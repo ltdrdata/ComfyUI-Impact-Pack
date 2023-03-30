@@ -7,7 +7,7 @@
 * SegmDetector - Detect segmentation from input image.
 * BboxDetector - Detect bbox from input image.
 
-### ![Detector Examples](https://user-images.githubusercontent.com/128333288/228881629-0374c095-5f69-4eba-bded-773bacda33d6.png)
+### ![example](https://user-images.githubusercontent.com/128333288/228896955-d84e164e-af87-4c4d-a377-662a6363381f.png)
 Detected mask example.
 
 # Installation
