@@ -63,7 +63,10 @@ from mmdet.apis import (inference_detector,
                         init_detector)
 from PIL import Image
 
+import model_management
+
 def load_mmdet(model_path):
+    print(model_management.vram_state)
     model_config = os.path.splitext(model_path)[0] + ".py"
     model = init_detector(model_config, model_path, device="cpu")
     return model
@@ -154,13 +157,19 @@ folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, 
 folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
 
+class NO_BBOX_MODEL:
+    ERROR = ""
+
+class NO_SEGM_MODEL:
+    ERROR = ""
+
 class MMDetLoader:
     @classmethod
     def INPUT_TYPES(s):
         bboxs = [ "bbox/"+x for x in folder_paths.get_filename_list("mmdets_bbox") ]
         segms = [ "segm/"+x for x in folder_paths.get_filename_list("mmdets_segm") ]
         return {"required": { "model_name": (bboxs + segms, )}}
-    RETURN_TYPES = ("MODEL", )
+    RETURN_TYPES = ("BBOX_MODEL", "SEGM_MODEL")
     FUNCTION = "load_mmdet"
 
     CATEGORY = "ImpactPack"
@@ -168,7 +177,11 @@ class MMDetLoader:
     def load_mmdet(self, model_name):
         mmdet_path = folder_paths.get_full_path("mmdets", model_name)
         model = load_mmdet(mmdet_path)
-        return (model, )
+
+        if model_name.startswith("bbox"):
+            return (model, NO_SEGM_MODEL())
+        else:
+            return (NO_BBOX_MODEL(), model)
 
 class SegmDetector:
     input_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
@@ -176,7 +189,7 @@ class SegmDetector:
     def INPUT_TYPES(s):
         return {"required":
                     {
-                        "model": ("MODEL", ),
+                        "segm_model": ("SEGM_MODEL", ),
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                       }
@@ -187,8 +200,8 @@ class SegmDetector:
 
     CATEGORY = "ImpactPack"
 
-    def doit(self, model, image, threshold):
-        mmdet_results = inference_segm(model, image, threshold)
+    def doit(self, segm_model, image, threshold):
+        mmdet_results = inference_segm(segm_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
         mask = combine_masks(segmasks)
 
@@ -196,10 +209,22 @@ class SegmDetector:
         return (image,)
 
 class BboxDetector(SegmDetector):
-    def doit(self, model, image, threshold):
-        mmdet_results = inference_bbox(model, image, threshold)
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {
+                        "bbox_model": ("BBOX_MODEL", ),
+                        "image": ("IMAGE", ),
+                        "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                      }
+                }
+
+
+    def doit(self, bbox_model, image, threshold):
+        mmdet_results = inference_bbox(bbox_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
         mask = combine_masks(segmasks)
+
         image = pil2tensor(mask)
         return (image,)
 
