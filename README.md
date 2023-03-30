@@ -1,1 +1,1 @@
-# CompyUI-Impact-Pack
+# ComfyUI-Impact-Pack
