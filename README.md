@@ -7,8 +7,8 @@
 * SegmDetector - Detect segmentation from input image.
 * BboxDetector - Detect bbox from input image.
 
-### [Detector Examples](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/main/misc/example.png)
-
+### ![Detector Examples](https://user-images.githubusercontent.com/128333288/228881629-0374c095-5f69-4eba-bded-773bacda33d6.png)
+Detected mask example.
 
 # Installation
 
