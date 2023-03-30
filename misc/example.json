@@ -1,0 +1,301 @@
+{
+  "last_node_id": 9,
+  "last_link_id": 10,
+  "nodes": [
+    {
+      "id": 7,
+      "type": "MMDetLoader",
+      "pos": [
+        515,
+        771
+      ],
+      "size": {
+        "0": 443,
+        "1": 58
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MMDetLoader"
+      },
+      "widgets_values": [
+        "segm/mmdet_dd-person_mask2former.pth"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MMDetLoader",
+      "pos": [
+        515,
+        180
+      ],
+      "size": {
+        "0": 439,
+        "1": 62
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MMDetLoader"
+      },
+      "widgets_values": [
+        "bbox/mmdet_anime-face_yolov3.pth"
+      ],
+      "shape": 2
+    },
+    {
+      "id": 6,
+      "type": "SegmDetector",
+      "pos": [
+        178,
+        765
+      ],
+      "size": {
+        "0": 210,
+        "1": 78
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 7
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SegmDetector"
+      },
+      "widgets_values": [
+        0.49999999999999956
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        510,
+        314
+      ],
+      "size": {
+        "0": 448,
+        "1": 387
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6,
+            8
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "snh.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        1008,
+        319
+      ],
+      "size": {
+        "0": 339,
+        "1": 380
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "title": "PreviewImage - Faces",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 5,
+      "type": "BboxDetector",
+      "pos": [
+        1048,
+        180
+      ],
+      "size": {
+        "0": 210,
+        "1": 78
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 4
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BboxDetector"
+      },
+      "widgets_values": [
+        0.49999999999999956
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        97,
+        321
+      ],
+      "size": {
+        "0": 366,
+        "1": 380
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "title": "PreviewImage - Persons",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "MODEL"
+    ],
+    [
+      5,
+      5,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      1,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      6,
+      0,
+      "MODEL"
+    ],
+    [
+      8,
+      1,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      10,
+      6,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
