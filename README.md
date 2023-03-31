@@ -5,7 +5,9 @@
 # Features
 * MMDetLoader - Load MMDet model
 * SegmDetector - Detect segmentation from input image.
-* BboxDetector - Detect bbox from input image.
+* BboxDetector - Detect bbox(bounding box) from input image.
+* BitwiseAndMask - Perform bitwise operations between 2 masks
+* SubtractMask - Perform subtract operations between 2 masks
 
 ### ![example](https://user-images.githubusercontent.com/128333288/229093882-239c4a2a-0c94-4b77-b0fa-8ac07eda17b9.png)
 Head detection example.
