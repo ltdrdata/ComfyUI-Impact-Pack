@@ -1,0 +1,971 @@
+{
+  "last_node_id": 86,
+  "last_link_id": 200,
+  "nodes": [
+    {
+      "id": 44,
+      "type": "EmptyLatentImage",
+      "pos": [
+        660.9426439941404,
+        515.4209721069341
+      ],
+      "size": [
+        297.050703568892,
+        124.40960415926838
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            73
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        256,
+        320,
+        1
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 37,
+      "type": "CLIPTextEncode",
+      "pos": [
+        303.94264399414016,
+        891.4209721069335
+      ],
+      "size": [
+        296.778076171875,
+        141.13685954700816
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            71
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "low quality, worst quality, bad anatomy"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 31,
+      "type": "CLIPTextEncode",
+      "pos": [
+        307.94264399414004,
+        699.4209721069342
+      ],
+      "size": [
+        290.05080344460225,
+        136.4095868197354
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            70
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "1girl, photorealistic:1.4, masterpiece, holding book, full shot, black suit, perfect anatomy, office, detailed eyes, smile"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 42,
+      "type": "KSampler",
+      "pos": [
+        662.9426439941404,
+        698.4209721069342
+      ],
+      "size": [
+        298.6870672052555,
+        336.8641496138139
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 72
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 70
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 71
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 73
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            74
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        805157917915455,
+        false,
+        20,
+        8,
+        "euler",
+        "karras",
+        1
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 30,
+      "type": "CheckpointLoader",
+      "pos": [
+        309.94264399414004,
+        514.4209721069341
+      ],
+      "size": [
+        289.505273992365,
+        122
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            72
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            49,
+            62
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            137,
+            189
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoader"
+      },
+      "widgets_values": [
+        "anything_v3.yaml",
+        "V07_v07.safetensors"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 40,
+      "type": "VAEDecode",
+      "pos": [
+        664.7999938964844,
+        413.5999877929687
+      ],
+      "size": [
+        291.57110980898665,
+        46
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 74
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 137
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            110,
+            182,
+            183,
+            194,
+            196
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 83,
+      "type": "VAEEncodeForInpaint",
+      "pos": [
+        2034.6854083008925,
+        438.58422545240285
+      ],
+      "size": [
+        159.60000610351562,
+        66
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 194
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 193
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 197
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            198
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncodeForInpaint"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 84,
+      "type": "VAEDecode",
+      "pos": [
+        2034.6854083008925,
+        547.584225452403
+      ],
+      "size": [
+        158.03991800103177,
+        46
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 198
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 199
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            200
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 82,
+      "type": "MMDetLoader",
+      "pos": [
+        1792.6854083008925,
+        296.584225452403
+      ],
+      "size": [
+        401.5425781433414,
+        94.64831104464832
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "BBOX_MODEL",
+          "type": "BBOX_MODEL",
+          "links": [
+            195
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "SEGM_MODEL",
+          "type": "SEGM_MODEL",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MMDetLoader"
+      },
+      "widgets_values": [
+        "bbox/mmdet_anime-face_yolov3.pth"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 85,
+      "type": "BboxDetectorCombined",
+      "pos": [
+        1794.6854083008925,
+        491.58422545240296
+      ],
+      "size": [
+        210,
+        102
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bbox_model",
+          "type": "BBOX_MODEL",
+          "link": 195
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 196
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            197
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BboxDetectorCombined"
+      },
+      "widgets_values": [
+        0.5,
+        4
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 79,
+      "type": "VAEEncodeForInpaint",
+      "pos": [
+        1584.1425488730654,
+        441.1026224791242
+      ],
+      "size": [
+        159.60000610351562,
+        66
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 183
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 190
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 192
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            186
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncodeForInpaint"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 80,
+      "type": "VAEDecode",
+      "pos": [
+        1585.1425488730654,
+        555.1026224791242
+      ],
+      "size": [
+        156.52604921772217,
+        46
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 186
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 191
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            188
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 45,
+      "type": "MMDetLoader",
+      "pos": [
+        1339.1425488730654,
+        300.10262247912425
+      ],
+      "size": [
+        400.1511431320723,
+        87.89173704014047
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "BBOX_MODEL",
+          "type": "BBOX_MODEL",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "SEGM_MODEL",
+          "type": "SEGM_MODEL",
+          "links": [
+            181
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MMDetLoader"
+      },
+      "widgets_values": [
+        "segm/mmdet_dd-person_mask2former.pth"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 78,
+      "type": "SegmDetectorCombined",
+      "pos": [
+        1347.1425488730654,
+        497.10262247912414
+      ],
+      "size": [
+        211.54638570990392,
+        102
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segm_model",
+          "type": "SEGM_MODEL",
+          "link": 181
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 182
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            192
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SegmDetectorCombined"
+      },
+      "widgets_values": [
+        0.5,
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 86,
+      "type": "SaveImage",
+      "pos": [
+        1795.6854083008925,
+        646.584225452403
+      ],
+      "size": [
+        398.5425781433414,
+        381.0119474082842
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 200
+        }
+      ],
+      "title": "Refined Image",
+      "properties": {},
+      "widgets_values": [
+        "refined"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 41,
+      "type": "PreviewImage",
+      "pos": [
+        999.7999938964845,
+        655.5999877929687
+      ],
+      "size": [
+        300.6870242032137,
+        383.227705522017
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 110
+        }
+      ],
+      "title": "Prompt Image",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 71,
+      "type": "SaveImage",
+      "pos": [
+        1343.7999938964847,
+        653.5999877929687
+      ],
+      "size": [
+        399.19697333492695,
+        372.00142900107153
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 188
+        }
+      ],
+      "title": "Refined Image",
+      "properties": {},
+      "widgets_values": [
+        "refined"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 81,
+      "type": "Reroute",
+      "pos": [
+        1526,
+        196
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 189
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            190,
+            191,
+            193,
+            199
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    }
+  ],
+  "links": [
+    [
+      49,
+      30,
+      1,
+      31,
+      0,
+      "CLIP"
+    ],
+    [
+      62,
+      30,
+      1,
+      37,
+      0,
+      "CLIP"
+    ],
+    [
+      70,
+      31,
+      0,
+      42,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      71,
+      37,
+      0,
+      42,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      72,
+      30,
+      0,
+      42,
+      0,
+      "MODEL"
+    ],
+    [
+      73,
+      44,
+      0,
+      42,
+      3,
+      "LATENT"
+    ],
+    [
+      74,
+      42,
+      0,
+      40,
+      0,
+      "LATENT"
+    ],
+    [
+      110,
+      40,
+      0,
+      41,
+      0,
+      "IMAGE"
+    ],
+    [
+      137,
+      30,
+      2,
+      40,
+      1,
+      "VAE"
+    ],
+    [
+      181,
+      45,
+      1,
+      78,
+      0,
+      "SEGM_MODEL"
+    ],
+    [
+      182,
+      40,
+      0,
+      78,
+      1,
+      "IMAGE"
+    ],
+    [
+      183,
+      40,
+      0,
+      79,
+      0,
+      "IMAGE"
+    ],
+    [
+      186,
+      79,
+      0,
+      80,
+      0,
+      "LATENT"
+    ],
+    [
+      188,
+      80,
+      0,
+      71,
+      0,
+      "IMAGE"
+    ],
+    [
+      189,
+      30,
+      2,
+      81,
+      0,
+      "*"
+    ],
+    [
+      190,
+      81,
+      0,
+      79,
+      1,
+      "VAE"
+    ],
+    [
+      191,
+      81,
+      0,
+      80,
+      1,
+      "VAE"
+    ],
+    [
+      192,
+      78,
+      0,
+      79,
+      2,
+      "MASK"
+    ],
+    [
+      193,
+      81,
+      0,
+      83,
+      1,
+      "VAE"
+    ],
+    [
+      194,
+      40,
+      0,
+      83,
+      0,
+      "IMAGE"
+    ],
+    [
+      195,
+      82,
+      0,
+      85,
+      0,
+      "BBOX_MODEL"
+    ],
+    [
+      196,
+      40,
+      0,
+      85,
+      1,
+      "IMAGE"
+    ],
+    [
+      197,
+      85,
+      0,
+      83,
+      2,
+      "MASK"
+    ],
+    [
+      198,
+      83,
+      0,
+      84,
+      0,
+      "LATENT"
+    ],
+    [
+      199,
+      81,
+      0,
+      84,
+      1,
+      "VAE"
+    ],
+    [
+      200,
+      84,
+      0,
+      86,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
