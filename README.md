@@ -14,6 +14,15 @@
 * BitwiseAndMaskForEach - Perform 'bitwise and' operations between 2 SEGS.
 * BitwiseAndMaskForEach - Perform subtract operations between 2 SEGS.
 
+# Installation
+
+1. Download 'comfyui-impact-pack.py' 
+2. Copy into 'ComfyUI/custom_nodes'
+3. Restart ComfyUI (additional dependencies will be installed automatically)
+
+* Due to compatibility issues between mmcv and PyTorch, it is recommended to use pytorch==1.13.1. Environment setup for PyTorch 2.0.0 is under testing.
+* !pip -q install xformers torch==1.13.1 torchdiffeq torchsde einops open-clip-torch transformers>=4.25.1 safetensors pytorch_lightning aiohttp accelerate pyyaml
+* You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 
 # How to use (DDetailer feature)
 
@@ -51,15 +60,6 @@
 
 ![example](misc/mask.png)
 
-
-# Installation
-
-1. Download 'comfyui-impact-pack.py' 
-2. Copy into 'ComfyUI/custom_nodes'
-3. Restart ComfyUI (additional dependencies will be installed automatically)
-
-* Due to compatibility issues between mmcv and PyTorch, it is recommended to use pytorch==1.13.1. Environment setup for PyTorch 2.0.0 is under testing.
-* !pip -q install xformers torch==1.13.1 torchdiffeq torchsde einops open-clip-torch transformers>=4.25.1 safetensors pytorch_lightning aiohttp accelerate pyyaml
 
 # Credits
 
