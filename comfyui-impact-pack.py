@@ -101,7 +101,7 @@ def create_segmasks(results):
 
 
 def combine_masks(masks):
-    if masks.__len__ == 0:
+    if len(masks) == 0:
         return None
     else:
         initial_cv2_mask = np.array(masks[0][1])
@@ -116,7 +116,7 @@ def combine_masks(masks):
 
 
 def combine_masks2(masks):
-    if masks.__len__ == 0:
+    if len(masks) == 0:
         return None
     else:
         initial_cv2_mask = np.array(masks[0]).astype(np.uint8)
@@ -632,7 +632,10 @@ class SAMDetectorCombined:
             if not selected:
                 total_masks.append(max_mask)
 
-        mask = combine_masks2(total_masks).float()
+        mask = combine_masks2(total_masks)
+        if mask is not None:
+            mask = mask.float()
+
         return (mask, )
 
 
