@@ -72,6 +72,8 @@ ComfyUI/[ComfyUI](https://github.com/comfyanonymous/ComfyUI) - A powerful and mo
 
 dustysys/ddetailer[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
 
+Bing-su/dddetailer[dddetailer](https://github.com/Bing-su/dddetailer) - Compatibility work for mmdet 3.0.0 has been applied to the anime-face-detector used in ddetailer.
+
 facebook/segment-anythong[](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
 
 hysts/[anime-face-detector](https://github.com/hysts/anime-face-detector) - Creator of `anime-face_yolov3`, which has impressive performance on a variety of art styles.
