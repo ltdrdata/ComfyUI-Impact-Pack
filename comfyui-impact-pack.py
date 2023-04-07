@@ -1,6 +1,4 @@
 import os, sys, subprocess
-
-import numpy
 from torchvision.datasets.utils import download_url
 
 # ----- SETUP --------------------------------------------------------------
@@ -23,13 +21,19 @@ installed_pip = packages_pip()
 if "openmim" not in installed_pip:
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
 
+if "segment-anything" not in installed_pip:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'segment-anything'])
+
 installed_mim = packages_mim()
 
-if "mmcv-full" not in installed_mim:
-    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv-full==1.7.0'])
+if "mmcv" not in installed_mim:
+    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
 
 if "mmdet" not in installed_mim:
-    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==2.28.2'])
+    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
+
+if "mmengine" not in installed_mim:
+    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
 
 # Download model
 print("### ComfyUI-Impact-Pack: Check basic models")
@@ -43,20 +47,17 @@ else:
 
 model_path = os.path.join(comfy_path, "models")
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
-segm_path = os.path.join(model_path, "mmdets", "segm")
+#segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
+sam_path = os.path.join(model_path, "sams", "segm")
 
 if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
     download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
 
 if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
-    download_url("https://huggingface.co/dustysys/ddetailer/raw/main/mmdet/bbox/mmdet_anime-face_yolov3.py", bbox_path)
+    download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
 
-if not os.path.exists(os.path.join(segm_path, "mmdet_dd-person_mask2former.pth")):
-    download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/segm/mmdet_dd-person_mask2former.pth", segm_path)
-
-if not os.path.exists(os.path.join(segm_path, "mmdet_dd-person_mask2former.py")):
-    download_url("https://huggingface.co/dustysys/ddetailer/raw/main/mmdet/segm/mmdet_dd-person_mask2former.py", segm_path)
-
+if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
+    download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
 
 # ----- MAIN CODE --------------------------------------------------------------
 
@@ -65,20 +66,21 @@ import torch
 import cv2
 import mmcv
 import numpy as np
-from mmdet.core import get_classes
-from mmdet.apis import (inference_detector,
-                        init_detector)
-from PIL import Image
+from mmdet.apis import (inference_detector, init_detector)
 import comfy.samplers
 import comfy.sd
 import nodes
 import model_management
-
-from scipy.ndimage import distance_transform_edt, gaussian_filter
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
 def load_mmdet(model_path):
+    if model_management.vram_state.value < model_management.VRAMState.HIGH_VRAM.value:
+        model_device = "cpu"
+    else:
+        model_device = model_management.get_torch_device()
     model_config = os.path.splitext(model_path)[0] + ".py"
-    model = init_detector(model_config, model_path, device="cpu")
+    model = init_detector(model_config, model_path, device=model_device)
     return model
 
 
@@ -93,10 +95,11 @@ def tensor2pil(image):
 def create_segmasks(results):
     bboxs = results[1]
     segms = results[2]
+    confidence = results[3]
 
     results = []
     for i in range(len(segms)):
-        item = (bboxs[i], segms[i].astype(np.float32))
+        item = (bboxs[i], segms[i].astype(np.float32), confidence[i])
         results.append(item)
     return results
 
@@ -112,8 +115,21 @@ def combine_masks(masks):
             cv2_mask = np.array(masks[i][1])
             combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
 
-        # combined_mask = Image.fromarray(combined_cv2_mask)
-        # return combined_mask
+        mask = torch.from_numpy(combined_cv2_mask)
+        return mask
+
+
+def combine_masks2(masks):
+    if masks.__len__ == 0:
+        return None
+    else:
+        initial_cv2_mask = np.array(masks[0]).astype(np.uint8)
+        combined_cv2_mask = initial_cv2_mask
+
+        for i in range(1, len(masks)):
+            cv2_mask = np.array(masks[i]).astype(np.uint8)
+            combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
+
         mask = torch.from_numpy(combined_cv2_mask)
         return mask
 
@@ -126,20 +142,23 @@ def bitwise_and_masks(mask1, mask2):
     return mask
 
 
-def dilate_masks(masks, dilation_factor, iter=1):
+def dilate_masks(segmasks, dilation_factor, iter=1):
     if dilation_factor == 0:
-        return masks
+        return segmasks
     dilated_masks = []
     kernel = np.ones((dilation_factor,dilation_factor), np.uint8)
-    for i in range(len(masks)):
-        cv2_mask = masks[i][1]
+    for i in range(len(segmasks)):
+        cv2_mask = segmasks[i][1]
         dilated_mask = cv2.dilate(cv2_mask, kernel, iter)
-        item = (masks[i][0],dilated_mask)
+        item = (segmasks[i][0],dilated_mask,segmasks[i][2])
         dilated_masks.append(item)
     return dilated_masks
 
 
 from PIL import Image, ImageFilter
+from mmdet.evaluation import get_classes
+
+
 def feather_mask(mask, thickness):
     pil_mask = Image.fromarray(np.uint8(mask * 255))
 
@@ -158,7 +177,7 @@ def subtract_masks(mask1, mask2):
     return mask
 
 
-def inference_segm(model, image, conf_threshold):
+def inference_segm_old(model, image, conf_threshold):
     image = image.numpy()[0] * 255
     mmdet_results = inference_detector(model, image)
 
@@ -188,31 +207,57 @@ def inference_segm(model, image, conf_threshold):
     return mmdet_results
 
 
-def inference_bbox(model, image, conf_threshold):
+def inference_segm(image, modelname, conf_thres, label):
+    image = image.numpy()[0] * 255
+    mmdet_results = inference_detector(modelname, image).pred_instances
+    bboxes = mmdet_results.bboxes.numpy()
+    segms = mmdet_results.masks.numpy()
+    scores = mmdet_results.scores.numpy()
+
+    classes = get_classes("coco")
+
+    n, m = bboxes.shape
+    if n == 0:
+        return [[], [], [], []]
+    labels = mmdet_results.labels
+    filter_inds = np.where(mmdet_results.scores > conf_thres)[0]
+    results = [[], [], [], []]
+    for i in filter_inds:
+        results[0].append(label + "-" + classes[labels[i]])
+        results[1].append(bboxes[i])
+        results[2].append(segms[i])
+        results[3].append(scores[i])
+
+    return results
+
+
+def inference_bbox(modelname, image, conf_threshold):
     image = image.numpy()[0] * 255
     label = "A"
-    results = inference_detector(model, image)
+    output = inference_detector(modelname, image).pred_instances
     cv2_image = np.array(image)
     cv2_image = cv2_image[:, :, ::-1].copy()
     cv2_gray = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2GRAY)
 
     segms = []
-    for (x0, y0, x1, y1, conf) in results[0]:
+    for x0, y0, x1, y1 in output.bboxes:
         cv2_mask = np.zeros((cv2_gray.shape), np.uint8)
         cv2.rectangle(cv2_mask, (int(x0), int(y0)), (int(x1), int(y1)), 255, -1)
         cv2_mask_bool = cv2_mask.astype(bool)
         segms.append(cv2_mask_bool)
 
-    n, m = results[0].shape
-    if (n == 0):
-        return [[], [], []]
-    bboxes = np.vstack(results[0])
-    filter_inds = np.where(bboxes[:, -1] > conf_threshold)[0]
-    results = [[], [], []]
+    n, m = output.bboxes.shape
+    if n == 0:
+        return [[], [], [], []]
+    bboxes = output.bboxes.numpy()
+    scores = output.scores.numpy()
+    filter_inds = np.where(scores > conf_threshold)[0]
+    results = [[], [], [], []]
     for i in filter_inds:
         results[0].append(label)
         results[1].append(bboxes[i])
         results[2].append(segms[i])
+        results[3].append(scores[i])
 
     return results
 
@@ -223,6 +268,7 @@ import folder_paths
 folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
+folder_paths.folder_names_and_paths["sams"] = ([os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
 
 
 class NO_BBOX_MODEL:
@@ -252,6 +298,26 @@ class MMDetLoader:
             return (model, NO_SEGM_MODEL())
         else:
             return (NO_BBOX_MODEL(), model)
+
+
+from segment_anything import build_sam, SamPredictor
+from segment_anything import sam_model_registry
+
+
+class SAMLoader:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": { "model_name": (folder_paths.get_filename_list("sams"), )}}
+    RETURN_TYPES = ("SAM_MODEL", )
+    FUNCTION = "load_model"
+
+    CATEGORY = "ImpactPack"
+
+    def load_model(selfself, model_name):
+        modelname = folder_paths.get_full_path("sams", model_name)
+        sam = sam_model_registry["vit_b"](checkpoint=modelname)
+        print(f"Loads SAM model: {modelname}")
+        return (sam, )
 
 
 def normalize_region(limit, startp, size):
@@ -451,6 +517,129 @@ class DetailerForEach:
         return (pil2tensor(image_pil.convert('RGB')), )
 
 
+class DetailerForEachTest(DetailerForEach):
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Test"
+
+    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather):
+
+        image_pil = tensor2pil(image).convert('RGBA')
+
+        for x in segs:
+            cropped_image = x[0]
+            mask_pil = feather_mask(x[1], feather)
+            confidence = x[2]
+            crop_region = x[3]
+            bbox_size = x[4]
+
+            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox_size,
+                                          seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
+
+            if not (enhanced_pil is None):
+                # don't latent composite &
+                # use image paste
+                image_pil.paste(enhanced_pil, (crop_region[0], crop_region[1]), mask_pil)
+
+        image_tensor = pil2tensor(image_pil.convert('RGB'))
+
+        if len(segs) > 0:
+            return image_tensor, torch.from_numpy(cropped_image), pil2tensor(enhanced_pil),
+        else:
+            return image_tensor, image_tensor, image_tensor,
+
+
+class SegsMaskCombine:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {
+                        "segs": ("SEGS", ),
+                        "image": ("IMAGE", ),
+                      }
+                }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack"
+
+    def doit(self, segs, image):
+        h = image.shape[1]
+        w = image.shape[2]
+
+        mask = np.zeros((h, w), dtype=np.uint8)
+
+        for seg in segs:
+            cropped_mask = seg[1]
+            crop_region = seg[3]
+            mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
+
+        return (torch.from_numpy(mask.astype(np.float32) / 255.0), )
+
+
+class SAMDetectorCombined:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {
+                        "sam_model": ("SAM_MODEL", ),
+                        "segs": ("SEGS", ),
+                        "image": ("IMAGE", ),
+                        "dilation": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                        "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                      }
+                }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack"
+
+    def doit(self, sam_model, segs, image, dilation, threshold):
+        predictor = SamPredictor(sam_model)
+        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+
+        predictor.set_image(image,"RGB")
+
+        total_masks = []
+        for i in range(len(segs)):
+            bbox = segs[i][4]
+            w,h = bbox[2] - bbox[0], bbox[3] - bbox[1] / 2
+            center = bbox[1] + h/2, bbox[0] + w/2
+
+            x1 = max(segs[i][4][0] - dilation, 0)
+            y1 = max(segs[i][4][1] - dilation, 0)
+            x2 = max(segs[i][4][2] + dilation, image.shape[2])
+            y2 = max(segs[i][4][3] + dilation, image.shape[1])
+
+            dilated_bbox = [x1, y1, x2, y2]
+
+            cur_masks, scores, _ = predictor.predict(point_coords=np.array([center]), point_labels=np.array([1]),
+                                                     box=np.array([dilated_bbox]))
+
+            selected = False
+            max_score = 0
+            for i in range(len(scores)):
+                if scores[i] > max_score:
+                    max_score = scores[i]
+                    max_mask = cur_masks[i]
+
+                if scores[i] >= threshold:
+                    selected = True
+                    total_masks.append(cur_masks[i])
+                else:
+                    pass
+
+            if not selected:
+                total_masks.append(max_mask)
+
+        mask = combine_masks2(total_masks).float()
+        return (mask, )
+
+
 class BboxDetectorForEach:
     @classmethod
     def INPUT_TYPES(s):
@@ -485,10 +674,10 @@ class BboxDetectorForEach:
             crop_region = make_crop_region(w, h, item_bbox, crop_factor)
             cropped_image = crop_image(image, crop_region)
             cropped_mask = crop_ndarray2(item_mask, crop_region)
-            confidence = item_bbox[4]
-            bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
+            confidence = x[2]
+            # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
-            item = (cropped_image, cropped_mask, confidence, crop_region, bbox_size)
+            item = (cropped_image, cropped_mask, confidence, crop_region, item_bbox)
             items.append(item)
 
         return (items, )
@@ -528,13 +717,47 @@ class SegmDetectorForEach:
             crop_region = make_crop_region(w, h, item_bbox, crop_factor)
             cropped_image = crop_image(image, crop_region)
             cropped_mask = crop_ndarray2(item_mask, crop_region)
-            confidence = item_bbox[4]
+            confidence = x[2]
             bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
             item = (cropped_image, cropped_mask, confidence, crop_region, bbox_size)
             items.append(item)
 
         return (items, )
+
+
+class SegsBitwiseAndMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+            {
+                "segs": ("SEGS",),
+                "mask": ("MASK",),
+            }
+        }
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack"
+
+    def doit(self, segs, mask):
+        items = []
+
+        mask = (mask.numpy() * 255).astype(np.uint8)
+
+        for x in segs:
+            cropped_mask = (x[1].copy() * 255).astype(np.uint8)
+            crop_region = x[3]
+
+            cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
+
+            new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
+            new_mask = new_mask.astype(np.float32) / 255.0
+
+            item = (x[0], new_mask, x[2], x[3], x[4])
+            items.append(item)
+
+        return (items,)
 
 
 class BitwiseAndMaskForEach:
@@ -737,12 +960,21 @@ class SubtractMask:
 
 NODE_CLASS_MAPPINGS = {
     "MMDetLoader": MMDetLoader,
+    "SAMLoader": SAMLoader,
+
     "BboxDetectorForEach": BboxDetectorForEach,
     "SegmDetectorForEach": SegmDetectorForEach,
     "BitwiseAndMaskForEach": BitwiseAndMaskForEach,
+
+    "DetailerForEach": DetailerForEach,
+    "DetailerForEachDebug": DetailerForEachTest,
+
     "BboxDetectorCombined": BboxDetectorCombined,
     "SegmDetectorCombined": SegmDetectorCombined,
+    "SAMDetectorCombined": SAMDetectorCombined,
+
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
-    "DetailerForEach": DetailerForEach,
+    "Segs & Mask": SegsBitwiseAndMask,
+    "SegsMaskCombine": SegsMaskCombine,
 }
