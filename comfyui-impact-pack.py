@@ -48,7 +48,7 @@ else:
 model_path = os.path.join(comfy_path, "models")
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
 #segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
-sam_path = os.path.join(model_path, "sams", "segm")
+sam_path = os.path.join(model_path, "sams")
 
 if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
     download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
@@ -70,17 +70,13 @@ from mmdet.apis import (inference_detector, init_detector)
 import comfy.samplers
 import comfy.sd
 import nodes
-import model_management
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
+
 def load_mmdet(model_path):
-    if model_management.vram_state.value < model_management.VRAMState.HIGH_VRAM.value:
-        model_device = "cpu"
-    else:
-        model_device = model_management.get_torch_device()
     model_config = os.path.splitext(model_path)[0] + ".py"
-    model = init_detector(model_config, model_path, device=model_device)
+    model = init_detector(model_config, model_path, device="cpu")
     return model
 
 
