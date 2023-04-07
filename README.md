@@ -4,8 +4,10 @@
 
 # Features
 * MMDetLoader - Load MMDet model
-* SegmDetector - Detect segmentation and return mask from input image.
-* BboxDetector - Detect bbox(bounding box) and return mask from input image.
+* SAMLoader - Load SAM model
+* SegmDetectorCombined - Detect segmentation and return mask from input image.
+* BboxDetectorCombined - Detect bbox(bounding box) and return mask from input image.
+* SamDetectorCombined - Using the technology of SAM, extract the segment at the location indicated by the input SEGS on the input image, and output it as a unified mask. 
 * BitwiseAndMask - Perform 'bitwise and' operations between 2 masks
 * SubtractMask - Perform subtract operations between 2 masks
 * SegmDetectorForEach - Detect segmentation and return SEGS from input image.
@@ -13,6 +15,7 @@
 * DetailerForEach - Refine image rely on SEGS.
 * BitwiseAndMaskForEach - Perform 'bitwise and' operations between 2 SEGS.
 * BitwiseAndMaskForEach - Perform subtract operations between 2 SEGS.
+* Segs & Masks - Perform a bitwise AND operation on SEGS and MASK.
 
 # Installation
 
@@ -20,8 +23,6 @@
 2. Copy into 'ComfyUI/custom_nodes'
 3. Restart ComfyUI (additional dependencies will be installed automatically)
 
-* Due to compatibility issues between mmcv and PyTorch, it is recommended to use pytorch==1.13.1. Environment setup for PyTorch 2.0.0 is under testing.
-* !pip -q install xformers torch==1.13.1 torchdiffeq torchsde einops open-clip-torch transformers>=4.25.1 safetensors pytorch_lightning aiohttp accelerate pyyaml
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 
 # How to use (DDetailer feature)
@@ -31,6 +32,8 @@
 ![example](misc/simple-original.png) ![example](misc/simple-refined.png)
 * The face that has been damaged due to low resolution is restored with high resolution by generating and synthesizing it, in order to restore the details.
 * You can load models for bbox or segm using MMDetLoader. If you load a bbox model, only **BBOX_MODEL** is valid in the output, and if you load a segm model, only **SEGM_MODEL** is valid.
+   * Currently, we are using the more sophisticated SAM model instead of the SEGM_MODEL for silhouette extraction.
+
 * The default downloaded bbox model currently only detects the face area as a rectangle, and the segm model detects the silhouette of a person.
 * The difference between BboxDetectorCombine and BboxDetectorForEach is that the former outputs a single mask by combining all detected bboxes, and the latter outputs SEGS consisting of various information, including the cropped image, mask pattern, crop position, and confidence, for each detection. SEGS can be used in other ...ForEach nodes.
 
@@ -52,9 +55,11 @@
 
 #### 3. Face Bbox(bounding box) + Person silhouette segmantation (prevent distortion of the background.)
 ![example](misc/combination.png)
-![example](misc/combination-original.png) ![example](misc/combination-bbox.png) ![example](misc/combination-both.png)
+![example](misc/combination-original.png) ![example](misc/combination-refined.png)
 
-* In the second picture, you can see that the background is slightly distorted into a rectangle shape. In the third picture, only the overlapping part between the bbox and the seg is refined to prevent distortion of the background.
+* Facial synthesis that emphasizes details is delicately aligned with the contours of the face, and it can be observed that it does not affect the image outside of the face.
+
+* The BBoxDetectorForEach node is used to detect faces, and the SAMDetectorCombined node is used to find the segment related to the detected face. By using the Segs & Mask node with the two masks obtained in this way, an accurate mask that intersects based on segs can be generated. If this generated mask is input to the DetailerForEach node, only the target area can be created in high resolution from the image and then composited.
 
 #### Mask feature
 
@@ -65,13 +70,11 @@
 
 ComfyUI/[ComfyUI](https://github.com/comfyanonymous/ComfyUI) - A powerful and modular stable diffusion GUI.
 
-dustysys/ddetailer[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer
+dustysys/ddetailer[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
+
+facebook/segment-anythong[](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
 
 hysts/[anime-face-detector](https://github.com/hysts/anime-face-detector) - Creator of `anime-face_yolov3`, which has impressive performance on a variety of art styles.
-
-skytnt/[anime-segmentation](https://huggingface.co/datasets/skytnt/anime-segmentation) - Synthetic dataset used to train `dd-person_mask2former`.
-
-jerryli27/[AniSeg](https://github.com/jerryli27/AniSeg) - Annotated dataset used to train `dd-person_mask2former`.
 
 open-mmlab/[mmdetection](https://github.com/open-mmlab/mmdetection) - Object detection toolset. `dd-person_mask2former` was trained via transfer learning using their [R-50 Mask2Former instance segmentation model](https://github.com/open-mmlab/mmdetection/tree/master/configs/mask2former#instance-segmentation) as a base.
 
