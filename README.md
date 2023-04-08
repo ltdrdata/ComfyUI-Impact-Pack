@@ -25,6 +25,23 @@
 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 
+# Package Dependencies (If you need to manual setup.)
+
+* pip install
+   * openmim
+   * segment-anything
+   
+* mim install
+   * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
+   
+# Other Materials (auto-download on initial startup)
+
+* ComfyUI/models/mmdets/bbox <= https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth
+* ComfyUI/models/mmdets/bbox <= https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py
+* ComfyUI/models/sams <= https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
+
+
+
 # How to use (DDetailer feature)
 
 #### 1. Basic auto face detection and refine exapmle.
