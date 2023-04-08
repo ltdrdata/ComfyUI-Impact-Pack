@@ -33,6 +33,7 @@
    
 * mim install
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
+   * To use the mmdet package on Windows, you may need to install the Visual Studio compiler.
    
 # Other Materials (auto-download on initial startup)
 
