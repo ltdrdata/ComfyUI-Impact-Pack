@@ -40,7 +40,8 @@
 * ComfyUI/models/mmdets/bbox <= https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py
 * ComfyUI/models/sams <= https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
 
-
+# Troubleshooting page
+* [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md)
 
 # How to use (DDetailer feature)
 
