@@ -15,6 +15,7 @@
 * DetailerForEach - Refine image rely on SEGS.
 * DetailerForEachDebug - Refine image rely on SEGS. Additionally, you can monitor cropped image and refined image of cropped image.
    * The 'DetailerForEach' and 'DetailerForEachDebug' now support an 'external_seed' that is obtained from the Seed node on the [WAS suite](https://github.com/WASasquatch/was-node-suite-comfyui)
+   * To prevent the regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node
 * BitwiseAndMaskForEach - Perform 'bitwise and' operations between 2 SEGS.
 * BitwiseAndMaskForEach - Perform subtract operations between 2 SEGS.
 * Segs & Masks - Perform a bitwise AND operation on SEGS and MASK.
