@@ -30,10 +30,10 @@
 * pip install
    * openmim
    * segment-anything
+   * pycocotools
    
 * mim install
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
-   * To use the mmdet package on Windows, you may need to install the Visual Studio compiler.
    
 # Other Materials (auto-download on initial startup)
 
@@ -91,7 +91,7 @@ ComfyUI/[ComfyUI](https://github.com/comfyanonymous/ComfyUI) - A powerful and mo
 
 dustysys/ddetailer[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
 
-Bing-su/dddetailer[dddetailer](https://github.com/Bing-su/dddetailer) - Compatibility work for mmdet 3.0.0 has been applied to the anime-face-detector used in ddetailer.
+Bing-su/dddetailer[dddetailer](https://github.com/Bing-su/dddetailer) - The anime-face-detector used in ddetailer has been updated to be compatible with mmdet 3.0.0, and we have also applied a patch to the pycocotools dependency for Windows environment in ddetailer.
 
 facebook/segment-anythong[](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
 
