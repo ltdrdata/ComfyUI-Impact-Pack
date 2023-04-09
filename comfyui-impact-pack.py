@@ -1,5 +1,6 @@
 import os, sys, subprocess
 from torchvision.datasets.utils import download_url
+import platform
 
 # ----- SETUP --------------------------------------------------------------
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
@@ -24,6 +25,22 @@ if "openmim" not in installed_pip:
 if "segment-anything" not in installed_pip:
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'segment-anything'])
 
+# INSTALL pycocotools
+if "pycocotools" not in installed_pip:
+    if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pycocotools'])
+    else:
+        pycocotools = {
+            (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
+            (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
+            (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
+            (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
+        }
+
+        version = sys.version_info[:2]
+        url = pycocotools[version]
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', url])
+
 installed_mim = packages_mim()
 
 if "mmcv" not in installed_mim:
@@ -45,7 +62,8 @@ else:
     # For development
     comfy_path = os.path.realpath("../ComfyUI")
 
-model_path = os.path.join(comfy_path, "models")
+import folder_paths
+model_path = folder_paths.models_dir
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
 #segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
 sam_path = os.path.join(model_path, "sams")
@@ -259,7 +277,6 @@ def inference_bbox(modelname, image, conf_threshold):
 
 
 # Nodes
-import folder_paths
 # folder_paths.supported_pt_extensions
 folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
