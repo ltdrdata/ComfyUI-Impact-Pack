@@ -55,15 +55,11 @@ if "mmengine" not in installed_mim:
 # Download model
 print("### ComfyUI-Impact-Pack: Check basic models")
 
-if os.path.realpath("..").endswith("custom_nodes"):
-    # For user
-    comfy_path = os.path.realpath("../..")
-else:
-    # For development
-    comfy_path = os.path.realpath("../ComfyUI")
-
 import folder_paths
+
+comfy_path = os.path.dirname(folder_paths.__file__)
 model_path = folder_paths.models_dir
+
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
 #segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
 sam_path = os.path.join(model_path, "sams")
