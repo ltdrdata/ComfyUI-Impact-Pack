@@ -13,6 +13,8 @@
 * SegmDetectorForEach - Detect segmentation and return SEGS from input image.
 * BboxDetectorForEach - Detect bbox(bounding box) and return SEGS from input image.
 * DetailerForEach - Refine image rely on SEGS.
+* DetailerForEachDebug - Refine image rely on SEGS. Additionally, you can monitor cropped image and refined image of cropped image.
+   * The 'DetailerForEach' and 'DetailerForEachDebug' now support an 'external_seed' that is obtained from the Seed node on the [WAS suite](https://github.com/WASasquatch/was-node-suite-comfyui)
 * BitwiseAndMaskForEach - Perform 'bitwise and' operations between 2 SEGS.
 * BitwiseAndMaskForEach - Perform subtract operations between 2 SEGS.
 * Segs & Masks - Perform a bitwise AND operation on SEGS and MASK.
@@ -43,6 +45,7 @@
 
 # Troubleshooting page
 * [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md)
+
 
 # How to use (DDetailer feature)
 
@@ -89,13 +92,14 @@
 
 ComfyUI/[ComfyUI](https://github.com/comfyanonymous/ComfyUI) - A powerful and modular stable diffusion GUI.
 
-dustysys/ddetailer[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
+dustysys/[ddetailer](https://github.com/dustysys/ddetailer) - DDetailer for Stable-diffusion-webUI extension.
 
-Bing-su/dddetailer[dddetailer](https://github.com/Bing-su/dddetailer) - The anime-face-detector used in ddetailer has been updated to be compatible with mmdet 3.0.0, and we have also applied a patch to the pycocotools dependency for Windows environment in ddetailer.
+Bing-su/[dddetailer](https://github.com/Bing-su/dddetailer) - The anime-face-detector used in ddetailer has been updated to be compatible with mmdet 3.0.0, and we have also applied a patch to the pycocotools dependency for Windows environment in ddetailer.
 
-facebook/segment-anythong[](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
+facebook/[segment-anything](https://github.com/facebookresearch/segment-anything) - Segmentation Anything!
 
 hysts/[anime-face-detector](https://github.com/hysts/anime-face-detector) - Creator of `anime-face_yolov3`, which has impressive performance on a variety of art styles.
 
 open-mmlab/[mmdetection](https://github.com/open-mmlab/mmdetection) - Object detection toolset. `dd-person_mask2former` was trained via transfer learning using their [R-50 Mask2Former instance segmentation model](https://github.com/open-mmlab/mmdetection/tree/master/configs/mask2former#instance-segmentation) as a base.
 
+WASasquatch/[was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui) - A powerful custom node extensions of ComfyUI.

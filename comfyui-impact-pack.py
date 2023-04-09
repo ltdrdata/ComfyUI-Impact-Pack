@@ -475,7 +475,6 @@ def composite_to(dest_latent, crop_region, src_latent):
 
     return orig_image[0]
 
-
 class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
@@ -495,7 +494,8 @@ class DetailerForEach:
                      "negative": ("CONDITIONING",),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     }
+                     },
+                "optional": { "external_seed": ("SEED", ), }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -504,7 +504,10 @@ class DetailerForEach:
     CATEGORY = "ImpactPack"
 
     def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather):
+             positive, negative, denoise, feather, external_seed=None):
+
+        if external_seed is not None:
+            seed = external_seed['seed']
 
         image_pil = tensor2pil(image).convert('RGBA')
 
@@ -533,7 +536,10 @@ class DetailerForEachTest(DetailerForEach):
     CATEGORY = "ImpactPack/Test"
 
     def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather):
+             positive, negative, denoise, feather, external_seed=None):
+
+        if external_seed is not None:
+            seed = external_seed['seed']
 
         image_pil = tensor2pil(image).convert('RGBA')
 
