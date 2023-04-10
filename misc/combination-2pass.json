@@ -45,116 +45,6 @@
       "bgcolor": "#535"
     },
     {
-      "id": 107,
-      "type": "SaveImage",
-      "pos": [
-        752,
-        620
-      ],
-      "size": {
-        "0": 703.5068359375,
-        "1": 549.9654541015625
-      },
-      "flags": {},
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 273
-        }
-      ],
-      "title": "Prompt",
-      "properties": {},
-      "widgets_values": [
-        "original"
-      ]
-    },
-    {
-      "id": 108,
-      "type": "VAEDecode",
-      "pos": [
-        360,
-        1123
-      ],
-      "size": {
-        "0": 381.7952880859375,
-        "1": 46.58692932128906
-      },
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 272
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 267
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            273,
-            274,
-            346
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      }
-    },
-    {
-      "id": 110,
-      "type": "CLIPTextEncode",
-      "pos": [
-        362,
-        866
-      ],
-      "size": {
-        "0": 381.7952880859375,
-        "1": 213.58692932128906
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 304
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            265,
-            351,
-            371
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Negative Prompt",
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "nsfw, (worst quality:1.4), (low quality:1.4), (blurry:1.22), (greyscale:1.1), (monochrome:1.1), cropped, lowres, text, jpeg artifacts, signature, watermark, username, blurry, artist name, trademark, title, (tan:1.1), muscular, petite, infant, toddlers, (sd character:1.1), Reference sheet, bad_prompt, comic, lowres low resolution, (bad anatomy:1.1), low quality anatomy, (bad hands:1.22), bad nails, bad legs, (bad fingers:1.22), bad toes, extra digit, (extra hands:1.22), (extra fingers:1.22), extra arms, extra legs, fewer digit, low quality face, low quality eyes, (cropped hands:1.22), cropped legs, cropped arms, (cropped fingers:1.22), (fused fingers:1.22), (too many fingers:1.22), tattoo, (missing fingers:1.22), ugly, text, (thai:1.1), thai girl, thai style, thai face, thai makeup), (american girl:1.1), american, american style, american face, american makeup), (chinese girl:1.1), chinese, chinese style, chinese face, chinese makeup), more than one person in focus, (more than two arm per body:1.48), (more than two leg per body:1.41), (more than five fingers on one hand:1.41), multi arms, multi legs, bad arm anatomy, bad leg anatomy, (bad hand anatomy:1.1), (bad finger anatomy:1.1), bad detailed background, unclear architectural outline, elf-ears, obesity, fat, (mutated hands and fingers:1.1), disfigured, fused, cloned, duplicate, flag, mole, strabismus, (highleg panties:1.1), hat, fishnet, (no pants), topless, bottomless, low-cut_armhole, high-waist_sideboob, sideless_outfit, breast_slip, cleavage_cutout, center_opening, breastless_clothes, sideboob, backboob, underboob, underboob_cutout, nipple_slip, areola_slip, revealing_clothes, see-through clothes, crotch_cutout, hip_vent, ass_cutout, side_slit, zettai_ryouiki, butt_crack, naked, nude, clothes_grab, untying, open_clothes, untied, undressing, unzipped, clothes_down, bikini, pink hair, letters, characters, wing, sunglasses, nipple"
-      ]
-    },
-    {
       "id": 109,
       "type": "CLIPTextEncode",
       "pos": [
@@ -228,66 +118,6 @@
         "showOutputText": true,
         "horizontal": false
       }
-    },
-    {
-      "id": 112,
-      "type": "EmptyLatentImage",
-      "pos": [
-        21,
-        1065
-      ],
-      "size": {
-        "0": 315,
-        "1": 106
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            266
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "EmptyLatentImage"
-      },
-      "widgets_values": [
-        512,
-        832,
-        1
-      ]
-    },
-    {
-      "id": 115,
-      "type": "SaveImage",
-      "pos": [
-        1498,
-        618
-      ],
-      "size": {
-        "0": 708.5068359375,
-        "1": 555.9654541015625
-      },
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 352
-        }
-      ],
-      "title": "Refined",
-      "properties": {},
-      "widgets_values": [
-        "refined"
-      ]
     },
     {
       "id": 124,
@@ -623,7 +453,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 350
+        "1": 394
       },
       "flags": {},
       "order": 23,
@@ -658,6 +488,11 @@
           "name": "negative",
           "type": "CONDITIONING",
           "link": 351
+        },
+        {
+          "name": "external_seed",
+          "type": "SEED",
+          "link": null
         }
       ],
       "outputs": [
@@ -699,7 +534,8 @@
         "euler",
         "karras",
         0.6,
-        5
+        5,
+        "enabled"
       ]
     },
     {
@@ -803,65 +639,6 @@
       "widgets_values": [
         "koreanDollLikeness_v10.safetensors",
         1,
-        1
-      ]
-    },
-    {
-      "id": 111,
-      "type": "KSampler",
-      "pos": [
-        20,
-        762
-      ],
-      "size": {
-        "0": 315,
-        "1": 262
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 315
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 264
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 265
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 266
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            272
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler"
-      },
-      "widgets_values": [
-        762773680021613,
-        false,
-        30,
-        7,
-        "euler",
-        "karras",
         1
       ]
     },
@@ -1061,55 +838,16 @@
       }
     },
     {
-      "id": 138,
-      "type": "CLIPTextEncode",
-      "pos": [
-        1503,
-        1746
-      ],
-      "size": [
-        955.8740349121085,
-        273.6712827148433
-      ],
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 376
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            375
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Face Prompt",
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
-      ]
-    },
-    {
       "id": 136,
       "type": "SaveImage",
       "pos": [
         756,
         1341
       ],
-      "size": [
-        704.027668457031,
-        678.629770507812
-      ],
+      "size": {
+        "0": 704.0276489257812,
+        "1": 678.6297607421875
+      },
       "flags": {},
       "order": 32,
       "mode": 0,
@@ -1135,7 +873,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 350
+        "1": 394
       },
       "flags": {},
       "order": 31,
@@ -1172,6 +910,11 @@
           "type": "CONDITIONING",
           "link": 371,
           "slot_index": 5
+        },
+        {
+          "name": "external_seed",
+          "type": "SEED",
+          "link": null
         }
       ],
       "outputs": [
@@ -1196,7 +939,8 @@
         "euler",
         "karras",
         0.5,
-        5
+        5,
+        "enabled"
       ]
     },
     {
@@ -1206,10 +950,10 @@
         2195,
         1554
       ],
-      "size": [
-        260.3999938964844,
-        126
-      ],
+      "size": {
+        "0": 260.3999938964844,
+        "1": 126
+      },
       "flags": {},
       "order": 28,
       "mode": 0,
@@ -1247,6 +991,45 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 138,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1498,
+        1775
+      ],
+      "size": [
+        954.989501953125,
+        243.09625799005676
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 376
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            375
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Face Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
+      ]
     },
     {
       "id": 90,
@@ -1301,12 +1084,12 @@
       "id": 127,
       "type": "SAMDetectorCombined",
       "pos": [
-        1111,
-        316
+        1112,
+        306
       ],
       "size": {
         "0": 243.7554168701172,
-        "1": 122
+        "1": 146
       },
       "flags": {},
       "order": 21,
@@ -1342,7 +1125,8 @@
         "Node name for S&R": "SAMDetectorCombined"
       },
       "widgets_values": [
-        0,
+        "center-1",
+        1,
         0.93
       ],
       "color": "#232",
@@ -1355,10 +1139,10 @@
         2192,
         1353
       ],
-      "size": [
-        259.5433422851563,
-        148.8305297851564
-      ],
+      "size": {
+        "0": 259.5433349609375,
+        "1": 148.83053588867188
+      },
       "flags": {},
       "order": 29,
       "mode": 2,
@@ -1393,11 +1177,241 @@
         "Node name for S&R": "SAMDetectorCombined"
       },
       "widgets_values": [
-        0,
+        "center-1",
+        0.93,
         0.93
       ],
       "color": "#232",
       "bgcolor": "#353"
+    },
+    {
+      "id": 115,
+      "type": "SaveImage",
+      "pos": [
+        1498,
+        618
+      ],
+      "size": [
+        714.0886352539064,
+        594.8502563476563
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 352
+        }
+      ],
+      "title": "Refined",
+      "properties": {},
+      "widgets_values": [
+        "refined"
+      ]
+    },
+    {
+      "id": 107,
+      "type": "SaveImage",
+      "pos": [
+        753,
+        620
+      ],
+      "size": [
+        700.0886352539064,
+        588.4502563476562
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 273
+        }
+      ],
+      "title": "Prompt",
+      "properties": {},
+      "widgets_values": [
+        "original"
+      ]
+    },
+    {
+      "id": 108,
+      "type": "VAEDecode",
+      "pos": [
+        361,
+        1155
+      ],
+      "size": {
+        "0": 381.7952880859375,
+        "1": 46.58692932128906
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 272
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 267
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            273,
+            274,
+            346
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 110,
+      "type": "CLIPTextEncode",
+      "pos": [
+        359,
+        881
+      ],
+      "size": {
+        "0": 381.7952880859375,
+        "1": 213.58692932128906
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 304
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            265,
+            351,
+            371
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Negative Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "nsfw, (worst quality:1.4), (low quality:1.4), (blurry:1.22), (greyscale:1.1), (monochrome:1.1), cropped, lowres, text, jpeg artifacts, signature, watermark, username, blurry, artist name, trademark, title, (tan:1.1), muscular, petite, infant, toddlers, (sd character:1.1), Reference sheet, bad_prompt, comic, lowres low resolution, (bad anatomy:1.1), low quality anatomy, (bad hands:1.22), bad nails, bad legs, (bad fingers:1.22), bad toes, extra digit, (extra hands:1.22), (extra fingers:1.22), extra arms, extra legs, fewer digit, low quality face, low quality eyes, (cropped hands:1.22), cropped legs, cropped arms, (cropped fingers:1.22), (fused fingers:1.22), (too many fingers:1.22), tattoo, (missing fingers:1.22), ugly, text, (thai:1.1), thai girl, thai style, thai face, thai makeup), (american girl:1.1), american, american style, american face, american makeup), (chinese girl:1.1), chinese, chinese style, chinese face, chinese makeup), more than one person in focus, (more than two arm per body:1.48), (more than two leg per body:1.41), (more than five fingers on one hand:1.41), multi arms, multi legs, bad arm anatomy, bad leg anatomy, (bad hand anatomy:1.1), (bad finger anatomy:1.1), bad detailed background, unclear architectural outline, elf-ears, obesity, fat, (mutated hands and fingers:1.1), disfigured, fused, cloned, duplicate, flag, mole, strabismus, (highleg panties:1.1), hat, fishnet, (no pants), topless, bottomless, low-cut_armhole, high-waist_sideboob, sideless_outfit, breast_slip, cleavage_cutout, center_opening, breastless_clothes, sideboob, backboob, underboob, underboob_cutout, nipple_slip, areola_slip, revealing_clothes, see-through clothes, crotch_cutout, hip_vent, ass_cutout, side_slit, zettai_ryouiki, butt_crack, naked, nude, clothes_grab, untying, open_clothes, untied, undressing, unzipped, clothes_down, bikini, pink hair, letters, characters, wing, sunglasses, nipple"
+      ]
+    },
+    {
+      "id": 112,
+      "type": "EmptyLatentImage",
+      "pos": [
+        23,
+        1095
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            266
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        512,
+        832,
+        1
+      ]
+    },
+    {
+      "id": 111,
+      "type": "KSampler",
+      "pos": [
+        21,
+        771
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 315
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 264
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 265
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 266
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            272
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        762773680021613,
+        false,
+        30,
+        7,
+        "euler",
+        "karras",
+        1
+      ]
     }
   ],
   "links": [

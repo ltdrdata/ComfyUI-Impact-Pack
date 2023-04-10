@@ -6,51 +6,56 @@ import platform
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
 sys.path.append('../ComfyUI')
 
-def packages_pip():
-    import sys, subprocess
-    return [r.decode().split('==')[0] for r in subprocess.check_output([sys.executable, '-m', 'pip', 'freeze']).split()]
-
-def packages_mim():
-    import sys, subprocess
-    return [r.decode().split('==')[0] for r in subprocess.check_output([sys.executable, '-m', 'mim', 'list']).split()]
 
 # INSTALL
 print("Loading: ComfyUI-Impact-Pack")
 print("### ComfyUI-Impact-Pack: Check dependencies")
-installed_pip = packages_pip()
 
-if "openmim" not in installed_pip:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
 
-if "segment-anything" not in installed_pip:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'segment-anything'])
+def ensure_pip_packages():
+    try:
+        import segment_anything
+    except Exception:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'segment-anything'])
 
-# INSTALL pycocotools
-if "pycocotools" not in installed_pip:
-    if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pycocotools'])
-    else:
-        pycocotools = {
-            (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
-            (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
-            (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
-            (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
-        }
+    try:
+        from skimage.measure import label, regionprops
+    except Exception:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scikit-image'])
 
-        version = sys.version_info[:2]
-        url = pycocotools[version]
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', url])
+    try:
+        import pycocotools
+    except Exception:
+        if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pycocotools'])
+        else:
+            pycocotools = {
+                (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
+                (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
+                (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
+                (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
+            }
 
-installed_mim = packages_mim()
+            version = sys.version_info[:2]
+            url = pycocotools[version]
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', url])
 
-if "mmcv" not in installed_mim:
-    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
 
-if "mmdet" not in installed_mim:
-    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
+def ensure_mmdet_package():
+    try:
+        import mmcv
+        import mmdet
+        from mmdet.evaluation import get_classes
+    except Exception:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
+        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
+        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
+        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
 
-if "mmengine" not in installed_mim:
-    subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
+
+ensure_pip_packages()
+ensure_mmdet_package()
+
 
 # Download model
 print("### ComfyUI-Impact-Pack: Check basic models")
@@ -85,6 +90,11 @@ import comfy.samplers
 import comfy.sd
 import nodes
 import warnings
+from PIL import Image, ImageFilter
+from mmdet.evaluation import get_classes
+from skimage.measure import label, regionprops
+
+
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
 
@@ -152,6 +162,12 @@ def bitwise_and_masks(mask1, mask2):
     return mask
 
 
+def to_binary_mask(mask):
+    mask = mask.clone()
+    mask[mask != 0] = 1.
+    return mask
+
+
 def dilate_masks(segmasks, dilation_factor, iter=1):
     if dilation_factor == 0:
         return segmasks
@@ -163,10 +179,6 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
         item = (segmasks[i][0],dilated_mask,segmasks[i][2])
         dilated_masks.append(item)
     return dilated_masks
-
-
-from PIL import Image, ImageFilter
-from mmdet.evaluation import get_classes
 
 
 def feather_mask(mask, thickness):
@@ -421,7 +433,7 @@ def scale_tensor_and_to_pil(w,h, image):
 
 
 def enhance_detail(image, model, vae, guide_size, bbox_size, seed, steps, cfg, sampler_name, scheduler,
-                   positive, negative, denoise):
+                   positive, negative, denoise, noise_mask):
 
     h = image.shape[1]
     w = image.shape[2]
@@ -437,6 +449,9 @@ def enhance_detail(image, model, vae, guide_size, bbox_size, seed, steps, cfg, s
     new_w = int(((w * upscale)//64) * 64)
     new_h = int(((h * upscale)//64) * 64)
 
+    if upscale < 1.0:
+        print(f"Detailer: segment skip")
+        None
 
     print(f"Detailer: segment upscale for ({bbox_size}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
 
@@ -445,6 +460,16 @@ def enhance_detail(image, model, vae, guide_size, bbox_size, seed, steps, cfg, s
 
     # ksampler
     latent_image = to_latent_image(upscaled_image, vae)
+
+    if noise_mask is not None:
+        # upscale the mask tensor by a factor of 2 using bilinear interpolation
+        noise_mask = torch.from_numpy(noise_mask)
+        upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
+                                                   mode='bilinear', align_corners=False)
+
+        # remove the extra dimensions added by unsqueeze
+        upscaled_mask = upscaled_mask.squeeze().squeeze()
+        latent_image['noise_mask'] = upscaled_mask
 
     sampler = nodes.KSampler()
     refined_latent = sampler.sample(model, seed, steps, cfg, sampler_name, scheduler,
@@ -475,6 +500,7 @@ def composite_to(dest_latent, crop_region, src_latent):
 
     return orig_image[0]
 
+
 class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
@@ -494,6 +520,7 @@ class DetailerForEach:
                      "negative": ("CONDITIONING",),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask": (["enabled", "disabled"], )
                      },
                 "optional": { "external_seed": ("SEED", ), }
                 }
@@ -503,8 +530,8 @@ class DetailerForEach:
 
     CATEGORY = "ImpactPack"
 
-    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, external_seed=None):
+    def do_detail(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         if external_seed is not None:
             seed = external_seed['seed']
@@ -512,49 +539,24 @@ class DetailerForEach:
         image_pil = tensor2pil(image).convert('RGBA')
 
         for x in segs:
-            cropped_image = x[0]
+            crop_region = x[3]
+            cropped_image = x[0] if x[0] is not None else crop_ndarray4(image.numpy(), crop_region)
+
             mask_pil = feather_mask(x[1], feather)
             confidence = x[2]
-            crop_region = x[3]
             bbox_size = x[4]
 
-            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox_size,
-                                          seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
-
-            if not (enhanced_pil is None):
-                # don't latent composite &
-                # use image paste
-                image_pil.paste(enhanced_pil, (crop_region[0], crop_region[1]), mask_pil)
-
-        return (pil2tensor(image_pil.convert('RGB')), )
-
-
-class DetailerForEachTest(DetailerForEach):
-    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Test"
-
-    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, external_seed=None):
-
-        if external_seed is not None:
-            seed = external_seed['seed']
-
-        image_pil = tensor2pil(image).convert('RGBA')
-
-        for x in segs:
-            cropped_image = x[0]
-            mask_pil = feather_mask(x[1], feather)
-            confidence = x[2]
-            crop_region = x[3]
-            bbox_size = x[4]
+            if noise_mask == "enabled":
+                cropped_mask = x[1]
+            else:
+                cropped_mask = None
 
             enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox_size,
-                                          seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
+                                          seed, steps, cfg, sampler_name, scheduler,
+                                          positive, negative, denoise, cropped_mask)
 
             if not (enhanced_pil is None):
-                # don't latent composite &
+                # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image_pil.paste(enhanced_pil, (crop_region[0], crop_region[1]), mask_pil)
 
@@ -563,7 +565,35 @@ class DetailerForEachTest(DetailerForEach):
         if len(segs) > 0:
             return image_tensor, torch.from_numpy(cropped_image), pil2tensor(enhanced_pil),
         else:
-            return image_tensor, image_tensor, image_tensor,
+            return image_tensor, None, None,
+
+    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather, noise_mask, external_seed=None):
+
+        enhanced_img, cropped, cropped_enhanced = \
+            self.do_detail(image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+                           positive, negative, denoise, feather, noise_mask, external_seed)
+
+        return (enhanced_img, )
+
+
+class DetailerForEachTest(DetailerForEach):
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack"
+
+    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather, noise_mask, external_seed=None):
+
+        enhanced_img, cropped, cropped_enhanced = \
+            self.do_detail(image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+                           positive, negative, denoise, feather, noise_mask, external_seed)
+
+        if cropped is None:
+            return enhanced_img, enhanced_img, enhanced_img,
+        else:
+            return enhanced_img, cropped, cropped_enhanced,
 
 
 class SegsMaskCombine:
@@ -579,7 +609,7 @@ class SegsMaskCombine:
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, segs, image):
         h = image.shape[1]
@@ -603,6 +633,7 @@ class SAMDetectorCombined:
                         "sam_model": ("SAM_MODEL", ),
                         "segs": ("SEGS", ),
                         "image": ("IMAGE", ),
+                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "none"],),
                         "dilation": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
                         "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                       }
@@ -611,9 +642,9 @@ class SAMDetectorCombined:
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, sam_model, segs, image, dilation, threshold):
+    def doit(self, sam_model, segs, image, detection_hint, dilation, threshold):
         predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
@@ -632,7 +663,46 @@ class SAMDetectorCombined:
 
             dilated_bbox = [x1, y1, x2, y2]
 
-            cur_masks, scores, _ = predictor.predict(point_coords=np.array([center]), point_labels=np.array([1]),
+            points = []
+            plabs = []
+            if detection_hint == "center-1":
+                points.append(center)
+                plabs = [1] # 1 = foreground point, 0 = background point
+
+            elif detection_hint == "horizontal-2":
+                gap = (x2 - x1) / 3
+                points.append((x1 + gap, center[1]))
+                points.append((x1 + gap*2, center[1]))
+                plabs = [1, 1]
+
+            elif detection_hint == "vertical-2":
+                gap = (y2 - y1) / 3
+                points.append((center[0], y1 + gap))
+                points.append((center[0], y1 + gap*2))
+                plabs = [1, 1]
+
+            elif detection_hint == "rect-4":
+                x_gap = (x2 - x1) / 3
+                y_gap = (y2 - y1) / 3
+                points.append((x1 + x_gap, center[1]))
+                points.append((x1 + x_gap*2, center[1]))
+                points.append((center[0], y1 + y_gap))
+                points.append((center[0], y1 + y_gap*2))
+                plabs = [1, 1, 1, 1]
+
+            elif detection_hint == "diamond-4":
+                x_gap = (x2 - x1) / 3
+                y_gap = (y2 - y1) / 3
+                points.append((x1 + x_gap, y1 + y_gap))
+                points.append((x1 + x_gap*2, y1 + y_gap))
+                points.append((x1 + x_gap, y1 + y_gap*2))
+                points.append((x1 + x_gap*2, y1 + y_gap*2))
+                plabs = [1, 1, 1, 1]
+
+            point_coords = None if not points else np.array(points)
+            point_labels = None if not plabs else np.array(plabs)
+
+            cur_masks, scores, _ = predictor.predict(point_coords=point_coords, point_labels=point_labels,
                                                      box=np.array([dilated_bbox]))
 
             selected = False
@@ -673,7 +743,7 @@ class BboxDetectorForEach:
     RETURN_TYPES = ("SEGS", )
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detector"
 
     def doit(self, bbox_model, image, threshold, dilation, crop_factor):
         mmdet_results = inference_bbox(bbox_model, image, threshold)
@@ -716,7 +786,7 @@ class SegmDetectorForEach:
     RETURN_TYPES = ("SEGS", )
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detector"
 
     def doit(self, segm_model, image, threshold, dilation, crop_factor):
         mmdet_results = inference_segm(segm_model, image, threshold)
@@ -736,9 +806,8 @@ class SegmDetectorForEach:
             cropped_image = crop_image(image, crop_region)
             cropped_mask = crop_ndarray2(item_mask, crop_region)
             confidence = x[2]
-            bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
-            item = (cropped_image, cropped_mask, confidence, crop_region, bbox_size)
+            item = (cropped_image, cropped_mask, confidence, crop_region, item_bbox)
             items.append(item)
 
         return (items, )
@@ -756,15 +825,19 @@ class SegsBitwiseAndMask:
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, segs, mask):
+        if mask is None:
+            print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
+            return ([], )
+
         items = []
 
         mask = (mask.numpy() * 255).astype(np.uint8)
 
         for x in segs:
-            cropped_mask = (x[1].copy() * 255).astype(np.uint8)
+            cropped_mask = (x[1] * 255).astype(np.uint8)
             crop_region = x[3]
 
             cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
@@ -791,7 +864,7 @@ class BitwiseAndMaskForEach:
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, base_segs, mask_segs):
 
@@ -846,7 +919,7 @@ class SubtractMaskForEach:
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, base_segs, mask_segs):
 
@@ -889,6 +962,66 @@ class SubtractMaskForEach:
         return (result,)
 
 
+class MaskToSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                                "mask": ("MASK",),
+                                "combined": (["False", "True"], ),
+                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 1}),
+                             }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, mask, combined, crop_factor):
+        if mask is None:
+            print("[MaskToSEGS] Cannot operate: MASK is empty.")
+            return ([], )
+
+        mask = mask.numpy()
+
+        result = []
+        if combined == "True":
+            # Find the indices of the non-zero elements
+            indices = np.nonzero(mask)
+
+            if len(indices[0]) > 0 and len(indices[1]) > 0:
+                # Determine the bounding box of the non-zero elements
+                bbox = np.min(indices[1]), np.min(indices[0]), np.max(indices[1]), np.max(indices[0])
+                crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+                x1, y1, x2, y2 = crop_region
+
+                if x2 - x1 > 0 and y2 - y1 > 0:
+                    cropped_mask = mask[y1:y2, x1:x2]
+                    result.append((None, cropped_mask, 1.0, crop_region, bbox))
+
+        else:
+            # label the connected components
+            labelled_mask = label(mask)
+
+            # get the region properties for each connected component
+            regions = regionprops(labelled_mask)
+
+            # iterate over the regions and print their bounding boxes
+            for region in regions:
+                y1, x1, y2, x2 = region.bbox
+                bbox = x1, x2, y1, y2
+                crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+
+                if x2 - x1 > 0 and y2 - y1 > 0:
+                    cropped_mask = mask[y1:y2, x1:x2]
+                    result.append((None, cropped_mask, 1.0, crop_region, bbox))
+
+        if not result:
+            print(f"[MaskToSEGS] Empty mask.")
+
+        return (result, )
+
+
 class SegmDetectorCombined:
     @classmethod
     def INPUT_TYPES(s):
@@ -904,7 +1037,7 @@ class SegmDetectorCombined:
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detector"
 
     def doit(self, segm_model, image, threshold, dilation):
         mmdet_results = inference_segm(segm_model, image, threshold)
@@ -938,6 +1071,25 @@ class BboxDetectorCombined(SegmDetectorCombined):
         return (mask,)
 
 
+class ToBinaryMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+            {
+                "mask": ("MASK",),
+            }
+        }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, mask,):
+        mask = to_binary_mask(mask)
+        return (mask,)
+
+
 class BitwiseAndMask:
     @classmethod
     def INPUT_TYPES(s):
@@ -951,11 +1103,12 @@ class BitwiseAndMask:
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask1, mask2):
         mask = bitwise_and_masks(mask1, mask2)
         return (mask,)
+
 
 class SubtractMask:
     @classmethod
@@ -970,11 +1123,12 @@ class SubtractMask:
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask1, mask2):
         mask = subtract_masks(mask1, mask2)
         return (mask,)
+
 
 NODE_CLASS_MAPPINGS = {
     "MMDetLoader": MMDetLoader,
@@ -995,4 +1149,7 @@ NODE_CLASS_MAPPINGS = {
     "SubtractMask": SubtractMask,
     "Segs & Mask": SegsBitwiseAndMask,
     "SegsMaskCombine": SegsMaskCombine,
+
+    "MaskToSEGS": MaskToSEGS,
+    "ToBinaryMask": ToBinaryMask,
 }
