@@ -24,6 +24,11 @@ def ensure_pip_packages():
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scikit-image'])
 
     try:
+        import onnxruntime
+    except Exception:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'onnxruntime'])
+
+    try:
         import pycocotools
     except Exception:
         if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
@@ -68,6 +73,7 @@ model_path = folder_paths.models_dir
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
 #segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
 sam_path = os.path.join(model_path, "sams")
+onnx_path = os.path.join(model_path, "onnx")
 
 if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
     download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
@@ -77,6 +83,10 @@ if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
 
 if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
     download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
+
+if not os.path.exists(onnx_path):
+    print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
+    os.mkdir(onnx_path)
 
 # ----- MAIN CODE --------------------------------------------------------------
 
@@ -290,6 +300,7 @@ folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, 
 folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["sams"] = ([os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
+folder_paths.folder_names_and_paths["onnx"] = ([os.path.join(model_path, "onnx")], set(['.onnx']))
 
 
 class NO_BBOX_MODEL:
@@ -298,47 +309,6 @@ class NO_BBOX_MODEL:
 
 class NO_SEGM_MODEL:
     ERROR = ""
-
-
-class MMDetLoader:
-    @classmethod
-    def INPUT_TYPES(s):
-        bboxs = [ "bbox/"+x for x in folder_paths.get_filename_list("mmdets_bbox") ]
-        segms = [ "segm/"+x for x in folder_paths.get_filename_list("mmdets_segm") ]
-        return {"required": { "model_name": (bboxs + segms, )}}
-    RETURN_TYPES = ("BBOX_MODEL", "SEGM_MODEL")
-    FUNCTION = "load_mmdet"
-
-    CATEGORY = "ImpactPack"
-
-    def load_mmdet(self, model_name):
-        mmdet_path = folder_paths.get_full_path("mmdets", model_name)
-        model = load_mmdet(mmdet_path)
-
-        if model_name.startswith("bbox"):
-            return (model, NO_SEGM_MODEL())
-        else:
-            return (NO_BBOX_MODEL(), model)
-
-
-from segment_anything import build_sam, SamPredictor
-from segment_anything import sam_model_registry
-
-
-class SAMLoader:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": { "model_name": (folder_paths.get_filename_list("sams"), )}}
-    RETURN_TYPES = ("SAM_MODEL", )
-    FUNCTION = "load_model"
-
-    CATEGORY = "ImpactPack"
-
-    def load_model(selfself, model_name):
-        modelname = folder_paths.get_full_path("sams", model_name)
-        sam = sam_model_registry["vit_b"](checkpoint=modelname)
-        print(f"Loads SAM model: {modelname}")
-        return (sam, )
 
 
 def normalize_region(limit, startp, size):
@@ -500,6 +470,122 @@ def composite_to(dest_latent, crop_region, src_latent):
 
     return orig_image[0]
 
+
+
+class MMDetLoader:
+    @classmethod
+    def INPUT_TYPES(s):
+        bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("mmdets_bbox")]
+        segms = ["segm/"+x for x in folder_paths.get_filename_list("mmdets_segm")]
+        return {"required": {"model_name": (bboxs + segms, )}}
+    RETURN_TYPES = ("BBOX_MODEL", "SEGM_MODEL")
+    FUNCTION = "load_mmdet"
+
+    CATEGORY = "ImpactPack"
+
+    def load_mmdet(self, model_name):
+        mmdet_path = folder_paths.get_full_path("mmdets", model_name)
+        model = load_mmdet(mmdet_path)
+
+        if model_name.startswith("bbox"):
+            return (model, NO_SEGM_MODEL())
+        else:
+            return (NO_BBOX_MODEL(), model)
+
+
+from segment_anything import build_sam, SamPredictor
+from segment_anything import sam_model_registry
+import onnxruntime
+
+
+class SAMLoader:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": { "model_name": (folder_paths.get_filename_list("sams"), )}}
+
+    RETURN_TYPES = ("SAM_MODEL", )
+    FUNCTION = "load_model"
+
+    CATEGORY = "ImpactPack"
+
+    def load_model(self, model_name):
+        modelname = folder_paths.get_full_path("sams", model_name)
+        sam = sam_model_registry["vit_b"](checkpoint=modelname)
+        print(f"Loads SAM model: {modelname}")
+        return (sam, )
+
+
+class ONNXLoader:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"model_name": (folder_paths.get_filename_list("onnx"), )}}
+
+    RETURN_TYPES = ("ONNX_MODEL", )
+    FUNCTION = "load_model"
+
+    CATEGORY = "ImpactPack"
+
+    def load_model(self, model_name):
+        modelname = folder_paths.get_full_path("onnx", model_name)
+        print(f"Loads ONNX model: {modelname}")
+        return (modelname, )
+
+
+class ONNXDetectorForEach:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "onnx_model": ("ONNX_MODEL",),
+                    "image": ("IMAGE",),
+                    "threshold": ("FLOAT", {"default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    }
+                }
+
+    RETURN_TYPES = ("SEGS", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detector"
+
+    OUTPUT_NODE = True
+
+    def doit(self, onnx_model, image, threshold):
+        # prepare image
+        pil = tensor2pil(image)
+        image = np.ascontiguousarray(pil)
+        image = image[:, :, ::-1]  # to BGR image
+        image = image.astype(np.float32)
+        image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
+
+        # do detection
+        onnx_model = onnxruntime.InferenceSession(onnx_model)
+        outputs = onnx_model.run(
+            [s_i.name for s_i in onnx_model.get_outputs()],
+            {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
+        )
+
+        labels = [op for op in outputs if op.dtype == "int32"][0]
+        scores = [op for op in outputs if isinstance(op[0][0], np.float32)][0]
+        boxes = [op for op in outputs if isinstance(op[0][0], np.ndarray)][0]
+
+        # filter-out useless item
+        idx = np.where(labels[0] == -1)[0][0]
+
+        labels = labels[0][:idx]
+        scores = scores[0][:idx]
+        boxes = boxes[0][:idx].astype(np.uint32)
+
+        # collect feasible item
+        result = []
+
+        for i in range(len(labels)):
+            if scores[i] > threshold:
+                x1, y1, x2, y2 = boxes[i]
+
+                mask = np.ones((y2-y1,x2-x1))
+                item = (None, mask, scores[i], boxes[i], boxes[i])
+                result.append(item)
+                
+        return (result,)
 
 class DetailerForEach:
     @classmethod
@@ -1133,9 +1219,12 @@ class SubtractMask:
 NODE_CLASS_MAPPINGS = {
     "MMDetLoader": MMDetLoader,
     "SAMLoader": SAMLoader,
+    "ONNXLoader": ONNXLoader,
 
     "BboxDetectorForEach": BboxDetectorForEach,
     "SegmDetectorForEach": SegmDetectorForEach,
+    "ONNXDetectorForEach": ONNXDetectorForEach,
+
     "BitwiseAndMaskForEach": BitwiseAndMaskForEach,
 
     "DetailerForEach": DetailerForEach,

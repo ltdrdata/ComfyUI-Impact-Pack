@@ -1,0 +1,416 @@
+{
+  "last_node_id": 13,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 5,
+      "type": "SegsMaskCombine",
+      "pos": [
+        327,
+        530
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 15
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SegsMaskCombine"
+      }
+    },
+    {
+      "id": 6,
+      "type": "VAEEncodeForInpaint",
+      "pos": [
+        609,
+        493
+      ],
+      "size": {
+        "0": 226.8000030517578,
+        "1": 66
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 8
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            9
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAE Encode (for Inpainting)"
+      }
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": [
+        858,
+        495
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 9
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAE Decode"
+      }
+    },
+    {
+      "id": 9,
+      "type": "SaveImage",
+      "pos": [
+        1107,
+        494
+      ],
+      "size": {
+        "0": 315,
+        "1": 250
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "VAELoader",
+      "pos": [
+        327,
+        684
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            8,
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load VAE"
+      },
+      "widgets_values": [
+        "vae-ft-mse-840000-ema-pruned.safetensors"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "ONNXLoader",
+      "pos": [
+        672.1527099609375,
+        363.65423583984375
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "ONNX_MODEL",
+          "type": "ONNX_MODEL",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ONNXLoader"
+      },
+      "widgets_values": [
+        "detector_v2_base_checkpoint.onnx"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "ONNXLoader",
+      "pos": [
+        -25,
+        389
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "ONNX_MODEL",
+          "type": "ONNX_MODEL",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ONNXLoader"
+      },
+      "widgets_values": [
+        "detector_v2_base_checkpoint.onnx"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -23,
+        504
+      ],
+      "size": {
+        "0": 312.3335266113281,
+        "1": 241.66659545898438
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4,
+            7,
+            14
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load Image"
+      },
+      "widgets_values": [
+        "rga6845.jpeg",
+        "image"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "ONNXDetectorForEach",
+      "pos": [
+        325,
+        391
+      ],
+      "size": [
+        210,
+        78
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "onnx_model",
+          "type": "ONNX_MODEL",
+          "link": 13
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ONNXDetectorForEach"
+      },
+      "widgets_values": [
+        0.5
+      ]
+    }
+  ],
+  "links": [
+    [
+      4,
+      2,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      6,
+      5,
+      0,
+      6,
+      2,
+      "MASK"
+    ],
+    [
+      7,
+      2,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      7,
+      0,
+      6,
+      1,
+      "VAE"
+    ],
+    [
+      9,
+      6,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      10,
+      7,
+      0,
+      8,
+      1,
+      "VAE"
+    ],
+    [
+      11,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      1,
+      0,
+      13,
+      0,
+      "ONNX_MODEL"
+    ],
+    [
+      14,
+      2,
+      0,
+      13,
+      1,
+      "IMAGE"
+    ],
+    [
+      15,
+      13,
+      0,
+      5,
+      0,
+      "SEGS"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

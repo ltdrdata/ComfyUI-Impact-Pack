@@ -5,6 +5,7 @@
 # Features
 * MMDetLoader - Load MMDet model
 * SAMLoader - Load SAM model
+* ONNXLoader - Load ONNX model
 * SegmDetectorCombined - Detect segmentation and return mask from input image.
 * BboxDetectorCombined - Detect bbox(bounding box) and return mask from input image.
 * SamDetectorCombined - Using the technology of SAM, extract the segment at the location indicated by the input SEGS on the input image, and output it as a unified mask. 
@@ -12,6 +13,7 @@
 * SubtractMask - Perform subtract operations between 2 masks
 * SegmDetectorForEach - Detect segmentation and return SEGS from input image.
 * BboxDetectorForEach - Detect bbox(bounding box) and return SEGS from input image.
+* ONNXDetectorForeach - Using the ONNX model, identify the bbox and retrieve the SEGS from the input image
 * DetailerForEach - Refine image rely on SEGS.
 * DetailerForEachDebug - Refine image rely on SEGS. Additionally, you can monitor cropped image and refined image of cropped image.
    * The 'DetailerForEach' and 'DetailerForEachDebug' now support an 'external_seed' that is obtained from the Seed node on the [WAS suite](https://github.com/WASasquatch/was-node-suite-comfyui)
