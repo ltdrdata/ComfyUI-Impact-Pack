@@ -408,13 +408,17 @@ def enhance_detail(image, model, vae, guide_size, bbox_size, seed, steps, cfg, s
     h = image.shape[1]
     w = image.shape[2]
 
+
+    bbox_h = bbox[3]-bbox[1]
+    bbox_w = bbox[2]-bbox[0]
+
     # Skip processing if the detected bbox is already larger than the guide_size
     if bbox_size[0] >= guide_size and bbox_size[1] >= guide_size:
         print(f"Detailer: segment skip")
         None
 
     # Scale up based on the smaller dimension between width and height.
-    upscale = guide_size/min(bbox_size[0],bbox_size[1])
+    upscale = guide_size/min(bbox_w,bbox_h)
 
     new_w = int(((w * upscale)//64) * 64)
     new_h = int(((h * upscale)//64) * 64)
@@ -630,14 +634,14 @@ class DetailerForEach:
 
             mask_pil = feather_mask(x[1], feather)
             confidence = x[2]
-            bbox_size = x[4]
+            bbox = x[4]
 
             if noise_mask == "enabled":
                 cropped_mask = x[1]
             else:
                 cropped_mask = None
 
-            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox_size,
+            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox,
                                           seed, steps, cfg, sampler_name, scheduler,
                                           positive, negative, denoise, cropped_mask)
 
