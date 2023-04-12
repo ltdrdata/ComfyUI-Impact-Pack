@@ -333,12 +333,9 @@ def make_crop_region(w, h, bbox, crop_factor):
 
     bbox_w = x2-x1
     bbox_h = y2-y1
-
-    # multiply and normalize size
-    # multiply: contains enough around context
-    # normalize: make sure size to be times of 64 and minimum size must be greater equal than 64
-    crop_w = max(64, (bbox_w * crop_factor // 64) * 64)
-    crop_h = max(64, (bbox_h * crop_factor // 64) * 64)
+    
+    crop_w = bbox_w * crop_factor
+    crop_h = bbox_h * crop_factor
 
     kernel_x = x1 + bbox_w / 2
     kernel_y = y1 + bbox_h / 2
