@@ -402,7 +402,7 @@ def scale_tensor_and_to_pil(w,h, image):
     return image.resize((w,h), resample=LANCZOS)
 
 
-def enhance_detail(image, model, vae, guide_size, bbox_size, seed, steps, cfg, sampler_name, scheduler,
+def enhance_detail(image, model, vae, guide_size, bbox, seed, steps, cfg, sampler_name, scheduler,
                    positive, negative, denoise, noise_mask):
 
     h = image.shape[1]
