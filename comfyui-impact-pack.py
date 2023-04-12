@@ -413,7 +413,7 @@ def enhance_detail(image, model, vae, guide_size, bbox, seed, steps, cfg, sample
     bbox_w = bbox[2]-bbox[0]
 
     # Skip processing if the detected bbox is already larger than the guide_size
-    if bbox_size[0] >= guide_size and bbox_size[1] >= guide_size:
+    if bbox_h >= guide_size and bbox_w >= guide_size:
         print(f"Detailer: segment skip")
         None
 
@@ -427,7 +427,7 @@ def enhance_detail(image, model, vae, guide_size, bbox, seed, steps, cfg, sample
         print(f"Detailer: segment skip")
         None
 
-    print(f"Detailer: segment upscale for ({bbox_size}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
+    print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
 
     # upscale
     upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
