@@ -371,171 +371,6 @@
       "bgcolor": "#3f5159"
     },
     {
-      "id": 19,
-      "type": "CLIPTextEncode",
-      "pos": [
-        138,
-        957
-      ],
-      "size": {
-        "0": 239,
-        "1": 173
-      },
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 25
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            26
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "jeans, ((black))"
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 20,
-      "type": "CLIPTextEncode",
-      "pos": [
-        134,
-        736
-      ],
-      "size": {
-        "0": 240,
-        "1": 177
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 24
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            27
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "1girl, pink short pants"
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 22,
-      "type": "PreviewImage",
-      "pos": [
-        730,
-        950
-      ],
-      "size": {
-        "0": 165,
-        "1": 182
-      },
-      "flags": {},
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 30
-        }
-      ],
-      "title": "Refined Crop",
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 21,
-      "type": "PreviewImage",
-      "pos": [
-        729,
-        741
-      ],
-      "size": {
-        "0": 166,
-        "1": 167
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 29
-        }
-      ],
-      "title": "Cropped",
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 23,
-      "type": "SaveImage",
-      "pos": [
-        911,
-        740
-      ],
-      "size": {
-        "0": 273,
-        "1": 392
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 28
-        }
-      ],
-      "title": "Result",
-      "properties": {},
-      "widgets_values": [
-        "ComfyUI"
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 3,
       "type": "PreviewImage",
       "pos": [
@@ -564,6 +399,388 @@
       "bgcolor": "#000"
     },
     {
+      "id": 30,
+      "type": "VAEDecode",
+      "pos": [
+        1333,
+        615
+      ],
+      "size": {
+        "0": 227.90530395507812,
+        "1": 46
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 42
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            44
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 28,
+      "type": "SegsMaskCombine",
+      "pos": [
+        1333,
+        435
+      ],
+      "size": {
+        "0": 225.70559692382812,
+        "1": 46
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 39
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            56
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SegsMaskCombine"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 16,
+      "type": "Segs & Mask",
+      "pos": [
+        1331,
+        356
+      ],
+      "size": {
+        "0": 226.6055908203125,
+        "1": 46
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 18
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            20,
+            39
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Segs & Mask"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 9,
+      "type": "SAMDetectorCombined",
+      "pos": [
+        1332,
+        165
+      ],
+      "size": {
+        "0": 225.6055908203125,
+        "1": 150.59918212890625
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sam_model",
+          "type": "SAM_MODEL",
+          "link": 10
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 12
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            19
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SAMDetectorCombined"
+      },
+      "widgets_values": [
+        "none",
+        0.93,
+        0.93
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 8,
+      "type": "ToBinaryMask",
+      "pos": [
+        1093,
+        171
+      ],
+      "size": {
+        "0": 214.5975799560547,
+        "1": 26
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            9,
+            57
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToBinaryMask"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 20,
+      "type": "CLIPTextEncode",
+      "pos": [
+        134,
+        736
+      ],
+      "size": {
+        "0": 239.99998474121094,
+        "1": 192.00001525878906
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            27
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "1girl, (silver:1.4) short pants"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 21,
+      "type": "PreviewImage",
+      "pos": [
+        729,
+        741
+      ],
+      "size": {
+        "0": 166.99998474121094,
+        "1": 174.00001525878906
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 29
+        }
+      ],
+      "title": "Cropped",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 22,
+      "type": "PreviewImage",
+      "pos": [
+        729,
+        959
+      ],
+      "size": {
+        "0": 164.99998474121094,
+        "1": 197.00001525878906
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "title": "Refined Crop",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 23,
+      "type": "SaveImage",
+      "pos": [
+        911,
+        740
+      ],
+      "size": {
+        "0": 289,
+        "1": 415
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 28
+        }
+      ],
+      "title": "Result",
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 19,
+      "type": "CLIPTextEncode",
+      "pos": [
+        135,
+        971
+      ],
+      "size": {
+        "0": 234.99998474121094,
+        "1": 185.00001525878906
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            26
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "jeans, ((black)), ((blue))"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
       "id": 17,
       "type": "DetailerForEachDebug",
       "pos": [
@@ -572,7 +789,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 394
+        "1": 418
       },
       "flags": {},
       "order": 13,
@@ -644,236 +861,20 @@
         "Node name for S&R": "DetailerForEachDebug"
       },
       "widgets_values": [
-        128,
-        1048032768687491,
-        true,
+        192,
+        "bbox",
+        991944171351598,
+        "randomize",
         20,
-        8,
+        10,
         "euler",
         "karras",
-        0.7,
-        2,
+        0.6,
+        3,
         "enabled"
       ],
       "color": "#223",
       "bgcolor": "#335"
-    },
-    {
-      "id": 30,
-      "type": "VAEDecode",
-      "pos": [
-        1333,
-        615
-      ],
-      "size": [
-        227.90531005859384,
-        46
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 42
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 46
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            44
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      },
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 28,
-      "type": "SegsMaskCombine",
-      "pos": [
-        1333,
-        435
-      ],
-      "size": [
-        225.7055908203124,
-        46
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 39
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 38
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            56
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SegsMaskCombine"
-      },
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 16,
-      "type": "Segs & Mask",
-      "pos": [
-        1331,
-        356
-      ],
-      "size": [
-        226.6055908203125,
-        46
-      ],
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 18
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 19
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SEGS",
-          "type": "SEGS",
-          "links": [
-            20,
-            39
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Segs & Mask"
-      },
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 9,
-      "type": "SAMDetectorCombined",
-      "pos": [
-        1332,
-        165
-      ],
-      "size": [
-        225.6055908203125,
-        150.59918670654298
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "sam_model",
-          "type": "SAM_MODEL",
-          "link": 10
-        },
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 12
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 51
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            19
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SAMDetectorCombined"
-      },
-      "widgets_values": [
-        "none",
-        0.93,
-        0.93
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 8,
-      "type": "ToBinaryMask",
-      "pos": [
-        1093,
-        171
-      ],
-      "size": [
-        214.59758398437498,
-        26
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            9,
-            57
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ToBinaryMask"
-      },
-      "color": "#232",
-      "bgcolor": "#353"
     }
   ],
   "links": [

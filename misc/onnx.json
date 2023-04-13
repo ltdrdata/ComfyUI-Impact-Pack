@@ -3,58 +3,101 @@
   "last_link_id": 15,
   "nodes": [
     {
-      "id": 5,
-      "type": "SegsMaskCombine",
+      "id": 8,
+      "type": "VAEDecode",
       "pos": [
-        327,
-        530
+        1191,
+        203
       ],
       "size": {
         "0": 210,
         "1": 46
       },
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 15
+          "name": "samples",
+          "type": "LATENT",
+          "link": 9
         },
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 4
+          "name": "vae",
+          "type": "VAE",
+          "link": 10
         }
       ],
       "outputs": [
         {
-          "name": "MASK",
-          "type": "MASK",
+          "name": "IMAGE",
+          "type": "IMAGE",
           "links": [
-            6
+            11
           ],
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "SegsMaskCombine"
-      }
+        "Node name for S&R": "VAE Decode"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        57,
+        322
+      ],
+      "size": {
+        "0": 314,
+        "1": 102
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4,
+            7,
+            14
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Load Image"
+      },
+      "widgets_values": [
+        "rga6845.jpeg",
+        "image"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
       "id": 6,
       "type": "VAEEncodeForInpaint",
       "pos": [
-        609,
-        493
+        942,
+        201
       ],
       "size": {
         "0": 226.8000030517578,
         "1": 66
       },
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -85,87 +128,23 @@
       ],
       "properties": {
         "Node name for S&R": "VAE Encode (for Inpainting)"
-      }
-    },
-    {
-      "id": 8,
-      "type": "VAEDecode",
-      "pos": [
-        858,
-        495
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
       },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 9
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 10
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            11
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAE Decode"
-      }
-    },
-    {
-      "id": 9,
-      "type": "SaveImage",
-      "pos": [
-        1107,
-        494
-      ],
-      "size": {
-        "0": 315,
-        "1": 250
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 11
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "ComfyUI"
-      ]
+      "color": "#223",
+      "bgcolor": "#335"
     },
     {
       "id": 7,
       "type": "VAELoader",
       "pos": [
-        327,
-        684
+        56,
+        96
       ],
       "size": {
         "0": 315,
         "1": 58
       },
       "flags": {},
-      "order": 0,
+      "order": 1,
       "mode": 0,
       "outputs": [
         {
@@ -183,119 +162,93 @@
       },
       "widgets_values": [
         "vae-ft-mse-840000-ema-pruned.safetensors"
-      ]
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
-      "id": 11,
-      "type": "ONNXLoader",
+      "id": 5,
+      "type": "SegsMaskCombine",
       "pos": [
-        672.1527099609375,
-        363.65423583984375
+        681,
+        369
       ],
       "size": {
-        "0": 315,
-        "1": 58
+        "0": 210,
+        "1": 46
       },
       "flags": {},
-      "order": 1,
+      "order": 4,
       "mode": 0,
-      "outputs": [
+      "inputs": [
         {
-          "name": "ONNX_MODEL",
-          "type": "ONNX_MODEL",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ONNXLoader"
-      },
-      "widgets_values": [
-        "detector_v2_base_checkpoint.onnx"
-      ]
-    },
-    {
-      "id": 1,
-      "type": "ONNXLoader",
-      "pos": [
-        -25,
-        389
-      ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "ONNX_MODEL",
-          "type": "ONNX_MODEL",
-          "links": [
-            13
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ONNXLoader"
-      },
-      "widgets_values": [
-        "detector_v2_base_checkpoint.onnx"
-      ]
-    },
-    {
-      "id": 2,
-      "type": "LoadImage",
-      "pos": [
-        -23,
-        504
-      ],
-      "size": {
-        "0": 312.3335266113281,
-        "1": 241.66659545898438
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            4,
-            7,
-            14
-          ],
-          "slot_index": 0
+          "name": "segs",
+          "type": "SEGS",
+          "link": 15
         },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
         {
           "name": "MASK",
           "type": "MASK",
-          "links": null
+          "links": [
+            6
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "Load Image"
+        "Node name for S&R": "SegsMaskCombine"
       },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 9,
+      "type": "SaveImage",
+      "pos": [
+        1476,
+        205
+      ],
+      "size": {
+        "0": 475,
+        "1": 543
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "properties": {},
       "widgets_values": [
-        "rga6845.jpeg",
-        "image"
-      ]
+        "ComfyUI"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
     },
     {
       "id": 13,
       "type": "ONNXDetectorForEach",
       "pos": [
-        325,
-        391
+        405,
+        209
       ],
-      "size": [
-        210,
-        78
-      ],
+      "size": {
+        "0": 210,
+        "1": 102
+      },
       "flags": {},
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -323,8 +276,44 @@
         "Node name for S&R": "ONNXDetectorForEach"
       },
       "widgets_values": [
-        0.5
-      ]
+        0.5,
+        2
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 1,
+      "type": "ONNXLoader",
+      "pos": [
+        55,
+        207
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "ONNX_MODEL",
+          "type": "ONNX_MODEL",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ONNXLoader"
+      },
+      "widgets_values": [
+        "detector_v2_base_checkpoint.onnx"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
     }
   ],
   "links": [

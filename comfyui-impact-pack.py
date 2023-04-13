@@ -399,12 +399,11 @@ def scale_tensor_and_to_pil(w,h, image):
     return image.resize((w,h), resample=LANCZOS)
 
 
-def enhance_detail(image, model, vae, guide_size, bbox, seed, steps, cfg, sampler_name, scheduler,
+def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
                    positive, negative, denoise, noise_mask):
 
     h = image.shape[1]
     w = image.shape[2]
-
 
     bbox_h = bbox[3]-bbox[1]
     bbox_w = bbox[2]-bbox[0]
@@ -414,15 +413,19 @@ def enhance_detail(image, model, vae, guide_size, bbox, seed, steps, cfg, sample
         print(f"Detailer: segment skip")
         None
 
-    # Scale up based on the smaller dimension between width and height.
-    upscale = guide_size/min(bbox_w,bbox_h)
+    if guide_size_for == "bbox":
+        # Scale up based on the smaller dimension between width and height.
+        upscale = guide_size/min(bbox_w,bbox_h)
+    else:
+        # for cropped_size
+        upscale = guide_size/min(w,h)
 
     new_w = int(((w * upscale)//64) * 64)
     new_h = int(((h * upscale)//64) * 64)
 
-    if upscale < 1.0:
+    if upscale <= 1.0:
         print(f"Detailer: segment skip")
-        None
+        return None
 
     print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
 
@@ -471,6 +474,34 @@ def composite_to(dest_latent, crop_region, src_latent):
 
     return orig_image[0]
 
+
+def onnx_inference(image, onnx_model):
+    # prepare image
+    pil = tensor2pil(image)
+    image = np.ascontiguousarray(pil)
+    image = image[:, :, ::-1]  # to BGR image
+    image = image.astype(np.float32)
+    image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
+
+    # do detection
+    onnx_model = onnxruntime.InferenceSession(onnx_model)
+    outputs = onnx_model.run(
+        [s_i.name for s_i in onnx_model.get_outputs()],
+        {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
+    )
+
+    labels = [op for op in outputs if op.dtype == "int32"][0]
+    scores = [op for op in outputs if isinstance(op[0][0], np.float32)][0]
+    boxes = [op for op in outputs if isinstance(op[0][0], np.ndarray)][0]
+
+    # filter-out useless item
+    idx = np.where(labels[0] == -1)[0][0]
+
+    labels = labels[0][:idx]
+    scores = scores[0][:idx]
+    boxes = boxes[0][:idx].astype(np.uint32)
+
+    return labels, scores, boxes
 
 
 class MMDetLoader:
@@ -539,6 +570,7 @@ class ONNXDetectorForEach:
                     "onnx_model": ("ONNX_MODEL",),
                     "image": ("IMAGE",),
                     "threshold": ("FLOAT", {"default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "crop_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 10, "step": 0.1}),
                     }
                 }
 
@@ -549,41 +581,30 @@ class ONNXDetectorForEach:
 
     OUTPUT_NODE = True
 
-    def doit(self, onnx_model, image, threshold):
-        # prepare image
-        pil = tensor2pil(image)
-        image = np.ascontiguousarray(pil)
-        image = image[:, :, ::-1]  # to BGR image
-        image = image.astype(np.float32)
-        image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
+    def doit(self, onnx_model, image, threshold, crop_factor):
+        h = image.shape[1]
+        w = image.shape[2]
 
-        # do detection
-        onnx_model = onnxruntime.InferenceSession(onnx_model)
-        outputs = onnx_model.run(
-            [s_i.name for s_i in onnx_model.get_outputs()],
-            {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
-        )
-
-        labels = [op for op in outputs if op.dtype == "int32"][0]
-        scores = [op for op in outputs if isinstance(op[0][0], np.float32)][0]
-        boxes = [op for op in outputs if isinstance(op[0][0], np.ndarray)][0]
-
-        # filter-out useless item
-        idx = np.where(labels[0] == -1)[0][0]
-
-        labels = labels[0][:idx]
-        scores = scores[0][:idx]
-        boxes = boxes[0][:idx].astype(np.uint32)
+        labels, scores, boxes = onnx_inference(image, onnx_model)
 
         # collect feasible item
         result = []
 
         for i in range(len(labels)):
             if scores[i] > threshold:
-                x1, y1, x2, y2 = boxes[i]
+                item_bbox = boxes[i]
+                x1, y1, x2, y2 = item_bbox
 
-                mask = np.ones((y2-y1,x2-x1))
-                item = (None, mask, scores[i], boxes[i], boxes[i])
+                crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
+
+                # prepare cropped mask
+                cropped_mask = np.zeros((crop_y2-crop_y1,crop_x2-crop_x1))
+                inner_mask = np.ones((y2-y1,x2-x1))
+                cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
+
+                # make items
+                item = (None, cropped_mask, scores[i], crop_region, item_bbox)
                 result.append(item)
                 
         return (result,)
@@ -598,6 +619,7 @@ class DetailerForEach:
                      "model": ("MODEL",),
                      "vae": ("VAE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 128, "max": nodes.MAX_RESOLUTION, "step": 64}),
+                     "guide_size_for": (["bbox", "crop_region"],),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
@@ -607,7 +629,7 @@ class DetailerForEach:
                      "negative": ("CONDITIONING",),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": (["enabled", "disabled"], )
+                     "noise_mask": (["enabled", "disabled"], ),
                      },
                 "optional": { "external_seed": ("SEED", ), }
                 }
@@ -617,7 +639,7 @@ class DetailerForEach:
 
     CATEGORY = "ImpactPack"
 
-    def do_detail(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+    def do_detail(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         if external_seed is not None:
@@ -638,7 +660,7 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
-            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, bbox,
+            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, bbox,
                                           seed, steps, cfg, sampler_name, scheduler,
                                           positive, negative, denoise, cropped_mask)
 
@@ -650,15 +672,16 @@ class DetailerForEach:
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         if len(segs) > 0:
-            return image_tensor, torch.from_numpy(cropped_image), pil2tensor(enhanced_pil),
+            enhanced_tensor = pil2tensor(enhanced_pil) if not (enhanced_pil is None) else None
+            return image_tensor, torch.from_numpy(cropped_image), enhanced_tensor,
         else:
             return image_tensor, None, None,
 
-    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+    def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         enhanced_img, cropped, cropped_enhanced = \
-            self.do_detail(image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+            self.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
                            positive, negative, denoise, feather, noise_mask, external_seed)
 
         return (enhanced_img, )
@@ -670,11 +693,11 @@ class DetailerForEachTest(DetailerForEach):
 
     CATEGORY = "ImpactPack"
 
-    def doit(self, image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+    def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         enhanced_img, cropped, cropped_enhanced = \
-            self.do_detail(image, segs, model, vae, guide_size, seed, steps, cfg, sampler_name, scheduler,
+            self.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
                            positive, negative, denoise, feather, noise_mask, external_seed)
 
         if cropped is None:
@@ -823,7 +846,7 @@ class BboxDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
                       }
                 }
 
@@ -866,7 +889,7 @@ class SegmDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
                       }
                 }
 
@@ -1055,7 +1078,7 @@ class MaskToSEGS:
         return {"required": {
                                 "mask": ("MASK",),
                                 "combined": (["False", "True"], ),
-                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 1}),
+                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
                              }
                 }
 

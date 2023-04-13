@@ -1,49 +1,7 @@
 {
-  "last_node_id": 138,
-  "last_link_id": 376,
+  "last_node_id": 143,
+  "last_link_id": 384,
   "nodes": [
-    {
-      "id": 104,
-      "type": "Segs & Mask",
-      "pos": [
-        1529.9366837890627,
-        285.3044807531738
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
-      "flags": {},
-      "order": 22,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 246
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 337
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SEGS",
-          "type": "SEGS",
-          "links": [
-            347
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Segs & Mask"
-      },
-      "color": "#323",
-      "bgcolor": "#535"
-    },
     {
       "id": 109,
       "type": "CLIPTextEncode",
@@ -120,45 +78,6 @@
       }
     },
     {
-      "id": 124,
-      "type": "CLIPTextEncode",
-      "pos": [
-        2234,
-        617
-      ],
-      "size": {
-        "0": 313.7494201660156,
-        "1": 156.86895751953125
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 357
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            374
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Face Prompt",
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
-      ]
-    },
-    {
       "id": 118,
       "type": "PreviewImage",
       "pos": [
@@ -170,7 +89,7 @@
         "1": 252.140380859375
       },
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -196,7 +115,7 @@
         "1": 250
       },
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -208,43 +127,6 @@
       "title": "Cropped",
       "properties": {
         "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 94,
-      "type": "Reroute",
-      "pos": [
-        559,
-        445
-      ],
-      "size": [
-        82,
-        26
-      ],
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 274
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            218,
-            335
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": true,
-        "horizontal": false
       }
     },
     {
@@ -323,54 +205,6 @@
       }
     },
     {
-      "id": 105,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        5,
-        -10
-      ],
-      "size": {
-        "0": 315,
-        "1": 98
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            327
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            333
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            252,
-            267
-          ],
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "V07_v07.safetensors"
-      ]
-    },
-    {
       "id": 82,
       "type": "MMDetLoader",
       "pos": [
@@ -382,7 +216,7 @@
         "1": 93.55003356933594
       },
       "flags": {},
-      "order": 2,
+      "order": 0,
       "mode": 0,
       "outputs": [
         {
@@ -422,7 +256,7 @@
         "1": 96.49998474121094
       },
       "flags": {},
-      "order": 3,
+      "order": 1,
       "mode": 0,
       "outputs": [
         {
@@ -443,155 +277,6 @@
       ],
       "color": "#232",
       "bgcolor": "#353"
-    },
-    {
-      "id": 116,
-      "type": "DetailerForEachDebug",
-      "pos": [
-        2234,
-        819
-      ],
-      "size": {
-        "0": 315,
-        "1": 394
-      },
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 346
-        },
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 347
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 348
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 349
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 374
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 351
-        },
-        {
-          "name": "external_seed",
-          "type": "SEED",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            352,
-            359
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            292
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            293
-          ],
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DetailerForEachDebug"
-      },
-      "widgets_values": [
-        320,
-        525638383782973,
-        false,
-        20,
-        7,
-        "euler",
-        "karras",
-        0.6,
-        5,
-        "enabled"
-      ]
-    },
-    {
-      "id": 126,
-      "type": "LoraLoader",
-      "pos": [
-        899,
-        -102
-      ],
-      "size": {
-        "0": 410.2594299316406,
-        "1": 126
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 330
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 328
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            329,
-            355
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            331,
-            356
-          ],
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoraLoader"
-      },
-      "widgets_values": [
-        "emotionPuppeteerLora_v2Lora.safetensors",
-        1,
-        1
-      ]
     },
     {
       "id": 119,
@@ -654,7 +339,7 @@
         26
       ],
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -696,7 +381,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 30,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -801,427 +486,16 @@
       }
     },
     {
-      "id": 106,
-      "type": "Reroute",
-      "pos": [
-        2110,
-        -129
-      ],
-      "size": [
-        75,
-        26
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 252
-        }
-      ],
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            349,
-            370
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": true,
-        "horizontal": false
-      }
-    },
-    {
-      "id": 136,
-      "type": "SaveImage",
-      "pos": [
-        756,
-        1341
-      ],
-      "size": {
-        "0": 704.0276489257812,
-        "1": 678.6297607421875
-      },
-      "flags": {},
-      "order": 32,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 372
-        }
-      ],
-      "title": "Refine - 2pass",
-      "properties": {},
-      "widgets_values": [
-        "refined-2pass"
-      ]
-    },
-    {
-      "id": 135,
-      "type": "DetailerForEach",
-      "pos": [
-        1499,
-        1343
-      ],
-      "size": {
-        "0": 315,
-        "1": 394
-      },
-      "flags": {},
-      "order": 31,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 368
-        },
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 367
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 369
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 370
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 375,
-          "slot_index": 4
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 371,
-          "slot_index": 5
-        },
-        {
-          "name": "external_seed",
-          "type": "SEED",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            372
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DetailerForEach"
-      },
-      "widgets_values": [
-        320,
-        557701735627255,
-        false,
-        20,
-        8,
-        "euler",
-        "karras",
-        0.5,
-        5,
-        "enabled"
-      ]
-    },
-    {
-      "id": 132,
-      "type": "BboxDetectorForEach",
-      "pos": [
-        2195,
-        1554
-      ],
-      "size": {
-        "0": 260.3999938964844,
-        "1": 126
-      },
-      "flags": {},
-      "order": 28,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "bbox_model",
-          "type": "BBOX_MODEL",
-          "link": 362
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 361
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SEGS",
-          "type": "SEGS",
-          "links": [
-            363,
-            366
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "BboxDetectorFE !! DON'T MUTE !!",
-      "properties": {
-        "Node name for S&R": "BboxDetectorForEach"
-      },
-      "widgets_values": [
-        0.5,
-        10,
-        4
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 138,
-      "type": "CLIPTextEncode",
-      "pos": [
-        1498,
-        1775
-      ],
-      "size": [
-        954.989501953125,
-        243.09625799005676
-      ],
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 376
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            375
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Face Prompt",
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
-      ]
-    },
-    {
-      "id": 90,
-      "type": "BboxDetectorForEach",
-      "pos": [
-        716,
-        313
-      ],
-      "size": {
-        "0": 260.3999938964844,
-        "1": 126
-      },
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "bbox_model",
-          "type": "BBOX_MODEL",
-          "link": 204
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 218
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SEGS",
-          "type": "SEGS",
-          "links": [
-            239,
-            334
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "BboxDetectorFE !! DON'T MUTE !!",
-      "properties": {
-        "Node name for S&R": "BboxDetectorForEach"
-      },
-      "widgets_values": [
-        0.5,
-        10,
-        4
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 127,
-      "type": "SAMDetectorCombined",
-      "pos": [
-        1112,
-        306
-      ],
-      "size": {
-        "0": 243.7554168701172,
-        "1": 146
-      },
-      "flags": {},
-      "order": 21,
-      "mode": 2,
-      "inputs": [
-        {
-          "name": "sam_model",
-          "type": "SAM_MODEL",
-          "link": 336
-        },
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 334
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 335
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            337
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SAMDetectorCombined"
-      },
-      "widgets_values": [
-        "center-1",
-        1,
-        0.93
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 131,
-      "type": "SAMDetectorCombined",
-      "pos": [
-        2192,
-        1353
-      ],
-      "size": {
-        "0": 259.5433349609375,
-        "1": 148.83053588867188
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 2,
-      "inputs": [
-        {
-          "name": "sam_model",
-          "type": "SAM_MODEL",
-          "link": 364
-        },
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": 363
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 360
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            365
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SAMDetectorCombined"
-      },
-      "widgets_values": [
-        "center-1",
-        0.93,
-        0.93
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 115,
-      "type": "SaveImage",
-      "pos": [
-        1498,
-        618
-      ],
-      "size": [
-        714.0886352539064,
-        594.8502563476563
-      ],
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 352
-        }
-      ],
-      "title": "Refined",
-      "properties": {},
-      "widgets_values": [
-        "refined"
-      ]
-    },
-    {
       "id": 107,
       "type": "SaveImage",
       "pos": [
         753,
         620
       ],
-      "size": [
-        700.0886352539064,
-        588.4502563476562
-      ],
+      "size": {
+        "0": 700.088623046875,
+        "1": 588.4502563476562
+      },
       "flags": {},
       "order": 17,
       "mode": 0,
@@ -1333,7 +607,7 @@
         "1": 106
       },
       "flags": {},
-      "order": 0,
+      "order": 2,
       "mode": 0,
       "outputs": [
         {
@@ -1412,6 +686,897 @@
         "karras",
         1
       ]
+    },
+    {
+      "id": 136,
+      "type": "SaveImage",
+      "pos": [
+        756,
+        1341
+      ],
+      "size": {
+        "0": 702.1994018554688,
+        "1": 706.2926025390625
+      },
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 372
+        }
+      ],
+      "title": "Refine - 2pass",
+      "properties": {},
+      "widgets_values": [
+        "refined-2pass"
+      ]
+    },
+    {
+      "id": 124,
+      "type": "CLIPTextEncode",
+      "pos": [
+        2232,
+        592
+      ],
+      "size": {
+        "0": 313.7494201660156,
+        "1": 156.86895751953125
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 357
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            374
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Face Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
+      ]
+    },
+    {
+      "id": 115,
+      "type": "SaveImage",
+      "pos": [
+        1498,
+        594
+      ],
+      "size": {
+        "0": 710.8572998046875,
+        "1": 629.0338134765625
+      },
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 352
+        }
+      ],
+      "title": "Refined",
+      "properties": {},
+      "widgets_values": [
+        "refined"
+      ]
+    },
+    {
+      "id": 126,
+      "type": "LoraLoader",
+      "pos": [
+        898,
+        -129
+      ],
+      "size": {
+        "0": 410.2594299316406,
+        "1": 126
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 330
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 328
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            329,
+            355
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            331,
+            356
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoader"
+      },
+      "widgets_values": [
+        "emotionPuppeteerLora_v2Lora.safetensors",
+        1,
+        1
+      ]
+    },
+    {
+      "id": 105,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        7,
+        38
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            327
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            333
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            252,
+            267
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "V07_v07.safetensors"
+      ]
+    },
+    {
+      "id": 138,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1502,
+        1806
+      ],
+      "size": {
+        "0": 954.989501953125,
+        "1": 243.09625244140625
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 376
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            375
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Face Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "adorable face, widening eyes, disgust, closeup portrait, looking away, detailed eyes"
+      ]
+    },
+    {
+      "id": 131,
+      "type": "SAMDetectorCombined",
+      "pos": [
+        2192,
+        1353
+      ],
+      "size": {
+        "0": 259.5433349609375,
+        "1": 148.83053588867188
+      },
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sam_model",
+          "type": "SAM_MODEL",
+          "link": 364
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 363
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 360
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            365
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SAMDetectorCombined"
+      },
+      "widgets_values": [
+        "horizontal-2",
+        0.93,
+        0.93
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 104,
+      "type": "Segs & Mask",
+      "pos": [
+        1529.9366837890627,
+        285.3044807531738
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 246
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 337
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            347,
+            377
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Segs & Mask"
+      },
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 94,
+      "type": "Reroute",
+      "pos": [
+        559,
+        445
+      ],
+      "size": [
+        82,
+        26
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 274
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            218,
+            335,
+            378,
+            381
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 106,
+      "type": "Reroute",
+      "pos": [
+        2110,
+        -129
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 252
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            349,
+            370,
+            380,
+            383
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 127,
+      "type": "SAMDetectorCombined",
+      "pos": [
+        1112,
+        306
+      ],
+      "size": {
+        "0": 243.7554168701172,
+        "1": 146
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sam_model",
+          "type": "SAM_MODEL",
+          "link": 336
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 334
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 335
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            337
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SAMDetectorCombined"
+      },
+      "widgets_values": [
+        "horizontal-2",
+        1,
+        0.93
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 90,
+      "type": "BboxDetectorForEach",
+      "pos": [
+        716,
+        313
+      ],
+      "size": {
+        "0": 260.3999938964844,
+        "1": 126
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bbox_model",
+          "type": "BBOX_MODEL",
+          "link": 204
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 218
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            239,
+            334
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "BboxDetectorFE !! DON'T MUTE !!",
+      "properties": {
+        "Node name for S&R": "BboxDetectorForEach"
+      },
+      "widgets_values": [
+        0.5,
+        10,
+        3.9999999999999996
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 143,
+      "type": "PreviewImage",
+      "pos": [
+        2820,
+        -943
+      ],
+      "size": [
+        562,
+        699
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 384
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 142,
+      "type": "VAEDecode",
+      "pos": [
+        2447,
+        -941
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 382
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 383
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            384
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 141,
+      "type": "VAEEncodeForInpaint",
+      "pos": [
+        2142,
+        -939
+      ],
+      "size": {
+        "0": 210,
+        "1": 66
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 381
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 380
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 379
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            382
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncodeForInpaint"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 140,
+      "type": "SegsMaskCombine",
+      "pos": [
+        1761,
+        -898
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 377
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 378
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            379
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SegsMaskCombine"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 135,
+      "type": "DetailerForEach",
+      "pos": [
+        1499,
+        1343
+      ],
+      "size": {
+        "0": 315,
+        "1": 418
+      },
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 368
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 367
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 369
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 370
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 375,
+          "slot_index": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 371,
+          "slot_index": 5
+        },
+        {
+          "name": "external_seed",
+          "type": "SEED",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            372
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DetailerForEach"
+      },
+      "widgets_values": [
+        320,
+        "bbox",
+        557701735627255,
+        "fixed",
+        20,
+        10,
+        "euler",
+        "karras",
+        0.5,
+        5,
+        "disabled"
+      ]
+    },
+    {
+      "id": 116,
+      "type": "DetailerForEachDebug",
+      "pos": [
+        2235,
+        800
+      ],
+      "size": {
+        "0": 315,
+        "1": 418
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 346
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 347
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 348
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 349
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 374
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 351
+        },
+        {
+          "name": "external_seed",
+          "type": "SEED",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            352,
+            359
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            292
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            293
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DetailerForEachDebug"
+      },
+      "widgets_values": [
+        256,
+        "bbox",
+        525638383782973,
+        "fixed",
+        10,
+        7,
+        "euler",
+        "karras",
+        0.6,
+        5,
+        "disabled"
+      ]
+    },
+    {
+      "id": 132,
+      "type": "BboxDetectorForEach",
+      "pos": [
+        2195,
+        1554
+      ],
+      "size": {
+        "0": 260.3999938964844,
+        "1": 126
+      },
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bbox_model",
+          "type": "BBOX_MODEL",
+          "link": 362
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 361
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            363,
+            366
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "BboxDetectorFE !! DON'T MUTE !!",
+      "properties": {
+        "Node name for S&R": "BboxDetectorForEach"
+      },
+      "widgets_values": [
+        0.5,
+        20,
+        3.9999999999999996
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     }
   ],
   "links": [
@@ -1838,6 +2003,70 @@
       138,
       0,
       "CLIP"
+    ],
+    [
+      377,
+      104,
+      0,
+      140,
+      0,
+      "SEGS"
+    ],
+    [
+      378,
+      94,
+      0,
+      140,
+      1,
+      "IMAGE"
+    ],
+    [
+      379,
+      140,
+      0,
+      141,
+      2,
+      "MASK"
+    ],
+    [
+      380,
+      106,
+      0,
+      141,
+      1,
+      "VAE"
+    ],
+    [
+      381,
+      94,
+      0,
+      141,
+      0,
+      "IMAGE"
+    ],
+    [
+      382,
+      141,
+      0,
+      142,
+      0,
+      "LATENT"
+    ],
+    [
+      383,
+      106,
+      0,
+      142,
+      1,
+      "VAE"
+    ],
+    [
+      384,
+      142,
+      0,
+      143,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [
@@ -1862,7 +2091,7 @@
       "color": "#3f789e"
     },
     {
-      "title": "Refine and Render",
+      "title": "Refine and Render (Fast Repair)",
       "bounding": [
         1479,
         495,
@@ -1879,17 +2108,27 @@
         659,
         462
       ],
-      "color": "#3f789e"
+      "color": "#a1309b"
     },
     {
-      "title": "2nd refine",
+      "title": "2nd Refine (Detailer)",
       "bounding": [
         732,
         1265,
         1832,
-        779
+        803
       ],
       "color": "#3f789e"
+    },
+    {
+      "title": "Mask Preview",
+      "bounding": [
+        1698,
+        -1104,
+        1745,
+        909
+      ],
+      "color": "#a1309b"
     }
   ],
   "config": {},

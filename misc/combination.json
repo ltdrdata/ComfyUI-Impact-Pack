@@ -276,65 +276,6 @@
       ]
     },
     {
-      "id": 111,
-      "type": "KSampler",
-      "pos": [
-        20,
-        762
-      ],
-      "size": {
-        "0": 315,
-        "1": 262
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 268
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 264
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 265
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 266
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            272
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler"
-      },
-      "widgets_values": [
-        832707305495685,
-        false,
-        20,
-        7,
-        "euler",
-        "karras",
-        1
-      ]
-    },
-    {
       "id": 112,
       "type": "EmptyLatentImage",
       "pos": [
@@ -484,7 +425,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "masterpiece, photorealistic:1.4, short break hair, (yellow check short jacket), white shirts, light pink necktie, (pink school check skirt), cute girl, sneakers, detailed eyes, realistic, 2girls, ultra detailed, beautiful girl, beautiful-detailed eyes, slender, small breast, smile, from top, luminous skin, stocking"
+        "masterpiece, photorealistic:1.4, short break hair, (yellow check short jacket), white shirts, light pink necktie, (pink school check skirt), cute girl, sneakers, detailed eyes, realistic, 2girls, ultra detailed, beautiful girl, beautiful-detailed eyes, slender, small breast, smile, from top, luminous skin, stocking,"
       ]
     },
     {
@@ -542,6 +483,113 @@
       ]
     },
     {
+      "id": 111,
+      "type": "KSampler",
+      "pos": [
+        20,
+        762
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 268
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 264
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 265
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 266
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            272
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        832707305495685,
+        "fixed",
+        20,
+        7,
+        "euler",
+        "karras",
+        1
+      ]
+    },
+    {
+      "id": 90,
+      "type": "BboxDetectorForEach",
+      "pos": [
+        712.9366837890625,
+        293.3044807531738
+      ],
+      "size": {
+        "0": 251.412109375,
+        "1": 126
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bbox_model",
+          "type": "BBOX_MODEL",
+          "link": 204
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 218
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": [
+            208,
+            239
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BboxDetectorForEach"
+      },
+      "widgets_values": [
+        0.5,
+        20,
+        3
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
       "id": 114,
       "type": "DetailerForEach",
       "pos": [
@@ -550,7 +598,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 394
+        "1": 418
       },
       "flags": {},
       "order": 15,
@@ -607,64 +655,17 @@
       },
       "widgets_values": [
         256,
-        1063220709408570,
-        false,
+        "bbox",
+        1041366330963730,
+        "randomize",
         20,
         7,
         "euler",
         "karras",
-        0.5,
+        0.6,
         5,
-        "enabled"
+        "disabled"
       ]
-    },
-    {
-      "id": 90,
-      "type": "BboxDetectorForEach",
-      "pos": [
-        712.9366837890625,
-        293.3044807531738
-      ],
-      "size": {
-        "0": 251.412109375,
-        "1": 126
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "bbox_model",
-          "type": "BBOX_MODEL",
-          "link": 204
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 218
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SEGS",
-          "type": "SEGS",
-          "links": [
-            208,
-            239
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BboxDetectorForEach"
-      },
-      "widgets_values": [
-        0.5,
-        10,
-        3
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
     },
     {
       "id": 91,
@@ -711,9 +712,9 @@
         "Node name for S&R": "SAMDetectorCombined"
       },
       "widgets_values": [
-        "center-1",
-        0.93,
-        0.93
+        "rect-4",
+        10,
+        0.9
       ],
       "color": "#232",
       "bgcolor": "#353"
