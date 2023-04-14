@@ -1,14 +1,54 @@
 import os, sys, subprocess
 from torchvision.datasets.utils import download_url
 import platform
+import configparser
+import folder_paths
+
+
+# INSTALL
+print("### Loading: ComfyUI-Impact-Pack")
+
+comfy_path = os.path.dirname(folder_paths.__file__)
+config_path = os.path.join(comfy_path, "custom_nodes", "impact-pack.ini")
+
+js_path = os.path.join(comfy_path, "web", "extensions", "core")
+js_version = 1
+js_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/Main/js/impact-pack.js"
+
+def read_js_version():
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        return int(config['default']['js_version'])
+    except:
+        return 0
+
+def write_js_version():
+    config = configparser.ConfigParser()
+    config['default'] = {
+        'js_version': js_version
+    }
+    with open(config_path, 'w') as configfile:
+        config.write(configfile)
+    
+
+# Download js
+if not os.path.exists(os.path.join(js_path, "impact-pack.js")):
+    download_url(js_url, js_path)
+    write_js_version()
+else:
+    # update js
+    js = read_js_version()
+    if js < js_version:
+        download_url(js_url, js_path)
+        write_js_version()
+
 
 # ----- SETUP --------------------------------------------------------------
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
 sys.path.append('../ComfyUI')
 
 
-# INSTALL
-print("Loading: ComfyUI-Impact-Pack")
 print("### ComfyUI-Impact-Pack: Check dependencies")
 
 
@@ -57,17 +97,12 @@ def ensure_mmdet_package():
         subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
         subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
 
-
 ensure_pip_packages()
 ensure_mmdet_package()
-
 
 # Download model
 print("### ComfyUI-Impact-Pack: Check basic models")
 
-import folder_paths
-
-comfy_path = os.path.dirname(folder_paths.__file__)
 model_path = folder_paths.models_dir
 
 bbox_path = os.path.join(model_path, "mmdets", "bbox")
@@ -313,14 +348,14 @@ class NO_SEGM_MODEL:
 
 def normalize_region(limit, startp, size):
     if startp < 0:
-        new_endp = size
+        new_endp = min(limit, size)
         new_startp = 0
     elif startp + size > limit:
         new_startp = limit - size
         new_endp = limit
     else:
         new_startp = startp
-        new_endp = startp+size
+        new_endp = min(limit, startp+size)
 
     return int(new_startp), int(new_endp)
 
@@ -704,6 +739,19 @@ class DetailerForEachTest(DetailerForEach):
             return enhanced_img, enhanced_img, enhanced_img,
         else:
             return enhanced_img, cropped, cropped_enhanced,
+
+class EmptySEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return { }
+    
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self):
+        return ([],)
 
 
 class SegsMaskCombine:
@@ -1119,11 +1167,11 @@ class MaskToSEGS:
             # iterate over the regions and print their bounding boxes
             for region in regions:
                 y1, x1, y2, x2 = region.bbox
-                bbox = x1, x2, y1, y2
+                bbox = x1, y1, x2, y2
                 crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
 
                 if x2 - x1 > 0 and y2 - y1 > 0:
-                    cropped_mask = mask[y1:y2, x1:x2]
+                    cropped_mask = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
                     result.append((None, cropped_mask, 1.0, crop_region, bbox))
 
         if not result:
@@ -1240,6 +1288,62 @@ class SubtractMask:
         return (mask,)
 
 
+
+import nodes
+class MaskPainter(nodes.PreviewImage):
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"images": ("IMAGE", ), },
+                "hidden": {
+                    "prompt": "PROMPT", 
+                    "extra_pnginfo": "EXTRA_PNGINFO",
+                    },
+                "optional": { "mask_image": ("IMAGE_PATH", ), },
+                }
+    
+    RETURN_TYPES = ("MASK", )
+    
+    FUNCTION = "save_painted_images"
+
+    CATEGORY = "ImpactPack"
+
+
+    def load_mask(self, imagepath):
+        if imagepath['type'] == "temp":
+            input_dir = folder_paths.get_temp_directory()
+        else:
+            input_dir = folder_paths.get_input_directory()
+
+        image_path = os.path.join(input_dir, imagepath['filename'])
+
+        if os.path.exists(image_path):
+            i = Image.open(image_path)
+            
+            if 'A' in i.getbands():
+                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                mask = 1. - torch.from_numpy(mask)
+            else:
+                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+        else:
+                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+
+        return (mask, )
+    
+
+    def save_painted_images(self, images, filename_prefix="impact-mask", 
+                            prompt=None, extra_pnginfo=None, mask_image=None):
+        res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
+
+        if mask_image is not None:
+            res['result'] = self.load_mask(mask_image)
+        else:
+            mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            res['result'] = (mask, )
+
+        return res
+
+
 NODE_CLASS_MAPPINGS = {
     "MMDetLoader": MMDetLoader,
     "SAMLoader": SAMLoader,
@@ -1262,7 +1366,46 @@ NODE_CLASS_MAPPINGS = {
     "SubtractMask": SubtractMask,
     "Segs & Mask": SegsBitwiseAndMask,
     "SegsMaskCombine": SegsMaskCombine,
+    "EmptySegs": EmptySEGS,
 
     "MaskToSEGS": MaskToSEGS,
     "ToBinaryMask": ToBinaryMask,
+    
+    "MaskPainter": MaskPainter,
 }
+
+
+
+
+import server
+from aiohttp import web
+
+@server.PromptServer.instance.routes.post("/upload/temp")
+async def upload_image(request):
+    upload_dir = folder_paths.get_temp_directory()
+
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    
+    post = await request.post()
+    image = post.get("image")
+
+    if image and image.file:
+        filename = image.filename
+        if not filename:
+            return web.Response(status=400)
+
+        split = os.path.splitext(filename)
+        i = 1
+        while os.path.exists(os.path.join(upload_dir, filename)):
+            filename = f"{split[0]} ({i}){split[1]}"
+            i += 1
+
+        filepath = os.path.join(upload_dir, filename)
+
+        with open(filepath, "wb") as f:
+            f.write(image.file.read())
+        
+        return web.json_response({"name" : filename})
+    else:
+        return web.Response(status=400)

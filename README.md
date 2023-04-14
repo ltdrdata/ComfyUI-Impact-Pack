@@ -23,6 +23,8 @@
 * Segs & Masks - Perform a bitwise AND operation on SEGS and MASK.
 * MaskToSegs - This node generates SEGS based on the mask. 
 * ToBinaryMask - This node separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
+* EmptySEGS - This node provides a empty SEGS.
+* MaskPainter - This node provides a feature to draw masks.
 
 # Installation
 
@@ -105,6 +107,19 @@
 * The "detection_hint" in "SAMDetectorCombined" is a specifier that indicates which points should be included in the segmentation when performing segmentation. "center-1" specifies one point in the center of the mask, "horizontal-2" specifies two points on the center horizontal line, "vertical-2" specifies two points on the center vertical line, "rectangle-4" specifies four points in a rectangular shape inside the mask, and "diamond-4" specifies four points in a diamond shape centered around the center point.
 
 * Unlike in face detection, for non-rigid objects, the center point may not always be the segmentation area, so be careful not to assume that the center point is always the segmentation area.
+
+#### Mask Painter
+
+![example](misc/maskpainter1.png)
+* Click "Edit mask" button
+* **Don't connect to 'mask_image' input**
+
+![example](misc/maskpainter2.png)
+* You can draw mask on Mask Painter
+* Currently, this editor only provides basic functionalities
+
+![example](misc/maskpainter-original.png) ![example](misc/maskpainter-result.png)
+* When used together, SAMDetector and MaskPainter can be used to enhance specific elements of an image.
 
 # Others Tutorials
 * [ONNX Tutorial](tutorial/ONNX.md)
