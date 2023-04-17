@@ -12,7 +12,7 @@ comfy_path = os.path.dirname(folder_paths.__file__)
 config_path = os.path.join(comfy_path, "custom_nodes", "impact-pack.ini")
 
 js_path = os.path.join(comfy_path, "web", "extensions", "core")
-js_version = 1
+js_version = 2
 js_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/Main/js/impact-pack.js"
 
 def read_js_version():
@@ -138,10 +138,12 @@ import warnings
 from PIL import Image, ImageFilter
 from mmdet.evaluation import get_classes
 from skimage.measure import label, regionprops
-
+from collections import namedtuple
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
+SEG = namedtuple("SEG", ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label'],
+                 defaults=[None])
 
 def load_mmdet(model_path):
     model_config = os.path.splitext(model_path)[0] + ".py"
@@ -155,6 +157,11 @@ def pil2tensor(image):
 
 def tensor2pil(image):
     return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
+
+
+def center_of_bbox(bbox):
+    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    return bbox[0] + w/2, bbox[1] + h/2
 
 
 def create_segmasks(results):
@@ -213,15 +220,24 @@ def to_binary_mask(mask):
     return mask
 
 
+def dilate_mask(mask, dilation_factor, iter=1):
+    if dilation_factor == 0:
+        return mask
+
+    kernel = np.ones((dilation_factor,dilation_factor), np.uint8)
+    return cv2.dilate(mask, kernel, iter)
+
+
 def dilate_masks(segmasks, dilation_factor, iter=1):
     if dilation_factor == 0:
         return segmasks
+
     dilated_masks = []
     kernel = np.ones((dilation_factor,dilation_factor), np.uint8)
     for i in range(len(segmasks)):
         cv2_mask = segmasks[i][1]
         dilated_mask = cv2.dilate(cv2_mask, kernel, iter)
-        item = (segmasks[i][0],dilated_mask,segmasks[i][2])
+        item = (segmasks[i][0], dilated_mask, segmasks[i][2])
         dilated_masks.append(item)
     return dilated_masks
 
@@ -256,22 +272,20 @@ def inference_segm_old(model, image, conf_threshold):
         np.full(bbox.shape[0], i, dtype=np.int32)
         for i, bbox in enumerate(bbox_results)
     ]
-    n,m = bbox_results[0].shape
-    if (n == 0):
-        return [[],[],[]]
+    n, m = bbox_results[0].shape
+    if n == 0:
+        return [[], [], []]
     labels = np.concatenate(labels)
     bboxes = np.vstack(bbox_results)
     segms = mmcv.concat_list(segm_results)
-    filter_inds = np.where(bboxes[:,-1] > conf_threshold)[0]
-    results = [[],[],[]]
+    filter_inds = np.where(bboxes[:, -1] > conf_threshold)[0]
+    results = [[], [], []]
     for i in filter_inds:
         results[0].append(label + "-" + classes[labels[i]])
         results[1].append(bboxes[i])
         results[2].append(segms[i])
 
     return results
-
-    return mmdet_results
 
 
 def inference_segm(image, modelname, conf_thres, label):
@@ -308,7 +322,7 @@ def inference_bbox(modelname, image, conf_threshold):
 
     segms = []
     for x0, y0, x1, y1 in output.bboxes:
-        cv2_mask = np.zeros((cv2_gray.shape), np.uint8)
+        cv2_mask = np.zeros(cv2_gray.shape, np.uint8)
         cv2.rectangle(cv2_mask, (int(x0), int(y0)), (int(x1), int(y1)), 255, -1)
         cv2_mask_bool = cv2_mask.astype(bool)
         segms.append(cv2_mask_bool)
@@ -316,6 +330,7 @@ def inference_bbox(modelname, image, conf_threshold):
     n, m = output.bboxes.shape
     if n == 0:
         return [[], [], [], []]
+
     bboxes = output.bboxes.numpy()
     scores = output.scores.numpy()
     filter_inds = np.where(scores > conf_threshold)[0]
@@ -327,6 +342,26 @@ def inference_bbox(modelname, image, conf_threshold):
         results[3].append(scores[i])
 
     return results
+
+
+def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
+    points = []
+    plabs = []
+
+    # minimum sampling step >= 3
+    y_step = max(3, int(mask.shape[0]/20))
+    x_step = max(3, int(mask.shape[1]/20))
+    
+    for i in range(0, len(mask), y_step):
+        for j in range(0, len(mask[i]), x_step):
+            if mask[i][j] > threshold:
+                points.append((x+j, y+i))
+                plabs.append(1)
+            elif use_negative and mask[i][j] == 0:
+                points.append((x+j, y+i))
+                plabs.append(0)
+    
+    return points, plabs
 
 
 # Nodes
@@ -382,7 +417,7 @@ def make_crop_region(w, h, bbox, crop_factor):
     new_x1, new_x2 = normalize_region(w, new_x1, crop_w)
     new_y1, new_y2 = normalize_region(h, new_y1, crop_h)
 
-    return [new_x1,new_y1,new_x2,new_y2]
+    return [new_x1, new_y1, new_x2, new_y2]
 
 
 def crop_ndarray4(npimg, crop_region):
@@ -423,15 +458,15 @@ def to_latent_image(pixels, vae):
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 
 
-def scale_tensor(w,h, image):
+def scale_tensor(w, h, image):
     image = tensor2pil(image)
-    scaled_image = image.resize((w,h), resample=LANCZOS)
+    scaled_image = image.resize((w, h), resample=LANCZOS)
     return pil2tensor(scaled_image)
 
 
 def scale_tensor_and_to_pil(w,h, image):
     image = tensor2pil(image)
-    return image.resize((w,h), resample=LANCZOS)
+    return image.resize((w, h), resample=LANCZOS)
 
 
 def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
@@ -459,7 +494,7 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
     new_h = int(((h * upscale)//64) * 64)
 
     if upscale <= 1.0:
-        print(f"Detailer: segment skip")
+        print(f"Detailer: segment skip [determined upscale factor={upscale}]")
         return None
 
     print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
@@ -555,12 +590,12 @@ class MMDetLoader:
         model = load_mmdet(mmdet_path)
 
         if model_name.startswith("bbox"):
-            return (model, NO_SEGM_MODEL())
+            return model, NO_SEGM_MODEL()
         else:
-            return (NO_BBOX_MODEL(), model)
+            return NO_BBOX_MODEL(), model
 
 
-from segment_anything import build_sam, SamPredictor
+from segment_anything import SamPredictor
 from segment_anything import sam_model_registry
 import onnxruntime
 
@@ -568,7 +603,7 @@ import onnxruntime
 class SAMLoader:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": { "model_name": (folder_paths.get_filename_list("sams"), )}}
+        return {"required": {"model_name": (folder_paths.get_filename_list("sams"), )}}
 
     RETURN_TYPES = ("SAM_MODEL", )
     FUNCTION = "load_model"
@@ -639,17 +674,17 @@ class ONNXDetectorForEach:
                 cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
 
                 # make items
-                item = (None, cropped_mask, scores[i], crop_region, item_bbox)
+                item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox)
                 result.append(item)
                 
         return (result,)
 
+
 class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
-                     "image":("IMAGE", ),
+        return {"required": {
+                     "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
                      "model": ("MODEL",),
                      "vae": ("VAE",),
@@ -666,7 +701,7 @@ class DetailerForEach:
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      "noise_mask": (["enabled", "disabled"], ),
                      },
-                "optional": { "external_seed": ("SEED", ), }
+                "optional": {"external_seed": ("SEED", ), }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -674,40 +709,39 @@ class DetailerForEach:
 
     CATEGORY = "ImpactPack"
 
-    def do_detail(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, noise_mask, external_seed=None):
+    @staticmethod
+    def do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+                  positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         if external_seed is not None:
             seed = external_seed['seed']
 
         image_pil = tensor2pil(image).convert('RGBA')
 
-        for x in segs:
-            crop_region = x[3]
-            cropped_image = x[0] if x[0] is not None else crop_ndarray4(image.numpy(), crop_region)
+        for seg in segs:
+            cropped_image = seg.cropped_image if seg.cropped_image is not None \
+                                              else crop_ndarray4(image.numpy(), seg.crop_region)
 
-            mask_pil = feather_mask(x[1], feather)
-            confidence = x[2]
-            bbox = x[4]
+            mask_pil = feather_mask(seg.cropped_mask, feather)
 
             if noise_mask == "enabled":
-                cropped_mask = x[1]
+                cropped_mask = seg.cropped_mask
             else:
                 cropped_mask = None
 
-            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, bbox,
+            enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
                                           seed, steps, cfg, sampler_name, scheduler,
                                           positive, negative, denoise, cropped_mask)
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image_pil.paste(enhanced_pil, (crop_region[0], crop_region[1]), mask_pil)
+                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         if len(segs) > 0:
-            enhanced_tensor = pil2tensor(enhanced_pil) if not (enhanced_pil is None) else None
+            enhanced_tensor = pil2tensor(enhanced_pil) if enhanced_pil is not None else None
             return image_tensor, torch.from_numpy(cropped_image), enhanced_tensor,
         else:
             return image_tensor, None, None,
@@ -716,8 +750,9 @@ class DetailerForEach:
              positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         enhanced_img, cropped, cropped_enhanced = \
-            self.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-                           positive, negative, denoise, feather, noise_mask, external_seed)
+            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                      external_seed)
 
         return (enhanced_img, )
 
@@ -732,8 +767,9 @@ class DetailerForEachTest(DetailerForEach):
              positive, negative, denoise, feather, noise_mask, external_seed=None):
 
         enhanced_img, cropped, cropped_enhanced = \
-            self.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-                           positive, negative, denoise, feather, noise_mask, external_seed)
+            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                      external_seed)
 
         # set fallback image
         if cropped is None:
@@ -744,10 +780,11 @@ class DetailerForEachTest(DetailerForEach):
 
         return enhanced_img, cropped, cropped_enhanced,
 
+
 class EmptySEGS:
     @classmethod
     def INPUT_TYPES(s):
-        return { }
+        return {}
     
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
@@ -761,8 +798,7 @@ class EmptySEGS:
 class SegsMaskCombine:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
+        return {"required": {
                         "segs": ("SEGS", ),
                         "image": ("IMAGE", ),
                       }
@@ -780,24 +816,55 @@ class SegsMaskCombine:
         mask = np.zeros((h, w), dtype=np.uint8)
 
         for seg in segs:
-            cropped_mask = seg[1]
-            crop_region = seg[3]
+            cropped_mask = seg.cropped_mask
+            crop_region = seg.crop_region
             mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
 
         return (torch.from_numpy(mask.astype(np.float32) / 255.0), )
 
 
+def sam_predict(predictor, points, plabs, bbox, threshold):
+    point_coords = None if not points else np.array(points)
+    point_labels = None if not plabs else np.array(plabs)
+
+    box = np.array([bbox]) if bbox is not None else None
+
+    cur_masks, scores, _ = predictor.predict(point_coords=point_coords, point_labels=point_labels, box=box)
+
+    total_masks = []
+
+    selected = False
+    max_score = 0
+    for idx in range(len(scores)):
+        if scores[idx] > max_score:
+            max_score = scores[idx]
+            max_mask = cur_masks[idx]
+
+        if scores[idx] >= threshold:
+            selected = True
+            total_masks.append(cur_masks[idx])
+        else:
+            pass
+
+    if not selected:
+        total_masks.append(max_mask)
+
+    return total_masks
+
+
 class SAMDetectorCombined:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
+        return {"required": {
                         "sam_model": ("SAM_MODEL", ),
                         "segs": ("SEGS", ),
                         "image": ("IMAGE", ),
-                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "none"],),
-                        "dilation": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                        "dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
                         "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                        "bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                        "mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                        "mask_hint_use_negative": (["False", "True", ], )
                       }
                 }
 
@@ -806,86 +873,100 @@ class SAMDetectorCombined:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, sam_model, segs, image, detection_hint, dilation, threshold):
+    def doit(self, sam_model, segs, image, detection_hint, dilation,
+             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+
         predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
-        predictor.set_image(image,"RGB")
+        predictor.set_image(image, "RGB")
 
         total_masks = []
-        for i in range(len(segs)):
-            bbox = segs[i][4]
-            w,h = bbox[2] - bbox[0], bbox[3] - bbox[1] / 2
-            center = bbox[1] + h/2, bbox[0] + w/2
 
-            x1 = max(segs[i][4][0] - dilation, 0)
-            y1 = max(segs[i][4][1] - dilation, 0)
-            x2 = max(segs[i][4][2] + dilation, image.shape[2])
-            y2 = max(segs[i][4][3] + dilation, image.shape[1])
+        use_negative = mask_hint_use_negative == "True"
 
-            dilated_bbox = [x1, y1, x2, y2]
-
+        if detection_hint == "mask-points":
             points = []
             plabs = []
-            if detection_hint == "center-1":
+
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(segs[i].bbox)
                 points.append(center)
-                plabs = [1] # 1 = foreground point, 0 = background point
 
-            elif detection_hint == "horizontal-2":
-                gap = (x2 - x1) / 3
-                points.append((x1 + gap, center[1]))
-                points.append((x1 + gap*2, center[1]))
-                plabs = [1, 1]
-
-            elif detection_hint == "vertical-2":
-                gap = (y2 - y1) / 3
-                points.append((center[0], y1 + gap))
-                points.append((center[0], y1 + gap*2))
-                plabs = [1, 1]
-
-            elif detection_hint == "rect-4":
-                x_gap = (x2 - x1) / 3
-                y_gap = (y2 - y1) / 3
-                points.append((x1 + x_gap, center[1]))
-                points.append((x1 + x_gap*2, center[1]))
-                points.append((center[0], y1 + y_gap))
-                points.append((center[0], y1 + y_gap*2))
-                plabs = [1, 1, 1, 1]
-
-            elif detection_hint == "diamond-4":
-                x_gap = (x2 - x1) / 3
-                y_gap = (y2 - y1) / 3
-                points.append((x1 + x_gap, y1 + y_gap))
-                points.append((x1 + x_gap*2, y1 + y_gap))
-                points.append((x1 + x_gap, y1 + y_gap*2))
-                points.append((x1 + x_gap*2, y1 + y_gap*2))
-                plabs = [1, 1, 1, 1]
-
-            point_coords = None if not points else np.array(points)
-            point_labels = None if not plabs else np.array(plabs)
-
-            cur_masks, scores, _ = predictor.predict(point_coords=point_coords, point_labels=point_labels,
-                                                     box=np.array([dilated_bbox]))
-
-            selected = False
-            max_score = 0
-            for i in range(len(scores)):
-                if scores[i] > max_score:
-                    max_score = scores[i]
-                    max_mask = cur_masks[i]
-
-                if scores[i] >= threshold:
-                    selected = True
-                    total_masks.append(cur_masks[i])
+                # small point is background, big point is foreground
+                if use_negative and bbox[2]-bbox[0] < 10:
+                    plabs.append(0)
                 else:
-                    pass
+                    plabs.append(1)
 
-            if not selected:
-                total_masks.append(max_mask)
+            detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+            total_masks += detected_masks
 
+        else:
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(bbox)
+
+                y1 = max(bbox[0] - bbox_expansion, 0)
+                x1 = max(bbox[1] - bbox_expansion, 0)
+                y2 = max(bbox[2] + bbox_expansion, image.shape[2])
+                x2 = max(bbox[3] + bbox_expansion, image.shape[1])
+
+                dilated_bbox = [x1, y1, x2, y2]
+
+                points = []
+                plabs = []
+                if detection_hint == "center-1":
+                    points.append(center)
+                    plabs = [1]  # 1 = foreground point, 0 = background point
+
+                elif detection_hint == "horizontal-2":
+                    gap = (x2 - x1) / 3
+                    points.append((x1 + gap, center[1]))
+                    points.append((x1 + gap*2, center[1]))
+                    plabs = [1, 1]
+
+                elif detection_hint == "vertical-2":
+                    gap = (y2 - y1) / 3
+                    points.append((center[0], y1 + gap))
+                    points.append((center[0], y1 + gap*2))
+                    plabs = [1, 1]
+
+                elif detection_hint == "rect-4":
+                    x_gap = (x2 - x1) / 3
+                    y_gap = (y2 - y1) / 3
+                    points.append((x1 + x_gap, center[1]))
+                    points.append((x1 + x_gap*2, center[1]))
+                    points.append((center[0], y1 + y_gap))
+                    points.append((center[0], y1 + y_gap*2))
+                    plabs = [1, 1, 1, 1]
+
+                elif detection_hint == "diamond-4":
+                    x_gap = (x2 - x1) / 3
+                    y_gap = (y2 - y1) / 3
+                    points.append((x1 + x_gap, y1 + y_gap))
+                    points.append((x1 + x_gap*2, y1 + y_gap))
+                    points.append((x1 + x_gap, y1 + y_gap*2))
+                    points.append((x1 + x_gap*2, y1 + y_gap*2))
+                    plabs = [1, 1, 1, 1]
+
+                elif detection_hint == "mask-area":
+                    points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1], segs[i].cropped_mask,
+                                                                  mask_hint_threshold, use_negative)
+
+                detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+                total_masks += detected_masks
+
+        # merge every collected masks
         mask = combine_masks2(total_masks)
+
         if mask is not None:
             mask = mask.float()
+            mask = dilate_mask(mask.numpy(), dilation)
+            mask = torch.from_numpy(mask)
+        else:
+            mask = torch.zeros((64,64), dtype=torch.float32, device="cpu") # empty mask
 
         return (mask, )
 
@@ -898,7 +979,7 @@ class BboxDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                       }
                 }
 
@@ -927,7 +1008,7 @@ class BboxDetectorForEach:
             confidence = x[2]
             # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
-            item = (cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
             items.append(item)
 
         return (items, )
@@ -941,7 +1022,7 @@ class SegmDetectorForEach:
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
+                        "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                       }
                 }
 
@@ -969,7 +1050,7 @@ class SegmDetectorForEach:
             cropped_mask = crop_ndarray2(item_mask, crop_region)
             confidence = x[2]
 
-            item = (cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
             items.append(item)
 
         return (items, )
@@ -978,12 +1059,12 @@ class SegmDetectorForEach:
 class SegsBitwiseAndMask:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-            {
-                "segs": ("SEGS",),
-                "mask": ("MASK",),
-            }
-        }
+        return {"required": {
+                        "segs": ("SEGS",),
+                        "mask": ("MASK",),
+                    }
+                }
+
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
 
@@ -998,16 +1079,16 @@ class SegsBitwiseAndMask:
 
         mask = (mask.numpy() * 255).astype(np.uint8)
 
-        for x in segs:
-            cropped_mask = (x[1] * 255).astype(np.uint8)
-            crop_region = x[3]
+        for seg in segs:
+            cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
+            crop_region = seg.crop_region
 
             cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
 
             new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
             new_mask = new_mask.astype(np.float32) / 255.0
 
-            item = (x[0], new_mask, x[2], x[3], x[4])
+            item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             items.append(item)
 
         return (items,)
@@ -1032,13 +1113,13 @@ class BitwiseAndMaskForEach:
 
         result = []
 
-        for x in base_segs:
-            cropped_mask1 = x[1].copy()
-            crop_region1 = x[3]
+        for bseg in base_segs:
+            cropped_mask1 = bseg.cropped_mask.copy()
+            crop_region1 = bseg.crop_region
 
-            for y in mask_segs:
-                cropped_mask2 =y[1]
-                crop_region2 = y[3]
+            for mseg in mask_segs:
+                cropped_mask2 = mseg.cropped_mask
+                crop_region2 = mseg.crop_region
 
                 # compute the intersection of the two crop regions
                 intersect_region = (max(crop_region1[0], crop_region2[0]),
@@ -1061,9 +1142,8 @@ class BitwiseAndMaskForEach:
                             cropped_mask1[j - crop_region1[1], i - crop_region1[0]] = 0
 
                 if overlapped:
-                    item = x[0], cropped_mask1, x[2], x[3], x[4]
+                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label)
                     result.append(item)
-
 
         return (result,)
 
@@ -1071,12 +1151,11 @@ class BitwiseAndMaskForEach:
 class SubtractMaskForEach:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-            {
-                "base_segs": ("SEGS",),
-                "mask_segs": ("SEGS",),
-            }
-        }
+        return {"required": {
+                        "base_segs": ("SEGS",),
+                        "mask_segs": ("SEGS",),
+                    }
+                }
 
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
@@ -1087,13 +1166,13 @@ class SubtractMaskForEach:
 
         result = []
 
-        for x in base_segs:
-            cropped_mask1 = x[1].copy()
-            crop_region1 = x[3]
+        for bseg in base_segs:
+            cropped_mask1 = bseg.cropped_mask.copy()
+            crop_region1 = bseg.crop_region
 
-            for y in mask_segs:
-                cropped_mask2 = y[1]
-                crop_region2 = y[3]
+            for mseg in mask_segs:
+                cropped_mask2 = mseg.cropped_mask
+                crop_region2 = mseg.crop_region
 
                 # compute the intersection of the two crop regions
                 intersect_region = (max(crop_region1[0], crop_region2[0]),
@@ -1116,7 +1195,7 @@ class SubtractMaskForEach:
                             pass
 
                 if changed:
-                    item = x[0], cropped_mask1, x[2], x[3], x[4]
+                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label)
                     result.append(item)
                 else:
                     result.append(base_segs)
@@ -1130,7 +1209,7 @@ class MaskToSEGS:
         return {"required": {
                                 "mask": ("MASK",),
                                 "combined": (["False", "True"], ),
-                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.5, "max": 10, "step": 0.1}),
+                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                              }
                 }
 
@@ -1159,7 +1238,8 @@ class MaskToSEGS:
 
                 if x2 - x1 > 0 and y2 - y1 > 0:
                     cropped_mask = mask[y1:y2, x1:x2]
-                    result.append((None, cropped_mask, 1.0, crop_region, bbox))
+                    item = SEG(None, cropped_mask, 1.0, crop_region, bbox)
+                    result.append(item)
 
         else:
             # label the connected components
@@ -1176,7 +1256,8 @@ class MaskToSEGS:
 
                 if x2 - x1 > 0 and y2 - y1 > 0:
                     cropped_mask = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
-                    result.append((None, cropped_mask, 1.0, crop_region, bbox))
+                    item = SEG(None, cropped_mask, 1.0, crop_region, bbox)
+                    result.append(item)
 
         if not result:
             print(f"[MaskToSEGS] Empty mask.")
@@ -1187,8 +1268,7 @@ class MaskToSEGS:
 class SegmDetectorCombined:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
+        return {"required": {
                         "segm_model": ("SEGM_MODEL", ),
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -1214,8 +1294,7 @@ class SegmDetectorCombined:
 class BboxDetectorCombined(SegmDetectorCombined):
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
+        return {"required": {
                         "bbox_model": ("BBOX_MODEL", ),
                         "image": ("IMAGE", ),
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -1236,11 +1315,10 @@ class BboxDetectorCombined(SegmDetectorCombined):
 class ToBinaryMask:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-            {
-                "mask": ("MASK",),
-            }
-        }
+        return {"required": {
+                      "mask": ("MASK",),
+                    }
+                }
 
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
@@ -1255,12 +1333,11 @@ class ToBinaryMask:
 class BitwiseAndMask:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-            {
-                "mask1": ("MASK",),
-                "mask2": ("MASK",),
-            }
-        }
+        return {"required": {
+                        "mask1": ("MASK",),
+                        "mask2": ("MASK",),
+                    }
+                }
 
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
@@ -1275,8 +1352,7 @@ class BitwiseAndMask:
 class SubtractMask:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
+        return {"required": {
                         "mask1": ("MASK", ),
                         "mask2": ("MASK", ),
                       }
@@ -1294,16 +1370,17 @@ class SubtractMask:
 
 
 import nodes
+
+
 class MaskPainter(nodes.PreviewImage):
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {"images": ("IMAGE", ), },
+        return {"required": {"images": ("IMAGE", ), },
                 "hidden": {
-                    "prompt": "PROMPT", 
-                    "extra_pnginfo": "EXTRA_PNGINFO",
-                    },
-                "optional": { "mask_image": ("IMAGE_PATH", ), },
+                            "prompt": "PROMPT",
+                            "extra_pnginfo": "EXTRA_PNGINFO",
+                            },
+                "optional": {"mask_image": ("IMAGE_PATH", ), },
                 }
     
     RETURN_TYPES = ("MASK", )
@@ -1311,7 +1388,6 @@ class MaskPainter(nodes.PreviewImage):
     FUNCTION = "save_painted_images"
 
     CATEGORY = "ImpactPack"
-
 
     def load_mask(self, imagepath):
         if imagepath['type'] == "temp":
@@ -1328,12 +1404,11 @@ class MaskPainter(nodes.PreviewImage):
                 mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
                 mask = 1. - torch.from_numpy(mask)
             else:
-                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
         else:
-                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
 
         return (mask, )
-    
 
     def save_painted_images(self, images, filename_prefix="impact-mask", 
                             prompt=None, extra_pnginfo=None, mask_image=None):
@@ -1342,7 +1417,7 @@ class MaskPainter(nodes.PreviewImage):
         if mask_image is not None:
             res['result'] = self.load_mask(mask_image)
         else:
-            mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
             res['result'] = (mask, )
 
         return res
@@ -1378,11 +1453,11 @@ NODE_CLASS_MAPPINGS = {
     "MaskPainter": MaskPainter,
 }
 
-
-
+# Expand Server api
 
 import server
 from aiohttp import web
+
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -1410,6 +1485,6 @@ async def upload_image(request):
         with open(filepath, "wb") as f:
             f.write(image.file.read())
         
-        return web.json_response({"name" : filename})
+        return web.json_response({"name": filename})
     else:
         return web.Response(status=400)

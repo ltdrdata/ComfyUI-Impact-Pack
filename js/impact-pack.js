@@ -130,7 +130,7 @@ class ImpactInpaintDialog extends ComfyDialog {
 				type: "button",
 				textContent: "Clear",
 				onclick: () => { 
-          this.maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+          this.maskCtx.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height);
         },
 			}),
 		];
@@ -204,14 +204,55 @@ class ImpactInpaintDialog extends ComfyDialog {
     };
     
     const filepath = this.node.images[0];
-    image.src = `view?filename=${filepath.filename}&type=${filepath.type}`;
+    console.log(this.node);
+    image.src = this.node.imgs[0].src;
     this.image = image;
 
     
     // event handler for user drawing ------
-    let isDrawing = false;
+    let brush_size = 10;
 
-    function draw_move(event) {
+    function mouse_down(event) {
+      if (event.buttons === 1) { 
+        const maskRect = maskCanvas.getBoundingClientRect();
+        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
+        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
+
+        maskCtx.beginPath();
+        maskCtx.fillStyle = "rgb(0,0,0)";
+        maskCtx.globalCompositeOperation = "source-over";
+        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
+        maskCtx.fill();
+      }
+    }
+
+    function mouse_move(event) {
+      if (event.buttons === 1) { 
+        event.preventDefault();
+        const maskRect = maskCanvas.getBoundingClientRect();
+        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
+        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
+
+        maskCtx.beginPath();
+        maskCtx.fillStyle = "rgb(0,0,0)";
+        maskCtx.globalCompositeOperation = "source-over";
+        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
+        maskCtx.fill();
+      }
+      else if(event.buttons === 2) {
+        event.preventDefault();
+        const maskRect = maskCanvas.getBoundingClientRect();
+        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
+        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
+
+        maskCtx.beginPath();
+        maskCtx.globalCompositeOperation = "destination-out";
+        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
+        maskCtx.fill();
+      }
+    }
+
+    function touch_move(event) {
       event.preventDefault();
       const maskRect = maskCanvas.getBoundingClientRect();
       const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
@@ -219,15 +260,26 @@ class ImpactInpaintDialog extends ComfyDialog {
 
       maskCtx.beginPath();
       maskCtx.fillStyle = "rgb(0,0,0)";
-      maskCtx.arc(x, y, 10, 0, Math.PI * 2, false);
+      maskCtx.globalCompositeOperation = "source-over";
+      maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
       maskCtx.fill();
-  }
+    }
 
-    maskCanvas.addEventListener('mousedown', function(event) { event.preventDefault(); isDrawing = true; } );
-    maskCanvas.addEventListener('mousemove', function(event) { if(isDrawing) { draw_move(event); } } );
-    maskCanvas.addEventListener('mouseup', function(event) { isDrawing = false; } );
+    function handleWheelEvent(event) {
 
-    maskCanvas.addEventListener('touchmove', draw_move);
+      if(event.deltaY < 0)
+        brush_size = Math.min(brush_size+2, 100);
+      else
+        brush_size = Math.max(brush_size-2, 1);
+    }
+
+    maskCanvas.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+    maskCanvas.addEventListener('wheel', handleWheelEvent);
+    maskCanvas.addEventListener('mousedown', mouse_down);
+    maskCanvas.addEventListener('mousemove', mouse_move);
+    maskCanvas.addEventListener('touchmove', touch_move);
 	}
 }
 
@@ -238,7 +290,10 @@ app.registerExtension({
         node.addWidget("button", "Edit mask", null, () => {
           this.dlg = new ImpactInpaintDialog(app);
           this.dlg.node = node;
-          this.dlg.show();
+
+          if('images' in node) {
+            this.dlg.show();
+          }
         });
         
         node.addWidget("hidden", "mask_image", null, null);

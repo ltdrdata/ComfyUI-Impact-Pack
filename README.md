@@ -122,6 +122,7 @@
 * When used together, SAMDetector and MaskPainter can be used to enhance specific elements of an image.
 
 # Others Tutorials
+* [Mask Pointer](tutorial/maskpointer.md)
 * [ONNX Tutorial](tutorial/ONNX.md)
 
 
