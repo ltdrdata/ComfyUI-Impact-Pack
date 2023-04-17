@@ -908,11 +908,11 @@ class SAMDetectorCombined:
                 bbox = segs[i].bbox
                 center = center_of_bbox(bbox)
 
-                y1 = max(bbox[0] - bbox_expansion, 0)
-                x1 = max(bbox[1] - bbox_expansion, 0)
-                y2 = max(bbox[2] + bbox_expansion, image.shape[2])
-                x2 = max(bbox[3] + bbox_expansion, image.shape[1])
-
+                x1 = max(bbox[0] - bbox_expansion, 0)
+                y1 = max(bbox[1] - bbox_expansion, 0)
+                x2 = min(bbox[2] + bbox_expansion, image.shape[1])
+                y2 = min(bbox[3] + bbox_expansion, image.shape[0])
+                
                 dilated_bbox = [x1, y1, x2, y2]
 
                 points = []
@@ -953,7 +953,7 @@ class SAMDetectorCombined:
 
                 elif detection_hint == "mask-area":
                     points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1], segs[i].cropped_mask,
-                                                                  mask_hint_threshold, use_negative)
+                                                                       mask_hint_threshold, use_negative)
 
                 detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
                 total_masks += detected_masks
