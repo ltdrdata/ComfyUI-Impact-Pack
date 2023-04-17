@@ -735,10 +735,14 @@ class DetailerForEachTest(DetailerForEach):
             self.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
                            positive, negative, denoise, feather, noise_mask, external_seed)
 
+        # set fallback image
         if cropped is None:
-            return enhanced_img, enhanced_img, enhanced_img,
-        else:
-            return enhanced_img, cropped, cropped_enhanced,
+            cropped = enhanced_img
+
+        if cropped_enhanced is None:
+            cropped_enhanced = enhanced_img
+
+        return enhanced_img, cropped, cropped_enhanced,
 
 class EmptySEGS:
     @classmethod
