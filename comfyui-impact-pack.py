@@ -364,6 +364,22 @@ def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
     return points, plabs
 
 
+def gen_negative_hints(w, h, x1, y1, x2, y2):
+    npoints = []
+    nplabs = []
+
+    # minimum sampling step >= 3
+    y_step = max(3, int(w/20))
+    x_step = max(3, int(h/20))
+    
+    for i in range(10, h-10, y_step):
+        for j in range(10, w-10, x_step):
+            if not (x1-10 <= j and j <= x2+10 and y1-10 <= i and i <= y2+10):
+                npoints.append((j,i))
+                nplabs.append(0)
+    
+    return npoints, nplabs
+
 # Nodes
 # folder_paths.supported_pt_extensions
 folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
@@ -470,7 +486,7 @@ def scale_tensor_and_to_pil(w,h, image):
 
 
 def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
-                   positive, negative, denoise, noise_mask):
+                   positive, negative, denoise, noise_mask, force_inpaint):
 
     h = image.shape[1]
     w = image.shape[2]
@@ -493,10 +509,21 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
     new_w = int(((w * upscale)//64) * 64)
     new_h = int(((h * upscale)//64) * 64)
 
-    if upscale <= 1.0:
-        print(f"Detailer: segment skip [determined upscale factor={upscale}]")
-        return None
-
+    if not force_inpaint:
+        if upscale <= 1.0:
+            print(f"Detailer: segment skip [determined upscale factor={upscale}]")
+            return None
+        
+        if new_w == 0 or new_h == 0:
+            print(f"Detailer: segment skip [zero size={new_w,new_h}]")
+            return None
+    else:
+        if upscale <= 1.0 or new_w == 0 or new_h == 0:
+            print(f"Detailer: force inpaint")
+            upscale = 1.0
+            new_w = w
+            new_h = h
+            
     print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
 
     # upscale
@@ -700,8 +727,8 @@ class DetailerForEach:
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      "noise_mask": (["enabled", "disabled"], ),
+                     "force_inpaint": (["disabled", "enabled"], ),
                      },
-                "optional": {"external_seed": ("SEED", ), }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -711,11 +738,8 @@ class DetailerForEach:
 
     @staticmethod
     def do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-                  positive, negative, denoise, feather, noise_mask, external_seed=None):
-
-        if external_seed is not None:
-            seed = external_seed['seed']
-
+                  positive, negative, denoise, feather, noise_mask, force_inpaint):
+        
         image_pil = tensor2pil(image).convert('RGBA')
 
         for seg in segs:
@@ -731,7 +755,7 @@ class DetailerForEach:
 
             enhanced_pil = enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
                                           seed, steps, cfg, sampler_name, scheduler,
-                                          positive, negative, denoise, cropped_mask)
+                                          positive, negative, denoise, cropped_mask, force_inpaint)
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
@@ -747,29 +771,30 @@ class DetailerForEach:
             return image_tensor, None, None,
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, noise_mask, external_seed=None):
+             positive, negative, denoise, feather, noise_mask, force_inpaint):
 
         enhanced_img, cropped, cropped_enhanced = \
             DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      external_seed)
+                                      force_inpaint)
 
         return (enhanced_img, )
 
 
 class DetailerForEachTest(DetailerForEach):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
+    RETURN_NAMES = ("image","cropped","cropped_refined")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack"
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, noise_mask, external_seed=None):
+             positive, negative, denoise, feather, noise_mask, force_inpaint):
 
         enhanced_img, cropped, cropped_enhanced = \
             DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      external_seed)
+                                      force_inpaint)
 
         # set fallback image
         if cropped is None:
@@ -864,7 +889,7 @@ class SAMDetectorCombined:
                         "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
                         "mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "mask_hint_use_negative": (["False", "True", ], )
+                        "mask_hint_use_negative": (["False", "Small", "Outter"], )
                       }
                 }
 
@@ -883,7 +908,7 @@ class SAMDetectorCombined:
 
         total_masks = []
 
-        use_negative = mask_hint_use_negative == "True"
+        use_small_negative = mask_hint_use_negative == "Small"
 
         if detection_hint == "mask-points":
             points = []
@@ -895,7 +920,7 @@ class SAMDetectorCombined:
                 points.append(center)
 
                 # small point is background, big point is foreground
-                if use_negative and bbox[2]-bbox[0] < 10:
+                if use_small_negative and bbox[2]-bbox[0] < 10:
                     plabs.append(0)
                 else:
                     plabs.append(1)
@@ -953,8 +978,16 @@ class SAMDetectorCombined:
 
                 elif detection_hint == "mask-area":
                     points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1], segs[i].cropped_mask,
-                                                                       mask_hint_threshold, use_negative)
+                                                                       mask_hint_threshold, use_small_negative)
 
+
+                if mask_hint_use_negative == "Outter":
+                    npoints, nplabs = gen_negative_hints(image.shape[0], image.shape[1], 
+                                                         segs[i].crop_region[0], segs[i].crop_region[1], segs[i].crop_region[2], segs[i].crop_region[3])
+                    
+                    points += npoints
+                    plabs += nplabs
+                    
                 detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
                 total_masks += detected_masks
 
@@ -1261,6 +1294,10 @@ class MaskToSEGS:
 
         if not result:
             print(f"[MaskToSEGS] Empty mask.")
+
+        print(f"# of Detected SEGS: {len(result)}")
+        # for r in result:
+        #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
 
         return (result, )
 
