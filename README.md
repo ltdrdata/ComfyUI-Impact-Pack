@@ -28,9 +28,11 @@
 
 # Installation
 
-1. Download 'comfyui-impact-pack.py' 
-2. Copy into 'ComfyUI/custom_nodes'
-3. Restart ComfyUI (additional dependencies will be installed automatically)
+1. cd custom_nodes
+1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git 
+3. cd ComfyUI-Impact-Pack
+4. python install.py
+5. Restart ComfyUI
 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 
@@ -58,30 +60,21 @@
 
 #### 1. Basic auto face detection and refine exapmle.
 ![example](misc/simple.png)
-![example](misc/simple-original.png) ![example](misc/simple-refined-noisemask-disabled.png) ![example](misc/simple-refined-noisemask-enabled.png)
 * The face that has been damaged due to low resolution is restored with high resolution by generating and synthesizing it, in order to restore the details.
-* You can load models for bbox or segm using MMDetLoader. If you load a bbox model, only **BBOX_MODEL** is valid in the output, and if you load a segm model, only **SEGM_MODEL** is valid.
-   * Currently, we are using the more sophisticated SAM model instead of the SEGM_MODEL for silhouette extraction.
+* The FaceDetailer node is a combination of a Detector node for face detection and a Detailer node for image enhancement. See the [Advanced Tutorial](tutorial/advanced.md) for a more detailed explanation.
+* Pass the MMDetLoader 's bbox model and the detection model loaded by SAMLoader to FaceDetailer . Since it performs the function of KSampler for image enhancement, it overlaps with KSampler's options.
+* The MASK output of FaceDetailer provides a visualization of where the detected and enhanced areas are.
 
-* The default downloaded bbox model currently only detects the face area as a rectangle, and the segm model detects the silhouette of a person.
-* The difference between BboxDetectorCombine and BboxDetectorForEach is that the former outputs a single mask by combining all detected bboxes, and the latter outputs SEGS consisting of various information, including the cropped image, mask pattern, crop position, and confidence, for each detection. SEGS can be used in other ...ForEach nodes.
-
-* The "noise_mask" option determines whether to add noise only to the masked area when generating an image using "KSampler". If enabled, denoising will not be applied outside the masked area, which can result in a safer generation with stronger denoising, but it may not always produce good results. The middle image shows the result when the "noise_mask" option is disabled, and the image on the right shows the result when the "noise_mask" option is enabled.
-
-* Detector Node
-    * threshold: Detect only those object whose recognized confidence is above this set value.
-    * dilation: Expand the detected mask area.
-    * crop_factor: Determine how many times the surrounding area should be included in the detail recovery process based on the detected mask area. If this value is small, the restoration may not work well because the surrounding context cannot be known.
-* Detailer Node
-    * guide_size: This feature attempt detail recovery only when the size of the detected mask is smaller than this value. If the size is larger, this feature increase the resolution and attempt detail recovery.
-    * feather: When compositing the recovered details onto the original image, this feature use a gradient to composite it so that the boundaries are not visible. The thickness of this gradient is determined.
-    * This feature adopt the properties of KSampler because this feature use it to recover details.
+![example](misc/simple-original.png) ![example](misc/simple-refined.png)
+* You can see that the face in the image on the left has increased detail as in the image on the right.
 
 #### 2. 2Pass refine (restore a severely damaged face)
-![2pass-workflow-example](misc/2pass.png)
+![2pass-workflow-example](misc/2pass-simple.png)
+* Although two FaceDetailers can be attached together for a 2-pass configuration, various common inputs used in KSampler can be passed through DETAILER_PIPE, so FaceDetailerPipe can be used to configure easily.
+* In 1pass, only rough outline recovery is required, so restore with a reasonable resolution and low options. However, if you increase the dilation at this time, not only the face but also the surrounding parts are included in the recovery range, so it is useful when you need to reshape the face other than the facial part.
+
 ![2pass-example-original](misc/2pass-original.png) ![2pass-example-middle](misc/2pass-1pass.png) ![2pass-example-result](misc/2pass-2pass.png)
 * In the first stage, the severely damaged face is restored to some extent, and in the second stage, the details are restored
-
 
 #### 3. Face Bbox(bounding box) + Person silhouette segmantation (prevent distortion of the background.)
 ![combination-workflow-example](misc/combination.png)
@@ -122,6 +115,7 @@
 * When used together, SAMDetector and MaskPainter can be used to enhance specific elements of an image.
 
 # Others Tutorials
+* [Advanced Tutorial](tutorial/advanced.md)
 * [Mask Pointer](tutorial/maskpointer.md)
 * [ONNX Tutorial](tutorial/ONNX.md)
 

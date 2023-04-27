@@ -1,131 +1,20 @@
-import os, sys, subprocess
-from torchvision.datasets.utils import download_url
-import platform
-import configparser
-import folder_paths
+import os
+import sys
 
+main_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+sys.path.append(os.path.dirname(__file__))
+sys.path.append(main_dir)
 
-# INSTALL
-print("### Loading: ComfyUI-Impact-Pack")
+import impact_config
 
-comfy_path = os.path.dirname(folder_paths.__file__)
-config_path = os.path.join(comfy_path, "custom_nodes", "impact-pack.ini")
-
-js_path = os.path.join(comfy_path, "web", "extensions", "core")
-js_version = 2
-js_url = "https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/Main/js/impact-pack.js"
-
-def read_js_version():
-    try:
-        config = configparser.ConfigParser()
-        config.read(config_path)
-        return int(config['default']['js_version'])
-    except:
-        return 0
-
-def write_js_version():
-    config = configparser.ConfigParser()
-    config['default'] = {
-        'js_version': js_version
-    }
-    with open(config_path, 'w') as configfile:
-        config.write(configfile)
-    
-
-# Download js
-if not os.path.exists(os.path.join(js_path, "impact-pack.js")):
-    download_url(js_url, js_path)
-    write_js_version()
-else:
-    # update js
-    js = read_js_version()
-    if js < js_version:
-        download_url(js_url, js_path)
-        write_js_version()
-
-
-# ----- SETUP --------------------------------------------------------------
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-sys.path.append('../ComfyUI')
-
-
-print("### ComfyUI-Impact-Pack: Check dependencies")
-
-
-def ensure_pip_packages():
-    try:
-        import segment_anything
-    except Exception:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'segment-anything'])
-
-    try:
-        from skimage.measure import label, regionprops
-    except Exception:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scikit-image'])
-
-    try:
-        import onnxruntime
-    except Exception:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'onnxruntime'])
-
-    try:
-        import pycocotools
-    except Exception:
-        if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pycocotools'])
-        else:
-            pycocotools = {
-                (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
-                (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
-                (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
-                (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
-            }
-
-            version = sys.version_info[:2]
-            url = pycocotools[version]
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', url])
-
-
-def ensure_mmdet_package():
-    try:
-        import mmcv
-        import mmdet
-        from mmdet.evaluation import get_classes
-    except Exception:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
-
-ensure_pip_packages()
-ensure_mmdet_package()
-
-# Download model
-print("### ComfyUI-Impact-Pack: Check basic models")
-
-model_path = folder_paths.models_dir
-
-bbox_path = os.path.join(model_path, "mmdets", "bbox")
-#segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
-sam_path = os.path.join(model_path, "sams")
-onnx_path = os.path.join(model_path, "onnx")
-
-if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
-    download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
-
-if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
-    download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
-
-if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
-    download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
-
-if not os.path.exists(onnx_path):
-    print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
-    os.mkdir(onnx_path)
+# ensure dependency
+if impact_config.read_config()[1] < impact_config.dependency_version:
+    import install
 
 # ----- MAIN CODE --------------------------------------------------------------
 
 # Core
+import folder_paths
 import torch
 import cv2
 import mmcv
@@ -133,7 +22,6 @@ import numpy as np
 from mmdet.apis import (inference_detector, init_detector)
 import comfy.samplers
 import comfy.sd
-import nodes
 import warnings
 from PIL import Image, ImageFilter
 from mmdet.evaluation import get_classes
@@ -142,8 +30,11 @@ from collections import namedtuple
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
+model_path = folder_paths.models_dir
+
 SEG = namedtuple("SEG", ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label'],
                  defaults=[None])
+
 
 def load_mmdet(model_path):
     model_config = os.path.splitext(model_path)[0] + ".py"
@@ -377,8 +268,9 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
             if not (x1-10 <= j and j <= x2+10 and y1-10 <= i and i <= y2+10):
                 npoints.append((j,i))
                 nplabs.append(0)
-    
+
     return npoints, nplabs
+
 
 # Nodes
 # folder_paths.supported_pt_extensions
@@ -386,7 +278,7 @@ folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, 
 folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["sams"] = ([os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["onnx"] = ([os.path.join(model_path, "onnx")], set(['.onnx']))
+folder_paths.folder_names_and_paths["onnx"] = ([os.path.join(model_path, "onnx")], {'.onnx'})
 
 
 class NO_BBOX_MODEL:
@@ -501,10 +393,10 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
 
     if guide_size_for == "bbox":
         # Scale up based on the smaller dimension between width and height.
-        upscale = guide_size/min(bbox_w,bbox_h)
+        upscale = guide_size/min(bbox_w, bbox_h)
     else:
         # for cropped_size
-        upscale = guide_size/min(w,h)
+        upscale = guide_size/min(w, h)
 
     new_w = int(((w * upscale)//64) * 64)
     new_h = int(((h * upscale)//64) * 64)
@@ -524,7 +416,7 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
             new_w = w
             new_h = h
             
-    print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w,h} x {upscale} -> {new_w,new_h}")
+    print(f"Detailer: segment upscale for ({bbox_w,bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale
     upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
@@ -734,7 +626,7 @@ class DetailerForEach:
     RETURN_TYPES = ("IMAGE", )
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
     def do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
@@ -781,12 +673,151 @@ class DetailerForEach:
         return (enhanced_img, )
 
 
+class FaceDetailer:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "model": ("MODEL",),
+                     "vae": ("VAE",),
+                     "guide_size": ("FLOAT", {"default": 256, "min": 128, "max": nodes.MAX_RESOLUTION, "step": 64}),
+                     "guide_size_for": (["bbox", "crop_region"],),
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                     "positive": ("CONDITIONING",),
+                     "negative": ("CONDITIONING",),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask": (["enabled", "disabled"], ),
+                     "force_inpaint": (["disabled", "enabled"], ),
+
+                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
+                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+
+                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
+
+                     "bbox_model": ("BBOX_MODEL", ),
+                     },
+                "optional": {
+                    "sam_model_opt": ("SAM_MODEL", ),
+                }}
+
+    RETURN_TYPES = ("IMAGE", "MASK", "DETAILER_PIPE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Simple"
+
+    @staticmethod
+    def enhance(image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather, noise_mask, force_inpaint,
+             bbox_threshold, bbox_dilation, bbox_crop_factor,
+             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative,
+             bbox_model, sam_model_opt=None):
+
+        segs = BboxDetectorForEach.detect(bbox_model, image, bbox_threshold, bbox_dilation, bbox_crop_factor)
+
+        # bbox + sam combination
+        if sam_model_opt is not None:
+            sam_mask = SAMDetectorCombined.make_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
+                                                     sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative,)
+            segs = SegsBitwiseAndMask.operate(segs, sam_mask)
+
+        enhanced_img, _, _ = \
+            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                      force_inpaint)
+
+        # Mask Generator
+        mask = SegsMaskCombine.combine(segs, image)
+
+        return enhanced_img, mask
+
+    def doit(self, image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+             positive, negative, denoise, feather, noise_mask, force_inpaint,
+             bbox_threshold, bbox_dilation, bbox_crop_factor,
+             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative,
+             bbox_model, sam_model_opt=None):
+
+        enhanced_img, mask = FaceDetailer.enhance(
+            image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+            positive, negative, denoise, feather, noise_mask, force_inpaint,
+            bbox_threshold, bbox_dilation, bbox_crop_factor,
+            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+            sam_mask_hint_use_negative,
+            bbox_model, sam_model_opt)
+
+        pipe = (vae, model, vae, positive, negative, bbox_model, sam_model_opt)
+        return enhanced_img, mask, pipe
+
+
+class FaceDetailerPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "detailer_pipe": ("DETAILER_PIPE",),
+                     "guide_size": ("FLOAT", {"default": 256, "min": 128, "max": nodes.MAX_RESOLUTION, "step": 64}),
+                     "guide_size_for": (["bbox", "crop_region"],),
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask": (["enabled", "disabled"], ),
+                     "force_inpaint": (["disabled", "enabled"], ),
+
+                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
+                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+
+                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
+                     },
+                }
+
+    RETURN_TYPES = ("IMAGE", "MASK", "DETAILER_PIPE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Simple"
+
+    def doit(self, image, detailer_pipe, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+             denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
+             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative):
+
+        vae, model, vae, positive, negative, bbox_model, sam_model_opt = detailer_pipe
+
+        enhanced_img, mask = FaceDetailer.enhance(
+            image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+            positive, negative, denoise, feather, noise_mask, force_inpaint,
+            bbox_threshold, bbox_dilation, bbox_crop_factor,
+            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+            sam_mask_hint_use_negative,
+            bbox_model, sam_model_opt)
+
+        return enhanced_img, mask, detailer_pipe
+
+
 class DetailerForEachTest(DetailerForEach):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
     RETURN_NAMES = ("image","cropped","cropped_refined")
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):
@@ -834,7 +865,8 @@ class SegsMaskCombine:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, segs, image):
+    @staticmethod
+    def combine(segs, image):
         h = image.shape[1]
         w = image.shape[2]
 
@@ -845,8 +877,10 @@ class SegsMaskCombine:
             crop_region = seg.crop_region
             mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
 
-        return (torch.from_numpy(mask.astype(np.float32) / 255.0), )
+        return torch.from_numpy(mask.astype(np.float32) / 255.0)
 
+    def doit(self, segs, image):
+        return (SegsMaskCombine.combine(segs, image), )
 
 def sam_predict(predictor, points, plabs, bbox, threshold):
     point_coords = None if not points else np.array(points)
@@ -898,8 +932,9 @@ class SAMDetectorCombined:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, sam_model, segs, image, detection_hint, dilation,
-             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+    @staticmethod
+    def make_mask(sam_model, segs, image, detection_hint, dilation,
+                  threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
         predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
@@ -980,7 +1015,6 @@ class SAMDetectorCombined:
                     points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1], segs[i].cropped_mask,
                                                                        mask_hint_threshold, use_small_negative)
 
-
                 if mask_hint_use_negative == "Outter":
                     npoints, nplabs = gen_negative_hints(image.shape[0], image.shape[1], 
                                                          segs[i].crop_region[0], segs[i].crop_region[1], segs[i].crop_region[2], segs[i].crop_region[3])
@@ -1001,7 +1035,12 @@ class SAMDetectorCombined:
         else:
             mask = torch.zeros((64,64), dtype=torch.float32, device="cpu") # empty mask
 
-        return (mask, )
+        return mask
+
+    def doit(self, sam_model, segs, image, detection_hint, dilation,
+             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+        return (SAMDetectorCombined.make_mask(sam_model, segs, image, detection_hint, dilation,
+                                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative), )
 
 
 class BboxDetectorForEach:
@@ -1021,7 +1060,8 @@ class BboxDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, bbox_model, image, threshold, dilation, crop_factor):
+    @staticmethod
+    def detect(bbox_model, image, threshold, dilation, crop_factor):
         mmdet_results = inference_bbox(bbox_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
 
@@ -1044,7 +1084,10 @@ class BboxDetectorForEach:
             item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
             items.append(item)
 
-        return (items, )
+        return items
+
+    def doit(self, bbox_model, image, threshold, dilation, crop_factor):
+        return (BboxDetectorForEach.detect(bbox_model, image, threshold, dilation, crop_factor), )
 
 
 class SegmDetectorForEach:
@@ -1103,7 +1146,8 @@ class SegsBitwiseAndMask:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, segs, mask):
+    @staticmethod
+    def operate(segs, mask):
         if mask is None:
             print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
             return ([], )
@@ -1124,7 +1168,10 @@ class SegsBitwiseAndMask:
             item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             items.append(item)
 
-        return (items,)
+        return items
+
+    def doit(self, segs, mask):
+        return (SegsBitwiseAndMask.operate(segs, mask), )
 
 
 class BitwiseAndMaskForEach:
@@ -1424,7 +1471,7 @@ class MaskPainter(nodes.PreviewImage):
     
     FUNCTION = "save_painted_images"
 
-    CATEGORY = "ImpactPack"
+    CATEGORY = "ImpactPack/Util"
 
     def load_mask(self, imagepath):
         if imagepath['type'] == "temp":
@@ -1477,6 +1524,9 @@ NODE_CLASS_MAPPINGS = {
     "BboxDetectorCombined": BboxDetectorCombined,
     "SegmDetectorCombined": SegmDetectorCombined,
     "SAMDetectorCombined": SAMDetectorCombined,
+
+    "FaceDetailer": FaceDetailer,
+    "FaceDetailerPipe": FaceDetailerPipe,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,

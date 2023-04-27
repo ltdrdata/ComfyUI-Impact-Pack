@@ -204,7 +204,6 @@ class ImpactInpaintDialog extends ComfyDialog {
     };
     
     const filepath = this.node.images[0];
-    console.log(this.node);
     image.src = this.node.imgs[0].src;
     this.image = image;
 
