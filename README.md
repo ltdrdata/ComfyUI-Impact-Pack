@@ -29,7 +29,7 @@
 # Installation
 
 1. cd custom_nodes
-1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git 
+1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git
 3. cd ComfyUI-Impact-Pack
 4. python install.py
 5. Restart ComfyUI
@@ -42,6 +42,7 @@
    * openmim
    * segment-anything
    * pycocotools
+   * onnxruntime
    
 * mim install
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
