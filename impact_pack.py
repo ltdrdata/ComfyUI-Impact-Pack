@@ -198,7 +198,7 @@ def inference_segm_old(model, image, conf_threshold):
     return results
 
 
-def inference_segm(image, modelname, conf_thres, label):
+def inference_segm(image, modelname, conf_thres, lab="A"):
     image = image.numpy()[0] * 255
     mmdet_results = inference_detector(modelname, image).pred_instances
     bboxes = mmdet_results.bboxes.numpy()
@@ -214,7 +214,7 @@ def inference_segm(image, modelname, conf_thres, label):
     filter_inds = np.where(mmdet_results.scores > conf_thres)[0]
     results = [[], [], [], []]
     for i in filter_inds:
-        results[0].append(label + "-" + classes[labels[i]])
+        results[0].append(lab + "-" + classes[labels[i]])
         results[1].append(bboxes[i])
         results[2].append(segms[i])
         results[3].append(scores[i])
