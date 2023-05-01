@@ -14,6 +14,25 @@ if impact_config.read_config()[1] < impact_config.dependency_version:
 # ----- MAIN CODE --------------------------------------------------------------
 
 # Core
+# recheck dependencies for colab
+try:
+    import folder_paths
+    import torch
+    import cv2
+    import mmcv
+    import numpy as np
+    from mmdet.apis import (inference_detector, init_detector)
+    import comfy.samplers
+    import comfy.sd
+    import warnings
+    from PIL import Image, ImageFilter
+    from mmdet.evaluation import get_classes
+    from skimage.measure import label, regionprops
+    from collections import namedtuple
+except:
+    print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
+    import install
+
 import folder_paths
 import torch
 import cv2
