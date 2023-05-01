@@ -31,7 +31,8 @@
 1. cd custom_nodes
 1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git
 3. cd ComfyUI-Impact-Pack
-4. python install.py
+4. (optional) python install.py
+   * Impact Pack will automatically install its dependencies during its initial launch.
 5. Restart ComfyUI
 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.

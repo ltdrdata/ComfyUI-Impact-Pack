@@ -6,6 +6,7 @@ import subprocess
 comfy_path = '../..'
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
+sys.path.append('.')   # for portable version
 sys.path.append(comfy_path)
 
 
@@ -35,6 +36,7 @@ def remove_olds():
 
 def ensure_pip_packages():
     try:
+        import cv2
         import segment_anything
         from skimage.measure import label, regionprops
         import onnxruntime
