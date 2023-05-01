@@ -717,7 +717,7 @@ class FaceDetailer:
                      "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
                      "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
 
-                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
                      "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
                      "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
@@ -800,7 +800,7 @@ class FaceDetailerPipe:
                      "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
                      "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
 
-                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
                      "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
                      "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
@@ -937,7 +937,8 @@ class SAMDetectorCombined:
                         "sam_model": ("SAM_MODEL", ),
                         "segs": ("SEGS", ),
                         "image": ("IMAGE", ),
-                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "none"],),
+                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area",
+                                            "mask-points", "mask-point-bbox", "none"],),
                         "dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
                         "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
@@ -1029,6 +1030,11 @@ class SAMDetectorCombined:
                     points.append((x1 + x_gap, y1 + y_gap*2))
                     points.append((x1 + x_gap*2, y1 + y_gap*2))
                     plabs = [1, 1, 1, 1]
+
+                elif detection_hint == "mask-point-bbox":
+                    center = center_of_bbox(segs[i].bbox)
+                    points.append(center)
+                    plabs = [1]
 
                 elif detection_hint == "mask-area":
                     points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1], segs[i].cropped_mask,
