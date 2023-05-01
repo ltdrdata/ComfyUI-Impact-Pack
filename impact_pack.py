@@ -1391,7 +1391,7 @@ class SegmDetectorCombined:
     CATEGORY = "ImpactPack/Detector"
 
     def doit(self, segm_model, image, threshold, dilation):
-        mmdet_results = inference_segm(segm_model, image, threshold)
+        mmdet_results = inference_segm_old(segm_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
         if dilation > 0:
             segmasks = dilate_masks(segmasks, dilation)
