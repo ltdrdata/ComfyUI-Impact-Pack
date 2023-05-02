@@ -1,6 +1,8 @@
 import configparser
 import os
 
+version = "V2.0"
+
 dependency_version = 1
 
 my_path = os.path.dirname(__file__)

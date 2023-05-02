@@ -1,0 +1,748 @@
+import os
+import sys
+import mmcv
+from mmdet.apis import (inference_detector, init_detector)
+from mmdet.evaluation import get_classes
+from segment_anything import SamPredictor
+import cv2
+
+from impact_utils import *
+from collections import namedtuple
+import numpy as np
+from skimage.measure import label, regionprops
+
+main_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+sys.path.append(os.path.dirname(__file__))
+sys.path.append(main_dir)
+
+import nodes
+import onnx
+import comfy_extras.nodes_upscale_model as model_upscale
+
+SEG = namedtuple("SEG", ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label'],
+                 defaults=[None])
+
+
+class NO_BBOX_DETECTOR:
+    pass
+
+
+class NO_SEGM_DETECTOR:
+    pass
+
+
+def load_mmdet(model_path):
+    model_config = os.path.splitext(model_path)[0] + ".py"
+    model = init_detector(model_config, model_path, device="cpu")
+    return model
+
+
+def create_segmasks(results):
+    bboxs = results[1]
+    segms = results[2]
+    confidence = results[3]
+
+    results = []
+    for i in range(len(segms)):
+        item = (bboxs[i], segms[i].astype(np.float32), confidence[i])
+        results.append(item)
+    return results
+
+
+def inference_segm_old(model, image, conf_threshold):
+    image = image.numpy()[0] * 255
+    mmdet_results = inference_detector(model, image)
+
+    bbox_results, segm_results = mmdet_results
+    label = "A"
+
+    classes = get_classes("coco")
+    labels = [
+        np.full(bbox.shape[0], i, dtype=np.int32)
+        for i, bbox in enumerate(bbox_results)
+    ]
+    n, m = bbox_results[0].shape
+    if n == 0:
+        return [[], [], []]
+    labels = np.concatenate(labels)
+    bboxes = np.vstack(bbox_results)
+    segms = mmcv.concat_list(segm_results)
+    filter_idxs = np.where(bboxes[:, -1] > conf_threshold)[0]
+    results = [[], [], []]
+    for i in filter_idxs:
+        results[0].append(label + "-" + classes[labels[i]])
+        results[1].append(bboxes[i])
+        results[2].append(segms[i])
+
+    return results
+
+
+def inference_segm(image, modelname, conf_thres, lab="A"):
+    image = image.numpy()[0] * 255
+    mmdet_results = inference_detector(modelname, image).pred_instances
+    bboxes = mmdet_results.bboxes.numpy()
+    segms = mmdet_results.masks.numpy()
+    scores = mmdet_results.scores.numpy()
+
+    classes = get_classes("coco")
+
+    n, m = bboxes.shape
+    if n == 0:
+        return [[], [], [], []]
+    labels = mmdet_results.labels
+    filter_inds = np.where(mmdet_results.scores > conf_thres)[0]
+    results = [[], [], [], []]
+    for i in filter_inds:
+        results[0].append(lab + "-" + classes[labels[i]])
+        results[1].append(bboxes[i])
+        results[2].append(segms[i])
+        results[3].append(scores[i])
+
+    return results
+
+
+def inference_bbox(modelname, image, conf_threshold):
+    image = image.numpy()[0] * 255
+    label = "A"
+    output = inference_detector(modelname, image).pred_instances
+    cv2_image = np.array(image)
+    cv2_image = cv2_image[:, :, ::-1].copy()
+    cv2_gray = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2GRAY)
+
+    segms = []
+    for x0, y0, x1, y1 in output.bboxes:
+        cv2_mask = np.zeros(cv2_gray.shape, np.uint8)
+        cv2.rectangle(cv2_mask, (int(x0), int(y0)), (int(x1), int(y1)), 255, -1)
+        cv2_mask_bool = cv2_mask.astype(bool)
+        segms.append(cv2_mask_bool)
+
+    n, m = output.bboxes.shape
+    if n == 0:
+        return [[], [], [], []]
+
+    bboxes = output.bboxes.numpy()
+    scores = output.scores.numpy()
+    filter_idxs = np.where(scores > conf_threshold)[0]
+    results = [[], [], [], []]
+    for i in filter_idxs:
+        results[0].append(label)
+        results[1].append(bboxes[i])
+        results[2].append(segms[i])
+        results[3].append(scores[i])
+
+    return results
+
+
+def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
+    points = []
+    plabs = []
+
+    # minimum sampling step >= 3
+    y_step = max(3, int(mask.shape[0]/20))
+    x_step = max(3, int(mask.shape[1]/20))
+    
+    for i in range(0, len(mask), y_step):
+        for j in range(0, len(mask[i]), x_step):
+            if mask[i][j] > threshold:
+                points.append((x+j, y+i))
+                plabs.append(1)
+            elif use_negative and mask[i][j] == 0:
+                points.append((x+j, y+i))
+                plabs.append(0)
+    
+    return points, plabs
+
+
+def gen_negative_hints(w, h, x1, y1, x2, y2):
+    npoints = []
+    nplabs = []
+
+    # minimum sampling step >= 3
+    y_step = max(3, int(w/20))
+    x_step = max(3, int(h/20))
+    
+    for i in range(10, h-10, y_step):
+        for j in range(10, w-10, x_step):
+            if not (x1-10 <= j and j <= x2+10 and y1-10 <= i and i <= y2+10):
+                npoints.append((j, i))
+                nplabs.append(0)
+
+    return npoints, nplabs
+
+
+def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
+                   positive, negative, denoise, noise_mask, force_inpaint):
+    h = image.shape[1]
+    w = image.shape[2]
+
+    bbox_h = bbox[3] - bbox[1]
+    bbox_w = bbox[2] - bbox[0]
+
+    # Skip processing if the detected bbox is already larger than the guide_size
+    if bbox_h >= guide_size and bbox_w >= guide_size:
+        print(f"Detailer: segment skip")
+        None
+
+    if guide_size_for == "bbox":
+        # Scale up based on the smaller dimension between width and height.
+        upscale = guide_size / min(bbox_w, bbox_h)
+    else:
+        # for cropped_size
+        upscale = guide_size / min(w, h)
+
+    new_w = int(((w * upscale) // 8) * 8)
+    new_h = int(((h * upscale) // 8) * 8)
+
+    if not force_inpaint:
+        if upscale <= 1.0:
+            print(f"Detailer: segment skip [determined upscale factor={upscale}]")
+            return None
+
+        if new_w == 0 or new_h == 0:
+            print(f"Detailer: segment skip [zero size={new_w, new_h}]")
+            return None
+    else:
+        if upscale <= 1.0 or new_w == 0 or new_h == 0:
+            print(f"Detailer: force inpaint")
+            upscale = 1.0
+            new_w = w
+            new_h = h
+
+    print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
+
+    # upscale
+    upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
+
+    # ksampler
+    latent_image = to_latent_image(upscaled_image, vae)
+
+    if noise_mask is not None:
+        # upscale the mask tensor by a factor of 2 using bilinear interpolation
+        noise_mask = torch.from_numpy(noise_mask)
+        upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
+                                                        mode='bilinear', align_corners=False)
+
+        # remove the extra dimensions added by unsqueeze
+        upscaled_mask = upscaled_mask.squeeze().squeeze()
+        latent_image['noise_mask'] = upscaled_mask
+
+    sampler = nodes.KSampler()
+    refined_latent = sampler.sample(model, seed, steps, cfg, sampler_name, scheduler,
+                                    positive, negative, latent_image, denoise)
+    refined_latent = refined_latent[0]
+
+    # non-latent downscale - latent downscale cause bad quality
+    refined_image = vae.decode(refined_latent['samples'])
+
+    # downscale
+    refined_image = scale_tensor_and_to_pil(w, h, refined_image)
+
+    # don't convert to latent - latent break image
+    # preserving pil is much better
+    return refined_image
+
+
+def composite_to(dest_latent, crop_region, src_latent):
+    x1 = crop_region[0]
+    y1 = crop_region[1]
+
+    # composite to original latent
+    lc = nodes.LatentComposite()
+
+    # 현재 mask 를 고려한 composite 가 없음... 이거 처리 필요.
+
+    orig_image = lc.composite(dest_latent, src_latent, x1, y1)
+
+    return orig_image[0]
+
+
+def sam_predict(predictor, points, plabs, bbox, threshold):
+    point_coords = None if not points else np.array(points)
+    point_labels = None if not plabs else np.array(plabs)
+
+    box = np.array([bbox]) if bbox is not None else None
+
+    cur_masks, scores, _ = predictor.predict(point_coords=point_coords, point_labels=point_labels, box=box)
+
+    total_masks = []
+
+    selected = False
+    max_score = 0
+    for idx in range(len(scores)):
+        if scores[idx] > max_score:
+            max_score = scores[idx]
+            max_mask = cur_masks[idx]
+
+        if scores[idx] >= threshold:
+            selected = True
+            total_masks.append(cur_masks[idx])
+        else:
+            pass
+
+    if not selected:
+        total_masks.append(max_mask)
+
+    return total_masks
+
+
+def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
+              threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+    predictor = SamPredictor(sam_model)
+    image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+
+    predictor.set_image(image, "RGB")
+
+    total_masks = []
+
+    use_small_negative = mask_hint_use_negative == "Small"
+
+    # seg_shape = segs[0]
+    segs = segs[1]
+    if detection_hint == "mask-points":
+        points = []
+        plabs = []
+
+        for i in range(len(segs)):
+            bbox = segs[i].bbox
+            center = center_of_bbox(segs[i].bbox)
+            points.append(center)
+
+            # small point is background, big point is foreground
+            if use_small_negative and bbox[2] - bbox[0] < 10:
+                plabs.append(0)
+            else:
+                plabs.append(1)
+
+        detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+        total_masks += detected_masks
+
+    else:
+        for i in range(len(segs)):
+            bbox = segs[i].bbox
+            center = center_of_bbox(bbox)
+
+            x1 = max(bbox[0] - bbox_expansion, 0)
+            y1 = max(bbox[1] - bbox_expansion, 0)
+            x2 = min(bbox[2] + bbox_expansion, image.shape[1])
+            y2 = min(bbox[3] + bbox_expansion, image.shape[0])
+
+            dilated_bbox = [x1, y1, x2, y2]
+
+            points = []
+            plabs = []
+            if detection_hint == "center-1":
+                points.append(center)
+                plabs = [1]  # 1 = foreground point, 0 = background point
+
+            elif detection_hint == "horizontal-2":
+                gap = (x2 - x1) / 3
+                points.append((x1 + gap, center[1]))
+                points.append((x1 + gap * 2, center[1]))
+                plabs = [1, 1]
+
+            elif detection_hint == "vertical-2":
+                gap = (y2 - y1) / 3
+                points.append((center[0], y1 + gap))
+                points.append((center[0], y1 + gap * 2))
+                plabs = [1, 1]
+
+            elif detection_hint == "rect-4":
+                x_gap = (x2 - x1) / 3
+                y_gap = (y2 - y1) / 3
+                points.append((x1 + x_gap, center[1]))
+                points.append((x1 + x_gap * 2, center[1]))
+                points.append((center[0], y1 + y_gap))
+                points.append((center[0], y1 + y_gap * 2))
+                plabs = [1, 1, 1, 1]
+
+            elif detection_hint == "diamond-4":
+                x_gap = (x2 - x1) / 3
+                y_gap = (y2 - y1) / 3
+                points.append((x1 + x_gap, y1 + y_gap))
+                points.append((x1 + x_gap * 2, y1 + y_gap))
+                points.append((x1 + x_gap, y1 + y_gap * 2))
+                points.append((x1 + x_gap * 2, y1 + y_gap * 2))
+                plabs = [1, 1, 1, 1]
+
+            elif detection_hint == "mask-point-bbox":
+                center = center_of_bbox(segs[i].bbox)
+                points.append(center)
+                plabs = [1]
+
+            elif detection_hint == "mask-area":
+                points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1],
+                                                                   segs[i].cropped_mask,
+                                                                   mask_hint_threshold, use_small_negative)
+
+            if mask_hint_use_negative == "Outter":
+                npoints, nplabs = gen_negative_hints(image.shape[0], image.shape[1],
+                                                     segs[i].crop_region[0], segs[i].crop_region[1],
+                                                     segs[i].crop_region[2], segs[i].crop_region[3])
+
+                points += npoints
+                plabs += nplabs
+
+            detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+            total_masks += detected_masks
+
+    # merge every collected masks
+    mask = combine_masks2(total_masks)
+
+    if mask is not None:
+        mask = mask.float()
+        mask = dilate_mask(mask.numpy(), dilation)
+        mask = torch.from_numpy(mask)
+    else:
+        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+
+    return mask
+
+
+def segs_bitwise_and_mask(segs, mask):
+    if mask is None:
+        print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
+        return ([], )
+
+    items = []
+
+    mask = (mask.numpy() * 255).astype(np.uint8)
+
+    for seg in segs[1]:
+        cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
+        crop_region = seg.crop_region
+
+        cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
+
+        new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
+        new_mask = new_mask.astype(np.float32) / 255.0
+
+        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+        items.append(item)
+
+    return segs[0], items
+
+
+class BBoxDetector:
+    bbox_model = None
+
+    def __init__(self, bbox_model):
+        self.bbox_model = bbox_model
+
+    def detect(self, image, threshold, dilation, crop_factor):
+        mmdet_results = inference_bbox(self.bbox_model, image, threshold)
+        segmasks = create_segmasks(mmdet_results)
+
+        if dilation > 0:
+            segmasks = dilate_masks(segmasks, dilation)
+
+        items = []
+        h = image.shape[1]
+        w = image.shape[2]
+        for x in segmasks:
+            item_bbox = x[0]
+            item_mask = x[1]
+
+            crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+            cropped_image = crop_image(image, crop_region)
+            cropped_mask = crop_ndarray2(item_mask, crop_region)
+            confidence = x[2]
+            # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
+
+            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+            items.append(item)
+
+        shape = image.shape[1],image.shape[2]
+        return shape, items
+
+    def detect_combined(self, image, threshold, dilation):
+        mmdet_results = inference_bbox(self.bbox_model, image, threshold)
+        segmasks = create_segmasks(mmdet_results)
+        if dilation > 0:
+            segmasks = dilate_masks(segmasks, dilation)
+
+        return combine_masks(segmasks)
+
+    def setAux(self, x):
+        pass
+
+
+class ONNXDetector(BBoxDetector):
+    onnx_model = None
+
+    def __init__(self, onnx_model):
+        self.onnx_model = onnx_model
+
+    def detect(self, image, threshold, dilation, crop_factor):
+        h = image.shape[1]
+        w = image.shape[2]
+
+        labels, scores, boxes = onnx.onnx_inference(image, self.onnx_model)
+
+        # collect feasible item
+        result = []
+
+        for i in range(len(labels)):
+            if scores[i] > threshold:
+                item_bbox = boxes[i]
+                x1, y1, x2, y2 = item_bbox
+
+                crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
+
+                # prepare cropped mask
+                cropped_mask = np.zeros((crop_y2-crop_y1,crop_x2-crop_x1))
+                inner_mask = np.ones((y2-y1,x2-x1))
+                cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
+
+                # make items
+                item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox)
+                result.append(item)
+
+        shape = h, w
+        return shape, result
+
+    def detect_combined(self, image, threshold, dilation):
+        return segs_to_combined_mask(self.detect(image, threshold, dilation, 1))
+
+    def setAux(self, x):
+        pass
+
+
+class SegmDetector(BBoxDetector):
+    segm_model = None
+
+    def __init__(self, segm_model):
+        self.segm_model = segm_model
+
+    def detect(self, image, threshold, dilation, crop_factor):
+        mmdet_results = inference_segm(image, self.segm_model, threshold)
+        segmasks = create_segmasks(mmdet_results)
+
+        if dilation > 0:
+            segmasks = dilate_masks(segmasks, dilation)
+
+        items = []
+        h = image.shape[1]
+        w = image.shape[2]
+        for x in segmasks:
+            item_bbox = x[0]
+            item_mask = x[1]
+
+            crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+            cropped_image = crop_image(image, crop_region)
+            cropped_mask = crop_ndarray2(item_mask, crop_region)
+            confidence = x[2]
+
+            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+            items.append(item)
+
+        return image.shape, items
+
+    def detect_combined(self, image, threshold, dilation):
+        mmdet_results = inference_bbox(self.bbox_model, image, threshold)
+        segmasks = create_segmasks(mmdet_results)
+        if dilation > 0:
+            segmasks = dilate_masks(segmasks, dilation)
+
+        return combine_masks(segmasks)
+
+    def setAux(self, x):
+        pass
+
+
+def mask_to_segs(mask, combined, crop_factor, bbox_fill):
+    if mask is None:
+        print("[mask_to_segs] Cannot operate: MASK is empty.")
+        return ([], )
+
+    mask = mask.numpy()
+
+    result = []
+    if combined == "True":
+        # Find the indices of the non-zero elements
+        indices = np.nonzero(mask)
+
+        if len(indices[0]) > 0 and len(indices[1]) > 0:
+            # Determine the bounding box of the non-zero elements
+            bbox = np.min(indices[1]), np.min(indices[0]), np.max(indices[1]), np.max(indices[0])
+            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+            x1, y1, x2, y2 = crop_region
+
+            if x2 - x1 > 0 and y2 - y1 > 0:
+                cropped_mask = mask[y1:y2, x1:x2]
+                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
+                result.append(item)
+
+    else:
+        # label the connected components
+        labelled_mask = label(mask)
+
+        # get the region properties for each connected component
+        regions = regionprops(labelled_mask)
+
+        # iterate over the regions and print their bounding boxes
+        for region in regions:
+            y1, x1, y2, x2 = region.bbox
+            bbox = x1, y1, x2, y2
+            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+
+            if x2 - x1 > 0 and y2 - y1 > 0:
+                cropped_mask = np.array(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
+
+                if bbox_fill:
+                    cropped_mask.fill(1.0)
+
+                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
+
+                result.append(item)
+
+    if not result:
+        print(f"[mask_to_segs] Empty mask.")
+
+    print(f"# of Detected SEGS: {len(result)}")
+    # for r in result:
+    #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
+
+    return mask.shape, result
+
+
+def segs_to_combined_mask(segs):
+    shape = segs[0]
+    h = shape[0]
+    w = shape[1]
+
+    mask = np.zeros((h, w), dtype=np.uint8)
+
+    for seg in segs[1]:
+        cropped_mask = seg.cropped_mask
+        crop_region = seg.crop_region
+        mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
+
+    return torch.from_numpy(mask.astype(np.float32) / 255.0)
+
+
+def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae):
+    pixels = nodes.VAEDecode().decode(vae, samples)[0]
+    new_w = max(8, (w//8)*8)
+    new_h = max(8, (h//8)*8)
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)
+    return nodes.VAEEncode().encode(vae, pixels[0])[0]
+
+
+def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae):
+    pixels = nodes.VAEDecode().decode(vae, samples)[0]
+    w = pixels.shape[2] * scale_factor
+    h = pixels.shape[1] * scale_factor
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(w), int(h), False)
+    return nodes.VAEEncode().encode(vae, pixels[0])[0]
+
+
+def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae):
+    pixels = nodes.VAEDecode().decode(vae, samples)[0]
+    w = pixels.shape[2]
+
+    # upscale by model upscaler
+    current_w = w
+    while current_w < new_w:
+        pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
+        current_w = pixels.shape[2]
+
+    # downscale to target scale
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)
+    return nodes.VAEEncode().encode(vae, pixels[0])[0]
+
+
+def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae):
+    pixels = nodes.VAEDecode().decode(vae, samples)[0]
+    w = pixels.shape[2]
+    h = pixels.shape[1]
+
+    new_w = w * scale_factor
+    new_h = h * scale_factor
+
+    # upscale by model upscaler
+    current_w = w
+    while current_w < new_w:
+        pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
+        current_w = pixels.shape[2]
+
+    # downscale to target scale
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)
+    return nodes.VAEEncode().encode(vae, pixels[0])[0]
+
+
+class PixelKSampleUpscaler:
+    params = None
+    upscale_model = None
+
+    def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt=None):
+        self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
+        self.upscale_model = upscale_model_opt
+
+    def upscale(self, samples, upscale_factor):
+        scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+
+        if self.upscale_model is None:
+            upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae)
+        else:
+            upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae)
+
+        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
+                                                 positive, negative, upscaled_latent, denoise)
+        return refined_latent
+
+    def upscale_shape(self, samples, w, h):
+        scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+
+        if self.upscale_model is None:
+            upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae)
+        else:
+            upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae)
+
+        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
+                                                 positive, negative, upscaled_latent, denoise)
+        return refined_latent[0]
+
+try:
+    class BBoxDetectorBasedOnCLIPSeg(BBoxDetector):
+        prompt = None
+        blur = None
+        threshold = None
+        dilation_factor = None
+        aux = None
+
+        def __init__(self, prompt, blur, threshold, dilation_factor):
+            self.prompt = prompt
+            self.blur = blur
+            self.threshold = threshold
+            self.dilation_factor = dilation_factor
+
+        def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor):
+            mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
+            segs = mask_to_segs(mask, False, bbox_crop_factor, True)
+            return segs
+
+        def detect_combined(self, image, bbox_threshold, bbox_dilation):
+            from custom_nodes.clipseg import CLIPSeg
+
+            if self.threshold is None:
+                threshold = bbox_threshold
+            else:
+                threshold = self.threshold
+
+            if self.dilation_factor is None:
+                dilation_factor = bbox_dilation
+            else:
+                dilation_factor = self.dilation_factor
+
+            prompt = self.aux if self.prompt == '' and self.aux is not None else self.prompt
+
+            mask, _, _ = CLIPSeg().segment_image(image, prompt, self.blur, threshold, dilation_factor)
+            mask = to_binary_mask(mask)
+            return mask
+
+        def setAux(self, x):
+            self.aux = x
+
+except:
+    pass
