@@ -22,7 +22,6 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * ONNX Detector (SEGS) - Using the ONNX model, identify the bbox and retrieve the SEGS from the input image
 * Detailer (SEGS) - Refine image rely on SEGS.
 * DetailerDebug (SEGS) - Refine image rely on SEGS. Additionally, you can monitor cropped image and refined image of cropped image.
-   * The 'DetailerForEach' and 'DetailerForEachDebug' now support an 'external_seed' that is obtained from the Seed node on the [WAS suite](https://github.com/WASasquatch/was-node-suite-comfyui)
    * To prevent the regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node
 * MASK to SEGS - This node generates SEGS based on the mask. 
 * ToBinaryMask - This node separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
