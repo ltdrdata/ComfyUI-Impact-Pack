@@ -358,6 +358,89 @@ class LatentPixelScale:
         return (latent,)
 
 
+MAX_RESOLUTION=8192
+
+class PixelTiledKSampleUpscalerProvider:
+    upscale_methods = ["nearest-exact", "bilinear", "area"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "scale_method": (s.upscale_methods,),
+                    "model": ("MODEL",),
+                    "vae": ("VAE",),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "positive": ("CONDITIONING", ),
+                    "negative": ("CONDITIONING", ),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    },
+                "optional": {
+                        "upscale_model_opt": ("UPSCALE_MODEL", ),
+                    }
+                }
+
+    RETURN_TYPES = ("UPSCALER",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt=None):
+        try:
+            import custom_nodes.ComfyUI_TiledKSampler.nodes
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt)
+            return (upscaler, )
+        except Exception as e:
+            print("[ERROR] PixelTiledKSampleUpscalerProvider: BlenderNeko/ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+            print(f"\t{e}")
+            pass
+
+
+class PixelTiledKSampleUpscalerProviderPipe:
+    upscale_methods = ["nearest-exact", "bilinear", "area"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "scale_method": (s.upscale_methods,),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    "basic_pipe": ("BASIC_PIPE",) },
+                "optional": {
+                        "upscale_model_opt": ("UPSCALE_MODEL", ),
+                    }
+                }
+
+    RETURN_TYPES = ("UPSCALER",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, concurrent_tiles, basic_pipe, upscale_model_opt=None):
+        try:
+            import custom_nodes.ComfyUI_TiledKSampler.nodes
+            model, _, vae, positive, negative = basic_pipe
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt)
+            return (upscaler, )
+        except Exception as e:
+            print("[ERROR] PixelTiledKSampleUpscalerProvider: BlenderNeko/ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+            print(f"\t{e}")
+            pass
+
+
 class PixelKSampleUpscalerProvider:
     upscale_methods = ["nearest-exact", "bilinear", "area"]
 

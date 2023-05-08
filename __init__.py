@@ -89,6 +89,8 @@ NODE_CLASS_MAPPINGS = {
     "PixelKSampleUpscalerProviderPipe": PixelKSampleUpscalerProviderPipe,
     "IterativeLatentUpscale": IterativeLatentUpscale,
     "IterativeImageUpscale": IterativeImageUpscale,
+    "PixelTiledKSampleUpscalerProvider": PixelTiledKSampleUpscalerProvider,
+    "PixelTiledKSampleUpscalerProviderPipe": PixelTiledKSampleUpscalerProviderPipe,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
