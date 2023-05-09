@@ -511,7 +511,8 @@ class IterativeLatentUpscale:
                      "samples": ("LATENT", ),
                      "upscale_factor": ("FLOAT", {"default": 1.5, "min": 1, "max": 10000, "step": 0.1}),
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
-                     "upscaler": ("UPSCALER",),
+                     "temp_prefix": ("STRING", {"default": ""}),
+                     "upscaler": ("UPSCALER",)
                 }}
 
     RETURN_TYPES = ("LATENT",)
@@ -520,9 +521,12 @@ class IterativeLatentUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, samples, upscale_factor, steps, upscaler):
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler):
         w = samples['samples'].shape[3]*8  # image width
         h = samples['samples'].shape[2]*8  # image height
+
+        if temp_prefix == "":
+            temp_prefix = None
 
         upscale_factor_unit = max(0, (upscale_factor-1.0)/steps)
         current_latent = samples
@@ -532,13 +536,13 @@ class IterativeLatentUpscale:
             new_w = (w*scale//8)*8
             new_h = (h*scale//8)*8
             print(f"IterativeLatentUpscale[{i+1}/{steps}]: {new_w}x{new_h} (scale:{scale:.2f}) ")
-            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h)
+            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h, temp_prefix)
 
         if scale < upscale_factor:
             new_w = (w*upscale_factor//8)*8
             new_h = (h*upscale_factor//8)*8
             print(f"IterativeLatentUpscale[Final]: {new_w}x{new_h} (scale:{upscale_factor:.2f}) ")
-            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h)
+            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h, temp_prefix)
 
         return (current_latent, )
 
@@ -550,6 +554,7 @@ class IterativeImageUpscale:
                      "pixels": ("IMAGE", ),
                      "upscale_factor": ("FLOAT", {"default": 1.5, "min": 1, "max": 10000, "step": 0.1}),
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
+                     "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
                      "vae": ("VAE",),
                 }}
@@ -560,10 +565,22 @@ class IterativeImageUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, pixels, upscale_factor, steps, upscaler, vae):
-        latent = nodes.VAEEncode().encode(vae, pixels)[0]
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, upscaler)
-        pixels = nodes.VAEDecode().decode(vae, refined_latent[0])[0]
+    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae):
+        if temp_prefix == "":
+            temp_prefix = None
+
+        if upscaler.is_tiled:
+            latent = nodes.VAEEncodeTiled().encode(vae, pixels)[0]
+        else:
+            latent = nodes.VAEEncode().encode(vae, pixels)[0]
+
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, upscaler, temp_prefix)
+
+        if upscaler.is_tiled:
+            pixels = nodes.VAEDecodeTiled().decode(vae, refined_latent[0])[0]
+        else:
+            pixels = nodes.VAEDecode().decode(vae, refined_latent[0])[0]
+
         return (pixels, )
 
 
