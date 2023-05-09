@@ -574,7 +574,7 @@ class IterativeImageUpscale:
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, upscaler, temp_prefix)
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler)
 
         if upscaler.is_tiled:
             pixels = nodes.VAEDecodeTiled().decode(vae, refined_latent[0])[0]
