@@ -528,6 +528,7 @@ class PixelKSampleUpscalerProvider:
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "use_tiled_vae": (["disabled", "enabled"],),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -540,8 +541,10 @@ class PixelKSampleUpscalerProvider:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt=None, pk_hook_opt=None):
-        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt, pk_hook_opt)
+    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+             use_tiled_vae, upscale_model_opt=None, pk_hook_opt=None):
+        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
+                                             positive, negative, denoise, use_tiled_vae == "enabled", upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 
@@ -558,6 +561,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "use_tiled_vae": (["enabled", "disabled"],),
                     "basic_pipe": ("BASIC_PIPE",)
                     },
                 "optional": {
@@ -567,13 +571,15 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                 }
 
     RETURN_TYPES = ("UPSCALER",)
-    FUNCTION = "doit"
+    FUNCTION = "doit_pipe"
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
+    def doit_pipe(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise,
+                  use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
         model, _, vae, positive, negative = basic_pipe
-        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt, pk_hook_opt)
+        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
+                                             positive, negative, denoise, use_tiled_vae == "enabled", upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 

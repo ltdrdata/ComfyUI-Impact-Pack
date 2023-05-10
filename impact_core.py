@@ -816,10 +816,12 @@ class PixelKSampleUpscaler:
     hook = None
     is_tiled = False
 
-    def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt=None, hook_opt=None):
+    def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+                 use_tiled_vae, upscale_model_opt=None, hook_opt=None):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
         self.upscale_model = upscale_model_opt
         self.hook = hook_opt
+        self.use_tiled_vae = use_tiled_vae
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -829,6 +831,7 @@ class PixelKSampleUpscaler:
 
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
+                                                            use_tile=self.use_tiled_vae,
                                                             save_temp_prefix=save_temp_prefix, hook=self.hook)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
@@ -850,9 +853,11 @@ class PixelKSampleUpscaler:
 
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
+                                                                  use_tile=self.use_tiled_vae,
                                                                   save_temp_prefix=save_temp_prefix, hook=self.hook)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
+                                                                             use_tile=self.use_tiled_vae,
                                                                              save_temp_prefix=save_temp_prefix, hook=self.hook)
 
         if self.hook is not None:
@@ -893,7 +898,7 @@ try:
 
             #print(f"steps={steps}, start_at_step={start_at_step}, end_at_step={end_at_step}")
             refined_latent = TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, concurrent_tiles, steps, cfg, sampler_name, scheduler,
-                                                                        positive, negative, latent, start_at_step, end_at_step, "disable")
+                                                            positive, negative, latent, start_at_step, end_at_step, "disable")
             
             return refined_latent
 
