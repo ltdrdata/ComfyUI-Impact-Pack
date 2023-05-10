@@ -40,6 +40,12 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * Similar to 'Latent Scale (on Pixel Space)', if upscale_model_opt is provided, it performs pixel upscaling using the model.
 * PixelTiledKSampleUpscalerProvider - It is similar to PixelKSampleUpscalerProvider, but it uses ComfyUI_TiledKSampler and Tiled VAE Decoder/Encoder to avoid GPU VRAM issues at high resolutions.
   * You need to install the [ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
+
+* DenoiseScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the denoise to target_denoise as the step progresses.
+* CfgScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the cfg to target_cfg as the step progresses.
+* PixelKSampleHookCombine - This is used to connect two PK_HOOKs. hook1 is executed first and then hook2 is executed.
+  * If you want to simultaneously change cfg and denoise, you can combine the PK_HOOKs of CfgScheduleHookProvider and PixelKSampleHookCombine.
+
 * Iterative Upscale (Latent) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. 
 This takes latent as input and outputs latent as the result.
 * Iterative Upscale (Image) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. This takes image as input and outputs image as the result.
@@ -75,7 +81,11 @@ This takes latent as input and outputs latent as the result.
    
 * mim install
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
-   
+
+* linux packages (ubuntu)
+  * libgl1-mesa-glx
+  * libglib2.0-0
+
 # Other Materials (auto-download on initial startup)
 
 * ComfyUI/models/mmdets/bbox <= https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth
@@ -136,6 +146,7 @@ This takes latent as input and outputs latent as the result.
 * [ONNX Tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ONNX.md)
 * [CLIPSeg Tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/clipseg.md)
 * [Extreme Highresolution Upscale](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/extreme-upscale.md)
+* [PK_HOOK](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/pk_hook.md)
 
 
 # Credits

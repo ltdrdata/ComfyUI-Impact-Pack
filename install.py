@@ -39,7 +39,6 @@ def ensure_pip_packages():
         import cv2
         import segment_anything
         from skimage.measure import label, regionprops
-        import onnxruntime
     except Exception:
         my_path = os.path.dirname(__file__)
         requirements_path = os.path.join(my_path, "requirements.txt")

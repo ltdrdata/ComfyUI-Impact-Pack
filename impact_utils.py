@@ -168,8 +168,8 @@ def crop_image(image, crop_region):
 
 
 def to_latent_image(pixels, vae):
-    x = (pixels.shape[1] // 8) * 8
-    y = (pixels.shape[2] // 8) * 8
+    x = pixels.shape[1]
+    y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
         pixels = pixels[:, :x, :y, :]
     t = vae.encode(pixels[:, :, :, :3])

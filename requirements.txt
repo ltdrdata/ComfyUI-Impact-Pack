@@ -1,5 +1,4 @@
 openmim
 segment-anything
 scikit-image
-onnxruntime
 opencv-python

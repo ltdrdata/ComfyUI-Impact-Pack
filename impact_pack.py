@@ -80,7 +80,7 @@ class CLIPSegDetectorProvider:
             import custom_nodes.clipseg
             return (core.BBoxDetectorBasedOnCLIPSeg(text, blur, threshold, dilation_factor), )
         except Exception as e:
-            print("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install ComfyUI-CLIPSeg extension to use this node.")
+            print("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
             print(f"\t{e}")
             pass
 
@@ -358,7 +358,74 @@ class LatentPixelScale:
         return (latent,)
 
 
-MAX_RESOLUTION=8192
+MAX_RESOLUTION = 8192
+
+class CfgScheduleHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_iteration": (s.schedules,),
+                     "target_cfg": ("FLOAT", {"default": 3.0, "min": 0.0, "max": 100.0}),
+                    },
+                }
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, schedule_for_iteration, target_cfg):
+        hook = None
+        if schedule_for_iteration == "simple":
+            hook = core.SimpleCfgScheduleHook(target_cfg)
+
+        return (hook, )
+
+
+class DenoiseScheduleHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_iteration": (s.schedules,),
+                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0}),
+                    },
+                }
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, schedule_for_iteration, target_denoise):
+        hook = None
+        if schedule_for_iteration == "simple":
+            hook = core.SimpleDenoiseScheduleHook(target_denoise)
+
+        return (hook, )
+
+
+class PixelKSampleHookCombine:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "hook1": ("PK_HOOK",),
+                     "hook2": ("PK_HOOK",),
+                    },
+                }
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, hook1, hook2):
+        hook = core.PixelKSampleHookCombine(hook1, hook2)
+        return (hook, )
+
 
 class PixelTiledKSampleUpscalerProvider:
     upscale_methods = ["nearest-exact", "bilinear", "area"]
@@ -383,6 +450,7 @@ class PixelTiledKSampleUpscalerProvider:
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_opt": ("PK_HOOK", ),
                     }
                 }
 
@@ -391,13 +459,13 @@ class PixelTiledKSampleUpscalerProvider:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt=None):
+    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt=None, pk_hook_opt=None):
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt, pk_hook_opt)
             return (upscaler, )
         except Exception as e:
-            print("[ERROR] PixelTiledKSampleUpscalerProvider: BlenderNeko/ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+            print("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
             print(f"\t{e}")
             pass
 
@@ -418,9 +486,11 @@ class PixelTiledKSampleUpscalerProviderPipe:
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
-                    "basic_pipe": ("BASIC_PIPE",) },
+                    "basic_pipe": ("BASIC_PIPE",)
+                    },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_opt": ("PK_HOOK", ),
                     }
                 }
 
@@ -429,14 +499,14 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, concurrent_tiles, basic_pipe, upscale_model_opt=None):
+    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, concurrent_tiles, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
             model, _, vae, positive, negative = basic_pipe
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt, pk_hook_opt)
             return (upscaler, )
         except Exception as e:
-            print("[ERROR] PixelTiledKSampleUpscalerProvider: BlenderNeko/ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+            print("[ERROR] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
             print(f"\t{e}")
             pass
 
@@ -461,6 +531,7 @@ class PixelKSampleUpscalerProvider:
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_opt": ("PK_HOOK", ),
                     }
                 }
 
@@ -469,8 +540,8 @@ class PixelKSampleUpscalerProvider:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt=None):
-        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt)
+    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt=None, pk_hook_opt=None):
+        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 
@@ -487,9 +558,11 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "basic_pipe": ("BASIC_PIPE",) },
+                    "basic_pipe": ("BASIC_PIPE",)
+                    },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_opt": ("PK_HOOK", ),
                     }
                 }
 
@@ -498,9 +571,9 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe, upscale_model_opt=None):
+    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
         model, _, vae, positive, negative = basic_pipe
-        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt)
+        upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 
@@ -531,18 +604,21 @@ class IterativeLatentUpscale:
         upscale_factor_unit = max(0, (upscale_factor-1.0)/steps)
         current_latent = samples
         scale = 1
+
         for i in range(steps-1):
             scale += upscale_factor_unit
-            new_w = (w*scale//8)*8
-            new_h = (h*scale//8)*8
+            new_w = w*scale
+            new_h = h*scale
             print(f"IterativeLatentUpscale[{i+1}/{steps}]: {new_w}x{new_h} (scale:{scale:.2f}) ")
-            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h, temp_prefix)
+            step_info = i, steps
+            current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
 
         if scale < upscale_factor:
-            new_w = (w*upscale_factor//8)*8
-            new_h = (h*upscale_factor//8)*8
+            new_w = w*upscale_factor
+            new_h = h*upscale_factor
             print(f"IterativeLatentUpscale[Final]: {new_w}x{new_h} (scale:{upscale_factor:.2f}) ")
-            current_latent = upscaler.upscale_shape(current_latent, new_w, new_h, temp_prefix)
+            step_info = steps, steps
+            current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
 
         return (current_latent, )
 

@@ -92,6 +92,10 @@ NODE_CLASS_MAPPINGS = {
     "PixelTiledKSampleUpscalerProvider": PixelTiledKSampleUpscalerProvider,
     "PixelTiledKSampleUpscalerProviderPipe": PixelTiledKSampleUpscalerProviderPipe,
 
+    "PixelKSampleHookCombine": PixelKSampleHookCombine,
+    "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
+    "CfgScheduleHookProvider": CfgScheduleHookProvider,
+
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
     "Segs & Mask": SegsBitwiseAndMask,
