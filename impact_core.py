@@ -710,8 +710,8 @@ class SimpleCfgScheduleHook(PixelKSampleHook):
         self.target_cfg = target_cfg
     
     def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise):
-        progress = 1.0 - self.cur_step/self.total_step
-        gap = self.target_cfg-cfg
+        progress = self.cur_step/self.total_step
+        gap = self.target_cfg - cfg
         current_cfg = cfg + gap*progress
         return model, seed, steps, current_cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise
 
@@ -724,7 +724,7 @@ class SimpleDenoiseScheduleHook(PixelKSampleHook):
         self.target_denoise = target_denoise
 
     def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise):
-        progress = 1.0 - self.cur_step / self.total_step
+        progress = self.cur_step / self.total_step
         gap = self.target_denoise - denoise
         current_denoise = denoise + gap * progress
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, current_denoise
