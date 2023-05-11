@@ -296,6 +296,8 @@ class TwoSamplersForMask:
         new_latent_image['noise_mask'] = mask
         new_latent_image = mask_sampler.sample(new_latent_image)[0]
 
+        del new_latent_image['noise_mask']
+
         return (new_latent_image, )
 
 
