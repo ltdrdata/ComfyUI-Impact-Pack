@@ -97,7 +97,15 @@ class SAMLoader:
 
     def load_model(self, model_name):
         modelname = folder_paths.get_full_path("sams", model_name)
-        sam = sam_model_registry["vit_b"](checkpoint=modelname)
+
+        if 'vit_h' in model_name:
+            model_kind = 'vit_h'
+        elif 'vit_l' in model_name:
+            model_kind = 'vit_l'
+        else:
+            model_kind = 'vit_b'
+
+        sam = sam_model_registry[model_kind](checkpoint=modelname)
         print(f"Loads SAM model: {modelname}")
         return (sam, )
 
