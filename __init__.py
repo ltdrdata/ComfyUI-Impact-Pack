@@ -114,6 +114,9 @@ NODE_CLASS_MAPPINGS = {
     "SegmDetectorCombined": SegmDetectorCombined,
     "SegsToCombinedMask": SegsToCombinedMask,
 
+    "KSamplerProvider": KSamplerProvider,
+    "TwoSamplersForMask": TwoSamplersForMask,
+
     "MMDetLoader": legacy_nodes.MMDetLoader,
     "SegsMaskCombine": legacy_nodes.SegsMaskCombine,
     "BboxDetectorForEach": legacy_nodes.BboxDetectorForEach,

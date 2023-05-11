@@ -649,6 +649,17 @@ def vae_encode(vae, pixels, use_tile, hook):
     return samples
 
 
+class KSamplerWrapper:
+    params = None
+
+    def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise):
+        self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
+
+    def sample(self, latent_image):
+        model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+        return nodes.common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise)
+
+
 class PixelKSampleHook:
     cur_step = 0
     total_step = 0

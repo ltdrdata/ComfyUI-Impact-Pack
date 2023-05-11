@@ -51,6 +51,10 @@ This takes latent as input and outputs latent as the result.
 * Iterative Upscale (Image) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. This takes image as input and outputs image as the result.
   * Internally, this node uses 'Iterative Upscale (Latent)'.
 
+* TwoSamplersForMask - This node can apply two samplers depending on the mask area. The base_sampler is applied to the area where the mask is 0, while the mask_sampler is applied to the area where the mask is 1.
+  * Note: The latent encoded through VAEEncodeForInpaint cannot be used.
+* KSamplerProvider - This is a wrapper that enables KSampler to be used in TwoSamplersForMask.
+
 # Depercated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.
    * MMDetLoader -> MMDetDetectorProvider

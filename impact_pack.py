@@ -238,6 +238,59 @@ class DetailerForEachPipe:
         return (enhanced_img, )
 
 
+class KSamplerProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "basic_pipe": ("BASIC_PIPE", )
+                    }}
+
+    RETURN_TYPES = ("KSAMPLER",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Sampler"
+
+    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe):
+        model, _, _, positive, negative = basic_pipe
+        sampler = core.KSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
+        return (sampler, )
+
+
+class TwoSamplersForMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "latent_image": ("LATENT", ),
+                     "base_sampler": ("KSAMPLER", ),
+                     "mask_sampler": ("KSAMPLER", ),
+                     "mask": ("MASK", )
+                     },
+                }
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Sampler"
+
+    def doit(self, latent_image, base_sampler, mask_sampler, mask):
+        inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
+
+        latent_image['noise_mask'] = inv_mask
+        new_latent_image = base_sampler.sample(latent_image)[0]
+
+        new_latent_image['noise_mask'] = mask
+        new_latent_image = mask_sampler.sample(new_latent_image)[0]
+
+        return (new_latent_image, )
+
+
 class FaceDetailer:
     @classmethod
     def INPUT_TYPES(s):
