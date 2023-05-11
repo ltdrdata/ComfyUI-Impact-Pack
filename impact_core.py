@@ -559,7 +559,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill):
         print("[mask_to_segs] Cannot operate: MASK is empty.")
         return ([], )
 
-    mask = mask.numpy()
+    mask = mask.cpu().numpy()
 
     result = []
     if combined == "True":
