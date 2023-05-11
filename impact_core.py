@@ -388,7 +388,7 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
 
     if mask is not None:
         mask = mask.float()
-        mask = dilate_mask(mask.numpy(), dilation)
+        mask = dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
     else:
         mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
@@ -403,7 +403,7 @@ def segs_bitwise_and_mask(segs, mask):
 
     items = []
 
-    mask = (mask.numpy() * 255).astype(np.uint8)
+    mask = (mask.cpu().numpy() * 255).astype(np.uint8)
 
     for seg in segs[1]:
         cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
