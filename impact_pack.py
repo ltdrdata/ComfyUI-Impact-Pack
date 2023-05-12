@@ -182,7 +182,7 @@ class DetailerForEach:
 
             enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
                                           seed, steps, cfg, sampler_name, scheduler,
-                                          positive, negative, denoise, cropped_mask, force_inpaint)
+                                          positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
