@@ -2,7 +2,8 @@ import folder_paths
 import impact_core as core
 from impact_utils import *
 from impact_core import SEG
-
+import nodes
+import os
 
 class NO_BBOX_MODEL:
     pass
@@ -201,3 +202,54 @@ class SegsMaskCombine:
 
     def doit(self, segs, image):
         return (SegsMaskCombine.combine(segs, image), )
+
+
+class MaskPainter(nodes.PreviewImage):
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"images": ("IMAGE",), },
+                "hidden": {
+                    "prompt": "PROMPT",
+                    "extra_pnginfo": "EXTRA_PNGINFO",
+                },
+                "optional": {"mask_image": ("IMAGE_PATH",), },
+                }
+
+    RETURN_TYPES = ("MASK",)
+
+    FUNCTION = "save_painted_images"
+
+    CATEGORY = "ImpactPack/Legacy"
+
+    def load_mask(self, imagepath):
+        if imagepath['type'] == "temp":
+            input_dir = folder_paths.get_temp_directory()
+        else:
+            input_dir = folder_paths.get_input_directory()
+
+        image_path = os.path.join(input_dir, imagepath['filename'])
+
+        if os.path.exists(image_path):
+            i = Image.open(image_path)
+
+            if 'A' in i.getbands():
+                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                mask = 1. - torch.from_numpy(mask)
+            else:
+                mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
+        else:
+            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
+
+        return (mask,)
+
+    def save_painted_images(self, images, filename_prefix="impact-mask",
+                            prompt=None, extra_pnginfo=None, mask_image=None):
+        res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
+
+        if mask_image is not None:
+            res['result'] = self.load_mask(mask_image)
+        else:
+            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
+            res['result'] = (mask,)
+
+        return res

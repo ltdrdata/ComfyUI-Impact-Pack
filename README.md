@@ -53,7 +53,12 @@ This takes latent as input and outputs latent as the result.
 
 * TwoSamplersForMask - This node can apply two samplers depending on the mask area. The base_sampler is applied to the area where the mask is 0, while the mask_sampler is applied to the area where the mask is 1.
   * Note: The latent encoded through VAEEncodeForInpaint cannot be used.
-* KSamplerProvider - This is a wrapper that enables KSampler to be used in TwoSamplersForMask.
+* KSamplerProvider - This is a wrapper that enables KSampler to be used in TwoSamplersForMask TwoSamplersForMaskUpscalerProvider.
+* TiledKSamplerProvider - ComfyUI_TiledKSampler is a wrapper that provides KSAMPLER.
+  * You need to install the [ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
+  
+* TwoSamplersForMaskUpscalerProvider - This is an Upscaler that extends TwoSamplersForMask to be used in Iterative Upscale.
+  * TwoSamplersForMaskUpscalerProviderPipe - pipe version of TwoSamplersForMaskUpscalerProvider.
 
 # Depercated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.

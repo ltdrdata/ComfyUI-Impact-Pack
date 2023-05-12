@@ -91,6 +91,8 @@ NODE_CLASS_MAPPINGS = {
     "IterativeImageUpscale": IterativeImageUpscale,
     "PixelTiledKSampleUpscalerProvider": PixelTiledKSampleUpscalerProvider,
     "PixelTiledKSampleUpscalerProviderPipe": PixelTiledKSampleUpscalerProviderPipe,
+    "TwoSamplersForMaskUpscalerProvider": TwoSamplersForMaskUpscalerProvider,
+    "TwoSamplersForMaskUpscalerProviderPipe": TwoSamplersForMaskUpscalerProviderPipe,
 
     "PixelKSampleHookCombine": PixelKSampleHookCombine,
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
@@ -104,8 +106,6 @@ NODE_CLASS_MAPPINGS = {
     "MaskToSEGS": MaskToSEGS,
     "ToBinaryMask": ToBinaryMask,
 
-    "MaskPainter": MaskPainter,
-
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
     "ONNXDetectorSEGS": ONNXDetectorForEach,
@@ -116,7 +116,11 @@ NODE_CLASS_MAPPINGS = {
 
     "KSamplerProvider": KSamplerProvider,
     "TwoSamplersForMask": TwoSamplersForMask,
+    "TiledKSamplerProvider": TiledKSamplerProvider,
 
+    #"PreviewBridge": PreviewBridge,
+
+    "MaskPainter": legacy_nodes.MaskPainter,
     "MMDetLoader": legacy_nodes.MMDetLoader,
     "SegsMaskCombine": legacy_nodes.SegsMaskCombine,
     "BboxDetectorForEach": legacy_nodes.BboxDetectorForEach,
@@ -154,6 +158,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "IterativeLatentUpscale": "Iterative Upscale (Latent)",
     "IterativeImageUpscale": "Iterative Upscale (Image)",
 
+    "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
+    "TwoSamplersForMaskUpscalerProviderPipe": "TwoSamplersForMask Upscaler Provider (pipe)",
+
+    "MaskPainter": "MaskPainter (Legacy)",
     "MMDetLoader": "MMDetLoader (Legacy)",
     "SegsMaskCombine": "SegsMaskCombine (Legacy)",
     "BboxDetectorForEach": "BboxDetectorForEach (Legacy)",

@@ -73,7 +73,7 @@ def ensure_mmdet_package():
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
         subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
         subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.2'])
+        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.3'])
 
 
 def install():

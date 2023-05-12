@@ -377,16 +377,15 @@ class FaceDetailer:
     def doit(self, image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
-             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative,
-             bbox_detector, sam_model_opt=None):
+             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+             sam_mask_hint_use_negative, bbox_detector, sam_model_opt=None):
 
         enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
             image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative,
-            bbox_detector, sam_model_opt)
+            sam_mask_hint_use_negative, bbox_detector, sam_model_opt)
 
         pipe = (model, vae, positive, negative, bbox_detector, sam_model_opt)
         return enhanced_img, cropped_enhanced, mask, pipe
@@ -488,6 +487,35 @@ class PixelKSampleHookCombine:
     def doit(self, hook1, hook2):
         hook = core.PixelKSampleHookCombine(hook1, hook2)
         return (hook, )
+
+
+class TiledKSamplerProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    "basic_pipe": ("BASIC_PIPE", )
+                    }}
+
+    RETURN_TYPES = ("KSAMPLER",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Sampler"
+
+    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise,
+             tile_width, tile_height, concurrent_tiles, basic_pipe):
+        model, _, _, positive, negative = basic_pipe
+        sampler = core.TiledKSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+                                            tile_width, tile_height, concurrent_tiles)
+        return (sampler, )
 
 
 class PixelTiledKSampleUpscalerProvider:
@@ -624,7 +652,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "use_tiled_vae": (["enabled", "disabled"],),
+                    "use_tiled_vae": (["disabled", "enabled"],),
                     "basic_pipe": ("BASIC_PIPE",)
                     },
                 "optional": {
@@ -643,6 +671,89 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
         model, _, vae, positive, negative = basic_pipe
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
                                              positive, negative, denoise, use_tiled_vae == "enabled", upscale_model_opt, pk_hook_opt)
+        return (upscaler, )
+
+
+class TwoSamplersForMaskUpscalerProvider:
+    upscale_methods = ["nearest-exact", "bilinear", "area"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "scale_method": (s.upscale_methods,),
+                     "full_sample_schedule": (
+                         ["none", "interleave1", "interleave2", "interleave3",
+                          "last1", "last2",
+                          "interleave1+last1", "interleave2+last1", "interleave3+last1",
+                          ],),
+                     "use_tiled_vae": (["disabled", "enabled"],),
+                     "base_sampler": ("KSAMPLER", ),
+                     "mask_sampler": ("KSAMPLER", ),
+                     "mask": ("MASK", ),
+                     "vae": ("VAE",),
+                     },
+                "optional": {
+                        "full_sampler_opt": ("KSAMPLER",),
+                        "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_base_opt": ("PK_HOOK", ),
+                        "pk_hook_mask_opt": ("PK_HOOK", ),
+                        "pk_hook_full_opt": ("PK_HOOK", ),
+                    }
+                }
+
+    RETURN_TYPES = ("UPSCALER", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae,
+             full_sampler_opt=None, upscale_model_opt=None,
+             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
+        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae == "enabled",
+                                                   base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
+                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
+        return (upscaler, )
+
+
+class TwoSamplersForMaskUpscalerProviderPipe:
+    upscale_methods = ["nearest-exact", "bilinear", "area"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "scale_method": (s.upscale_methods,),
+                     "full_sample_schedule": (
+                         ["none", "interleave1", "interleave2", "interleave3",
+                          "last1", "last2",
+                          "interleave1+last1", "interleave2+last1", "interleave3+last1",
+                          ],),
+                     "use_tiled_vae": (["disabled", "enabled"],),
+                     "base_sampler": ("KSAMPLER", ),
+                     "mask_sampler": ("KSAMPLER", ),
+                     "mask": ("MASK", ),
+                     "basic_pipe": ("BASIC_PIPE",),
+                     },
+                "optional": {
+                        "full_sampler_opt": ("KSAMPLER",),
+                        "upscale_model_opt": ("UPSCALE_MODEL", ),
+                        "pk_hook_base_opt": ("PK_HOOK", ),
+                        "pk_hook_mask_opt": ("PK_HOOK", ),
+                        "pk_hook_full_opt": ("PK_HOOK", ),
+                    }
+                }
+
+    RETURN_TYPES = ("UPSCALER", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, basic_pipe,
+             full_sampler_opt=None, upscale_model_opt=None,
+             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
+        _, _, vae, _, _ = basic_pipe
+        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae == "enabled",
+                                                   base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
+                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
         return (upscaler, )
 
 
@@ -678,14 +789,14 @@ class IterativeLatentUpscale:
             scale += upscale_factor_unit
             new_w = w*scale
             new_h = h*scale
-            print(f"IterativeLatentUpscale[{i+1}/{steps}]: {new_w}x{new_h} (scale:{scale:.2f}) ")
+            print(f"IterativeLatentUpscale[{i+1}/{steps}]: {new_w:.1f}x{new_h:.1f} (scale:{scale:.2f}) ")
             step_info = i, steps
             current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
 
         if scale < upscale_factor:
             new_w = w*upscale_factor
             new_h = h*upscale_factor
-            print(f"IterativeLatentUpscale[Final]: {new_w}x{new_h} (scale:{upscale_factor:.2f}) ")
+            print(f"IterativeLatentUpscale[Final]: {new_w:.1f}x{new_h:.1f} (scale:{upscale_factor:.2f}) ")
             step_info = steps, steps
             current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
 
@@ -1070,57 +1181,34 @@ class SubtractMask:
         return (mask,)
 
 
-
 import nodes
 
-
-class MaskPainter(nodes.PreviewImage):
+class PreviewBridge(nodes.PreviewImage):
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"images": ("IMAGE", ), },
-                "hidden": {
-                            "prompt": "PROMPT",
-                            "extra_pnginfo": "EXTRA_PNGINFO",
-                            },
-                "optional": {"mask_image": ("IMAGE_PATH", ), },
+        return {"required": {"images": ("IMAGE",), },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", },
                 }
-    
-    RETURN_TYPES = ("MASK", )
-    
-    FUNCTION = "save_painted_images"
+
+    RETURN_TYPES = ("IMAGE", "MASK", )
+
+    FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
-    def load_mask(self, imagepath):
-        if imagepath['type'] == "temp":
-            input_dir = folder_paths.get_temp_directory()
-        else:
-            input_dir = folder_paths.get_input_directory()
-
-        image_path = os.path.join(input_dir, imagepath['filename'])
-
-        if os.path.exists(image_path):
-            i = Image.open(image_path)
-            
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-        else:
-            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-
-        return (mask, )
-
-    def save_painted_images(self, images, filename_prefix="impact-mask", 
-                            prompt=None, extra_pnginfo=None, mask_image=None):
+    def doit(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
         res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
 
-        if mask_image is not None:
-            res['result'] = self.load_mask(mask_image)
+        item = res['ui']['images'][0]
+
+        if not item['filename'].endswith(']'):
+            filepath = f"{item['filename']} [{item['type']}]"
         else:
-            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-            res['result'] = (mask, )
+            filepath = item['filename']
+
+        image, mask = nodes.LoadImage().load_image(filepath)
+
+        res['result'] = (image, mask, )
 
         return res
 
@@ -1175,7 +1263,7 @@ class DetailerForEach:
 
             enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
                                                seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint)
+                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
