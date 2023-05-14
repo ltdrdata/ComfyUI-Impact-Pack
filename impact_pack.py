@@ -3,6 +3,7 @@ import folder_paths
 import comfy.samplers
 import comfy.sd
 import warnings
+import re
 from segment_anything import sam_model_registry
 
 from impact_utils import *
@@ -1188,6 +1189,7 @@ class PreviewBridge(nodes.PreviewImage):
     def INPUT_TYPES(s):
         return {"required": {"images": ("IMAGE",), },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", },
+                "optional": {"image": (["#placeholder"], )},
                 }
 
     RETURN_TYPES = ("IMAGE", "MASK", )
@@ -1196,21 +1198,46 @@ class PreviewBridge(nodes.PreviewImage):
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
-        res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
+    def doit(self, images, image, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        if image == "#placeholder" or image['image_hash'] != id(images):
+            # new input image
+            res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
 
-        item = res['ui']['images'][0]
+            item = res['ui']['images'][0]
 
-        if not item['filename'].endswith(']'):
-            filepath = f"{item['filename']} [{item['type']}]"
+            if not item['filename'].endswith(']'):
+                filepath = f"{item['filename']} [{item['type']}]"
+            else:
+                filepath = item['filename']
+
+            image, mask = nodes.LoadImage().load_image(filepath)
+
+            res['ui']['aux'] = [id(images), res['ui']['images']]
+            res['result'] = (image, mask, )
+
+            return res
+
         else:
-            filepath = item['filename']
+            # new mask
+            forward = {'filename': image['forward_filename'],
+                       'subfolder': image['forward_subfolder'],
+                       'type': image['forward_type'], }
 
-        image, mask = nodes.LoadImage().load_image(filepath)
+            res = {'ui': {'images': [forward]}}
 
-        res['result'] = (image, mask, )
+            imgpath = ""
+            if 'subfolder' in image and image['subfolder'] != "":
+                imgpath = image['subfolder'] + "/"
 
-        return res
+            imgpath += f"{image['filename']}"
+
+            if 'type' in image and image['type'] != "":
+                imgpath += f" [{image['type']}]"
+
+            res['ui']['aux'] = [id(images), [forward]]
+            res['result'] = nodes.LoadImage().load_image(imgpath)
+
+            return res
 
 
 class DetailerForEach:

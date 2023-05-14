@@ -60,6 +60,8 @@ This takes latent as input and outputs latent as the result.
 * TwoSamplersForMaskUpscalerProvider - This is an Upscaler that extends TwoSamplersForMask to be used in Iterative Upscale.
   * TwoSamplersForMaskUpscalerProviderPipe - pipe version of TwoSamplersForMaskUpscalerProvider.
 
+* PreviewBridge - This custom node can be used with a bridge when using the MaskEditor feature of Clipspace.
+
 # Depercated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.
    * MMDetLoader -> MMDetDetectorProvider
@@ -68,6 +70,7 @@ This takes latent as input and outputs latent as the result.
    * SegmDetectorForEach -> SEGM Detector (SEGS)
    * BboxDetectorCombined -> BBOX Detector (combined)
    * SegmDetectorCombined -> SEGM Detector (combined)
+   * MaskPainter -> PreviewBridge
 
 # Installation
 
@@ -156,6 +159,7 @@ This takes latent as input and outputs latent as the result.
 * [CLIPSeg Tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/clipseg.md)
 * [Extreme Highresolution Upscale](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/extreme-upscale.md)
 * [PK_HOOK](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/pk_hook.md)
+
 
 
 # Credits

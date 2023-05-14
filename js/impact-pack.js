@@ -1,5 +1,6 @@
 import { app } from "/scripts/app.js";
 import { ComfyDialog, $el } from "/scripts/ui.js";
+import { api } from "/scripts/api.js";
 
 // Helper function to convert a data URL to a Blob object
 function dataURLToBlob(dataURL) {
@@ -76,32 +77,6 @@ class ImpactInpaintDialog extends ComfyDialog {
 
           const dataURL = this.backupCanvas.toDataURL();
           const blob = dataURLToBlob(dataURL);
-
-          /*
-          // copy image data
-          backupCtx.globalCompositeOperation = 'copy';
-          backupCtx.globalAlpha = 1.0;
-          backupCtx.drawImage(this.image, 0, 0);
-          backupCtx.globalCompositeOperation = 'source-over';
-
-          const backupData2 = backupCtx.getImageData(0, 0, this.backupCanvas.width, this.backupCanvas.height);
-
-          // restore alpha channel
-          var cnt_r = 0;
-          for (let i = 0; i < backupData2.data.length; i += 4) {
-            if(backupData2.data[i] == 0) {
-              cnt_r++;
-            }
-
-            backupData2.data[i + 3] = backupData.data[i + 3];
-          }
-          
-          // I don't know why RGB channel is effected by this code....
-          backupCtx.putImageData(backupData2, 0, 0);
-
-          const dataURL2 = this.backupCanvas.toDataURL();
-          const blob2 = dataURLToBlob(dataURL2);
-          */
 
           const formData = new FormData();
           const filename = "impact-mask-" + performance.now() + ".png";
@@ -282,20 +257,102 @@ class ImpactInpaintDialog extends ComfyDialog {
 	}
 }
 
-app.registerExtension({
-    name: "Comfy.Impack",
-    nodeCreated(node, app) {
-      if(node.comfyClass == "MaskPainter") { 
-        node.addWidget("button", "Edit mask", null, () => {
-          this.dlg = new ImpactInpaintDialog(app);
-          this.dlg.node = node;
+const input_tracking = {};
+const input_dirty = {};
+const output_tracking = {};
 
-          if('images' in node) {
-            this.dlg.show();
-          }
-        });
-        
-        node.addWidget("hidden", "mask_image", null, null);
-      }
-    }
+function executeHandler(event) {
+	if(event.detail.output.aux){
+		const id = event.detail.node;
+		if(input_tracking.hasOwnProperty(id)) {
+			console.log(input_tracking[id]);
+			if(input_tracking.hasOwnProperty(id) && input_tracking[id][0] != event.detail.output.aux[0]) {
+				console.log(`dirty(${id}) = ${input_tracking[id][0]} != ${event.detail.output.aux[0]}`);
+				input_dirty[id] = true;
+			}
+			else{
+
+			}
+		}
+
+		input_tracking[id] = event.detail.output.aux;
+	}
+}
+
+var eventRegistered = false;
+
+app.registerExtension({
+	name: "Comfy.Impack",
+	loadedGraphNode(node, app) {
+		if (node.comfyClass == "PreviewBridge") {
+			if (!eventRegistered) {
+				api.addEventListener("executed", executeHandler);
+				eventRegistered = true;
+			}
+
+			input_dirty[node.id + ""] = false;
+		}
+	},
+	nodeCreated(node, app) {
+		if(node.comfyClass == "MaskPainter") {
+			node.addWidget("button", "Edit mask", null, () => {
+				this.dlg = new ImpactInpaintDialog(app);
+				this.dlg.node = node;
+
+				if('images' in node) {
+					this.dlg.show();
+				}
+			});
+
+			node.addWidget("hidden", "mask_image", null, null);
+		}
+		else if (node.comfyClass == "PreviewBridge") {
+			Object.defineProperty(node, "images", {
+				set: function(value) {
+					node._images = value;
+				},
+				get: function() {
+					const id = node.id+"";
+					if(node.widgets[0].value != '#placeholder') {
+						var need_invalidate = false;
+
+						if(input_dirty.hasOwnProperty(id) && input_dirty[id]) {
+							node.widgets[0].value = {...input_tracking[id][1]};
+							input_dirty[id] = false;
+							need_invalidate = true
+						}
+
+						node.widgets[0].value['image_hash'] = app.nodeOutputs[id]['aux'][0];
+						node.widgets[0].value['forward_filename'] = app.nodeOutputs[id]['aux'][1][0]['filename'];
+						node.widgets[0].value['forward_subfolder'] = app.nodeOutputs[id]['aux'][1][0]['subfolder'];
+						node.widgets[0].value['forward_type'] = app.nodeOutputs[id]['aux'][1][0]['type'];
+						app.nodeOutputs[id].images = [node.widgets[0].value];
+
+						if(need_invalidate) {
+							Promise.all(
+								app.nodeOutputs[id].images.map((src) => {
+									return new Promise((r) => {
+										const img = new Image();
+										img.onload = () => r(img);
+										img.onerror = () => r(null);
+										img.src = "/view?" + new URLSearchParams(src[0]).toString();
+										console.log(`new img => ${img.src}`);
+									});
+								})
+							).then((imgs) => {
+								this.imgs = imgs.filter(Boolean);
+								this.setSizeForImage?.();
+								app.graph.setDirtyCanvas(true);
+							});
+						}
+
+						return app.nodeOutputs[id].images;
+					}
+					else {
+						return node._images;
+					}
+				}
+			});
+		}
+	}
 });

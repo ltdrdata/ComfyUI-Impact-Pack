@@ -118,7 +118,7 @@ NODE_CLASS_MAPPINGS = {
     "TwoSamplersForMask": TwoSamplersForMask,
     "TiledKSamplerProvider": TiledKSamplerProvider,
 
-    #"PreviewBridge": PreviewBridge,
+    "PreviewBridge": PreviewBridge,
 
     "MaskPainter": legacy_nodes.MaskPainter,
     "MMDetLoader": legacy_nodes.MMDetLoader,
@@ -161,7 +161,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
     "TwoSamplersForMaskUpscalerProviderPipe": "TwoSamplersForMask Upscaler Provider (pipe)",
 
-    "MaskPainter": "MaskPainter (Legacy)",
+    "MaskPainter": "MaskPainter (Deprecated)",
     "MMDetLoader": "MMDetLoader (Legacy)",
     "SegsMaskCombine": "SegsMaskCombine (Legacy)",
     "BboxDetectorForEach": "BboxDetectorForEach (Legacy)",
