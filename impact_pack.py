@@ -502,7 +502,7 @@ class TiledKSamplerProvider:
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    "tiling_strategy": (["random", "padded", 'simple'], ),
                     "basic_pipe": ("BASIC_PIPE", )
                     }}
 
@@ -512,10 +512,10 @@ class TiledKSamplerProvider:
     CATEGORY = "ImpactPack/Sampler"
 
     def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise,
-             tile_width, tile_height, concurrent_tiles, basic_pipe):
+             tile_width, tile_height, tiling_strategy, basic_pipe):
         model, _, _, positive, negative = basic_pipe
         sampler = core.TiledKSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                                            tile_width, tile_height, concurrent_tiles)
+                                            tile_width, tile_height, tiling_strategy)
         return (sampler, )
 
 
@@ -538,7 +538,7 @@ class PixelTiledKSampleUpscalerProvider:
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    "tiling_strategy": (["random", "padded", 'simple'], ),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -551,10 +551,10 @@ class PixelTiledKSampleUpscalerProvider:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt=None, pk_hook_opt=None):
+    def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt=None, pk_hook_opt=None):
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt, pk_hook_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt)
             return (upscaler, )
         except Exception as e:
             print("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
@@ -577,7 +577,7 @@ class PixelTiledKSampleUpscalerProviderPipe:
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "concurrent_tiles": ("INT", {"default": 1, "min": 1, "max": 64, "step": 1}),
+                    "tiling_strategy": (["random", "padded", 'simple'], ),
                     "basic_pipe": ("BASIC_PIPE",)
                     },
                 "optional": {
@@ -591,11 +591,11 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, concurrent_tiles, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
+    def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, tiling_strategy, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
             model, _, vae, positive, negative = basic_pipe
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles, upscale_model_opt, pk_hook_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt)
             return (upscaler, )
         except Exception as e:
             print("[ERROR] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")

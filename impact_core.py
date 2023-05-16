@@ -1017,13 +1017,13 @@ try:
         params = None
 
         def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                     tile_width, tile_height, concurrent_tiles):
-            self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles
+                     tile_width, tile_height, tiling_strategy):
+            self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy
 
         def sample(self, latent_image, hook):
             from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSamplerAdvanced
 
-            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, concurrent_tiles = self.params
+            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
 
             steps = int(steps/denoise)
             start_at_step = int(steps*(1.0 - denoise))
@@ -1033,7 +1033,7 @@ try:
                 model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
                     hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
 
-            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, concurrent_tiles, steps, cfg, sampler_name, scheduler,
+            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
                                                   positive, negative, latent_image, start_at_step, end_at_step, "disable")[0]
 
     class PixelTiledKSampleUpscaler:
@@ -1044,10 +1044,10 @@ try:
         is_tiled = True
 
         def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, 
-                     tile_width, tile_height, concurrent_tiles, 
+                     tile_width, tile_height, tiling_strategy,
                      upscale_model_opt=None, hook_opt=None):
             self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
-            self.tile_params = tile_width, tile_height, concurrent_tiles
+            self.tile_params = tile_width, tile_height, tiling_strategy
             self.upscale_model = upscale_model_opt
             self.hook = hook_opt
 
@@ -1055,14 +1055,14 @@ try:
             from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSamplerAdvanced
 
             scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
-            tile_width, tile_height, concurrent_tiles = self.tile_params
+            tile_width, tile_height, tiling_strategy = self.tile_params
 
             steps = int(steps/denoise)
             start_at_step = int(steps*(1.0 - denoise))
             end_at_step = steps
 
             #print(f"steps={steps}, start_at_step={start_at_step}, end_at_step={end_at_step}")
-            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, concurrent_tiles, steps, cfg, sampler_name, scheduler,
+            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
                                                   positive, negative, latent, start_at_step, end_at_step, "disable")[0]
 
         def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
