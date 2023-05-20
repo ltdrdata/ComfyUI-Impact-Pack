@@ -265,9 +265,7 @@ function executeHandler(event) {
 	if(event.detail.output.aux){
 		const id = event.detail.node;
 		if(input_tracking.hasOwnProperty(id)) {
-			console.log(input_tracking[id]);
 			if(input_tracking.hasOwnProperty(id) && input_tracking[id][0] != event.detail.output.aux[0]) {
-				console.log(`dirty(${id}) = ${input_tracking[id][0]} != ${event.detail.output.aux[0]}`);
 				input_dirty[id] = true;
 			}
 			else{

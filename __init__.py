@@ -46,7 +46,11 @@ def setup_js():
     js_dest_path = os.path.join(comfy_path, "web", "extensions", "impact-pack")
     if not os.path.exists(js_dest_path):
         os.makedirs(js_dest_path)
+
     js_src_path = os.path.join(impact_path, "js", "impact-pack.js")
+    shutil.copy(js_src_path, js_dest_path)
+
+    js_src_path = os.path.join(impact_path, "js", "impact-sam-editor.js")
     shutil.copy(js_src_path, js_dest_path)
     
 setup_js()
