@@ -104,7 +104,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 	createLeftSlider(self, name, callback) {
 		const divElement = document.createElement('div');
-		divElement.id = "sam-fidelity-slider";
+		divElement.id = "sam-confidence-slider";
 		divElement.style.cssFloat = "left";
 		divElement.style.fontFamily = "sans-serif";
 		divElement.style.marginRight = "4px";
@@ -119,18 +119,18 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		divElement.style.display = "flex";
 		divElement.style.position = "relative";
 		divElement.style.top = "2px";
-		self.fidelity_slider_input = document.createElement('input');
-		self.fidelity_slider_input.setAttribute('type', 'range');
-		self.fidelity_slider_input.setAttribute('min', '0');
-		self.fidelity_slider_input.setAttribute('max', '100');
-		self.fidelity_slider_input.setAttribute('value', '70');
+		self.confidence_slider_input = document.createElement('input');
+		self.confidence_slider_input.setAttribute('type', 'range');
+		self.confidence_slider_input.setAttribute('min', '0');
+		self.confidence_slider_input.setAttribute('max', '100');
+		self.confidence_slider_input.setAttribute('value', '70');
 		const labelElement = document.createElement("label");
 		labelElement.textContent = name;
 
 		divElement.appendChild(labelElement);
-		divElement.appendChild(self.fidelity_slider_input);
+		divElement.appendChild(self.confidence_slider_input);
 
-		self.fidelity_slider_input.addEventListener("change", callback);
+		self.confidence_slider_input.addEventListener("change", callback);
 
 		return divElement;
 	}
@@ -189,8 +189,8 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		document.body.appendChild(brush);
 		this.brush_size = 5;
 
-		var fidelity_slider = this.createLeftSlider(self, "Fidelity", (event) => {
-			self.fidelity = event.target.value;
+		var confidence_slider = this.createLeftSlider(self, "Confidence", (event) => {
+			self.confidence = event.target.value;
 		});
 
 		var clearButton = this.createLeftButton("Clear", () => {
@@ -228,7 +228,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		bottom_panel.appendChild(detectButton);
 		bottom_panel.appendChild(self.saveButton);
 		bottom_panel.appendChild(cancelButton);
-		bottom_panel.appendChild(fidelity_slider);
+		bottom_panel.appendChild(confidence_slider);
 		bottom_panel.appendChild(undoButton);
 
 		imgCanvas.style.position = "relative";
@@ -415,7 +415,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 	is_positive_mode = true;
 	prompt_points = [];
-	fidelity = 70;
+	confidence = 70;
 
 	invalidatePointsCanvas(self) {
 		const ctx = self.pointsCtx;
@@ -481,7 +481,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		const data = {
 			positive_points: positive_points,
 			negative_points: negative_points,
-			threshold: self.fidelity/100
+			threshold: self.confidence/100
 		};
 		
 		const response = await fetch('/sam/detect', {
