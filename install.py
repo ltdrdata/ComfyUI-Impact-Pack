@@ -37,6 +37,13 @@ def remove_olds():
 def ensure_pip_packages():
     try:
         import cv2
+    except Exception:
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'opencv-python'])
+        except:
+            print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
+
+    try:
         import segment_anything
         from skimage.measure import label, regionprops
     except Exception:
