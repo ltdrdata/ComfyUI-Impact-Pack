@@ -427,7 +427,8 @@ class BBoxDetector:
     def __init__(self, bbox_model):
         self.bbox_model = bbox_model
 
-    def detect(self, image, threshold, dilation, crop_factor):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+        drop_size = max(drop_size, 1)
         mmdet_results = inference_bbox(self.bbox_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
 
@@ -437,20 +438,25 @@ class BBoxDetector:
         items = []
         h = image.shape[1]
         w = image.shape[2]
+
         for x in segmasks:
             item_bbox = x[0]
             item_mask = x[1]
 
-            crop_region = make_crop_region(w, h, item_bbox, crop_factor)
-            cropped_image = crop_image(image, crop_region)
-            cropped_mask = crop_ndarray2(item_mask, crop_region)
-            confidence = x[2]
-            # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
+            y1, x1, y2, x2 = item_bbox
 
-            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
-            items.append(item)
+            if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
+                crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                cropped_image = crop_image(image, crop_region)
+                cropped_mask = crop_ndarray2(item_mask, crop_region)
+                confidence = x[2]
+                # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
-        shape = image.shape[1],image.shape[2]
+                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+
+                items.append(item)
+
+        shape = image.shape[1], image.shape[2]
         return shape, items
 
     def detect_combined(self, image, threshold, dilation):
@@ -471,7 +477,8 @@ class ONNXDetector(BBoxDetector):
     def __init__(self, onnx_model):
         self.onnx_model = onnx_model
 
-    def detect(self, image, threshold, dilation, crop_factor):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+        drop_size = max(drop_size, 1)
         try:
             import onnx
 
@@ -488,17 +495,18 @@ class ONNXDetector(BBoxDetector):
                     item_bbox = boxes[i]
                     x1, y1, x2, y2 = item_bbox
 
-                    crop_region = make_crop_region(w, h, item_bbox, crop_factor)
-                    crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
+                    if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
+                        crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                        crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
 
-                    # prepare cropped mask
-                    cropped_mask = np.zeros((crop_y2-crop_y1,crop_x2-crop_x1))
-                    inner_mask = np.ones((y2-y1,x2-x1))
-                    cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
+                        # prepare cropped mask
+                        cropped_mask = np.zeros((crop_y2-crop_y1,crop_x2-crop_x1))
+                        inner_mask = np.ones((y2-y1,x2-x1))
+                        cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
 
-                    # make items
-                    item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox)
-                    result.append(item)
+                        # make items
+                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox)
+                        result.append(item)
 
             shape = h, w
             return shape, result
@@ -519,7 +527,8 @@ class SegmDetector(BBoxDetector):
     def __init__(self, segm_model):
         self.segm_model = segm_model
 
-    def detect(self, image, threshold, dilation, crop_factor):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+        drop_size = max(drop_size, 1)
         mmdet_results = inference_segm(image, self.segm_model, threshold)
         segmasks = create_segmasks(mmdet_results)
 
@@ -533,13 +542,16 @@ class SegmDetector(BBoxDetector):
             item_bbox = x[0]
             item_mask = x[1]
 
-            crop_region = make_crop_region(w, h, item_bbox, crop_factor)
-            cropped_image = crop_image(image, crop_region)
-            cropped_mask = crop_ndarray2(item_mask, crop_region)
-            confidence = x[2]
+            y1, x1, y2, x2 = item_bbox
 
-            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
-            items.append(item)
+            if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
+                crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                cropped_image = crop_image(image, crop_region)
+                cropped_mask = crop_ndarray2(item_mask, crop_region)
+                confidence = x[2]
+
+                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+                items.append(item)
 
         return image.shape, items
 
@@ -555,7 +567,8 @@ class SegmDetector(BBoxDetector):
         pass
 
 
-def mask_to_segs(mask, combined, crop_factor, bbox_fill):
+def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
+    drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
         return ([], )
@@ -591,7 +604,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill):
             bbox = x1, y1, x2, y2
             crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
 
-            if x2 - x1 > 0 and y2 - y1 > 0:
+            if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
                 cropped_mask = np.array(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
 
                 if bbox_fill:
@@ -1117,9 +1130,9 @@ try:
             self.threshold = threshold
             self.dilation_factor = dilation_factor
 
-        def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor):
+        def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size=1):
             mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
-            segs = mask_to_segs(mask, False, bbox_crop_factor, True)
+            segs = mask_to_segs(mask, False, bbox_crop_factor, True, drop_size)
             return segs
 
         def detect_combined(self, image, bbox_threshold, bbox_dilation):

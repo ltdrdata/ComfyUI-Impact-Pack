@@ -3,12 +3,12 @@ import folder_paths
 import comfy.samplers
 import comfy.sd
 import warnings
-import re
 from segment_anything import sam_model_registry
 
 from impact_utils import *
 import impact_core as core
 from impact_core import SEG, NO_BBOX_DETECTOR, NO_SEGM_DETECTOR
+from impact_config import MAX_RESOLUTION
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -120,6 +120,7 @@ class ONNXDetectorForEach:
                     "threshold": ("FLOAT", {"default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
                     "crop_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 10, "step": 0.1}),
+                    "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                     }
                 }
 
@@ -130,8 +131,8 @@ class ONNXDetectorForEach:
 
     OUTPUT_NODE = True
 
-    def doit(self, onnx_detector, image, threshold, dilation, crop_factor):
-        segs = onnx_detector.detect(image, threshold, dilation, crop_factor)
+    def doit(self, onnx_detector, image, threshold, dilation, crop_factor, drop_size):
+        segs = onnx_detector.detect(image, threshold, dilation, crop_factor, drop_size)
         return (segs, )
 
 
@@ -250,16 +251,16 @@ class DetailerForEachPipe:
 class KSamplerProvider:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required":
-                    {
-                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "basic_pipe": ("BASIC_PIPE", )
-                    }}
+        return {"required": {
+                                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                                "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                                "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                                "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                                "basic_pipe": ("BASIC_PIPE", )
+                             },
+                }
 
     RETURN_TYPES = ("KSAMPLER",)
     FUNCTION = "doit"
@@ -334,6 +335,8 @@ class FaceDetailer:
                      "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
+                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      },
                 "optional": {
@@ -351,11 +354,11 @@ class FaceDetailer:
                      positive, negative, denoise, feather, noise_mask, force_inpaint,
                      bbox_threshold, bbox_dilation, bbox_crop_factor,
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                     sam_mask_hint_use_negative,
+                     sam_mask_hint_use_negative, drop_size,
                      bbox_detector, sam_model_opt=None):
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor)
+        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
         bbox_detector.setAux(None)
 
         # bbox + sam combination
@@ -379,14 +382,14 @@ class FaceDetailer:
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-             sam_mask_hint_use_negative, bbox_detector, sam_model_opt=None):
+             sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt=None):
 
         enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
             image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, bbox_detector, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt)
 
         pipe = (model, vae, positive, negative, bbox_detector, sam_model_opt)
         return enhanced_img, cropped_enhanced, mask, pipe
@@ -420,8 +423,6 @@ class LatentPixelScale:
             latent = core.latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model_opt, scale_factor, vae)
         return (latent,)
 
-
-MAX_RESOLUTION = 8192
 
 class CfgScheduleHookProvider:
     schedules = ["simple"]
@@ -869,6 +870,8 @@ class FaceDetailerPipe:
                      "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
                      "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
+
+                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                      },
                 }
 
@@ -880,7 +883,8 @@ class FaceDetailerPipe:
 
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
-             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold, sam_mask_hint_use_negative):
+             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size):
 
         model, vae, positive, negative, bbox_detector, sam_model_opt = detailer_pipe
 
@@ -889,8 +893,7 @@ class FaceDetailerPipe:
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative,
-            bbox_detector, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt)
 
         return enhanced_img, cropped_enhanced, mask, detailer_pipe
 
@@ -1113,6 +1116,7 @@ class MaskToSEGS:
                                 "combined": (["False", "True"], ),
                                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                                 "bbox_fill": (["disabled", "enabled"], ),
+                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                              }
                 }
 
@@ -1121,8 +1125,8 @@ class MaskToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill):
-        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill == "enabled")
+    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
+        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill == "enabled", drop_size)
         return (result, )
 
 

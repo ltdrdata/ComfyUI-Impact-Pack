@@ -1,4 +1,5 @@
 import impact_core as core
+from impact_config import MAX_RESOLUTION
 
 
 class SAMDetectorCombined:
@@ -37,6 +38,7 @@ class BboxDetectorForEach:
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                       }
                 }
 
@@ -45,8 +47,8 @@ class BboxDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, bbox_detector, image, threshold, dilation, crop_factor):
-        segs = bbox_detector.detect(image, threshold, dilation, crop_factor)
+    def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size):
+        segs = bbox_detector.detect(image, threshold, dilation, crop_factor, drop_size)
         return (segs, )
 
 
@@ -59,6 +61,7 @@ class SegmDetectorForEach:
                         "threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                         "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                        "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                       }
                 }
 
@@ -67,8 +70,8 @@ class SegmDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, segm_detector, image, threshold, dilation, crop_factor):
-        segs = segm_detector.detect(image, threshold, dilation, crop_factor)
+    def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size):
+        segs = segm_detector.detect(image, threshold, dilation, crop_factor, drop_size)
         return (segs, )
 
 

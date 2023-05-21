@@ -1,13 +1,13 @@
 import configparser
 import os
 
-version = "V2.6.1"
+version = "V2.7"
 
 dependency_version = 1
 
 my_path = os.path.dirname(__file__)
 config_path = os.path.join(my_path, "impact-pack.ini")
-
+MAX_RESOLUTION = 8192
 
 def write_config(comfy_path):
     config = configparser.ConfigParser()

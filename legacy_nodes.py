@@ -52,7 +52,7 @@ class BboxDetectorForEach:
     CATEGORY = "ImpactPack/Legacy"
 
     @staticmethod
-    def detect(bbox_model, image, threshold, dilation, crop_factor):
+    def detect(bbox_model, image, threshold, dilation, crop_factor, drop_size=1):
         mmdet_results = core.inference_bbox(bbox_model, image, threshold)
         segmasks = core.create_segmasks(mmdet_results)
 
@@ -66,14 +66,17 @@ class BboxDetectorForEach:
             item_bbox = x[0]
             item_mask = x[1]
 
-            crop_region = make_crop_region(w, h, item_bbox, crop_factor)
-            cropped_image = crop_image(image, crop_region)
-            cropped_mask = crop_ndarray2(item_mask, crop_region)
-            confidence = x[2]
-            # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
+            y1, x1, y2, x2 = item_bbox
 
-            item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
-            items.append(item)
+            if x2 - x1 > drop_size and y2 - y1 > drop_size:
+                crop_region = make_crop_region(w, h, item_bbox, crop_factor)
+                cropped_image = crop_image(image, crop_region)
+                cropped_mask = crop_ndarray2(item_mask, crop_region)
+                confidence = x[2]
+                # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
+
+                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+                items.append(item)
 
         shape = h, w
         return shape, items
