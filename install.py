@@ -18,6 +18,13 @@ import impact_config
 
 print("### ComfyUI-Impact-Pack: Check dependencies")
 
+if "python_embeded" in sys.executable or "python_embedded" in sys.executable:
+    pip_install = [sys.executable, '-m', 'pip', 'install', '--user']
+    mim_install = [sys.executable, '-m', 'mim', 'install', '--user']
+else:
+    pip_install = [sys.executable, '-m', 'pip', 'install']
+    mim_install = [sys.executable, '-m', 'mim', 'install']
+
 
 def remove_olds():
     comfy_path = os.path.dirname(folder_paths.__file__)
@@ -39,7 +46,7 @@ def ensure_pip_packages():
         import cv2
     except Exception:
         try:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'opencv-python'])
+            subprocess.check_call(pip_install + ['opencv-python'])
         except:
             print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
@@ -49,7 +56,7 @@ def ensure_pip_packages():
     except Exception:
         my_path = os.path.dirname(__file__)
         requirements_path = os.path.join(my_path, "requirements.txt")
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', requirements_path])
+        subprocess.check_call(pip_install + ['-r', requirements_path])
 
     try:
         import pycocotools
@@ -57,7 +64,7 @@ def ensure_pip_packages():
         if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
             print(f"Your system is {platform.system()}; !! You need to install 'libpython3-dev' for this step. !!")
 
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pycocotools'])
+            subprocess.check_call(pip_install + ['pycocotools'])
         else:
             pycocotools = {
                 (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
@@ -68,7 +75,7 @@ def ensure_pip_packages():
 
             version = sys.version_info[:2]
             url = pycocotools[version]
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', url])
+            subprocess.check_call(pip_install + [url])
 
 
 def ensure_mmdet_package():
@@ -77,10 +84,10 @@ def ensure_mmdet_package():
         import mmdet
         from mmdet.evaluation import get_classes
     except Exception:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-U', 'openmim'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmcv==2.0.0'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmdet==3.0.0'])
-        subprocess.check_call([sys.executable, '-m', 'mim', 'install', 'mmengine==0.7.3'])
+        subprocess.check_call(pip_install + ['-U', 'openmim'])
+        subprocess.check_call(mim_install + ['mmcv==2.0.0'])
+        subprocess.check_call(mim_install + ['mmdet==3.0.0'])
+        subprocess.check_call(mim_install + ['mmengine==0.7.3'])
 
 
 def install():
