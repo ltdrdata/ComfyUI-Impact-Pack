@@ -501,7 +501,7 @@ class ONNXDetector(BBoxDetector):
 
                         # prepare cropped mask
                         cropped_mask = np.zeros((crop_y2-crop_y1,crop_x2-crop_x1))
-                        inner_mask = np.ones((y2-y1,x2-x1))
+                        inner_mask = np.ones((y2-y1, x2-x1))
                         cropped_mask[y1-crop_y1:y2-crop_y1, x1-crop_x1:x2-crop_x1] = inner_mask
 
                         # make items
@@ -510,8 +510,8 @@ class ONNXDetector(BBoxDetector):
 
             shape = h, w
             return shape, result
-        except:
-            print(f"ONNXDetector: unable to execute.")
+        except Exception as e:
+            print(f"ONNXDetector: unable to execute.\n{e}")
             pass
 
     def detect_combined(self, image, threshold, dilation):

@@ -107,7 +107,7 @@ def normalize_region(limit, startp, size):
         new_endp = min(limit, size)
         new_startp = 0
     elif startp + size > limit:
-        new_startp = limit - size
+        new_startp = max(0, limit - size)
         new_endp = limit
     else:
         new_startp = startp
