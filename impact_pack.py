@@ -952,7 +952,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
 class EmptySEGS:
     @classmethod
     def INPUT_TYPES(s):
-        return {}
+        return {"required": {},}
     
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
