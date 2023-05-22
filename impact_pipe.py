@@ -65,7 +65,7 @@ class ToBasicPipe:
 class FromBasicPipe:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": { "basic_pipe": ("BASIC_PIPE",), }, }
+        return {"required": {"basic_pipe": ("BASIC_PIPE",), }, }
 
     RETURN_TYPES = ("MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING")
     RETURN_NAMES = ("model", "clip", "vae", "positive", "negative")
@@ -173,8 +173,8 @@ class EditDetailerPipe:
                 "sam_model": ("SAM_MODEL",), },
         }
 
-    RETURN_TYPES = ("BASIC_PIPE",)
-    RETURN_NAMES = ("basic_pipe",)
+    RETURN_TYPES = ("DETAILER_PIPE",)
+    RETURN_NAMES = ("detailer_pipe",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Pipe"
