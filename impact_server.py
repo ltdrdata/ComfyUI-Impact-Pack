@@ -10,7 +10,6 @@ import impact_pack
 from segment_anything import SamPredictor, sam_model_registry
 import numpy as np
 import nodes
-import torch
 from PIL import Image
 import io
 

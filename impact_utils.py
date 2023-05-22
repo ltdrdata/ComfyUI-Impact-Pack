@@ -49,6 +49,8 @@ def combine_masks2(masks):
 
 
 def bitwise_and_masks(mask1, mask2):
+    mask1 = mask1.cpu()
+    mask2 = mask2.cpu()
     cv2_mask1 = np.array(mask1)
     cv2_mask2 = np.array(mask2)
     cv2_mask = cv2.bitwise_and(cv2_mask1, cv2_mask2)
@@ -57,7 +59,7 @@ def bitwise_and_masks(mask1, mask2):
 
 
 def to_binary_mask(mask):
-    mask = mask.clone()
+    mask = mask.clone().cpu()
     mask[mask != 0] = 1.
     return mask
 
@@ -95,6 +97,8 @@ def feather_mask(mask, thickness):
 
 
 def subtract_masks(mask1, mask2):
+    mask1 = mask1.cpu()
+    mask2 = mask2.cpu()
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
     cv2_mask = cv2.subtract(cv2_mask1, cv2_mask2)
