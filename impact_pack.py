@@ -194,10 +194,10 @@ class DetailerForEach:
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         if len(segs[1]) > 0:
-            enhanced_tensor = pil2tensor(enhanced_pil) if enhanced_pil is not None else None
+            enhanced_tensor = pil2tensor(enhanced_pil) if enhanced_pil is not None else image_tensor
             return image_tensor, torch.from_numpy(cropped_image), enhanced_tensor,
         else:
-            return image_tensor, None, None,
+            return image_tensor, image_tensor, image_tensor,
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):
@@ -1188,6 +1188,7 @@ class SubtractMask:
 
 import nodes
 
+
 class PreviewBridge(nodes.PreviewImage):
     @classmethod
     def INPUT_TYPES(s):
@@ -1242,80 +1243,3 @@ class PreviewBridge(nodes.PreviewImage):
             res['result'] = nodes.LoadImage().load_image(imgpath)
 
             return res
-
-
-class DetailerForEach:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "image": ("IMAGE",),
-            "segs": ("SEGS",),
-            "model": ("MODEL",),
-            "vae": ("VAE",),
-            "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-            "guide_size_for": (["bbox", "crop_region"],),
-            "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-            "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-            "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-            "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-            "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-            "positive": ("CONDITIONING",),
-            "negative": ("CONDITIONING",),
-            "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-            "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-            "noise_mask": (["enabled", "disabled"],),
-            "force_inpaint": (["disabled", "enabled"],),
-        },
-        }
-
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detailer"
-
-    @staticmethod
-    def do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-                  positive, negative, denoise, feather, noise_mask, force_inpaint):
-
-        image_pil = tensor2pil(image).convert('RGBA')
-
-        # shape = segs[0]
-        segs = segs[1]
-        for seg in segs:
-            cropped_image = seg.cropped_image if seg.cropped_image is not None \
-                else crop_ndarray4(image.numpy(), seg.crop_region)
-
-            mask_pil = feather_mask(seg.cropped_mask, feather)
-
-            if noise_mask == "enabled":
-                cropped_mask = seg.cropped_mask
-            else:
-                cropped_mask = None
-
-            enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
-                                               seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
-
-            if not (enhanced_pil is None):
-                # don't latent composite-> converting to latent caused poor quality
-                # use image paste
-                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-
-        image_tensor = pil2tensor(image_pil.convert('RGB'))
-
-        if len(segs) > 0:
-            enhanced_tensor = pil2tensor(enhanced_pil) if enhanced_pil is not None else None
-            return image_tensor, torch.from_numpy(cropped_image), enhanced_tensor,
-        else:
-            return image_tensor, None, None,
-
-    def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-             positive, negative, denoise, feather, noise_mask, force_inpaint):
-
-        enhanced_img, cropped, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
-                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
-
-        return (enhanced_img,)
-
