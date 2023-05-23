@@ -873,6 +873,7 @@ class TwoSamplersForMaskUpscaler:
                                                             save_temp_prefix=save_temp_prefix, hook=self.hook_base)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
+                                                                       use_tile=self.use_tiled_vae,
                                                                        save_temp_prefix=save_temp_prefix, hook=self.hook_mask)
 
         return self.do_samples(step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent)
@@ -897,6 +898,7 @@ class TwoSamplersForMaskUpscaler:
                                                                   save_temp_prefix=save_temp_prefix, hook=self.hook_base)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
+                                                                             use_tile=self.use_tiled_vae,
                                                                              save_temp_prefix=save_temp_prefix, hook=self.hook_mask)
 
         return self.do_samples(step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent)
@@ -990,6 +992,7 @@ class PixelKSampleUpscaler:
                                                             save_temp_prefix=save_temp_prefix, hook=self.hook)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
+                                                                       use_tile=self.use_tiled_vae,
                                                                        save_temp_prefix=save_temp_prefix, hook=self.hook)
 
         if self.hook is not None:
@@ -1085,11 +1088,11 @@ try:
                 self.hook.set_steps(step_info)
 
             if self.upscale_model is None:
-                upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae, True,
-                                                                save_temp_prefix=save_temp_prefix, hook=self.hook)
+                upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
+                                                                use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
             else:
-                upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae, True,
-                                                                           save_temp_prefix=save_temp_prefix, hook=self.hook)
+                upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
+                                                                           use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
 
             refined_latent = self.emulate_non_advanced(upscaled_latent)
 
@@ -1102,11 +1105,11 @@ try:
                 self.hook.set_steps(step_info)
 
             if self.upscale_model is None:
-                upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, True,
-                                                                      save_temp_prefix=save_temp_prefix, hook=self.hook)
+                upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
+                                                                      use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
             else:
-                upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae, True,
-                                                                                 save_temp_prefix=save_temp_prefix, hook=self.hook)
+                upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
+                                                                                 use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
 
             refined_latent = self.emulate_non_advanced(upscaled_latent)
 
