@@ -15,7 +15,7 @@ try:
         image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
 
         # do detection
-        onnx_model = onnxruntime.InferenceSession(onnx_model)
+        onnx_model = onnxruntime.InferenceSession(onnx_model, providers=["CPUExecutionProvider"])
         outputs = onnx_model.run(
             [s_i.name for s_i in onnx_model.get_outputs()],
             {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
