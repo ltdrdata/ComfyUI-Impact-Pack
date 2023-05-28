@@ -1036,21 +1036,17 @@ try:
                      tile_width, tile_height, tiling_strategy):
             self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy
 
-        def sample(self, latent_image, hook):
-            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSamplerAdvanced
+        def sample(self, latent_image, hook=None):
+            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSampler
 
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
-
-            steps = int(steps/denoise)
-            start_at_step = int(steps*(1.0 - denoise))
-            end_at_step = steps
 
             if hook is not None:
                 model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
                     hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
 
-            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
-                                                  positive, negative, latent_image, start_at_step, end_at_step, "disable")[0]
+            return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
+                                          positive, negative, latent_image, denoise)
 
     class PixelTiledKSampleUpscaler:
         params = None
@@ -1067,19 +1063,14 @@ try:
             self.upscale_model = upscale_model_opt
             self.hook = hook_opt
 
-        def emulate_non_advanced(self, latent):
-            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSamplerAdvanced
+        def tiled_ksample(self, latent):
+            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSampler
 
             scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
             tile_width, tile_height, tiling_strategy = self.tile_params
 
-            steps = int(steps/denoise)
-            start_at_step = int(steps*(1.0 - denoise))
-            end_at_step = steps
-
-            #print(f"steps={steps}, start_at_step={start_at_step}, end_at_step={end_at_step}")
-            return TiledKSamplerAdvanced().sample(model, "enable", seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
-                                                  positive, negative, latent, start_at_step, end_at_step, "disable")[0]
+            return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
+                                          positive, negative, latent, denoise)[0]
 
         def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
             scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1094,7 +1085,7 @@ try:
                 upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
                                                                            use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
 
-            refined_latent = self.emulate_non_advanced(upscaled_latent)
+            refined_latent = self.tiled_ksample(upscaled_latent)
 
             return refined_latent
 
@@ -1111,7 +1102,7 @@ try:
                 upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
                                                                                  use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
 
-            refined_latent = self.emulate_non_advanced(upscaled_latent)
+            refined_latent = self.tiled_ksample(upscaled_latent)
 
             return refined_latent
 except:
