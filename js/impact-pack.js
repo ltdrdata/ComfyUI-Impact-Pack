@@ -1,259 +1,77 @@
-import { app } from "/scripts/app.js";
+import { ComfyApp, app } from "/scripts/app.js";
 import { ComfyDialog, $el } from "/scripts/ui.js";
 import { api } from "/scripts/api.js";
 
-// Helper function to convert a data URL to a Blob object
-function dataURLToBlob(dataURL) {
-  const parts = dataURL.split(';base64,');
-  const contentType = parts[0].split(':')[1];
-  const byteString = atob(parts[1]);
-  const arrayBuffer = new ArrayBuffer(byteString.length);
-  const uint8Array = new Uint8Array(arrayBuffer);
-  for (let i = 0; i < byteString.length; i++) {
-    uint8Array[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([arrayBuffer], { type: contentType });
-}
-
-async function invalidateImage(node, formData) {
-  const filepath = node.images[0];
-
-  await fetch('/upload/temp', {
-    method: 'POST',
-    body: formData
-  }).then(response => {
-  }).catch(error => {
-    console.error('Error:', error);
-  });
-
-  const img = new Image();
-  img.onload = () => {
-    node.imgs = [img];
-    app.graph.setDirtyCanvas(true);
-  };
-
-  img.src = `view?filename=${filepath.filename}&type=${filepath.type}`;;
-}
-
-class ImpactInpaintDialog extends ComfyDialog {
-  constructor() {
-    super();
-		this.element = $el("div.comfy-modal", { parent: document.body }, 
-    [
-			$el("div.comfy-modal-content", 
-        [
-          ...this.createButtons()]),
-		]);
+// temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
+// I think this should be included into master!!
+class ImpactProgressBadge {
+	constructor() {
+		if (!window.__progress_badge__) {
+			window.__progress_badge__ = Symbol("__impact_progress_badge__");
+		}
+		this.symbol = window.__progress_badge__;
 	}
 
-	createButtons() {
-		return [
-			$el("button", {
-				type: "button",
-				textContent: "Save",
-				onclick: () => {          
-          const backupCtx = this.backupCanvas.getContext('2d', {transparent: true});
-          backupCtx.clearRect(0,0,this.backupCanvas.width,this.backupCanvas.height);
-          backupCtx.drawImage(this.maskCanvas, 
-              0, 0, this.maskCanvas.width, this.maskCanvas.height, 
-              0, 0, this.backupCanvas.width, this.backupCanvas.height);
-              
-          // paste mask data into alpha channel
-          const backupData = backupCtx.getImageData(0, 0, this.backupCanvas.width, this.backupCanvas.height);
-
-          for (let i = 0; i < backupData.data.length; i += 4) {
-            if(backupData.data[i+3] == 255)
-              backupData.data[i+3] = 0;
-            else
-              backupData.data[i+3] = 255;
-              
-            backupData.data[i] = 0;
-            backupData.data[i+1] = 0;
-            backupData.data[i+2] = 0;
-          }
-
-          backupCtx.globalCompositeOperation = 'source-over';
-          backupCtx.putImageData(backupData, 0, 0);
-
-          const dataURL = this.backupCanvas.toDataURL();
-          const blob = dataURLToBlob(dataURL);
-
-          const formData = new FormData();
-          const filename = "impact-mask-" + performance.now() + ".png";
-
-          const item =
-            {
-              "filename": filename,
-              "subfolder": "",
-              "type": "temp",
-            };
-
-          this.node.images[0] = item;
-          this.node.widgets[1].value = item;
-
-          formData.append('image', blob, filename);
-          invalidateImage(this.node, formData);
-          this.close();
-        }
-			}),
-			$el("button", {
-				type: "button",
-				textContent: "Cancel",
-				onclick: () => this.close(),
-			}),
-			$el("button", {
-				type: "button",
-				textContent: "Clear",
-				onclick: () => { 
-          this.maskCtx.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height);
-        },
-			}),
-		];
+	getState(node) {
+		return node[this.symbol] || {};
 	}
 
-	show() {
-    const imgCanvas = document.createElement('canvas');
-    const maskCanvas = document.createElement('canvas');
-    const backupCanvas = document.createElement('canvas');
-    imgCanvas.id = "imageCanvas";
-    maskCanvas.id = "maskCanvas";
-    backupCanvas.id = "backupCanvas";
+	setState(node, state) {
+		node[this.symbol] = state;
+		app.canvas.setDirty(true);
+	}
 
-    this.element.appendChild(imgCanvas);
-    this.element.appendChild(maskCanvas);
+	addStatusHandler(nodeType) {
+		if (nodeType[this.symbol]?.statusTagHandler) {
+			return;
+		}
+		if (!nodeType[this.symbol]) {
+			nodeType[this.symbol] = {};
+		}
+		nodeType[this.symbol] = {
+			statusTagHandler: true,
+		};
 
-    this.node.widgets[1].value = null;
+		api.addEventListener("impact/update_status", ({ detail }) => {
+			let { node, progress, text } = detail;
+			const n = app.graph.getNodeById(+(node || app.runningNodeId));
+			if (!n) return;
+			const state = this.getState(n);
+			state.status = Object.assign(state.status || {}, { progress: text ? progress : null, text: text || null });
+			this.setState(n, state);
+		});
 
-    this.element.style.display = "block";
-    imgCanvas.style.position = "relative";
-    imgCanvas.style.top = "200";
-    imgCanvas.style.left = "0";
+		const self = this;
+		const onDrawForeground = nodeType.prototype.onDrawForeground;
+		nodeType.prototype.onDrawForeground = function (ctx) {
+			const r = onDrawForeground?.apply?.(this, arguments);
+			const state = self.getState(this);
+			if (!state?.status?.text) {
+				return r;
+			}
 
-    maskCanvas.style.position = "absolute";
-    
-    const imgCtx = imgCanvas.getContext('2d');
-    const maskCtx = maskCanvas.getContext('2d');
-    const backupCtx = backupCanvas.getContext('2d');
+			const { fgColor, bgColor, text, progress, progressColor } = { ...state.status };
 
-    this.maskCanvas = maskCanvas;
-    this.maskCtx = maskCtx;
-    this.backupCanvas = backupCanvas;
-    
-    window.addEventListener("resize", () => {
-      // repositioning 
-      imgCanvas.width = window.innerWidth - 250;
-      imgCanvas.height = window.innerHeight - 300;
-      
-      // redraw image
-      let drawWidth = image.width;
-      let drawHeight = image.height;
-      if (image.width > imgCanvas.width) {
-        drawWidth = imgCanvas.width;
-        drawHeight = (drawWidth / image.width) * image.height;
-      }
-      if (drawHeight > imgCanvas.height) {
-        drawHeight = imgCanvas.height;
-        drawWidth = (drawHeight / image.height) * image.width;
-      }
+			ctx.save();
+			ctx.font = "12px sans-serif";
+			const sz = ctx.measureText(text);
+			ctx.fillStyle = bgColor || "dodgerblue";
+			ctx.beginPath();
+			ctx.roundRect(0, -LiteGraph.NODE_TITLE_HEIGHT - 20, sz.width + 12, 20, 5);
+			ctx.fill();
 
-      imgCtx.drawImage(image, 0, 0, drawWidth, drawHeight);
+			if (progress) {
+				ctx.fillStyle = progressColor || "green";
+				ctx.beginPath();
+				ctx.roundRect(0, -LiteGraph.NODE_TITLE_HEIGHT - 20, (sz.width + 12) * progress, 20, 5);
+				ctx.fill();
+			}
 
-      // update mask
-      backupCtx.drawImage(maskCanvas, 0, 0, maskCanvas.width, maskCanvas.height, 0, 0, backupCanvas.width, backupCanvas.height);
-      
-      maskCanvas.width = drawWidth; 
-      maskCanvas.height = drawHeight;
-      maskCanvas.style.top = imgCanvas.offsetTop + "px";
-      maskCanvas.style.left = imgCanvas.offsetLeft + "px";
-
-      maskCtx.drawImage(backupCanvas, 0, 0, backupCanvas.width, backupCanvas.height, 0, 0, maskCanvas.width, maskCanvas.height);
-    });
-    
-
-    // image load
-    const image = new Image();
-    image.onload = function() {
-        backupCanvas.width = image.width;
-        backupCanvas.height = image.height; 
-        window.dispatchEvent(new Event('resize'));
-    };
-    
-    const filepath = this.node.images[0];
-    image.src = this.node.imgs[0].src;
-    this.image = image;
-
-    
-    // event handler for user drawing ------
-    let brush_size = 10;
-
-    function mouse_down(event) {
-      if (event.buttons === 1) { 
-        const maskRect = maskCanvas.getBoundingClientRect();
-        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
-        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
-
-        maskCtx.beginPath();
-        maskCtx.fillStyle = "rgb(0,0,0)";
-        maskCtx.globalCompositeOperation = "source-over";
-        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
-        maskCtx.fill();
-      }
-    }
-
-    function mouse_move(event) {
-      if (event.buttons === 1) { 
-        event.preventDefault();
-        const maskRect = maskCanvas.getBoundingClientRect();
-        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
-        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
-
-        maskCtx.beginPath();
-        maskCtx.fillStyle = "rgb(0,0,0)";
-        maskCtx.globalCompositeOperation = "source-over";
-        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
-        maskCtx.fill();
-      }
-      else if(event.buttons === 2) {
-        event.preventDefault();
-        const maskRect = maskCanvas.getBoundingClientRect();
-        const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
-        const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
-
-        maskCtx.beginPath();
-        maskCtx.globalCompositeOperation = "destination-out";
-        maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
-        maskCtx.fill();
-      }
-    }
-
-    function touch_move(event) {
-      event.preventDefault();
-      const maskRect = maskCanvas.getBoundingClientRect();
-      const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
-      const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
-
-      maskCtx.beginPath();
-      maskCtx.fillStyle = "rgb(0,0,0)";
-      maskCtx.globalCompositeOperation = "source-over";
-      maskCtx.arc(x, y, brush_size, 0, Math.PI * 2, false);
-      maskCtx.fill();
-    }
-
-    function handleWheelEvent(event) {
-
-      if(event.deltaY < 0)
-        brush_size = Math.min(brush_size+2, 100);
-      else
-        brush_size = Math.max(brush_size-2, 1);
-    }
-
-    maskCanvas.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-    });
-    maskCanvas.addEventListener('wheel', handleWheelEvent);
-    maskCanvas.addEventListener('mousedown', mouse_down);
-    maskCanvas.addEventListener('mousemove', mouse_move);
-    maskCanvas.addEventListener('touchmove', touch_move);
+			ctx.fillStyle = fgColor || "#fff";
+			ctx.fillText(text, 6, -LiteGraph.NODE_TITLE_HEIGHT - 6);
+			ctx.restore();
+			return r;
+		};
 	}
 }
 
@@ -278,33 +96,38 @@ function executeHandler(event) {
 }
 
 var eventRegistered = false;
+const impactProgressBadge = new ImpactProgressBadge();
 
 app.registerExtension({
 	name: "Comfy.Impack",
 	loadedGraphNode(node, app) {
-		if (node.comfyClass == "PreviewBridge") {
+		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
 			if (!eventRegistered) {
 				api.addEventListener("executed", executeHandler);
 				eventRegistered = true;
 			}
 
-			input_dirty[node.id + ""] = false;
+			input_dirty[node.id + ""] = true;
 		}
 	},
+
+	async beforeRegisterNodeDef(nodeType, nodeData, app) {
+		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale") {
+			impactProgressBadge.addStatusHandler(nodeType);
+		}
+	},
+
 	nodeCreated(node, app) {
 		if(node.comfyClass == "MaskPainter") {
 			node.addWidget("button", "Edit mask", null, () => {
-				this.dlg = new ImpactInpaintDialog(app);
-				this.dlg.node = node;
-
-				if('images' in node) {
-					this.dlg.show();
-				}
+				ComfyApp.copyToClipspace(node);
+				ComfyApp.clipspace_return_node = node;
+				ComfyApp.open_maskeditor();
 			});
-
-			node.addWidget("hidden", "mask_image", null, null);
 		}
-		else if (node.comfyClass == "PreviewBridge") {
+		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
+			node.widgets[0].value = '#placeholder';
+
 			Object.defineProperty(node, "images", {
 				set: function(value) {
 					node._images = value;

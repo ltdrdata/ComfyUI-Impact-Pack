@@ -216,6 +216,7 @@ class MaskPainter(nodes.PreviewImage):
                     "extra_pnginfo": "EXTRA_PNGINFO",
                 },
                 "optional": {"mask_image": ("IMAGE_PATH",), },
+                "optional": {"image": (["#placeholder"], )},
                 }
 
     RETURN_TYPES = ("MASK",)
@@ -224,35 +225,48 @@ class MaskPainter(nodes.PreviewImage):
 
     CATEGORY = "ImpactPack/Legacy"
 
-    def load_mask(self, imagepath):
-        if imagepath['type'] == "temp":
-            input_dir = folder_paths.get_temp_directory()
-        else:
-            input_dir = folder_paths.get_input_directory()
-
-        image_path = os.path.join(input_dir, imagepath['filename'])
-
-        if os.path.exists(image_path):
-            i = Image.open(image_path)
-
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-        else:
-            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-
-        return (mask,)
-
     def save_painted_images(self, images, filename_prefix="impact-mask",
-                            prompt=None, extra_pnginfo=None, mask_image=None):
-        res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
+                            prompt=None, extra_pnginfo=None, mask_image=None, image=None):
+        if image == "#placeholder" or image['image_hash'] != id(images):
+            # new input image
+            res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
 
-        if mask_image is not None:
-            res['result'] = self.load_mask(mask_image)
+            item = res['ui']['images'][0]
+
+            if not item['filename'].endswith(']'):
+                filepath = f"{item['filename']} [{item['type']}]"
+            else:
+                filepath = item['filename']
+
+            _, mask = nodes.LoadImage().load_image(filepath)
+
+            res['ui']['aux'] = [id(images), res['ui']['images']]
+            res['result'] = (mask, )
+
+            return res
+
         else:
-            mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")
-            res['result'] = (mask,)
+            # new mask
+            if '0' in image:  # fallback
+                image = image['0']
 
-        return res
+            forward = {'filename': image['forward_filename'],
+                       'subfolder': image['forward_subfolder'],
+                       'type': image['forward_type'], }
+
+            res = {'ui': {'images': [forward]}}
+
+            imgpath = ""
+            if 'subfolder' in image and image['subfolder'] != "":
+                imgpath = image['subfolder'] + "/"
+
+            imgpath += f"{image['filename']}"
+
+            if 'type' in image and image['type'] != "":
+                imgpath += f" [{image['type']}]"
+
+            res['ui']['aux'] = [id(images), [forward]]
+            _, mask = nodes.LoadImage().load_image(imgpath)
+            res['result'] = (mask, )
+
+            return res

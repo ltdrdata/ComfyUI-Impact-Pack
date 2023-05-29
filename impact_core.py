@@ -17,6 +17,7 @@ sys.path.append(main_dir)
 
 import nodes
 import comfy_extras.nodes_upscale_model as model_upscale
+from server import PromptServer
 
 SEG = namedtuple("SEG", ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label'],
                  defaults=[None])
@@ -1152,3 +1153,14 @@ try:
             self.aux = x
 except:
     pass
+
+
+def update_node_status(node, text, progress=None):
+    if PromptServer.instance.client_id is None:
+        return
+
+    PromptServer.instance.send_sync("impact/update_status", {
+        "node": node,
+        "progress": progress,
+        "text": text
+    }, PromptServer.instance.client_id)
