@@ -1217,10 +1217,8 @@ class PreviewBridge(nodes.PreviewImage):
 
     CATEGORY = "ImpactPack/Util"
 
-    OUTPUT_NODE = True
-
     def doit(self, images, image, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
-        if image == "#placeholder" or image['image_hash'] != id(images):
+        if image == "#placeholder" or image['image_hash'] != id(images) or ('0' in image and 'forward_filename' not in image[0]):
             # new input image
             res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
 
