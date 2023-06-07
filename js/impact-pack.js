@@ -106,7 +106,6 @@ function imgSendHandler(event) {
 				if(nodes[i].widgets[1].value == event.detail.link_id) {
 					nodes[i].widgets[0].value = filename;
 					let img = new Image();
-					nodes[i].images = [data];
 					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
 					nodes[i].imgs = [img];
 					nodes[i].size[1] = Math.max(200, nodes[i].size[1]);

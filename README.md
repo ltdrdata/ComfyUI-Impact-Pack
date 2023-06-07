@@ -62,6 +62,7 @@ This takes latent as input and outputs latent as the result.
 
 * PreviewBridge - This custom node can be used with a bridge when using the MaskEditor feature of Clipspace.
 * ImageSender, ImageReceiver - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
+  * NOTE: requires this [patch](https://github.com/comfyanonymous/ComfyUI/pull/746)
  
 # Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
