@@ -123,6 +123,8 @@ NODE_CLASS_MAPPINGS = {
     "TiledKSamplerProvider": TiledKSamplerProvider,
 
     "PreviewBridge": PreviewBridge,
+    "ImageSender": ImageSender,
+    "ImageReceiver": ImageReceiver,
 
     "MaskPainter": legacy_nodes.MaskPainter,
     "MMDetLoader": legacy_nodes.MMDetLoader,

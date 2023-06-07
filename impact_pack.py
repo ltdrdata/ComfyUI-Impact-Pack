@@ -1,4 +1,5 @@
 import os
+import sys
 import folder_paths
 import comfy.samplers
 import comfy.sd
@@ -1260,3 +1261,48 @@ class PreviewBridge(nodes.PreviewImage):
             res['result'] = nodes.LoadImage().load_image(imgpath)
 
             return res
+
+
+class ImageReceiver(nodes.LoadImage):
+    @classmethod
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        return {"required": {
+                    "image": (sorted(files), ),
+                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}), },
+                }
+
+    FUNCTION = "doit"
+
+    def doit(self, image, link_id):
+        return nodes.LoadImage().load_image(image)
+
+    @classmethod
+    def VALIDATE_INPUTS(s, image, link_id):
+        if not folder_paths.exists_annotated_filepath(image):
+            return "Invalid image file: {}".format(image)
+
+        return True
+
+
+from server import PromptServer
+
+class ImageSender(nodes.PreviewImage):
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "images": ("IMAGE", ),
+                    "filename_prefix": ("STRING", {"default": "ImgSender"}),
+                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}), },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    def doit(self, images, filename_prefix="ImgSender", link_id=0, prompt=None, extra_pnginfo=None):
+        result = nodes.PreviewImage().save_images(images, filename_prefix, prompt, extra_pnginfo)
+        PromptServer.instance.send_sync("img-send", {"link_id": link_id, "images": result['ui']['images']})
+        return result

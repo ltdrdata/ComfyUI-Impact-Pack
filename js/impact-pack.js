@@ -79,7 +79,7 @@ const input_tracking = {};
 const input_dirty = {};
 const output_tracking = {};
 
-function executeHandler(event) {
+function progressExecuteHandler(event) {
 	if(event.detail.output.aux){
 		const id = event.detail.node;
 		if(input_tracking.hasOwnProperty(id)) {
@@ -95,19 +95,48 @@ function executeHandler(event) {
 	}
 }
 
-var eventRegistered = false;
+function imgSendHandler(event) {
+	if(event.detail.images.length > 0){
+		let data = event.detail.images[0];
+		let filename = `${data.filename} [${data.type}]`;
+
+		let nodes = app.graph._nodes;
+		for(let i in nodes) {
+			if(nodes[i].type == 'ImageReceiver') {
+				if(nodes[i].widgets[1].value == event.detail.link_id) {
+					nodes[i].widgets[0].value = filename;
+					let img = new Image();
+					nodes[i].images = [data];
+					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
+					nodes[i].imgs = [img];
+					nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
+				}
+			}
+		}
+	}
+}
+
+var progressEventRegistered = false;
+var imgSendEventRegistered = false;
 const impactProgressBadge = new ImpactProgressBadge();
 
 app.registerExtension({
 	name: "Comfy.Impack",
 	loadedGraphNode(node, app) {
 		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
-			if (!eventRegistered) {
-				api.addEventListener("executed", executeHandler);
-				eventRegistered = true;
+			if (!progressEventRegistered) {
+				api.addEventListener("executed", progressExecuteHandler);
+				progressEventRegistered = true;
 			}
 
 			input_dirty[node.id + ""] = true;
+		}
+
+		if (node.comfyClass == "ImageSender") {
+			if (!imgSendEventRegistered) {
+				api.addEventListener("img-send", imgSendHandler);
+				imgSendEventRegistered = true;
+			}
 		}
 	},
 
