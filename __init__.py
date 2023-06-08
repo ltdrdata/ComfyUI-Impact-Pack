@@ -114,8 +114,8 @@ NODE_CLASS_MAPPINGS = {
     "SegmDetectorSEGS": SegmDetectorForEach,
     "ONNXDetectorSEGS": ONNXDetectorForEach,
 
-    "BboxDetectorCombined": BboxDetectorCombined,
-    "SegmDetectorCombined": SegmDetectorCombined,
+    "BboxDetectorCombined_v2": BboxDetectorCombined,
+    "SegmDetectorCombined_v2": SegmDetectorCombined,
     "SegsToCombinedMask": SegsToCombinedMask,
 
     "KSamplerProvider": KSamplerProvider,
@@ -125,6 +125,8 @@ NODE_CLASS_MAPPINGS = {
     "PreviewBridge": PreviewBridge,
     "ImageSender": ImageSender,
     "ImageReceiver": ImageReceiver,
+    "ImageMaskSwitch": ImageMaskSwitch,
+    "LatentSwitch": LatentSwitch,
 
     "MaskPainter": legacy_nodes.MaskPainter,
     "MMDetLoader": legacy_nodes.MMDetLoader,
@@ -139,8 +141,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
     "ONNXDetectorSEGS": "ONNX Detector (SEGS)",
-    "BboxDetectorCombined": "BBOX Detector (combined)",
-    "SegmDetectorCombined": "SEGM Detector (combined)",
+    "BboxDetectorCombined_v2": "BBOX Detector (combined)",
+    "SegmDetectorCombined_v2": "SEGM Detector (combined)",
     "SegsToCombinedMask": "SEGS to MASK (combined)",
     "MaskToSEGS": "MASK to SEGS",
     "BitwiseAndMaskForEach": "Bitwise(SEGS & SEGS)",
@@ -167,6 +169,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
     "TwoSamplersForMaskUpscalerProviderPipe": "TwoSamplersForMask Upscaler Provider (pipe)",
 
+    "Image Sender": "Image Sender",
+    "Image Receiver": "Image Receiver",
+    "ImageMaskSwitch": "Switch (images, mask)",
+    "LatentSwitch": "Switch (latent)",
+    
     "MaskPainter": "MaskPainter (Deprecated)",
     "MMDetLoader": "MMDetLoader (Legacy)",
     "SegsMaskCombine": "SegsMaskCombine (Legacy)",
