@@ -1275,6 +1275,8 @@ class ImageReceiver(nodes.LoadImage):
 
     FUNCTION = "doit"
 
+    CATEGORY = "ImpactPack/Util"
+
     def doit(self, image, link_id):
         return nodes.LoadImage().load_image(image)
 
@@ -1301,6 +1303,8 @@ class ImageSender(nodes.PreviewImage):
     OUTPUT_NODE = True
 
     FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
 
     def doit(self, images, filename_prefix="ImgSender", link_id=0, prompt=None, extra_pnginfo=None):
         result = nodes.PreviewImage().save_images(images, filename_prefix, prompt, extra_pnginfo)
@@ -1333,6 +1337,8 @@ class ImageMaskSwitch:
 
     FUNCTION = "doit"
 
+    CATEGORY = "ImpactPack/Util"
+
     def doit(self, select, images1, mask1_opt=None, images2_opt=None, mask2_opt=None, images3_opt=None, mask3_opt=None, images4_opt=None, mask4_opt=None):
         if select == 1:
             return images1, mask1_opt,
@@ -1364,6 +1370,8 @@ class LatentSwitch:
     OUTPUT_NODE = True
 
     FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
 
     def doit(self, select, latent1, latent2_opt=None, latent3_opt=None, latent4_opt=None):
         if select == 1:
