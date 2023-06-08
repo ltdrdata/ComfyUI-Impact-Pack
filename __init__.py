@@ -169,8 +169,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
     "TwoSamplersForMaskUpscalerProviderPipe": "TwoSamplersForMask Upscaler Provider (pipe)",
 
-    "Image Sender": "Image Sender",
-    "Image Receiver": "Image Receiver",
+    "PreviewBridge": "Preview Bridge",
+    "ImageSender": "Image Sender",
+    "ImageReceiver": "Image Receiver",
     "ImageMaskSwitch": "Switch (images, mask)",
     "LatentSwitch": "Switch (latent)",
     
