@@ -1,5 +1,5 @@
 import additional_dependencies
-from impact_utils import *
+from impact.utils import *
 
 additional_dependencies.ensure_onnx_package()
 

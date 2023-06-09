@@ -1,9 +1,9 @@
 import folder_paths
-import impact_core as core
-from impact_utils import *
-from impact_core import SEG
+
+import impact.core as core
+from impact.utils import *
+from impact.core import SEG
 import nodes
-import os
 
 class NO_BBOX_MODEL:
     pass

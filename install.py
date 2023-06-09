@@ -4,16 +4,15 @@ import subprocess
 
 
 comfy_path = '../..'
+if sys.argv[0] == 'install.py':
+    sys.path.append('.')   # for portable version
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-sys.path.append('.')   # for portable version
 sys.path.append(comfy_path)
-
 
 import platform
 import folder_paths
 from torchvision.datasets.utils import download_url
-import impact_config
+import impact.config
 
 
 print("### ComfyUI-Impact-Pack: Check dependencies")
@@ -118,7 +117,7 @@ def install():
         print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
         os.mkdir(onnx_path)
 
-    impact_config.write_config(comfy_path)
+    impact.config.write_config(comfy_path)
 
 
 install()

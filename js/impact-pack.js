@@ -153,6 +153,42 @@ app.registerExtension({
 				ComfyApp.open_maskeditor();
 			});
 		}
+
+		if(node.comfyClass == "ImpactWildcardProcessor") {
+			let force_serializeValue = async (n,i) =>
+				{
+					if(n.widgets_values[2] == "Fixed") {
+						return node.widgets[1].value;
+					}
+					else {
+						let response = await fetch(`/impact/wildcards`, {
+																method: 'POST',
+																headers: { 'Content-Type': 'application/json' },
+																body: JSON.stringify({text: n.widgets_values[0]})
+															});
+
+						let populated = await response.json();
+
+						n.widgets_values[2] = "Fixed";
+						n.widgets_values[1] = populated.text;
+						node.widgets[1].value = populated.text;
+
+						return populated.text;
+					}
+				};
+
+			// prevent hooking by dynamicPrompt.js
+			Object.defineProperty(node.widgets[0], "serializeValue", {
+				set: () => {},
+				get: (value) => { return (n,i) => { return n.widgets_values[i]; }; }
+			});
+
+			Object.defineProperty(node.widgets[1], "serializeValue", {
+				set: () => {},
+				get: (value) => { return force_serializeValue; }
+			});
+		}
+
 		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
 			node.widgets[0].value = '#placeholder';
 
@@ -169,13 +205,31 @@ app.registerExtension({
 							node.widgets[0].value = {...input_tracking[id][1]};
 							input_dirty[id] = false;
 							need_invalidate = true
+							this._images = app.nodeOutputs[id].images;
 						}
 
-						node.widgets[0].value['image_hash'] = app.nodeOutputs[id]['aux'][0];
-						node.widgets[0].value['forward_filename'] = app.nodeOutputs[id]['aux'][1][0]['filename'];
-						node.widgets[0].value['forward_subfolder'] = app.nodeOutputs[id]['aux'][1][0]['subfolder'];
-						node.widgets[0].value['forward_type'] = app.nodeOutputs[id]['aux'][1][0]['type'];
-						app.nodeOutputs[id].images = [node.widgets[0].value];
+						let filename = app.nodeOutputs[id]['aux'][1][0]['filename'];
+						let subfolder = app.nodeOutputs[id]['aux'][1][0]['subfolder'];
+						let type = app.nodeOutputs[id]['aux'][1][0]['type'];
+
+						let item =
+							{
+								image_hash: app.nodeOutputs[id]['aux'][0],
+								forward_filename: app.nodeOutputs[id]['aux'][1][0]['filename'],
+								forward_subfolder: app.nodeOutputs[id]['aux'][1][0]['subfolder'],
+								forward_type: app.nodeOutputs[id]['aux'][1][0]['type']
+							};
+
+						app.nodeOutputs[id].images = [{
+								...node._images[0],
+								...item
+							}];
+
+						node.widgets[0].value =
+							{
+								...node._images[0],
+								...item
+							};
 
 						if(need_invalidate) {
 							Promise.all(
@@ -184,8 +238,7 @@ app.registerExtension({
 										const img = new Image();
 										img.onload = () => r(img);
 										img.onerror = () => r(null);
-										img.src = "/view?" + new URLSearchParams(src[0]).toString();
-										console.log(`new img => ${img.src}`);
+										img.src = "/view?" + new URLSearchParams(src).toString();
 									});
 								})
 							).then((imgs) => {
@@ -193,6 +246,8 @@ app.registerExtension({
 								this.setSizeForImage?.();
 								app.graph.setDirtyCanvas(true);
 							});
+
+							app.nodeOutputs[id].images[0] = { ...node.widgets[0].value };
 						}
 
 						return app.nodeOutputs[id].images;

@@ -1,5 +1,5 @@
-import impact_core as core
-from impact_config import MAX_RESOLUTION
+import impact.core as core
+from impact.config import MAX_RESOLUTION
 
 
 class SAMDetectorCombined:

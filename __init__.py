@@ -2,18 +2,27 @@ import shutil
 import folder_paths
 import os
 import sys
+import importlib
 
 comfy_path = os.path.dirname(folder_paths.__file__)
-impact_path = os.path.dirname(__file__)
+impact_path = os.path.join(os.path.dirname(__file__))
+modules_path = os.path.join(os.path.dirname(__file__), "modules")
+wildcards_path = os.path.join(os.path.dirname(__file__), "wildcards")
 
-sys.path.append(impact_path)
+sys.path.append(modules_path)
 
-import impact_config
-print(f"### Loading: ComfyUI-Impact-Pack ({impact_config.version})")
+import impact.config
+print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
+
+def do_install():
+    spec = importlib.util.spec_from_file_location('impact_install', os.path.join(os.path.dirname(__file__), 'install.py'))
+    impact_install = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(impact_install)
 
 # ensure dependency
-if impact_config.read_config()[1] < impact_config.dependency_version:
-    import install  # to install dependencies
+if impact.config.read_config()[1] < impact.config.dependency_version:
+    do_install()
+
 # Core
 # recheck dependencies for colab
 try:
@@ -31,10 +40,11 @@ try:
     from skimage.measure import label, regionprops
     from collections import namedtuple
 except:
+    import importlib
     print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
-    import install
+    do_install()
 
-import impact_server  # to load server api
+import impact.impact_server  # to load server api
 
 def setup_js():
     # remove garbage
@@ -55,10 +65,12 @@ def setup_js():
     
 setup_js()
 
-import legacy_nodes
-from impact_pack import *
-from detectors import *
-from impact_pipe import *
+import impact.legacy_nodes
+from impact.impact_pack import *
+from impact.detectors import *
+from impact.pipe import *
+
+impact.wildcards.read_wildcard_dict(wildcards_path)
 
 NODE_CLASS_MAPPINGS = {
     "SAMLoader": SAMLoader,
@@ -128,13 +140,19 @@ NODE_CLASS_MAPPINGS = {
     "ImageMaskSwitch": ImageMaskSwitch,
     "LatentSwitch": LatentSwitch,
 
-    "MaskPainter": legacy_nodes.MaskPainter,
-    "MMDetLoader": legacy_nodes.MMDetLoader,
-    "SegsMaskCombine": legacy_nodes.SegsMaskCombine,
-    "BboxDetectorForEach": legacy_nodes.BboxDetectorForEach,
-    "SegmDetectorForEach": legacy_nodes.SegmDetectorForEach,
-    "BboxDetectorCombined": legacy_nodes.BboxDetectorCombined,
-    "SegmDetectorCombined": legacy_nodes.SegmDetectorCombined,
+    # "SaveConditioning": SaveConditioning,
+    # "LoadConditioning": LoadConditioning,
+
+    "ImpactWildcardProcessor": ImpactWildcardProcessor,
+    "ImpactLogger": ImpactLogger,
+
+    "MaskPainter": impact.legacy_nodes.MaskPainter,
+    "MMDetLoader": impact.legacy_nodes.MMDetLoader,
+    "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,
+    "BboxDetectorForEach": impact.legacy_nodes.BboxDetectorForEach,
+    "SegmDetectorForEach": impact.legacy_nodes.SegmDetectorForEach,
+    "BboxDetectorCombined": impact.legacy_nodes.BboxDetectorCombined,
+    "SegmDetectorCombined": impact.legacy_nodes.SegmDetectorCombined,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

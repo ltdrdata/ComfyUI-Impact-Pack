@@ -1,0 +1,9 @@
+diamond
+emerald
+sapphire
+opal
+ruby
+topaz
+pearl
+rubyamethyst
+aquamarine

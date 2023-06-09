@@ -5,13 +5,14 @@ from aiohttp import web
 import server
 import folder_paths
 
-import impact_core as core
-import impact_pack
+import impact.core as core
+import impact.impact_pack as impact_pack
 from segment_anything import SamPredictor, sam_model_registry
 import numpy as np
 import nodes
 from PIL import Image
 import io
+import impact.wildcards as wildcards
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -93,12 +94,15 @@ async def load_sam_model(request):
 
         sam_predictor.set_image(image, "RGB")
 
+        print(f"ComfyUI-Impact-Pack: SAM model loaded. ")
+
 
 @server.PromptServer.instance.routes.post("/sam/release")
 async def release_sam(request):
     global sam_predictor
 
     with sam_lock:
+        del sam_predictor
         sam_predictor = None
 
     print(f"ComfyUI-Impact-Pack: unloading SAM model")
@@ -146,3 +150,10 @@ async def sam_detect(request):
 
         else:
             return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.post("/impact/wildcards")
+async def populate_wildcards(request):
+    data = await request.json()
+    populated = wildcards.process(data['text'])
+    return web.json_response({"text": populated})

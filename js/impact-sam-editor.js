@@ -575,16 +575,26 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			const index = ComfyApp.clipspace.widgets.findIndex(obj => obj.name === 'image');
 
 			if(index >= 0)
-				ComfyApp.clipspace.widgets[index].value = item;
+				ComfyApp.clipspace.widgets[index].value = `${filename} [temp]`;
 		}
 
 		const dataURL = save_canvas.toDataURL();
 		const blob = dataURLToBlob(dataURL);
 
-		const original_blob = loadedImageToBlob(this.image);
+		let original_url = new URL(this.image.src);
+
+		const original_ref = { filename: original_url.searchParams.get('filename') };
+
+		let original_subfolder = original_url.searchParams.get("subfolder");
+		if(original_subfolder)
+			original_ref.subfolder = original_subfolder;
+
+		let original_type = original_url.searchParams.get("type");
+		if(original_type)
+			original_ref.type = original_type;
 
 		formData.append('image', blob, filename);
-		formData.append('original_image', original_blob);
+		formData.append('original_ref', JSON.stringify(original_ref));
 		formData.append('type', "temp");
 
 		await uploadMask(item, formData);

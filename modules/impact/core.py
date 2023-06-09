@@ -1,19 +1,14 @@
 import os
-import sys
 import mmcv
 from mmdet.apis import (inference_detector, init_detector)
 from mmdet.evaluation import get_classes
 from segment_anything import SamPredictor
 import torch.nn.functional as F
 
-from impact_utils import *
+from impact.utils import *
 from collections import namedtuple
 import numpy as np
 from skimage.measure import label, regionprops
-
-main_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-sys.path.append(os.path.dirname(__file__))
-sys.path.append(main_dir)
 
 import nodes
 import comfy_extras.nodes_upscale_model as model_upscale
@@ -290,6 +285,8 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
     predictor = SamPredictor(sam_model)
     image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
+    print(f"image.shape: {image.shape}")
+
     predictor.set_image(image, "RGB")
 
     total_masks = []
@@ -481,7 +478,7 @@ class ONNXDetector(BBoxDetector):
     def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
         drop_size = max(drop_size, 1)
         try:
-            import onnx
+            import impact.onnx as onnx
 
             h = image.shape[1]
             w = image.shape[2]
