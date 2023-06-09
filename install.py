@@ -87,7 +87,7 @@ def ensure_mmdet_package():
         subprocess.check_call(pip_install + ['-U', 'openmim'])
         subprocess.check_call(mim_install + ['mmcv==2.0.0'])
         subprocess.check_call(mim_install + ['mmdet==3.0.0'])
-        subprocess.check_call(mim_install + ['mmengine==0.7.3'])
+        subprocess.check_call(mim_install + ['mmengine==0.7.4'])
 
 
 def install():
