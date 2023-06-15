@@ -220,7 +220,7 @@ class SEGSPaste:
     CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
-    def do_detail(image, segs, feather):
+    def doit(image, segs, feather):
         image_pil = tensor2pil(image).convert('RGBA')
 
         for seg in segs[1]:
