@@ -250,6 +250,8 @@ class SEGSPreview:
 
     CATEGORY = "ImpactPack/Detailer"
 
+    OUTPUT_NODE = True
+
     def doit(self, segs):
         full_output_folder, filename, counter, subfolder, filename_prefix = \
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
