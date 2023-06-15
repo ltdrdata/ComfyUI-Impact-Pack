@@ -139,6 +139,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageReceiver": ImageReceiver,
     "ImageMaskSwitch": ImageMaskSwitch,
     "LatentSwitch": LatentSwitch,
+    "SEGSSwitch": SEGSSwitch,
 
     # "SaveConditioning": SaveConditioning,
     # "LoadConditioning": LoadConditioning,
@@ -196,6 +197,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageReceiver": "Image Receiver",
     "ImageMaskSwitch": "Switch (images, mask)",
     "LatentSwitch": "Switch (latent)",
+    "SEGSSwitch": "Switch (SEGS)",
     
     "MaskPainter": "MaskPainter (Deprecated)",
     "MMDetLoader": "MMDetLoader (Legacy)",

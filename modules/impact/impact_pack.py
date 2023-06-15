@@ -1556,6 +1556,40 @@ class LatentSwitch:
             return (latent4_opt,)
 
 
+class SEGSSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
+                    "segs": ("SEGS",),
+                    },
+
+                "optional": {
+                        "segs2_opt": ("SEGS",),
+                        "segs3_opt": ("SEGS",),
+                        "segs4_opt": ("SEGS",),
+                    },
+                }
+
+    RETURN_TYPES = ("SEGS", )
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, select, segs, segs2_opt=None, segs3_opt=None, segs4_opt=None):
+        if select == 1:
+            return (segs,)
+        elif select == 2:
+            return (segs2_opt,)
+        elif select == 3:
+            return (segs3_opt,)
+        else:
+            return (segs4_opt,)
+
+
 class SaveConditioning:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
