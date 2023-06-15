@@ -192,3 +192,9 @@ def scale_tensor_and_to_pil(w,h, image):
     return image.resize((w, h), resample=LANCZOS)
 
 
+class NonListIterable:
+    def __init__(self, data):
+        self.data = data
+
+    def __getitem__(self, index):
+        return self.data[index]

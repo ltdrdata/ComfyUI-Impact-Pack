@@ -1,35 +1,40 @@
 # ComfyUI-Impact-Pack
 
+**Custom nodes pack for ComfyUI**
 This custom node helps to conveniently enhance images through Detector, Detailer, Upscaler, Pipe, and more.
 
-## Custom nodes pack for ComfyUI
 
-# Custom Nodes
-* SAMLoader - Load SAM model
-* MMDetDetectorProvider - Load MMDet model to provide BBOX_DETECTOR, SEGM_DETECTOR
-* ONNXDetectorProvider - Load ONNX model to provide SEGM_DETECTOR
-* CLIPSegDetectorProvider - CLIPSeg wrapper to provide BBOX_DETECTOR
-  * You need to install the [ComfyUI-CLIPSeg](https://github.com/biegert/ComfyUI-CLIPSeg) node extension. 
-* SEGM Detector (combined) - Detect segmentation and return mask from input image.
-* BBOX Detector (combined) - Detect bbox(bounding box) and return mask from input image.
-* SAMDetector (combined) - Using the technology of SAM, extract the segment at the location indicated by the input SEGS on the input image, and output it as a unified mask. 
-* Bitwise(SEGS & SEGS) - Perform 'bitwise and' operations between 2 SEGS.
-* Bitwise(SEGS - SEGS) - Perform subtract operations between 2 SEGS.
-* Bitwise(SEGS & MASK) - Perform a bitwise AND operation on SEGS and MASK.
-* Bitwise(MASK & MASK) - Perform 'bitwise and' operations between 2 masks
-* Bitwise(MASK - MASK) - Perform subtract operations between 2 masks
-* SEGM Detector (SEGS) - Detect segmentation and return SEGS from input image.
-* BBOX Detector (SEGS) - Detect bbox(bounding box) and return SEGS from input image.
-* ONNX Detector (SEGS) - Using the ONNX model, identify the bbox and retrieve the SEGS from the input image
-* Detailer (SEGS) - Refine image rely on SEGS.
-* DetailerDebug (SEGS) - Refine image rely on SEGS. Additionally, you can monitor cropped image and refined image of cropped image.
-   * To prevent the regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node
-* MASK to SEGS - This node generates SEGS based on the mask. 
-* ToBinaryMask - This node separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
-* EmptySEGS - This node provides a empty SEGS.
-* MaskPainter - This node provides a feature to draw masks.
-* FaceDetailer - This is a node that can easily detect faces and improve them.
-* FaceDetailer (pipe) - This is a node that can easily detect faces and improve them. (for multipass)
+## Custom Nodes
+* SAMLoader - Loads the SAM model.
+* MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
+* ONNXDetectorProvider - Loads the ONNX model to provide SEGM_DETECTOR.
+* CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
+  * You need to install the ComfyUI-CLIPSeg node extension.
+* SEGM Detector (combined) - Detects segmentation and returns a mask from the input image.
+* BBOX Detector (combined) - Detects bounding boxes and returns a mask from the input image.
+* SAMDetector (combined) - Utilizes the SAM technology to extract the segment at the location indicated by the input SEGS on the input image and outputs it as a unified mask.
+* Bitwise(SEGS & SEGS) - Performs a 'bitwise and' operation between two SEGS.
+* Bitwise(SEGS - SEGS) - Subtracts one SEGS from another.
+* Bitwise(SEGS & MASK) - Performs a bitwise AND operation between SEGS and MASK.
+* Bitwise(MASK & MASK) - Performs a 'bitwise and' operation between two masks.
+* Bitwise(MASK - MASK) - Subtracts one mask from another.
+* SEGM Detector (SEGS) - Detects segmentation and returns SEGS from the input image.
+* BBOX Detector (SEGS) - Detects bounding boxes and returns SEGS from the input image.
+* ONNX Detector (SEGS) - Utilizes the ONNX model to identify the bbox and retrieve the SEGS from the input image.
+* Detailer (SEGS) - Refines the image based on SEGS.
+* DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
+  * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
+* MASK to SEGS - Generates SEGS based on the mask.
+* ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
+* EmptySEGS - Provides an empty SEGS.
+* MaskPainter - Provides a feature to draw masks.
+* FaceDetailer - Easily detects faces and improves them.
+* FaceDetailer (pipe) - Easily detects faces and improves them (for multipass).
+
+* SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
+* SEGSPaste - Pastes the results of SEGS onto the original image.
+* SEGSPreview - Provides a preview of SEGS.
+
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
    * ToBasicPipe, FromBasicPipe - These nodes are used to bundle model, clip, vae, positive conditioning, and negative conditioning into a single BASIC_PIPE, or extract each element from the BASIC_PIPE.
@@ -68,11 +73,11 @@ This takes latent as input and outputs latent as the result.
   * When an image is generated with the "fixed" mode, the prompt used for that particular generation is stored in the metadata.
   * Known Issue: The presetText.js script from **pythongosssss's [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)** is causing a conflict, preventing it from being used together.
 
-# Feature
+## Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
 
 
-# Deprecated
+## Deprecated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.
    * MMDetLoader -> MMDetDetectorProvider
    * SegsMaskCombine -> SEGS to MASK (combined)
@@ -82,7 +87,7 @@ This takes latent as input and outputs latent as the result.
    * SegmDetectorCombined -> SEGM Detector (combined)
    * MaskPainter -> PreviewBridge
 
-# Installation
+## Installation
 
 1. cd custom_nodes
 1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git
@@ -94,7 +99,7 @@ This takes latent as input and outputs latent as the result.
 * NOTE: If an error occurs during the installation process, please refer to [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md) for assistance. 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 
-# Package Dependencies (If you need to manual setup.)
+## Package Dependencies (If you need to manual setup.)
 
 * pip install
    * openmim
@@ -109,17 +114,17 @@ This takes latent as input and outputs latent as the result.
   * libgl1-mesa-glx
   * libglib2.0-0
 
-# Other Materials (auto-download on initial startup)
+## Other Materials (auto-download on initial startup)
 
 * ComfyUI/models/mmdets/bbox <= https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth
 * ComfyUI/models/mmdets/bbox <= https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py
 * ComfyUI/models/sams <= https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth
 
-# Troubleshooting page
+## Troubleshooting page
 * [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md)
 
 
-# How to use (DDetailer feature)
+## How to use (DDetailer feature)
 
 #### 1. Basic auto face detection and refine exapmle.
 ![simple](https://github.com/ltdrdata/ComfyUI-extension-tutorials/raw/Main/ComfyUI-Impact-Pack/images/simple.png)
@@ -175,7 +180,7 @@ This takes latent as input and outputs latent as the result.
 
 * When you execute using the reflected mask in the node, you can observe that the image and mask are displayed separately.
 
-# Others Tutorials
+## Others Tutorials
 * [ComfyUI-extension-tutorials/ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-extension-tutorials/tree/Main/ComfyUI-Impact-Pack) - You can find various tutorials and workflows on this page.
 * [Advanced Tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/advanced.md)
 * [SAM Application](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/sam.md)
@@ -191,7 +196,7 @@ This takes latent as input and outputs latent as the result.
 * [Interactive SAM + PreviewBridge](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/sam_with_preview_bridge.md)
 * [ImageSender/ImageReceiver](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/image_sender_receiver.md)
 
-# Credits
+## Credits
 
 ComfyUI/[ComfyUI](https://github.com/comfyanonymous/ComfyUI) - A powerful and modular stable diffusion GUI.
 

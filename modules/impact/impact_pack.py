@@ -142,6 +142,134 @@ class ONNXDetectorForEach:
         return (segs, )
 
 
+class SEGSDetailer:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "segs": ("SEGS", ),
+                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                     "guide_size_for": (["bbox", "crop_region"],),
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                     "noise_mask": (["enabled", "disabled"], ),
+                     "force_inpaint": (["disabled", "enabled"], ),
+                     "basic_pipe": ("BASIC_PIPE",),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    @staticmethod
+    def do_detail(image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+                  denoise, noise_mask, force_inpaint, basic_pipe):
+
+        model, _, vae, positive, negative = basic_pipe
+
+        image_pil = tensor2pil(image).convert('RGBA')
+
+        new_segs = []
+
+        for seg in segs[1]:
+            cropped_image = seg.cropped_image if seg.cropped_image is not None \
+                                              else crop_ndarray4(image.numpy(), seg.crop_region)
+
+            if noise_mask == "enabled":
+                cropped_mask = seg.cropped_mask
+            else:
+                cropped_mask = None
+
+            enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
+                                               seed, steps, cfg, sampler_name, scheduler,
+                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
+
+            new_seg = seg._replace(cropped_image=enhanced_pil)
+            new_segs.append(new_seg)
+
+        return segs[0], new_segs
+
+    def doit(self, image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+             denoise, noise_mask, force_inpaint, basic_pipe):
+
+        segs = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+                                      denoise, noise_mask, force_inpaint, basic_pipe)
+
+        return (segs, )
+
+
+class SEGSPaste:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "segs": ("SEGS", ),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     },
+                }
+
+    RETURN_TYPES = ("IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    @staticmethod
+    def do_detail(image, segs, feather):
+        image_pil = tensor2pil(image).convert('RGBA')
+
+        for seg in segs[1]:
+            if seg.cropped_image is not None:
+                mask_pil = feather_mask(seg.cropped_mask, feather)
+                image_pil.paste(seg.cropped_image, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
+
+        image_tensor = pil2tensor(image_pil.convert('RGB'))
+
+        return (image_tensor, )
+
+
+class SEGSPreview:
+    def __init__(self):
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, segs):
+        full_output_folder, filename, counter, subfolder, filename_prefix = \
+            folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
+
+        results = list()
+
+        for seg in segs[1]:
+            if seg.cropped_image is not None:
+                file = f"{filename}_{counter:05}_.webp"
+                seg.cropped_image.save(os.path.join(full_output_folder, file))
+                results.append({
+                    "filename": file,
+                    "subfolder": subfolder,
+                    "type": self.type
+                })
+            counter += 1
+
+        return {"ui": {"images": results}}
+
+
 class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
@@ -177,6 +305,9 @@ class DetailerForEach:
 
         image_pil = tensor2pil(image).convert('RGBA')
 
+        enhanced_list = []
+        cropped_list = []
+
         for seg in segs[1]:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
@@ -196,14 +327,16 @@ class DetailerForEach:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
+                enhanced_list.append(np.squeeze(pil2tensor(enhanced_pil)))
+
+            cropped_list.append(np.squeeze(torch.from_numpy(cropped_image)))
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
-        if len(segs[1]) > 0:
-            enhanced_tensor = pil2tensor(enhanced_pil) if enhanced_pil is not None else image_tensor
-            return image_tensor, torch.from_numpy(cropped_image), enhanced_tensor,
-        else:
-            return image_tensor, image_tensor, image_tensor,
+        cropped_list.sort(key=lambda x: x.shape, reverse=True)
+        enhanced_list.sort(key=lambda x: x.shape, reverse=True)
+
+        return image_tensor, NonListIterable(cropped_list), NonListIterable(enhanced_list)
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):

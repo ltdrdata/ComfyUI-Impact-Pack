@@ -146,6 +146,10 @@ NODE_CLASS_MAPPINGS = {
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactLogger": ImpactLogger,
 
+    "SEGSDetailer": SEGSDetailer,
+    "SEGSPaste": SEGSPaste,
+    "SEGSPreview": SEGSPreview,
+
     "MaskPainter": impact.legacy_nodes.MaskPainter,
     "MMDetLoader": impact.legacy_nodes.MMDetLoader,
     "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,
