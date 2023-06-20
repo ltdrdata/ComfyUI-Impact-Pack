@@ -7,6 +7,9 @@ comfy_path = '../..'
 if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
 
+impact_path = os.path.join(os.path.dirname(__file__), "modules")
+
+sys.path.append(impact_path)
 sys.path.append(comfy_path)
 
 import platform
