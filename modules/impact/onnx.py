@@ -1,7 +1,7 @@
-import additional_dependencies
+import impact.additional_dependencies
 from impact.utils import *
 
-additional_dependencies.ensure_onnx_package()
+impact.additional_dependencies.ensure_onnx_package()
 
 try:
     import onnxruntime
