@@ -667,7 +667,7 @@ class KSamplerWrapper:
     def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise):
         self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
 
-    def sample(self, latent_image, hook):
+    def sample(self, latent_image, hook=None):
         model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
 
         if hook is not None:
