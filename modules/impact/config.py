@@ -1,7 +1,7 @@
 import configparser
 import os
 
-version = "V2.13.6"
+version = "V2.13.7"
 
 dependency_version = 1
 

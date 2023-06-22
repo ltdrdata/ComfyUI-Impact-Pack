@@ -221,10 +221,7 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
         upscaled_mask = upscaled_mask.squeeze().squeeze()
         latent_image['noise_mask'] = upscaled_mask
 
-    sampler = nodes.KSampler()
-    refined_latent = sampler.sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                    positive, negative, latent_image, denoise)
-    refined_latent = refined_latent[0]
+    refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
 
     # non-latent downscale - latent downscale cause bad quality
     refined_image = vae.decode(refined_latent['samples'])
@@ -651,9 +648,9 @@ def vae_decode(vae, samples, use_tile, hook):
 
 def vae_encode(vae, pixels, use_tile, hook):
     if use_tile:
-        samples = nodes.VAEEncodeTiled().encode(vae, pixels[0])[0]
+        samples = nodes.VAEEncodeTiled().encode(vae, pixels)[0]
     else:
-        samples = nodes.VAEEncode().encode(vae, pixels[0])[0]
+        samples = nodes.VAEEncode().encode(vae, pixels)[0]
 
     if hook is not None:
         hook.post_encode(samples)
@@ -764,7 +761,7 @@ def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_ti
     if save_temp_prefix is not None:
         nodes.PreviewImage().save_images(pixels, filename_prefix=save_temp_prefix)
 
-    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(w), int(h), False)
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(w), int(h), False)[0]
 
     if hook is not None:
         pixels = hook.post_upscale(pixels)
@@ -780,7 +777,7 @@ def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_
 
     w = pixels.shape[2] * scale_factor
     h = pixels.shape[1] * scale_factor
-    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(w), int(h), False)
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(w), int(h), False)[0]
 
     if hook is not None:
         pixels = hook.post_upscale(pixels)
@@ -803,7 +800,7 @@ def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscal
         current_w = pixels.shape[2]
 
     # downscale to target scale
-    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
 
     if hook is not None:
         pixels = hook.post_upscale(pixels)
@@ -830,7 +827,7 @@ def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_mode
         current_w = pixels.shape[2]
 
     # downscale to target scale
-    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)
+    pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
 
     if hook is not None:
         pixels = hook.post_upscale(pixels)
@@ -998,8 +995,8 @@ class PixelKSampleUpscaler:
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise)
 
         refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                 positive, negative, upscaled_latent, denoise)
-        return refined_latent[0]
+                                                 positive, negative, upscaled_latent, denoise)[0]
+        return refined_latent
 
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1021,8 +1018,8 @@ class PixelKSampleUpscaler:
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise)
 
         refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                 positive, negative, upscaled_latent, denoise)
-        return refined_latent[0]
+                                                 positive, negative, upscaled_latent, denoise)[0]
+        return refined_latent
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
@@ -1044,7 +1041,7 @@ try:
                     hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
 
             return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name, scheduler,
-                                          positive, negative, latent_image, denoise)
+                                          positive, negative, latent_image, denoise)[0]
 
     class PixelTiledKSampleUpscaler:
         params = None

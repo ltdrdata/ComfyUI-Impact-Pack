@@ -434,10 +434,10 @@ class TwoSamplersForMask:
         inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
 
         latent_image['noise_mask'] = inv_mask
-        new_latent_image = base_sampler.sample(latent_image)[0]
+        new_latent_image = base_sampler.sample(latent_image)
 
         new_latent_image['noise_mask'] = mask
-        new_latent_image = mask_sampler.sample(new_latent_image)[0]
+        new_latent_image = mask_sampler.sample(new_latent_image)
 
         del new_latent_image['noise_mask']
 
