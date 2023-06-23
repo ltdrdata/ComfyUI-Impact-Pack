@@ -243,6 +243,9 @@ class SEGSPreview:
         return {"required": {
                      "segs": ("SEGS", ),
                      },
+                "optional": {
+                     "fallback_image_opt": ("IMAGE", ),
+                    }
                 }
 
     RETURN_TYPES = ()
@@ -252,7 +255,7 @@ class SEGSPreview:
 
     OUTPUT_NODE = True
 
-    def doit(self, segs):
+    def doit(self, segs, fallback_image_opt):
         full_output_folder, filename, counter, subfolder, filename_prefix = \
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
 
@@ -260,14 +263,22 @@ class SEGSPreview:
 
         for seg in segs[1]:
             if seg.cropped_image is not None:
+                cropped_image = seg.cropped_image
+            elif fallback_image_opt is not None:
+                # take from original image
+                cropped_image = crop_image(fallback_image_opt, seg.crop_region)
+                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
+
+            if cropped_image is not None:
                 file = f"{filename}_{counter:05}_.webp"
-                seg.cropped_image.save(os.path.join(full_output_folder, file))
+                cropped_image.save(os.path.join(full_output_folder, file))
                 results.append({
                     "filename": file,
                     "subfolder": subfolder,
                     "type": self.type
                 })
-            counter += 1
+
+                counter += 1
 
         return {"ui": {"images": results}}
 
