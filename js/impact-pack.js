@@ -155,6 +155,10 @@ app.registerExtension({
 		}
 
 		if(node.comfyClass == "ImpactWildcardProcessor") {
+			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
+			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";
+			node.widgets[1].inputEl.disabled = true;
+
 			let force_serializeValue = async (n,i) =>
 				{
 					if(n.widgets_values[2] == "Fixed") {
@@ -177,15 +181,29 @@ app.registerExtension({
 					}
 				};
 
+			//
+			Object.defineProperty(node.widgets[2], "value", {
+				set: (value) => {
+						this._value = value;
+						node.widgets[1].inputEl.disabled = value != "Fixed";
+					},
+				get: () => {
+						if(this._value)
+							return this._value;
+						else
+							return "Populate";
+					 }
+			});
+
 			// prevent hooking by dynamicPrompt.js
 			Object.defineProperty(node.widgets[0], "serializeValue", {
 				set: () => {},
-				get: (value) => { return (n,i) => { return n.widgets_values[i]; }; }
+				get: () => { return (n,i) => { return n.widgets_values[i]; }; }
 			});
 
 			Object.defineProperty(node.widgets[1], "serializeValue", {
 				set: () => {},
-				get: (value) => { return force_serializeValue; }
+				get: () => { return force_serializeValue; }
 			});
 		}
 
