@@ -1741,13 +1741,13 @@ class LatentSwitch:
     def INPUT_TYPES(s):
         return {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
-                    "latent1": ("IMAGE",),
+                    "latent1": ("LATENT",),
                     },
 
                 "optional": {
-                        "latent2_opt": ("IMAGE",),
-                        "latent3_opt": ("IMAGE",),
-                        "latent4_opt": ("IMAGE",),
+                        "latent2_opt": ("LATENT",),
+                        "latent3_opt": ("LATENT",),
+                        "latent4_opt": ("LATENT",),
                     },
                 }
 
