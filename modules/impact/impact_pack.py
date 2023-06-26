@@ -5,6 +5,10 @@ import comfy.samplers
 import comfy.sd
 import warnings
 from segment_anything import sam_model_registry
+from io import BytesIO
+import piexif
+import zipfile
+from server import PromptServer
 
 from impact.utils import *
 import impact.core as core
@@ -1496,11 +1500,6 @@ class ImageSender(nodes.PreviewImage):
         PromptServer.instance.send_sync("img-send", {"link_id": link_id, "images": result['ui']['images']})
         return result
 
-
-from io import BytesIO
-import piexif
-import zipfile
-from server import PromptServer
 
 class LatentReceiver:
     def __init__(self):

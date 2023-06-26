@@ -39,6 +39,7 @@ try:
     from mmdet.evaluation import get_classes
     from skimage.measure import label, regionprops
     from collections import namedtuple
+    import piexif
 except:
     import importlib
     print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
