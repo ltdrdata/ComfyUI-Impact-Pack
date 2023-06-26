@@ -8,6 +8,7 @@ from segment_anything import sam_model_registry
 from io import BytesIO
 import piexif
 import zipfile
+import re
 from server import PromptServer
 
 from impact.utils import *
@@ -1539,6 +1540,19 @@ class LatentReceiver:
             return {"samples": tensor['latent_tensor']}
         return None
 
+    def parse_filename(self, filename):
+        pattern = r"^(.*)/(.*?)\[(.*)\]\s*$"
+        match = re.match(pattern, filename)
+        if match:
+            subfolder = match.group(1)
+            filename = match.group(2).rstrip()  # 오른쪽 공백 제거
+            file_type = match.group(3)
+        else:
+            subfolder = ''
+            file_type = self.type
+
+        return {'filename': filename, 'subfolder': subfolder, 'type': file_type}
+
     def doit(self, latent, link_id):
         latent_path = folder_paths.get_annotated_filepath(latent)
 
@@ -1551,11 +1565,7 @@ class LatentReceiver:
         else:
             samples = LatentReceiver.load_preview_latent(latent_path)
 
-        preview = {
-                    'filename': latent_path,
-                    'subfolder': '',
-                    'type': self.type
-                    }
+        preview = self.parse_filename(latent)
 
         return {
                 'ui': {"images": [preview]},
