@@ -9,12 +9,14 @@ from segment_anything import sam_model_registry
 from impact.utils import *
 import impact.core as core
 from impact.core import SEG, NO_BBOX_DETECTOR, NO_SEGM_DETECTOR
-from impact.config import MAX_RESOLUTION
+from impact.config import MAX_RESOLUTION, latent_letter_path
 from PIL import Image
 import numpy as np
 import hashlib
 import json
 import safetensors.torch
+from PIL.PngImagePlugin import PngInfo
+import latent_preview
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -1493,6 +1495,198 @@ class ImageSender(nodes.PreviewImage):
         result = nodes.PreviewImage().save_images(images, filename_prefix, prompt, extra_pnginfo)
         PromptServer.instance.send_sync("img-send", {"link_id": link_id, "images": result['ui']['images']})
         return result
+
+
+from io import BytesIO
+import piexif
+import zipfile
+from server import PromptServer
+
+class LatentReceiver:
+    def __init__(self):
+        self.input_dir = folder_paths.get_input_directory()
+        self.type = "input"
+
+    @classmethod
+    def INPUT_TYPES(s):
+        def check_file_extension(x):
+            return x.endswith(".latent") or x.endswith(".latent.png")
+
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f)) and check_file_extension(f)]
+        return {"required": {
+                    "latent": (sorted(files), ),
+                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                    },
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = ("LATENT",)
+
+    @staticmethod
+    def load_preview_latent(image_path):
+        image = Image.open(image_path)
+        exif_data = piexif.load(image.info["exif"])
+
+        if piexif.ExifIFD.UserComment in exif_data["Exif"]:
+            compressed_data = exif_data["Exif"][piexif.ExifIFD.UserComment]
+            compressed_data_io = BytesIO(compressed_data)
+            with zipfile.ZipFile(compressed_data_io, mode='r') as archive:
+                tensor_bytes = archive.read("latent")
+            tensor = safetensors.torch.load(tensor_bytes)
+            return {"samples": tensor['latent_tensor']}
+        return None
+
+    def doit(self, latent, link_id):
+        latent_path = folder_paths.get_annotated_filepath(latent)
+
+        if latent.endswith(".latent"):
+            latent = safetensors.torch.load_file(latent_path, device="cpu")
+            multiplier = 1.0
+            if "latent_format_version_0" not in latent:
+                multiplier = 1.0 / 0.18215
+            samples = {"samples": latent["latent_tensor"].float() * multiplier}
+        else:
+            samples = LatentReceiver.load_preview_latent(latent_path)
+
+        preview = {
+                    'filename': latent_path,
+                    'subfolder': '',
+                    'type': self.type
+                    }
+
+        return {
+                'ui': {"images": [preview]},
+                'result': (samples, )
+                }
+
+    @classmethod
+    def IS_CHANGED(s, latent, link_id):
+        image_path = folder_paths.get_annotated_filepath(latent)
+        m = hashlib.sha256()
+        with open(image_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+
+    @classmethod
+    def VALIDATE_INPUTS(s, latent, link_id):
+        if not folder_paths.exists_annotated_filepath(latent):
+            return "Invalid latent file: {}".format(latent)
+        return True
+
+
+class LatentSender(nodes.SaveLatent):
+    def __init__(self):
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "samples": ("LATENT", ),
+                    "filename_prefix": ("STRING", {"default": "latents/LatentSender"}),
+                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}), },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    OUTPUT_NODE = True
+
+    RETURN_TYPES = ()
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    @staticmethod
+    def save_to_file(tensor_bytes, prompt, extra_pnginfo, image, image_path):
+        compressed_data = BytesIO()
+        with zipfile.ZipFile(compressed_data, mode='w') as archive:
+            archive.writestr("latent", tensor_bytes)
+        image = image.copy()
+        exif_data = {"Exif": {piexif.ExifIFD.UserComment: compressed_data.getvalue()}}
+
+        metadata = PngInfo()
+        if prompt is not None:
+            metadata.add_text("prompt", json.dumps(prompt))
+        if extra_pnginfo is not None:
+            for x in extra_pnginfo:
+                metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+        exif_bytes = piexif.dump(exif_data)
+        image.save(image_path, format='png', exif=exif_bytes, pnginfo=metadata, optimize=True)
+
+    @staticmethod
+    def prepare_preview(latent_tensor):
+        lower_bound = 128
+        upper_bound = 256
+
+        previewer = core.get_previewer("cpu", force=True)
+        image = previewer.decode_latent_to_preview(latent_tensor)
+        min_size = min(image.size[0], image.size[1])
+        max_size = max(image.size[0], image.size[1])
+
+        scale_factor = 1
+        if max_size > upper_bound:
+            scale_factor = upper_bound/max_size
+
+        # prevent too small preview
+        if min_size*scale_factor < lower_bound:
+            scale_factor = lower_bound/min_size
+
+        w = int(image.size[0] * scale_factor)
+        h = int(image.size[1] * scale_factor)
+
+        image = image.resize((w, h), resample=Image.NEAREST)
+
+        return LatentSender.attach_format_text(image)
+
+    @staticmethod
+    def attach_format_text(image):
+        width_a, height_a = image.size
+
+        letter_image = Image.open(latent_letter_path)
+        width_b, height_b = letter_image.size
+
+        new_width = max(width_a, width_b)
+        new_height = height_a + height_b
+
+        new_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
+
+        offset_x = (new_width - width_b) // 2
+        offset_y = (height_a + (new_height - height_a - height_b) // 2)
+        new_image.paste(letter_image, (offset_x, offset_y))
+
+        new_image.paste(image, (0, 0))
+
+        return new_image
+
+    def doit(self, samples, filename_prefix="latents/LatentSender", link_id=0, prompt=None, extra_pnginfo=None):
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
+
+        # load preview
+        preview = LatentSender.prepare_preview(samples['samples'])
+
+        # support save metadata for latent sharing
+        file = f"{filename}_{counter:05}_.latent.png"
+        fullpath = os.path.join(full_output_folder, file)
+
+        output = {"latent_tensor": samples["samples"]}
+
+        tensor_bytes = safetensors.torch.save(output)
+        LatentSender.save_to_file(tensor_bytes, prompt, extra_pnginfo, preview, fullpath)
+
+        latent_path = {
+                    'filename': file,
+                    'subfolder': subfolder,
+                    'type': self.type
+                    }
+
+        PromptServer.instance.send_sync("latent-send", {"link_id": link_id, "images": [latent_path]})
+
+        return {'ui': {'images': [latent_path]}}
 
 
 class ImageMaskSwitch:

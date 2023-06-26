@@ -1,12 +1,14 @@
 import configparser
 import os
 
-version = "V2.14"
+version = "V2.15"
 
 dependency_version = 1
 
 my_path = os.path.dirname(__file__)
 config_path = os.path.join(my_path, "impact-pack.ini")
+latent_letter_path = os.path.join(my_path, "..", "..", "latent.png")
+
 MAX_RESOLUTION = 8192
 
 def write_config(comfy_path):

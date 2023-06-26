@@ -137,6 +137,8 @@ NODE_CLASS_MAPPINGS = {
     "PreviewBridge": PreviewBridge,
     "ImageSender": ImageSender,
     "ImageReceiver": ImageReceiver,
+    "LatentSender": LatentSender,
+    "LatentReceiver": LatentReceiver,
     "ImageMaskSwitch": ImageMaskSwitch,
     "LatentSwitch": LatentSwitch,
     "SEGSSwitch": SEGSSwitch,
