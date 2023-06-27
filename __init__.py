@@ -135,6 +135,9 @@ NODE_CLASS_MAPPINGS = {
     "TwoSamplersForMask": TwoSamplersForMask,
     "TiledKSamplerProvider": TiledKSamplerProvider,
 
+    "KSamplerAdvancedProvider": KSamplerAdvancedProvider,
+    "TwoAdvancedSamplersForMask": TwoAdvancedSamplersForMask,
+
     "PreviewBridge": PreviewBridge,
     "ImageSender": ImageSender,
     "ImageReceiver": ImageReceiver,

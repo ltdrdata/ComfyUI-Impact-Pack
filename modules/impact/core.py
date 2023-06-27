@@ -674,6 +674,26 @@ class KSamplerWrapper:
         return nodes.common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise)[0]
 
 
+class KSamplerAdvancedWrapper:
+    params = None
+
+    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative):
+        self.params = model, cfg, sampler_name, scheduler, positive, negative
+
+    def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None):
+        model, cfg, sampler_name, scheduler, positive, negative = self.params
+
+        if hook is not None:
+            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent = \
+                hook.pre_ksample_advanced(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                          positive, negative, latent_image, start_at_step, end_at_step,
+                                          return_with_leftover_noise)
+
+        return nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                               positive, negative, latent_image, start_at_step, end_at_step,
+                                               return_with_leftover_noise)[0]
+
+
 class PixelKSampleHook:
     cur_step = 0
     total_step = 0
