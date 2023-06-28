@@ -323,6 +323,9 @@ class SEGSToImageList:
             cropped_image = torch.from_numpy(cropped_image)
             results.append(cropped_image)
 
+        if len(results) == 0:
+            results.append(fallback_image_opt)
+
         return (results,)
 
 

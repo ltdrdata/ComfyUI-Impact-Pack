@@ -38,7 +38,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SEGSPreview - Provides a preview of SEGS.
    * This option is used to preview the improved image through ```SEGSDetailer``` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
 * SEGSToImageList - Convert SEGS To Image List
-  * If SEGS is not present, the application will stop with an error unless [PR 731](https://github.com/comfyanonymous/ComfyUI/pull/731) from is applied.
+  * If ```SEGS``` is not present and ```fallback_image_opt``` is not provided, the execution will stop with an error unless [PR 731](https://github.com/comfyanonymous/ComfyUI/pull/731) from is applied.
 
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
