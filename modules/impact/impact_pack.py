@@ -1632,7 +1632,7 @@ class LatentReceiver:
         match = re.match(pattern, filename)
         if match:
             subfolder = match.group(1)
-            filename = match.group(2).rstrip()  # 오른쪽 공백 제거
+            filename = match.group(2).rstrip()
             file_type = match.group(3)
         else:
             subfolder = ''
@@ -1641,7 +1641,8 @@ class LatentReceiver:
         return {'filename': filename, 'subfolder': subfolder, 'type': file_type}
 
     def doit(self, latent, link_id):
-        latent_path = folder_paths.get_annotated_filepath(latent)
+        latent_name = latent
+        latent_path = folder_paths.get_annotated_filepath(latent_name)
 
         if latent.endswith(".latent"):
             latent = safetensors.torch.load_file(latent_path, device="cpu")
@@ -1652,7 +1653,7 @@ class LatentReceiver:
         else:
             samples = LatentReceiver.load_preview_latent(latent_path)
 
-        preview = self.parse_filename(latent)
+        preview = self.parse_filename(latent_name)
 
         return {
                 'ui': {"images": [preview]},
