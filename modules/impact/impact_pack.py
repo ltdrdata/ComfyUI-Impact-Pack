@@ -492,7 +492,7 @@ class TwoAdvancedSamplersForMask:
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "latent_image": ("LATENT", ),
+                     "samples": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "mask_sampler": ("KSAMPLER_ADVANCED", ),
                      "mask": ("MASK", ),
@@ -506,9 +506,11 @@ class TwoAdvancedSamplersForMask:
     CATEGORY = "ImpactPack/Sampler"
 
     @staticmethod
-    def mask_erosion(latent_image, mask, grow_mask_by):
-        w = latent_image['samples'].shape[3]
-        h = latent_image['samples'].shape[2]
+    def mask_erosion(samples, mask, grow_mask_by):
+        mask = mask.clone()
+
+        w = samples['samples'].shape[3]
+        h = samples['samples'].shape[2]
 
         mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h), mode="bilinear")
         if grow_mask_by == 0:
@@ -521,16 +523,16 @@ class TwoAdvancedSamplersForMask:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, steps, denoise, latent_image, base_sampler, mask_sampler, mask, overlap_factor):
+    def doit(self, seed, steps, denoise, samples, base_sampler, mask_sampler, mask, overlap_factor):
 
         inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
 
         adv_steps = int(steps / denoise)
         start_at_step = adv_steps - steps
 
-        new_latent_image = {'samples': latent_image['samples']}
+        new_latent_image = samples.copy()
 
-        mask_erosion = TwoAdvancedSamplersForMask.mask_erosion(latent_image, mask, overlap_factor)
+        mask_erosion = TwoAdvancedSamplersForMask.mask_erosion(samples, mask, overlap_factor)
 
         for i in range(start_at_step, adv_steps):
             add_noise = "enable" if i == start_at_step else "disable"
