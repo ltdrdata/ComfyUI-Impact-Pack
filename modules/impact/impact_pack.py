@@ -1559,7 +1559,7 @@ class ImageReceiver(nodes.LoadImage):
 
     @classmethod
     def VALIDATE_INPUTS(s, image, link_id):
-        if not folder_paths.exists_annotated_filepath(image):
+        if not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or image.contains(".."):
             return "Invalid image file: {}".format(image)
 
         return True
@@ -1670,7 +1670,7 @@ class LatentReceiver:
 
     @classmethod
     def VALIDATE_INPUTS(s, latent, link_id):
-        if not folder_paths.exists_annotated_filepath(latent):
+        if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or latent.contains(".."):
             return "Invalid latent file: {}".format(latent)
         return True
 
