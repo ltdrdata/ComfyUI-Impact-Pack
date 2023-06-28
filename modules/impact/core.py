@@ -1183,27 +1183,35 @@ def update_node_status(node, text, progress=None):
 from comfy.cli_args import args, LatentPreviewMethod
 import folder_paths
 from latent_preview import TAESD, TAESDPreviewerImpl, Latent2RGBPreviewer
-import comfy.latent_formats as latent_formats
 
-def get_previewer(device, latent_format=latent_formats.SD15(), force=False):
-    previewer = None
-    method = args.preview_method
-    if method != LatentPreviewMethod.NoPreviews or force:
-        # TODO previewer methods
-        taesd_decoder_path = folder_paths.get_full_path("vae_approx", latent_format.taesd_decoder_name)
+try:
+    import comfy.latent_formats as latent_formats
 
-        if method == LatentPreviewMethod.Auto:
-            method = LatentPreviewMethod.Latent2RGB
-            if taesd_decoder_path:
-                method = LatentPreviewMethod.TAESD
+    def get_previewer(device, latent_format=latent_formats.SD15(), force=False):
+        previewer = None
+        method = args.preview_method
+        if method != LatentPreviewMethod.NoPreviews or force:
+            # TODO previewer methods
+            taesd_decoder_path = folder_paths.get_full_path("vae_approx", latent_format.taesd_decoder_name)
 
-        if method == LatentPreviewMethod.TAESD:
-            if taesd_decoder_path:
-                taesd = TAESD(None, taesd_decoder_path).to(device)
-                previewer = TAESDPreviewerImpl(taesd)
-            else:
-                print("Warning: TAESD previews enabled, but could not find models/vae_approx/{}".format(latent_format.taesd_decoder_name))
+            if method == LatentPreviewMethod.Auto:
+                method = LatentPreviewMethod.Latent2RGB
+                if taesd_decoder_path:
+                    method = LatentPreviewMethod.TAESD
 
-        if previewer is None:
-            previewer = Latent2RGBPreviewer(latent_format.latent_rgb_factors)
-    return previewer
+            if method == LatentPreviewMethod.TAESD:
+                if taesd_decoder_path:
+                    taesd = TAESD(None, taesd_decoder_path).to(device)
+                    previewer = TAESDPreviewerImpl(taesd)
+                else:
+                    print("Warning: TAESD previews enabled, but could not find models/vae_approx/{}".format(latent_format.taesd_decoder_name))
+
+            if previewer is None:
+                previewer = Latent2RGBPreviewer(latent_format.latent_rgb_factors)
+        return previewer
+
+except:
+    print(f"#########################################################################")
+    print(f"[ERROR] ComfyUI-Impact-Pack: Please update ComfyUI to the latest version.")
+    print(f"#########################################################################")
+
