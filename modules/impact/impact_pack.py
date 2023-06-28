@@ -259,7 +259,7 @@ class SEGSPreview:
     RETURN_TYPES = ()
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Detailer"
+    CATEGORY = "ImpactPack/Util"
 
     OUTPUT_NODE = True
 
@@ -289,6 +289,41 @@ class SEGSPreview:
                 counter += 1
 
         return {"ui": {"images": results}}
+
+
+class SEGSToImageList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                "optional": {
+                     "fallback_image_opt": ("IMAGE", ),
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    OUTPUT_NODE = True
+
+    def doit(self, segs, fallback_image_opt):
+        results = list()
+
+        for seg in segs[1]:
+            if seg.cropped_image is not None:
+                cropped_image = seg.cropped_image
+            elif fallback_image_opt is not None:
+                # take from original image
+                cropped_image = crop_image(fallback_image_opt, seg.crop_region)
+
+            cropped_image = torch.from_numpy(cropped_image)
+            results.append(cropped_image)
+
+        return (results,)
 
 
 class DetailerForEach:
@@ -1559,7 +1594,7 @@ class ImageReceiver(nodes.LoadImage):
 
     @classmethod
     def VALIDATE_INPUTS(s, image, link_id):
-        if not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or image.contains(".."):
+        if not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
             return "Invalid image file: {}".format(image)
 
         return True
@@ -1670,7 +1705,7 @@ class LatentReceiver:
 
     @classmethod
     def VALIDATE_INPUTS(s, latent, link_id):
-        if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or latent.contains(".."):
+        if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or ".." in latent.contains:
             return "Invalid latent file: {}".format(latent)
         return True
 

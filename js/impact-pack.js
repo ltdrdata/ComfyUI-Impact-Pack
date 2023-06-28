@@ -144,35 +144,17 @@ function latentSendHandler(event) {
 	}
 }
 
-var progressEventRegistered = false;
-var imgSendEventRegistered = false;
-var latentSendEventRegistered = false;
 const impactProgressBadge = new ImpactProgressBadge();
+
+api.addEventListener("img-send", imgSendHandler);
+api.addEventListener("latent-send", latentSendHandler);
+api.addEventListener("executed", progressExecuteHandler);
 
 app.registerExtension({
 	name: "Comfy.Impack",
 	loadedGraphNode(node, app) {
 		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
-			if (!progressEventRegistered) {
-				api.addEventListener("executed", progressExecuteHandler);
-				progressEventRegistered = true;
-			}
-
 			input_dirty[node.id + ""] = true;
-		}
-
-		if (node.comfyClass == "ImageSender") {
-			if (!imgSendEventRegistered) {
-				api.addEventListener("img-send", imgSendHandler);
-				imgSendEventRegistered = true;
-			}
-		}
-
-		if (node.comfyClass == "LatentSender") {
-			if (!latentSendEventRegistered) {
-				api.addEventListener("latent-send", latentSendHandler);
-				latentSendEventRegistered = true;
-			}
 		}
 	},
 
