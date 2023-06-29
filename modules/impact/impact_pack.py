@@ -23,6 +23,7 @@ import json
 import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import latent_preview
+import torch
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -121,6 +122,8 @@ class SAMLoader:
             model_kind = 'vit_b'
 
         sam = sam_model_registry[model_kind](checkpoint=modelname)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        sam.to(device=device)
         print(f"Loads SAM model: {modelname}")
         return (sam, )
 
