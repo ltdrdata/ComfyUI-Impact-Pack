@@ -107,7 +107,7 @@ class SAMLoader:
         return {
             "required": {
                 "model_name": (folder_paths.get_filename_list("sams"), ),
-                "use_cpu": ([False, True],),
+                "device_mode": (["AUTO", "Prefer GPU", "CPU"],),
             }
         }
 
@@ -116,7 +116,7 @@ class SAMLoader:
 
     CATEGORY = "ImpactPack"
 
-    def load_model(self, model_name, use_cpu=False):
+    def load_model(self, model_name, device_mode="auto"):
         modelname = folder_paths.get_full_path("sams", model_name)
 
         if 'vit_h' in model_name:
@@ -128,10 +128,14 @@ class SAMLoader:
 
         sam = sam_model_registry[model_kind](checkpoint=modelname)
         # Unless user explicitly wants to use CPU, we use GPU
-        device = "cpu" if use_cpu else comfy.model_management.get_torch_device()
-        print(f"Moves SAM model to device: {device}")
-        sam.to(device=device)
-        print(f"Loads SAM model: {modelname}")
+        device = comfy.model_management.get_torch_device() if device_mode == "Prefer GPU" else "CPU"
+
+        if device_mode == "Prefer GPU":
+            sam.to(device=device)
+
+        sam.is_auto_mode = device_mode == "AUTO"
+
+        print(f"Loads SAM model: {modelname} (device:{device_mode})")
         return (sam, )
 
 
