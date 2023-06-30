@@ -23,6 +23,7 @@ import json
 import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import latent_preview
+import comfy.model_management
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -102,15 +103,20 @@ class CLIPSegDetectorProvider:
 
 class SAMLoader:
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"model_name": (folder_paths.get_filename_list("sams"), )}}
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "model_name": (folder_paths.get_filename_list("sams"), ),
+                "use_cpu": ([False, True],),
+            }
+        }
 
     RETURN_TYPES = ("SAM_MODEL", )
     FUNCTION = "load_model"
 
     CATEGORY = "ImpactPack"
 
-    def load_model(self, model_name):
+    def load_model(self, model_name, use_cpu=False):
         modelname = folder_paths.get_full_path("sams", model_name)
 
         if 'vit_h' in model_name:
@@ -121,6 +127,10 @@ class SAMLoader:
             model_kind = 'vit_b'
 
         sam = sam_model_registry[model_kind](checkpoint=modelname)
+        # Unless user explicitly wants to use CPU, we use GPU
+        device = "cpu" if use_cpu else comfy.model_management.get_torch_device()
+        print(f"Moves SAM model to device: {device}")
+        sam.to(device=device)
         print(f"Loads SAM model: {modelname}")
         return (sam, )
 
