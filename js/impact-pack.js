@@ -177,6 +177,8 @@ app.registerExtension({
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";
 			node.widgets[1].inputEl.disabled = true;
+			node.widgets[0].dynamicPrompts = false;
+			node.widgets[1].dynamicPrompts = false;
 
 			let force_serializeValue = async (n,i) =>
 				{
