@@ -100,6 +100,8 @@ async def sam_prepare(request):
         if image_dir is None:
             typ = data['type'] if data['type'] != '' else 'output'
             image_dir = folder_paths.get_directory_by_type(typ)
+            if data['subfolder'] is not None and data['subfolder'] != '':
+                image_dir += f"/{data['subfolder']}"
 
         if image_dir is None:
             return web.Response(status=400)
