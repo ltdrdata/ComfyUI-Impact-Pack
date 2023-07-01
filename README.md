@@ -5,6 +5,9 @@
 **Custom nodes pack for ComfyUI**
 This custom node helps to conveniently enhance images through Detector, Detailer, Upscaler, Pipe, and more.
 
+## NOTICE
+* The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
+* Attempting to load the "ComfyUI-Impact-Pack" on ComfyUI versions released before June 27, 2023, will result in a failure.
 
 ## Custom Nodes
 * SAMLoader - Loads the SAM model.

@@ -1500,6 +1500,7 @@ class SubtractMask:
 
 import nodes
 
+
 def get_image_hash(arr):
     split_index1 = arr.shape[0] // 2
     split_index2 = arr.shape[1] // 2
@@ -1516,7 +1517,6 @@ def get_image_hash(arr):
 
     return hash((sum1, sum2, sum3, sum4))
 
-preview_hash_map = {}
 
 class PreviewBridge(nodes.PreviewImage):
     @classmethod
@@ -1532,8 +1532,11 @@ class PreviewBridge(nodes.PreviewImage):
 
     CATEGORY = "ImpactPack/Util"
 
+    def __init__(self):
+        super().__init__()
+        self.prev_hash = None
+
     def doit(self, images, image, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, unique_id=None):
-        global preview_hash_map
         if image != "#placeholder" and isinstance(image, str):
             image_path = folder_paths.get_annotated_filepath(image)
             img = Image.open(image_path).convert("RGB")
@@ -1544,8 +1547,8 @@ class PreviewBridge(nodes.PreviewImage):
             image_hash = get_image_hash(data)
 
         is_changed = False
-        if unique_id not in preview_hash_map or preview_hash_map[unique_id] != image_hash:
-            preview_hash_map[unique_id] = image_hash
+        if self.prev_hash is None or self.prev_hash != image_hash:
+            self.prev_hash = image_hash
             is_changed = True
 
         if is_changed or image == "#placeholder":
