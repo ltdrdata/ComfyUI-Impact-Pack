@@ -158,6 +158,9 @@ NODE_CLASS_MAPPINGS = {
     "SEGSPreview": SEGSPreview,
     "SEGSToImageList": SEGSToImageList,
 
+    # "SEGPick": SEGPick,
+    # "SEGEdit": SEGEdit,
+
     "MaskPainter": impact.legacy_nodes.MaskPainter,
     "MMDetLoader": impact.legacy_nodes.MMDetLoader,
     "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,

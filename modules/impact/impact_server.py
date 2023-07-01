@@ -13,6 +13,7 @@ import nodes
 from PIL import Image
 import io
 import impact.wildcards as wildcards
+import comfy
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -92,7 +93,10 @@ async def load_sam_model(request):
         image = nodes.LoadImage().load_image(image_path)[0]
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
+        device = comfy.model_management.get_torch_device()
+        sam_predictor.model.to(device=device)
         sam_predictor.set_image(image, "RGB")
+        sam_predictor.model.to(device="cpu")
 
         print(f"ComfyUI-Impact-Pack: SAM model loaded. ")
 
@@ -113,38 +117,43 @@ async def sam_detect(request):
     global sam_predictor
     with sam_lock:
         if sam_predictor is not None:
-            data = await request.json()
+            device = comfy.model_management.get_torch_device()
+            sam_predictor.model.to(device=device)
+            try:
+                data = await request.json()
 
-            positive_points = data['positive_points']
-            negative_points = data['negative_points']
-            threshold = data['threshold']
+                positive_points = data['positive_points']
+                negative_points = data['negative_points']
+                threshold = data['threshold']
 
-            points = []
-            plabs = []
+                points = []
+                plabs = []
 
-            for p in positive_points:
-                points.append(p)
-                plabs.append(1)
+                for p in positive_points:
+                    points.append(p)
+                    plabs.append(1)
 
-            for p in negative_points:
-                points.append(p)
-                plabs.append(0)
+                for p in negative_points:
+                    points.append(p)
+                    plabs.append(0)
 
-            detected_masks = core.sam_predict(sam_predictor, points, plabs, None, threshold)
-            mask = core.combine_masks2(detected_masks)
+                detected_masks = core.sam_predict(sam_predictor, points, plabs, None, threshold)
+                mask = core.combine_masks2(detected_masks)
 
-            if mask is None:
-                return web.Response(status=400)
+                if mask is None:
+                    return web.Response(status=400)
 
-            image = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
-            i = 255. * image.cpu().numpy()
+                image = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+                i = 255. * image.cpu().numpy()
 
-            img = Image.fromarray(np.clip(i[0], 0, 255).astype(np.uint8))
+                img = Image.fromarray(np.clip(i[0], 0, 255).astype(np.uint8))
 
-            img_buffer = io.BytesIO()
-            img.save(img_buffer, format='png')
+                img_buffer = io.BytesIO()
+                img.save(img_buffer, format='png')
 
-            headers = {'Content-Type': 'image/png'}
+                headers = {'Content-Type': 'image/png'}
+            finally:
+                sam_predictor.model.to(device="cpu")
 
             return web.Response(body=img_buffer.getvalue(), headers=headers)
 

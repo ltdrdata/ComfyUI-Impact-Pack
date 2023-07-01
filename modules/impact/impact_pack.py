@@ -1944,6 +1944,34 @@ class SEGSSwitch:
             return (segs4_opt,)
 
 
+# class SEGPick:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required": {
+#                     "select": ("INT", {"default": 1, "min": 1, "max": 99999, "step": 1}),
+#                     "segs": ("SEGS",),
+#                     },
+#                 }
+#
+#     RETURN_TYPES = ("SEGS", )
+#
+#     OUTPUT_NODE = True
+#
+#     FUNCTION = "doit"
+#
+#     CATEGORY = "ImpactPack/Util"
+#
+#     def doit(self, select, segs):
+#         if select == 1:
+#             return (segs,)
+#         elif select == 2:
+#             return (segs2_opt,)
+#         elif select == 3:
+#             return (segs3_opt,)
+#         else:
+#             return (segs4_opt,)
+
+
 class SaveConditioning:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
