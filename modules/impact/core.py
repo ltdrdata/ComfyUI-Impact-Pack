@@ -14,6 +14,7 @@ import nodes
 import comfy_extras.nodes_upscale_model as model_upscale
 from server import PromptServer
 import comfy
+import impact.wildcards as wildcards
 
 SEG = namedtuple("SEG", ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label'],
                  defaults=[None])
@@ -166,8 +167,12 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
     return npoints, nplabs
 
 
-def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
-                   positive, negative, denoise, noise_mask, force_inpaint):
+def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
+                   positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
+
+    if wildcard_opt is not None and wildcard_opt != "":
+        model, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+
     h = image.shape[1]
     w = image.shape[2]
 
@@ -177,7 +182,7 @@ def enhance_detail(image, model, vae, guide_size, guide_size_for, bbox, seed, st
     # Skip processing if the detected bbox is already larger than the guide_size
     if bbox_h >= guide_size and bbox_w >= guide_size:
         print(f"Detailer: segment skip")
-        None
+        return None
 
     if guide_size_for == "bbox":
         # Scale up based on the smaller dimension between width and height.
@@ -283,15 +288,11 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
 
     if sam_model.is_auto_mode:
         device = comfy.model_management.get_torch_device()
-        print(f"load to {device}")
         sam_model.to(device=device)
 
     try:
         predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-
-        print(f"image.shape: {image.shape}")
-
         predictor.set_image(image, "RGB")
 
         total_masks = []

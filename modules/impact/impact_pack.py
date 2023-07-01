@@ -194,7 +194,7 @@ class SEGSDetailer:
     def do_detail(image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
                   denoise, noise_mask, force_inpaint, basic_pipe):
 
-        model, _, vae, positive, negative = basic_pipe
+        model, clip, vae, positive, negative = basic_pipe
 
         new_segs = []
 
@@ -207,7 +207,7 @@ class SEGSDetailer:
             else:
                 cropped_mask = None
 
-            enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
+            enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, seg.bbox,
                                                seed, steps, cfg, sampler_name, scheduler,
                                                positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
 
@@ -353,6 +353,7 @@ class DetailerForEach:
                      "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
                      "model": ("MODEL",),
+                     "clip": ("CLIP",),
                      "vae": ("VAE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "guide_size_for": (["bbox", "crop_region"],),
@@ -376,8 +377,8 @@ class DetailerForEach:
     CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
-    def do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
-                  positive, negative, denoise, feather, noise_mask, force_inpaint):
+    def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+                  positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None):
 
         image_pil = tensor2pil(image).convert('RGBA')
 
@@ -395,9 +396,9 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
-            enhanced_pil = core.enhance_detail(cropped_image, model, vae, guide_size, guide_size_for, seg.bbox,
-                                          seed, steps, cfg, sampler_name, scheduler,
-                                          positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
+            enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, seg.bbox,
+                                               seed, steps, cfg, sampler_name, scheduler,
+                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled", wildcard_opt)
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
@@ -414,11 +415,11 @@ class DetailerForEach:
 
         return image_tensor, cropped_list, enhanced_list
 
-    def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+    def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):
 
         enhanced_img, cropped, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 
@@ -454,9 +455,9 @@ class DetailerForEachPipe:
     def doit(self, image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe):
 
-        model, _, vae, positive, negative = basic_pipe
+        model, clip, vae, positive, negative = basic_pipe
         enhanced_img, cropped, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 
@@ -610,6 +611,7 @@ class FaceDetailer:
         return {"required": {
                      "image": ("IMAGE", ),
                      "model": ("MODEL",),
+                     "clip": ("CLIP",),
                      "vae": ("VAE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "guide_size_for": (["bbox", "crop_region"],),
@@ -652,12 +654,12 @@ class FaceDetailer:
     CATEGORY = "ImpactPack/Simple"
 
     @staticmethod
-    def enhance_face(image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+    def enhance_face(image, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
                      positive, negative, denoise, feather, noise_mask, force_inpaint,
                      bbox_threshold, bbox_dilation, bbox_crop_factor,
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
-                     bbox_detector, sam_model_opt=None):
+                     bbox_detector, wildcard_opt=None, sam_model_opt=None):
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
@@ -671,29 +673,29 @@ class FaceDetailer:
             segs = core.segs_bitwise_and_mask(segs, sam_mask)
 
         enhanced_img, _, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
+                                      force_inpaint, wildcard_opt)
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
 
         return enhanced_img, cropped_enhanced, mask
 
-    def doit(self, image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+    def doit(self, image, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt=None):
 
         enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
-            image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+            image, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, None, sam_model_opt)
 
-        pipe = (model, vae, positive, negative, bbox_detector, sam_model_opt)
+        pipe = (model, clip, vae, positive, negative, bbox_detector, None, sam_model_opt)
         return enhanced_img, cropped_enhanced, mask, pipe
 
 
@@ -1193,6 +1195,7 @@ class FaceDetailerPipe:
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
     RETURN_NAMES = ("image", "cropped_refined", "mask", "detailer_pipe")
+    OUTPUT_IS_LIST = (False, True, False, False)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Simple"
@@ -1202,14 +1205,14 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size):
 
-        model, vae, positive, negative, bbox_detector, sam_model_opt = detailer_pipe
+        model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt = detailer_pipe
 
         enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
-            image, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+            image, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
 
         return enhanced_img, cropped_enhanced, mask, detailer_pipe
 
@@ -1223,11 +1226,11 @@ class DetailerForEachTest(DetailerForEach):
 
     CATEGORY = "ImpactPack/Detailer"
 
-    def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
+    def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):
 
         enhanced_img, cropped, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 
@@ -1253,9 +1256,9 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     def doit(self, image, segs, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe):
 
-        model, _, vae, positive, negative = basic_pipe
+        model, clip, vae, positive, negative = basic_pipe
         enhanced_img, cropped, cropped_enhanced = \
-            DetailerForEach.do_detail(image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 

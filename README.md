@@ -8,6 +8,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 ## NOTICE
 * The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
 * Attempting to load the "ComfyUI-Impact-Pack" on ComfyUI versions released before June 27, 2023, will result in a failure.
+* With the addition of wildcard support in FaceDetailer, the structure of DETAILER_PIPE-related nodes and Detailer nodes has changed. There may be malfunctions when using the existing workflow.
 
 ## Custom Nodes
 * SAMLoader - Loads the SAM model.

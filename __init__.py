@@ -8,6 +8,7 @@ comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
 modules_path = os.path.join(os.path.dirname(__file__), "modules")
 wildcards_path = os.path.join(os.path.dirname(__file__), "wildcards")
+custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcards")
 
 sys.path.append(modules_path)
 
@@ -72,6 +73,7 @@ from impact.detectors import *
 from impact.pipe import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
+impact.wildcards.read_wildcard_dict(custom_wildcards_path)
 
 NODE_CLASS_MAPPINGS = {
     "SAMLoader": SAMLoader,
@@ -92,7 +94,7 @@ NODE_CLASS_MAPPINGS = {
     "FaceDetailer": FaceDetailer,
     "FaceDetailerPipe": FaceDetailerPipe,
 
-    "ToDetailerPipe": ToDetailerPipe ,
+    "ToDetailerPipe": ToDetailerPipe,
     "FromDetailerPipe": FromDetailerPipe,
     "ToBasicPipe": ToBasicPipe,
     "FromBasicPipe": FromBasicPipe,
