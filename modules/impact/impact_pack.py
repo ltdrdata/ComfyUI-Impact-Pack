@@ -10,6 +10,7 @@ import piexif
 import math
 import zipfile
 import re
+from PIL import ImageDraw
 from server import PromptServer
 
 from impact.utils import *
@@ -195,8 +196,6 @@ class SEGSDetailer:
 
         model, _, vae, positive, negative = basic_pipe
 
-        image_pil = tensor2pil(image).convert('RGBA')
-
         new_segs = []
 
         for seg in segs[1]:
@@ -212,7 +211,7 @@ class SEGSDetailer:
                                                seed, steps, cfg, sampler_name, scheduler,
                                                positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
 
-            new_seg = seg._replace(cropped_image=enhanced_pil)
+            new_seg = SEG(enhanced_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             new_segs.append(new_seg)
 
         return segs[0], new_segs
@@ -324,21 +323,25 @@ class SEGSToImageList:
 
     OUTPUT_NODE = True
 
-    def doit(self, segs, fallback_image_opt):
+    def doit(self, segs, fallback_image_opt=None):
         results = list()
 
         for seg in segs[1]:
             if seg.cropped_image is not None:
-                cropped_image = seg.cropped_image
+                cropped_image = pil2tensor(seg.cropped_image)
             elif fallback_image_opt is not None:
                 # take from original image
-                cropped_image = crop_image(fallback_image_opt, seg.crop_region)
+                cropped_image = torch.from_numpy(crop_image(fallback_image_opt, seg.crop_region))
+            else:
+                image = Image.new("RGB", (64, 64))
+                draw = ImageDraw.Draw(image)
+                draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
+                cropped_image = pil2tensor(image)
 
-            cropped_image = torch.from_numpy(cropped_image)
             results.append(cropped_image)
 
         if len(results) == 0:
-            results.append(fallback_image_opt)
+            results.append(pil2tensor(Image.new("RGBA", (8, 8))))
 
         return (results,)
 
@@ -400,16 +403,16 @@ class DetailerForEach:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-                enhanced_list.append(np.squeeze(pil2tensor(enhanced_pil)))
+                enhanced_list.append(pil2tensor(enhanced_pil))
 
-            cropped_list.append(np.squeeze(torch.from_numpy(cropped_image)))
+            cropped_list.append(torch.from_numpy(cropped_image))
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
 
-        return image_tensor, NonListIterable(cropped_list), NonListIterable(enhanced_list)
+        return image_tensor, cropped_list, enhanced_list
 
     def doit(self, image, segs, model, vae, guide_size, guide_size_for, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint):
@@ -643,6 +646,7 @@ class FaceDetailer:
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
     RETURN_NAMES = ("image", "cropped_refined", "mask", "detailer_pipe")
+    OUTPUT_IS_LIST = (False, True, False, False)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Simple"
@@ -1213,6 +1217,8 @@ class FaceDetailerPipe:
 class DetailerForEachTest(DetailerForEach):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
     RETURN_NAMES = ("image", "cropped", "cropped_refined")
+    OUTPUT_IS_LIST = (False, True, True)
+
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Detailer"
@@ -1226,11 +1232,11 @@ class DetailerForEachTest(DetailerForEach):
                                       force_inpaint)
 
         # set fallback image
-        if cropped is None:
-            cropped = enhanced_img
+        if len(cropped) == 0:
+            cropped = [enhanced_img]
 
-        if cropped_enhanced is None:
-            cropped_enhanced = enhanced_img
+        if len(cropped_enhanced) == 0:
+            cropped_enhanced = [enhanced_img]
 
         return enhanced_img, cropped, cropped_enhanced,
 
@@ -1238,6 +1244,8 @@ class DetailerForEachTest(DetailerForEach):
 class DetailerForEachTestPipe(DetailerForEachPipe):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
     RETURN_NAMES = ("image", "cropped", "cropped_refined")
+    OUTPUT_IS_LIST = (False, True, True)
+
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Detailer"
@@ -1252,11 +1260,11 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       force_inpaint)
 
         # set fallback image
-        if cropped is None:
-            cropped = enhanced_img
+        if len(cropped) == 0:
+            cropped = [enhanced_img]
 
-        if cropped_enhanced is None:
-            cropped_enhanced = enhanced_img
+        if len(cropped_enhanced) == 0:
+            cropped_enhanced = [enhanced_img]
 
         return enhanced_img, cropped, cropped_enhanced,
 
