@@ -1,6 +1,6 @@
 {
-  "last_node_id": 25,
-  "last_link_id": 41,
+  "last_node_id": 27,
+  "last_link_id": 46,
   "nodes": [
     {
       "id": 11,
@@ -98,7 +98,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "photorealistic:1.4, best quality:1.4, masterpiece, 1girl is sitting in the cafe terrace, colorful hair"
+        "photorealistic:1.4, best quality:1.4, masterpiece, 1girl is sitting in the cafe terrace, (colorful hair:1.1)"
       ]
     },
     {
@@ -178,41 +178,6 @@
       ]
     },
     {
-      "id": 16,
-      "type": "EmptyLatentImage",
-      "pos": [
-        532,
-        1143
-      ],
-      "size": {
-        "0": 315,
-        "1": 106
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            25,
-            28
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "EmptyLatentImage"
-      },
-      "widgets_values": [
-        792,
-        512,
-        1
-      ]
-    },
-    {
       "id": 10,
       "type": "ToBasicPipe",
       "pos": [
@@ -269,156 +234,6 @@
       "properties": {
         "Node name for S&R": "ToBasicPipe"
       }
-    },
-    {
-      "id": 20,
-      "type": "VAEDecode",
-      "pos": [
-        1579,
-        1077
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 30
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 31
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            37
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      }
-    },
-    {
-      "id": 23,
-      "type": "PreviewBridge",
-      "pos": [
-        1829,
-        1076
-      ],
-      "size": {
-        "0": 315,
-        "1": 290
-      },
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 37
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            38
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewBridge"
-      },
-      "widgets_values": [
-        {
-          "filename": "clipspace-mask-75860.60000000894.png",
-          "subfolder": "clipspace",
-          "type": "input",
-          "image_hash": -3419835239699805000,
-          "forward_filename": "ComfyUI_00003_.png",
-          "forward_subfolder": "",
-          "forward_type": "temp"
-        }
-      ]
-    },
-    {
-      "id": 14,
-      "type": "TwoAdvancedSamplersForMask",
-      "pos": [
-        2253,
-        383
-      ],
-      "size": {
-        "0": 315,
-        "1": 354
-      },
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 25,
-          "slot_index": 0
-        },
-        {
-          "name": "base_sampler",
-          "type": "KSAMPLER_ADVANCED",
-          "link": 24
-        },
-        {
-          "name": "mask_sampler",
-          "type": "KSAMPLER_ADVANCED",
-          "link": 23
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 38
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            39
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "TwoAdvancedSamplersForMask"
-      },
-      "widgets_values": [
-        20,
-        1
-      ]
     },
     {
       "id": 22,
@@ -507,7 +322,7 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 39
+          "link": 46
         },
         {
           "name": "vae",
@@ -542,7 +357,7 @@
         "1": 98
       },
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "outputs": [
         {
@@ -579,6 +394,107 @@
       },
       "widgets_values": [
         "V07_v07.safetensors"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": [
+        2175,
+        1079
+      ],
+      "size": {
+        "0": 516,
+        "1": 424
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 41
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 13,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1727,
+        192
+      ],
+      "size": {
+        "0": 355.20001220703125,
+        "1": 154
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            42
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "fixed",
+        "normal"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "EmptyLatentImage",
+      "pos": [
+        532,
+        1143
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            28,
+            45
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        792,
+        512,
+        1
       ]
     },
     {
@@ -642,46 +558,114 @@
       ]
     },
     {
-      "id": 13,
-      "type": "KSamplerAdvancedProvider",
+      "id": 27,
+      "type": "TwoAdvancedSamplersForMask",
       "pos": [
-        1727,
-        192
+        2187,
+        266
       ],
-      "size": {
-        "0": 355.20001220703125,
-        "1": 154
-      },
+      "size": [
+        315,
+        426.00000762939453
+      ],
       "flags": {},
-      "order": 7,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
-          "name": "basic_pipe",
-          "type": "BASIC_PIPE",
-          "link": 19
+          "name": "samples",
+          "type": "LATENT",
+          "link": 45
+        },
+        {
+          "name": "base_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 42
+        },
+        {
+          "name": "mask_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 43
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 44
         }
       ],
       "outputs": [
         {
-          "name": "KSAMPLER_ADVANCED",
-          "type": "KSAMPLER_ADVANCED",
+          "name": "LATENT",
+          "type": "LATENT",
           "links": [
-            24
+            46
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "KSamplerAdvancedProvider"
+        "Node name for S&R": "TwoAdvancedSamplersForMask"
       },
       "widgets_values": [
         1107040072933062,
         "fixed",
-        8,
-        "euler",
-        "normal"
+        20,
+        1,
+        10
+      ]
+    },
+    {
+      "id": 23,
+      "type": "PreviewBridge",
+      "pos": [
+        1778,
+        1098
+      ],
+      "size": {
+        "0": 315,
+        "1": 290
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            44
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewBridge"
+      },
+      "widgets_values": [
+        {
+          "filename": "clipspace-mask-348148.69999999925.png",
+          "subfolder": "clipspace",
+          "type": "input",
+          "image_hash": 492469318636598500,
+          "forward_filename": "ComfyUI_00001_.png",
+          "forward_subfolder": "",
+          "forward_type": "temp"
+        }
       ]
     },
     {
@@ -710,7 +694,7 @@
           "name": "KSAMPLER_ADVANCED",
           "type": "KSAMPLER_ADVANCED",
           "links": [
-            23
+            43
           ],
           "shape": 3,
           "slot_index": 0
@@ -720,36 +704,50 @@
         "Node name for S&R": "KSamplerAdvancedProvider"
       },
       "widgets_values": [
-        1107040072933062,
-        "fixed",
         8,
-        "euler",
+        "fixed",
         "normal"
       ]
     },
     {
-      "id": 25,
-      "type": "PreviewImage",
+      "id": 20,
+      "type": "VAEDecode",
       "pos": [
-        2175,
-        1079
+        1546,
+        972
       ],
-      "size": [
-        516,
-        424
-      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
       "flags": {},
-      "order": 15,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 30
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
           "type": "IMAGE",
-          "link": 41
+          "links": [
+            37
+          ],
+          "shape": 3,
+          "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "PreviewImage"
+        "Node name for S&R": "VAEDecode"
       }
     }
   ],
@@ -851,30 +849,6 @@
       "BASIC_PIPE"
     ],
     [
-      23,
-      15,
-      0,
-      14,
-      2,
-      "KSAMPLER_ADVANCED"
-    ],
-    [
-      24,
-      13,
-      0,
-      14,
-      1,
-      "KSAMPLER_ADVANCED"
-    ],
-    [
-      25,
-      16,
-      0,
-      14,
-      0,
-      "LATENT"
-    ],
-    [
       28,
       16,
       0,
@@ -939,22 +913,6 @@
       "IMAGE"
     ],
     [
-      38,
-      23,
-      1,
-      14,
-      3,
-      "MASK"
-    ],
-    [
-      39,
-      14,
-      0,
-      24,
-      0,
-      "LATENT"
-    ],
-    [
       40,
       22,
       2,
@@ -969,6 +927,46 @@
       25,
       0,
       "IMAGE"
+    ],
+    [
+      42,
+      13,
+      0,
+      27,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      43,
+      15,
+      0,
+      27,
+      2,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      44,
+      23,
+      1,
+      27,
+      3,
+      "MASK"
+    ],
+    [
+      45,
+      16,
+      0,
+      27,
+      0,
+      "LATENT"
+    ],
+    [
+      46,
+      27,
+      0,
+      24,
+      0,
+      "LATENT"
     ]
   ],
   "groups": [],

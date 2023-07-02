@@ -179,8 +179,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, max_size
     bbox_w = bbox[2] - bbox[0]
 
     # Skip processing if the detected bbox is already larger than the guide_size
-    if bbox_h >= guide_size and bbox_w >= guide_size:
-        print(f"Detailer: segment skip")
+    if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
+        print(f"Detailer: segment skip (enough big)")
         return None
 
     if guide_size_for == "bbox":
