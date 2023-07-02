@@ -28,7 +28,12 @@ def combine_masks(masks):
 
         for i in range(1, len(masks)):
             cv2_mask = np.array(masks[i][1])
-            combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
+
+            if combined_cv2_mask.shape == cv2_mask.shape:
+                combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
+            else:
+                # do nothing - incompatible mask
+                pass
 
         mask = torch.from_numpy(combined_cv2_mask)
         return mask
@@ -43,7 +48,12 @@ def combine_masks2(masks):
 
         for i in range(1, len(masks)):
             cv2_mask = np.array(masks[i]).astype(np.uint8)
-            combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
+
+            if combined_cv2_mask.shape == cv2_mask.shape:
+                combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
+            else:
+                # do nothing - incompatible mask
+                pass
 
         mask = torch.from_numpy(combined_cv2_mask)
         return mask
@@ -54,9 +64,13 @@ def bitwise_and_masks(mask1, mask2):
     mask2 = mask2.cpu()
     cv2_mask1 = np.array(mask1)
     cv2_mask2 = np.array(mask2)
-    cv2_mask = cv2.bitwise_and(cv2_mask1, cv2_mask2)
-    mask = torch.from_numpy(cv2_mask)
-    return mask
+
+    if cv2_mask1.shape == cv2_mask2.shape:
+        cv2_mask = cv2.bitwise_and(cv2_mask1, cv2_mask2)
+        return torch.from_numpy(cv2_mask)
+    else:
+        # do nothing - incompatible mask shape: mostly empty mask
+        return mask1
 
 
 def to_binary_mask(mask):
@@ -102,9 +116,13 @@ def subtract_masks(mask1, mask2):
     mask2 = mask2.cpu()
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
-    cv2_mask = cv2.subtract(cv2_mask1, cv2_mask2)
-    mask = torch.from_numpy(cv2_mask) / 255.0
-    return mask
+
+    if cv2_mask1.shape == cv2_mask2.shape:
+        cv2_mask = cv2.subtract(cv2_mask1, cv2_mask2)
+        return torch.from_numpy(cv2_mask) / 255.0
+    else:
+        # do nothing - incompatible mask shape: mostly empty mask
+        return mask1
 
 
 def normalize_region(limit, startp, size):

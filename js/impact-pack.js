@@ -173,6 +173,23 @@ app.registerExtension({
 			});
 		}
 
+		switch(node.comfyClass) {
+		    case "ToDetailerPipe":
+		    case "BasicPipeToDetailerPipe":
+		    case "EditDetailerPipe":
+		    case "FaceDetailer":
+		        {
+                    for(let i in node.widgets) {
+                        let widget = node.widgets[i];
+                        if(widget.type === "customtext") {
+                            widget.dynamicPrompts = false;
+                            widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
+                        }
+			        }
+			    }
+		        break;
+		}
+
 		if(node.comfyClass == "ImpactWildcardProcessor") {
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";

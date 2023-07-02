@@ -167,9 +167,8 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
     return npoints, nplabs
 
 
-def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, bbox, seed, steps, cfg, sampler_name, scheduler,
-                   positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
-
+def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, max_size, bbox, seed, steps, cfg, sampler_name,
+                   scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
     if wildcard_opt is not None and wildcard_opt != "":
         model, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
 
@@ -194,6 +193,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, bbox, se
     new_w = int(w * upscale)
     new_h = int(h * upscale)
 
+    # safeguard
+    if new_w > max_size or new_h > max_size:
+        upscale *= max_size / max(new_w, new_h)
+        new_w = int(w * upscale)
+        new_h = int(h * upscale)
+
     if not force_inpaint:
         if upscale <= 1.0:
             print(f"Detailer: segment skip [determined upscale factor={upscale}]")
@@ -210,6 +215,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, bbox, se
             new_h = h
 
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
+
+    # noise_mask
+    is_mask_all_zeros = (noise_mask == 0).all().item()
+    if is_mask_all_zeros:
+        print(f"Detailer: segment skip [empty mask]")
+        return None
 
     # upscale
     upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
@@ -615,10 +626,16 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
             crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
 
             if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
-                cropped_mask = np.array(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
+                cropped_mask = np.zeros_like(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
 
                 if bbox_fill:
                     cropped_mask.fill(1.0)
+                else:
+                    cropped_mask_bbox = mask[y1:y2, x1:x2]
+                    bbox_offset_y = y1 - crop_region[1]
+                    bbox_offset_x = x1 - crop_region[0]
+                    cropped_mask[bbox_offset_y:bbox_offset_y + cropped_mask_bbox.shape[0],
+                                 bbox_offset_x:bbox_offset_x + cropped_mask_bbox.shape[1]] = cropped_mask_bbox
 
                 item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
 
