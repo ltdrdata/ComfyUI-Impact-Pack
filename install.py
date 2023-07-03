@@ -24,8 +24,8 @@ if "python_embeded" in sys.executable or "python_embedded" in sys.executable:
     pip_install = [sys.executable, '-s', '-m', 'pip', 'install']
     mim_install = [sys.executable, '-s', '-m', 'mim', 'install']
 else:
-    pip_install = [sys.executable, '-s', '-m', 'pip', 'install']
-    mim_install = [sys.executable, '-s', '-m', 'mim', 'install']
+    pip_install = [sys.executable, '-m', 'pip', 'install']
+    mim_install = [sys.executable, '-m', 'mim', 'install']
 
 
 def remove_olds():
