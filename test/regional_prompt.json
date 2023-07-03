@@ -1,0 +1,975 @@
+{
+  "last_node_id": 22,
+  "last_link_id": 28,
+  "nodes": [
+    {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [
+        2400,
+        270
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        -250,
+        747
+      ],
+      "size": {
+        "0": 915.1032104492188,
+        "1": 860.6505126953125
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            15
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clipspace/clipspace-mask-1650741.700000003.png [input]",
+        "image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "EditBasicPipe",
+      "pos": [
+        888,
+        222
+      ],
+      "size": {
+        "0": 267,
+        "1": 126
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 11
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 13
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": [
+            16
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EditBasicPipe"
+      }
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        460,
+        242
+      ],
+      "size": {
+        "0": 292.0009765625,
+        "1": 115.41679382324219
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            13
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1girl wear red hat"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "EmptyLatentImage",
+      "pos": [
+        1050,
+        877
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            19
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        768,
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        2476,
+        319
+      ],
+      "size": [
+        1069.308299510546,
+        1128.9237824485897
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 6,
+      "type": "FromBasicPipe",
+      "pos": [
+        167,
+        238
+      ],
+      "size": {
+        "0": 241.79998779296875,
+        "1": 106
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            12,
+            20
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            8
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FromBasicPipe"
+      }
+    },
+    {
+      "id": 18,
+      "type": "CLIPTextEncode",
+      "pos": [
+        502,
+        507
+      ],
+      "size": {
+        "0": 292.0009765625,
+        "1": 115.41679382324219
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            21
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1 man wear jeans"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "## make-basic_pipe [2c8c61]",
+      "pos": [
+        -227,
+        -290
+      ],
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae_opt",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "BASIC_PIPE",
+          "type": "BASIC_PIPE",
+          "links": [
+            1,
+            3,
+            11,
+            22
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "title": "## make-basic_pipe",
+      "properties": {
+        "Node name for S&R": "## make-basic_pipe [2c8c61]"
+      },
+      "widgets_values": [
+        "V07_v07.safetensors",
+        "photorealistic:1.4, 1girl and 1man sitting in the cafe",
+        ""
+      ]
+    },
+    {
+      "id": 17,
+      "type": "EditBasicPipe",
+      "pos": [
+        975,
+        597
+      ],
+      "size": {
+        "0": 267,
+        "1": 126
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 22
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 21
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": [
+            24
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EditBasicPipe"
+      }
+    },
+    {
+      "id": 2,
+      "type": "RegionalSampler",
+      "pos": [
+        2050,
+        200
+      ],
+      "size": [
+        315,
+        406
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 19,
+          "slot_index": 0
+        },
+        {
+          "name": "base_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 10
+        },
+        {
+          "name": "regional_prompts",
+          "type": "REGIONAL_PROMPTS",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            7
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RegionalSampler"
+      },
+      "widgets_values": [
+        212608453650633,
+        "randomize",
+        20,
+        1,
+        10
+      ]
+    },
+    {
+      "id": 12,
+      "type": "RegionalPrompt",
+      "pos": [
+        1361,
+        497
+      ],
+      "size": {
+        "0": 418.1999816894531,
+        "1": 46
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 15
+        },
+        {
+          "name": "advanced_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            25
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RegionalPrompt"
+      }
+    },
+    {
+      "id": 20,
+      "type": "RegionalPrompt",
+      "pos": [
+        1520,
+        940
+      ],
+      "size": {
+        "0": 418.1999816894531,
+        "1": 46
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 28
+        },
+        {
+          "name": "advanced_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            26
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RegionalPrompt"
+      }
+    },
+    {
+      "id": 22,
+      "type": "CombineRegionalPrompts",
+      "pos": [
+        1851.5471568957514,
+        660.6109041998288
+      ],
+      "size": {
+        "0": 430.8000183105469,
+        "1": 46
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "regional_prompts1",
+          "type": "REGIONAL_PROMPTS",
+          "link": 25
+        },
+        {
+          "name": "regional_prompts2",
+          "type": "REGIONAL_PROMPTS",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            27
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CombineRegionalPrompts"
+      }
+    },
+    {
+      "id": 15,
+      "type": "LoadImage",
+      "pos": [
+        -278,
+        1721
+      ],
+      "size": [
+        1069.0971236588748,
+        886.818909225281
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            28
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clipspace/clipspace-mask-1683237.5.png [input]",
+        "image"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1209,
+        225
+      ],
+      "size": {
+        "0": 355.20001220703125,
+        "1": 106
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            17
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "euler",
+        "normal"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1360,
+        670
+      ],
+      "size": {
+        "0": 355.20001220703125,
+        "1": 106
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            23
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "euler",
+        "normal"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1289,
+        -267
+      ],
+      "size": {
+        "0": 355.20001220703125,
+        "1": 106
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            10
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "euler",
+        "normal"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      5,
+      0,
+      4,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      3,
+      5,
+      0,
+      6,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      7,
+      2,
+      0,
+      7,
+      0,
+      "LATENT"
+    ],
+    [
+      8,
+      6,
+      2,
+      7,
+      1,
+      "VAE"
+    ],
+    [
+      9,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      4,
+      0,
+      2,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      11,
+      5,
+      0,
+      9,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      12,
+      6,
+      1,
+      10,
+      0,
+      "CLIP"
+    ],
+    [
+      13,
+      10,
+      0,
+      9,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      15,
+      1,
+      1,
+      12,
+      0,
+      "MASK"
+    ],
+    [
+      16,
+      9,
+      0,
+      13,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      17,
+      13,
+      0,
+      12,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      19,
+      14,
+      0,
+      2,
+      0,
+      "LATENT"
+    ],
+    [
+      20,
+      6,
+      1,
+      18,
+      0,
+      "CLIP"
+    ],
+    [
+      21,
+      18,
+      0,
+      17,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      22,
+      5,
+      0,
+      17,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      23,
+      21,
+      0,
+      20,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      24,
+      17,
+      0,
+      21,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      25,
+      12,
+      0,
+      22,
+      0,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      26,
+      20,
+      0,
+      22,
+      1,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      27,
+      22,
+      0,
+      2,
+      2,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      28,
+      15,
+      1,
+      20,
+      0,
+      "MASK"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

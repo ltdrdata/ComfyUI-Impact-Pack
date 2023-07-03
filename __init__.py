@@ -163,6 +163,10 @@ NODE_CLASS_MAPPINGS = {
     # "SEGPick": SEGPick,
     # "SEGEdit": SEGEdit,
 
+    "RegionalSampler": RegionalSampler,
+    "CombineRegionalPrompts": CombineRegionalPrompts,
+    "RegionalPrompt": RegionalPrompt,
+
     "MaskPainter": impact.legacy_nodes.MaskPainter,
     "MMDetLoader": impact.legacy_nodes.MMDetLoader,
     "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,

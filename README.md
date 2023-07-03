@@ -88,6 +88,9 @@ This takes latent as input and outputs latent as the result.
   * When an image is generated with the "fixed" mode, the prompt used for that particular generation is stored in the metadata.
   * Known Issue: The presetText.js script from **pythongosssss's [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)** is causing a conflict, preventing it from being used together.
 
+* RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
+- multiple region version of TwoAdvancedSamplersForMask 
+
 ## Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
 
