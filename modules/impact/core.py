@@ -450,7 +450,127 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
 
     return mask
 
+def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
+              threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
+    if sam_model.is_auto_mode:
+        device = comfy.model_management.get_torch_device()
+        sam_model.to(device=device)
+
+    try:
+        predictor = SamPredictor(sam_model)
+        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        predictor.set_image(image, "RGB")
+
+        total_masks = []
+
+        use_small_negative = mask_hint_use_negative == "Small"
+
+        # seg_shape = segs[0]
+        segs = segs[1]
+        if detection_hint == "mask-points":
+            points = []
+            plabs = []
+
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(segs[i].bbox)
+                points.append(center)
+
+                # small point is background, big point is foreground
+                if use_small_negative and bbox[2] - bbox[0] < 10:
+                    plabs.append(0)
+                else:
+                    plabs.append(1)
+
+            detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+            total_masks += detected_masks
+
+        else:
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(bbox)
+
+                x1 = max(bbox[0] - bbox_expansion, 0)
+                y1 = max(bbox[1] - bbox_expansion, 0)
+                x2 = min(bbox[2] + bbox_expansion, image.shape[1])
+                y2 = min(bbox[3] + bbox_expansion, image.shape[0])
+
+                dilated_bbox = [x1, y1, x2, y2]
+
+                points = []
+                plabs = []
+                if detection_hint == "center-1":
+                    points.append(center)
+                    plabs = [1]  # 1 = foreground point, 0 = background point
+
+                elif detection_hint == "horizontal-2":
+                    gap = (x2 - x1) / 3
+                    points.append((x1 + gap, center[1]))
+                    points.append((x1 + gap * 2, center[1]))
+                    plabs = [1, 1]
+
+                elif detection_hint == "vertical-2":
+                    gap = (y2 - y1) / 3
+                    points.append((center[0], y1 + gap))
+                    points.append((center[0], y1 + gap * 2))
+                    plabs = [1, 1]
+
+                elif detection_hint == "rect-4":
+                    x_gap = (x2 - x1) / 3
+                    y_gap = (y2 - y1) / 3
+                    points.append((x1 + x_gap, center[1]))
+                    points.append((x1 + x_gap * 2, center[1]))
+                    points.append((center[0], y1 + y_gap))
+                    points.append((center[0], y1 + y_gap * 2))
+                    plabs = [1, 1, 1, 1]
+
+                elif detection_hint == "diamond-4":
+                    x_gap = (x2 - x1) / 3
+                    y_gap = (y2 - y1) / 3
+                    points.append((x1 + x_gap, y1 + y_gap))
+                    points.append((x1 + x_gap * 2, y1 + y_gap))
+                    points.append((x1 + x_gap, y1 + y_gap * 2))
+                    points.append((x1 + x_gap * 2, y1 + y_gap * 2))
+                    plabs = [1, 1, 1, 1]
+
+                elif detection_hint == "mask-point-bbox":
+                    center = center_of_bbox(segs[i].bbox)
+                    points.append(center)
+                    plabs = [1]
+
+                elif detection_hint == "mask-area":
+                    points, plabs = gen_detection_hints_from_mask_area(segs[i].crop_region[0], segs[i].crop_region[1],
+                                                                       segs[i].cropped_mask,
+                                                                       mask_hint_threshold, use_small_negative)
+
+                if mask_hint_use_negative == "Outter":
+                    npoints, nplabs = gen_negative_hints(image.shape[0], image.shape[1],
+                                                         segs[i].crop_region[0], segs[i].crop_region[1],
+                                                         segs[i].crop_region[2], segs[i].crop_region[3])
+
+                    points += npoints
+                    plabs += nplabs
+
+                detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+                total_masks += detected_masks
+
+        # merge every collected masks
+        mask = combine_masks2(total_masks)
+
+    finally:
+        if sam_model.is_auto_mode:
+            print(f"semd to {device}")
+            sam_model.to(device="cpu")
+
+    if mask is not None:
+        mask = mask.float()
+        mask = dilate_mask(mask.cpu().numpy(), dilation)
+        mask = torch.from_numpy(mask)
+    else:
+        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+
+    return mask
 
 def segs_bitwise_and_mask(segs, mask):
     if mask is None:

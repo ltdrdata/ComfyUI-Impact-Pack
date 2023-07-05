@@ -90,6 +90,7 @@ NODE_CLASS_MAPPINGS = {
     "DetailerForEachDebugPipe": DetailerForEachTestPipe,
 
     "SAMDetectorCombined": SAMDetectorCombined,
+    "SAMDetectorSegmented": SAMDetectorSegmented,
 
     "FaceDetailer": FaceDetailer,
     "FaceDetailerPipe": FaceDetailerPipe,
@@ -194,6 +195,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",
     "SAMDetectorCombined": "SAMDetector (combined)",
+    "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
 
     "BasicPipeToDetailerPipe": "BasicPipe -> DetailerPipe",

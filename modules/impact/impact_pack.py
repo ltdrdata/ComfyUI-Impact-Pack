@@ -388,6 +388,7 @@ class DetailerForEach:
         cropped_list = []
 
         for seg in segs[1]:
+            print(seg)
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
 
@@ -405,8 +406,22 @@ class DetailerForEach:
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-                enhanced_list.append(pil2tensor(enhanced_pil))
+
+                # Create a copy of enhanced_pil
+                enhanced_pil_modified = enhanced_pil.copy()
+
+                # Convert enhanced_pil_modified to RGBA mode
+                enhanced_pil_modified = enhanced_pil_modified.convert('RGBA')
+
+                # Apply the mask
+                mask_array = seg.cropped_mask.astype(np.uint8) * 255
+                mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_modified.size)
+                enhanced_pil_modified.putalpha(mask_image)
+
+                # Paste the modified enhanced_pil onto image_pil
+                image_pil.paste(enhanced_pil_modified, (seg.crop_region[0], seg.crop_region[1]), enhanced_pil_modified)
+
+                enhanced_list.append(pil2tensor(enhanced_pil_modified))
 
             cropped_list.append(torch.from_numpy(cropped_image))
 
