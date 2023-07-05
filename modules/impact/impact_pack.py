@@ -789,6 +789,12 @@ class FaceDetailer:
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
 
+        if len(cropped_enhanced) == 0:
+            image = Image.new("RGB", (64, 64))
+            draw = ImageDraw.Draw(image)
+            draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
+            cropped_enhanced = [pil2tensor(image)]
+
         return enhanced_img, cropped_enhanced, mask
 
     def doit(self, image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
@@ -1323,6 +1329,12 @@ class FaceDetailerPipe:
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
+
+        if len(cropped_enhanced) == 0:
+            image = Image.new("RGB", (64, 64))
+            draw = ImageDraw.Draw(image)
+            draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
+            cropped_enhanced = [pil2tensor(image)]
 
         return enhanced_img, cropped_enhanced, mask, detailer_pipe
 
