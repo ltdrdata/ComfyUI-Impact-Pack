@@ -626,54 +626,76 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
-        return ([], )
+        return ([],)
 
-    mask = mask.cpu().numpy()
+    if isinstance(mask, np.ndarray):
+        pass  # `mask` is already a NumPy array
+    else:
+        try:
+            mask = mask.numpy()
+        except AttributeError:
+            print("[mask_to_segs] Cannot operate: MASK is not a NumPy array or Tensor.")
+            return ([],)
+
+    if mask is None:
+        print("[mask_to_segs] Cannot operate: MASK is empty.")
+        return ([],)
 
     result = []
-    if combined == "True":
-        # Find the indices of the non-zero elements
-        indices = np.nonzero(mask)
 
-        if len(indices[0]) > 0 and len(indices[1]) > 0:
-            # Determine the bounding box of the non-zero elements
-            bbox = np.min(indices[1]), np.min(indices[0]), np.max(indices[1]), np.max(indices[0])
-            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
-            x1, y1, x2, y2 = crop_region
-
-            if x2 - x1 > 0 and y2 - y1 > 0:
-                cropped_mask = mask[y1:y2, x1:x2]
-                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
-                result.append(item)
-
+    if len(mask.shape) == 2:
+        mask = np.expand_dims(mask, axis=0)
     else:
-        # label the connected components
-        labelled_mask = label(mask)
+        mask = np.squeeze(mask, axis=1)
 
-        # get the region properties for each connected component
-        regions = regionprops(labelled_mask)
+    for i in range(mask.shape[0]):
+        mask_i = mask[i]
 
-        # iterate over the regions and print their bounding boxes
-        for region in regions:
-            y1, x1, y2, x2 = region.bbox
-            bbox = x1, y1, x2, y2
-            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+        if combined == "True":
+            indices = np.nonzero(mask_i)
+            if len(indices[0]) > 0 and len(indices[1]) > 0:
+                bbox = (
+                    np.min(indices[1]),
+                    np.min(indices[0]),
+                    np.max(indices[1]),
+                    np.max(indices[0]),
+                )
+                crop_region = make_crop_region(
+                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
+                )
+                x1, y1, x2, y2 = crop_region
+                if x2 - x1 > 0 and y2 - y1 > 0:
+                    cropped_mask = mask_i[y1:y2, x1:x2]
 
-            if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
-                cropped_mask = np.zeros_like(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
+                    if cropped_mask is not None:
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        result.append(item)
 
-                if bbox_fill:
-                    cropped_mask.fill(1.0)
-                else:
-                    cropped_mask_bbox = mask[y1:y2, x1:x2]
-                    bbox_offset_y = y1 - crop_region[1]
-                    bbox_offset_x = x1 - crop_region[0]
-                    cropped_mask[bbox_offset_y:bbox_offset_y + cropped_mask_bbox.shape[0],
-                                 bbox_offset_x:bbox_offset_x + cropped_mask_bbox.shape[1]] = cropped_mask_bbox
+        else:
+            labelled_mask = label(mask_i)
+            regions = regionprops(labelled_mask)
 
-                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
+            for region in regions:
+                y1, x1, y2, x2 = region.bbox
+                bbox = x1, y1, x2, y2
+                crop_region = make_crop_region(
+                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
+                )
 
-                result.append(item)
+                if x2 - x1 > drop_size and y2 - y1 > drop_size:
+                    cropped_mask = np.array(
+                        mask_i[
+                            crop_region[1] : crop_region[3],
+                            crop_region[0] : crop_region[2],
+                        ]
+                    )
+
+                    if bbox_fill:
+                        cropped_mask.fill(1.0)
+
+                    if cropped_mask is not None:
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        result.append(item)
 
     if not result:
         print(f"[mask_to_segs] Empty mask.")
