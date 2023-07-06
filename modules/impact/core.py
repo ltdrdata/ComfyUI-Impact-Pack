@@ -892,7 +892,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
 
 
 def segs_to_combined_mask(segs):
-    shape = segs[0]
+    shape = segs[0][1:]
     h = shape[0]
     w = shape[1]
 
