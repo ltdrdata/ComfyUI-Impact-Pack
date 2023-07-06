@@ -203,6 +203,12 @@ class SEGSDetailer:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
 
+            is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
+            if is_mask_all_zeros:
+                print(f"Detailer: segment skip [empty mask]")
+                new_segs.append(seg)
+                continue
+
             if noise_mask == "enabled":
                 cropped_mask = seg.cropped_mask
             else:
@@ -392,6 +398,11 @@ class DetailerForEach:
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
 
             mask_pil = feather_mask(seg.cropped_mask, feather)
+
+            is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
+            if is_mask_all_zeros:
+                print(f"Detailer: segment skip [empty mask]")
+                continue
 
             if noise_mask == "enabled":
                 cropped_mask = seg.cropped_mask

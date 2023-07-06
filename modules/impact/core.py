@@ -250,12 +250,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, max_size
 
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
-    # noise_mask
-    is_mask_all_zeros = (noise_mask == 0).all().item()
-    if is_mask_all_zeros:
-        print(f"Detailer: segment skip [empty mask]")
-        return None
-
     # upscale
     upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
 
