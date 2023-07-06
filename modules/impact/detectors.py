@@ -46,15 +46,17 @@ class SAMDetectorSegmented:
                       }
                 }
 
-    RETURN_TYPES = ("MASK",)
+    RETURN_TYPES = ("MASK","MASK")
+    RETURN_NAMES = ("combined_mask", "batch_masks")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Detector"
 
     def doit(self, sam_model, segs, image, detection_hint, dilation,
              threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
-        return (core.make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
-                                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative), )
+        combined_mask, batch_masks = core.make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
+                                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative)
+        return (combined_mask, batch_masks,)
 
 class BboxDetectorForEach:
     @classmethod
