@@ -90,6 +90,7 @@ NODE_CLASS_MAPPINGS = {
     "DetailerForEachDebugPipe": DetailerForEachTestPipe,
 
     "SAMDetectorCombined": SAMDetectorCombined,
+    "SAMDetectorSegmented": SAMDetectorSegmented,
 
     "FaceDetailer": FaceDetailer,
     "FaceDetailerPipe": FaceDetailerPipe,
@@ -120,6 +121,7 @@ NODE_CLASS_MAPPINGS = {
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
     "Segs & Mask": SegsBitwiseAndMask,
+    "Segs & Mask ForEach": SegsBitwiseAndMaskForEach,
     "EmptySegs": EmptySEGS,
 
     "MaskToSEGS": MaskToSEGS,
@@ -187,6 +189,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BitwiseAndMaskForEach": "Bitwise(SEGS & SEGS)",
     "SubtractMaskForEach": "Bitwise(SEGS - SEGS)",
     "Segs & Mask": "Bitwise(SEGS & MASK)",
+    "Segs & Mask ForEach": "Bitwise(SEGS & MASKS ForEach)",
     "BitwiseAndMask": "Bitwise(MASK & MASK)",
     "SubtractMask": "Bitwise(MASK - MASK)",
     "DetailerForEach": "Detailer (SEGS)",
@@ -194,6 +197,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",
     "SAMDetectorCombined": "SAMDetector (combined)",
+    "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
 
     "BasicPipeToDetailerPipe": "BasicPipe -> DetailerPipe",
