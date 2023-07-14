@@ -43,24 +43,7 @@ def remove_olds():
         os.remove(old_py_path)
 
 
-def ensure_pip_packages():
-    try:
-        import cv2
-    except Exception:
-        try:
-            subprocess.check_call(pip_install + ['opencv-python'])
-        except:
-            print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
-
-    try:
-        import segment_anything
-        from skimage.measure import label, regionprops
-        import piexif
-    except Exception:
-        my_path = os.path.dirname(__file__)
-        requirements_path = os.path.join(my_path, "requirements.txt")
-        subprocess.check_call(pip_install + ['-r', requirements_path])
-
+def ensure_pip_packages_first():
     try:
         import pycocotools
     except Exception:
@@ -81,6 +64,26 @@ def ensure_pip_packages():
             subprocess.check_call(pip_install + [url])
 
 
+def ensure_pip_packages_last():
+    try:
+        import segment_anything
+        from skimage.measure import label, regionprops
+        import piexif
+    except Exception:
+        my_path = os.path.dirname(__file__)
+        requirements_path = os.path.join(my_path, "requirements.txt")
+        subprocess.check_call(pip_install + ['-r', requirements_path])
+
+    # !! cv2 importing test must be very last !!
+    try:
+        import cv2
+    except Exception:
+        try:
+            subprocess.check_call(pip_install + ['opencv-python'])
+        except:
+            print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
+
+
 def ensure_mmdet_package():
     try:
         import mmcv
@@ -95,8 +98,9 @@ def ensure_mmdet_package():
 
 def install():
     remove_olds()
-    ensure_pip_packages()
+    ensure_pip_packages_first()
     ensure_mmdet_package()
+    ensure_pip_packages_last()
 
     # Download model
     print("### ComfyUI-Impact-Pack: Check basic models")

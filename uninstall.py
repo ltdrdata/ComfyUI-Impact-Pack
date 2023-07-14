@@ -3,6 +3,7 @@ import sys
 import time
 import platform
 import shutil
+import subprocess
 
 comfy_path = '../..'
 
