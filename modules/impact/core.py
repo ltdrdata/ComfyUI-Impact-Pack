@@ -533,10 +533,13 @@ def merge_and_stack_masks(stacked_masks, group_size):
 
     return merged_masks
 
-# 利用了 Python 的切片功能。stacked_masks[2::3] 表示从索引 2 开始，以步长 3 选择每个第三个张量。这样就可以快速获取到 stacked_masks 中每三个张量的最后一个张量。
+
+# Used Python's slicing feature. stacked_masks[2::3] means starting from index 2, selecting every third tensor with a step size of 3.
+# This allows for quickly obtaining the last tensor of every three tensors in stacked_masks.
 def every_three_pick_last(stacked_masks):
     selected_masks = stacked_masks[2::3]
     return selected_masks
+
 
 def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
               threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
