@@ -522,6 +522,9 @@ def convert_and_stack_masks(masks):
 
 
 def merge_and_stack_masks(stacked_masks, group_size):
+    if stacked_masks is None:
+        return None
+
     num_masks = stacked_masks.size(0)
     merged_masks = []
 
@@ -644,7 +647,7 @@ def segs_bitwise_and_mask(segs, mask):
 def apply_mask_to_each_seg(segs, masks):
     if masks is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
-        return ([], )
+        return (segs[0], [], )
 
     items = []
 

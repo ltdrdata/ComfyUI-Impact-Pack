@@ -219,7 +219,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageMaskSwitch": "Switch (images, mask)",
     "LatentSwitch": "Switch (latent)",
     "SEGSSwitch": "Switch (SEGS)",
-    
+
+    "MasksToMaskList": "Masks to Mask List",
+
     "MaskPainter": "MaskPainter (Deprecated)",
     "MMDetLoader": "MMDetLoader (Legacy)",
     "SegsMaskCombine": "SegsMaskCombine (Legacy)",

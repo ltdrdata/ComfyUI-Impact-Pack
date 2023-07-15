@@ -1634,6 +1634,10 @@ class MasksToMaskList:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, masks):
+        if masks is None:
+            empty_mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            return ([empty_mask], )
+
         res = []
 
         for mask in masks:
