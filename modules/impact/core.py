@@ -542,7 +542,7 @@ def every_three_pick_last(stacked_masks):
 
 
 def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
-              threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+                            threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
     if sam_model.is_auto_mode:
         device = comfy.model_management.get_torch_device()
@@ -587,6 +587,8 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                 y2 = min(bbox[3] + bbox_expansion, image.shape[0])
 
                 dilated_bbox = [x1, y1, x2, y2]
+
+                print(f"dilated_bbox: {dilated_bbox}")
 
                 points, plabs = generate_detection_hints(image, segs[i],center, detection_hint, dilated_bbox, mask_hint_threshold, use_small_negative, mask_hint_use_negative)
 
@@ -638,20 +640,19 @@ def segs_bitwise_and_mask(segs, mask):
     return segs[0], items
 
 
-def apply_mask_to_each_seg(segs, masks):
-    if masks is None:
+def apply_mask_to_each_seg(segs, mask):
+    if mask is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
         return ([], )
 
     items = []
 
-    masks = masks.squeeze(1)
-
-    for seg, mask in zip(segs[1], masks):
+    mask = mask.cpu().numpy()
+    for seg in segs[1]:
         cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
         crop_region = seg.crop_region
 
-        cropped_mask2 = (mask.cpu().numpy() * 255).astype(np.uint8)
+        cropped_mask2 = (mask * 255).astype(np.uint8)
         cropped_mask2 = cropped_mask2[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
 
         new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)

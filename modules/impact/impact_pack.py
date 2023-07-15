@@ -1475,7 +1475,7 @@ class SegsBitwiseAndMaskForEach:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS",),
-                        "masks": ("MASK",),
+                        "mask": ("MASK",),
                     }
                 }
 
@@ -1484,8 +1484,8 @@ class SegsBitwiseAndMaskForEach:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, segs, masks):
-        return (core.apply_mask_to_each_seg(segs, masks), )
+    def doit(self, segs, mask):
+        return (core.apply_mask_to_each_seg(segs, mask), )
 
 
 class BitwiseAndMaskForEach:

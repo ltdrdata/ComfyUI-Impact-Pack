@@ -29,6 +29,7 @@ class SAMDetectorCombined:
         return (core.make_sam_mask(sam_model, segs, image, detection_hint, dilation,
                                    threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative), )
 
+
 class SAMDetectorSegmented:
     @classmethod
     def INPUT_TYPES(s):
@@ -55,8 +56,10 @@ class SAMDetectorSegmented:
     def doit(self, sam_model, segs, image, detection_hint, dilation,
              threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
         combined_mask, batch_masks = core.make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
-                                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative)
+                                                                  threshold, bbox_expansion, mask_hint_threshold,
+                                                                  mask_hint_use_negative)
         return (combined_mask, batch_masks,)
+
 
 class BboxDetectorForEach:
     @classmethod
