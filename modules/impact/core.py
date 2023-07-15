@@ -869,8 +869,8 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                 if x2 - x1 > drop_size and y2 - y1 > drop_size:
                     cropped_mask = np.array(
                         mask_i[
-                            crop_region[1] : crop_region[3],
-                            crop_region[0] : crop_region[2],
+                            crop_region[1]: crop_region[3],
+                            crop_region[0]: crop_region[2],
                         ]
                     )
 
@@ -888,11 +888,12 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
     # for r in result:
     #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
 
-    return mask.shape, result
+    # shape: (b,h,w) -> (h,w)
+    return (mask.shape[1], mask.shape[2]), result
 
 
 def segs_to_combined_mask(segs):
-    shape = segs[0][1:]
+    shape = segs[0]
     h = shape[0]
     w = shape[1]
 
