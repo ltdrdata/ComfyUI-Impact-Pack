@@ -1900,7 +1900,7 @@ class LatentReceiver:
 
     @classmethod
     def VALIDATE_INPUTS(s, latent, link_id):
-        if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or ".." in latent.contains:
+        if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or ".." in latent:
             return "Invalid latent file: {}".format(latent)
         return True
 
