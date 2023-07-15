@@ -1475,7 +1475,7 @@ class SegsBitwiseAndMaskForEach:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS",),
-                        "mask": ("MASK",),
+                        "masks": ("MASKS",),
                     }
                 }
 
@@ -1484,8 +1484,8 @@ class SegsBitwiseAndMaskForEach:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, segs, mask):
-        return (core.apply_mask_to_each_seg(segs, mask), )
+    def doit(self, segs, masks):
+        return (core.apply_mask_to_each_seg(segs, masks), )
 
 
 class BitwiseAndMaskForEach:
@@ -1617,6 +1617,31 @@ class MaskToSEGS:
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill == "enabled", drop_size)
         return (result, )
+
+
+class MasksToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "masks": ("MASKS", ),
+                      }
+                }
+
+    RETURN_TYPES = ("MASK", )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, masks):
+        res = []
+
+        for mask in masks:
+            res.append(mask)
+
+        print(f"mask len: {len(res)}")
+
+        return (res, )
 
 
 class ToBinaryMask:

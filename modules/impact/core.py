@@ -501,8 +501,9 @@ def generate_detection_hints(image,seg,center,detection_hint,dilated_bbox,mask_h
 
         points += npoints
         plabs += nplabs
-        
+
     return points, plabs
+
 
 def convert_and_stack_masks(masks):
     if len(masks) == 0:
@@ -518,6 +519,7 @@ def convert_and_stack_masks(masks):
     stacked_masks = stacked_masks.unsqueeze(1)
 
     return stacked_masks
+
 
 def merge_and_stack_masks(stacked_masks, group_size):
     num_masks = stacked_masks.size(0)
@@ -588,8 +590,6 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
 
                 dilated_bbox = [x1, y1, x2, y2]
 
-                print(f"dilated_bbox: {dilated_bbox}")
-
                 points, plabs = generate_detection_hints(image, segs[i],center, detection_hint, dilated_bbox, mask_hint_threshold, use_small_negative, mask_hint_use_negative)
 
                 detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
@@ -616,6 +616,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
     return (mask, merge_and_stack_masks(stacked_masks, group_size=3))
     # return every_three_pick_last(stacked_masks)
 
+
 def segs_bitwise_and_mask(segs, mask):
     if mask is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
@@ -640,19 +641,20 @@ def segs_bitwise_and_mask(segs, mask):
     return segs[0], items
 
 
-def apply_mask_to_each_seg(segs, mask):
-    if mask is None:
+def apply_mask_to_each_seg(segs, masks):
+    if masks is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
         return ([], )
 
     items = []
 
-    mask = mask.cpu().numpy()
-    for seg in segs[1]:
+    masks = masks.squeeze(1)
+
+    for seg, mask in zip(segs[1], masks):
         cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
         crop_region = seg.crop_region
 
-        cropped_mask2 = (mask * 255).astype(np.uint8)
+        cropped_mask2 = (mask.cpu().numpy() * 255).astype(np.uint8)
         cropped_mask2 = cropped_mask2[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
 
         new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)

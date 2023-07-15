@@ -47,7 +47,7 @@ class SAMDetectorSegmented:
                       }
                 }
 
-    RETURN_TYPES = ("MASK","MASK")
+    RETURN_TYPES = ("MASK", "MASKS")
     RETURN_NAMES = ("combined_mask", "batch_masks")
     FUNCTION = "doit"
 
@@ -58,7 +58,7 @@ class SAMDetectorSegmented:
         combined_mask, batch_masks = core.make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                                                                   threshold, bbox_expansion, mask_hint_threshold,
                                                                   mask_hint_use_negative)
-        return (combined_mask, batch_masks,)
+        return (combined_mask, batch_masks, )
 
 
 class BboxDetectorForEach:
