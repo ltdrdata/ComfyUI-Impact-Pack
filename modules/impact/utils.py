@@ -1,7 +1,7 @@
 import torch
 import cv2
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 
@@ -205,9 +205,16 @@ def scale_tensor(w, h, image):
     return pil2tensor(scaled_image)
 
 
-def scale_tensor_and_to_pil(w,h, image):
+def scale_tensor_and_to_pil(w, h, image):
     image = tensor2pil(image)
     return image.resize((w, h), resample=LANCZOS)
+
+
+def empty_pil(w=64, h=64):
+    image = Image.new("RGB", (w, h))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, w-1, h-1), fill=(0, 0, 0))
+    return pil2tensor(image)
 
 
 class NonListIterable:

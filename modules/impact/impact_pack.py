@@ -340,15 +340,12 @@ class SEGSToImageList:
                 # take from original image
                 cropped_image = torch.from_numpy(crop_image(fallback_image_opt, seg.crop_region))
             else:
-                image = Image.new("RGB", (64, 64))
-                draw = ImageDraw.Draw(image)
-                draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
-                cropped_image = pil2tensor(image)
+                cropped_image = empty_pil()
 
             results.append(cropped_image)
 
         if len(results) == 0:
-            results.append(pil2tensor(Image.new("RGBA", (8, 8))))
+            results.append(empty_pil())
 
         return (results,)
 
@@ -390,6 +387,7 @@ class DetailerForEach:
 
         image_pil = tensor2pil(image).convert('RGBA')
 
+        enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
 
@@ -419,19 +417,30 @@ class DetailerForEach:
                 image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
                 enhanced_list.append(pil2tensor(enhanced_pil))
 
+            if not (enhanced_pil is None):
+                # Convert enhanced_pil_alpha to RGBA mode
+                enhanced_pil_alpha = enhanced_pil.copy().convert('RGBA')
+
+                # Apply the mask
+                mask_array = seg.cropped_mask.astype(np.uint8) * 255
+                mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
+                enhanced_pil_alpha.putalpha(mask_image)
+                enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
+
             cropped_list.append(torch.from_numpy(cropped_image))
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
+        enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
 
-        return image_tensor, cropped_list, enhanced_list
+        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint):
 
-        enhanced_img, cropped, cropped_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
@@ -470,7 +479,7 @@ class DetailerForEachPipe:
              denoise, feather, noise_mask, force_inpaint, basic_pipe):
 
         model, clip, vae, positive, negative = basic_pipe
-        enhanced_img, cropped, cropped_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
@@ -766,9 +775,9 @@ class FaceDetailer:
                     "sam_model_opt": ("SAM_MODEL", ),
                 }}
 
-    RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
-    RETURN_NAMES = ("image", "cropped_refined", "mask", "detailer_pipe")
-    OUTPUT_IS_LIST = (False, True, False, False)
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
+    RETURN_NAMES = ("image", "cropped_refined", "cropped_enhanced_alpha", "mask", "detailer_pipe")
+    OUTPUT_IS_LIST = (False, True, True, False, False)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Simple"
@@ -788,11 +797,11 @@ class FaceDetailer:
         # bbox + sam combination
         if sam_model_opt is not None:
             sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
-                                     sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                                     sam_mask_hint_use_negative, )
+                                          sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                                          sam_mask_hint_use_negative, )
             segs = core.segs_bitwise_and_mask(segs, sam_mask)
 
-        enhanced_img, _, cropped_enhanced = \
+        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard_opt)
@@ -801,12 +810,12 @@ class FaceDetailer:
         mask = core.segs_to_combined_mask(segs)
 
         if len(cropped_enhanced) == 0:
-            image = Image.new("RGB", (64, 64))
-            draw = ImageDraw.Draw(image)
-            draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
-            cropped_enhanced = [pil2tensor(image)]
+            cropped_enhanced = [empty_pil()]
 
-        return enhanced_img, cropped_enhanced, mask
+        if len(cropped_enhanced_alpha) == 0:
+            cropped_enhanced_alpha = [empty_pil()]
+
+        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask,
 
     def doit(self, image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint,
@@ -814,7 +823,7 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None):
 
-        enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
+        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
@@ -822,7 +831,7 @@ class FaceDetailer:
             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
 
         pipe = (model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt)
-        return enhanced_img, cropped_enhanced, mask, pipe
+        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe
 
 
 class LatentPixelScale:
@@ -1320,9 +1329,9 @@ class FaceDetailerPipe:
                      },
                 }
 
-    RETURN_TYPES = ("IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
-    RETURN_NAMES = ("image", "cropped_refined", "mask", "detailer_pipe")
-    OUTPUT_IS_LIST = (False, True, False, False)
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
+    RETURN_NAMES = ("image", "cropped_refined", "cropped_enhanced_alpha", "mask", "detailer_pipe")
+    OUTPUT_IS_LIST = (False, True, True, False, False)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Simple"
@@ -1334,7 +1343,7 @@ class FaceDetailerPipe:
 
         model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt = detailer_pipe
 
-        enhanced_img, cropped_enhanced, mask = FaceDetailer.enhance_face(
+        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
@@ -1342,18 +1351,18 @@ class FaceDetailerPipe:
             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
 
         if len(cropped_enhanced) == 0:
-            image = Image.new("RGB", (64, 64))
-            draw = ImageDraw.Draw(image)
-            draw.rectangle((0, 0, 63, 63), fill=(0, 0, 0))
-            cropped_enhanced = [pil2tensor(image)]
+            cropped_enhanced = [empty_pil()]
 
-        return enhanced_img, cropped_enhanced, mask, detailer_pipe
+        if len(cropped_enhanced_alpha) == 0:
+            cropped_enhanced_alpha = [empty_pil()]
+
+        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, detailer_pipe
 
 
 class DetailerForEachTest(DetailerForEach):
-    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
-    RETURN_NAMES = ("image", "cropped", "cropped_refined")
-    OUTPUT_IS_LIST = (False, True, True)
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", )
+    RETURN_NAMES = ("image", "cropped", "cropped_refined", "cropped_refined_alpha", )
+    OUTPUT_IS_LIST = (False, True, True, True, )
 
     FUNCTION = "doit"
 
@@ -1362,25 +1371,28 @@ class DetailerForEachTest(DetailerForEach):
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint):
 
-        enhanced_img, cropped, cropped_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 
         # set fallback image
         if len(cropped) == 0:
-            cropped = [enhanced_img]
+            cropped = [empty_pil()]
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [enhanced_img]
+            cropped_enhanced = [empty_pil()]
 
-        return enhanced_img, cropped, cropped_enhanced,
+        if len(cropped_enhanced_alpha) == 0:
+            cropped_enhanced_alpha = [empty_pil()]
+
+        return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha
 
 
 class DetailerForEachTestPipe(DetailerForEachPipe):
-    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", )
-    RETURN_NAMES = ("image", "cropped", "cropped_refined")
-    OUTPUT_IS_LIST = (False, True, True)
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", )
+    RETURN_NAMES = ("image", "cropped", "cropped_refined", "cropped_refined_alpha", )
+    OUTPUT_IS_LIST = (False, True, True, True)
 
     FUNCTION = "doit"
 
@@ -1390,19 +1402,22 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
              denoise, feather, noise_mask, force_inpaint, basic_pipe):
 
         model, clip, vae, positive, negative = basic_pipe
-        enhanced_img, cropped, cropped_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint)
 
         # set fallback image
         if len(cropped) == 0:
-            cropped = [enhanced_img]
+            cropped = [empty_pil()]
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [enhanced_img]
+            cropped_enhanced = [empty_pil()]
 
-        return enhanced_img, cropped, cropped_enhanced,
+        if len(cropped_enhanced_alpha) == 0:
+            cropped_enhanced_alpha = [empty_pil()]
+
+        return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha
 
 
 class EmptySEGS:
@@ -1453,6 +1468,24 @@ class SegsBitwiseAndMask:
 
     def doit(self, segs, mask):
         return (core.segs_bitwise_and_mask(segs, mask), )
+    
+
+class SegsBitwiseAndMaskForEach:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs": ("SEGS",),
+                        "masks": ("MASKS",),
+                    }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, segs, masks):
+        return (core.apply_mask_to_each_seg(segs, masks), )
 
 
 class BitwiseAndMaskForEach:
@@ -1584,6 +1617,35 @@ class MaskToSEGS:
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill == "enabled", drop_size)
         return (result, )
+
+
+class MasksToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "masks": ("MASKS", ),
+                      }
+                }
+
+    RETURN_TYPES = ("MASK", )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, masks):
+        if masks is None:
+            empty_mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            return ([empty_mask], )
+
+        res = []
+
+        for mask in masks:
+            res.append(mask)
+
+        print(f"mask len: {len(res)}")
+
+        return (res, )
 
 
 class ToBinaryMask:

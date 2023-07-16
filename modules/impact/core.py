@@ -444,6 +444,180 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
 
     return mask
 
+def generate_detection_hints(image,seg,center,detection_hint,dilated_bbox,mask_hint_threshold, use_small_negative, mask_hint_use_negative):
+
+    [x1, y1, x2, y2] = dilated_bbox
+
+    points = []
+    plabs = []
+    if detection_hint == "center-1":
+        points.append(center)
+        plabs = [1]  # 1 = foreground point, 0 = background point
+
+    elif detection_hint == "horizontal-2":
+        gap = (x2 - x1) / 3
+        points.append((x1 + gap, center[1]))
+        points.append((x1 + gap * 2, center[1]))
+        plabs = [1, 1]
+
+    elif detection_hint == "vertical-2":
+        gap = (y2 - y1) / 3
+        points.append((center[0], y1 + gap))
+        points.append((center[0], y1 + gap * 2))
+        plabs = [1, 1]
+
+    elif detection_hint == "rect-4":
+        x_gap = (x2 - x1) / 3
+        y_gap = (y2 - y1) / 3
+        points.append((x1 + x_gap, center[1]))
+        points.append((x1 + x_gap * 2, center[1]))
+        points.append((center[0], y1 + y_gap))
+        points.append((center[0], y1 + y_gap * 2))
+        plabs = [1, 1, 1, 1]
+
+    elif detection_hint == "diamond-4":
+        x_gap = (x2 - x1) / 3
+        y_gap = (y2 - y1) / 3
+        points.append((x1 + x_gap, y1 + y_gap))
+        points.append((x1 + x_gap * 2, y1 + y_gap))
+        points.append((x1 + x_gap, y1 + y_gap * 2))
+        points.append((x1 + x_gap * 2, y1 + y_gap * 2))
+        plabs = [1, 1, 1, 1]
+
+    elif detection_hint == "mask-point-bbox":
+        center = center_of_bbox(seg.bbox)
+        points.append(center)
+        plabs = [1]
+
+    elif detection_hint == "mask-area":
+        points, plabs = gen_detection_hints_from_mask_area(seg.crop_region[0], seg.crop_region[1],
+                                                            seg.cropped_mask,
+                                                            mask_hint_threshold, use_small_negative)
+
+    if mask_hint_use_negative == "Outter":
+        npoints, nplabs = gen_negative_hints(image.shape[0], image.shape[1],
+                                                seg.crop_region[0], seg.crop_region[1],
+                                                seg.crop_region[2], seg.crop_region[3])
+
+        points += npoints
+        plabs += nplabs
+
+    return points, plabs
+
+
+def convert_and_stack_masks(masks):
+    if len(masks) == 0:
+        return None
+
+    mask_tensors = []
+    for mask in masks:
+        mask_array = np.array(mask, dtype=np.uint8)
+        mask_tensor = torch.from_numpy(mask_array).bool()
+        mask_tensors.append(mask_tensor)
+
+    stacked_masks = torch.stack(mask_tensors, dim=0)
+    stacked_masks = stacked_masks.unsqueeze(1)
+
+    return stacked_masks
+
+
+def merge_and_stack_masks(stacked_masks, group_size):
+    if stacked_masks is None:
+        return None
+
+    num_masks = stacked_masks.size(0)
+    merged_masks = []
+
+    for i in range(0, num_masks, group_size):
+        subset_masks = stacked_masks[i:i+group_size]
+        merged_mask = torch.any(subset_masks, dim=0)
+        merged_masks.append(merged_mask)
+
+    if len(merged_masks) > 0:
+        merged_masks = torch.stack(merged_masks, dim=0)
+
+    return merged_masks
+
+
+# Used Python's slicing feature. stacked_masks[2::3] means starting from index 2, selecting every third tensor with a step size of 3.
+# This allows for quickly obtaining the last tensor of every three tensors in stacked_masks.
+def every_three_pick_last(stacked_masks):
+    selected_masks = stacked_masks[2::3]
+    return selected_masks
+
+
+def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
+                            threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+
+    if sam_model.is_auto_mode:
+        device = comfy.model_management.get_torch_device()
+        sam_model.to(device=device)
+
+    try:
+        predictor = SamPredictor(sam_model)
+        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        predictor.set_image(image, "RGB")
+
+        total_masks = []
+
+        use_small_negative = mask_hint_use_negative == "Small"
+
+        # seg_shape = segs[0]
+        segs = segs[1]
+        if detection_hint == "mask-points":
+            points = []
+            plabs = []
+
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(bbox)
+                points.append(center)
+
+                # small point is background, big point is foreground
+                if use_small_negative and bbox[2] - bbox[0] < 10:
+                    plabs.append(0)
+                else:
+                    plabs.append(1)
+
+            detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+            total_masks += detected_masks
+
+        else:
+            for i in range(len(segs)):
+                bbox = segs[i].bbox
+                center = center_of_bbox(bbox)
+                x1 = max(bbox[0] - bbox_expansion, 0)
+                y1 = max(bbox[1] - bbox_expansion, 0)
+                x2 = min(bbox[2] + bbox_expansion, image.shape[1])
+                y2 = min(bbox[3] + bbox_expansion, image.shape[0])
+
+                dilated_bbox = [x1, y1, x2, y2]
+
+                points, plabs = generate_detection_hints(image, segs[i],center, detection_hint, dilated_bbox, mask_hint_threshold, use_small_negative, mask_hint_use_negative)
+
+                detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+
+                total_masks += detected_masks
+
+        # merge every collected masks
+        mask = combine_masks2(total_masks)
+
+    finally:
+        if sam_model.is_auto_mode:
+            print(f"semd to {device}")
+            sam_model.to(device="cpu")
+
+    if mask is not None:
+        mask = mask.float()
+        mask = dilate_mask(mask.cpu().numpy(), dilation)
+        mask = torch.from_numpy(mask)
+    else:
+        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+
+    stacked_masks = convert_and_stack_masks(total_masks)
+
+    return (mask, merge_and_stack_masks(stacked_masks, group_size=3))
+    # return every_three_pick_last(stacked_masks)
 
 
 def segs_bitwise_and_mask(segs, mask):
@@ -460,6 +634,31 @@ def segs_bitwise_and_mask(segs, mask):
         crop_region = seg.crop_region
 
         cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
+
+        new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
+        new_mask = new_mask.astype(np.float32) / 255.0
+
+        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+        items.append(item)
+
+    return segs[0], items
+
+
+def apply_mask_to_each_seg(segs, masks):
+    if masks is None:
+        print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
+        return (segs[0], [], )
+
+    items = []
+
+    masks = masks.squeeze(1)
+
+    for seg, mask in zip(segs[1], masks):
+        cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
+        crop_region = seg.crop_region
+
+        cropped_mask2 = (mask.cpu().numpy() * 255).astype(np.uint8)
+        cropped_mask2 = cropped_mask2[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
 
         new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
         new_mask = new_mask.astype(np.float32) / 255.0
@@ -620,54 +819,76 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
-        return ([], )
+        return ([],)
 
-    mask = mask.cpu().numpy()
+    if isinstance(mask, np.ndarray):
+        pass  # `mask` is already a NumPy array
+    else:
+        try:
+            mask = mask.numpy()
+        except AttributeError:
+            print("[mask_to_segs] Cannot operate: MASK is not a NumPy array or Tensor.")
+            return ([],)
+
+    if mask is None:
+        print("[mask_to_segs] Cannot operate: MASK is empty.")
+        return ([],)
 
     result = []
-    if combined == "True":
-        # Find the indices of the non-zero elements
-        indices = np.nonzero(mask)
 
-        if len(indices[0]) > 0 and len(indices[1]) > 0:
-            # Determine the bounding box of the non-zero elements
-            bbox = np.min(indices[1]), np.min(indices[0]), np.max(indices[1]), np.max(indices[0])
-            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
-            x1, y1, x2, y2 = crop_region
-
-            if x2 - x1 > 0 and y2 - y1 > 0:
-                cropped_mask = mask[y1:y2, x1:x2]
-                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
-                result.append(item)
-
+    if len(mask.shape) == 2:
+        mask = np.expand_dims(mask, axis=0)
     else:
-        # label the connected components
-        labelled_mask = label(mask)
+        mask = np.squeeze(mask, axis=1)
 
-        # get the region properties for each connected component
-        regions = regionprops(labelled_mask)
+    for i in range(mask.shape[0]):
+        mask_i = mask[i]
 
-        # iterate over the regions and print their bounding boxes
-        for region in regions:
-            y1, x1, y2, x2 = region.bbox
-            bbox = x1, y1, x2, y2
-            crop_region = make_crop_region(mask.shape[1], mask.shape[0], bbox, crop_factor)
+        if combined == "True":
+            indices = np.nonzero(mask_i)
+            if len(indices[0]) > 0 and len(indices[1]) > 0:
+                bbox = (
+                    np.min(indices[1]),
+                    np.min(indices[0]),
+                    np.max(indices[1]),
+                    np.max(indices[0]),
+                )
+                crop_region = make_crop_region(
+                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
+                )
+                x1, y1, x2, y2 = crop_region
+                if x2 - x1 > 0 and y2 - y1 > 0:
+                    cropped_mask = mask_i[y1:y2, x1:x2]
 
-            if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
-                cropped_mask = np.zeros_like(mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]])
+                    if cropped_mask is not None:
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        result.append(item)
 
-                if bbox_fill:
-                    cropped_mask.fill(1.0)
-                else:
-                    cropped_mask_bbox = mask[y1:y2, x1:x2]
-                    bbox_offset_y = y1 - crop_region[1]
-                    bbox_offset_x = x1 - crop_region[0]
-                    cropped_mask[bbox_offset_y:bbox_offset_y + cropped_mask_bbox.shape[0],
-                                 bbox_offset_x:bbox_offset_x + cropped_mask_bbox.shape[1]] = cropped_mask_bbox
+        else:
+            labelled_mask = label(mask_i)
+            regions = regionprops(labelled_mask)
 
-                item = SEG(None, cropped_mask, 1.0, crop_region, bbox, 'A')
+            for region in regions:
+                y1, x1, y2, x2 = region.bbox
+                bbox = x1, y1, x2, y2
+                crop_region = make_crop_region(
+                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
+                )
 
-                result.append(item)
+                if x2 - x1 > drop_size and y2 - y1 > drop_size:
+                    cropped_mask = np.array(
+                        mask_i[
+                            crop_region[1]: crop_region[3],
+                            crop_region[0]: crop_region[2],
+                        ]
+                    )
+
+                    if bbox_fill:
+                        cropped_mask.fill(1.0)
+
+                    if cropped_mask is not None:
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        result.append(item)
 
     if not result:
         print(f"[mask_to_segs] Empty mask.")
@@ -676,7 +897,8 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
     # for r in result:
     #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
 
-    return mask.shape, result
+    # shape: (b,h,w) -> (h,w)
+    return (mask.shape[1], mask.shape[2]), result
 
 
 def segs_to_combined_mask(segs):
