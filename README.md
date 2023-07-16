@@ -5,10 +5,14 @@
 **Custom nodes pack for ComfyUI**
 This custom node helps to conveniently enhance images through Detector, Detailer, Upscaler, Pipe, and more.
 
+
 ## NOTICE
+* Between versions 2.22 and 2.21, there is partial compatibility loss regarding the Detailer workflow. If you continue to use the existing workflow, errors may occur during execution. An additional output called "enhanced_alpha_list" has been added to Detailer-related nodes.
+* The permission error related to cv2 that occurred during the installation of Impact Pack has been patched in version 2.21.4. However, please note that the latest versions of ComfyUI and ComfyUI-Manager are required.
 * The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
 * Attempting to load the "ComfyUI-Impact-Pack" on ComfyUI versions released before June 27, 2023, will result in a failure.
 * With the addition of wildcard support in FaceDetailer, the structure of DETAILER_PIPE-related nodes and Detailer nodes has changed. There may be malfunctions when using the existing workflow.
+
 
 ## Custom Nodes
 * SAMLoader - Loads the SAM model.
@@ -19,9 +23,14 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SEGM Detector (combined) - Detects segmentation and returns a mask from the input image.
 * BBOX Detector (combined) - Detects bounding boxes and returns a mask from the input image.
 * SAMDetector (combined) - Utilizes the SAM technology to extract the segment at the location indicated by the input SEGS on the input image and outputs it as a unified mask.
+* SAMDetector (Segmented) - It is similar to `SAMDetector (combined)`, but it separates and outputs the detected segments. Multiple segments can be found for the same detected area, and currently, a policy is in place to group them arbitrarily in sets of three. This aspect is expected to be improved in the future.
+  * As a result, it outputs the `combined_mask`, which is a unified mask, and `batch_masks`, which are multiple masks grouped together in batch form.
+  * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
 * Bitwise(SEGS & SEGS) - Performs a 'bitwise and' operation between two SEGS.
 * Bitwise(SEGS - SEGS) - Subtracts one SEGS from another.
 * Bitwise(SEGS & MASK) - Performs a bitwise AND operation between SEGS and MASK.
+* Bitwise(SEGS & MASKS ForEach) - Performs a bitwise AND operation between SEGS and MASKS.
+  * Please note that this operation is performed with batches of MASKS, not just a single MASK.
 * Bitwise(MASK & MASK) - Performs a 'bitwise and' operation between two masks.
 * Bitwise(MASK - MASK) - Subtracts one mask from another.
 * SEGM Detector (SEGS) - Detects segmentation and returns SEGS from the input image.
@@ -32,6 +41,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
 * MASK to SEGS - Generates SEGS based on the mask.
 * ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
+* Masks to Mask List - MASKS 
+  * This node converts the MASKS in batch form to a list of individual masks.
 * EmptySEGS - Provides an empty SEGS.
 * MaskPainter - Provides a feature to draw masks.
 * FaceDetailer - Easily detects faces and improves them.
@@ -42,8 +53,6 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SEGSPreview - Provides a preview of SEGS.
    * This option is used to preview the improved image through ```SEGSDetailer``` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
 * SEGSToImageList - Convert SEGS To Image List
-  * If ```SEGS``` is not present and ```fallback_image_opt``` is not provided, the execution will stop with an error unless [PR 731](https://github.com/comfyanonymous/ComfyUI/pull/731) from is applied.
-
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
    * ToBasicPipe, FromBasicPipe - These nodes are used to bundle model, clip, vae, positive conditioning, and negative conditioning into a single BASIC_PIPE, or extract each element from the BASIC_PIPE.
@@ -198,6 +207,7 @@ This takes latent as input and outputs latent as the result.
 
 * When you execute using the reflected mask in the node, you can observe that the image and mask are displayed separately.
 
+
 ## Others Tutorials
 * [ComfyUI-extension-tutorials/ComfyUI-Impact-Pack](https://github.com/ltdrdata/ComfyUI-extension-tutorials/tree/Main/ComfyUI-Impact-Pack) - You can find various tutorials and workflows on this page.
 * [Advanced Tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/advanced.md)
@@ -214,6 +224,7 @@ This takes latent as input and outputs latent as the result.
 
 * [Interactive SAM + PreviewBridge](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/sam_with_preview_bridge.md)
 * [ImageSender/ImageReceiver/LatentSender/LatentReceiver](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/sender_receiver.md)
+
 
 ## Credits
 
