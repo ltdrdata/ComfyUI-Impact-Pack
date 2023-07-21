@@ -184,6 +184,7 @@ app.registerExtension({
                         if(widget.type === "customtext") {
                             widget.dynamicPrompts = false;
                             widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
+                            widget.serializeValue = (n,i) => { return n.widgets_values[i]; };
                         }
 			        }
 			    }
@@ -233,16 +234,8 @@ app.registerExtension({
 					 }
 			});
 
-			// prevent hooking by dynamicPrompt.js
-			Object.defineProperty(node.widgets[0], "serializeValue", {
-				set: () => {},
-				get: () => { return (n,i) => { return n.widgets_values[i]; }; }
-			});
-
-			Object.defineProperty(node.widgets[1], "serializeValue", {
-				set: () => {},
-				get: () => { return force_serializeValue; }
-			});
+            node.widgets[0].serializeValue = (n,i) => { return n.widgets_values[i]; };
+            node.widgets[1].serializeValue = force_serializeValue;
 		}
 
 		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
