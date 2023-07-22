@@ -97,8 +97,10 @@ NODE_CLASS_MAPPINGS = {
 
     "ToDetailerPipe": ToDetailerPipe,
     "FromDetailerPipe": FromDetailerPipe,
+    "FromDetailerPipe_v2": FromDetailerPipe_v2,
     "ToBasicPipe": ToBasicPipe,
     "FromBasicPipe": FromBasicPipe,
+    "FromBasicPipe_v2": FromBasicPipe_v2,
     "BasicPipeToDetailerPipe": BasicPipeToDetailerPipe,
     "DetailerPipeToBasicPipe": DetailerPipeToBasicPipe,
     "EditBasicPipe": EditBasicPipe,

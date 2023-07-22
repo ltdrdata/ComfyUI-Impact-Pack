@@ -41,6 +41,22 @@ class FromDetailerPipe:
         return model, clip, vae, positive, negative, bbox_detector, sam_model_opt
 
 
+class FromDetailerPipe_v2:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"detailer_pipe": ("DETAILER_PIPE",), }, }
+
+    RETURN_TYPES = ("DETAILER_PIPE", "MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING", "BBOX_DETECTOR", "SAM_MODEL")
+    RETURN_NAMES = ("detailer_pipe", "model", "clip", "vae", "positive", "negative", "bbox_detector", "sam_model_opt")
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Pipe"
+
+    def doit(self, detailer_pipe):
+        model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt = detailer_pipe
+        return detailer_pipe, model, clip, vae, positive, negative, bbox_detector, sam_model_opt
+
+
 class ToBasicPipe:
     @classmethod
     def INPUT_TYPES(s):
@@ -78,6 +94,22 @@ class FromBasicPipe:
     def doit(self, basic_pipe):
         model, clip, vae, positive, negative = basic_pipe
         return model, clip, vae, positive, negative
+
+
+class FromBasicPipe_v2:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"basic_pipe": ("BASIC_PIPE",), }, }
+
+    RETURN_TYPES = ("BASIC_PIPE", "MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING")
+    RETURN_NAMES = ("basic_pipe", "model", "clip", "vae", "positive", "negative")
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Pipe"
+
+    def doit(self, basic_pipe):
+        model, clip, vae, positive, negative = basic_pipe
+        return basic_pipe, model, clip, vae, positive, negative
 
 
 class BasicPipeToDetailerPipe:
