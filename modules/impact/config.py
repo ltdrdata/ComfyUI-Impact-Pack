@@ -4,7 +4,7 @@ import os
 
 version = "V3.0.2"
 
-dependency_version = 2
+dependency_version = 3
 
 my_path = os.path.dirname(__file__)
 old_config_path = os.path.join(my_path, "impact-pack.ini")
