@@ -210,7 +210,7 @@ def scale_tensor_and_to_pil(w, h, image):
     return image.resize((w, h), resample=LANCZOS)
 
 
-def empty_pil(w=64, h=64):
+def empty_pil_tensor(w=64, h=64):
     image = Image.new("RGB", (w, h))
     draw = ImageDraw.Draw(image)
     draw.rectangle((0, 0, w-1, h-1), fill=(0, 0, 0))

@@ -1,21 +1,24 @@
 import configparser
 import os
 
-version = "V2.23.1"
 
-dependency_version = 1
+version = "V3.0"
+
+dependency_version = 2
 
 my_path = os.path.dirname(__file__)
-config_path = os.path.join(my_path, "impact-pack.ini")
+old_config_path = os.path.join(my_path, "impact-pack.ini")
+config_path = os.path.join(my_path, "..", "..", "impact-pack.ini")
 latent_letter_path = os.path.join(my_path, "..", "..", "latent.png")
 
 MAX_RESOLUTION = 8192
 
-def write_config(comfy_path):
+
+def write_config():
     config = configparser.ConfigParser()
     config['default'] = {
         'dependency_version': dependency_version,
-        'comfy_path': comfy_path
+        'mmdet_skip': get_config()['mmdet_skip'],
     }
     with open(config_path, 'w') as configfile:
         config.write(configfile)
@@ -27,6 +30,22 @@ def read_config():
         config.read(config_path)
         default_conf = config['default']
 
-        return default_conf['comfy_path'], int(default_conf['dependency_version'])
+        return {
+                    'dependency_version': int(default_conf['dependency_version']),
+                    'mmdet_skip': default_conf['mmdet_skip'].lower() == 'true'
+               }
+
     except Exception:
-        return "", 0
+        return {'dependency_version': 0, 'mmdet_skip': True}
+
+
+cached_config = None
+
+
+def get_config():
+    global cached_config
+
+    if cached_config is None:
+        cached_config = read_config()
+
+    return cached_config

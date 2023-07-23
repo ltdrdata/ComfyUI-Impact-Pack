@@ -335,17 +335,17 @@ class SEGSToImageList:
 
         for seg in segs[1]:
             if seg.cropped_image is not None:
-                cropped_image = pil2tensor(seg.cropped_image)
+                cropped_image = torch.from_numpy(seg.cropped_image)
             elif fallback_image_opt is not None:
                 # take from original image
                 cropped_image = torch.from_numpy(crop_image(fallback_image_opt, seg.crop_region))
             else:
-                cropped_image = empty_pil()
+                cropped_image = empty_pil_tensor()
 
             results.append(cropped_image)
 
         if len(results) == 0:
-            results.append(empty_pil())
+            results.append(empty_pil_tensor())
 
         return (results,)
 
@@ -810,10 +810,10 @@ class FaceDetailer:
         mask = core.segs_to_combined_mask(segs)
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil()]
+            cropped_enhanced = [empty_pil_tensor()]
 
         if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil()]
+            cropped_enhanced_alpha = [empty_pil_tensor()]
 
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask,
 
@@ -1351,10 +1351,10 @@ class FaceDetailerPipe:
             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil()]
+            cropped_enhanced = [empty_pil_tensor()]
 
         if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil()]
+            cropped_enhanced_alpha = [empty_pil_tensor()]
 
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, detailer_pipe
 
@@ -1378,13 +1378,13 @@ class DetailerForEachTest(DetailerForEach):
 
         # set fallback image
         if len(cropped) == 0:
-            cropped = [empty_pil()]
+            cropped = [empty_pil_tensor()]
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil()]
+            cropped_enhanced = [empty_pil_tensor()]
 
         if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil()]
+            cropped_enhanced_alpha = [empty_pil_tensor()]
 
         return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha
 
@@ -1409,13 +1409,13 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
 
         # set fallback image
         if len(cropped) == 0:
-            cropped = [empty_pil()]
+            cropped = [empty_pil_tensor()]
 
         if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil()]
+            cropped_enhanced = [empty_pil_tensor()]
 
         if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil()]
+            cropped_enhanced_alpha = [empty_pil_tensor()]
 
         return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha
 

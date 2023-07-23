@@ -7,6 +7,12 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE
+<<<<<<< HEAD
+* Starting from V3.0, nodes related to `mmdet` are optional nodes that are activated only based on the configuration settings.
+  - Through ComfyUI-Impact-Subpack, you can utilize UltralysticsDetectorProvider to access various detection models.
+=======
+* Starting from V3.0, nodes related to mmdet are optional nodes that are activated only based on the configuration settings. 
+>>>>>>> fb0f901 (V3.0: subpack features)
 * Between versions 2.22 and 2.21, there is partial compatibility loss regarding the Detailer workflow. If you continue to use the existing workflow, errors may occur during execution. An additional output called "enhanced_alpha_list" has been added to Detailer-related nodes.
 * The permission error related to cv2 that occurred during the installation of Impact Pack has been patched in version 2.21.4. However, please note that the latest versions of ComfyUI and ComfyUI-Manager are required.
 * The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
@@ -16,7 +22,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 ## Custom Nodes
 * SAMLoader - Loads the SAM model.
-* MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
+* UltralysticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
+  - Unlike `MMDetDetectorProvider`, for segm models, `BBOX_DETECTOR` is also provided.
+  - The various models available in UltralysticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
 * ONNXDetectorProvider - Loads the ONNX model to provide SEGM_DETECTOR.
 * CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
   * You need to install the ComfyUI-CLIPSeg node extension.
@@ -102,6 +110,14 @@ This takes latent as input and outputs latent as the result.
 * RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
 - multiple region version of TwoAdvancedSamplersForMask 
 
+
+<<<<<<< HEAD
+## MMDet nodes
+* MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
+* To use the existing MMDetDetectorProvider, you need to enable the MMDet usage configuration.
+
+=======
+>>>>>>> fb0f901 (V3.0: subpack features)
 ## Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
 
@@ -115,15 +131,38 @@ This takes latent as input and outputs latent as the result.
    * BboxDetectorCombined -> BBOX Detector (combined)
    * SegmDetectorCombined -> SEGM Detector (combined)
    * MaskPainter -> PreviewBridge
+* To use the existing deprecated legacy nodes, you need to enable the MMDet usage configuration.
+
+
+## How to activate 'MMDet usage'
+* Upon the initial execution, an `impact-pack.ini` file will be generated in the custom_nodes/ComfyUI-Impact-Pack directory.
+```
+[default]
+dependency_version = 2
+mmdet_skip = True
+```
+* Change `mmdet_skip = True` to `mmdet_skip = False`
+```
+[default]
+dependency_version = 2
+mmdet_skip = False
+```
+* Restart ComfyUI
+
 
 ## Installation
 
-1. cd custom_nodes
-1. git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git
-3. cd ComfyUI-Impact-Pack
-4. (optional) python install.py
+1. `cd custom_nodes`
+1. `git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git`
+3. `cd ComfyUI-Impact-Pack`
+4. (optional) `git submodule update --init --recursive`
+   * Impact Pack will automatically download subpack during its initial launch.
+5. (optional) `python install.py`
    * Impact Pack will automatically install its dependencies during its initial launch.
-5. Restart ComfyUI
+   * For the portable version, you should execute the command `..\..\..\python_embedded\python.exe install.py` to run the installation script.
+
+
+6. Restart ComfyUI
 
 * NOTE: If an error occurs during the installation process, please refer to [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md) for assistance. 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
@@ -133,10 +172,13 @@ This takes latent as input and outputs latent as the result.
 * pip install
    * openmim
    * segment-anything
-   * pycocotools
-   * onnxruntime
+   * ultralytics
+   * scikit-image
+   * piexif
+   * (optional) pycocotools
+   * (optional) onnxruntime
    
-* mim install
+* mim install (optional)
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2
 
 * linux packages (ubuntu)

@@ -8,6 +8,9 @@ if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
 
 impact_path = os.path.join(os.path.dirname(__file__), "modules")
+subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
+subpack_repo = ""
+
 
 sys.path.append(impact_path)
 sys.path.append(comfy_path)
@@ -28,11 +31,25 @@ else:
     mim_install = [sys.executable, '-m', 'mim', 'install']
 
 
+def ensure_subpack():
+    import git
+    repo = git.Repo(os.path.dirname(__file__))
+    origin = repo.remote(name='origin')
+    origin.pull()
+    repo.git.submodule('update', '--init', '--recursive')
+
+
 def remove_olds():
+    global comfy_path
+
     comfy_path = os.path.dirname(folder_paths.__file__)
     custom_nodes_path = os.path.join(comfy_path, "custom_nodes")
     old_ini_path = os.path.join(custom_nodes_path, "impact-pack.ini")
     old_py_path = os.path.join(custom_nodes_path, "comfyui-impact-pack.py")
+
+    if os.path.exists(impact.config.old_config_path):
+        impact.config.get_config()['mmdet_skip'] = False
+        os.remove(impact.config.old_config_path)
 
     if os.path.exists(old_ini_path):
         print(f"Delete legacy file: {old_ini_path}")
@@ -44,24 +61,29 @@ def remove_olds():
 
 
 def ensure_pip_packages_first():
-    try:
-        import pycocotools
-    except Exception:
-        if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
-            print(f"Your system is {platform.system()}; !! You need to install 'libpython3-dev' for this step. !!")
+    subpack_req = os.path.join(subpack_path, "requirements.txt")
+    if os.path.exists(subpack_req):
+        subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
 
-            subprocess.check_call(pip_install + ['pycocotools'])
-        else:
-            pycocotools = {
-                (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
-                (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
-                (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
-                (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
-            }
+    if not impact.config.get_config()['mmdet_skip']:
+        try:
+            import pycocotools
+        except Exception:
+            if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
+                print(f"Your system is {platform.system()}; !! You need to install 'libpython3-dev' for this step. !!")
 
-            version = sys.version_info[:2]
-            url = pycocotools[version]
-            subprocess.check_call(pip_install + [url])
+                subprocess.check_call(pip_install + ['pycocotools'])
+            else:
+                pycocotools = {
+                    (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
+                    (3, 9): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp39-cp39-win_amd64.whl",
+                    (3, 10): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp310-cp310-win_amd64.whl",
+                    (3, 11): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp311-cp311-win_amd64.whl",
+                }
+
+                version = sys.version_info[:2]
+                url = pycocotools[version]
+                subprocess.check_call(pip_install + [url])
 
 
 def ensure_pip_packages_last():
@@ -83,6 +105,11 @@ def ensure_pip_packages_last():
         except:
             print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
+    try:
+        import git
+    except Exception:
+        subprocess.check_call(pip_install + ['gitpython'])
+
 
 def ensure_mmdet_package():
     try:
@@ -99,7 +126,10 @@ def ensure_mmdet_package():
 def install():
     remove_olds()
     ensure_pip_packages_first()
-    ensure_mmdet_package()
+
+    if not impact.config.get_config()['mmdet_skip']:
+        ensure_mmdet_package()
+
     ensure_pip_packages_last()
 
     # Download model
@@ -108,24 +138,38 @@ def install():
     model_path = folder_paths.models_dir
 
     bbox_path = os.path.join(model_path, "mmdets", "bbox")
-    #segm_path = os.path.join(model_path, "mmdets", "segm") -- deprecated
     sam_path = os.path.join(model_path, "sams")
     onnx_path = os.path.join(model_path, "onnx")
 
-    if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
-        download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
+    if not os.path.exists(bbox_path):
+        os.makedirs(bbox_path)
 
-    if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
-        download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
+    if not impact.config.get_config()['mmdet_skip']:
+        if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
+            download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
 
-    if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
-        download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
+        if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
+            download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
+
+        if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
+            download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
+
+    subpack_install_script = os.path.join(subpack_path, "install.py")
+
+    if not os.path.exists(subpack_install_script):
+        print(f"### ComfyUI-Impact-Pack: Downloading subpack")
+        ensure_subpack()
+
+    if os.path.exists(subpack_install_script):
+        subprocess.run([sys.executable, 'install.py'], cwd=subpack_path)
+        subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
 
     if not os.path.exists(onnx_path):
         print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
         os.mkdir(onnx_path)
 
-    impact.config.write_config(comfy_path)
+    impact.config.write_config()
 
 
 install()
+

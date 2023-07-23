@@ -2,27 +2,34 @@ import shutil
 import folder_paths
 import os
 import sys
-import importlib
 
 comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
+subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
 modules_path = os.path.join(os.path.dirname(__file__), "modules")
 wildcards_path = os.path.join(os.path.dirname(__file__), "wildcards")
 custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcards")
 
 sys.path.append(modules_path)
+sys.path.append(subpack_path)
+
 
 import impact.config
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
 
+
 def do_install():
+    import importlib
     spec = importlib.util.spec_from_file_location('impact_install', os.path.join(os.path.dirname(__file__), 'install.py'))
     impact_install = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(impact_install)
 
+
 # ensure dependency
-if impact.config.read_config()[1] < impact.config.dependency_version:
+if impact.config.get_config()['dependency_version'] < impact.config.dependency_version:
+    print(f"## ComfyUI-Impact-Pack: Updating dependencies")
     do_install()
+
 
 # Core
 # recheck dependencies for colab
@@ -30,17 +37,19 @@ try:
     import folder_paths
     import torch
     import cv2
-    import mmcv
     import numpy as np
-    from mmdet.apis import (inference_detector, init_detector)
     import comfy.samplers
     import comfy.sd
     import warnings
     from PIL import Image, ImageFilter
-    from mmdet.evaluation import get_classes
     from skimage.measure import label, regionprops
     from collections import namedtuple
     import piexif
+
+    if not impact.config.get_config()['mmdet_skip']:
+        import mmcv
+        from mmdet.apis import (inference_detector, init_detector)
+        from mmdet.evaluation import get_classes
 except:
     import importlib
     print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
@@ -77,7 +86,6 @@ impact.wildcards.read_wildcard_dict(custom_wildcards_path)
 
 NODE_CLASS_MAPPINGS = {
     "SAMLoader": SAMLoader,
-    "MMDetDetectorProvider": MMDetDetectorProvider,
     "CLIPSegDetectorProvider": CLIPSegDetectorProvider,
     "ONNXDetectorProvider": ONNXDetectorProvider,
 
@@ -171,15 +179,8 @@ NODE_CLASS_MAPPINGS = {
     "RegionalSampler": RegionalSampler,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
-
-    "MaskPainter": impact.legacy_nodes.MaskPainter,
-    "MMDetLoader": impact.legacy_nodes.MMDetLoader,
-    "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,
-    "BboxDetectorForEach": impact.legacy_nodes.BboxDetectorForEach,
-    "SegmDetectorForEach": impact.legacy_nodes.SegmDetectorForEach,
-    "BboxDetectorCombined": impact.legacy_nodes.BboxDetectorCombined,
-    "SegmDetectorCombined": impact.legacy_nodes.SegmDetectorCombined,
 }
+
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
@@ -223,14 +224,37 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SEGSSwitch": "Switch (SEGS)",
 
     "MasksToMaskList": "Masks to Mask List",
-
-    "MaskPainter": "MaskPainter (Deprecated)",
-    "MMDetLoader": "MMDetLoader (Legacy)",
-    "SegsMaskCombine": "SegsMaskCombine (Legacy)",
-    "BboxDetectorForEach": "BboxDetectorForEach (Legacy)",
-    "SegmDetectorForEach": "SegmDetectorForEach (Legacy)",
-    "BboxDetectorCombined": "BboxDetectorCombined (Legacy)",
-    "SegmDetectorCombined": "SegmDetectorCombined (Legacy)",
 }
+
+if not impact.config.get_config()['mmdet_skip']:
+    NODE_CLASS_MAPPINGS.update({
+        "MMDetDetectorProvider": MMDetDetectorProvider,
+        "MMDetLoader": impact.legacy_nodes.MMDetLoader,
+        "MaskPainter": impact.legacy_nodes.MaskPainter,
+        "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,
+        "BboxDetectorForEach": impact.legacy_nodes.BboxDetectorForEach,
+        "SegmDetectorForEach": impact.legacy_nodes.SegmDetectorForEach,
+        "BboxDetectorCombined": impact.legacy_nodes.BboxDetectorCombined,
+        "SegmDetectorCombined": impact.legacy_nodes.SegmDetectorCombined,
+    })
+
+    NODE_DISPLAY_NAME_MAPPINGS.update({
+        "MaskPainter": "MaskPainter (Deprecated)",
+        "MMDetLoader": "MMDetLoader (Legacy)",
+        "SegsMaskCombine": "SegsMaskCombine (Legacy)",
+        "BboxDetectorForEach": "BboxDetectorForEach (Legacy)",
+        "SegmDetectorForEach": "SegmDetectorForEach (Legacy)",
+        "BboxDetectorCombined": "BboxDetectorCombined (Legacy)",
+        "SegmDetectorCombined": "SegmDetectorCombined (Legacy)",
+    })
+
+try:
+    import impact.subpack_nodes
+
+    NODE_CLASS_MAPPINGS.update(impact.subpack_nodes.NODE_CLASS_MAPPINGS)
+    NODE_DISPLAY_NAME_MAPPINGS.update(impact.subpack_nodes.NODE_DISPLAY_NAME_MAPPINGS)
+
+except:
+    pass
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
