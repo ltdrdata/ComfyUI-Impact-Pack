@@ -1,8 +1,9 @@
 import folder_paths
 
-import impact.core as core
+import impact.mmdet_nodes as mmdet_nodes
 from impact.utils import *
 from impact.core import SEG
+import impact.core as core
 import nodes
 
 class NO_BBOX_MODEL:
@@ -26,7 +27,7 @@ class MMDetLoader:
 
     def load_mmdet(self, model_name):
         mmdet_path = folder_paths.get_full_path("mmdets", model_name)
-        model = core.load_mmdet(mmdet_path)
+        model = mmdet_nodes.load_mmdet(mmdet_path)
 
         if model_name.startswith("bbox"):
             return model, NO_SEGM_MODEL()
@@ -53,7 +54,7 @@ class BboxDetectorForEach:
 
     @staticmethod
     def detect(bbox_model, image, threshold, dilation, crop_factor, drop_size=1):
-        mmdet_results = core.inference_bbox(bbox_model, image, threshold)
+        mmdet_results = mmdet_nodes.inference_bbox(bbox_model, image, threshold)
         segmasks = core.create_segmasks(mmdet_results)
 
         if dilation > 0:
@@ -102,7 +103,7 @@ class SegmDetectorCombined:
     CATEGORY = "ImpactPack/Legacy"
 
     def doit(self, segm_model, image, threshold, dilation):
-        mmdet_results = core.inference_segm(image, segm_model, threshold)
+        mmdet_results = mmdet_nodes.inference_segm(image, segm_model, threshold)
         segmasks = core.create_segmasks(mmdet_results)
         if dilation > 0:
             segmasks = dilate_masks(segmasks, dilation)
@@ -123,7 +124,7 @@ class BboxDetectorCombined(SegmDetectorCombined):
                 }
 
     def doit(self, bbox_model, image, threshold, dilation):
-        mmdet_results = core.inference_bbox(bbox_model, image, threshold)
+        mmdet_results = mmdet_nodes.inference_bbox(bbox_model, image, threshold)
         segmasks = core.create_segmasks(mmdet_results)
         if dilation > 0:
             segmasks = dilate_masks(segmasks, dilation)
@@ -150,7 +151,7 @@ class SegmDetectorForEach:
     CATEGORY = "ImpactPack/Legacy"
 
     def doit(self, segm_model, image, threshold, dilation, crop_factor):
-        mmdet_results = core.inference_segm(image, segm_model, threshold)
+        mmdet_results = mmdet_nodes.inference_segm(image, segm_model, threshold)
         segmasks = core.create_segmasks(mmdet_results)
 
         if dilation > 0:

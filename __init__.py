@@ -76,7 +76,6 @@ def setup_js():
     
 setup_js()
 
-import impact.legacy_nodes
 from impact.impact_pack import *
 from impact.detectors import *
 from impact.pipe import *
@@ -227,6 +226,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 }
 
 if not impact.config.get_config()['mmdet_skip']:
+    from impact.mmdet_nodes import *
+    import impact.legacy_nodes
     NODE_CLASS_MAPPINGS.update({
         "MMDetDetectorProvider": MMDetDetectorProvider,
         "MMDetLoader": impact.legacy_nodes.MMDetLoader,

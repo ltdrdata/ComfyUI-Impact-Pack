@@ -55,27 +55,6 @@ class ONNXDetectorProvider:
         return (core.ONNXDetector(model), )
 
 
-class MMDetDetectorProvider:
-    @classmethod
-    def INPUT_TYPES(s):
-        bboxs = ["bbox/"+x for x in folder_paths.get_filename_list("mmdets_bbox")]
-        segms = ["segm/"+x for x in folder_paths.get_filename_list("mmdets_segm")]
-        return {"required": {"model_name": (bboxs + segms, )}}
-    RETURN_TYPES = ("BBOX_DETECTOR", "SEGM_DETECTOR")
-    FUNCTION = "load_mmdet"
-
-    CATEGORY = "ImpactPack"
-
-    def load_mmdet(self, model_name):
-        mmdet_path = folder_paths.get_full_path("mmdets", model_name)
-        model = core.load_mmdet(mmdet_path)
-
-        if model_name.startswith("bbox"):
-            return core.BBoxDetector(model), NO_SEGM_DETECTOR()
-        else:
-            return NO_BBOX_DETECTOR(), model
-
-
 class CLIPSegDetectorProvider:
     @classmethod
     def INPUT_TYPES(s):
