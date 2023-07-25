@@ -198,6 +198,9 @@ app.registerExtension({
 			node.widgets[0].dynamicPrompts = false;
 			node.widgets[1].dynamicPrompts = false;
 
+            let populate_getter = node.widgets[1].__lookupGetter__('value');
+            let populate_setter = node.widgets[1].__lookupSetter__('value');
+
 			let force_serializeValue = async (n,i) =>
 				{
 					if(n.widgets_values[2] == "Fixed") {
@@ -214,13 +217,13 @@ app.registerExtension({
 
 						n.widgets_values[2] = "Fixed";
 						n.widgets_values[1] = populated.text;
-						node.widgets[1].value = populated.text;
+						populate_setter.call(node.widgets[1], populated.text);
 
 						return populated.text;
 					}
 				};
 
-			//
+			// mode combo
 			Object.defineProperty(node.widgets[2], "value", {
 				set: (value) => {
 						this._value = value;
@@ -231,6 +234,18 @@ app.registerExtension({
 							return this._value;
 						else
 							return "Populate";
+					 }
+			});
+
+            // to avoid conflict with presetText.js of pythongosssss
+			Object.defineProperty(node.widgets[1], "value", {
+				set: (value) => {
+				        const stackTrace = new Error().stack;
+                        if(!stackTrace.includes('serializeValue'))
+				            populate_setter.call(node.widgets[1], value);
+					},
+				get: () => {
+				        return populate_getter.call(node.widgets[1]);
 					 }
 			});
 
