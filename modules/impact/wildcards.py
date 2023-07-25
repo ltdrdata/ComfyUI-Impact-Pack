@@ -15,7 +15,7 @@ def read_wildcard_dict(wildcard_path):
                 file_path = os.path.join(root, file)
                 key = os.path.splitext(file)[0]
 
-                with open(file_path, 'r') as f:
+                with open(file_path, 'r', encoding="UTF-8") as f:
                     lines = f.read().splitlines()
 
                 wildcard_dict[key] = lines
