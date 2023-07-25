@@ -156,9 +156,8 @@ def install():
 
     subpack_install_script = os.path.join(subpack_path, "install.py")
 
-    if not os.path.exists(subpack_install_script):
-        print(f"### ComfyUI-Impact-Pack: Downloading subpack")
-        ensure_subpack()
+    print(f"### ComfyUI-Impact-Pack: Updating subpack")
+    ensure_subpack()
 
     if os.path.exists(subpack_install_script):
         subprocess.run([sys.executable, 'install.py'], cwd=subpack_path)
