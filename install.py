@@ -3,13 +3,14 @@ import sys
 import subprocess
 
 
-comfy_path = '../..'
 if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
+
 
 impact_path = os.path.join(os.path.dirname(__file__), "modules")
 subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
 subpack_repo = ""
+comfy_path = os.path.join(os.path.dirname(__file__), '..', '..')
 
 
 sys.path.append(impact_path)
