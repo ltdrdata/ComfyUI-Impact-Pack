@@ -2258,6 +2258,56 @@ class ImpactWildcardProcessor:
         return (populated_text, )
 
 
+class ReencodeLatent:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "samples": ("LATENT", ),
+                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
+                        "input_vae": ("VAE", ),
+                        "output_vae": ("VAE", ),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    def doit(self, samples, tile_mode, input_vae, output_vae):
+        if tile_mode in ["Both", "Decode(input) only"]:
+            pixels = nodes.VAEDecodeTiled().decode(input_vae, samples)[0]
+        else:
+            pixels = nodes.VAEDecode().decode(input_vae, samples)[0]
+
+        if tile_mode in ["Both", "Encode(output) only"]:
+            return nodes.VAEEncodeTiled().encode(output_vae, pixels)
+        else:
+            return nodes.VAEEncode().encode(output_vae, pixels)
+
+
+class ReencodeLatentPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "samples": ("LATENT", ),
+                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
+                        "input_basic_pipe": ("BASIC_PIPE", ),
+                        "output_basic_pipe": ("BASIC_PIPE", ),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    def doit(self, samples, tile_mode, input_basic_pipe, output_basic_pipe):
+        _, _, input_vae, _, _ = input_basic_pipe
+        _, _, output_vae, _, _ = output_basic_pipe
+        return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
+
+
 class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):

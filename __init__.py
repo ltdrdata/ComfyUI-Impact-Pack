@@ -175,6 +175,9 @@ NODE_CLASS_MAPPINGS = {
     # "SEGPick": SEGPick,
     # "SEGEdit": SEGEdit,
 
+    "ReencodeLatent": ReencodeLatent,
+    "ReencodeLatentPipe": ReencodeLatentPipe,
+
     "RegionalSampler": RegionalSampler,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
@@ -214,6 +217,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
     "TwoSamplersForMaskUpscalerProviderPipe": "TwoSamplersForMask Upscaler Provider (pipe)",
+
+    "ReencodeLatent": "Reencode Latent",
+    "ReencodeLatentPipe": "Reencode Latent (pipe)",
 
     "PreviewBridge": "Preview Bridge",
     "ImageSender": "Image Sender",
