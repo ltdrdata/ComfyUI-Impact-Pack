@@ -152,8 +152,8 @@ def install():
         if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
             download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
 
-        if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
-            download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
+    if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
+        download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
 
     subpack_install_script = os.path.join(subpack_path, "install.py")
 
