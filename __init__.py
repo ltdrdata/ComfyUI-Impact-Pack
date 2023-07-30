@@ -184,6 +184,8 @@ NODE_CLASS_MAPPINGS = {
     "RegionalSampler": RegionalSampler,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
+
+    "ImpactSEGSLabelFilter": SEGSLabelFilter,
 }
 
 
@@ -226,6 +228,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactKSamplerBasicPipe": "KSampler (pipe)",
     "ImpactKSamplerAdvancedBasicPipe": "KSampler (Advanced/pipe)",
+    "ImpactSEGSLabelFilter": "SEGS Filter (label)",
 
     "PreviewBridge": "Preview Bridge",
     "ImageSender": "Image Sender",

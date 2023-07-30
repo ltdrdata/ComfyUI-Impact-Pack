@@ -191,6 +191,26 @@ app.registerExtension({
 		        break;
 		}
 
+		if(node.comfyClass == "ImpactSEGSLabelFilter") {
+			Object.defineProperty(node.widgets[0], "value", {
+				set: (value) => {
+				        const stackTrace = new Error().stack;
+                        if(stackTrace.includes('inner_value_change')) {
+                            if(node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
+                                node.widgets[1].value += ", "
+
+                            node.widgets[1].value += value;
+                            node.widgets_values[1] = node.widgets[1].value;
+                        }
+
+						this._value = value;
+					},
+				get: () => {
+                        return this._value;
+					 }
+			});
+		}
+
 		if(node.comfyClass == "ImpactWildcardProcessor") {
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";

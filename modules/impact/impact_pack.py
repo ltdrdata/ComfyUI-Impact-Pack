@@ -290,6 +290,38 @@ class SEGSPreview:
         return {"ui": {"images": results}}
 
 
+class SEGSLabelFilter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs": ("SEGS", ),
+                        "preset": (['all', 'hand', 'face', 'short_sleeved_shirt', 'long_sleeved_shirt', 'short_sleeved_outwear', 'long_sleeved_outwear', 'vest', 'sling', 'shorts', 'trousers', 'skirt', 'short_sleeved_dress', 'long_sleeved_dress', 'vest_dress', 'sling_dress'], ),
+                        "labels": ("STRING", {"multiline": True, "placeholder": "List the types of segments to be allowed, separated by commas"}),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    OUTPUT_NODE = True
+
+    def doit(self, segs, preset, labels):
+        labels = labels.split(',')
+        labels = set([label.strip() for label in labels])
+
+        if 'all' in labels:
+            return (segs, )
+        else:
+            res_segs = []
+            for x in segs[1]:
+                if x.label in labels:
+                    res_segs.append(x)
+
+        return ((segs[0], res_segs), )
+
+
 class SEGSToImageList:
     @classmethod
     def INPUT_TYPES(s):
