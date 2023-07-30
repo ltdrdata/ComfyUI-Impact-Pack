@@ -752,6 +752,7 @@ class FaceDetailer:
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
+                    "segm_detector_opt": ("SEGM_DETECTOR", ),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", )
@@ -767,7 +768,7 @@ class FaceDetailer:
                      bbox_threshold, bbox_dilation, bbox_crop_factor,
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
-                     bbox_detector, wildcard_opt=None, sam_model_opt=None):
+                     bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None):
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
@@ -779,6 +780,11 @@ class FaceDetailer:
                                           sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                                           sam_mask_hint_use_negative, )
             segs = core.segs_bitwise_and_mask(segs, sam_mask)
+
+        elif segm_detector is not None:
+            segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+            segm_mask = core.segs_to_combined_mask(segm_segs)
+            segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
         enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
@@ -800,16 +806,16 @@ class FaceDetailer:
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None):
+             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None):
 
         enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard)
 
-        pipe = (model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt)
+        pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt)
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe
 
 
@@ -1320,14 +1326,14 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size):
 
-        model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt = detailer_pipe
+        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt = detailer_pipe
 
         enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [empty_pil_tensor()]
@@ -1402,7 +1408,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
 class EmptySEGS:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {},}
+        return {"required": {}, }
     
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
