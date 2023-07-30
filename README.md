@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE
+* **In versions below V3.3.1, there was an issue with the image quality generated after using the UltralyticsDetectorProvider. Please make sure to upgrade to a newer version.**
 * Starting from V3.0, nodes related to `mmdet` are optional nodes that are activated only based on the configuration settings.
   - Through ComfyUI-Impact-Subpack, you can utilize UltralysticsDetectorProvider to access various detection models.
 * Between versions 2.22 and 2.21, there is partial compatibility loss regarding the Detailer workflow. If you continue to use the existing workflow, errors may occur during execution. An additional output called "enhanced_alpha_list" has been added to Detailer-related nodes.
