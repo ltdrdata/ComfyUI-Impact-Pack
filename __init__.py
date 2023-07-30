@@ -175,6 +175,9 @@ NODE_CLASS_MAPPINGS = {
     # "SEGPick": SEGPick,
     # "SEGEdit": SEGEdit,
 
+    "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
+    "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
+
     "ReencodeLatent": ReencodeLatent,
     "ReencodeLatentPipe": ReencodeLatentPipe,
 
@@ -220,6 +223,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ReencodeLatent": "Reencode Latent",
     "ReencodeLatentPipe": "Reencode Latent (pipe)",
+
+    "ImpactKSamplerBasicPipe": "KSampler (pipe)",
+    "ImpactKSamplerAdvancedBasicPipe": "KSampler (Advanced/pipe)",
 
     "PreviewBridge": "Preview Bridge",
     "ImageSender": "Image Sender",

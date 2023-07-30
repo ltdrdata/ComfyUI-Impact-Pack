@@ -7,12 +7,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE
-<<<<<<< HEAD
 * Starting from V3.0, nodes related to `mmdet` are optional nodes that are activated only based on the configuration settings.
   - Through ComfyUI-Impact-Subpack, you can utilize UltralysticsDetectorProvider to access various detection models.
-=======
-* Starting from V3.0, nodes related to mmdet are optional nodes that are activated only based on the configuration settings. 
->>>>>>> fb0f901 (V3.0: subpack features)
 * Between versions 2.22 and 2.21, there is partial compatibility loss regarding the Detailer workflow. If you continue to use the existing workflow, errors may occur during execution. An additional output called "enhanced_alpha_list" has been added to Detailer-related nodes.
 * The permission error related to cv2 that occurred during the installation of Impact Pack has been patched in version 2.21.4. However, please note that the latest versions of ComfyUI and ComfyUI-Manager are required.
 * The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
@@ -110,14 +106,15 @@ This takes latent as input and outputs latent as the result.
 * RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
 - multiple region version of TwoAdvancedSamplersForMask 
 
+* KSampler (pipe), KSampler (advanced/pipe)
+- convenient `KSampler` based_on `BASIC_PIPE`
 
-<<<<<<< HEAD
+
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
 * To use the existing MMDetDetectorProvider, you need to enable the MMDet usage configuration.
 
-=======
->>>>>>> fb0f901 (V3.0: subpack features)
+
 ## Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
 

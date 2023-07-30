@@ -2314,6 +2314,61 @@ class ReencodeLatentPipe:
         return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
 
 
+class KSamplerBasicPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"basic_pipe": ("BASIC_PIPE",),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "latent_image": ("LATENT", ),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     }
+                }
+
+    RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
+    FUNCTION = "sample"
+
+    CATEGORY = "sampling"
+
+    def sample(self, basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
+        model, clip, vae, positive, negative = basic_pipe
+        latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
+        return (basic_pipe, latent, vae)
+
+
+class KSamplerAdvancedBasicPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"basic_pipe": ("BASIC_PIPE",),
+                    "add_noise": (["enable", "disable"], ),
+                    "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                    "latent_image": ("LATENT", ),
+                    "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+                    "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
+                    "return_with_leftover_noise": (["disable", "enable"], ),
+                     }
+                }
+
+    RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
+    FUNCTION = "sample"
+
+    CATEGORY = "sampling"
+
+    def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
+        model, clip, vae, positive, negative = basic_pipe
+        latent = nodes.KSamplerAdvanced().sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise)[0]
+        return (basic_pipe, latent, vae)
+
+
 class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):
