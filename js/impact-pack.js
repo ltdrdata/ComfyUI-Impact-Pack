@@ -1,6 +1,6 @@
-import { ComfyApp, app } from "/scripts/app.js";
-import { ComfyDialog, $el } from "/scripts/ui.js";
-import { api } from "/scripts/api.js";
+import { ComfyApp, app } from "../../scripts/app.js";
+import { ComfyDialog, $el } from "../../scripts/ui.js";
+import { api } from "../../scripts/api.js";
 
 // temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 // I think this should be included into master!!

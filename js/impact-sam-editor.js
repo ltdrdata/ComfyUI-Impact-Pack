@@ -1,7 +1,7 @@
-import { app } from "/scripts/app.js";
-import { ComfyDialog, $el } from "/scripts/ui.js";
-import { ComfyApp } from "/scripts/app.js";
-import { ClipspaceDialog } from "/extensions/core/clipspace.js";
+import { app } from "../../scripts/app.js";
+import { ComfyDialog, $el } from "../../scripts/ui.js";
+import { ComfyApp } from "../../scripts/app.js";
+import { ClipspaceDialog } from "../../extensions/core/clipspace.js";
 
 function addMenuHandler(nodeType, cb) {
 	const getOpts = nodeType.prototype.getExtraMenuOptions;
