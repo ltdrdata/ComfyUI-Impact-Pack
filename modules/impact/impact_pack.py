@@ -151,16 +151,16 @@ class SEGSDetailer:
                      "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": (["bbox", "crop_region"],),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "noise_mask": (["enabled", "disabled"], ),
-                     "force_inpaint": (["disabled", "enabled"], ),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE",),
                      },
                 }
@@ -188,14 +188,14 @@ class SEGSDetailer:
                 new_segs.append(seg)
                 continue
 
-            if noise_mask == "enabled":
+            if noise_mask:
                 cropped_mask = seg.cropped_mask
             else:
                 cropped_mask = None
 
             enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled")
+                                               positive, negative, denoise, cropped_mask, force_inpaint)
 
             new_seg = SEG(enhanced_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             new_segs.append(new_seg)
@@ -371,19 +371,19 @@ class DetailerForEach:
                      "clip": ("CLIP",),
                      "vae": ("VAE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": (["bbox", "crop_region"],),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                      "positive": ("CONDITIONING",),
                      "negative": ("CONDITIONING",),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": (["enabled", "disabled"], ),
-                     "force_inpaint": (["disabled", "enabled"], ),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1, "display": "slider"}),
+                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      },
                 }
 
@@ -393,7 +393,7 @@ class DetailerForEach:
     CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
-    def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
+    def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None):
 
         image_pil = tensor2pil(image).convert('RGBA')
@@ -413,14 +413,14 @@ class DetailerForEach:
                 print(f"Detailer: segment skip [empty mask]")
                 continue
 
-            if noise_mask == "enabled":
+            if noise_mask:
                 cropped_mask = seg.cropped_mask
             else:
                 cropped_mask = None
 
-            enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
+            enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint == "enabled", wildcard_opt)
+                                               positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt)
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
@@ -466,17 +466,17 @@ class DetailerForEachPipe:
                      "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": (["bbox", "crop_region"],),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": (["enabled", "disabled"], ),
-                     "force_inpaint": (["disabled", "enabled"], ),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1, "display": "slider"}),
+                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE", )
                      },
                 }
@@ -504,10 +504,10 @@ class KSamplerProvider:
         return {"required": {
                                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                                "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                                "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
                 }
@@ -527,7 +527,7 @@ class KSamplerAdvancedProvider:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                                "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                                 "basic_pipe": ("BASIC_PIPE", )
@@ -581,7 +581,7 @@ class TwoAdvancedSamplersForMask:
         return {"required": {
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
                      "samples": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "mask_sampler": ("KSAMPLER_ADVANCED", ),
@@ -682,7 +682,7 @@ class RegionalSampler:
         return {"required": {
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
                      "samples": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "regional_prompts": ("REGIONAL_PROMPTS", ),
@@ -752,29 +752,29 @@ class FaceDetailer:
                      "clip": ("CLIP",),
                      "vae": ("VAE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": (["bbox", "crop_region"],),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                      "positive": ("CONDITIONING",),
                      "negative": ("CONDITIONING",),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": (["enabled", "disabled"], ),
-                     "force_inpaint": (["disabled", "enabled"], ),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1, "display": "slider"}),
+                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
 
-                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1, "display": "slider"}),
+                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1, "display": "slider"}),
 
                      "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
-                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
-                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
-                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1, "display": "slider"}),
+                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1, "display": "slider"}),
+                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                      "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
@@ -795,7 +795,7 @@ class FaceDetailer:
     CATEGORY = "ImpactPack/Simple"
 
     @staticmethod
-    def enhance_face(image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
+    def enhance_face(image, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                      positive, negative, denoise, feather, noise_mask, force_inpaint,
                      bbox_threshold, bbox_dilation, bbox_crop_factor,
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
@@ -819,7 +819,7 @@ class FaceDetailer:
             segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
         enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha = \
-            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
+            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard_opt)
 
@@ -861,7 +861,7 @@ class LatentPixelScale:
                      "scale_method": (s.upscale_methods,),
                      "scale_factor": ("FLOAT", {"default": 1.5, "min": 0.1, "max": 10000, "step": 0.1}),
                      "vae": ("VAE", ),
-                     "use_tiled_vae": (["disabled", "enabled"],),
+                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -874,9 +874,8 @@ class LatentPixelScale:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
-        use_tile = use_tiled_vae == "enabled"
         if upscale_model_opt is None:
-            latent = core.latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=use_tile)
+            latent = core.latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
         else:
             latent = core.latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tile)
         return (latent,)
@@ -889,7 +888,7 @@ class CfgScheduleHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_iteration": (s.schedules,),
-                     "target_cfg": ("FLOAT", {"default": 3.0, "min": 0.0, "max": 100.0}),
+                     "target_cfg": ("FLOAT", {"default": 3.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     },
                 }
 
@@ -913,7 +912,7 @@ class DenoiseScheduleHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_iteration": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0}),
+                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0, "display": "slider"}),
                     },
                 }
 
@@ -955,10 +954,10 @@ class TiledKSamplerProvider:
         return {"required": {
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
@@ -989,12 +988,12 @@ class PixelTiledKSampleUpscalerProvider:
                     "vae": ("VAE",),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
@@ -1030,10 +1029,10 @@ class PixelTiledKSampleUpscalerProviderPipe:
                     "scale_method": (s.upscale_methods,),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                     "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
@@ -1073,13 +1072,13 @@ class PixelKSampleUpscalerProvider:
                     "vae": ("VAE",),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "use_tiled_vae": (["disabled", "enabled"],),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                    "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -1095,7 +1094,7 @@ class PixelKSampleUpscalerProvider:
     def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
              use_tiled_vae, upscale_model_opt=None, pk_hook_opt=None):
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
-                                             positive, negative, denoise, use_tiled_vae == "enabled", upscale_model_opt, pk_hook_opt)
+                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 
@@ -1108,11 +1107,11 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "scale_method": (s.upscale_methods,),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "use_tiled_vae": (["disabled", "enabled"],),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                    "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "basic_pipe": ("BASIC_PIPE",)
                     },
                 "optional": {
@@ -1130,7 +1129,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                   use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
         model, _, vae, positive, negative = basic_pipe
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
-                                             positive, negative, denoise, use_tiled_vae == "enabled", upscale_model_opt, pk_hook_opt)
+                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt)
         return (upscaler, )
 
 
@@ -1146,7 +1145,7 @@ class TwoSamplersForMaskUpscalerProvider:
                           "last1", "last2",
                           "interleave1+last1", "interleave2+last1", "interleave3+last1",
                           ],),
-                     "use_tiled_vae": (["disabled", "enabled"],),
+                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "base_sampler": ("KSAMPLER", ),
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
@@ -1169,7 +1168,7 @@ class TwoSamplersForMaskUpscalerProvider:
     def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae,
              full_sampler_opt=None, upscale_model_opt=None,
              pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
-        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae == "enabled",
+        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
                                                    base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
                                                    pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
         return (upscaler, )
@@ -1187,7 +1186,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
                           "last1", "last2",
                           "interleave1+last1", "interleave2+last1", "interleave3+last1",
                           ],),
-                     "use_tiled_vae": (["disabled", "enabled"],),
+                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "base_sampler": ("KSAMPLER", ),
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
@@ -1211,7 +1210,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
              full_sampler_opt=None, upscale_model_opt=None,
              pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
         _, _, vae, _, _ = basic_pipe
-        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae == "enabled",
+        upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
                                                    base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
                                                    pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
         return (upscaler, )
@@ -1319,27 +1318,27 @@ class FaceDetailerPipe:
                      "image": ("IMAGE", ),
                      "detailer_pipe": ("DETAILER_PIPE",),
                      "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": (["bbox", "crop_region"],),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
                      "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": (["enabled", "disabled"], ),
-                     "force_inpaint": (["disabled", "enabled"], ),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1, "display": "slider"}),
+                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
 
-                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
-                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "bbox_dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1, "display": "slider"}),
+                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1, "display": "slider"}),
 
                      "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
-                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
-                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
-                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     "sam_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1, "display": "slider"}),
+                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
+                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1, "display": "slider"}),
+                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                      "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
@@ -1619,9 +1618,9 @@ class MaskToSEGS:
     def INPUT_TYPES(s):
         return {"required": {
                                 "mask": ("MASK",),
-                                "combined": (["False", "True"], ),
+                                "combined": ("BOOLEAN", {"default": False, "label_on": "True", "label_off": "False"}),
                                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
-                                "bbox_fill": (["disabled", "enabled"], ),
+                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                              }
                 }
@@ -1632,7 +1631,7 @@ class MaskToSEGS:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
-        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill == "enabled", drop_size)
+        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
         return (result, )
 
 
@@ -2068,7 +2067,7 @@ class ImageMaskSwitch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
+                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1, "display": "slider"}),
                     "images1": ("IMAGE", ),
                     },
             
@@ -2106,7 +2105,7 @@ class LatentSwitch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
+                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1, "display": "slider"}),
                     "latent1": ("LATENT",),
                     },
 
@@ -2140,7 +2139,7 @@ class SEGSSwitch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
+                    "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1, "display": "slider"}),
                     "segs": ("SEGS",),
                     },
 
@@ -2283,7 +2282,7 @@ class ImpactWildcardProcessor:
         return {"required": {
                         "wildcard_text": ("STRING", {"multiline": True}),
                         "populated_text": ("STRING", {"multiline": True}),
-                        "mode": (["Populate", "Fixed"], ),
+                        "mode":("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                     },
                 }
 
@@ -2353,11 +2352,11 @@ class KSamplerBasicPipe:
                     {"basic_pipe": ("BASIC_PIPE",),
                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "display": "slider"}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "latent_image": ("LATENT", ),
-                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "display": "slider"}),
                      }
                 }
 
@@ -2377,16 +2376,16 @@ class KSamplerAdvancedBasicPipe:
     def INPUT_TYPES(s):
         return {"required":
                     {"basic_pipe": ("BASIC_PIPE",),
-                    "add_noise": (["enable", "disable"], ),
-                    "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-                    "latent_image": ("LATENT", ),
-                    "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
-                    "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
-                    "return_with_leftover_noise": (["disable", "enable"], ),
+                     "add_noise": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "latent_image": ("LATENT", ),
+                     "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+                     "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
+                     "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      }
                 }
 
@@ -2397,6 +2396,17 @@ class KSamplerAdvancedBasicPipe:
 
     def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
+
+        if add_noise:
+            add_noise = "enabled"
+        else:
+            add_noise = "disabled"
+
+        if return_with_leftover_noise:
+            return_with_leftover_noise = "enabled"
+        else:
+            return_with_leftover_noise = "disabled"
+
         latent = nodes.KSamplerAdvanced().sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise)[0]
         return (basic_pipe, latent, vae)
 

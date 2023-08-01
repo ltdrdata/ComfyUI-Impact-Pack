@@ -73,6 +73,9 @@ def setup_js():
 
     js_src_path = os.path.join(impact_path, "js", "impact-sam-editor.js")
     shutil.copy(js_src_path, js_dest_path)
+
+    js_src_path = os.path.join(impact_path, "js", "comboBoolMigration.js")
+    shutil.copy(js_src_path, js_dest_path)
     
 setup_js()
 
