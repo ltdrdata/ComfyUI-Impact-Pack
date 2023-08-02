@@ -67,6 +67,8 @@ def ensure_pip_packages_first():
         subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
 
     if not impact.config.get_config()['mmdet_skip']:
+        subprocess.run(pip_install + ['openmim'], cwd=subpack_path)
+
         try:
             import pycocotools
         except Exception:
