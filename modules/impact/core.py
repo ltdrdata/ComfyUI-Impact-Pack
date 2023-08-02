@@ -108,7 +108,7 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
     return npoints, nplabs
 
 
-def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg, sampler_name,
+def enhance_detail(image, model, clip, vae, guide_size, guide_size_for, max_size, bbox, seed, steps, cfg, sampler_name,
                    scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
     if wildcard_opt is not None and wildcard_opt != "":
         model, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
@@ -124,7 +124,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         print(f"Detailer: segment skip (enough big)")
         return None
 
-    if guide_size_for_bbox: # == "bbox"
+    if guide_size_for == "bbox":
         # Scale up based on the smaller dimension between width and height.
         upscale = guide_size / min(bbox_w, bbox_h)
     else:
