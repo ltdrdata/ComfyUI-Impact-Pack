@@ -223,14 +223,16 @@ app.registerExtension({
 
 			let force_serializeValue = async (n,i) =>
 				{
-					if(n.widgets_values[2] == "Fixed") {
+					if(node.widgets[2].value == "Fixed") {
 						return node.widgets[1].value;
 					}
 					else {
-						let response = await fetch(`/impact/wildcards`, {
+				        let wildcard_text = await node.widgets[0].serializeValue();
+
+						let response = await api.fetchApi(`/impact/wildcards`, {
 																method: 'POST',
 																headers: { 'Content-Type': 'application/json' },
-																body: JSON.stringify({text: n.widgets_values[0]})
+																body: JSON.stringify({text: wildcard_text})
 															});
 
 						let populated = await response.json();
@@ -246,12 +248,12 @@ app.registerExtension({
 			// mode combo
 			Object.defineProperty(node.widgets[2], "value", {
 				set: (value) => {
-						this._value = value;
+						node._mode_value = value;
 						node.widgets[1].inputEl.disabled = value != "Fixed";
 					},
 				get: () => {
-						if(this._value)
-							return this._value;
+						if(node._mode_value)
+							return node._mode_value;
 						else
 							return "Populate";
 					 }
@@ -269,7 +271,19 @@ app.registerExtension({
 					 }
 			});
 
-            node.widgets[0].serializeValue = (n,i) => { return n.widgets_values[i]; };
+            node.widgets[0].serializeValue = (n,i) => {
+                let link_id = node.inputs.find(x => x.name=="wildcard_text")?.link;
+                if(link_id != undefined) {
+                    let link = app.graph.links[link_id];
+                    let input_widget = app.graph._nodes_by_id[link.origin_id].widgets[link.origin_slot];
+                    if(input_widget.type == "customtext") {
+                        return input_widget.value;
+                    }
+                }
+                else {
+                    return node.widgets[0].value;
+                }
+            };
             node.widgets[1].serializeValue = force_serializeValue;
 		}
 
