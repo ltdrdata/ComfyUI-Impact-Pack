@@ -272,13 +272,18 @@ app.registerExtension({
 			});
 
             node.widgets[0].serializeValue = (n,i) => {
-                let link_id = node.inputs.find(x => x.name=="wildcard_text")?.link;
-                if(link_id != undefined) {
-                    let link = app.graph.links[link_id];
-                    let input_widget = app.graph._nodes_by_id[link.origin_id].widgets[link.origin_slot];
-                    if(input_widget.type == "customtext") {
-                        return input_widget.value;
-                    }
+                if(node.inputs) {
+	                let link_id = node.inputs.find(x => x.name=="wildcard_text")?.link;
+	                if(link_id != undefined) {
+	                    let link = app.graph.links[link_id];
+	                    let input_widget = app.graph._nodes_by_id[link.origin_id].widgets[link.origin_slot];
+	                    if(input_widget.type == "customtext") {
+	                        return input_widget.value;
+	                    }
+	                }
+	                else {
+	                    return node.widgets[0].value;
+	                }
                 }
                 else {
                     return node.widgets[0].value;
