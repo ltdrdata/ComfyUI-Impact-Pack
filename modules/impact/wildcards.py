@@ -47,23 +47,32 @@ def process(text):
         pattern = r"__([\w.-/]+)__"
         matches = re.findall(pattern, string)
 
+        replacements_found = False
+
         for match in matches:
             if match in wildcard_dict:
                 replacement = random.choice(wildcard_dict[match])
+                replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
 
-        return string
+        return string, replacements_found
 
-    # pass1: replace options
-    pass1, is_replaced = replace_options(text)
+    replace_depth = 100
+    stop_unwrap = False
+    while not stop_unwrap and replace_depth > 1:
+        replace_depth -= 1  # prevent infinite loop
 
-    while is_replaced:
-        pass1, is_replaced = replace_options(pass1)
+        # pass1: replace options
+        pass1, is_replaced1 = replace_options(text)
 
-    # pass2: replace wildcards
-    pass2 = replace_wildcard(pass1)
+        while is_replaced1:
+            pass1, is_replaced1 = replace_options(pass1)
 
-    return pass2
+        # pass2: replace wildcards
+        text, is_replaced2 = replace_wildcard(pass1)
+        stop_unwrap = not is_replaced1 and not is_replaced2
+
+    return text
 
 
 def safe_float(x):
