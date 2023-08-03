@@ -184,7 +184,9 @@ app.registerExtension({
                         if(widget.type === "customtext") {
                             widget.dynamicPrompts = false;
                             widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
-                            widget.serializeValue = (n,i) => { return n.widgets_values[i]; };
+                            widget.serializeValue = () => {
+                                return node.widgets[i].value;
+                            };
                         }
 			        }
 			    }
@@ -249,7 +251,7 @@ app.registerExtension({
 			Object.defineProperty(node.widgets[2], "value", {
 				set: (value) => {
 						node._mode_value = value == true || value == "Populate";
-						node.widgets[1].inputEl.disabled = value == false || value != "Fixed";
+						node.widgets[1].inputEl.disabled = value == true || value == "Populate";
 					},
 				get: () => {
 						if(node._mode_value != undefined)
