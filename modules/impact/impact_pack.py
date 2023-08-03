@@ -2433,7 +2433,7 @@ class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "text": ("STRING", {"default": ""}),
+                        "text": ("STRING", {"default": "", "forceInput": True}),
                     },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }

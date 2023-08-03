@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE
+* Starting from V3.6, requires latest version(Aug 8, 9ccc965) of ComfyUI.
 * **In versions below V3.3.1, there was an issue with the image quality generated after using the UltralyticsDetectorProvider. Please make sure to upgrade to a newer version.**
 * Starting from V3.0, nodes related to `mmdet` are optional nodes that are activated only based on the configuration settings.
   - Through ComfyUI-Impact-Subpack, you can utilize UltralysticsDetectorProvider to access various detection models.
@@ -60,7 +61,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SEGSToImageList - Convert SEGS To Image List
 * SEGS Filter (label) - This node filters SEGS based on the label of the detected areas 
 * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different then segs2 will be ignored. 
-* 
+ 
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
    * ToBasicPipe, FromBasicPipe - These nodes are used to bundle model, clip, vae, positive conditioning, and negative conditioning into a single BASIC_PIPE, or extract each element from the BASIC_PIPE.
