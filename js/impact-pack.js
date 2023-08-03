@@ -223,7 +223,7 @@ app.registerExtension({
 
 			let force_serializeValue = async (n,i) =>
 				{
-					if(node.widgets[2].value == "Fixed") {
+					if(!node.widgets[2].value) {
 						return node.widgets[1].value;
 					}
 					else {
@@ -237,7 +237,7 @@ app.registerExtension({
 
 						let populated = await response.json();
 
-						n.widgets_values[2] = "Fixed";
+						n.widgets_values[2] = false;
 						n.widgets_values[1] = populated.text;
 						populate_setter.call(node.widgets[1], populated.text);
 
@@ -248,14 +248,14 @@ app.registerExtension({
 			// mode combo
 			Object.defineProperty(node.widgets[2], "value", {
 				set: (value) => {
-						node._mode_value = value;
-						node.widgets[1].inputEl.disabled = value != "Fixed";
+						node._mode_value = value == true || value == "Populate";
+						node.widgets[1].inputEl.disabled = value == false || value != "Fixed";
 					},
 				get: () => {
-						if(node._mode_value)
+						if(node._mode_value != undefined)
 							return node._mode_value;
 						else
-							return "Populate";
+							return true;
 					 }
 			});
 
