@@ -82,6 +82,7 @@ setup_js()
 from impact.impact_pack import *
 from impact.detectors import *
 from impact.pipe import *
+from impact.logics import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
 impact.wildcards.read_wildcard_dict(custom_wildcards_path)
@@ -190,6 +191,17 @@ NODE_CLASS_MAPPINGS = {
     "RegionalPrompt": RegionalPrompt,
 
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
+
+    "ImpactCompare": ImpactCompare,
+    "ImpactConditionalBranch": ImpactConditionalBranch,
+    "ImpactInt": ImpactInt,
+    # "ImpactFloat": ImpactFloat,
+    "ImpactValueSender": ImpactValueSender,
+    "ImpactValueReceiver": ImpactValueReceiver,
+    "ImpactImageInfo": ImpactImageInfo,
+    "ImpactMinMax": ImpactMinMax,
+    "ImpactNeg": ImpactNeg,
+    "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
 }
 
 

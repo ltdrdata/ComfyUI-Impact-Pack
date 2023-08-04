@@ -144,8 +144,36 @@ function latentSendHandler(event) {
 	}
 }
 
+
+function valueSendHandler(event) {
+    let nodes = app.graph._nodes;
+    for(let i in nodes) {
+        if(nodes[i].type == 'ImpactValueReceiver') {
+            if(nodes[i].widgets[2].value == event.detail.link_id) {
+                nodes[i].widgets[1].value = event.detail.value;
+
+                let typ = typeof event.detail.value;
+                if(typ != "number") {
+                    nodes[i].widgets[0].value = typeof event.detail.value;
+                }
+                else if(Number.isInteger(event.detail.value)) {
+                    nodes[i].widgets[0].value = "INT";
+                }
+                else {
+                    nodes[i].widgets[0].value = "FLOAT";
+                }
+            }
+        }
+    }
+}
+
+
 const impactProgressBadge = new ImpactProgressBadge();
 
+api.addEventListener("stop-iteration", () => {
+    document.getElementById("autoQueueCheckbox").checked = false;
+});
+api.addEventListener("value-send", valueSendHandler);
 api.addEventListener("img-send", imgSendHandler);
 api.addEventListener("latent-send", latentSendHandler);
 api.addEventListener("executed", progressExecuteHandler);

@@ -110,9 +110,11 @@ This takes latent as input and outputs latent as the result.
 
 * RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
 - multiple region version of TwoAdvancedSamplersForMask 
-
+* 
 * KSampler (pipe), KSampler (advanced/pipe)
-- convenient `KSampler` based_on `BASIC_PIPE`
+
+* ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
+- Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
 
 
 ## MMDet nodes
