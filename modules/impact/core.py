@@ -655,7 +655,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
     for i in range(mask.shape[0]):
         mask_i = mask[i]
 
-        if combined == "True":
+        if combined:
             indices = np.nonzero(mask_i)
             if len(indices[0]) > 0 and len(indices[1]) > 0:
                 bbox = (
