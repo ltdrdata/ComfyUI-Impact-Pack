@@ -191,6 +191,8 @@ NODE_CLASS_MAPPINGS = {
     "RegionalPrompt": RegionalPrompt,
 
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
+    "ImpactSEGSRangeFilter": SEGSRangeFilter,
+    "ImpactSEGSOrderedFilter": SEGSOrderedFilter,
 
     "ImpactCompare": ImpactCompare,
     "ImpactConditionalBranch": ImpactConditionalBranch,
@@ -245,6 +247,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactKSamplerBasicPipe": "KSampler (pipe)",
     "ImpactKSamplerAdvancedBasicPipe": "KSampler (Advanced/pipe)",
     "ImpactSEGSLabelFilter": "SEGS Filter (label)",
+    "ImpactSEGSRangeFilter": "SEGS Filter (range)",
+    "ImpactSEGSOrderedFilter": "SEGS Filter (ordered)",
     "ImpactSEGSConcat": "SEGS Concat",
 
     "PreviewBridge": "Preview Bridge",

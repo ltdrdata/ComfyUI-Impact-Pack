@@ -59,7 +59,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SEGSPreview - Provides a preview of SEGS.
    * This option is used to preview the improved image through `SEGSDetailer` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
 * SEGSToImageList - Convert SEGS To Image List
-* SEGS Filter (label) - This node filters SEGS based on the label of the detected areas 
+* SEGS Filter (label) - This node filters SEGS based on the label of the detected areas. 
+* SEGS Filter (ordered) - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
+* SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
 * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different then segs2 will be ignored. 
  
 * Pipe nodes

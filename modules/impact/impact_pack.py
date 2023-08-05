@@ -320,6 +320,111 @@ class SEGSLabelFilter:
         return ((segs[0], res_segs), )
 
 
+class SEGSOrderedFilter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs": ("SEGS", ),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
+                        "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
+                        "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                        "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, target, order, take_start, take_count):
+        segs_with_order = []
+
+        for seg in segs[1]:
+            x1 = seg.crop_region[0]
+            y1 = seg.crop_region[1]
+            x2 = seg.crop_region[2]
+            y2 = seg.crop_region[3]
+
+            if target == "area(=w*h)":
+                value = (y2 - y1) * (x2 - x1)
+            elif target == "width":
+                value = x2 - x1
+            elif target == "height":
+                value = y2 - y1
+            elif target == "x1":
+                value = x1
+            elif target == "x2":
+                value = x2
+            elif target == "y1":
+                value = y1
+            else:
+                value = y2
+
+            segs_with_order.append((value, seg))
+
+        if order:
+            sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=True)
+        else:
+            sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=False)
+
+        result_list = [item[1] for item in sorted_list[take_start:take_start + take_count]]
+        return ((segs[0], result_list), )
+
+
+class SEGSRangeFilter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs": ("SEGS", ),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
+                        "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
+                        "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                        "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, target, mode, min_value, max_value):
+        new_segs = []
+
+        for seg in segs[1]:
+            x1 = seg.crop_region[0]
+            y1 = seg.crop_region[1]
+            x2 = seg.crop_region[2]
+            y2 = seg.crop_region[3]
+
+            if target == "area(=w*h)":
+                value = (y2 - y1) * (x2 - x1)
+            elif target == "width":
+                value = x2 - x1
+            elif target == "height":
+                value = y2 - y1
+            elif target == "x1":
+                value = x1
+            elif target == "x2":
+                value = x2
+            elif target == "y1":
+                value = y1
+            else:
+                value = y2
+
+            if mode and min_value <= value <= max_value:
+                print(f"[in] value={value} / {mode}, {min_value}, {max_value}")
+                new_segs.append(seg)
+            elif not mode and (value < min_value or value > max_value):
+                print(f"[out] value={value} / {mode}, {min_value}, {max_value}")
+                new_segs.append(seg)
+            else:
+                print(f"[filter] value={value} / {mode}, {min_value}, {max_value}")
+
+        return ((segs[0], new_segs), )
+
+
 class SEGSToImageList:
     @classmethod
     def INPUT_TYPES(s):
