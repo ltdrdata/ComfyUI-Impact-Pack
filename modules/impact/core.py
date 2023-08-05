@@ -676,19 +676,22 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                         result.append(item)
 
         else:
-            labelled_mask = label(mask_i)
-            regions = regionprops(labelled_mask)
+            mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
+            contours, _ = cv2.findContours(mask_i_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for contour in contours:
+                separated_mask = np.zeros_like(mask_i_uint8)
+                cv2.drawContours(separated_mask, [contour], 0, 255, -1)
+                separated_mask = np.array(separated_mask/255.0)
 
-            for region in regions:
-                y1, x1, y2, x2 = region.bbox
-                bbox = x1, y1, x2, y2
+                x, y, w, h = cv2.boundingRect(contour)
+                bbox = x, y, x+w, y+h
                 crop_region = make_crop_region(
                     mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
                 )
 
-                if x2 - x1 > drop_size and y2 - y1 > drop_size:
+                if w > drop_size and h > drop_size:
                     cropped_mask = np.array(
-                        mask_i[
+                        separated_mask[
                             crop_region[1]: crop_region[3],
                             crop_region[0]: crop_region[2],
                         ]
