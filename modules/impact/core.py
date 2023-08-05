@@ -681,7 +681,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
             for contour in contours:
                 separated_mask = np.zeros_like(mask_i_uint8)
                 cv2.drawContours(separated_mask, [contour], 0, 255, -1)
-                separated_mask = np.array(separated_mask/255.0)
+                separated_mask = np.array(separated_mask/255.0).astype(np.float32)
 
                 x, y, w, h = cv2.boundingRect(contour)
                 bbox = x, y, x+w, y+h
