@@ -727,6 +727,23 @@ def segs_to_combined_mask(segs):
     return torch.from_numpy(mask.astype(np.float32) / 255.0)
 
 
+def segs_to_masklist(segs):
+    shape = segs[0]
+    h = shape[0]
+    w = shape[1]
+
+    masks = []
+    for seg in segs[1]:
+        mask = np.zeros((h, w), dtype=np.uint8)
+        cropped_mask = seg.cropped_mask
+        crop_region = seg.crop_region
+        mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
+        mask = torch.from_numpy(mask.astype(np.float32) / 255.0)
+        masks.append(mask)
+
+    return masks
+
+
 def vae_decode(vae, samples, use_tile, hook):
     if use_tile:
         pixels = nodes.VAEDecodeTiled().decode(vae, samples)[0]

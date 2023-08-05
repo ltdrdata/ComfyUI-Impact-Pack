@@ -462,6 +462,25 @@ class SEGSToImageList:
         return (results,)
 
 
+class SEGSToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                }
+
+    RETURN_TYPES = ("MASK",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs):
+        masks = core.segs_to_masklist(segs)
+        return (masks,)
+
+
 class SEGSConcat:
     @classmethod
     def INPUT_TYPES(s):

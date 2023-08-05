@@ -175,6 +175,7 @@ NODE_CLASS_MAPPINGS = {
     "SEGSPaste": SEGSPaste,
     "SEGSPreview": SEGSPreview,
     "SEGSToImageList": SEGSToImageList,
+    "ImpactSEGSToMaskList": SEGSToMaskList,
     "ImpactSEGSConcat": SEGSConcat,
 
     # "SEGPick": SEGPick,
