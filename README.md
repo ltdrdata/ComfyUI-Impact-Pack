@@ -10,7 +10,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * Starting from V3.6, requires latest version(Aug 8, 9ccc965) of ComfyUI.
 * **In versions below V3.3.1, there was an issue with the image quality generated after using the UltralyticsDetectorProvider. Please make sure to upgrade to a newer version.**
 * Starting from V3.0, nodes related to `mmdet` are optional nodes that are activated only based on the configuration settings.
-  - Through ComfyUI-Impact-Subpack, you can utilize UltralysticsDetectorProvider to access various detection models.
+  - Through ComfyUI-Impact-Subpack, you can utilize UltralyticsDetectorProvider to access various detection models.
 * Between versions 2.22 and 2.21, there is partial compatibility loss regarding the Detailer workflow. If you continue to use the existing workflow, errors may occur during execution. An additional output called "enhanced_alpha_list" has been added to Detailer-related nodes.
 * The permission error related to cv2 that occurred during the installation of Impact Pack has been patched in version 2.21.4. However, please note that the latest versions of ComfyUI and ComfyUI-Manager are required.
 * The "PreviewBridge" feature may not function correctly on ComfyUI versions released before July 1, 2023.
@@ -20,9 +20,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 ## Custom Nodes
 * SAMLoader - Loads the SAM model.
-* UltralysticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
+* UltralyticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
   - Unlike `MMDetDetectorProvider`, for segm models, `BBOX_DETECTOR` is also provided.
-  - The various models available in UltralysticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
+  - The various models available in UltralyticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
 * ONNXDetectorProvider - Loads the ONNX model to provide SEGM_DETECTOR.
 * CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
   * You need to install the ComfyUI-CLIPSeg node extension.
