@@ -188,6 +188,8 @@ NODE_CLASS_MAPPINGS = {
     "ReencodeLatent": ReencodeLatent,
     "ReencodeLatentPipe": ReencodeLatentPipe,
 
+    "ImpactImageBatchToImageList": ImageBatchToImageList,
+
     "RegionalSampler": RegionalSampler,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
@@ -262,6 +264,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SEGSSwitch": "Switch (SEGS)",
 
     "MasksToMaskList": "Masks to Mask List",
+    "ImpactImageBatchToImageList": "Image batch to Image List"
 }
 
 if not impact.config.get_config()['mmdet_skip']:
