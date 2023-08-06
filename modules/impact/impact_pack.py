@@ -1863,6 +1863,25 @@ class SubtractMask:
         return (mask,)
 
 
+class AddMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "mask1": ("MASK",),
+            "mask2": ("MASK",),
+        }
+        }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, mask1, mask2):
+        mask = add_masks(mask1, mask2)
+        return (mask,)
+
+
 import nodes
 
 

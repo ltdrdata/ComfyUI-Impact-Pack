@@ -126,6 +126,20 @@ def subtract_masks(mask1, mask2):
         return mask1
 
 
+def add_masks(mask1, mask2):
+    mask1 = mask1.cpu()
+    mask2 = mask2.cpu()
+    cv2_mask1 = np.array(mask1) * 255
+    cv2_mask2 = np.array(mask2) * 255
+
+    if cv2_mask1.shape == cv2_mask2.shape:
+        cv2_mask = cv2.add(cv2_mask1, cv2_mask2)
+        return torch.from_numpy(cv2_mask) / 255.0
+    else:
+        # do nothing - incompatible mask shape: mostly empty mask
+        return mask1
+
+
 def normalize_region(limit, startp, size):
     if startp < 0:
         new_endp = min(limit, size)

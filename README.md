@@ -39,6 +39,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * Please note that this operation is performed with batches of MASKS, not just a single MASK.
 * Bitwise(MASK & MASK) - Performs a 'bitwise and' operation between two masks.
 * Bitwise(MASK - MASK) - Subtracts one mask from another.
+* Bitwise(MASK + MASK) - Combine two masks.
 * SEGM Detector (SEGS) - Detects segmentation and returns SEGS from the input image.
 * BBOX Detector (SEGS) - Detects bounding boxes and returns SEGS from the input image.
 * ONNX Detector (SEGS) - Utilizes the ONNX model to identify the bbox and retrieve the SEGS from the input image.

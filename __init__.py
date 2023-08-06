@@ -133,6 +133,7 @@ NODE_CLASS_MAPPINGS = {
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
+    "AddMask": AddMask,
     "Segs & Mask": SegsBitwiseAndMask,
     "Segs & Mask ForEach": SegsBitwiseAndMaskForEach,
     "EmptySegs": EmptySEGS,
@@ -222,6 +223,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Segs & Mask ForEach": "Bitwise(SEGS & MASKS ForEach)",
     "BitwiseAndMask": "Bitwise(MASK & MASK)",
     "SubtractMask": "Bitwise(MASK - MASK)",
+    "AddMask": "Bitwise(MASK + MASK)",
     "DetailerForEach": "Detailer (SEGS)",
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
