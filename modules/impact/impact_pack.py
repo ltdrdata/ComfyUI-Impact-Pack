@@ -1811,6 +1811,7 @@ class ToBinaryMask:
     def INPUT_TYPES(s):
         return {"required": {
                       "mask": ("MASK",),
+                      "threshold": ("INT", {"default": 20, "min": 1, "max": 255}),
                     }
                 }
 
@@ -1819,8 +1820,8 @@ class ToBinaryMask:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask,):
-        mask = to_binary_mask(mask)
+    def doit(self, mask, threshold):
+        mask = to_binary_mask(mask, threshold/255.0)
         return (mask,)
 
 
