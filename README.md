@@ -57,6 +57,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 * SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
 * SEGSPaste - Pastes the results of SEGS onto the original image.
+  * If `ref_image_opt` is present, the images contained within SEGS are ignored. Instead, the image within `ref_image_opt` corresponding to the crop area of SEGS is taken and pasted. The size of the image in `ref_image_opt` should be the same as the original image size. 
 * SEGSPreview - Provides a preview of SEGS.
    * This option is used to preview the improved image through `SEGSDetailer` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
 * SEGSToImageList - Convert SEGS To Image List

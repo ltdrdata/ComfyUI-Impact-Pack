@@ -1,5 +1,8 @@
 import os
 import sys
+
+import torch
+
 import folder_paths
 import comfy.samplers
 import comfy.sd
@@ -219,6 +222,7 @@ class SEGSPaste:
                      "segs": ("SEGS", ),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      },
+                "optional": {"ref_image_opt": ("IMAGE", ),}
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -227,13 +231,21 @@ class SEGSPaste:
     CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
-    def doit(image, segs, feather):
+    def doit(image, segs, feather, ref_image_opt=None):
         image_pil = tensor2pil(image).convert('RGBA')
 
         for seg in segs[1]:
-            if seg.cropped_image is not None:
+            ref_image_pil = None
+            if ref_image_opt is None and seg.cropped_image is not None:
+                ref_image_pil = seg.cropped_image
+            elif ref_image_opt is not None:
+                cropped = crop_image(ref_image_opt, seg.crop_region)
+                cropped = np.clip(255. * cropped.squeeze(), 0, 255).astype(np.uint8)
+                ref_image_pil = Image.fromarray(cropped).convert('RGBA')
+
+            if ref_image_pil is not None:
                 mask_pil = feather_mask(seg.cropped_mask, feather)
-                image_pil.paste(seg.cropped_image, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
+                image_pil.paste(ref_image_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
