@@ -73,7 +73,7 @@ def bitwise_and_masks(mask1, mask2):
         return mask1
 
 
-def to_binary_mask(mask, threshold):
+def to_binary_mask(mask, threshold=0):
     mask = mask.clone().cpu()
     mask[mask > threshold] = 1.
     mask[mask <= threshold] = 0.
