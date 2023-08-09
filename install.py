@@ -120,6 +120,7 @@ def ensure_mmdet_package():
         import mmdet
         from mmdet.evaluation import get_classes
     except Exception:
+        subprocess.check_call(pip_install + ['opendatalab==0.0.9'])
         subprocess.check_call(pip_install + ['-U', 'openmim'])
         subprocess.check_call(mim_install + ['mmcv==2.0.0'])
         subprocess.check_call(mim_install + ['mmdet==3.0.0'])
