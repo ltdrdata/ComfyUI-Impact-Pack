@@ -115,15 +115,17 @@ This takes latent as input and outputs latent as the result.
 
 * RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
 - multiple region version of TwoAdvancedSamplersForMask 
-* 
+
 * KSampler (pipe), KSampler (advanced/pipe)
 
 * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
 - Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
 
 * Image batch To Image List - Convert Image batch to Image List
-- You can use images generated in a multi batch to handle them.
-
+- You can use images generated in a multi batch to handle them
+* Make Image List - Convert multiple images into a single image list
+- The input of images can be scaled up as needed
+- 
 
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
@@ -132,7 +134,7 @@ This takes latent as input and outputs latent as the result.
 
 ## Feature
 * Interactive SAM Detector (Clipspace) - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
-
+* Providing a feature to detect errors that occur when mixing models and clips from checkpoints such as `SDXL Base`, `SDXL Refiner`, `SD1.x`, `SD2.x` during sample execution, and reporting appropriate errors.
 
 ## Deprecated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.

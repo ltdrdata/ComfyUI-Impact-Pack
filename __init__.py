@@ -15,6 +15,7 @@ sys.path.append(subpack_path)
 
 
 import impact.config
+import impact.hacky
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
 
 
@@ -189,6 +190,7 @@ NODE_CLASS_MAPPINGS = {
     "ReencodeLatentPipe": ReencodeLatentPipe,
 
     "ImpactImageBatchToImageList": ImageBatchToImageList,
+    "ImpactMakeImageList": MakeImageList,
 
     "RegionalSampler": RegionalSampler,
     "CombineRegionalPrompts": CombineRegionalPrompts,
@@ -264,7 +266,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SEGSSwitch": "Switch (SEGS)",
 
     "MasksToMaskList": "Masks to Mask List",
-    "ImpactImageBatchToImageList": "Image batch to Image List"
+    "ImpactImageBatchToImageList": "Image batch to Image List",
+    "ImpactMakeImageList": "Make Image List",
 }
 
 if not impact.config.get_config()['mmdet_skip']:

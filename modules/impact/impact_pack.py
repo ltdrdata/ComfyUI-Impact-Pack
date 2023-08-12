@@ -2585,11 +2585,13 @@ class KSamplerAdvancedBasicPipe:
         return (basic_pipe, latent, vae)
 
 
+from impact.logics import AnyType
+
 class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "text": ("STRING", {"default": "", "forceInput": True}),
+                        "data": (AnyType("*"), ""),
                     },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
@@ -2601,8 +2603,12 @@ class ImpactLogger:
     RETURN_TYPES = ()
     FUNCTION = "doit"
 
-    def doit(self, text, prompt, extra_pnginfo):
-        print(f"[IMPACT LOGGER]: {text}")
+    def doit(self, data, prompt, extra_pnginfo):
+        shape = ""
+        if hasattr(data, "shape"):
+            shape = f"{data.shape} / "
+
+        print(f"[IMPACT LOGGER]: {shape}{data}")
 
         print(f"         PROMPT: {prompt}")
 
@@ -2630,4 +2636,24 @@ class ImageBatchToImageList:
 
     def doit(self, image):
         images = [image[i:i + 1, ...] for i in range(image.shape[0])]
+        return (images, )
+
+
+class MakeImageList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"image1": ("IMAGE",), }}
+
+    RETURN_TYPES = ("IMAGE",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        images = []
+
+        for k, v in kwargs.items():
+            images.append(v)
+
         return (images, )

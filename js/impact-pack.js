@@ -190,6 +190,31 @@ app.registerExtension({
 		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale") {
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
+
+        if (nodeData.name === 'ImpactMakeImageList') {
+            const onConnectionsChange = nodeType.prototype.onConnectionsChange
+            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+                if (!connected && this.inputs.length > 1) {
+                    if (this.widgets) {
+                        const w = this.widgets.find((w) => w.name === this.inputs[index].name)
+                        if (w) {
+                            w.onRemoved?.()
+                            this.widgets.length = this.widgets.length - 1
+                        }
+                    }
+                    this.removeInput(index);
+                }
+
+                for (let i = 0; i < this.inputs.length; i++) {
+                    this.inputs[i].label = `image${i + 1}`
+                    this.inputs[i].name = `image${i + 1}`
+                }
+
+                if (this.inputs[this.inputs.length - 1].link != undefined) {
+                    this.addInput(`image${this.inputs.length + 1}`, 'IMAGE');
+                }
+            }
+        }
 	},
 
 	nodeCreated(node, app) {
