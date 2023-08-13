@@ -125,7 +125,8 @@ This takes latent as input and outputs latent as the result.
 - You can use images generated in a multi batch to handle them
 * Make Image List - Convert multiple images into a single image list
 - The input of images can be scaled up as needed
-- 
+
+* String Selector - It selects and returns a portion of the string. When `multiline` mode is disabled, it simply returns the string of the line pointed to by the selector. When `multiline` mode is enabled, it divides the string based on lines that start with `#` and returns them. If the `select` value is larger than the number of items, it will start counting from the first line again and return accordingly.
 
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.

@@ -124,7 +124,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         print(f"Detailer: segment skip (enough big)")
         return None
 
-    if guide_size_for_bbox: # == "bbox"
+    if guide_size_for_bbox:  # == "bbox"
         # Scale up based on the smaller dimension between width and height.
         upscale = guide_size / min(bbox_w, bbox_h)
     else:
@@ -135,6 +135,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     new_h = int(h * upscale)
 
     # safeguard
+    if 'aitemplate_keep_loaded' in model.model_options:
+        max_size = min(4096, max_size)
+
     if new_w > max_size or new_h > max_size:
         upscale *= max_size / max(new_w, new_h)
         new_w = int(w * upscale)

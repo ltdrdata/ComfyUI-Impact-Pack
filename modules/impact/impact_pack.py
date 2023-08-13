@@ -2681,3 +2681,51 @@ class MakeImageList:
             images.append(v)
 
         return (images, )
+
+
+class StringSelector:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "strings": ("STRING", {"multiline": True}),
+            "multiline": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+            "select": ("INT", {"min": 0, "max": sys.maxsize, "step": 1, "default": 0}),
+        }}
+
+    RETURN_TYPES = ("STRING",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, strings, multiline, select):
+        lines = strings.split('\n')
+
+        if multiline:
+            result = []
+            current_string = ""
+
+            for line in lines:
+                if line.startswith("#"):
+                    if current_string:
+                        result.append(current_string.strip())
+                        current_string = ""
+                current_string += line + "\n"
+
+            if current_string:
+                result.append(current_string.strip())
+
+            if len(result) == 0:
+                selected = strings
+            else:
+                selected = result[select % len(result)]
+
+            if selected.startswith('#'):
+                selected = selected[1:]
+        else:
+            if len(lines) == 0:
+                selected = strings
+            else:
+                selected = lines[select % len(lines)]
+
+        return (selected, )

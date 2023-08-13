@@ -213,6 +213,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactMinMax": ImpactMinMax,
     "ImpactNeg": ImpactNeg,
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
+    "ImpactStringSelector": StringSelector,
 }
 
 
@@ -274,6 +275,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MasksToMaskList": "Masks to Mask List",
     "ImpactImageBatchToImageList": "Image batch to Image List",
     "ImpactMakeImageList": "Make Image List",
+    "ImpactStringSelector": "String Selector"
 }
 
 if not impact.config.get_config()['mmdet_skip']:
