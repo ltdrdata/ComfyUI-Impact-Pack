@@ -32,6 +32,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * SAMDetector (Segmented) - It is similar to `SAMDetector (combined)`, but it separates and outputs the detected segments. Multiple segments can be found for the same detected area, and currently, a policy is in place to group them arbitrarily in sets of three. This aspect is expected to be improved in the future.
   * As a result, it outputs the `combined_mask`, which is a unified mask, and `batch_masks`, which are multiple masks grouped together in batch form.
   * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
+* Simple Detector (SEGS) - Operating primarily with `BBOX_DETECTOR`, and with the additional provision of `SAM_MODEL` or `SEGM_DETECTOR`, this node internally generates improved SEGS through mask operations on both *bbox* and *silhouette*. It serves as a convenient tool to simplify a somewhat intricate workflow.
 * Bitwise(SEGS & SEGS) - Performs a 'bitwise and' operation between two SEGS.
 * Bitwise(SEGS - SEGS) - Subtracts one SEGS from another.
 * Bitwise(SEGS & MASK) - Performs a bitwise AND operation between SEGS and MASK.

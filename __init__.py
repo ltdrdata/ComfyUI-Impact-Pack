@@ -146,6 +146,8 @@ NODE_CLASS_MAPPINGS = {
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
     "ONNXDetectorSEGS": ONNXDetectorForEach,
+    "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
+    "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
     "SegmDetectorCombined_v2": SegmDetectorCombined,
@@ -218,6 +220,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
     "ONNXDetectorSEGS": "ONNX Detector (SEGS)",
+    "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
+    "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
+
     "BboxDetectorCombined_v2": "BBOX Detector (combined)",
     "SegmDetectorCombined_v2": "SEGM Detector (combined)",
     "SegsToCombinedMask": "SEGS to MASK (combined)",
