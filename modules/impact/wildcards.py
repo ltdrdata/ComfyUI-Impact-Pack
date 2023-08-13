@@ -36,7 +36,7 @@ def process(text):
             total_prob = 0
 
             for option in options:
-                parts = option.split(':')
+                parts = option.split(':', 1)
                 if len(parts) == 2:
                     config_value = int(parts[0])
                 else:
