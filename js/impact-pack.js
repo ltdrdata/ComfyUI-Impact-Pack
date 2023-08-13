@@ -266,7 +266,7 @@ app.registerExtension({
 			});
 		}
 
-		if(node.comfyClass == "ImpactWildcardProcessor") {
+		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";
 			node.widgets[1].inputEl.disabled = true;

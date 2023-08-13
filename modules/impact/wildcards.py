@@ -30,9 +30,26 @@ def process(text):
         def replace_option(match):
             nonlocal replacements_found
             options = match.group(1).split('|')
-            replacement = random.choice(options)
+
+            adjusted_probabilities = []
+
+            total_prob = 0
+
+            for option in options:
+                parts = option.split(':')
+                if len(parts) == 2:
+                    config_value = int(parts[0])
+                else:
+                    config_value = 1  # Default value if no configuration is provided
+
+                adjusted_probabilities.append(config_value)
+                total_prob += config_value
+
+            normalized_probabilities = [prob / total_prob for prob in adjusted_probabilities]
+
+            replacement = random.choices(options, weights=normalized_probabilities, k=1)[0]
             replacements_found = True
-            return replacement
+            return re.sub(r'^[0-9]+:', '', replacement, 1)
 
         pattern = r'{([^{}]*?)}'
         replaced_string = re.sub(pattern, replace_option, string)
@@ -136,5 +153,5 @@ def process_with_loras(wildcard_opt, model, clip):
             print(f"LORA NOT FOUND: {lora_name}")
 
     print(f"CLIP: {pass2}")
-    return model, nodes.CLIPTextEncode().encode(clip, pass2)[0]
+    return model, clip, nodes.CLIPTextEncode().encode(clip, pass2)[0]
 

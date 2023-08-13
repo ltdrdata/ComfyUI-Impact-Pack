@@ -111,7 +111,7 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
 def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg, sampler_name,
                    scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
     if wildcard_opt is not None and wildcard_opt != "":
-        model, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+        model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
 
     h = image.shape[1]
     w = image.shape[2]

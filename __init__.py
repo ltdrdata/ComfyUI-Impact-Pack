@@ -171,6 +171,7 @@ NODE_CLASS_MAPPINGS = {
     # "LoadConditioning": LoadConditioning,
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
+    "ImpactWildcardEncode": ImpactWildcardEncode,
     "ImpactLogger": ImpactLogger,
 
     "SEGSDetailer": SEGSDetailer,

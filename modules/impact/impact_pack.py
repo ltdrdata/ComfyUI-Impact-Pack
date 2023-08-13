@@ -14,6 +14,8 @@ import math
 import zipfile
 import re
 from PIL import ImageDraw
+
+import impact.wildcards
 from server import PromptServer
 
 from impact.utils import *
@@ -2467,6 +2469,28 @@ class ImpactWildcardProcessor:
 
     def doit(self, wildcard_text, populated_text, mode):
         return (populated_text, )
+
+
+class ImpactWildcardEncode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "model": ("MODEL",),
+                        "clip": ("CLIP",),
+                        "wildcard_text": ("STRING", {"multiline": True}),
+                        "populated_text": ("STRING", {"multiline": True}),
+                        "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Prompt"
+
+    RETURN_TYPES = ("MODEL", "CLIP", "CONDITIONING", )
+    FUNCTION = "doit"
+
+    def doit(self, model, clip, wildcard_text, populated_text, mode):
+        model, clip, conditioning = impact.wildcards.process_with_loras(populated_text, model, clip)
+        return (model, clip, conditioning)
 
 
 class ReencodeLatent:
