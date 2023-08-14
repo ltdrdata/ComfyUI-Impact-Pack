@@ -273,8 +273,15 @@ app.registerExtension({
 				set: (value) => {
 				        const stackTrace = new Error().stack;
                         if(stackTrace.includes('inner_value_change')) {
-                            node.widgets[0].value += `<lora:${value}>`;
-                            node.widgets_values[0] = node.widgets[0].value;
+                            if(value != "Select the LoRA to add to the text") {
+	                            let lora_name = value;
+	                            if (lora_name.endsWith('.safetensors')) {
+	                                lora_name = lora_name.slice(0, -12);
+	                            }
+
+	                            node.widgets[0].value += `<lora:${lora_name}>`;
+	                            node.widgets_values[0] = node.widgets[0].value;
+                            }
                         }
 
 						node._value = value;
