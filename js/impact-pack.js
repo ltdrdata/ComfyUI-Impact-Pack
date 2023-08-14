@@ -258,12 +258,41 @@ app.registerExtension({
                             node.widgets_values[1] = node.widgets[1].value;
                         }
 
-						this._value = value;
+						node._value = value;
 					},
 				get: () => {
-                        return this._value;
+                        return node._value;
 					 }
 			});
+		}
+
+		if(node.comfyClass == "ImpactWildcardEncode") {
+			node._value = "Select the LoRA to add to the text";
+
+			Object.defineProperty(node.widgets[3], "value", {
+				set: (value) => {
+				        const stackTrace = new Error().stack;
+                        if(stackTrace.includes('inner_value_change')) {
+                            if(value != "Select the LoRA to add to the text") {
+	                            let lora_name = value;
+	                            if (lora_name.endsWith('.safetensors')) {
+	                                lora_name = lora_name.slice(0, -12);
+	                            }
+
+	                            node.widgets[0].value += `<lora:${lora_name}>`;
+	                            node.widgets_values[0] = node.widgets[0].value;
+                            }
+                        }
+
+						node._value = value;
+					},
+				get: () => {
+                        return node._value;
+					 }
+			});
+
+			// Preventing validation errors from occurring in any situation.
+			node.widgets[3].serializeValue = () => { return "Select the LoRA to add to the text"; }
 		}
 
 		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {

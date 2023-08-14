@@ -2480,6 +2480,7 @@ class ImpactWildcardEncode:
                         "wildcard_text": ("STRING", {"multiline": True}),
                         "populated_text": ("STRING", {"multiline": True}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
+                        "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
                     },
                 }
 
@@ -2488,8 +2489,8 @@ class ImpactWildcardEncode:
     RETURN_TYPES = ("MODEL", "CLIP", "CONDITIONING", )
     FUNCTION = "doit"
 
-    def doit(self, model, clip, wildcard_text, populated_text, mode):
-        model, clip, conditioning = impact.wildcards.process_with_loras(populated_text, model, clip)
+    def doit(self, *args, **kwargs):
+        model, clip, conditioning = impact.wildcards.process_with_loras(kwargs['populated_text'], kwargs['model'], kwargs['clip'])
         return (model, clip, conditioning)
 
 
@@ -2609,44 +2610,6 @@ class KSamplerAdvancedBasicPipe:
         return (basic_pipe, latent, vae)
 
 
-from impact.logics import AnyType
-
-class ImpactLogger:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "data": (AnyType("*"), ""),
-                    },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
-                }
-
-    CATEGORY = "ImpactPack/Debug"
-
-    OUTPUT_NODE = True
-
-    RETURN_TYPES = ()
-    FUNCTION = "doit"
-
-    def doit(self, data, prompt, extra_pnginfo):
-        shape = ""
-        if hasattr(data, "shape"):
-            shape = f"{data.shape} / "
-
-        print(f"[IMPACT LOGGER]: {shape}{data}")
-
-        print(f"         PROMPT: {prompt}")
-
-        # for x in prompt:
-        #     if 'inputs' in x and 'populated_text' in x['inputs']:
-        #         print(f"PROMP: {x['10']['inputs']['populated_text']}")
-        #
-        # for x in extra_pnginfo['workflow']['nodes']:
-        #     if x['type'] == 'ImpactWildcardProcessor':
-        #         print(f" WV : {x['widgets_values'][1]}\n")
-
-        return {}
-
-
 class ImageBatchToImageList:
     @classmethod
     def INPUT_TYPES(s):
@@ -2729,3 +2692,55 @@ class StringSelector:
                 selected = lines[select % len(lines)]
 
         return (selected, )
+
+
+from impact.logics import AnyType
+
+class ImpactLogger:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "data": (AnyType("*"), ""),
+                    },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    CATEGORY = "ImpactPack/Debug"
+
+    OUTPUT_NODE = True
+
+    RETURN_TYPES = ()
+    FUNCTION = "doit"
+
+    def doit(self, data, prompt, extra_pnginfo):
+        shape = ""
+        if hasattr(data, "shape"):
+            shape = f"{data.shape} / "
+
+        print(f"[IMPACT LOGGER]: {shape}{data}")
+
+        print(f"         PROMPT: {prompt}")
+
+        # for x in prompt:
+        #     if 'inputs' in x and 'populated_text' in x['inputs']:
+        #         print(f"PROMP: {x['10']['inputs']['populated_text']}")
+        #
+        # for x in extra_pnginfo['workflow']['nodes']:
+        #     if x['type'] == 'ImpactWildcardProcessor':
+        #         print(f" WV : {x['widgets_values'][1]}\n")
+
+        return {}
+
+
+class ImpactDummyInput:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {}}
+
+    CATEGORY = "ImpactPack/Debug"
+
+    RETURN_TYPES = (AnyType("*"),)
+    FUNCTION = "doit"
+
+    def doit(self):
+        return ("DUMMY",)
