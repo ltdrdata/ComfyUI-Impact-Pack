@@ -174,7 +174,6 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
-    "ImpactLogger": ImpactLogger,
 
     "SEGSDetailer": SEGSDetailer,
     "SEGSPaste": SEGSPaste,
@@ -214,6 +213,9 @@ NODE_CLASS_MAPPINGS = {
     "ImpactNeg": ImpactNeg,
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
     "ImpactStringSelector": StringSelector,
+
+    "ImpactLogger": ImpactLogger,
+    "ImpactDummyInput": ImpactDummyInput,
 }
 
 
