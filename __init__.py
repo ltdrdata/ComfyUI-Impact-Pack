@@ -1,3 +1,10 @@
+"""
+@author: Dr.Lt.Data
+@title: Impact Pack
+@nickname: Impact Pack
+@description: This extension offers various detector nodes and detailer nodes that allow you to configure a workflow that automatically enhances facial details. And provide iterative upscaler.
+"""
+
 import shutil
 import folder_paths
 import os
