@@ -36,8 +36,8 @@ def process(text):
             total_prob = 0
 
             for option in options:
-                parts = option.split(':', 1)
-                if len(parts) == 2:
+                parts = option.split('::', 1)
+                if len(parts) == 2 and parts[0].isdigit():
                     config_value = int(parts[0])
                 else:
                     config_value = 1  # Default value if no configuration is provided
@@ -49,7 +49,7 @@ def process(text):
 
             replacement = random.choices(options, weights=normalized_probabilities, k=1)[0]
             replacements_found = True
-            return re.sub(r'^[0-9]+:', '', replacement, 1)
+            return re.sub(r'^[0-9]+::', '', replacement, 1)
 
         pattern = r'{([^{}]*?)}'
         replaced_string = re.sub(pattern, replace_option, string)
