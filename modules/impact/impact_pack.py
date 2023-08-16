@@ -314,7 +314,8 @@ class SEGSLabelFilter:
                      },
                 }
 
-    RETURN_TYPES = ("SEGS",)
+    RETURN_TYPES = ("SEGS", "SEGS",)
+    RETURN_NAMES = ("filtered_SEGS", "remained_SEGS",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -324,14 +325,18 @@ class SEGSLabelFilter:
         labels = set([label.strip() for label in labels])
 
         if 'all' in labels:
-            return (segs, )
+            return (segs, (segs[0], []), )
         else:
             res_segs = []
+            remained_segs = []
+
             for x in segs[1]:
                 if x.label in labels:
                     res_segs.append(x)
+                else:
+                    remained_segs.append(x)
 
-        return ((segs[0], res_segs), )
+        return ((segs[0], res_segs), (segs[0], remained_segs), )
 
 
 class SEGSOrderedFilter:
@@ -346,7 +351,8 @@ class SEGSOrderedFilter:
                      },
                 }
 
-    RETURN_TYPES = ("SEGS",)
+    RETURN_TYPES = ("SEGS", "SEGS",)
+    RETURN_NAMES = ("filtered_SEGS", "remained_SEGS",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -383,7 +389,9 @@ class SEGSOrderedFilter:
             sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=False)
 
         result_list = [item[1] for item in sorted_list[take_start:take_start + take_count]]
-        return ((segs[0], result_list), )
+        remained_list = [item[1] for item in sorted_list if item[1] not in result_list]
+
+        return ((segs[0], result_list), (segs[0], remained_list), )
 
 
 class SEGSRangeFilter:
@@ -398,13 +406,15 @@ class SEGSRangeFilter:
                      },
                 }
 
-    RETURN_TYPES = ("SEGS",)
+    RETURN_TYPES = ("SEGS", "SEGS",)
+    RETURN_NAMES = ("filtered_SEGS", "remained_SEGS",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, segs, target, mode, min_value, max_value):
         new_segs = []
+        remained_segs = []
 
         for seg in segs[1]:
             x1 = seg.crop_region[0]
@@ -434,9 +444,10 @@ class SEGSRangeFilter:
                 print(f"[out] value={value} / {mode}, {min_value}, {max_value}")
                 new_segs.append(seg)
             else:
+                remained_segs.append(seg)
                 print(f"[filter] value={value} / {mode}, {min_value}, {max_value}")
 
-        return ((segs[0], new_segs), )
+        return ((segs[0], new_segs), (segs[0], remained_segs), )
 
 
 class SEGSToImageList:
