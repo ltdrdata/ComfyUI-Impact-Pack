@@ -231,6 +231,10 @@ app.registerExtension({
 		    case "BasicPipeToDetailerPipe":
 		    case "EditDetailerPipe":
 		    case "FaceDetailer":
+		    case "DetailerForEach":
+		    case "DetailerForEachDebug":
+		    case "DetailerForEachPipe":
+		    case "DetailerForEachDebugPipe":
 		        {
                     for(let i in node.widgets) {
                         let widget = node.widgets[i];

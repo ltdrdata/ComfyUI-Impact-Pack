@@ -540,6 +540,7 @@ class DetailerForEach:
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "wildcard": ("STRING", {"multiline": True}),
                      },
                 }
 
@@ -605,12 +606,12 @@ class DetailerForEach:
         return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard):
 
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
+                                      force_inpaint, wildcard)
 
         return (enhanced_img, )
 
@@ -633,7 +634,8 @@ class DetailerForEachPipe:
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "basic_pipe": ("BASIC_PIPE", )
+                     "basic_pipe": ("BASIC_PIPE", ),
+                     "wildcard": ("STRING", {"multiline": True}),
                      },
                 }
 
@@ -643,13 +645,13 @@ class DetailerForEachPipe:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard):
 
         model, clip, vae, positive, negative = basic_pipe
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
+                                      force_inpaint, wildcard)
 
         return (enhanced_img, )
 
@@ -1541,12 +1543,12 @@ class DetailerForEachTest(DetailerForEach):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard):
 
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
+                                      force_inpaint, wildcard)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1571,13 +1573,13 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard):
 
         model, clip, vae, positive, negative = basic_pipe
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint)
+                                      force_inpaint, wildcard)
 
         # set fallback image
         if len(cropped) == 0:
