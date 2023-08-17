@@ -109,7 +109,7 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
 
 
 def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg, sampler_name,
-                   scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None):
+                   scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None):
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
 
@@ -176,10 +176,16 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         upscaled_mask = upscaled_mask.squeeze().squeeze()
         latent_image['noise_mask'] = upscaled_mask
 
+    if detailer_hook is not None:
+        latent_image = detailer_hook.post_encode(latent_image)
+
     refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
 
     # non-latent downscale - latent downscale cause bad quality
     refined_image = vae.decode(refined_latent['samples'])
+
+    if detailer_hook is not None:
+        refined_image = detailer_hook.post_decode(refined_image)
 
     # downscale
     refined_image = scale_tensor_and_to_pil(w, h, refined_image)
@@ -1161,8 +1167,6 @@ class PixelKSampleUpscaler:
 # REQUIREMENTS: BlenderNeko/ComfyUI Noise
 try:
     class InjectNoiseHook(PixelKSampleHook):
-        target_cfg = 0
-
         def __init__(self, source, seed, start_strength, end_strength):
             super().__init__()
             self.source = source

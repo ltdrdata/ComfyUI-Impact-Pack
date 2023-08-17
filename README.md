@@ -90,6 +90,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.
   * The source determines the types of CPU noise and GPU noise to be configured.
   * Currently, there is only a simple schedule available, where the strength of the noise varies from start_strength to end_strength during the progression of each iteration.
+* NoiseInjectionDetailerHookProvider - The `detailer_hook` is a hook in the `Detailer` that injects noise during the processing of each SEGS.
 
 * Iterative Upscale (Latent) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. 
 This takes latent as input and outputs latent as the result.

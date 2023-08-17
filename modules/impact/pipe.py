@@ -11,8 +11,9 @@ class ToDetailerPipe:
                      "wildcard": ("STRING", {"multiline": True}),
                      },
                 "optional": {
-                    "sam_model_opt": ("SAM_MODEL", ),
-                    "segm_detector_opt": ("SEGM_DETECTOR", ),
+                    "sam_model_opt": ("SAM_MODEL",),
+                    "segm_detector_opt": ("SEGM_DETECTOR",),
+                    "detailer_hook": ("DETAILER_HOOK",),
                 }}
 
     RETURN_TYPES = ("DETAILER_PIPE", )
@@ -21,8 +22,8 @@ class ToDetailerPipe:
 
     CATEGORY = "ImpactPack/Pipe"
 
-    def doit(self, model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None):
-        pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt)
+    def doit(self, model, clip, vae, positive, negative, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
+        pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook)
         return (pipe, )
 
 
@@ -31,15 +32,15 @@ class FromDetailerPipe:
     def INPUT_TYPES(s):
         return {"required": {"detailer_pipe": ("DETAILER_PIPE",), }, }
 
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING", "BBOX_DETECTOR", "SAM_MODEL", "SEGM_DETECTOR")
-    RETURN_NAMES = ("model", "clip", "vae", "positive", "negative", "bbox_detector", "sam_model_opt", "segm_detector_opt")
+    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING", "BBOX_DETECTOR", "SAM_MODEL", "SEGM_DETECTOR", "DETAILER_HOOK")
+    RETURN_NAMES = ("model", "clip", "vae", "positive", "negative", "bbox_detector", "sam_model_opt", "segm_detector_opt", "detailer_hook")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Pipe"
 
     def doit(self, detailer_pipe):
-        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt = detailer_pipe
-        return model, clip, vae, positive, negative, bbox_detector, sam_model_opt, segm_detector_opt
+        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook = detailer_pipe
+        return model, clip, vae, positive, negative, bbox_detector, sam_model_opt, segm_detector_opt, detailer_hook
 
 
 class FromDetailerPipe_v2:
@@ -47,15 +48,15 @@ class FromDetailerPipe_v2:
     def INPUT_TYPES(s):
         return {"required": {"detailer_pipe": ("DETAILER_PIPE",), }, }
 
-    RETURN_TYPES = ("DETAILER_PIPE", "MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING", "BBOX_DETECTOR", "SAM_MODEL", "SEGM_DETECTOR")
-    RETURN_NAMES = ("detailer_pipe", "model", "clip", "vae", "positive", "negative", "bbox_detector", "sam_model_opt", "segm_detector_opt")
+    RETURN_TYPES = ("DETAILER_PIPE", "MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING", "BBOX_DETECTOR", "SAM_MODEL", "SEGM_DETECTOR", "DETAILER_HOOK")
+    RETURN_NAMES = ("detailer_pipe", "model", "clip", "vae", "positive", "negative", "bbox_detector", "sam_model_opt", "segm_detector_opt", "detailer_hook")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Pipe"
 
     def doit(self, detailer_pipe):
-        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt = detailer_pipe
-        return detailer_pipe, model, clip, vae, positive, negative, bbox_detector, sam_model_opt, segm_detector_opt
+        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook = detailer_pipe
+        return detailer_pipe, model, clip, vae, positive, negative, bbox_detector, sam_model_opt, segm_detector_opt, detailer_hook
 
 
 class ToBasicPipe:
@@ -123,6 +124,7 @@ class BasicPipeToDetailerPipe:
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
                     "segm_detector_opt": ("SEGM_DETECTOR",),
+                    "detailer_hook": ("DETAILER_HOOK",),
                     },
                 }
 
@@ -132,9 +134,9 @@ class BasicPipeToDetailerPipe:
 
     CATEGORY = "ImpactPack/Pipe"
 
-    def doit(self, basic_pipe, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None):
+    def doit(self, basic_pipe, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
         model, clip, vae, positive, negative = basic_pipe
-        pipe = model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt
+        pipe = model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook
         return (pipe, )
 
 
@@ -150,7 +152,7 @@ class DetailerPipeToBasicPipe:
     CATEGORY = "ImpactPack/Pipe"
 
     def doit(self, detailer_pipe):
-        model, clip, vae, positive, negative, _, _, _, _ = detailer_pipe
+        model, clip, vae, positive, negative, _, _, _, _, _ = detailer_pipe
         pipe = model, clip, vae, positive, negative
         return (pipe, )
 
@@ -215,6 +217,7 @@ class EditDetailerPipe:
                 "bbox_detector": ("BBOX_DETECTOR",),
                 "sam_model": ("SAM_MODEL",),
                 "segm_detector_opt": ("SEGM_DETECTOR",),
+                "detailer_hook": ("DETAILER_HOOK",),
             },
         }
 
@@ -225,8 +228,8 @@ class EditDetailerPipe:
     CATEGORY = "ImpactPack/Pipe"
 
     def doit(self, detailer_pipe, wildcard, model=None, clip=None, vae=None, positive=None, negative=None,
-             bbox_detector=None, sam_model=None, segm_detector=None):
-        res_model, res_clip, res_vae, res_positive, res_negative, res_wildcard, res_bbox_detector, res_segm_detector, res_sam_model = detailer_pipe
+             bbox_detector=None, sam_model=None, segm_detector=None, detailer_hook=None):
+        res_model, res_clip, res_vae, res_positive, res_negative, res_wildcard, res_bbox_detector, res_segm_detector, res_sam_model, res_detailer_hook = detailer_pipe
 
         if model is not None:
             res_model = model
@@ -255,6 +258,9 @@ class EditDetailerPipe:
         if sam_model is not None:
             res_sam_model = sam_model
 
-        pipe = res_model, res_clip, res_vae, res_positive, res_negative, res_wildcard, res_bbox_detector, res_segm_detector, res_sam_model
+        if detailer_hook is not None:
+            res_detailer_hook = detailer_hook
+
+        pipe = res_model, res_clip, res_vae, res_positive, res_negative, res_wildcard, res_bbox_detector, res_segm_detector, res_sam_model, res_detailer_hook
 
         return (pipe, )

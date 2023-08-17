@@ -139,6 +139,7 @@ NODE_CLASS_MAPPINGS = {
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
     "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
+    "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
