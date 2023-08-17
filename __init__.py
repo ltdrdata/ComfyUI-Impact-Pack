@@ -138,6 +138,7 @@ NODE_CLASS_MAPPINGS = {
     "PixelKSampleHookCombine": PixelKSampleHookCombine,
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
+    "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,

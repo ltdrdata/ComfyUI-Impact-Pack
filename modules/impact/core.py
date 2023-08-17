@@ -757,7 +757,7 @@ def vae_decode(vae, samples, use_tile, hook):
         pixels = nodes.VAEDecode().decode(vae, samples)[0]
 
     if hook is not None:
-        hook.post_decode(pixels)
+        pixels = hook.post_decode(pixels)
 
     return pixels
 
@@ -769,7 +769,7 @@ def vae_encode(vae, pixels, use_tile, hook):
         samples = nodes.VAEEncode().encode(vae, pixels)[0]
 
     if hook is not None:
-        hook.post_encode(samples)
+        samples = hook.post_encode(samples)
 
     return samples
 
@@ -1156,6 +1156,41 @@ class PixelKSampleUpscaler:
         refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
                                                  positive, negative, upscaled_latent, denoise)[0]
         return refined_latent
+
+
+# REQUIREMENTS: BlenderNeko/ComfyUI Noise
+try:
+    class InjectNoiseHook(PixelKSampleHook):
+        target_cfg = 0
+
+        def __init__(self, source, seed, start_strength, end_strength):
+            super().__init__()
+            self.source = source
+            self.seed = seed
+            self.start_strength = start_strength
+            self.end_strength = end_strength
+
+        def post_encode(self, samples):
+            # gen noise
+            size = samples['samples'].shape
+            seed = self.cur_step + self.seed
+            from custom_nodes.ComfyUI_Noise.nodes import NoisyLatentImage, InjectNoise
+            noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3]*8, size[2]*8, size[0])[0]
+
+            # inj noise
+            mask = None
+            if 'noise_mask' in samples:
+                mask = samples['noise_mask']
+
+            strength = self.start_strength + (self.end_strength-self.start_strength)*self.cur_step/self.total_step
+            samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
+
+            if mask is not None:
+                samples['noise_mask'] = mask
+
+            return samples
+except:
+    pass
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
