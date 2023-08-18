@@ -181,7 +181,7 @@ mmdet_skip = False
    * Impact Pack will automatically download subpack during its initial launch.
 5. (optional) `python install.py`
    * Impact Pack will automatically install its dependencies during its initial launch.
-   * For the portable version, you should execute the command `..\..\..\python_embedded\python.exe install.py` to run the installation script.
+   * For the portable version, you should execute the command `..\..\..\python_embeded\python.exe install.py` to run the installation script.
 
 
 6. Restart ComfyUI
