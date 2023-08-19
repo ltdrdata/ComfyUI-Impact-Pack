@@ -452,7 +452,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		const subfolder = searchParams.get("subfolder") || "";
 
 		const data = {
-				sam_model_name: "sam_vit_b_01ec64.pth",
+				sam_model_name: "auto",
 				filename: filename,
 				type: fileType,
 				subfolder: subfolder

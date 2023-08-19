@@ -2,6 +2,8 @@ import os
 import threading
 
 from aiohttp import web
+
+import impact.config
 import server
 import folder_paths
 
@@ -72,7 +74,11 @@ def async_prepare_sam(image_dir, model_name, filename):
         image = nodes.LoadImage().load_image(image_path)[0]
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
-        device = comfy.model_management.get_torch_device()
+        if impact.config.get_config()['sam_editor_cpu']:
+            device = 'cpu'
+        else:
+            device = comfy.model_management.get_torch_device()
+
         sam_predictor.model.to(device=device)
         sam_predictor.set_image(image, "RGB")
         sam_predictor.model.cpu()
@@ -91,7 +97,11 @@ async def sam_prepare(request):
 
         last_prepare_data = data
 
-        model_name = os.path.join(impact_pack.model_path, "sams", data['sam_model_name'])
+        model_name = 'sam_vit_b_01ec64.pth'
+        if data['sam_model_name'] == 'auto':
+            model_name = impact.config.get_config()['sam_editor_model']
+
+        model_name = os.path.join(impact_pack.model_path, "sams", model_name)
 
         print(f"ComfyUI-Impact-Pack: Loading SAM model '{impact_pack.model_path}'")
 
@@ -128,7 +138,11 @@ async def sam_detect(request):
     global sam_predictor
     with sam_lock:
         if sam_predictor is not None:
-            device = comfy.model_management.get_torch_device()
+            if impact.config.get_config()['sam_editor_cpu']:
+                device = 'cpu'
+            else:
+                device = comfy.model_management.get_torch_device()
+
             sam_predictor.model.to(device=device)
             try:
                 data = await request.json()
