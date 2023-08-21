@@ -61,7 +61,7 @@ def process(text):
 
     def replace_wildcard(string):
         global wildcard_dict
-        pattern = r"__([\w.-/]+)__"
+        pattern = r"__([\w.\-/]+)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
