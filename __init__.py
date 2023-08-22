@@ -65,25 +65,36 @@ except:
 
 import impact.impact_server  # to load server api
 
+WEB_DIRECTORY = "js"
+
 def setup_js():
-    # remove garbage
-    old_js_path = os.path.join(comfy_path, "web", "extensions", "core", "impact-pack.js")
-    if os.path.exists(old_js_path):
-        os.remove(old_js_path)
-
-    # setup js
+    import nodes
     js_dest_path = os.path.join(comfy_path, "web", "extensions", "impact-pack")
-    if not os.path.exists(js_dest_path):
-        os.makedirs(js_dest_path)
 
-    js_src_path = os.path.join(impact_path, "js", "impact-pack.js")
-    shutil.copy(js_src_path, js_dest_path)
+    if hasattr(nodes, "EXTENSION_WEB_DIRS"):
+        if os.path.exists(js_dest_path):
+            shutil.rmtree(js_dest_path)
+    else:
+        print(f"[WARN] ComfyUI-Impact-Pack: Your ComfyUI version is outdated. Please update to the latest version.")
+        # remove garbage
+        old_js_path = os.path.join(comfy_path, "web", "extensions", "core", "impact-pack.js")
+        if os.path.exists(old_js_path):
+            os.remove(old_js_path)
 
-    js_src_path = os.path.join(impact_path, "js", "impact-sam-editor.js")
-    shutil.copy(js_src_path, js_dest_path)
+        # setup js
+        if not os.path.exists(js_dest_path):
+            os.makedirs(js_dest_path)
 
-    js_src_path = os.path.join(impact_path, "js", "comboBoolMigration.js")
-    shutil.copy(js_src_path, js_dest_path)
+        js_src_path = os.path.join(impact_path, "js", "impact-pack.js")
+        shutil.copy(js_src_path, js_dest_path)
+
+        js_src_path = os.path.join(impact_path, "js", "impact-sam-editor.js")
+        shutil.copy(js_src_path, js_dest_path)
+
+        js_src_path = os.path.join(impact_path, "js", "comboBoolMigration.js")
+        shutil.copy(js_src_path, js_dest_path)
+
+
     
 setup_js()
 
