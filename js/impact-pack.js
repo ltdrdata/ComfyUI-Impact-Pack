@@ -270,10 +270,27 @@ app.registerExtension({
 			});
 		}
 
-		if(node.comfyClass == "ImpactWildcardEncode") {
+		if(node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ToDetailerPipe" || node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe") {
 			node._value = "Select the LoRA to add to the text";
 
-			Object.defineProperty(node.widgets[3], "value", {
+            var tbox_id = 0;
+            var combo_id = 3;
+
+            switch(node.comfyClass){
+                case "ImpactWildcardEncode":
+                    tbox_id = 0;
+                    combo_id = 3;
+                    break;
+
+                case "ToDetailerPipe":
+                case "EditDetailerPipe":
+                case "BasicPipeToDetailerPipe":
+                    tbox_id = 0;
+                    combo_id = 1;
+                    break;
+            }
+
+			Object.defineProperty(node.widgets[combo_id], "value", {
 				set: (value) => {
 				        const stackTrace = new Error().stack;
                         if(stackTrace.includes('inner_value_change')) {
@@ -283,8 +300,10 @@ app.registerExtension({
 	                                lora_name = lora_name.slice(0, -12);
 	                            }
 
-	                            node.widgets[0].value += `<lora:${lora_name}>`;
-	                            node.widgets_values[0] = node.widgets[0].value;
+	                            node.widgets[tbox_id].value += `<lora:${lora_name}>`;
+	                            if(node.widgets_values) {
+	                                node.widgets_values[tbox_id] = node.widgets[tbox_id].value;
+                                }
                             }
                         }
 
@@ -296,7 +315,7 @@ app.registerExtension({
 			});
 
 			// Preventing validation errors from occurring in any situation.
-			node.widgets[3].serializeValue = () => { return "Select the LoRA to add to the text"; }
+			node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
 		}
 
 		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
