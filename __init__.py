@@ -65,7 +65,6 @@ except:
 
 import impact.impact_server  # to load server api
 
-WEB_DIRECTORY = "js"
 
 def setup_js():
     import nodes
@@ -76,11 +75,6 @@ def setup_js():
             shutil.rmtree(js_dest_path)
     else:
         print(f"[WARN] ComfyUI-Impact-Pack: Your ComfyUI version is outdated. Please update to the latest version.")
-        # remove garbage
-        old_js_path = os.path.join(comfy_path, "web", "extensions", "core", "impact-pack.js")
-        if os.path.exists(old_js_path):
-            os.remove(old_js_path)
-
         # setup js
         if not os.path.exists(js_dest_path):
             os.makedirs(js_dest_path)
@@ -333,4 +327,5 @@ try:
 except:
     pass
 
+WEB_DIRECTORY = "js"
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
