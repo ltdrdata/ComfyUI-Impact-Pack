@@ -1,12 +1,6 @@
 import sys
 from server import PromptServer
-
-# wildcard trick is taken from pythongossss's
-class AnyType(str):
-    def __ne__(self, __value: object) -> bool:
-        return False
-
-any = AnyType("*")
+from impact.utils import any_typ
 
 
 class ImpactCompare:
@@ -15,8 +9,8 @@ class ImpactCompare:
         return {
             "required": {
                 "cmp": (['a = b', 'a <> b', 'a > b', 'a < b', 'a >= b', 'a <= b', 'tt', 'ff'],),
-                "a": (any, ),
-                "b": (any, ),
+                "a": (any_typ, ),
+                "b": (any_typ, ),
             },
         }
 
@@ -50,15 +44,15 @@ class ImpactConditionalBranch:
         return {
             "required": {
                 "cond": ("BOOLEAN", {"forceInput": True}),
-                "tt_value": (any,),
-                "ff_value": (any,),
+                "tt_value": (any_typ,),
+                "ff_value": (any_typ,),
             },
         }
 
     FUNCTION = "doit"
     CATEGORY = "ImpactPack/Logic"
 
-    RETURN_TYPES = (any, )
+    RETURN_TYPES = (any_typ, )
 
     def doit(self, cond, tt_value, ff_value):
         if cond:
@@ -143,7 +137,7 @@ class ImpactValueSender:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-                    "value": (any, ),
+                    "value": (any_typ, ),
                     "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                     },
                 }
@@ -165,7 +159,7 @@ class ImpactIntConstSender:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-                    "signal": (any, ),
+                    "signal": (any_typ, ),
                     "value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                     "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                     },
@@ -198,7 +192,7 @@ class ImpactValueReceiver:
 
     CATEGORY = "ImpactPack/Logic"
 
-    RETURN_TYPES = (any, )
+    RETURN_TYPES = (any_typ, )
 
     def doit(self, typ, value, link_id=0):
         if typ == "INT":
@@ -235,8 +229,8 @@ class ImpactMinMax:
     def INPUT_TYPES(cls):
         return {"required": {
                     "mode": ("BOOLEAN", {"default": True, "label_on": "max", "label_off": "min"}),
-                    "a": (any,),
-                    "b": (any,),
+                    "a": (any_typ,),
+                    "b": (any_typ,),
                     },
                 }
 

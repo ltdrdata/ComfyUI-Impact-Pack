@@ -238,3 +238,11 @@ class NonListIterable:
 
     def __getitem__(self, index):
         return self.data[index]
+
+
+# wildcard trick is taken from pythongossss's
+class AnyType(str):
+    def __ne__(self, __value: object) -> bool:
+        return False
+
+any_typ = AnyType("*")

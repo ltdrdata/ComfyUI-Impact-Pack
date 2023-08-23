@@ -96,6 +96,7 @@ from impact.impact_pack import *
 from impact.detectors import *
 from impact.pipe import *
 from impact.logics import *
+from impact.util_nodes import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
 impact.wildcards.read_wildcard_dict(custom_wildcards_path)
@@ -180,8 +181,9 @@ NODE_CLASS_MAPPINGS = {
     "LatentSender": LatentSender,
     "LatentReceiver": LatentReceiver,
     "ImageMaskSwitch": ImageMaskSwitch,
-    "LatentSwitch": LatentSwitch,
-    "SEGSSwitch": SEGSSwitch,
+    "LatentSwitch": GeneralSwitch,
+    "SEGSSwitch": GeneralSwitch,
+    "ImpactSwitch": GeneralSwitch,
 
     # "SaveConditioning": SaveConditioning,
     # "LoadConditioning": LoadConditioning,
@@ -195,9 +197,6 @@ NODE_CLASS_MAPPINGS = {
     "SEGSToImageList": SEGSToImageList,
     "ImpactSEGSToMaskList": SEGSToMaskList,
     "ImpactSEGSConcat": SEGSConcat,
-
-    # "SEGPick": SEGPick,
-    # "SEGEdit": SEGEdit,
 
     "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
     "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
@@ -285,13 +284,15 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageSender": "Image Sender",
     "ImageReceiver": "Image Receiver",
     "ImageMaskSwitch": "Switch (images, mask)",
-    "LatentSwitch": "Switch (latent)",
-    "SEGSSwitch": "Switch (SEGS)",
+    "ImpactSwitch": "Switch (Any)",
 
     "MasksToMaskList": "Masks to Mask List",
     "ImpactImageBatchToImageList": "Image batch to Image List",
     "ImpactMakeImageList": "Make Image List",
-    "ImpactStringSelector": "String Selector"
+    "ImpactStringSelector": "String Selector",
+
+    "LatentSwitch": "Switch (latent/legacy)",
+    "SEGSSwitch": "Switch (SEGS/legacy)"
 }
 
 if not impact.config.get_config()['mmdet_skip']:
