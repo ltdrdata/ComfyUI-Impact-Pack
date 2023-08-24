@@ -120,7 +120,7 @@ def subtract_masks(mask1, mask2):
 
     if cv2_mask1.shape == cv2_mask2.shape:
         cv2_mask = cv2.subtract(cv2_mask1, cv2_mask2)
-        return torch.from_numpy(cv2_mask) / 255.0
+        return torch.clamp(torch.from_numpy(cv2_mask) / 255.0, min=0, max=1)
     else:
         # do nothing - incompatible mask shape: mostly empty mask
         return mask1
@@ -134,7 +134,7 @@ def add_masks(mask1, mask2):
 
     if cv2_mask1.shape == cv2_mask2.shape:
         cv2_mask = cv2.add(cv2_mask1, cv2_mask2)
-        return torch.from_numpy(cv2_mask) / 255.0
+        return torch.clamp(torch.from_numpy(cv2_mask) / 255.0, min=0, max=1)
     else:
         # do nothing - incompatible mask shape: mostly empty mask
         return mask1
