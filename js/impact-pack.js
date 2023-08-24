@@ -230,7 +230,8 @@ app.registerExtension({
                                 this.outputs[0].name = link_info.type;
 
                                 for(let i in this.inputs) {
-                                    this.inputs[i].type = link_info.type;
+                                    if(this.inputs[i].name != 'select')
+                                        this.inputs[i].type = link_info.type;
                                 }
                             }
                         }
@@ -250,7 +251,8 @@ app.registerExtension({
                         }
 
                         for(let i in this.inputs) {
-                            this.inputs[i].type = origin_type;
+                            if(this.inputs[i].name != 'select')
+                                this.inputs[i].type = origin_type;
                         }
 
                         this.outputs[0].type = origin_type;
@@ -259,29 +261,39 @@ app.registerExtension({
                     }
                 }
 
-                if (!connected && this.inputs.length > 1) {
+                let select_slot = this.inputs.find(x => x.name == "select");
+
+                if (!connected && (select_slot && this.inputs.length > 2) || (!select_slot && this.inputs.length > 1)) {
                     const stackTrace = new Error().stack;
-                    if(stackTrace.includes('LGraphNode.connect')) {
-                        return; // replace connection: don't remove connection
-                    }
+//
+//                    if (this.widgets) {
+//                        const w = this.widgets.find((w) => w.name === this.inputs[index].name)
+//                        if (w) {
+//                            w.onRemoved?.()
+//                            this.widgets.length = this.widgets.length - 1
+//                        }
+//                    }
 
-                    if (this.widgets) {
-                        const w = this.widgets.find((w) => w.name === this.inputs[index].name)
-                        if (w) {
-                            w.onRemoved?.()
-                            this.widgets.length = this.widgets.length - 1
-                        }
+                    if(!stackTrace.includes('LGraphNode.connect') && this.inputs[index].name != 'select') {
+                        this.removeInput(index);
                     }
-                    this.removeInput(index);
                 }
 
+				let slot_i = 1;
                 for (let i = 0; i < this.inputs.length; i++) {
-                    this.inputs[i].label = `${input_name}${i + 1}`
-                    this.inputs[i].name = `${input_name}${i + 1}`
+                    if(this.inputs[i].name != 'select') {
+	                    this.inputs[i].label = `${input_name}${slot_i}`
+	                    this.inputs[i].name = `${input_name}${slot_i}`
+                        slot_i++;
+                    }
                 }
 
-                if (this.inputs[this.inputs.length - 1].link != undefined) {
-                    this.addInput(`${input_name}${this.inputs.length + 1}`, this.inputs[0].type);
+				let last_slot = this.inputs[this.inputs.length - 1];
+                if (
+                    (last_slot.name == 'select' && this.inputs[this.inputs.length - 2].link != undefined)
+                    || (last_slot.name != 'select' && last_slot.link != undefined)
+                    ) {
+                        this.addInput(`${input_name}${this.inputs.length}`, this.outputs[0].type);
                 }
 
                 if(this.widgets) {
