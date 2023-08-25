@@ -266,7 +266,11 @@ app.registerExtension({
                 if (!connected && (select_slot && this.inputs.length > 2) || (!select_slot && this.inputs.length > 1)) {
                     const stackTrace = new Error().stack;
 
-                    if(!stackTrace.includes('LGraphNode.connect') && !stackTrace.includes('loadGraphData') && this.inputs[index].name != 'select') {
+                    if(
+                        !stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
+                        !stackTrace.includes('LGraphNode.connect') && // for mouse device
+                        !stackTrace.includes('loadGraphData') &&
+                        this.inputs[index].name != 'select') {
                         this.removeInput(index);
                     }
                 }
