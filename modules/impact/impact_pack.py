@@ -283,14 +283,17 @@ class SEGSPreview:
         results = list()
 
         for seg in segs[1]:
+            cropped_image = None
+
             if seg.cropped_image is not None:
                 cropped_image = seg.cropped_image
             elif fallback_image_opt is not None:
                 # take from original image
                 cropped_image = crop_image(fallback_image_opt, seg.crop_region)
-                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
 
             if cropped_image is not None:
+                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
+
                 file = f"{filename}_{counter:05}_.webp"
                 cropped_image.save(os.path.join(full_output_folder, file))
                 results.append({
