@@ -265,16 +265,8 @@ app.registerExtension({
 
                 if (!connected && (select_slot && this.inputs.length > 2) || (!select_slot && this.inputs.length > 1)) {
                     const stackTrace = new Error().stack;
-//
-//                    if (this.widgets) {
-//                        const w = this.widgets.find((w) => w.name === this.inputs[index].name)
-//                        if (w) {
-//                            w.onRemoved?.()
-//                            this.widgets.length = this.widgets.length - 1
-//                        }
-//                    }
 
-                    if(!stackTrace.includes('LGraphNode.connect') && this.inputs[index].name != 'select') {
+                    if(!stackTrace.includes('LGraphNode.connect') && !stackTrace.includes('loadGraphData') && this.inputs[index].name != 'select') {
                         this.removeInput(index);
                     }
                 }
@@ -291,13 +283,12 @@ app.registerExtension({
 				let last_slot = this.inputs[this.inputs.length - 1];
                 if (
                     (last_slot.name == 'select' && this.inputs[this.inputs.length - 2].link != undefined)
-                    || (last_slot.name != 'select' && last_slot.link != undefined)
-                    ) {
-                        this.addInput(`${input_name}${this.inputs.length}`, this.outputs[0].type);
+                    || (last_slot.name != 'select' && last_slot.link != undefined)) {
+                        this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
                 }
 
                 if(this.widgets) {
-                    this.widgets[0].options.max = this.inputs.length-1;
+                    this.widgets[0].options.max = select_slot?this.inputs.length-2:this.inputs.length-1;
                     this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
                     if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
                         this.widgets[0].value = 1;
