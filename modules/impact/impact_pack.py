@@ -554,7 +554,7 @@ class DetailerForEach:
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "wildcard": ("STRING", {"multiline": True}),
+                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      },
                 "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
@@ -650,7 +650,7 @@ class DetailerForEachPipe:
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE", ),
-                     "wildcard": ("STRING", {"multiline": True}),
+                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      },
                 "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
@@ -954,7 +954,7 @@ class FaceDetailer:
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
 
                      "bbox_detector": ("BBOX_DETECTOR", ),
-                     "wildcard": ("STRING", {"multiline": True}),
+                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -2493,8 +2493,8 @@ class ImpactWildcardProcessor:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "wildcard_text": ("STRING", {"multiline": True}),
-                        "populated_text": ("STRING", {"multiline": True}),
+                        "wildcard_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                        "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                     },
                 }
@@ -2514,8 +2514,8 @@ class ImpactWildcardEncode:
         return {"required": {
                         "model": ("MODEL",),
                         "clip": ("CLIP",),
-                        "wildcard_text": ("STRING", {"multiline": True}),
-                        "populated_text": ("STRING", {"multiline": True}),
+                        "wildcard_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                        "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
                     },

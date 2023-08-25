@@ -10,7 +10,7 @@ class ToDetailerPipe:
                      "positive": ("CONDITIONING",),
                      "negative": ("CONDITIONING",),
                      "bbox_detector": ("BBOX_DETECTOR", ),
-                     "wildcard": ("STRING", {"multiline": True}),
+                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
                      },
                 "optional": {
@@ -123,7 +123,7 @@ class BasicPipeToDetailerPipe:
     def INPUT_TYPES(s):
         return {"required": {"basic_pipe": ("BASIC_PIPE",),
                              "bbox_detector": ("BBOX_DETECTOR", ),
-                             "wildcard": ("STRING", {"multiline": True}),
+                             "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                              "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
                              },
                 "optional": {
@@ -218,7 +218,7 @@ class EditDetailerPipe:
         return {
             "required": {
                 "detailer_pipe": ("DETAILER_PIPE",),
-                "wildcard": ("STRING", {"multiline": True}),
+                "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                 "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
             },
             "optional": {
