@@ -9,7 +9,7 @@ wildcard_dict = {}
 
 def read_wildcard_dict(wildcard_path):
     global wildcard_dict
-    for root, directories, files in os.walk(wildcard_path):
+    for root, directories, files in os.walk(wildcard_path, followlinks=True):
         for file in files:
             if file.endswith('.txt'):
                 file_path = os.path.join(root, file)
