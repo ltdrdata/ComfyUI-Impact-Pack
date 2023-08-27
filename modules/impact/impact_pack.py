@@ -2216,9 +2216,11 @@ class LatentSender(nodes.SaveLatent):
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "samples": ("LATENT", ),
-                    "filename_prefix": ("STRING", {"default": "latents/LatentSender"}),
-                    "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}), },
+                             "samples": ("LATENT", ),
+                             "filename_prefix": ("STRING", {"default": "latents/LatentSender"}),
+                             "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                             "preview_method": (["Latent2RGB-SDXL", "Latent2RGB-SD15", "TAESDXL", "TAESD15"],)
+                             },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
 
@@ -2249,11 +2251,28 @@ class LatentSender(nodes.SaveLatent):
         image.save(image_path, format='png', exif=exif_bytes, pnginfo=metadata, optimize=True)
 
     @staticmethod
-    def prepare_preview(latent_tensor):
+    def prepare_preview(latent_tensor, preview_method):
+        from comfy.cli_args import LatentPreviewMethod
+        import comfy.latent_formats as latent_formats
+
         lower_bound = 128
         upper_bound = 256
 
-        previewer = core.get_previewer("cpu", force=True)
+        if preview_method == "Latent2RGB-SD15":
+            latent_format = latent_formats.SD15()
+            method = LatentPreviewMethod.Latent2RGB
+        elif preview_method == "TAESD15":
+            latent_format = latent_formats.SD15()
+            method = LatentPreviewMethod.TAESD
+        elif preview_method == "TAESDXL":
+            latent_format = latent_formats.SDXL()
+            method = LatentPreviewMethod.TAESD
+        else:  # preview_method == "Latent2RGB-SDXL"
+            latent_format = latent_formats.SDXL()
+            method = LatentPreviewMethod.Latent2RGB
+
+        previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
+
         image = previewer.decode_latent_to_preview(latent_tensor)
         min_size = min(image.size[0], image.size[1])
         max_size = max(image.size[0], image.size[1])
@@ -2293,11 +2312,11 @@ class LatentSender(nodes.SaveLatent):
 
         return new_image
 
-    def doit(self, samples, filename_prefix="latents/LatentSender", link_id=0, prompt=None, extra_pnginfo=None):
+    def doit(self, samples, filename_prefix="latents/LatentSender", link_id=0, preview_method="Latent2RGB-SDXL", prompt=None, extra_pnginfo=None):
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
 
         # load preview
-        preview = LatentSender.prepare_preview(samples['samples'])
+        preview = LatentSender.prepare_preview(samples['samples'], preview_method)
 
         # support save metadata for latent sharing
         file = f"{filename}_{counter:05}_.latent.png"

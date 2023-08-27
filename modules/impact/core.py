@@ -1342,9 +1342,12 @@ from latent_preview import TAESD, TAESDPreviewerImpl, Latent2RGBPreviewer
 try:
     import comfy.latent_formats as latent_formats
 
-    def get_previewer(device, latent_format=latent_formats.SD15(), force=False):
+    def get_previewer(device, latent_format=latent_formats.SD15(), force=False, method=None):
         previewer = None
-        method = args.preview_method
+
+        if method is None:
+            method = args.preview_method
+
         if method != LatentPreviewMethod.NoPreviews or force:
             # TODO previewer methods
             taesd_decoder_path = folder_paths.get_full_path("vae_approx", latent_format.taesd_decoder_name)
