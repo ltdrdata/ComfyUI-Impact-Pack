@@ -10,9 +10,6 @@ class GeneralSwitch:
                 }
 
     RETURN_TYPES = (any_typ, )
-
-    OUTPUT_NODE = True
-
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -47,9 +44,6 @@ class ImageMaskSwitch:
         }
 
     RETURN_TYPES = ("IMAGE", "MASK",)
-
-    OUTPUT_NODE = True
-
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -64,3 +58,44 @@ class ImageMaskSwitch:
             return images3_opt, mask3_opt,
         else:
             return images4_opt, mask4_opt,
+
+
+class RemoveNoiseMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"samples": ("LATENT",)}}
+
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, samples):
+        res = {key: value for key, value in samples.items() if key != 'noise_mask'}
+        return (res, )
+
+MAX_RESOLUTION=8192
+class ImagePasteMasked:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "destination": ("IMAGE",),
+                "source": ("IMAGE",),
+                "x": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),
+                "y": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),
+                "resize_source": ("BOOLEAN", {"default": False}),
+            },
+            "optional": {
+                "mask": ("MASK",),
+            }
+        }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "composite"
+
+    CATEGORY = "image"
+
+    def composite(self, destination, source, x, y, resize_source, mask = None):
+        destination = destination.clone().movedim(-1, 1)
+        output = composite(destination, source.movedim(-1, 1), x, y, mask, 1, resize_source).movedim(1, -1)
+        return (output,)

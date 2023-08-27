@@ -202,7 +202,8 @@ class SEGSDetailer:
                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                positive, negative, denoise, cropped_mask, force_inpaint)
 
-            new_seg = SEG(enhanced_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+            new_cropped_image = pil2numpy(enhanced_pil)
+            new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             new_segs.append(new_seg)
 
         return segs[0], new_segs
@@ -239,7 +240,7 @@ class SEGSPaste:
         for seg in segs[1]:
             ref_image_pil = None
             if ref_image_opt is None and seg.cropped_image is not None:
-                ref_image_pil = seg.cropped_image
+                ref_image_pil = tensor2pil(torch.from_numpy(seg.cropped_image))
             elif ref_image_opt is not None:
                 cropped = crop_image(ref_image_opt, seg.crop_region)
                 cropped = np.clip(255. * cropped.squeeze(), 0, 255).astype(np.uint8)

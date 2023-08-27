@@ -227,6 +227,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
     "ImpactStringSelector": StringSelector,
 
+    "RemoveNoiseMask": RemoveNoiseMask,
+
     "ImpactLogger": ImpactLogger,
     "ImpactDummyInput": ImpactDummyInput,
 }
@@ -290,6 +292,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactImageBatchToImageList": "Image batch to Image List",
     "ImpactMakeImageList": "Make Image List",
     "ImpactStringSelector": "String Selector",
+
+    "RemoveNoiseMask": "Remove Noise Mask",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)"

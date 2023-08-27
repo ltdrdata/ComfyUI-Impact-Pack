@@ -6,6 +6,10 @@ from PIL import Image, ImageDraw, ImageFilter
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 
 
+def pil2numpy(image):
+    return (np.array(image).astype(np.float32) / 255.0)[np.newaxis, :, :, :]
+
+
 def pil2tensor(image):
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
 
