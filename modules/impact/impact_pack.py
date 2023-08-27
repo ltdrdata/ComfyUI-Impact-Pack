@@ -392,8 +392,14 @@ class SEGSOrderedFilter:
         else:
             sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=False)
 
-        result_list = [item[1] for item in sorted_list[take_start:take_start + take_count]]
-        remained_list = [item[1] for item in sorted_list if item[1] not in result_list]
+        result_list = []
+        remained_list = []
+
+        for i, item in enumerate(sorted_list):
+            if take_start <= i < take_start + take_count:
+                result_list.append(item[1])
+            else:
+                remained_list.append(item[1])
 
         return ((segs[0], result_list), (segs[0], remained_list), )
 
