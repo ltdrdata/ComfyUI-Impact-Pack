@@ -116,6 +116,7 @@ def extract_lora_values(string):
         elif len(item) == 2:
             lora = item[0]
             a = safe_float(item[1])
+            b = a  # When only one weight is provided, use the same weight for model as well as clip - similar to Automatic1111
         elif len(item) >= 3:
             lora = item[0]
             if item[1] != '':
