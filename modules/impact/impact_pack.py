@@ -167,7 +167,11 @@ class SEGSDetailer:
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE",),
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      },
+                "optional": {
+                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                    }
                 }
 
     RETURN_TYPES = ("SEGS", )
@@ -177,9 +181,13 @@ class SEGSDetailer:
 
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, noise_mask, force_inpaint, basic_pipe):
+                  denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
         new_segs = []
 
@@ -200,19 +208,26 @@ class SEGSDetailer:
 
             enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint)
+                                               positive, negative, denoise, cropped_mask, force_inpaint,
+                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                               refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                               control_net_wrapper=seg.control_net_wrapper)
 
-            new_cropped_image = pil2numpy(enhanced_pil)
+            if enhanced_pil is None:
+                new_cropped_image = cropped_image
+            else:
+                new_cropped_image = pil2numpy(enhanced_pil)
+
             new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
             new_segs.append(new_seg)
 
         return segs[0], new_segs
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, noise_mask, force_inpaint, basic_pipe):
+             denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
 
-        segs = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                                      denoise, noise_mask, force_inpaint, basic_pipe)
+        segs = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
+                                      scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, refiner_basic_pipe_opt)
 
         return (segs, )
 
@@ -573,7 +588,8 @@ class DetailerForEach:
 
     @staticmethod
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None):
+                  positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
+                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
 
         image_pil = tensor2pil(image).convert('RGBA')
 
@@ -599,7 +615,10 @@ class DetailerForEach:
 
             enhanced_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt, detailer_hook)
+                                               positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt, detailer_hook,
+                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                               refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                               refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper)
 
             if not (enhanced_pil is None):
                 # don't latent composite-> converting to latent caused poor quality
@@ -658,8 +677,12 @@ class DetailerForEachPipe:
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      },
-                "optional": {"detailer_hook": ("DETAILER_HOOK",), }
+                "optional": {
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                    }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -668,13 +691,21 @@ class DetailerForEachPipe:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, detailer_hook=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
+
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
+
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
 
         return (enhanced_img, )
 
@@ -982,7 +1013,9 @@ class FaceDetailer:
                      bbox_threshold, bbox_dilation, bbox_crop_factor,
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
-                     bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None):
+                     bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
@@ -1003,7 +1036,10 @@ class FaceDetailer:
         enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard_opt, detailer_hook)
+                                      force_inpaint, wildcard_opt, detailer_hook,
+                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                      refiner_negative=refiner_negative)
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
@@ -1029,7 +1065,7 @@ class FaceDetailer:
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
             sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook)
 
-        pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook)
+        pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe
 
 
@@ -1200,8 +1236,8 @@ class TiledKSamplerProvider:
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_width": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
                     "basic_pipe": ("BASIC_PIPE", )
                     }}
@@ -1236,8 +1272,8 @@ class PixelTiledKSampleUpscalerProvider:
                     "positive": ("CONDITIONING", ),
                     "negative": ("CONDITIONING", ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_width": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
                     },
                 "optional": {
@@ -1275,8 +1311,8 @@ class PixelTiledKSampleUpscalerProviderPipe:
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    "tile_width": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
-                    "tile_height": ("INT", {"default": 512, "min": 256, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_width": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
+                    "tile_height": ("INT", {"default": 512, "min": 320, "max": MAX_RESOLUTION, "step": 64}),
                     "tiling_strategy": (["random", "padded", 'simple'], ),
                     "basic_pipe": ("BASIC_PIPE",)
                     },
@@ -1321,7 +1357,7 @@ class PixelKSampleUpscalerProvider:
                     "negative": ("CONDITIONING", ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
+                    "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -1357,7 +1393,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "basic_pipe": ("BASIC_PIPE",),
-                    "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
+                    "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -1396,7 +1432,7 @@ class TwoSamplersForMaskUpscalerProvider:
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
                      "vae": ("VAE",),
-                     "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
+                     "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
                      },
                 "optional": {
                         "full_sampler_opt": ("KSAMPLER",),
@@ -1438,7 +1474,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
                      "basic_pipe": ("BASIC_PIPE",),
-                     "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
+                     "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
                      },
                 "optional": {
                         "full_sampler_opt": ("KSAMPLER",),
@@ -1590,6 +1626,7 @@ class FaceDetailerPipe:
                      "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      },
                 }
 
@@ -1603,16 +1640,19 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None):
 
-        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt, detailer_hook = detailer_pipe
+        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt, detailer_hook, \
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
+            refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+            refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [empty_pil_tensor()]
@@ -1663,13 +1703,22 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, detailer_hook=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
+
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
+
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                      refiner_negative=refiner_negative)
 
         # set fallback image
         if len(cropped) == 0:
@@ -2571,7 +2620,7 @@ class ReencodeLatent:
                         "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
                         "input_vae": ("VAE", ),
                         "output_vae": ("VAE", ),
-                        "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
+                        "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
                     },
                 }
 
@@ -2714,6 +2763,35 @@ class MakeImageList:
             images.append(v)
 
         return (images, )
+
+
+class ControlNetApplySEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "segs": ("SEGS",),
+                    "control_net": ("CONTROL_NET",),
+                    "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
+                    },
+                "optional": {
+                    "segs_preprocessor": ("SEGS_PREPROCESSOR",),
+                    }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, control_net, strength, segs_preprocessor=None):
+        new_segs = []
+
+        for seg in segs[1]:
+            control_net_wrapper = impact.core.ControlNetWrapper(control_net, strength, segs_preprocessor)
+            new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
+            new_segs.append(new_seg)
+
+        return ((segs[0], new_segs), )
 
 
 class StringSelector:

@@ -230,7 +230,7 @@ class SimpleDetectorForEachPipe:
     def doit(self, detailer_pipe, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion, sam_mask_hint_threshold):
 
-        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook = detailer_pipe
+        model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         return SimpleDetectorForEach.detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
                                             sub_threshold, sub_dilation, sub_bbox_expansion,

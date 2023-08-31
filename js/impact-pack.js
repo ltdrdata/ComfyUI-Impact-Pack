@@ -312,7 +312,9 @@ app.registerExtension({
 
 		switch(node.comfyClass) {
 		    case "ToDetailerPipe":
+		    case "ToDetailerPipeSDXL":
 		    case "BasicPipeToDetailerPipe":
+		    case "BasicPipeToDetailerPipeSDXL":
 		    case "EditDetailerPipe":
 		    case "FaceDetailer":
 		    case "DetailerForEach":
@@ -354,7 +356,8 @@ app.registerExtension({
 			});
 		}
 
-		if(node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ToDetailerPipe" || node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe") {
+		if(node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
+		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
 
             var tbox_id = 0;
@@ -367,8 +370,10 @@ app.registerExtension({
                     break;
 
                 case "ToDetailerPipe":
+		        case "ToDetailerPipeSDXL":
                 case "EditDetailerPipe":
                 case "BasicPipeToDetailerPipe":
+		        case "BasicPipeToDetailerPipeSDXL":
                     tbox_id = 0;
                     combo_id = 1;
                     break;

@@ -121,15 +121,19 @@ NODE_CLASS_MAPPINGS = {
     "FaceDetailerPipe": FaceDetailerPipe,
 
     "ToDetailerPipe": ToDetailerPipe,
+    "ToDetailerPipeSDXL": ToDetailerPipeSDXL,
     "FromDetailerPipe": FromDetailerPipe,
     "FromDetailerPipe_v2": FromDetailerPipe_v2,
+    "FromDetailerPipeSDXL": FromDetailerPipe_SDXL,
     "ToBasicPipe": ToBasicPipe,
     "FromBasicPipe": FromBasicPipe,
     "FromBasicPipe_v2": FromBasicPipe_v2,
     "BasicPipeToDetailerPipe": BasicPipeToDetailerPipe,
+    "BasicPipeToDetailerPipeSDXL": BasicPipeToDetailerPipeSDXL,
     "DetailerPipeToBasicPipe": DetailerPipeToBasicPipe,
     "EditBasicPipe": EditBasicPipe,
     "EditDetailerPipe": EditDetailerPipe,
+    "EditDetailerPipeSDXL": EditDetailerPipeSDXL,
 
     "LatentPixelScale": LatentPixelScale,
     "PixelKSampleUpscalerProvider": PixelKSampleUpscalerProvider,
@@ -163,6 +167,7 @@ NODE_CLASS_MAPPINGS = {
     "ONNXDetectorSEGS": ONNXDetectorForEach,
     "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
     "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
+    "ImpactControlNetApplySEGS": ControlNetApplySEGS,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
     "SegmDetectorCombined_v2": SegmDetectorCombined,
@@ -240,6 +245,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ONNXDetectorSEGS": "ONNX Detector (SEGS)",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
+    "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",
 
     "BboxDetectorCombined_v2": "BBOX Detector (combined)",
     "SegmDetectorCombined_v2": "SEGM Detector (combined)",
@@ -259,6 +265,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SAMDetectorCombined": "SAMDetector (combined)",
     "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
+
+    "FromDetailerPipeSDXL": "FaceDetailer (SDXL/pipe)",
+    "BasicPipeToDetailerPipeSDXL": "BasicPipe -> DetailerPipe (SDXL)",
+    "EditDetailerPipeSDXL": "Edit DetailerPipe (SDXL)",
 
     "BasicPipeToDetailerPipe": "BasicPipe -> DetailerPipe",
     "DetailerPipeToBasicPipe": "DetailerPipe -> BasicPipe",

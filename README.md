@@ -34,6 +34,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * As a result, it outputs the `combined_mask`, which is a unified mask, and `batch_masks`, which are multiple masks grouped together in batch form.
   * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
 * Simple Detector (SEGS) - Operating primarily with `BBOX_DETECTOR`, and with the additional provision of `SAM_MODEL` or `SEGM_DETECTOR`, this node internally generates improved SEGS through mask operations on both *bbox* and *silhouette*. It serves as a convenient tool to simplify a somewhat intricate workflow.
+
+* ControlNetApply (SEGS) - To apply ControlNet in SEGS, you need to use the Preprocessor Provider node from the Inspire Pack to utilize this node.
+
 * Bitwise(SEGS & SEGS) - Performs a 'bitwise and' operation between two SEGS.
 * Bitwise(SEGS - SEGS) - Subtracts one SEGS from another.
 * Bitwise(SEGS & MASK) - Performs a bitwise AND operation between SEGS and MASK.
@@ -56,6 +59,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * MaskPainter - Provides a feature to draw masks.
 * FaceDetailer - Easily detects faces and improves them.
 * FaceDetailer (pipe) - Easily detects faces and improves them (for multipass).
+
+* `FaceDetailer (SDXL/pipe), BasicPipe -> DetailerPipe (SDXL), Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
 
 * SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
 * SEGSPaste - Pastes the results of SEGS onto the original image.
