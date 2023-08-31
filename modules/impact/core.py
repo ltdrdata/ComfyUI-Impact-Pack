@@ -756,9 +756,9 @@ def segs_to_masklist(segs):
     return masks
 
 
-def vae_decode(vae, samples, use_tile, hook):
+def vae_decode(vae, samples, use_tile, hook, tile_size=512):
     if use_tile:
-        pixels = nodes.VAEDecodeTiled().decode(vae, samples)[0]
+        pixels = nodes.VAEDecodeTiled().decode(vae, samples, tile_size)[0]
     else:
         pixels = nodes.VAEDecode().decode(vae, samples)[0]
 
@@ -768,9 +768,9 @@ def vae_decode(vae, samples, use_tile, hook):
     return pixels
 
 
-def vae_encode(vae, pixels, use_tile, hook):
+def vae_encode(vae, pixels, use_tile, hook, tile_size=512):
     if use_tile:
-        samples = nodes.VAEEncodeTiled().encode(vae, pixels)[0]
+        samples = nodes.VAEEncodeTiled().encode(vae, pixels, tile_size)[0]
     else:
         samples = nodes.VAEEncode().encode(vae, pixels)[0]
 
@@ -897,8 +897,8 @@ class SimpleDenoiseScheduleHook(PixelKSampleHook):
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, current_denoise
 
 
-def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_tile=False, save_temp_prefix=None, hook=None):
-    pixels = vae_decode(vae, samples, use_tile, hook)
+def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
+    pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
     if save_temp_prefix is not None:
         nodes.PreviewImage().save_images(pixels, filename_prefix=save_temp_prefix)
@@ -908,11 +908,11 @@ def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_ti
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook)
+    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
-def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, save_temp_prefix=None, hook=None):
-    pixels = vae_decode(vae, samples, use_tile, hook)
+def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
+    pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
     if save_temp_prefix is not None:
         nodes.PreviewImage().save_images(pixels, filename_prefix=save_temp_prefix)
@@ -924,11 +924,11 @@ def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook)
+    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
-def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae, use_tile=False, save_temp_prefix=None, hook=None):
-    pixels = vae_decode(vae, samples, use_tile, hook)
+def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae, use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
+    pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
     if save_temp_prefix is not None:
         nodes.PreviewImage().save_images(pixels, filename_prefix=save_temp_prefix)
@@ -947,11 +947,11 @@ def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscal
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook)
+    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
-def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False, save_temp_prefix=None, hook=None):
-    pixels = vae_decode(vae, samples, use_tile, hook)
+def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
+    pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
     if save_temp_prefix is not None:
         nodes.PreviewImage().save_images(pixels, filename_prefix=save_temp_prefix)
@@ -974,7 +974,7 @@ def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_mode
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook)
+    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
 class TwoSamplersForMaskUpscaler:
@@ -985,9 +985,11 @@ class TwoSamplersForMaskUpscaler:
     hook_full = None
     use_tiled_vae = False
     is_tiled = False
+    tile_size = 512
 
     def __init__(self, scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae,
-                 full_sampler_opt=None, upscale_model_opt=None, hook_base_opt=None, hook_mask_opt=None, hook_full_opt=None):
+                 full_sampler_opt=None, upscale_model_opt=None, hook_base_opt=None, hook_mask_opt=None, hook_full_opt=None,
+                 tile_size=512):
         mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1]))
 
         self.params = scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae
@@ -997,6 +999,7 @@ class TwoSamplersForMaskUpscaler:
         self.hook_mask = hook_mask_opt
         self.hook_full = hook_full_opt
         self.use_tiled_vae = use_tiled_vae
+        self.tile_size = tile_size
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
@@ -1007,11 +1010,13 @@ class TwoSamplersForMaskUpscaler:
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
                                                             use_tile=self.use_tiled_vae,
-                                                            save_temp_prefix=save_temp_prefix, hook=self.hook_base)
+                                                            save_temp_prefix=save_temp_prefix,
+                                                            hook=self.hook_base, tile_size=self.tile_size)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
                                                                        use_tile=self.use_tiled_vae,
-                                                                       save_temp_prefix=save_temp_prefix, hook=self.hook_mask)
+                                                                       save_temp_prefix=save_temp_prefix,
+                                                                       hook=self.hook_mask, tile_size=self.tile_size)
 
         return self.do_samples(step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent)
 
@@ -1032,11 +1037,13 @@ class TwoSamplersForMaskUpscaler:
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
                                                                   use_tile=self.use_tiled_vae,
-                                                                  save_temp_prefix=save_temp_prefix, hook=self.hook_base)
+                                                                  save_temp_prefix=save_temp_prefix, hook=self.hook_base,
+                                                                  tile_size=self.tile_size)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
                                                                              use_tile=self.use_tiled_vae,
-                                                                             save_temp_prefix=save_temp_prefix, hook=self.hook_mask)
+                                                                             save_temp_prefix=save_temp_prefix, hook=self.hook_mask,
+                                                                             tile_size=self.tile_size)
 
         return self.do_samples(step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent)
 
@@ -1109,13 +1116,15 @@ class PixelKSampleUpscaler:
     hook = None
     use_tiled_vae = False
     is_tiled = False
+    tile_size = 512
 
     def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                 use_tiled_vae, upscale_model_opt=None, hook_opt=None):
+                 use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
         self.upscale_model = upscale_model_opt
         self.hook = hook_opt
         self.use_tiled_vae = use_tiled_vae
+        self.tile_size = tile_size
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1128,9 +1137,11 @@ class PixelKSampleUpscaler:
                                                             use_tile=self.use_tiled_vae,
                                                             save_temp_prefix=save_temp_prefix, hook=self.hook)
         else:
-            upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
+            upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model,
+                                                                       upscale_factor, vae,
                                                                        use_tile=self.use_tiled_vae,
-                                                                       save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                       save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                                       tile_size=self.tile_size)
 
         if self.hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
@@ -1149,11 +1160,13 @@ class PixelKSampleUpscaler:
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
                                                                   use_tile=self.use_tiled_vae,
-                                                                  save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                  save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                                  tile_size=self.tile_size)
         else:
             upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
                                                                              use_tile=self.use_tiled_vae,
-                                                                             save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                             save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                                             tile_size=self.tile_size)
 
         if self.hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
@@ -1224,14 +1237,16 @@ try:
         tile_params = None
         hook = None
         is_tiled = True
+        tile_size = 512
 
         def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, 
                      tile_width, tile_height, tiling_strategy,
-                     upscale_model_opt=None, hook_opt=None):
+                     upscale_model_opt=None, hook_opt=None, tile_size=512):
             self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
             self.tile_params = tile_width, tile_height, tiling_strategy
             self.upscale_model = upscale_model_opt
             self.hook = hook_opt
+            self.tile_size = tile_size
 
         def tiled_ksample(self, latent):
             from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSampler
@@ -1250,10 +1265,12 @@ try:
 
             if self.upscale_model is None:
                 upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
-                                                                use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                                tile_size=self.tile_size)
             else:
                 upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model, upscale_factor, vae,
-                                                                           use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                           use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                                           tile_size=self.tile_size)
 
             refined_latent = self.tiled_ksample(upscaled_latent)
 
@@ -1267,10 +1284,12 @@ try:
 
             if self.upscale_model is None:
                 upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
-                                                                      use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                      use_tile=True, save_temp_prefix=save_temp_prefix,
+                                                                      hook=self.hook, tile_size=self.tile_size)
             else:
                 upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model, w, h, vae,
-                                                                                 use_tile=True, save_temp_prefix=save_temp_prefix, hook=self.hook)
+                                                                                 use_tile=True, save_temp_prefix=save_temp_prefix,
+                                                                                 hook=self.hook, tile_size=self.tile_size)
 
             refined_latent = self.tiled_ksample(upscaled_latent)
 

@@ -1254,7 +1254,7 @@ class PixelTiledKSampleUpscalerProvider:
     def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt=None, pk_hook_opt=None):
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_size=max(tile_width, tile_height))
             return (upscaler, )
         except Exception as e:
             print("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
@@ -1295,7 +1295,7 @@ class PixelTiledKSampleUpscalerProviderPipe:
         try:
             import custom_nodes.ComfyUI_TiledKSampler.nodes
             model, _, vae, positive, negative = basic_pipe
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt)
+            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_size=max(tile_width, tile_height))
             return (upscaler, )
         except Exception as e:
             print("[ERROR] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
@@ -1321,6 +1321,7 @@ class PixelKSampleUpscalerProvider:
                     "negative": ("CONDITIONING", ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -1334,9 +1335,10 @@ class PixelKSampleUpscalerProvider:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-             use_tiled_vae, upscale_model_opt=None, pk_hook_opt=None):
+             use_tiled_vae, upscale_model_opt=None, pk_hook_opt=None, tile_size=512):
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
-                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt)
+                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt,
+                                             tile_size=tile_size)
         return (upscaler, )
 
 
@@ -1354,7 +1356,8 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                     "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "basic_pipe": ("BASIC_PIPE",)
+                    "basic_pipe": ("BASIC_PIPE",),
+                    "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
                     },
                 "optional": {
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
@@ -1368,10 +1371,11 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
     CATEGORY = "ImpactPack/Upscale"
 
     def doit_pipe(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise,
-                  use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
+                  use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None, tile_size=512):
         model, _, vae, positive, negative = basic_pipe
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
-                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt)
+                                             positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt,
+                                             tile_size=tile_size)
         return (upscaler, )
 
 
@@ -1392,6 +1396,7 @@ class TwoSamplersForMaskUpscalerProvider:
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
                      "vae": ("VAE",),
+                     "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
                      },
                 "optional": {
                         "full_sampler_opt": ("KSAMPLER",),
@@ -1409,10 +1414,10 @@ class TwoSamplersForMaskUpscalerProvider:
 
     def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae,
              full_sampler_opt=None, upscale_model_opt=None,
-             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
+             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None, tile_size=512):
         upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
                                                    base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
-                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
+                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt, tile_size=tile_size)
         return (upscaler, )
 
 
@@ -1433,6 +1438,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
                      "mask_sampler": ("KSAMPLER", ),
                      "mask": ("MASK", ),
                      "basic_pipe": ("BASIC_PIPE",),
+                     "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
                      },
                 "optional": {
                         "full_sampler_opt": ("KSAMPLER",),
@@ -1450,11 +1456,11 @@ class TwoSamplersForMaskUpscalerProviderPipe:
 
     def doit(self, scale_method, full_sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, basic_pipe,
              full_sampler_opt=None, upscale_model_opt=None,
-             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None):
+             pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None, tile_size=512):
         _, _, vae, _, _ = basic_pipe
         upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
                                                    base_sampler, mask_sampler, mask, vae, full_sampler_opt, upscale_model_opt,
-                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt)
+                                                   pk_hook_base_opt, pk_hook_mask_opt, pk_hook_full_opt, tile_size=tile_size)
         return (upscaler, )
 
 
@@ -1536,7 +1542,7 @@ class IterativeImageUpscale:
 
         core.update_node_status(unique_id, "VAEEncode (first)", 0)
         if upscaler.is_tiled:
-            latent = nodes.VAEEncodeTiled().encode(vae, pixels)[0]
+            latent = nodes.VAEEncodeTiled().encode(vae, pixels, upscaler.tile_size)[0]
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
@@ -1544,7 +1550,7 @@ class IterativeImageUpscale:
 
         core.update_node_status(unique_id, "VAEDecode (final)", 1.0)
         if upscaler.is_tiled:
-            pixels = nodes.VAEDecodeTiled().decode(vae, refined_latent[0])[0]
+            pixels = nodes.VAEDecodeTiled().decode(vae, refined_latent[0], upscaler.tile_size)[0]
         else:
             pixels = nodes.VAEDecode().decode(vae, refined_latent[0])[0]
 
@@ -2565,6 +2571,7 @@ class ReencodeLatent:
                         "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
                         "input_vae": ("VAE", ),
                         "output_vae": ("VAE", ),
+                        "tile_size": ("INT", {"default": 512, "min": 192, "max": 4096, "step": 64}),
                     },
                 }
 
@@ -2573,14 +2580,14 @@ class ReencodeLatent:
     RETURN_TYPES = ("LATENT", )
     FUNCTION = "doit"
 
-    def doit(self, samples, tile_mode, input_vae, output_vae):
+    def doit(self, samples, tile_mode, input_vae, output_vae, tile_size=512):
         if tile_mode in ["Both", "Decode(input) only"]:
-            pixels = nodes.VAEDecodeTiled().decode(input_vae, samples)[0]
+            pixels = nodes.VAEDecodeTiled().decode(input_vae, samples, tile_size)[0]
         else:
             pixels = nodes.VAEDecode().decode(input_vae, samples)[0]
 
         if tile_mode in ["Both", "Encode(output) only"]:
-            return nodes.VAEEncodeTiled().encode(output_vae, pixels)
+            return nodes.VAEEncodeTiled().encode(output_vae, pixels, tile_size)
         else:
             return nodes.VAEEncode().encode(output_vae, pixels)
 
