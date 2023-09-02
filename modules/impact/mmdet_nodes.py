@@ -127,7 +127,7 @@ class BBoxDetector:
                 confidence = x[2]
                 # bbox_size = (item_bbox[2]-item_bbox[0],item_bbox[3]-item_bbox[1]) # (w,h)
 
-                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox, None, None)
 
                 items.append(item)
 
@@ -175,7 +175,7 @@ class SegmDetector(BBoxDetector):
                 cropped_mask = crop_ndarray2(item_mask, crop_region)
                 confidence = x[2]
 
-                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox)
+                item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox, None, None)
                 items.append(item)
 
         return image.shape, items

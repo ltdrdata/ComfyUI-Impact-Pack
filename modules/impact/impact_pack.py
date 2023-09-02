@@ -218,7 +218,7 @@ class SEGSDetailer:
             else:
                 new_cropped_image = pil2numpy(enhanced_pil)
 
-            new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+            new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
         return segs[0], new_segs
@@ -1849,7 +1849,7 @@ class BitwiseAndMaskForEach:
                             cropped_mask1[j - crop_region1[1], i - crop_region1[0]] = 0
 
                 if overlapped:
-                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label)
+                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label, None)
                     result.append(item)
 
         return ((base_segs[0], result),)
@@ -1902,7 +1902,7 @@ class SubtractMaskForEach:
                             pass
 
                 if changed:
-                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label)
+                    item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label, None)
                     result.append(item)
                 else:
                     result.append(base_segs)

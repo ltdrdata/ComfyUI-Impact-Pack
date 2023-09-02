@@ -604,7 +604,7 @@ def segs_bitwise_and_mask(segs, mask):
         new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
         new_mask = new_mask.astype(np.float32) / 255.0
 
-        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
         items.append(item)
 
     return segs[0], items
@@ -629,7 +629,7 @@ def apply_mask_to_each_seg(segs, masks):
         new_mask = np.bitwise_and(cropped_mask.astype(np.uint8), cropped_mask2)
         new_mask = new_mask.astype(np.float32) / 255.0
 
-        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label)
+        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
         items.append(item)
 
     return segs[0], items
@@ -669,7 +669,7 @@ class ONNXDetector:
                         cropped_mask[y1 - crop_y1:y2 - crop_y1, x1 - crop_x1:x2 - crop_x1] = inner_mask
 
                         # make items
-                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox)
+                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, None, None)
                         result.append(item)
 
             shape = h, w
@@ -731,7 +731,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                     cropped_mask = mask_i[y1:y2, x1:x2]
 
                     if cropped_mask is not None:
-                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A", None)
                         result.append(item)
 
         else:
@@ -760,7 +760,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                         cropped_mask.fill(1.0)
 
                     if cropped_mask is not None:
-                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A")
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A", None)
                         result.append(item)
 
     if not result:
