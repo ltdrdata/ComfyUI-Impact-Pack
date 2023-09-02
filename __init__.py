@@ -266,7 +266,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
 
-    "FromDetailerPipeSDXL": "FaceDetailer (SDXL/pipe)",
+    "FromDetailerPipeSDXL": "FromDetailer (SDXL/pipe)",
     "BasicPipeToDetailerPipeSDXL": "BasicPipe -> DetailerPipe (SDXL)",
     "EditDetailerPipeSDXL": "Edit DetailerPipe (SDXL)",
 

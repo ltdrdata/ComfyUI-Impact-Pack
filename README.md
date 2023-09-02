@@ -60,7 +60,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * FaceDetailer - Easily detects faces and improves them.
 * FaceDetailer (pipe) - Easily detects faces and improves them (for multipass).
 
-* `FaceDetailer (SDXL/pipe), BasicPipe -> DetailerPipe (SDXL), Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
+* `FromDetailer (SDXL/pipe), BasicPipe -> DetailerPipe (SDXL), Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
 
 * SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
 * SEGSPaste - Pastes the results of SEGS onto the original image.
