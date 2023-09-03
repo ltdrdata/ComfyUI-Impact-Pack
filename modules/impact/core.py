@@ -1001,6 +1001,9 @@ def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscal
     while current_w < new_w:
         pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
         current_w = pixels.shape[2]
+        if current_w == w:
+            print(f"[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
+            break
 
     # downscale to target scale
     pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
@@ -1029,6 +1032,9 @@ def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_mode
     while current_w < new_w:
         pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
         current_w = pixels.shape[2]
+        if current_w == w:
+            print(f"[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
+            break
 
     # downscale to target scale
     pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
