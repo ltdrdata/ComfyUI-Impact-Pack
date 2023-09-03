@@ -12,13 +12,12 @@ import sys
 
 comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
-subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
+subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
 modules_path = os.path.join(os.path.dirname(__file__), "modules")
 wildcards_path = os.path.join(os.path.dirname(__file__), "wildcards")
 custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcards")
 
 sys.path.append(modules_path)
-sys.path.append(subpack_path)
 
 
 import impact.config
@@ -34,10 +33,11 @@ def do_install():
 
 
 # ensure dependency
-if impact.config.get_config()['dependency_version'] < impact.config.dependency_version:
+if impact.config.get_config()['dependency_version'] < impact.config.dependency_version or not os.path.exists(subpack_path):
     print(f"## ComfyUI-Impact-Pack: Updating dependencies")
     do_install()
 
+sys.path.append(subpack_path)
 
 # Core
 # recheck dependencies for colab
@@ -64,7 +64,6 @@ except:
     do_install()
 
 import impact.impact_server  # to load server api
-
 
 def setup_js():
     import nodes

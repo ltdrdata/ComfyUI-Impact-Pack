@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import subprocess
 
@@ -8,8 +9,9 @@ if sys.argv[0] == 'install.py':
 
 
 impact_path = os.path.join(os.path.dirname(__file__), "modules")
-subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
-subpack_repo = ""
+old_subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
+subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
+subpack_repo = "https://github.com/ltdrdata/ComfyUI-Impact-Subpack"
 comfy_path = os.path.join(os.path.dirname(__file__), '..', '..')
 
 
@@ -34,10 +36,19 @@ else:
 
 def ensure_subpack():
     import git
-    repo = git.Repo(os.path.dirname(__file__))
-    origin = repo.remote(name='origin')
-    origin.pull()
-    repo.git.submodule('update', '--init', '--recursive')
+
+    if os.path.exists(subpack_path):
+        try:
+            repo = git.Repo(subpack_path)
+            repo.remotes.origin.pull()
+        except:
+            shutil.rmtree(subpack_path)
+            git.Repo.clone_from(subpack_repo, subpack_path)
+    else:
+        git.Repo.clone_from(subpack_repo, subpack_path)
+
+    if os.path.exists(old_subpack_path):
+        shutil.rmtree(old_subpack_path)
 
 
 def remove_olds():
