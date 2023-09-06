@@ -1271,183 +1271,190 @@ class ControlNetWrapper:
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI Noise
-try:
-    class InjectNoiseHook(PixelKSampleHook):
-        def __init__(self, source, seed, start_strength, end_strength):
-            super().__init__()
-            self.source = source
-            self.seed = seed
-            self.start_strength = start_strength
-            self.end_strength = end_strength
+class InjectNoiseHook(PixelKSampleHook):
+    def __init__(self, source, seed, start_strength, end_strength):
+        super().__init__()
+        self.source = source
+        self.seed = seed
+        self.start_strength = start_strength
+        self.end_strength = end_strength
 
-        def post_encode(self, samples):
-            # gen noise
-            size = samples['samples'].shape
-            seed = self.cur_step + self.seed
-            from custom_nodes.ComfyUI_Noise.nodes import NoisyLatentImage, InjectNoise
-            noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
+    def post_encode(self, samples):
+        # gen noise
+        size = samples['samples'].shape
+        seed = self.cur_step + self.seed
 
-            # inj noise
-            mask = None
-            if 'noise_mask' in samples:
-                mask = samples['noise_mask']
+        if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
+            NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
+            InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
+        else:
+            raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
 
-            strength = self.start_strength + (self.end_strength - self.start_strength) * self.cur_step / self.total_step
-            samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
+        noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
 
-            if mask is not None:
-                samples['noise_mask'] = mask
+        # inj noise
+        mask = None
+        if 'noise_mask' in samples:
+            mask = samples['noise_mask']
 
-            return samples
-except:
-    pass
+        strength = self.start_strength + (self.end_strength - self.start_strength) * self.cur_step / self.total_step
+        samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
+
+        if mask is not None:
+            samples['noise_mask'] = mask
+
+        return samples
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
-try:
-    class TiledKSamplerWrapper:
-        params = None
+class TiledKSamplerWrapper:
+    params = None
 
-        def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                     tile_width, tile_height, tiling_strategy):
-            self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy
+    def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+                 tile_width, tile_height, tiling_strategy):
+        self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy
 
-        def sample(self, latent_image, hook=None):
-            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSampler
+    def sample(self, latent_image, hook=None):
+        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
+            TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
+        else:
+            raise Exception("'BNK_TiledKSampler' node isn't installed.")
 
-            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
+        model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
 
-            if hook is not None:
-                model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
-                    hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                     denoise)
+        if hook is not None:
+            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
+                hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
+                                 denoise)
 
-            return \
-            TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                                   scheduler,
-                                   positive, negative, latent_image, denoise)[0]
+        return \
+        TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                               scheduler,
+                               positive, negative, latent_image, denoise)[0]
 
 
-    class PixelTiledKSampleUpscaler:
-        params = None
-        upscale_model = None
-        tile_params = None
-        hook = None
-        is_tiled = True
-        tile_size = 512
+class PixelTiledKSampleUpscaler:
+    params = None
+    upscale_model = None
+    tile_params = None
+    hook = None
+    is_tiled = True
+    tile_size = 512
 
-        def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                     denoise,
-                     tile_width, tile_height, tiling_strategy,
-                     upscale_model_opt=None, hook_opt=None, tile_size=512):
-            self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
-            self.tile_params = tile_width, tile_height, tiling_strategy
-            self.upscale_model = upscale_model_opt
-            self.hook = hook_opt
-            self.tile_size = tile_size
+    def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative,
+                 denoise,
+                 tile_width, tile_height, tiling_strategy,
+                 upscale_model_opt=None, hook_opt=None, tile_size=512):
+        self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
+        self.tile_params = tile_width, tile_height, tiling_strategy
+        self.upscale_model = upscale_model_opt
+        self.hook = hook_opt
+        self.tile_size = tile_size
 
-        def tiled_ksample(self, latent):
-            from custom_nodes.ComfyUI_TiledKSampler.nodes import TiledKSampler
+    def tiled_ksample(self, latent):
+        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
+            TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
+        else:
+            raise Exception("'BNK_TiledKSampler' node isn't installed.")
 
-            scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
-            tile_width, tile_height, tiling_strategy = self.tile_params
+        scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+        tile_width, tile_height, tiling_strategy = self.tile_params
 
-            return \
-            TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                                   scheduler,
-                                   positive, negative, latent, denoise)[0]
+        return \
+        TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                               scheduler,
+                               positive, negative, latent, denoise)[0]
 
-        def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
-            scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+    def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
+        scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
 
-            if self.hook is not None:
-                self.hook.set_steps(step_info)
+        if self.hook is not None:
+            self.hook.set_steps(step_info)
 
-            if self.upscale_model is None:
-                upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
-                                                                use_tile=True, save_temp_prefix=save_temp_prefix,
-                                                                hook=self.hook,
-                                                                tile_size=self.tile_size)
-            else:
-                upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model,
-                                                                           upscale_factor, vae,
-                                                                           use_tile=True,
-                                                                           save_temp_prefix=save_temp_prefix,
-                                                                           hook=self.hook,
-                                                                           tile_size=self.tile_size)
+        if self.upscale_model is None:
+            upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
+                                                            use_tile=True, save_temp_prefix=save_temp_prefix,
+                                                            hook=self.hook,
+                                                            tile_size=self.tile_size)
+        else:
+            upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model,
+                                                                       upscale_factor, vae,
+                                                                       use_tile=True,
+                                                                       save_temp_prefix=save_temp_prefix,
+                                                                       hook=self.hook,
+                                                                       tile_size=self.tile_size)
 
-            refined_latent = self.tiled_ksample(upscaled_latent)
+        refined_latent = self.tiled_ksample(upscaled_latent)
 
-            return refined_latent
+        return refined_latent
 
-        def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
-            scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
+    def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
+        scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
 
-            if self.hook is not None:
-                self.hook.set_steps(step_info)
+        if self.hook is not None:
+            self.hook.set_steps(step_info)
 
-            if self.upscale_model is None:
-                upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
-                                                                      use_tile=True, save_temp_prefix=save_temp_prefix,
-                                                                      hook=self.hook, tile_size=self.tile_size)
-            else:
-                upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method,
-                                                                                 self.upscale_model, w, h, vae,
-                                                                                 use_tile=True,
-                                                                                 save_temp_prefix=save_temp_prefix,
-                                                                                 hook=self.hook,
-                                                                                 tile_size=self.tile_size)
+        if self.upscale_model is None:
+            upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
+                                                                  use_tile=True, save_temp_prefix=save_temp_prefix,
+                                                                  hook=self.hook, tile_size=self.tile_size)
+        else:
+            upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method,
+                                                                             self.upscale_model, w, h, vae,
+                                                                             use_tile=True,
+                                                                             save_temp_prefix=save_temp_prefix,
+                                                                             hook=self.hook,
+                                                                             tile_size=self.tile_size)
 
-            refined_latent = self.tiled_ksample(upscaled_latent)
+        refined_latent = self.tiled_ksample(upscaled_latent)
 
-            return refined_latent
-except:
-    pass
+        return refined_latent
+
 
 # REQUIREMENTS: biegert/ComfyUI-CLIPSeg
-try:
-    class BBoxDetectorBasedOnCLIPSeg:
-        prompt = None
-        blur = None
-        threshold = None
-        dilation_factor = None
-        aux = None
+class BBoxDetectorBasedOnCLIPSeg:
+    prompt = None
+    blur = None
+    threshold = None
+    dilation_factor = None
+    aux = None
 
-        def __init__(self, prompt, blur, threshold, dilation_factor):
-            self.prompt = prompt
-            self.blur = blur
-            self.threshold = threshold
-            self.dilation_factor = dilation_factor
+    def __init__(self, prompt, blur, threshold, dilation_factor):
+        self.prompt = prompt
+        self.blur = blur
+        self.threshold = threshold
+        self.dilation_factor = dilation_factor
 
-        def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size=1):
-            mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
-            segs = mask_to_segs(mask, False, bbox_crop_factor, True, drop_size)
-            return segs
+    def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size=1):
+        mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
+        segs = mask_to_segs(mask, False, bbox_crop_factor, True, drop_size)
+        return segs
 
-        def detect_combined(self, image, bbox_threshold, bbox_dilation):
-            from custom_nodes.clipseg import CLIPSeg
+    def detect_combined(self, image, bbox_threshold, bbox_dilation):
+        if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
+            CLIPSeg = nodes.NODE_CLASS_MAPPINGS['CLIPSeg']
+        else:
+            raise Exception("'CLIPSeg' node isn't installed.")
+        
+        if self.threshold is None:
+            threshold = bbox_threshold
+        else:
+            threshold = self.threshold
 
-            if self.threshold is None:
-                threshold = bbox_threshold
-            else:
-                threshold = self.threshold
+        if self.dilation_factor is None:
+            dilation_factor = bbox_dilation
+        else:
+            dilation_factor = self.dilation_factor
 
-            if self.dilation_factor is None:
-                dilation_factor = bbox_dilation
-            else:
-                dilation_factor = self.dilation_factor
+        prompt = self.aux if self.prompt == '' and self.aux is not None else self.prompt
 
-            prompt = self.aux if self.prompt == '' and self.aux is not None else self.prompt
+        mask, _, _ = CLIPSeg().segment_image(image, prompt, self.blur, threshold, dilation_factor)
+        mask = to_binary_mask(mask)
+        return mask
 
-            mask, _, _ = CLIPSeg().segment_image(image, prompt, self.blur, threshold, dilation_factor)
-            mask = to_binary_mask(mask)
-            return mask
+    def setAux(self, x):
+        self.aux = x
 
-        def setAux(self, x):
-            self.aux = x
-except:
-    pass
-
-
+        
 def update_node_status(node, text, progress=None):
     if PromptServer.instance.client_id is None:
         return

@@ -1,8 +1,6 @@
 import os
 import sys
 
-import torch
-
 import folder_paths
 import comfy.samplers
 import comfy.sd
@@ -13,14 +11,13 @@ import piexif
 import math
 import zipfile
 import re
-from PIL import ImageDraw
 
 import impact.wildcards
 from server import PromptServer
 
 from impact.utils import *
 import impact.core as core
-from impact.core import SEG, NO_BBOX_DETECTOR, NO_SEGM_DETECTOR
+from impact.core import SEG
 from impact.config import MAX_RESOLUTION, latent_letter_path
 from PIL import Image
 import numpy as np
@@ -28,7 +25,6 @@ import hashlib
 import json
 import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
-import latent_preview
 import comfy.model_management
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
@@ -77,13 +73,10 @@ class CLIPSegDetectorProvider:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, text, blur, threshold, dilation_factor):
-        try:
-            import custom_nodes.clipseg
+        if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
             return (core.BBoxDetectorBasedOnCLIPSeg(text, blur, threshold, dilation_factor), )
-        except Exception as e:
+        else:
             print("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
-            print(f"\t{e}")
-            pass
 
 
 class SAMLoader:
@@ -1288,14 +1281,11 @@ class PixelTiledKSampleUpscalerProvider:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt=None, pk_hook_opt=None):
-        try:
-            import custom_nodes.ComfyUI_TiledKSampler.nodes
+        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
             upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_size=max(tile_width, tile_height))
             return (upscaler, )
-        except Exception as e:
+        else:
             print("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
-            print(f"\t{e}")
-            pass
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
@@ -1328,15 +1318,12 @@ class PixelTiledKSampleUpscalerProviderPipe:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, tiling_strategy, basic_pipe, upscale_model_opt=None, pk_hook_opt=None):
-        try:
-            import custom_nodes.ComfyUI_TiledKSampler.nodes
+        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
             model, _, vae, positive, negative = basic_pipe
             upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_size=max(tile_width, tile_height))
             return (upscaler, )
-        except Exception as e:
+        else:
             print("[ERROR] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
-            print(f"\t{e}")
-            pass
 
 
 class PixelKSampleUpscalerProvider:
