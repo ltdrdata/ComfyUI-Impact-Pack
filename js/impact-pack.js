@@ -417,35 +417,40 @@ app.registerExtension({
             let populate_getter = node.widgets[1].__lookupGetter__('value');
             let populate_setter = node.widgets[1].__lookupSetter__('value');
 
+			const wildcard_text_widget = node.widgets.find((w) => w.name == 'wildcard_text');
+			const populated_text_widget = node.widgets.find((w) => w.name == 'populated_text');
+			const mode_widget = node.widgets.find((w) => w.name == 'mode');
+			const seed_widget = node.widgets.find((w) => w.name == 'seed');
+
 			let force_serializeValue = async (n,i) =>
 				{
-					if(!node.widgets[2].value) {
-						return node.widgets[1].value;
+					if(!mode_widget.value) {
+						return populated_text_widget.value;
 					}
 					else {
-				        let wildcard_text = await node.widgets[0].serializeValue();
+				        let wildcard_text = await wildcard_text_widget.serializeValue();
 
 						let response = await api.fetchApi(`/impact/wildcards`, {
 																method: 'POST',
 																headers: { 'Content-Type': 'application/json' },
-																body: JSON.stringify({text: wildcard_text})
+																body: JSON.stringify({text: wildcard_text, seed: seed_widget.value})
 															});
 
 						let populated = await response.json();
 
 						n.widgets_values[2] = false;
 						n.widgets_values[1] = populated.text;
-						populate_setter.call(node.widgets[1], populated.text);
+						populate_setter.call(populated_text_widget, populated.text);
 
 						return populated.text;
 					}
 				};
 
 			// mode combo
-			Object.defineProperty(node.widgets[2], "value", {
+			Object.defineProperty(mode_widget, "value", {
 				set: (value) => {
 						node._mode_value = value == true || value == "Populate";
-						node.widgets[1].inputEl.disabled = value == true || value == "Populate";
+						populated_text_widget.inputEl.disabled = value == true || value == "Populate";
 					},
 				get: () => {
 						if(node._mode_value != undefined)
@@ -456,18 +461,18 @@ app.registerExtension({
 			});
 
             // to avoid conflict with presetText.js of pythongosssss
-			Object.defineProperty(node.widgets[1], "value", {
+			Object.defineProperty(populated_text_widget, "value", {
 				set: (value) => {
 				        const stackTrace = new Error().stack;
                         if(!stackTrace.includes('serializeValue'))
-				            populate_setter.call(node.widgets[1], value);
+				            populate_setter.call(populated_text_widget, value);
 					},
 				get: () => {
-				        return populate_getter.call(node.widgets[1]);
+				        return populate_getter.call(populated_text_widget);
 					 }
 			});
 
-            node.widgets[0].serializeValue = (n,i) => {
+            wildcard_text_widget.serializeValue = (n,i) => {
                 if(node.inputs) {
 	                let link_id = node.inputs.find(x => x.name=="wildcard_text")?.link;
 	                if(link_id != undefined) {
@@ -478,14 +483,15 @@ app.registerExtension({
 	                    }
 	                }
 	                else {
-	                    return node.widgets[0].value;
+	                    return wildcard_text_widget.value;
 	                }
                 }
                 else {
-                    return node.widgets[0].value;
+                    return wildcard_text_widget.value;
                 }
             };
-            node.widgets[1].serializeValue = force_serializeValue;
+
+            populated_text_widget.serializeValue = force_serializeValue;
 		}
 
 		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {

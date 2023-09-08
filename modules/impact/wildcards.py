@@ -23,7 +23,10 @@ def read_wildcard_dict(wildcard_path):
     return wildcard_dict
 
 
-def process(text):
+def process(text, seed=None):
+    if seed is not None:
+        random.seed(seed)
+
     def replace_options(string):
         replacements_found = False
 

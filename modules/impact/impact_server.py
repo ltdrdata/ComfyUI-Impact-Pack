@@ -189,5 +189,5 @@ async def sam_detect(request):
 @server.PromptServer.instance.routes.post("/impact/wildcards")
 async def populate_wildcards(request):
     data = await request.json()
-    populated = wildcards.process(data['text'])
+    populated = wildcards.process(data['text'], data.get('seed', None))
     return web.json_response({"text": populated})

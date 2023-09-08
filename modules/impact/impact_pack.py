@@ -2564,6 +2564,7 @@ class ImpactWildcardProcessor:
                         "wildcard_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
+                        "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     },
                 }
 
@@ -2572,7 +2573,7 @@ class ImpactWildcardProcessor:
     RETURN_TYPES = ("STRING", )
     FUNCTION = "doit"
 
-    def doit(self, wildcard_text, populated_text, mode):
+    def doit(self, wildcard_text, populated_text, mode, seed):
         return (populated_text, )
 
 
@@ -2586,6 +2587,7 @@ class ImpactWildcardEncode:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
+                        "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     },
                 }
 
