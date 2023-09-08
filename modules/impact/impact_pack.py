@@ -2591,12 +2591,14 @@ class ImpactWildcardEncode:
 
     CATEGORY = "ImpactPack/Prompt"
 
-    RETURN_TYPES = ("MODEL", "CLIP", "CONDITIONING", )
+    RETURN_TYPES = ("MODEL", "CLIP", "CONDITIONING", "STRING")
+    RETURN_NAMES = ("model", "clip", "conditioning", "populated_text")
     FUNCTION = "doit"
 
     def doit(self, *args, **kwargs):
-        model, clip, conditioning = impact.wildcards.process_with_loras(kwargs['populated_text'], kwargs['model'], kwargs['clip'])
-        return (model, clip, conditioning)
+        populated = kwargs['populated_text']
+        model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])
+        return (model, clip, conditioning, populated)
 
 
 class ReencodeLatent:
