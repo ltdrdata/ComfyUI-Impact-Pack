@@ -188,6 +188,7 @@ NODE_CLASS_MAPPINGS = {
     "LatentSwitch": GeneralSwitch,
     "SEGSSwitch": GeneralSwitch,
     "ImpactSwitch": GeneralSwitch,
+    "ImpactInversedSwitch": GeneralInversedSwitch,
 
     # "SaveConditioning": SaveConditioning,
     # "LoadConditioning": LoadConditioning,
@@ -296,6 +297,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageReceiver": "Image Receiver",
     "ImageMaskSwitch": "Switch (images, mask)",
     "ImpactSwitch": "Switch (Any)",
+    "ImpactInversedSwitch": "Inversed Switch (Any)",
 
     "MasksToMaskList": "Masks to Mask List",
     "ImpactImageBatchToImageList": "Image batch to Image List",

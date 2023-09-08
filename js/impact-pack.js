@@ -191,6 +191,95 @@ app.registerExtension({
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
 
+        if(nodeData.name === 'ImpactInversedSwitch') {
+            nodeData.output = ['*'];
+            nodeData.output_is_list = [false];
+            nodeData.output_name = ['output1'];
+
+            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+                if(!link_info)
+                    return;
+
+                if(type == 2) {
+                    // connect output
+                    if(connected){
+                        if(this.outputs[0].type == '*'){
+                            if(link_info.type == '*') {
+                                this.disconnectOutput(link_info.origin_slot);
+                            }
+                            else {
+                                // propagate type
+                                this.outputs[0].type = link_info.type;
+                                this.outputs[0].label = link_info.type;
+                                this.outputs[0].name = link_info.type;
+
+                                for(let i in this.inputs) {
+                                    if(this.inputs[i].name != 'select')
+                                        this.inputs[i].type = link_info.type;
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    // connect input
+                    if(this.inputs[0].type == '*'){
+                        const node = app.graph.getNodeById(link_info.origin_id);
+                        let origin_type = node.outputs[link_info.origin_slot].type;
+
+                        if(origin_type == '*') {
+                            this.disconnectInput(link_info.target_slot);
+                            return;
+                        }
+
+                        for(let i in this.inputs) {
+                            if(this.inputs[i].name != 'select')
+                                this.inputs[i].type = origin_type;
+                        }
+
+                        this.outputs[0].type = origin_type;
+                        this.outputs[0].label = origin_type;
+                        this.outputs[0].name = origin_type;
+                    }
+
+                    return;
+                }
+
+                if (!connected && this.outputs.length > 1) {
+                    const stackTrace = new Error().stack;
+
+                    if(
+                        !stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
+                        !stackTrace.includes('LGraphNode.connect') && // for mouse device
+                        !stackTrace.includes('loadGraphData')) {
+                            if(this.outputs[link_info.origin_slot].links.length == 0)
+                                this.removeOutput(link_info.origin_slot);
+                    }
+                }
+
+				let slot_i = 1;
+                for (let i = 0; i < this.outputs.length; i++) {
+                    this.outputs[i].label = `output${slot_i}`
+                    this.outputs[i].name = `output${slot_i}`
+                    slot_i++;
+                }
+
+				let last_slot = this.outputs[this.outputs.length - 1];
+                if (last_slot.slot_index == link_info.origin_slot) {
+                    this.addOutput(`output${slot_i}`, this.outputs[0].type);
+                }
+
+                let select_slot = this.inputs.find(x => x.name == "select");
+                if(this.widgets) {
+                    this.widgets[0].options.max = select_slot?this.outputs.length-2:this.outputs.length-1;
+                    this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
+                    if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
+                        this.widgets[0].value = 1;
+                }
+            }
+        }
+
         if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
 
@@ -211,7 +300,7 @@ app.registerExtension({
                 input_name = "input";
             }
 
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange
+            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
             nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
                 if(!link_info)
                     return;
