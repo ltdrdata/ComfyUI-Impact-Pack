@@ -196,17 +196,30 @@ async def populate_wildcards(request):
 
 def onprompt(json_data):
     inversed_switch_info = {}
+    onprompt_switch_info = {}
+
     for k, v in json_data['prompt'].items():
-        if v['class_type'] == 'ImpactInversedSwitch':
+        cls = v['class_type']
+        if cls == 'ImpactInversedSwitch':
             inversed_switch_info[k] = v['inputs']['select']
+        elif cls in ['ImpactSwitch', 'LatentSwitch', 'SEGSSwitch', 'ImpactMakeImageList']:
+            if v['inputs']['sel_mode']:
+                onprompt_switch_info[k] = v['inputs']['select']
 
     for k, v in json_data['prompt'].items():
         disable_targets = set()
+
         for kk, vv in v['inputs'].items():
             if isinstance(vv, list) and len(vv) == 2:
                 if vv[0] in inversed_switch_info:
                     if vv[1]+1 != inversed_switch_info[vv[0]]:
                         disable_targets.add(kk)
+
+        if k in onprompt_switch_info:
+            selected_slot_name = f"input{onprompt_switch_info[k]}"
+            for kk, vv in v['inputs'].items():
+                if kk != selected_slot_name and kk.startswith('input'):
+                    disable_targets.add(kk)
 
         for kk in disable_targets:
             del v['inputs'][kk]

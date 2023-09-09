@@ -319,8 +319,9 @@ app.registerExtension({
                                 this.outputs[0].name = link_info.type;
 
                                 for(let i in this.inputs) {
-                                    if(this.inputs[i].name != 'select')
-                                        this.inputs[i].type = link_info.type;
+                                    let input_i = this.inputs[i];
+                                    if(input_i.name != 'select' && input_i.name != 'sel_mode')
+                                        input_i.type = link_info.type;
                                 }
                             }
                         }
@@ -330,6 +331,9 @@ app.registerExtension({
                 }
                 else {
                     // connect input
+                    if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
+                        return;
+
                     if(this.inputs[0].type == '*'){
                         const node = app.graph.getNodeById(link_info.origin_id);
                         let origin_type = node.outputs[link_info.origin_slot].type;
@@ -340,8 +344,9 @@ app.registerExtension({
                         }
 
                         for(let i in this.inputs) {
-                            if(this.inputs[i].name != 'select')
-                                this.inputs[i].type = origin_type;
+                            let input_i = this.inputs[i];
+                            if(input_i.name != 'select' && input_i.name != 'sel_mode')
+                                input_i.type = origin_type;
                         }
 
                         this.outputs[0].type = origin_type;
@@ -351,8 +356,13 @@ app.registerExtension({
                 }
 
                 let select_slot = this.inputs.find(x => x.name == "select");
+                let mode_slot = this.inputs.find(x => x.name == "sel_mode");
 
-                if (!connected && (select_slot && this.inputs.length > 2) || (!select_slot && this.inputs.length > 1)) {
+                let converted_count = 0;
+                converted_count += select_slot?1:0;
+                converted_count += mode_slot?1:0;
+
+                if (!connected && (this.inputs.length > 1+converted_count)) {
                     const stackTrace = new Error().stack;
 
                     if(
@@ -366,17 +376,18 @@ app.registerExtension({
 
 				let slot_i = 1;
                 for (let i = 0; i < this.inputs.length; i++) {
-                    if(this.inputs[i].name != 'select') {
-	                    this.inputs[i].label = `${input_name}${slot_i}`
-	                    this.inputs[i].name = `${input_name}${slot_i}`
+                    let input_i = this.inputs[i];
+                    if(input_i.name != 'select'&& input_i.name != 'sel_mode') {
+	                    input_i.label = `${input_name}${slot_i}`
+	                    input_i.name = `${input_name}${slot_i}`
                         slot_i++;
                     }
                 }
 
 				let last_slot = this.inputs[this.inputs.length - 1];
                 if (
-                    (last_slot.name == 'select' && this.inputs[this.inputs.length - 2].link != undefined)
-                    || (last_slot.name != 'select' && last_slot.link != undefined)) {
+                    (last_slot.name == 'select' && last_slot.name != 'sel_mode' && this.inputs[this.inputs.length - 2].link != undefined)
+                    || (last_slot.name != 'select' && last_slot.name != 'sel_mode' && last_slot.link != undefined)) {
                         this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
                 }
 

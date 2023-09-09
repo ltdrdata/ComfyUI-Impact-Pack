@@ -5,8 +5,11 @@ class GeneralSwitch:
     def INPUT_TYPES(s):
         return {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
-                    "input1": (any_typ,),
+                    "sel_mode": ("BOOLEAN", {"default": True, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
                     },
+                "optional": {
+                    "input1": (any_typ,),
+                    }
                 }
 
     RETURN_TYPES = (any_typ, )
