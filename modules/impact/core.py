@@ -166,7 +166,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # Skip processing if the detected bbox is already larger than the guide_size
     if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
         print(f"Detailer: segment skip (enough big)")
-        return None
+        return None, None
 
     if guide_size_for_bbox:  # == "bbox"
         # Scale up based on the smaller dimension between width and height.
@@ -190,11 +190,11 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if not force_inpaint:
         if upscale <= 1.0:
             print(f"Detailer: segment skip [determined upscale factor={upscale}]")
-            return None
+            return None, None
 
         if new_w == 0 or new_h == 0:
             print(f"Detailer: segment skip [zero size={new_w, new_h}]")
-            return None
+            return None, None
     else:
         if upscale <= 1.0 or new_w == 0 or new_h == 0:
             print(f"Detailer: force inpaint")
@@ -223,8 +223,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         latent_image = detailer_hook.post_encode(latent_image)
 
+    cnet_pil = None
     if control_net_wrapper is not None:
-        positive = control_net_wrapper.apply(positive, upscaled_image)
+        positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image)
 
     refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       latent_image, denoise,
@@ -241,7 +242,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # don't convert to latent - latent break image
     # preserving pil is much better
-    return refined_image
+    return refined_image, cnet_pil
 
 
 def composite_to(dest_latent, crop_region, src_latent):
@@ -1262,12 +1263,13 @@ class ControlNetWrapper:
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
+        self.image = None
 
     def apply(self, conditioning, image):
         if self.preprocessor is not None:
             image = self.preprocessor.apply(image)
 
-        return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, image, self.strength)[0]
+        return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, image, self.strength)[0], image
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI Noise

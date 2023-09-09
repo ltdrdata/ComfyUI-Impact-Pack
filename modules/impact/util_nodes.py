@@ -23,8 +23,8 @@ class GeneralSwitch:
         if input_name in kwargs:
             return (kwargs[input_name],)
         else:
-            print(f"ImpactSwitch: invalid select index ('input1' is selected)")
-            return (kwargs['input1'],)
+            print(f"ImpactSwitch: invalid select index (ignored)")
+            return (None,)
 
 
 class GeneralInversedSwitch:
