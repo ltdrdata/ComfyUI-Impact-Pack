@@ -1953,6 +1953,7 @@ class MediaPipeFaceMeshToSEGS:
                                 "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                                 "crop_min_size": ("INT", {"min": 10, "max": MAX_RESOLUTION, "step": 1, "default": 50}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 1}),
+                                "dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
                                 "face": bool_widget,
                                 "mouth": bool_widget,
                                 "left_eyebrow": bool_widget,
@@ -1969,8 +1970,8 @@ class MediaPipeFaceMeshToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
-        result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
+    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+        result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return (result, )
 
 

@@ -775,7 +775,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
     return (mask.shape[1], mask.shape[2]), result
 
 
-def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
     parts = {
         "face": np.array([0x0A, 0xC8, 0x0A]),
         "mouth": np.array([0x0A, 0xB4, 0x0A]),
@@ -800,10 +800,11 @@ def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, dro
             cv2.fillPoly(convex_segment, [convex_hull], (255, 255, 255))
 
             convex_segment = np.expand_dims(convex_segment, axis=0).astype(np.float32) / 255.0
-            tensor = torch.from_numpy(convex_segment)   # (b,h,w,c) 로 된 4차원 텐서
+            tensor = torch.from_numpy(convex_segment)
             mask_tensor = torch.any(tensor != 0, dim=-1).float()
-            mask_tensor = mask_tensor.unsqueeze(0)
-            return mask_tensor
+            mask_tensor = mask_tensor.squeeze(0)
+            mask_tensor = torch.from_numpy(dilate_mask(mask_tensor.numpy(), dilation))
+            return mask_tensor.unsqueeze(0).unsqueeze(0)
 
         return None
 
