@@ -13,7 +13,7 @@ from server import PromptServer
 import comfy
 import impact.wildcards as wildcards
 import math
-
+import cv2
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -686,7 +686,7 @@ class ONNXDetector:
         pass
 
 
-def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
+def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None):
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
@@ -732,7 +732,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                     cropped_mask = mask_i[y1:y2, x1:x2]
 
                     if cropped_mask is not None:
-                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A", None)
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, label, None)
                         result.append(item)
 
         else:
@@ -746,7 +746,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                 x, y, w, h = cv2.boundingRect(contour)
                 bbox = x, y, x + w, y + h
                 crop_region = make_crop_region(
-                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
+                    mask_i.shape[1], mask_i.shape[0], bbox, crop_factor, crop_min_size
                 )
 
                 if w > drop_size and h > drop_size:
@@ -761,7 +761,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
                         cropped_mask.fill(1.0)
 
                     if cropped_mask is not None:
-                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, "A", None)
+                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, label, None)
                         result.append(item)
 
     if not result:
@@ -773,6 +773,74 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1):
 
     # shape: (b,h,w) -> (h,w)
     return (mask.shape[1], mask.shape[2]), result
+
+
+def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+    parts = {
+        "face": np.array([0x0A, 0xC8, 0x0A]),
+        "mouth": np.array([0x0A, 0xB4, 0x0A]),
+        "left_eyebrow": np.array([0xB4, 0xDC, 0x0A]),
+        "left_eye": np.array([0xB4, 0xC8, 0x0A]),
+        "left_pupil": np.array([0xFA, 0xC8, 0x0A]),
+        "right_eyebrow": np.array([0x0A, 0xDC, 0xB4]),
+        "right_eye": np.array([0x0A, 0xC8, 0xB4]),
+        "right_pupil": np.array([0x0A, 0xC8, 0xFA]),
+    }
+
+    def create_segment(image, color):
+        image = (image * 255).to(torch.uint8)
+        image = image.squeeze(0).numpy()
+        mask = cv2.inRange(image, color, color)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if contours:
+            max_contour = max(contours, key=cv2.contourArea)
+            convex_hull = cv2.convexHull(max_contour)
+            convex_segment = np.zeros_like(image)
+            cv2.fillPoly(convex_segment, [convex_hull], (255, 255, 255))
+
+            convex_segment = np.expand_dims(convex_segment, axis=0).astype(np.float32) / 255.0
+            tensor = torch.from_numpy(convex_segment)   # (b,h,w,c) 로 된 4차원 텐서
+            mask_tensor = torch.any(tensor != 0, dim=-1).float()
+            mask_tensor = mask_tensor.unsqueeze(0)
+            return mask_tensor
+
+        return None
+
+    segs = []
+
+    def create_seg(label):
+        mask = create_segment(image, parts[label])
+        if mask is not None:
+            seg = mask_to_segs(mask, False, crop_factor, bbox_fill, drop_size=drop_size, label=label, crop_min_size=crop_min_size)
+            if len(seg[1]) > 0:
+                segs.append(seg[1][0])
+
+    if face:
+        create_seg('face')
+
+    if mouth:
+        create_seg('mouth')
+
+    if left_eyebrow:
+        create_seg('left_eyebrow')
+
+    if left_eye:
+        create_seg('left_eye')
+
+    if left_pupil:
+        create_seg('left_pupil')
+
+    if right_eyebrow:
+        create_seg('right_eyebrow')
+
+    if right_eye:
+        create_seg('right_eye')
+
+    if right_pupil:
+        create_seg('right_pupil')
+
+    return (image.shape[1], image.shape[2]), segs
 
 
 def segs_to_combined_mask(segs):

@@ -52,6 +52,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
   * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
 * MASK to SEGS - Generates SEGS based on the mask.
+* MediaPipe FaceMesh to SEGS - Separate each landmark from the mediapipe facemesh image to create labeled SEGS.
 * ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
 * Masks to Mask List - MASKS 
   * This node converts the MASKS in batch form to a list of individual masks.

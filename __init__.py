@@ -157,6 +157,7 @@ NODE_CLASS_MAPPINGS = {
     "Segs & Mask ForEach": SegsBitwiseAndMaskForEach,
     "EmptySegs": EmptySEGS,
 
+    "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS,
     "MaskToSEGS": MaskToSEGS,
     "ToBinaryMask": ToBinaryMask,
     "MasksToMaskList": MasksToMaskList,
@@ -250,6 +251,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorCombined_v2": "BBOX Detector (combined)",
     "SegmDetectorCombined_v2": "SEGM Detector (combined)",
     "SegsToCombinedMask": "SEGS to MASK (combined)",
+    "MediaPipeFaceMeshToSEGS": "MediaPipe FaceMesh to SEGS",
     "MaskToSEGS": "MASK to SEGS",
     "BitwiseAndMaskForEach": "Bitwise(SEGS & SEGS)",
     "SubtractMaskForEach": "Bitwise(SEGS - SEGS)",

@@ -332,7 +332,14 @@ class SEGSLabelFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "preset": (['all', 'hand', 'face', 'short_sleeved_shirt', 'long_sleeved_shirt', 'short_sleeved_outwear', 'long_sleeved_outwear', 'vest', 'sling', 'shorts', 'trousers', 'skirt', 'short_sleeved_dress', 'long_sleeved_dress', 'vest_dress', 'sling_dress'], ),
+                        "preset": ([
+                                       'all', 'hand', 'face', 'mouth', 'eyes', 'eyebrows', 'pupils',
+                                       'left_eyebrow', 'left_eye', 'left_pupil',
+                                       'right_eyebrow', 'right_eye', 'right_pupil',
+                                       'short_sleeved_shirt',
+                                       'long_sleeved_shirt', 'short_sleeved_outwear', 'long_sleeved_outwear',
+                                       'vest', 'sling', 'shorts', 'trousers', 'skirt', 'short_sleeved_dress',
+                                       'long_sleeved_dress', 'vest_dress', 'sling_dress'], ),
                         "labels": ("STRING", {"multiline": True, "placeholder": "List the types of segments to be allowed, separated by commas"}),
                      },
                 }
@@ -355,6 +362,12 @@ class SEGSLabelFilter:
 
             for x in segs[1]:
                 if x.label in labels:
+                    res_segs.append(x)
+                elif 'eyes' in labels and x.label in ['left_eye', 'right_eye']:
+                    res_segs.append(x)
+                elif 'eyebrows' in labels and x.label in ['left_eyebrow', 'right_eyebrow']:
+                    res_segs.append(x)
+                elif 'pupils' in labels and x.label in ['left_pupil', 'right_pupil']:
                     res_segs.append(x)
                 else:
                     remained_segs.append(x)
@@ -1928,6 +1941,37 @@ class SubtractMaskForEach:
                     result.append(base_segs)
 
         return ((base_segs[0], result),)
+
+
+class MediaPipeFaceMeshToSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        bool_widget = ("BOOLEAN", {"default": True, "label_on": "Enabled", "label_off": "Disabled"})
+        return {"required": {
+                                "image": ("IMAGE",),
+                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                                "crop_min_size": ("INT", {"min": 10, "max": MAX_RESOLUTION, "step": 1, "default": 50}),
+                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 1}),
+                                "face": bool_widget,
+                                "mouth": bool_widget,
+                                "left_eyebrow": bool_widget,
+                                "left_eye": bool_widget,
+                                "left_pupil": bool_widget,
+                                "right_eyebrow": bool_widget,
+                                "right_eye": bool_widget,
+                                "right_pupil": bool_widget,
+                             }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+        result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
+        return (result, )
 
 
 class MaskToSEGS:

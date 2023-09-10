@@ -158,7 +158,7 @@ def normalize_region(limit, startp, size):
     return int(new_startp), int(new_endp)
 
 
-def make_crop_region(w, h, bbox, crop_factor):
+def make_crop_region(w, h, bbox, crop_factor, crop_min_size=None):
     x1 = bbox[0]
     y1 = bbox[1]
     x2 = bbox[2]
@@ -169,6 +169,10 @@ def make_crop_region(w, h, bbox, crop_factor):
 
     crop_w = bbox_w * crop_factor
     crop_h = bbox_h * crop_factor
+
+    if crop_min_size is not None:
+        crop_w = max(crop_min_size, crop_w)
+        crop_h = max(crop_min_size, crop_h)
 
     kernel_x = x1 + bbox_w / 2
     kernel_y = y1 + bbox_h / 2
