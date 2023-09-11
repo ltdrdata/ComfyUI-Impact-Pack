@@ -204,9 +204,13 @@ app.registerExtension({
                 if(type == 2) {
                     // connect output
                     if(connected){
+                        if(app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
+                            app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+                        }
+
                         if(this.outputs[0].type == '*'){
                             if(link_info.type == '*') {
-                                this.disconnectOutput(link_info.origin_slot);
+                                app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
                             }
                             else {
                                 // propagate type
@@ -223,6 +227,9 @@ app.registerExtension({
                     }
                 }
                 else {
+                    if(app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+                        this.disconnectInput(link_info.target_slot);
+
                     // connect input
                     if(this.inputs[0].type == '*'){
                         const node = app.graph.getNodeById(link_info.origin_id);
@@ -308,9 +315,13 @@ app.registerExtension({
                 if(type == 2) {
                     // connect output
                     if(connected){
+                        if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
+                            app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+                        }
+
                         if(this.outputs[0].type == '*'){
                             if(link_info.type == '*') {
-                                this.disconnectOutput(link_info.origin_slot);
+                                app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
                             }
                             else {
                                 // propagate type
@@ -330,6 +341,9 @@ app.registerExtension({
                     return;
                 }
                 else {
+                    if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+                        this.disconnectInput(link_info.target_slot);
+
                     // connect input
                     if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
                         return;
