@@ -201,10 +201,23 @@ def onprompt(json_data):
     for k, v in json_data['prompt'].items():
         cls = v['class_type']
         if cls == 'ImpactInversedSwitch':
-            inversed_switch_info[k] = v['inputs']['select']
+            select_input = v['inputs']['select']
+            if isinstance(select_input, list) and len(select_input) == 2:
+                input_node = json_data['prompt'][select_input[0]]
+                if input_node['class_type'] == 'ImpactInt' and 'inputs' in input_node and 'value' in input_node['inputs']:
+                    inversed_switch_info[k] = input_node['inputs']['value']
+            else:
+                inversed_switch_info[k] = select_input
+
         elif cls in ['ImpactSwitch', 'LatentSwitch', 'SEGSSwitch', 'ImpactMakeImageList']:
             if v['inputs']['sel_mode']:
-                onprompt_switch_info[k] = v['inputs']['select']
+                select_input = v['inputs']['select']
+                if isinstance(select_input, list) and len(select_input) == 2:
+                    input_node = json_data['prompt'][select_input[0]]
+                    if input_node['class_type'] == 'ImpactInt' and 'inputs' in input_node and 'value' in input_node['inputs']:
+                        onprompt_switch_info[k] = input_node['inputs']['value']
+                else:
+                    onprompt_switch_info[k] = select_input
 
     for k, v in json_data['prompt'].items():
         disable_targets = set()

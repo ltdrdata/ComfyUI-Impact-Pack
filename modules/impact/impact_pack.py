@@ -2274,6 +2274,9 @@ class LatentReceiver:
 
     @staticmethod
     def load_preview_latent(image_path):
+        if not os.path.exists(image_path):
+            return None
+
         image = Image.open(image_path)
         exif_data = piexif.load(image.info["exif"])
 
@@ -2316,6 +2319,9 @@ class LatentReceiver:
             samples = {"samples": latent["latent_tensor"].float() * multiplier}
         else:
             samples = LatentReceiver.load_preview_latent(latent_path)
+
+        if samples is None:
+            samples = {'samples': torch.zeros([1, 4, 8, 8])}
 
         preview = self.parse_filename(latent_name)
 
