@@ -309,7 +309,7 @@ class SEGSRangeFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent"],),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
                         "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -334,6 +334,11 @@ class SEGSRangeFilter:
 
             if target == "area(=w*h)":
                 value = (y2 - y1) * (x2 - x1)
+            elif target == "length_percent":
+                h = y2 - y1
+                w = x2 - x1
+                value = max(h/w, w/h)*100
+                print(f"value={value}")
             elif target == "width":
                 value = x2 - x1
             elif target == "height":
