@@ -478,7 +478,7 @@ def convert_and_stack_masks(masks):
     mask_tensors = []
     for mask in masks:
         mask_array = np.array(mask, dtype=np.uint8)
-        mask_tensor = torch.from_numpy(mask_array).bool()
+        mask_tensor = torch.from_numpy(mask_array)
         mask_tensors.append(mask_tensor)
 
     stacked_masks = torch.stack(mask_tensors, dim=0)

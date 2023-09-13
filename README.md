@@ -54,8 +54,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * MASK to SEGS - Generates SEGS based on the mask.
 * MediaPipe FaceMesh to SEGS - Separate each landmark from the mediapipe facemesh image to create labeled SEGS.
 * ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
-* Masks to Mask List - MASKS 
-  * This node converts the MASKS in batch form to a list of individual masks.
+* Masks to Mask List - This node converts the MASKS in batch form to a list of individual masks.
+* Mask List to Masks - This node converts the MASK list to MASK batch form.
 * EmptySEGS - Provides an empty SEGS.
 * MaskPainter - Provides a feature to draw masks.
 * FaceDetailer - Easily detects faces and improves them.
@@ -63,17 +63,25 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 * `FromDetailer (SDXL/pipe), BasicPipe -> DetailerPipe (SDXL), Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
 
-* SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
-* SEGSPaste - Pastes the results of SEGS onto the original image.
-  * If `ref_image_opt` is present, the images contained within SEGS are ignored. Instead, the image within `ref_image_opt` corresponding to the crop area of SEGS is taken and pasted. The size of the image in `ref_image_opt` should be the same as the original image size. 
-* SEGSPreview - Provides a preview of SEGS.
-   * This option is used to preview the improved image through `SEGSDetailer` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
-* SEGSToImageList - Convert SEGS To Image List
-* SEGSToMaskList - Convert SEGS To Mask List
-* SEGS Filter (label) - This node filters SEGS based on the label of the detected areas. 
-* SEGS Filter (ordered) - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
-* SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
-* SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different then segs2 will be ignored. 
+* SEGS Manipulation nodes 
+  * SEGSDetailer - Performs detailed work on SEGS without pasting it back onto the original image.
+  * SEGSPaste - Pastes the results of SEGS onto the original image.
+    * If `ref_image_opt` is present, the images contained within SEGS are ignored. Instead, the image within `ref_image_opt` corresponding to the crop area of SEGS is taken and pasted. The size of the image in `ref_image_opt` should be the same as the original image size. 
+  * SEGSPreview - Provides a preview of SEGS.
+     * This option is used to preview the improved image through `SEGSDetailer` before merging it into the original. Prior to going through ```SEGSDetailer```, SEGS only contains mask information without image information. If fallback_image_opt is connected to the original image, SEGS without image information will generate a preview using the original image. However, if SEGS already contains image information, fallback_image_opt will be ignored. 
+  * SEGSToImageList - Convert SEGS To Image List
+  * SEGSToMaskList - Convert SEGS To Mask List
+  * SEGS Filter (label) - This node filters SEGS based on the label of the detected areas. 
+  * SEGS Filter (ordered) - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
+  * SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
+  * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different then segs2 will be ignored.
+  * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
+  * AssembleSEGS - Reassemble the decomposed SEGS.
+  * From SEG_ELT - Extract detailed information from SEG_ELT.
+  * Edit SEG_ELT - Modify some of the information in SEG_ELT.
+  * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
+
+* Dilate Mask - Dilate Mask. 
  
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
@@ -121,7 +129,7 @@ This takes latent as input and outputs latent as the result.
   * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
   * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
-* Switches
+* Switche nodes
   * Switch (image,mask), Switch (latent), Switch (SEGS) - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
   * Switch (Any) - This is a Switch node that takes an arbitrary number of inputs and produces a single output. Its type is determined when connected to any node, and connecting inputs increases the available slots for connections.
   * Inversed Switch (Any) - In contrast to `Switch (Any)`, it takes a single input and outputs one of many. Due to ComfyUI's functional limitations, the value of `select` must be determined at the time of queuing a prompt, and while it can serve as a `Primitive Node` or `ImpactInt`, it cannot function properly when connected through other nodes. 

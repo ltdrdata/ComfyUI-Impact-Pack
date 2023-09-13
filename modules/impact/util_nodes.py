@@ -1,4 +1,6 @@
 from impact.utils import any_typ
+import comfy_extras.nodes_mask
+from nodes import MAX_RESOLUTION
 
 class GeneralSwitch:
     @classmethod
@@ -104,7 +106,7 @@ class RemoveNoiseMask:
         res = {key: value for key, value in samples.items() if key != 'noise_mask'}
         return (res, )
 
-MAX_RESOLUTION=8192
+
 class ImagePasteMasked:
     @classmethod
     def INPUT_TYPES(s):
@@ -127,5 +129,57 @@ class ImagePasteMasked:
 
     def composite(self, destination, source, x, y, resize_source, mask = None):
         destination = destination.clone().movedim(-1, 1)
-        output = composite(destination, source.movedim(-1, 1), x, y, mask, 1, resize_source).movedim(1, -1)
+        output = comfy_extras.nodes_mask.composite(destination, source.movedim(-1, 1), x, y, mask, 1, resize_source).movedim(1, -1)
         return (output,)
+
+
+from impact.utils import any_typ
+
+class ImpactLogger:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "data": (any_typ, ""),
+                    },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    CATEGORY = "ImpactPack/Debug"
+
+    OUTPUT_NODE = True
+
+    RETURN_TYPES = ()
+    FUNCTION = "doit"
+
+    def doit(self, data, prompt, extra_pnginfo):
+        shape = ""
+        if hasattr(data, "shape"):
+            shape = f"{data.shape} / "
+
+        print(f"[IMPACT LOGGER]: {shape}{data}")
+
+        print(f"         PROMPT: {prompt}")
+
+        # for x in prompt:
+        #     if 'inputs' in x and 'populated_text' in x['inputs']:
+        #         print(f"PROMP: {x['10']['inputs']['populated_text']}")
+        #
+        # for x in extra_pnginfo['workflow']['nodes']:
+        #     if x['type'] == 'ImpactWildcardProcessor':
+        #         print(f" WV : {x['widgets_values'][1]}\n")
+
+        return {}
+
+
+class ImpactDummyInput:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {}}
+
+    CATEGORY = "ImpactPack/Debug"
+
+    RETURN_TYPES = (any_typ,)
+    FUNCTION = "doit"
+
+    def doit(self):
+        return ("DUMMY",)
