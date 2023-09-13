@@ -177,6 +177,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactEdit_SEG_ELT": Edit_SEG_ELT,
     "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT,
     "ImpactDilateMask": DilateMask,
+    "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
     "SegmDetectorCombined_v2": SegmDetectorCombined,
@@ -211,6 +212,7 @@ NODE_CLASS_MAPPINGS = {
     "SEGSPreview": SEGSPreview,
     "SEGSToImageList": SEGSToImageList,
     "ImpactSEGSToMaskList": SEGSToMaskList,
+    "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
     "ImpactSEGSConcat": SEGSConcat,
 
     "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
@@ -303,12 +305,14 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSOrderedFilter": "SEGS Filter (ordered)",
     "ImpactSEGSConcat": "SEGS Concat",
     "ImpactSEGSToMaskList": "SEGS to Mask List",
+    "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",
     "ImpactFrom_SEG_ELT": "From SEG_ELT",
     "ImpactEdit_SEG_ELT": "Edit SEG_ELT",
     "ImpactDilate_Mask_SEG_ELT": "Dilate Mask (SEG_ELT)",
+    "ImpactScaleBy_BBOX_SEG_ELT": "ScaleBy BBOX (SEG_ELT)",
     "ImpactDilateMask": "Dilate Mask",
 
     "PreviewBridge": "Preview Bridge",

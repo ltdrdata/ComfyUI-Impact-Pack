@@ -1524,7 +1524,7 @@ class MaskListToMaskBatch:
 
     INPUT_IS_LIST = True
 
-    RETURN_TYPES = ("MASK", )
+    RETURN_TYPES = ("MASKS", )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Operation"
