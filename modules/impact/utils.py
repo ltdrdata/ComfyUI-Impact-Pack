@@ -88,8 +88,12 @@ def dilate_mask(mask, dilation_factor, iter=1):
     if dilation_factor == 0:
         return mask
 
-    kernel = np.ones((dilation_factor, dilation_factor), np.uint8)
-    return cv2.dilate(mask, kernel, iter)
+    if dilation_factor > 0:
+        kernel = np.ones((dilation_factor, dilation_factor), np.uint8)
+        return cv2.dilate(mask, kernel, iter)
+    else:
+        kernel = np.ones((-dilation_factor, -dilation_factor), np.uint8)
+        return cv2.erode(mask, kernel, iter)
 
 
 def dilate_masks(segmasks, dilation_factor, iter=1):

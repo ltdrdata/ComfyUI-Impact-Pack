@@ -563,7 +563,7 @@ class DilateMask:
     def INPUT_TYPES(s):
         return {"required": {
                      "mask": ("MASK", ),
-                     "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
+                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                 }}
 
     RETURN_TYPES = ("MASK", )
@@ -582,7 +582,7 @@ class Dilate_SEG_ELT:
     def INPUT_TYPES(s):
         return {"required": {
                      "seg_elt": ("SEG_ELT", ),
-                     "dilation": ("INT", {"default": 10, "min": 0, "max": 255, "step": 1}),
+                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                 }}
 
     RETURN_TYPES = ("SEG_ELT", )
@@ -684,7 +684,7 @@ class MediaPipeFaceMeshToSEGS:
                                 "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                                 "crop_min_size": ("INT", {"min": 10, "max": MAX_RESOLUTION, "step": 1, "default": 50}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 1}),
-                                "dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                                "dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
                                 "face": bool_widget,
                                 "mouth": bool_widget,
                                 "left_eyebrow": bool_widget,
