@@ -215,7 +215,6 @@ app.registerExtension({
                             else {
                                 // propagate type
                                 this.outputs[0].type = link_info.type;
-                                this.outputs[0].label = link_info.type;
                                 this.outputs[0].name = link_info.type;
 
                                 for(let i in this.inputs) {
@@ -246,7 +245,6 @@ app.registerExtension({
                         }
 
                         this.outputs[0].type = origin_type;
-                        this.outputs[0].label = origin_type;
                         this.outputs[0].name = origin_type;
                     }
 
@@ -267,7 +265,6 @@ app.registerExtension({
 
 				let slot_i = 1;
                 for (let i = 0; i < this.outputs.length; i++) {
-                    this.outputs[i].label = `output${slot_i}`
                     this.outputs[i].name = `output${slot_i}`
                     slot_i++;
                 }
@@ -392,7 +389,6 @@ app.registerExtension({
                 for (let i = 0; i < this.inputs.length; i++) {
                     let input_i = this.inputs[i];
                     if(input_i.name != 'select'&& input_i.name != 'sel_mode') {
-	                    input_i.label = `${input_name}${slot_i}`
 	                    input_i.name = `${input_name}${slot_i}`
                         slot_i++;
                     }
