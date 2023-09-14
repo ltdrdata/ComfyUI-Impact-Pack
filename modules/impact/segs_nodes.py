@@ -708,9 +708,33 @@ class MediaPipeFaceMeshToSEGS:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil, reference_image_opt=None):
+        # https://github.com/Fannovel16/comfyui_controlnet_aux/blob/1ec41fceff1ee99596445a0c73392fd91df407dc/utils.py#L33
+        def calc_pad(h_raw, w_raw):
+            def pad64(x):
+                return int(np.ceil(float(x) / 64.0) * 64 - x)
+
+            k = float(512) / float(min(h_raw, w_raw))
+            h_target = int(np.round(float(h_raw) * k))
+            w_target = int(np.round(float(w_raw) * k))
+
+            return pad64(h_target), pad64(w_target)
+
         if reference_image_opt is not None:
             if image.shape[1:] != reference_image_opt.shape[1:]:
-                image = nodes.ImageScale().upscale(image, "bilinear", reference_image_opt.shape[2], reference_image_opt.shape[1], False)[0]
+                scale_by1 = reference_image_opt.shape[1] / image.shape[1]
+                scale_by2 = reference_image_opt.shape[2] / image.shape[2]
+                scale_by = min(scale_by1, scale_by2)
+
+                h_pad, w_pad = calc_pad(reference_image_opt.shape[1], reference_image_opt.shape[2])
+
+                if h_pad != 0:
+                    # height padded
+                    image = image[:, :-h_pad, :, :]
+                elif w_pad != 0:
+                    # width padded
+                    image = image[:, :, :-w_pad, :]
+
+                image = nodes.ImageScaleBy().upscale(image, "bilinear", scale_by)[0]
 
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return (result, )
