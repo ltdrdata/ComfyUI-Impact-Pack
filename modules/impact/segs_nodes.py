@@ -698,7 +698,8 @@ class MediaPipeFaceMeshToSEGS:
                                 "right_eyebrow": bool_widget,
                                 "right_eye": bool_widget,
                                 "right_pupil": bool_widget,
-                             }
+                             },
+                "optional": {"reference_image_opt": ("IMAGE", ), }
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -706,7 +707,11 @@ class MediaPipeFaceMeshToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil, reference_image_opt=None):
+        if reference_image_opt is not None:
+            if image.shape[1:] != reference_image_opt.shape[1:]:
+                image = nodes.ImageScale().upscale(image, "bilinear", reference_image_opt.shape[2], reference_image_opt.shape[1], False)[0]
+
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return (result, )
 
