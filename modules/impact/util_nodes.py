@@ -11,10 +11,12 @@ class GeneralSwitch:
                     },
                 "optional": {
                     "input1": (any_typ,),
-                    }
+                    },
+                "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"}
                 }
 
-    RETURN_TYPES = (any_typ, )
+    RETURN_TYPES = (any_typ, "STRING", )
+    RETURN_NAMES = ("selected_value", "selected_label", )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -22,11 +24,24 @@ class GeneralSwitch:
     def doit(self, *args, **kwargs):
         input_name = f"input{int(kwargs['select'])}"
 
+        selected_label = input_name
+        node_id = kwargs['unique_id']
+        nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
+        for node in nodelist:
+            if str(node['id']) == node_id:
+                inputs = node['inputs']
+
+                for slot in inputs:
+                    if slot['name'] == input_name and 'label' in slot:
+                        selected_label = slot['label']
+
+                break
+
         if input_name in kwargs:
-            return (kwargs[input_name],)
+            return (kwargs[input_name], selected_label)
         else:
             print(f"ImpactSwitch: invalid select index (ignored)")
-            return (None,)
+            return (None, "")
 
 
 class GeneralInversedSwitch:
