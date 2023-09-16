@@ -682,7 +682,8 @@ class SegsToCombinedMask:
 class MediaPipeFaceMeshToSEGS:
     @classmethod
     def INPUT_TYPES(s):
-        bool_widget = ("BOOLEAN", {"default": True, "label_on": "Enabled", "label_off": "Disabled"})
+        bool_true_widget = ("BOOLEAN", {"default": True, "label_on": "Enabled", "label_off": "Disabled"})
+        bool_false_widget = ("BOOLEAN", {"default": False, "label_on": "Enabled", "label_off": "Disabled"})
         return {"required": {
                                 "image": ("IMAGE",),
                                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
@@ -690,16 +691,16 @@ class MediaPipeFaceMeshToSEGS:
                                 "crop_min_size": ("INT", {"min": 10, "max": MAX_RESOLUTION, "step": 1, "default": 50}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 1}),
                                 "dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
-                                "face": bool_widget,
-                                "mouth": bool_widget,
-                                "left_eyebrow": bool_widget,
-                                "left_eye": bool_widget,
-                                "left_pupil": bool_widget,
-                                "right_eyebrow": bool_widget,
-                                "right_eye": bool_widget,
-                                "right_pupil": bool_widget,
+                                "face": bool_true_widget,
+                                "mouth": bool_false_widget,
+                                "left_eyebrow": bool_false_widget,
+                                "left_eye": bool_false_widget,
+                                "left_pupil": bool_false_widget,
+                                "right_eyebrow": bool_false_widget,
+                                "right_eye": bool_false_widget,
+                                "right_pupil": bool_false_widget,
                              },
-                "optional": {"reference_image_opt": ("IMAGE", ), }
+                # "optional": {"reference_image_opt": ("IMAGE", ), }
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -708,16 +709,19 @@ class MediaPipeFaceMeshToSEGS:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil, reference_image_opt=None):
+        # padding is obsolete now
         # https://github.com/Fannovel16/comfyui_controlnet_aux/blob/1ec41fceff1ee99596445a0c73392fd91df407dc/utils.py#L33
-        def calc_pad(h_raw, w_raw):
-            def pad64(x):
-                return int(np.ceil(float(x) / 64.0) * 64 - x)
-
-            k = float(512) / float(min(h_raw, w_raw))
-            h_target = int(np.round(float(h_raw) * k))
-            w_target = int(np.round(float(w_raw) * k))
-
-            return pad64(h_target), pad64(w_target)
+        # def calc_pad(h_raw, w_raw):
+        #     resolution = normalize_size_base_64(h_raw, w_raw)
+        #
+        #     def pad64(x):
+        #         return int(np.ceil(float(x) / 64.0) * 64 - x)
+        #
+        #     k = float(resolution) / float(min(h_raw, w_raw))
+        #     h_target = int(np.round(float(h_raw) * k))
+        #     w_target = int(np.round(float(w_raw) * k))
+        #
+        #     return pad64(h_target), pad64(w_target)
 
         if reference_image_opt is not None:
             if image.shape[1:] != reference_image_opt.shape[1:]:
@@ -725,14 +729,14 @@ class MediaPipeFaceMeshToSEGS:
                 scale_by2 = reference_image_opt.shape[2] / image.shape[2]
                 scale_by = min(scale_by1, scale_by2)
 
-                h_pad, w_pad = calc_pad(reference_image_opt.shape[1], reference_image_opt.shape[2])
-
-                if h_pad != 0:
-                    # height padded
-                    image = image[:, :-h_pad, :, :]
-                elif w_pad != 0:
-                    # width padded
-                    image = image[:, :, :-w_pad, :]
+                # padding is obsolete now
+                # h_pad, w_pad = calc_pad(reference_image_opt.shape[1], reference_image_opt.shape[2])
+                # if h_pad != 0:
+                #     # height padded
+                #     image = image[:, :-h_pad, :, :]
+                # elif w_pad != 0:
+                #     # width padded
+                #     image = image[:, :, :-w_pad, :]
 
                 image = nodes.ImageScaleBy().upscale(image, "bilinear", scale_by)[0]
 
