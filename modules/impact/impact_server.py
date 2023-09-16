@@ -210,7 +210,7 @@ def onprompt(json_data):
                 inversed_switch_info[k] = select_input
 
         elif cls in ['ImpactSwitch', 'LatentSwitch', 'SEGSSwitch', 'ImpactMakeImageList']:
-            if v['inputs']['sel_mode']:
+            if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode']:
                 select_input = v['inputs']['select']
                 if isinstance(select_input, list) and len(select_input) == 2:
                     input_node = json_data['prompt'][select_input[0]]
