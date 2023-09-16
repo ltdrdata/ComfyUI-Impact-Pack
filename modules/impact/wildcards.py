@@ -95,39 +95,64 @@ def process(text, seed=None):
     return text
 
 
+def is_numeric_string(input_str):
+    return re.match(r'^-?\d+(\.\d+)?$', input_str) is not None
+
+
 def safe_float(x):
-    try:
+    if is_numeric_string(x):
         return float(x)
-    except:
+    else:
         return 1.0
 
 
 def extract_lora_values(string):
     pattern = r'<lora:([^>]+)>'
     matches = re.findall(pattern, string)
-    items = [match.strip(':') for match in matches]
 
-    result = {}
+    def touch_lbw(text):
+        return re.sub(r'LBW=[A-Za-z][A-Za-z0-9_-]*:', r'LBW=', text)
+
+    items = [touch_lbw(match.strip(':')) for match in matches]
+
+    added = set()
+    result = []
     for item in items:
         item = item.split(':')
 
         lora = None
-        a = 1.0
-        b = 1.0
-        if len(item) == 1:
-            lora = item[0]
-        elif len(item) == 2:
-            lora = item[0]
-            a = safe_float(item[1])
-            b = a  # When only one weight is provided, use the same weight for model as well as clip - similar to Automatic1111
-        elif len(item) >= 3:
-            lora = item[0]
-            if item[1] != '':
-                a = safe_float(item[1])
-            b = safe_float(item[2])
+        a = None
+        b = None
+        lbw = None
+        lbw_a = None
+        lbw_b = None
 
-        if lora is not None:
-            result[lora] = a, b
+        if len(item) > 0:
+            lora = item[0]
+
+            for sub_item in item[1:]:
+                if is_numeric_string(sub_item):
+                    if a is None:
+                        a = float(sub_item)
+                    elif b is None:
+                        b = float(sub_item)
+                elif sub_item.startswith("LBW="):
+                    for lbw_item in sub_item[4:].split(';'):
+                        if lbw_item.startswith("A="):
+                            lbw_a = safe_float(lbw_item[2:].strip())
+                        elif lbw_item.startswith("B="):
+                            lbw_b = safe_float(lbw_item[2:].strip())
+                        elif lbw_item.strip() != '':
+                            lbw = lbw_item
+
+        if a is None:
+            a = 1.0
+        if b is None:
+            b = 1.0
+
+        if lora is not None and lora not in added:
+            result.append((lora, a, b, lbw, lbw_a, lbw_b))
+            added.add(lora)
 
     return result
 
@@ -144,15 +169,27 @@ def process_with_loras(wildcard_opt, model, clip):
     loras = extract_lora_values(pass1)
     pass2 = remove_lora_tags(pass1)
 
-    for lora_name, (model_weight, clip_weight) in loras.items():
+    for lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b in loras:
         if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
 
         path = folder_paths.get_full_path("loras", lora_name)
 
         if path is not None:
-            print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}")
-            model, clip = nodes.LoraLoader().load_lora(model, clip, lora_name, model_weight, clip_weight)
+            print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}, LBW={lbw}, A={lbw_a}, B={lbw_b}")
+
+            def default_lora():
+                return nodes.LoraLoader().load_lora(model, clip, lora_name, model_weight, clip_weight)
+
+            if lbw is not None:
+                if 'LoraLoaderBlockWeight //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
+                    print(f"'LBW(Lora Block Weight)' is given, but the 'Inspire Pack' is not installed. The LBW= attribute is being ignored.")
+                    model, clip = default_lora()
+                else:
+                    cls = nodes.NODE_CLASS_MAPPINGS['LoraLoaderBlockWeight //Inspire']
+                    model, clip, _ = cls().doit(model, clip, lora_name, model_weight, clip_weight, False, 0, lbw_a, lbw_b, "", lbw)
+            else:
+                model, clip = default_lora()
         else:
             print(f"LORA NOT FOUND: {lora_name}")
 
