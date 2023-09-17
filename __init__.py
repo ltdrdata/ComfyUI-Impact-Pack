@@ -21,7 +21,7 @@ sys.path.append(modules_path)
 
 
 import impact.config
-import impact.hacky
+import impact.sample_error_enhancer
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
 
 
