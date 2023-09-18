@@ -88,7 +88,6 @@ def setup_js():
         shutil.copy(js_src_path, js_dest_path)
 
 
-    
 setup_js()
 
 from impact.impact_pack import *
@@ -97,6 +96,7 @@ from impact.pipe import *
 from impact.logics import *
 from impact.util_nodes import *
 from impact.segs_nodes import *
+from impact.special_samplers import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
 impact.wildcards.read_wildcard_dict(custom_wildcards_path)

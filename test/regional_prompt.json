@@ -1,106 +1,26 @@
 {
-  "last_node_id": 22,
-  "last_link_id": 28,
+  "last_node_id": 35,
+  "last_link_id": 65,
   "nodes": [
-    {
-      "id": 7,
-      "type": "VAEDecode",
-      "pos": [
-        2400,
-        270
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 7
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            9
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      }
-    },
-    {
-      "id": 1,
-      "type": "LoadImage",
-      "pos": [
-        -250,
-        747
-      ],
-      "size": {
-        "0": 915.1032104492188,
-        "1": 860.6505126953125
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            15
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "clipspace/clipspace-mask-1650741.700000003.png [input]",
-        "image"
-      ]
-    },
     {
       "id": 9,
       "type": "EditBasicPipe",
       "pos": [
-        888,
-        222
+        1210,
+        1030
       ],
       "size": {
         "0": 267,
         "1": 126
       },
       "flags": {},
-      "order": 8,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
           "name": "basic_pipe",
           "type": "BASIC_PIPE",
-          "link": 11
+          "link": 60
         },
         {
           "name": "model",
@@ -144,270 +64,163 @@
       }
     },
     {
-      "id": 10,
-      "type": "CLIPTextEncode",
+      "id": 15,
+      "type": "LoadImage",
       "pos": [
-        460,
-        242
+        -240,
+        1710
       ],
       "size": {
-        "0": 292.0009765625,
-        "1": 115.41679382324219
+        "0": 900,
+        "1": 900
       },
       "flags": {},
-      "order": 6,
+      "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 12
-        }
-      ],
       "outputs": [
         {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
           "links": [
-            13
+            28
           ],
           "shape": 3,
-          "slot_index": 0
+          "slot_index": 1
         }
       ],
       "properties": {
-        "Node name for S&R": "CLIPTextEncode"
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "photorealistic:1.4, 1girl wear red hat"
+        "clipspace/clipspace-mask-1572044.0999999996.png [input]",
+        "image"
       ]
     },
     {
-      "id": 14,
-      "type": "EmptyLatentImage",
+      "id": 23,
+      "type": "LoadImage",
       "pos": [
-        1050,
-        877
+        -240,
+        3790
       ],
       "size": {
-        "0": 315,
-        "1": 106
+        "0": 920,
+        "1": 910
       },
       "flags": {},
       "order": 1,
       "mode": 0,
       "outputs": [
         {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            19
-          ],
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
           "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            31
+          ],
+          "shape": 3,
+          "slot_index": 1
         }
       ],
       "properties": {
-        "Node name for S&R": "EmptyLatentImage"
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        1024,
-        768,
-        1
+        "clipspace/clipspace-mask-1351518.png [input]",
+        "image"
       ]
     },
     {
-      "id": 8,
-      "type": "PreviewImage",
+      "id": 26,
+      "type": "EditBasicPipe",
       "pos": [
-        2476,
-        319
-      ],
-      "size": [
-        1069.308299510546,
-        1128.9237824485897
-      ],
-      "flags": {},
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 9
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 6,
-      "type": "FromBasicPipe",
-      "pos": [
-        167,
-        238
+        1240,
+        4180
       ],
       "size": {
-        "0": 241.79998779296875,
-        "1": 106
+        "0": 178,
+        "1": 126
       },
       "flags": {},
-      "order": 5,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "basic_pipe",
           "type": "BASIC_PIPE",
-          "link": 3
-        }
-      ],
-      "outputs": [
+          "link": 59
+        },
         {
           "name": "model",
           "type": "MODEL",
-          "links": null,
-          "shape": 3
+          "link": null
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "links": [
-            12,
-            20
-          ],
-          "shape": 3,
-          "slot_index": 1
+          "link": null
         },
         {
           "name": "vae",
           "type": "VAE",
-          "links": [
-            8
-          ],
-          "shape": 3,
-          "slot_index": 2
+          "link": null
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 3
+          "link": 34
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "FromBasicPipe"
-      }
-    },
-    {
-      "id": 18,
-      "type": "CLIPTextEncode",
-      "pos": [
-        502,
-        507
-      ],
-      "size": {
-        "0": 292.0009765625,
-        "1": 115.41679382324219
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 20
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            21
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "photorealistic:1.4, 1 man wear jeans"
-      ]
-    },
-    {
-      "id": 5,
-      "type": "## make-basic_pipe [2c8c61]",
-      "pos": [
-        -227,
-        -290
-      ],
-      "size": {
-        "0": 400,
-        "1": 200
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "vae_opt",
-          "type": "VAE",
           "link": null
         }
       ],
       "outputs": [
         {
-          "name": "BASIC_PIPE",
+          "name": "basic_pipe",
           "type": "BASIC_PIPE",
           "links": [
-            1,
-            3,
-            11,
-            22
+            33
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
-      "title": "## make-basic_pipe",
       "properties": {
-        "Node name for S&R": "## make-basic_pipe [2c8c61]"
-      },
-      "widgets_values": [
-        "V07_v07.safetensors",
-        "photorealistic:1.4, 1girl and 1man sitting in the cafe",
-        ""
-      ]
+        "Node name for S&R": "EditBasicPipe"
+      }
     },
     {
       "id": 17,
       "type": "EditBasicPipe",
       "pos": [
-        975,
-        597
+        1550,
+        1740
       ],
       "size": {
-        "0": 267,
+        "0": 178,
         "1": 126
       },
       "flags": {},
-      "order": 9,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "basic_pipe",
           "type": "BASIC_PIPE",
-          "link": 22
+          "link": 57
         },
         {
           "name": "model",
@@ -451,18 +264,374 @@
       }
     },
     {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [
+        3660,
+        1820
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        4020,
+        1450
+      ],
+      "size": {
+        "0": 1069.308349609375,
+        "1": 1128.923828125
+      },
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        860,
+        1110
+      ],
+      "size": {
+        "0": 292.0009765625,
+        "1": 115.41679382324219
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 61
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            13
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1girl black hair, upper knee, (cafe:1.1)"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CombineRegionalPrompts",
+      "pos": [
+        2810,
+        1860
+      ],
+      "size": {
+        "0": 287.20001220703125,
+        "1": 106
+      },
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "regional_prompts1",
+          "type": "REGIONAL_PROMPTS",
+          "link": 48
+        },
+        {
+          "name": "regional_prompts2",
+          "type": "REGIONAL_PROMPTS",
+          "link": 49
+        },
+        {
+          "name": "regional_prompts3",
+          "type": "REGIONAL_PROMPTS",
+          "link": 50
+        },
+        {
+          "name": "regional_prompts4",
+          "type": "REGIONAL_PROMPTS",
+          "link": 64
+        },
+        {
+          "name": "regional_prompts5",
+          "type": "REGIONAL_PROMPTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            27
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CombineRegionalPrompts"
+      }
+    },
+    {
+      "id": 12,
+      "type": "RegionalPrompt",
+      "pos": [
+        2030,
+        1010
+      ],
+      "size": {
+        "0": 418.1999816894531,
+        "1": 46
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 15
+        },
+        {
+          "name": "advanced_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            48
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RegionalPrompt"
+      }
+    },
+    {
+      "id": 14,
+      "type": "EmptyLatentImage",
+      "pos": [
+        2740,
+        1500
+      ],
+      "size": {
+        "0": 350,
+        "1": 110
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            19
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        768,
+        1104,
+        1
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CLIPTextEncode",
+      "pos": [
+        830,
+        4260
+      ],
+      "size": [
+        338.8743232727047,
+        117.87075195312445
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            34
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1girl yellow pencil skirt, upper knee, (cafe:1.1)"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1600,
+        4180
+      ],
+      "size": {
+        "0": 287.9136962890625,
+        "1": 106.45689392089844
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            32
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "dpm_fast",
+        "sgm_uniform"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1563,
+        1030
+      ],
+      "size": {
+        "0": 355.20001220703125,
+        "1": 106
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            17
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "dpm_fast",
+        "sgm_uniform"
+      ]
+    },
+    {
       "id": 2,
       "type": "RegionalSampler",
       "pos": [
-        2050,
-        200
+        3260,
+        1820
       ],
-      "size": [
-        315,
-        406
-      ],
+      "size": {
+        "0": 323.1692810058594,
+        "1": 597.25439453125
+      },
       "flags": {},
-      "order": 15,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -497,67 +666,389 @@
         "Node name for S&R": "RegionalSampler"
       },
       "widgets_values": [
-        212608453650633,
+        1019854126263754,
         "randomize",
-        20,
+        30,
         1,
-        10
+        5
       ]
     },
     {
-      "id": 12,
-      "type": "RegionalPrompt",
+      "id": 5,
+      "type": "## make-basic_pipe [2c8c61]",
       "pos": [
-        1361,
-        497
+        -2547,
+        2236
       ],
       "size": {
-        "0": 418.1999816894531,
-        "1": 46
+        "0": 400,
+        "1": 200
       },
       "flags": {},
-      "order": 12,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
-          "name": "mask",
-          "type": "MASK",
-          "link": 15
-        },
-        {
-          "name": "advanced_sampler",
-          "type": "KSAMPLER_ADVANCED",
-          "link": 17
+          "name": "vae_opt",
+          "type": "VAE",
+          "link": null
         }
       ],
       "outputs": [
         {
-          "name": "REGIONAL_PROMPTS",
-          "type": "REGIONAL_PROMPTS",
+          "name": "BASIC_PIPE",
+          "type": "BASIC_PIPE",
           "links": [
-            25
+            1,
+            3,
+            62
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "title": "## make-basic_pipe",
+      "properties": {
+        "Node name for S&R": "## make-basic_pipe [2c8c61]"
+      },
+      "widgets_values": [
+        "SD1.5/epicrealism_naturalSinRC1VAE.safetensors",
+        "a photograph of a girl is standing in the cafe terrace, looking viewer, upper knee",
+        "big head, closeup"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        -260,
+        778
+      ],
+      "size": {
+        "0": 915.1032104492188,
+        "1": 860.6505126953125
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            15
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clipspace/clipspace-mask-1641138.7000000002.png [input]",
+        "image"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1230,
+        2550
+      ],
+      "size": {
+        "0": 292.0009765625,
+        "1": 115.41679382324219
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            51
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "RegionalPrompt"
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1girl, green tie, upper knee, (cafe:1.1)"
+      ]
+    },
+    {
+      "id": 33,
+      "type": "KSamplerAdvancedProvider",
+      "pos": [
+        1890,
+        2470
+      ],
+      "size": {
+        "0": 305.4067687988281,
+        "1": 106
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "KSAMPLER_ADVANCED",
+          "type": "KSAMPLER_ADVANCED",
+          "links": [
+            52
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerAdvancedProvider"
+      },
+      "widgets_values": [
+        8,
+        "dpm_fast",
+        "sgm_uniform"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "EditBasicPipe",
+      "pos": [
+        1610,
+        2480
+      ],
+      "size": {
+        "0": 178,
+        "1": 126
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 58
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 51
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": [
+            53
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EditBasicPipe"
+      }
+    },
+    {
+      "id": 6,
+      "type": "FromBasicPipe",
+      "pos": [
+        -1813,
+        2226
+      ],
+      "size": {
+        "0": 241.79998779296875,
+        "1": 106
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            37
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FromBasicPipe"
+      }
+    },
+    {
+      "id": 34,
+      "type": "FromBasicPipe_v2",
+      "pos": [
+        699,
+        2163
+      ],
+      "size": {
+        "0": 267,
+        "1": 126
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": [
+            57,
+            58,
+            59,
+            60
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            55,
+            56,
+            61
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            63
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FromBasicPipe_v2"
       }
     },
     {
       "id": 20,
       "type": "RegionalPrompt",
       "pos": [
-        1520,
-        940
+        2230,
+        1720
       ],
       "size": {
-        "0": 418.1999816894531,
-        "1": 46
+        "0": 278.79998779296875,
+        "1": 57.09715270996094
       },
       "flags": {},
-      "order": 13,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -576,7 +1067,7 @@
           "name": "REGIONAL_PROMPTS",
           "type": "REGIONAL_PROMPTS",
           "links": [
-            26
+            49
           ],
           "shape": 3,
           "slot_index": 0
@@ -587,29 +1078,68 @@
       }
     },
     {
-      "id": 22,
-      "type": "CombineRegionalPrompts",
+      "id": 18,
+      "type": "CLIPTextEncode",
       "pos": [
-        1851.5471568957514,
-        660.6109041998288
+        1180,
+        1820
       ],
       "size": {
-        "0": 430.8000183105469,
-        "1": 46
+        "0": 292.0009765625,
+        "1": 115.41679382324219
       },
       "flags": {},
-      "order": 14,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
-          "name": "regional_prompts1",
-          "type": "REGIONAL_PROMPTS",
-          "link": 25
+          "name": "clip",
+          "type": "CLIP",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            21
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "photorealistic:1.4, 1girl pink jacket, upper knee, (cafe:1.1)"
+      ]
+    },
+    {
+      "id": 32,
+      "type": "RegionalPrompt",
+      "pos": [
+        2280,
+        2450
+      ],
+      "size": {
+        "0": 278.79998779296875,
+        "1": 57.09715270996094
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 65
         },
         {
-          "name": "regional_prompts2",
-          "type": "REGIONAL_PROMPTS",
-          "link": 26
+          "name": "advanced_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 52
         }
       ],
       "outputs": [
@@ -617,29 +1147,70 @@
           "name": "REGIONAL_PROMPTS",
           "type": "REGIONAL_PROMPTS",
           "links": [
-            27
+            64
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "CombineRegionalPrompts"
+        "Node name for S&R": "RegionalPrompt"
       }
     },
     {
-      "id": 15,
+      "id": 24,
+      "type": "RegionalPrompt",
+      "pos": [
+        2040,
+        4160
+      ],
+      "size": {
+        "0": 278.79998779296875,
+        "1": 47.54190444946289
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 31
+        },
+        {
+          "name": "advanced_sampler",
+          "type": "KSAMPLER_ADVANCED",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "REGIONAL_PROMPTS",
+          "type": "REGIONAL_PROMPTS",
+          "links": [
+            50
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RegionalPrompt"
+      }
+    },
+    {
+      "id": 35,
       "type": "LoadImage",
       "pos": [
-        -278,
-        1721
+        -274,
+        2727
       ],
-      "size": [
-        1069.0971236588748,
-        886.818909225281
-      ],
+      "size": {
+        "0": 900,
+        "1": 900
+      },
       "flags": {},
-      "order": 3,
+      "order": 5,
       "mode": 0,
       "outputs": [
         {
@@ -652,7 +1223,7 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            28
+            65
           ],
           "shape": 3,
           "slot_index": 1
@@ -662,64 +1233,23 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "clipspace/clipspace-mask-1683237.5.png [input]",
+        "clipspace/clipspace-mask-1594007.5999999996.png [input]",
         "image"
-      ]
-    },
-    {
-      "id": 13,
-      "type": "KSamplerAdvancedProvider",
-      "pos": [
-        1209,
-        225
-      ],
-      "size": {
-        "0": 355.20001220703125,
-        "1": 106
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "basic_pipe",
-          "type": "BASIC_PIPE",
-          "link": 16
-        }
-      ],
-      "outputs": [
-        {
-          "name": "KSAMPLER_ADVANCED",
-          "type": "KSAMPLER_ADVANCED",
-          "links": [
-            17
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSamplerAdvancedProvider"
-      },
-      "widgets_values": [
-        8,
-        "euler",
-        "normal"
       ]
     },
     {
       "id": 21,
       "type": "KSamplerAdvancedProvider",
       "pos": [
-        1360,
-        670
+        1840,
+        1740
       ],
       "size": {
-        "0": 355.20001220703125,
+        "0": 305.4067687988281,
         "1": 106
       },
       "flags": {},
-      "order": 11,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -744,23 +1274,23 @@
       },
       "widgets_values": [
         8,
-        "euler",
-        "normal"
+        "dpm_fast",
+        "sgm_uniform"
       ]
     },
     {
       "id": 4,
       "type": "KSamplerAdvancedProvider",
       "pos": [
-        1289,
-        -267
+        2742,
+        1681
       ],
       "size": {
         "0": 355.20001220703125,
         "1": 106
       },
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -784,9 +1314,9 @@
         "Node name for S&R": "KSamplerAdvancedProvider"
       },
       "widgets_values": [
-        8,
-        "euler",
-        "normal"
+        5,
+        "dpm_fast",
+        "simple"
       ]
     }
   ],
@@ -816,14 +1346,6 @@
       "LATENT"
     ],
     [
-      8,
-      6,
-      2,
-      7,
-      1,
-      "VAE"
-    ],
-    [
       9,
       7,
       0,
@@ -838,22 +1360,6 @@
       2,
       1,
       "KSAMPLER_ADVANCED"
-    ],
-    [
-      11,
-      5,
-      0,
-      9,
-      0,
-      "BASIC_PIPE"
-    ],
-    [
-      12,
-      6,
-      1,
-      10,
-      0,
-      "CLIP"
     ],
     [
       13,
@@ -896,28 +1402,12 @@
       "LATENT"
     ],
     [
-      20,
-      6,
-      1,
-      18,
-      0,
-      "CLIP"
-    ],
-    [
       21,
       18,
       0,
       17,
       4,
       "CONDITIONING"
-    ],
-    [
-      22,
-      5,
-      0,
-      17,
-      0,
-      "BASIC_PIPE"
     ],
     [
       23,
@@ -936,22 +1426,6 @@
       "BASIC_PIPE"
     ],
     [
-      25,
-      12,
-      0,
-      22,
-      0,
-      "REGIONAL_PROMPTS"
-    ],
-    [
-      26,
-      20,
-      0,
-      22,
-      1,
-      "REGIONAL_PROMPTS"
-    ],
-    [
       27,
       22,
       0,
@@ -964,6 +1438,182 @@
       15,
       1,
       20,
+      0,
+      "MASK"
+    ],
+    [
+      31,
+      23,
+      1,
+      24,
+      0,
+      "MASK"
+    ],
+    [
+      32,
+      25,
+      0,
+      24,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      33,
+      26,
+      0,
+      25,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      34,
+      27,
+      0,
+      26,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      37,
+      6,
+      1,
+      27,
+      0,
+      "CLIP"
+    ],
+    [
+      48,
+      12,
+      0,
+      22,
+      0,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      49,
+      20,
+      0,
+      22,
+      1,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      50,
+      24,
+      0,
+      22,
+      2,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      51,
+      31,
+      0,
+      30,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      52,
+      33,
+      0,
+      32,
+      1,
+      "KSAMPLER_ADVANCED"
+    ],
+    [
+      53,
+      30,
+      0,
+      33,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      55,
+      34,
+      2,
+      18,
+      0,
+      "CLIP"
+    ],
+    [
+      56,
+      34,
+      2,
+      31,
+      0,
+      "CLIP"
+    ],
+    [
+      57,
+      34,
+      0,
+      17,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      58,
+      34,
+      0,
+      30,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      59,
+      34,
+      0,
+      26,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      60,
+      34,
+      0,
+      9,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      61,
+      34,
+      2,
+      10,
+      0,
+      "CLIP"
+    ],
+    [
+      62,
+      5,
+      0,
+      34,
+      0,
+      "BASIC_PIPE"
+    ],
+    [
+      63,
+      34,
+      3,
+      7,
+      1,
+      "VAE"
+    ],
+    [
+      64,
+      32,
+      0,
+      22,
+      3,
+      "REGIONAL_PROMPTS"
+    ],
+    [
+      65,
+      35,
+      1,
+      32,
       0,
       "MASK"
     ]

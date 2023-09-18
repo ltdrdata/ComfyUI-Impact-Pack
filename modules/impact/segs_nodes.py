@@ -3,7 +3,6 @@ import sys
 
 import folder_paths
 import comfy
-import nodes
 from nodes import MAX_RESOLUTION
 
 from impact.utils import *
@@ -764,3 +763,59 @@ class MaskToSEGS:
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
         return (result, )
+
+
+class ControlNetApplySEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "segs": ("SEGS",),
+                    "control_net": ("CONTROL_NET",),
+                    "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
+                    },
+                "optional": {
+                    "segs_preprocessor": ("SEGS_PREPROCESSOR",),
+                    }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, control_net, strength, segs_preprocessor=None):
+        new_segs = []
+
+        for seg in segs[1]:
+            control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor)
+            new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
+            new_segs.append(new_seg)
+
+        return ((segs[0], new_segs), )
+
+
+class SEGSSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "select": ("INT", {"default": 1, "min": 1, "max": 99999, "step": 1}),
+                    "segs1": ("SEGS",),
+                    },
+                }
+
+    RETURN_TYPES = ("SEGS", )
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, *args, **kwargs):
+        input_name = f"segs{int(kwargs['select'])}"
+
+        if input_name in kwargs:
+            return (kwargs[input_name],)
+        else:
+            print(f"SEGSSwitch: invalid select index ('segs1' is selected)")
+            return (kwargs['segs1'],)
