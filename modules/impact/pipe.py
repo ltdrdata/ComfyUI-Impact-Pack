@@ -309,7 +309,7 @@ class EditDetailerPipe:
                 "negative": ("CONDITIONING",),
                 "bbox_detector": ("BBOX_DETECTOR",),
                 "sam_model": ("SAM_MODEL",),
-                "segm_detector_opt": ("SEGM_DETECTOR",),
+                "segm_detector": ("SEGM_DETECTOR",),
                 "detailer_hook": ("DETAILER_HOOK",),
             },
         }
@@ -409,7 +409,7 @@ class EditDetailerPipeSDXL(EditDetailerPipe):
                 "refiner_negative": ("CONDITIONING",),
                 "bbox_detector": ("BBOX_DETECTOR",),
                 "sam_model": ("SAM_MODEL",),
-                "segm_detector_opt": ("SEGM_DETECTOR",),
+                "segm_detector": ("SEGM_DETECTOR",),
                 "detailer_hook": ("DETAILER_HOOK",),
             },
         }
