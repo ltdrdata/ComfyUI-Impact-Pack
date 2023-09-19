@@ -639,16 +639,28 @@ app.registerExtension({
 								forward_type: app.nodeOutputs[id]['aux'][1][0]['type']
 							};
 
-						app.nodeOutputs[id].images = [{
-								...node._images[0],
-								...item
-							}];
+						if(node._images) {
+							app.nodeOutputs[id].images = [{
+									...node._images[0],
+									...item
+								}];
 
-						node.widgets[0].value =
-							{
-								...node._images[0],
-								...item
-							};
+							node.widgets[0].value =
+								{
+									...node._images[0],
+									...item
+								};
+						}
+						else {
+							app.nodeOutputs[id].images = [{
+									...item
+								}];
+
+							node.widgets[0].value =
+								{
+									...item
+								};
+						}
 
 						if(need_invalidate) {
 							Promise.all(
