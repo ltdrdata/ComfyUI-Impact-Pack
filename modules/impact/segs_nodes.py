@@ -519,7 +519,7 @@ class From_SEG_ELT:
 
     def doit(self, seg_elt):
         cropped_image = torch.tensor(seg_elt.cropped_image) if seg_elt.cropped_image is not None else None
-        return (seg_elt, cropped_image, torch.tensor(seg_elt.cropped_mask), seg_elt.confidence, seg_elt.crop_region, seg_elt.bbox, seg_elt.label, seg_elt.control_net_wrapper)
+        return (seg_elt, cropped_image, torch.tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label,)
 
 
 class Edit_SEG_ELT:
