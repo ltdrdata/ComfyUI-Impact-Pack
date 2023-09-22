@@ -1992,7 +1992,6 @@ class StringSelector:
         }}
 
     RETURN_TYPES = ("STRING",)
-    OUTPUT_IS_LIST = (True,)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
