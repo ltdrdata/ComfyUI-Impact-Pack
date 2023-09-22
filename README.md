@@ -146,8 +146,14 @@ This takes latent as input and outputs latent as the result.
   * If the `Inspire Pack` is installed, you can use **Lora Block Weight** in the form of `LBW=lbw spec;`
   * `<lora:chunli:1.0:1.0:LBW=B11:0,0,0,0,0,0,0,0,0,0,A,0,0,0,0,0,0;A=0.;>`, `<lora:chunli:1.0:1.0:LBW=0,0,0,0,0,0,0,0,0,0,A,B,0,0,0,0,0;A=0.5;B=0.2;>`, `<lora:chunli:1.0:1.0:LBW=SD-MIDD;>` 
 
-* RegionalSampler, CombineRegionalPrompts, RegionalPrompt - experimental feature
-- multiple region version of TwoAdvancedSamplersForMask 
+* Regional Sampling - These nodes offer the capability to divide regions and perform partial sampling using a mask. Unlike TwoSamplersForMask, sampling for each region is applied during each step.
+  * RegionalPrompt - This node combines a **mask** for specifying regions and the **sampler** to apply to each region to create `REGIONAL_PROMPTS`.
+  * CombineRegionalPrompts - Combine multiple `REGIONAL_PROMPTS` to create a single `REGIONAL_PROMPTS`.
+  * RegionalSampler - This node performs sampling using a base sampler and regional prompts. Sampling by the base sampler is executed at each step, while sampling for each region is performed through the sampler bound to each region.
+    * overlap_factor - Specifies the amount of overlap for each region to blend well with the area outside the mask.
+    * latent_restore - When sampling each region, restore the areas outside the mask to the base latent, preventing additional noise from being introduced outside the mask during region sampling.
+  * RegionalSamplerAdvanced - This is the Advanced version of the RegionalSampler. You can control it using `step` instead of `denoise`.
+  * NOTE: The `sde` sampler and `uni_pc` sampler introduce additional noise during each step of the sampling process. To mitigate this, when sampling each region, the `uni_pc` sampler applies additional `dpmpp_fast`, and the sde sampler applies the `dpmpp_2m` sampler as an additional measure.
 
 * KSampler (pipe), KSampler (advanced/pipe)
 

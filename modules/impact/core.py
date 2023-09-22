@@ -53,9 +53,9 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
         print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
         temp_latent = \
-        nodes.KSamplerAdvanced().sample(model, "enable", seed, advanced_steps, cfg, sampler_name, scheduler,
-                                        positive, negative, latent_image, start_at_step, end_at_step,
-                                        "enable")[0]
+            nodes.KSamplerAdvanced().sample(model, "enable", seed, advanced_steps, cfg, sampler_name, scheduler,
+                                            positive, negative, latent_image, start_at_step, end_at_step,
+                                            "enable")[0]
 
         if 'noise_mask' in latent_image:
             # noise_latent = \
@@ -65,14 +65,14 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
             temp_latent = \
-            latent_compositor.composite(latent_image, temp_latent, 0, 0, False, latent_image['noise_mask'])[0]
+                latent_compositor.composite(latent_image, temp_latent, 0, 0, False, latent_image['noise_mask'])[0]
 
         print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
         refined_latent = \
-        nodes.KSamplerAdvanced().sample(refiner_model, "disable", seed, advanced_steps, cfg, sampler_name, scheduler,
-                                        refiner_positive, refiner_negative, temp_latent, end_at_step,
-                                        advanced_steps + 1,
-                                        "disable")[0]
+            nodes.KSamplerAdvanced().sample(refiner_model, "disable", seed, advanced_steps, cfg, sampler_name, scheduler,
+                                            refiner_positive, refiner_negative, temp_latent, end_at_step,
+                                            advanced_steps + 1,
+                                            "disable")[0]
 
     return refined_latent
 
@@ -251,9 +251,6 @@ def composite_to(dest_latent, crop_region, src_latent):
 
     # composite to original latent
     lc = nodes.LatentComposite()
-
-    # 현재 mask 를 고려한 composite 가 없음... 이거 처리 필요.
-
     orig_image = lc.composite(dest_latent, src_latent, x1, y1)
 
     return orig_image[0]
@@ -925,7 +922,7 @@ class KSamplerAdvancedWrapper:
         self.params = model, cfg, sampler_name, scheduler, positive, negative
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step,
-                        return_with_leftover_noise, hook=None):
+                        return_with_leftover_noise, hook=None, recover_special_sampler=False):
         model, cfg, sampler_name, scheduler, positive, negative = self.params
 
         if hook is not None:
@@ -934,9 +931,33 @@ class KSamplerAdvancedWrapper:
                                           positive, negative, latent_image, start_at_step, end_at_step,
                                           return_with_leftover_noise)
 
-        return nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                               positive, negative, latent_image, start_at_step, end_at_step,
-                                               return_with_leftover_noise)[0]
+        if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
+            base_image = latent_image.copy()
+        else:
+            base_image = None
+
+        latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                                       positive, negative, latent_image, start_at_step, end_at_step,
+                                                       return_with_leftover_noise)[0]
+
+        if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
+            compensate = 0 if sampler_name in ['uni_pc', 'uni_pc_bh2'] else 2
+            sampler_name = 'dpmpp_fast' if sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu'] else 'dpmpp_2m'
+            print(f"recover latent!!: {sampler_name} ->")
+            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
+
+            noise_mask = latent_image['noise_mask']
+
+            if len(noise_mask.shape) == 4:
+                noise_mask = noise_mask.squeeze(0).squeeze(0)
+
+            latent_image = \
+                latent_compositor.composite(base_image, latent_image, 0, 0, False, noise_mask)[0]
+            latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                                           positive, negative, latent_image, start_at_step-compensate, end_at_step,
+                                                           return_with_leftover_noise)[0]
+
+        return latent_image
 
 
 class PixelKSampleHook:

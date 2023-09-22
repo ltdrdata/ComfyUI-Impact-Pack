@@ -225,6 +225,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactMakeImageList": MakeImageList,
 
     "RegionalSampler": RegionalSampler,
+    "RegionalSamplerAdvanced": RegionalSamplerAdvanced,
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
 

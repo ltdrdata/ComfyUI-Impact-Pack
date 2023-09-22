@@ -1,3 +1,5 @@
+import time
+
 import comfy
 import math
 import impact.core as core
@@ -165,10 +167,10 @@ class TwoAdvancedSamplersForMask:
             return_with_leftover_noise = "enable" if i+1 != adv_steps else "disable"
 
             new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable")
+            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
 
             new_latent_image['noise_mask'] = mask_erosion
-            new_latent_image = mask_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, i, i + 1, return_with_leftover_noise)
+            new_latent_image = mask_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, i, i + 1, return_with_leftover_noise, recover_special_sampler=True)
 
         del new_latent_image['noise_mask']
 
@@ -225,7 +227,8 @@ class RegionalSampler:
                      "samples": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "regional_prompts": ("REGIONAL_PROMPTS", ),
-                     "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000})
+                     "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000}),
+                     "latent_restore": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"})
                      },
                  "hidden": {"unique_id": "UNIQUE_ID"},
                 }
@@ -253,7 +256,11 @@ class RegionalSampler:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, unique_id):
+    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, latent_restore, unique_id=None):
+        if latent_restore:
+            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
+        else:
+            latent_compositor = None
 
         masks = [regional_prompt.mask.numpy() for regional_prompt in regional_prompts]
         masks = [np.ceil(mask).astype(np.int32) for mask in masks]
@@ -268,30 +275,158 @@ class RegionalSampler:
         total = steps*region_len
 
         new_latent_image = samples.copy()
+        base_latent_image = None
 
         for i in range(start_at_step, adv_steps):
             core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", (i*region_len)/total)
 
             add_noise = "enable" if i == start_at_step else "disable"
-            return_with_leftover_noise = "enable" if i+1 != adv_steps else "disable"
 
             new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable")
+            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
+
+            if latent_restore:
+                del new_latent_image['noise_mask']
+                base_latent_image = new_latent_image.copy()
 
             j = 1
             for regional_prompt in regional_prompts:
+                if latent_restore:
+                    new_latent_image = base_latent_image.copy()
+
                 core.update_node_status(unique_id, f"{i}/{steps} steps  |  {j}/{region_len}", (i*region_len + j)/total)
-                new_latent_image['noise_mask'] = regional_prompt.get_mask_erosion(overlap_factor)
+
+                region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
+
+                new_latent_image['noise_mask'] = region_mask
                 new_latent_image = regional_prompt.sampler.sample_advanced("disable", seed, adv_steps, new_latent_image,
-                                                                           i, i + 1, return_with_leftover_noise)
+                                                                           i, i + 1, "enable", recover_special_sampler=True)
+
+                if latent_restore:
+                    del new_latent_image['noise_mask']
+                    base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
+                    new_latent_image = base_latent_image
+
                 j += 1
+
+        # finalize
+        core.update_node_status(unique_id, f"finalize")
+        if base_latent_image is not None:
+            new_latent_image = base_latent_image
+        new_latent_image['noise_mask'] = inv_mask
+        new_latent_image = base_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, adv_steps, adv_steps+1, "disable", recover_special_sampler=False)
 
         core.update_node_status(unique_id, f"{steps}/{steps} steps", total)
         core.update_node_status(unique_id, "", None)
 
-        del new_latent_image['noise_mask']
+        if latent_restore:
+            new_latent_image = base_latent_image
+
+        if 'noise_mask' in new_latent_image:
+            del new_latent_image['noise_mask']
 
         return (new_latent_image, )
+
+
+class RegionalSamplerAdvanced:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "add_noise": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+                     "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
+                     "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000}),
+                     "latent_restore": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "latent_image": ("LATENT", ),
+                     "base_sampler": ("KSAMPLER_ADVANCED", ),
+                     "regional_prompts": ("REGIONAL_PROMPTS", ),
+                     },
+                 "hidden": {"unique_id": "UNIQUE_ID"},
+                }
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Regional"
+
+    def doit(self, add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, latent_restore,
+             return_with_leftover_noise, latent_image, base_sampler, regional_prompts, unique_id):
+        if latent_restore:
+            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
+        else:
+            latent_compositor = None
+
+        masks = [regional_prompt.mask.numpy() for regional_prompt in regional_prompts]
+        masks = [np.ceil(mask).astype(np.int32) for mask in masks]
+        combined_mask = torch.from_numpy(np.bitwise_or.reduce(masks))
+
+        inv_mask = torch.where(combined_mask == 0, torch.tensor(1.0), torch.tensor(0.0))
+
+        region_len = len(regional_prompts)
+        end_at_step = min(steps, end_at_step)
+        total = (end_at_step - start_at_step) * region_len
+
+        new_latent_image = latent_image.copy()
+        base_latent_image = None
+        region_masks = {}
+
+        for i in range(start_at_step, end_at_step):
+            core.update_node_status(unique_id, f"{start_at_step+i}/{end_at_step} steps  |         ", ((i-start_at_step)*region_len)/total)
+
+            cur_add_noise = "enable" if i == start_at_step and add_noise else "disable"
+
+            new_latent_image['noise_mask'] = inv_mask
+            new_latent_image = base_sampler.sample_advanced(cur_add_noise, noise_seed, steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
+
+            if latent_restore:
+                del new_latent_image['noise_mask']
+                base_latent_image = new_latent_image.copy()
+
+            j = 1
+            for regional_prompt in regional_prompts:
+                if latent_restore:
+                    new_latent_image = base_latent_image.copy()
+
+                core.update_node_status(unique_id, f"{start_at_step+i}/{end_at_step} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
+
+                if j not in region_masks:
+                    region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
+                    region_masks[j] = region_mask
+                else:
+                    region_mask = region_masks[j]
+
+                new_latent_image['noise_mask'] = region_mask
+                new_latent_image = regional_prompt.sampler.sample_advanced("disable", noise_seed, steps, new_latent_image,
+                                                                           i, i + 1, "enable", recover_special_sampler=True)
+
+                if latent_restore:
+                    del new_latent_image['noise_mask']
+                    base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
+                    new_latent_image = base_latent_image
+
+                j += 1
+
+        # finalize
+        core.update_node_status(unique_id, f"finalize")
+        if base_latent_image is not None:
+            new_latent_image = base_latent_image
+        new_latent_image['noise_mask'] = inv_mask
+        new_latent_image = base_sampler.sample_advanced("disable", noise_seed, steps, new_latent_image, end_at_step, end_at_step+1, "disable", recover_special_sampler=False)
+
+        core.update_node_status(unique_id, f"{end_at_step}/{end_at_step} steps", total)
+        core.update_node_status(unique_id, "", None)
+
+        if latent_restore:
+            new_latent_image = base_latent_image
+
+        if 'noise_mask' in new_latent_image:
+            del new_latent_image['noise_mask']
+
+        return (new_latent_image, )
+
 
 class KSamplerBasicPipe:
     @classmethod
@@ -316,6 +451,46 @@ class KSamplerBasicPipe:
     def sample(self, basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
         latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
+        return (basic_pipe, latent, vae)
+
+
+class KSamplerAdvancedBasicPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"basic_pipe": ("BASIC_PIPE",),
+                     "add_noise": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "noise_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "latent_image": ("LATENT", ),
+                     "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+                     "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
+                     "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     }
+                }
+
+    RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
+    FUNCTION = "sample"
+
+    CATEGORY = "sampling"
+
+    def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
+        model, clip, vae, positive, negative = basic_pipe
+
+        if add_noise:
+            add_noise = "enabled"
+        else:
+            add_noise = "disabled"
+
+        if return_with_leftover_noise:
+            return_with_leftover_noise = "enabled"
+        else:
+            return_with_leftover_noise = "disabled"
+
+        latent = nodes.KSamplerAdvanced().sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise)[0]
         return (basic_pipe, latent, vae)
 
 

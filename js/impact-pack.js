@@ -187,7 +187,8 @@ app.registerExtension({
 	},
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
-		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale" || nodeData.name == "RegionalSampler") {
+		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale"
+		    || nodeData.name == "RegionalSampler"|| nodeData.name == "RegionalSamplerAdvanced") {
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
 
