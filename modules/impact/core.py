@@ -936,9 +936,14 @@ class KSamplerAdvancedWrapper:
         else:
             base_image = None
 
-        latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                                       positive, negative, latent_image, start_at_step, end_at_step,
-                                                       return_with_leftover_noise)[0]
+        try:
+            latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                                           positive, negative, latent_image, start_at_step, end_at_step,
+                                                           return_with_leftover_noise)[0]
+        except ValueError as e:
+            if str(e) == 'sigma_min and sigma_max must not be 0':
+                print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
+                return latent_image
 
         if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
             compensate = 0 if sampler_name in ['uni_pc', 'uni_pc_bh2'] else 2
@@ -952,9 +957,14 @@ class KSamplerAdvancedWrapper:
 
             latent_image = \
                 latent_compositor.composite(base_image, latent_image, 0, 0, False, noise_mask)[0]
-            latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                                           positive, negative, latent_image, start_at_step-compensate, end_at_step,
-                                                           return_with_leftover_noise)[0]
+
+            try:
+                latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
+                                                               positive, negative, latent_image, start_at_step-compensate, end_at_step,
+                                                               return_with_leftover_noise)[0]
+            except ValueError as e:
+                if str(e) == 'sigma_min and sigma_max must not be 0':
+                    print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
 
         return latent_image
 
