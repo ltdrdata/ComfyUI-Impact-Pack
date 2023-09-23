@@ -943,7 +943,6 @@ class KSamplerAdvancedWrapper:
         if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
             compensate = 0 if sampler_name in ['uni_pc', 'uni_pc_bh2'] else 2
             sampler_name = 'dpmpp_fast' if sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu'] else 'dpmpp_2m'
-            print(f"recover latent!!: {sampler_name} ->")
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
 
             noise_mask = latent_image['noise_mask']

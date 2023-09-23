@@ -228,7 +228,7 @@ class RegionalSampler:
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "regional_prompts": ("REGIONAL_PROMPTS", ),
                      "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000}),
-                     "latent_restore": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"})
+                     "restore_latent": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"})
                      },
                  "hidden": {"unique_id": "UNIQUE_ID"},
                 }
@@ -256,8 +256,8 @@ class RegionalSampler:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, latent_restore, unique_id=None):
-        if latent_restore:
+    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent, unique_id=None):
+        if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
         else:
             latent_compositor = None
@@ -285,13 +285,13 @@ class RegionalSampler:
             new_latent_image['noise_mask'] = inv_mask
             new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
 
-            if latent_restore:
+            if restore_latent:
                 del new_latent_image['noise_mask']
                 base_latent_image = new_latent_image.copy()
 
             j = 1
             for regional_prompt in regional_prompts:
-                if latent_restore:
+                if restore_latent:
                     new_latent_image = base_latent_image.copy()
 
                 core.update_node_status(unique_id, f"{i}/{steps} steps  |  {j}/{region_len}", (i*region_len + j)/total)
@@ -302,7 +302,7 @@ class RegionalSampler:
                 new_latent_image = regional_prompt.sampler.sample_advanced("disable", seed, adv_steps, new_latent_image,
                                                                            i, i + 1, "enable", recover_special_sampler=True)
 
-                if latent_restore:
+                if restore_latent:
                     del new_latent_image['noise_mask']
                     base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
                     new_latent_image = base_latent_image
@@ -319,7 +319,7 @@ class RegionalSampler:
         core.update_node_status(unique_id, f"{steps}/{steps} steps", total)
         core.update_node_status(unique_id, "", None)
 
-        if latent_restore:
+        if restore_latent:
             new_latent_image = base_latent_image
 
         if 'noise_mask' in new_latent_image:
@@ -338,7 +338,7 @@ class RegionalSamplerAdvanced:
                      "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
                      "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
                      "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000}),
-                     "latent_restore": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                     "restore_latent": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "latent_image": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
@@ -352,9 +352,9 @@ class RegionalSamplerAdvanced:
 
     CATEGORY = "ImpactPack/Regional"
 
-    def doit(self, add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, latent_restore,
+    def doit(self, add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, restore_latent,
              return_with_leftover_noise, latent_image, base_sampler, regional_prompts, unique_id):
-        if latent_restore:
+        if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
         else:
             latent_compositor = None
@@ -381,13 +381,13 @@ class RegionalSamplerAdvanced:
             new_latent_image['noise_mask'] = inv_mask
             new_latent_image = base_sampler.sample_advanced(cur_add_noise, noise_seed, steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
 
-            if latent_restore:
+            if restore_latent:
                 del new_latent_image['noise_mask']
                 base_latent_image = new_latent_image.copy()
 
             j = 1
             for regional_prompt in regional_prompts:
-                if latent_restore:
+                if restore_latent:
                     new_latent_image = base_latent_image.copy()
 
                 core.update_node_status(unique_id, f"{start_at_step+i}/{end_at_step} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
@@ -402,7 +402,7 @@ class RegionalSamplerAdvanced:
                 new_latent_image = regional_prompt.sampler.sample_advanced("disable", noise_seed, steps, new_latent_image,
                                                                            i, i + 1, "enable", recover_special_sampler=True)
 
-                if latent_restore:
+                if restore_latent:
                     del new_latent_image['noise_mask']
                     base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
                     new_latent_image = base_latent_image
@@ -419,7 +419,7 @@ class RegionalSamplerAdvanced:
         core.update_node_status(unique_id, f"{end_at_step}/{end_at_step} steps", total)
         core.update_node_status(unique_id, "", None)
 
-        if latent_restore:
+        if restore_latent:
             new_latent_image = base_latent_image
 
         if 'noise_mask' in new_latent_image:

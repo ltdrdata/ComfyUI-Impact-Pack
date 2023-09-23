@@ -151,7 +151,7 @@ This takes latent as input and outputs latent as the result.
   * CombineRegionalPrompts - Combine multiple `REGIONAL_PROMPTS` to create a single `REGIONAL_PROMPTS`.
   * RegionalSampler - This node performs sampling using a base sampler and regional prompts. Sampling by the base sampler is executed at each step, while sampling for each region is performed through the sampler bound to each region.
     * overlap_factor - Specifies the amount of overlap for each region to blend well with the area outside the mask.
-    * latent_restore - When sampling each region, restore the areas outside the mask to the base latent, preventing additional noise from being introduced outside the mask during region sampling.
+    * restore_latent - When sampling each region, restore the areas outside the mask to the base latent, preventing additional noise from being introduced outside the mask during region sampling.
   * RegionalSamplerAdvanced - This is the Advanced version of the RegionalSampler. You can control it using `step` instead of `denoise`.
   * NOTE: The `sde` sampler and `uni_pc` sampler introduce additional noise during each step of the sampling process. To mitigate this, when sampling each region, the `uni_pc` sampler applies additional `dpmpp_fast`, and the sde sampler applies the `dpmpp_2m` sampler as an additional measure.
 
