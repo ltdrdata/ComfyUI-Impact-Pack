@@ -278,7 +278,7 @@ class RegionalSampler:
         base_latent_image = None
 
         for i in range(start_at_step, adv_steps):
-            core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", (i*region_len)/total)
+            core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             add_noise = "enable" if i == start_at_step else "disable"
 
@@ -294,7 +294,7 @@ class RegionalSampler:
                 if restore_latent:
                     new_latent_image = base_latent_image.copy()
 
-                core.update_node_status(unique_id, f"{i}/{steps} steps  |  {j}/{region_len}", (i*region_len + j)/total)
+                core.update_node_status(unique_id, f"{i}/{steps} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
 
                 region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
 
