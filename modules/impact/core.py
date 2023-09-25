@@ -666,8 +666,8 @@ class ONNXDetector:
                         cropped_mask[y1 - crop_y1:y2 - crop_y1, x1 - crop_x1:x2 - crop_x1] = 1
                         cropped_mask = dilate_mask(cropped_mask, dilation)
 
-                        # make items
-                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, None, None)
+                        # make items. just convert the integer label to a string
+                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, str(labels[i]), None)
                         result.append(item)
 
             shape = h, w
