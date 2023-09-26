@@ -285,11 +285,14 @@ app.registerExtension({
             }
         }
 
-        if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'CombineRegionalPrompts' || nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
+        if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
+            nodeData.name === 'CombineRegionalPrompts' || nodeData.name === 'ImpactSwitch' ||
+            nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
 
             switch(nodeData.name) {
             case 'ImpactMakeImageList':
+            case 'ImpactMakeImageBatch':
                 input_name = "image";
                 break;
 

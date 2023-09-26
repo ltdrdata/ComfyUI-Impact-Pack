@@ -223,6 +223,7 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactImageBatchToImageList": ImageBatchToImageList,
     "ImpactMakeImageList": MakeImageList,
+    "ImpactMakeImageBatch": MakeImageBatch,
 
     "RegionalSampler": RegionalSampler,
     "RegionalSamplerAdvanced": RegionalSamplerAdvanced,
@@ -327,6 +328,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MaskListToMaskBatch": "Mask List to Masks",
     "ImpactImageBatchToImageList": "Image batch to Image List",
     "ImpactMakeImageList": "Make Image List",
+    "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
 
     "RemoveNoiseMask": "Remove Noise Mask",
