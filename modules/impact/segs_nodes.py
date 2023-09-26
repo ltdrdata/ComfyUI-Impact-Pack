@@ -428,7 +428,7 @@ class SEGSToMaskBatch:
                      },
                 }
 
-    RETURN_TYPES = ("MASKS",)
+    RETURN_TYPES = ("MASK",)
     OUTPUT_IS_LIST = (True,)
     FUNCTION = "doit"
 

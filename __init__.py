@@ -163,6 +163,7 @@ NODE_CLASS_MAPPINGS = {
     "ToBinaryMask": ToBinaryMask,
     "MasksToMaskList": MasksToMaskList,
     "MaskListToMaskBatch": MaskListToMaskBatch,
+    "ImageListToImageBatch": ImageListToMaskBatch,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,

@@ -47,7 +47,7 @@ class SAMDetectorSegmented:
                       }
                 }
 
-    RETURN_TYPES = ("MASK", "MASKS")
+    RETURN_TYPES = ("MASK", "MASK")
     RETURN_NAMES = ("combined_mask", "batch_masks")
     FUNCTION = "doit"
 

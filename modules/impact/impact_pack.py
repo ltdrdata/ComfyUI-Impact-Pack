@@ -1089,7 +1089,7 @@ class SegsBitwiseAndMaskForEach:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS",),
-                        "masks": ("MASKS",),
+                        "masks": ("MASK",),
                     }
                 }
 
@@ -1215,7 +1215,7 @@ class MasksToMaskList:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "masks": ("MASKS", ),
+                        "masks": ("MASK", ),
                       }
                 }
 
@@ -1250,14 +1250,58 @@ class MaskListToMaskBatch:
 
     INPUT_IS_LIST = True
 
-    RETURN_TYPES = ("MASKS", )
+    RETURN_TYPES = ("MASK", )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask):
-        mask_batch = torch.stack(mask, dim=0)
-        return (mask_batch, )
+        if len(mask) == 1:
+            if len(mask[0].shape) == 2:
+                mask = mask[0].unsqueeze(0)
+            return (mask,)
+        elif len(mask) > 1:
+            mask1 = mask[0]
+            if len(mask1.shape) == 2:
+                mask1 = mask1.unsqueeze(0)
+
+            for mask2 in mask[1:]:
+                if len(mask2.shape) == 2:
+                    mask2 = mask2.unsqueeze(0)
+                if mask1.shape[1:] != mask2.shape[1:]:
+                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "bilinear", "center").movedim(1, -1)
+                mask1 = torch.cat((mask1, mask2), dim=0)
+            return (mask1,)
+        else:
+            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+            return (empty_mask,)
+
+
+class ImageListToMaskBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "images": ("IMAGE", ),
+                      }
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, images):
+        if len(images) <= 1:
+            return (images,)
+        else:
+            image1 = images[0]
+            for image2 in images[1:]:
+                if image1.shape[1:] != image2.shape[1:]:
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                image1 = torch.cat((image1, image2), dim=0)
+            return (image1,)
 
 
 class ToBinaryMask:
