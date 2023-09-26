@@ -761,6 +761,9 @@ class MaskToSEGS:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
         return (result, )
 

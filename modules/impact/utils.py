@@ -78,6 +78,9 @@ def bitwise_and_masks(mask1, mask2):
 
 
 def to_binary_mask(mask, threshold=0):
+    if len(mask.shape) == 3:
+        mask = mask.squeeze(0)
+
     mask = mask.clone().cpu()
     mask[mask > threshold] = 1.
     mask[mask <= threshold] = 0.
@@ -87,6 +90,9 @@ def to_binary_mask(mask, threshold=0):
 def dilate_mask(mask, dilation_factor, iter=1):
     if dilation_factor == 0:
         return mask
+
+    if len(mask.shape) == 3:
+        mask = mask.squeeze(0)
 
     if dilation_factor > 0:
         kernel = np.ones((dilation_factor, dilation_factor), np.uint8)

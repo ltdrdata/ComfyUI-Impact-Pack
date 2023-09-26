@@ -1,6 +1,6 @@
 {
-  "last_node_id": 50,
-  "last_link_id": 113,
+  "last_node_id": 52,
+  "last_link_id": 150,
   "nodes": [
     {
       "id": 12,
@@ -87,10 +87,10 @@
         3270,
         810
       ],
-      "size": [
-        210,
-        246
-      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
       "flags": {},
       "order": 21,
       "mode": 0,
@@ -242,10 +242,10 @@
         257,
         164
       ],
-      "size": [
-        315,
-        314
-      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
       "flags": {},
       "order": 3,
       "mode": 0,
@@ -330,10 +330,10 @@
         3270,
         450
       ],
-      "size": [
-        210,
-        246
-      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
       "flags": {},
       "order": 20,
       "mode": 0,
@@ -447,10 +447,10 @@
         2810,
         -280
       ],
-      "size": [
-        344.0487548828123,
-        580.6563842773438
-      ],
+      "size": {
+        "0": 344.04876708984375,
+        "1": 580.6563720703125
+      },
       "flags": {},
       "order": 7,
       "mode": 2,
@@ -472,10 +472,10 @@
         3200,
         -280
       ],
-      "size": [
-        336.36944162782856,
-        585.6206784724828
-      ],
+      "size": {
+        "0": 336.36944580078125,
+        "1": 585.6206665039062
+      },
       "flags": {},
       "order": 18,
       "mode": 2,
@@ -581,7 +581,7 @@
           "name": "detailer_pipe",
           "type": "DETAILER_PIPE",
           "links": [
-            71
+            114
           ],
           "shape": 3,
           "slot_index": 0
@@ -593,110 +593,6 @@
       "widgets_values": [
         "",
         "Select the LoRA to add to the text"
-      ]
-    },
-    {
-      "id": 40,
-      "type": "ToDetailerPipeSDXL",
-      "pos": [
-        2198,
-        496
-      ],
-      "size": {
-        "0": 400,
-        "1": 340
-      },
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 73
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 74,
-          "slot_index": 1
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 75
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 76,
-          "slot_index": 3
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 77
-        },
-        {
-          "name": "refiner_model",
-          "type": "MODEL",
-          "link": 78,
-          "slot_index": 5
-        },
-        {
-          "name": "refiner_clip",
-          "type": "CLIP",
-          "link": 79
-        },
-        {
-          "name": "refiner_positive",
-          "type": "CONDITIONING",
-          "link": 80,
-          "slot_index": 7
-        },
-        {
-          "name": "refiner_negative",
-          "type": "CONDITIONING",
-          "link": 81
-        },
-        {
-          "name": "bbox_detector",
-          "type": "BBOX_DETECTOR",
-          "link": 82
-        },
-        {
-          "name": "sam_model_opt",
-          "type": "SAM_MODEL",
-          "link": 83,
-          "slot_index": 10
-        },
-        {
-          "name": "segm_detector_opt",
-          "type": "SEGM_DETECTOR",
-          "link": 84
-        },
-        {
-          "name": "detailer_hook",
-          "type": "DETAILER_HOOK",
-          "link": 85,
-          "slot_index": 12
-        }
-      ],
-      "outputs": [
-        {
-          "name": "detailer_pipe",
-          "type": "DETAILER_PIPE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ToDetailerPipeSDXL"
-      },
-      "widgets_values": [
-        "",
-        "SDXL/person/IU_leejieun_SDXL.safetensors"
       ]
     },
     {
@@ -753,24 +649,24 @@
         {
           "name": "bbox_detector",
           "type": "BBOX_DETECTOR",
-          "link": 89
+          "link": 133
         },
         {
           "name": "sam_model_opt",
           "type": "SAM_MODEL",
-          "link": 90,
+          "link": 134,
           "slot_index": 3
         },
         {
           "name": "segm_detector_opt",
           "type": "SEGM_DETECTOR",
-          "link": 91,
+          "link": 135,
           "slot_index": 4
         },
         {
           "name": "detailer_hook",
           "type": "DETAILER_HOOK",
-          "link": 92,
+          "link": 136,
           "slot_index": 5
         }
       ],
@@ -793,229 +689,6 @@
         "",
         "Select the LoRA to add to the text"
       ]
-    },
-    {
-      "id": 42,
-      "type": "ToBasicPipe",
-      "pos": [
-        1790,
-        940
-      ],
-      "size": {
-        "0": 241.79998779296875,
-        "1": 106
-      },
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 93
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 94,
-          "slot_index": 1
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 95,
-          "slot_index": 2
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 97,
-          "slot_index": 3
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 98,
-          "slot_index": 4
-        }
-      ],
-      "outputs": [
-        {
-          "name": "basic_pipe",
-          "type": "BASIC_PIPE",
-          "links": [
-            87,
-            107
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ToBasicPipe"
-      }
-    },
-    {
-      "id": 39,
-      "type": "FromDetailerPipe_SDXL",
-      "pos": [
-        1704,
-        480
-      ],
-      "size": [
-        269.43489990234366,
-        286
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "detailer_pipe",
-          "type": "DETAILER_PIPE",
-          "link": 71
-        }
-      ],
-      "outputs": [
-        {
-          "name": "detailer_pipe",
-          "type": "DETAILER_PIPE",
-          "links": null,
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "links": [
-            73,
-            93
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "links": [
-            74,
-            94
-          ],
-          "shape": 3
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "links": [
-            75,
-            95,
-            96
-          ],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            76,
-            97
-          ],
-          "shape": 3
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            77,
-            98
-          ],
-          "shape": 3,
-          "slot_index": 5
-        },
-        {
-          "name": "bbox_detector",
-          "type": "BBOX_DETECTOR",
-          "links": [
-            82,
-            89
-          ],
-          "shape": 3,
-          "slot_index": 6
-        },
-        {
-          "name": "sam_model_opt",
-          "type": "SAM_MODEL",
-          "links": [
-            83,
-            90
-          ],
-          "shape": 3,
-          "slot_index": 7
-        },
-        {
-          "name": "segm_detector_opt",
-          "type": "SEGM_DETECTOR",
-          "links": [
-            84,
-            91
-          ],
-          "shape": 3,
-          "slot_index": 8
-        },
-        {
-          "name": "detailer_hook",
-          "type": "DETAILER_HOOK",
-          "links": [
-            85,
-            92
-          ],
-          "shape": 3
-        },
-        {
-          "name": "refiner_model",
-          "type": "MODEL",
-          "links": [
-            78,
-            99
-          ],
-          "shape": 3,
-          "slot_index": 10
-        },
-        {
-          "name": "refiner_clip",
-          "type": "CLIP",
-          "links": [
-            79,
-            100
-          ],
-          "shape": 3,
-          "slot_index": 11
-        },
-        {
-          "name": "refiner_positive",
-          "type": "CONDITIONING",
-          "links": [
-            80,
-            101
-          ],
-          "shape": 3,
-          "slot_index": 12
-        },
-        {
-          "name": "refiner_negative",
-          "type": "CONDITIONING",
-          "links": [
-            81,
-            102
-          ],
-          "shape": 3,
-          "slot_index": 13
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "FromDetailerPipe_SDXL"
-      }
     },
     {
       "id": 44,
@@ -1079,6 +752,12 @@
           "type": "DETAILER_PIPE",
           "links": null,
           "shape": 3
+        },
+        {
+          "name": "cnet_images",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
         }
       ],
       "properties": {
@@ -1118,10 +797,10 @@
         4109.76494140625,
         483.81650390625
       ],
-      "size": [
-        210,
-        246
-      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
       "flags": {},
       "order": 24,
       "mode": 0,
@@ -1143,10 +822,10 @@
         2720,
         430
       ],
-      "size": [
-        456,
-        902
-      ],
+      "size": {
+        "0": 456,
+        "1": 902
+      },
       "flags": {},
       "order": 16,
       "mode": 0,
@@ -1208,6 +887,12 @@
           ],
           "shape": 3,
           "slot_index": 4
+        },
+        {
+          "name": "cnet_images",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
         }
       ],
       "properties": {
@@ -1258,28 +943,28 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 99
+          "link": 142
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 100
+          "link": 143
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 96,
+          "link": 145,
           "slot_index": 2
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 101
+          "link": 149
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 102
+          "link": 150
         }
       ],
       "outputs": [
@@ -1358,10 +1043,10 @@
         2725,
         1448
       ],
-      "size": [
-        456.56388211841386,
-        559.115060945277
-      ],
+      "size": {
+        "0": 456.5638732910156,
+        "1": 559.1150512695312
+      },
       "flags": {},
       "order": 23,
       "mode": 0,
@@ -1403,6 +1088,24 @@
           ],
           "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "cnet_images",
+          "type": "IMAGE",
+          "links": null,
+          "shape": 6
         }
       ],
       "properties": {
@@ -1433,10 +1136,10 @@
         3448.7228955078117,
         1463.962194335937
       ],
-      "size": [
-        210,
-        246
-      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
       "flags": {},
       "order": 25,
       "mode": 0,
@@ -1449,6 +1152,335 @@
       ],
       "properties": {
         "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 40,
+      "type": "ToDetailerPipeSDXL",
+      "pos": [
+        2226,
+        539
+      ],
+      "size": {
+        "0": 400,
+        "1": 340
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 125
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 116,
+          "slot_index": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 117
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 120,
+          "slot_index": 3
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 121
+        },
+        {
+          "name": "refiner_model",
+          "type": "MODEL",
+          "link": 124,
+          "slot_index": 5
+        },
+        {
+          "name": "refiner_clip",
+          "type": "CLIP",
+          "link": 126
+        },
+        {
+          "name": "refiner_positive",
+          "type": "CONDITIONING",
+          "link": 127,
+          "slot_index": 7
+        },
+        {
+          "name": "refiner_negative",
+          "type": "CONDITIONING",
+          "link": 128
+        },
+        {
+          "name": "bbox_detector",
+          "type": "BBOX_DETECTOR",
+          "link": 129
+        },
+        {
+          "name": "sam_model_opt",
+          "type": "SAM_MODEL",
+          "link": 130,
+          "slot_index": 10
+        },
+        {
+          "name": "segm_detector_opt",
+          "type": "SEGM_DETECTOR",
+          "link": 131
+        },
+        {
+          "name": "detailer_hook",
+          "type": "DETAILER_HOOK",
+          "link": 132,
+          "slot_index": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "detailer_pipe",
+          "type": "DETAILER_PIPE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToDetailerPipeSDXL"
+      },
+      "widgets_values": [
+        "",
+        "SDXL/person/IU_leejieun_SDXL.safetensors"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "ToBasicPipe",
+      "pos": [
+        1899,
+        906
+      ],
+      "size": {
+        "0": 241.79998779296875,
+        "1": 106
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 137
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 138,
+          "slot_index": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 139,
+          "slot_index": 2
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 147,
+          "slot_index": 3
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 148,
+          "slot_index": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "basic_pipe",
+          "type": "BASIC_PIPE",
+          "links": [
+            87,
+            107
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToBasicPipe"
+      }
+    },
+    {
+      "id": 51,
+      "type": "FromDetailerPipeSDXL",
+      "pos": [
+        1650,
+        520
+      ],
+      "size": {
+        "0": 393,
+        "1": 286
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "detailer_pipe",
+          "type": "DETAILER_PIPE",
+          "link": 114
+        }
+      ],
+      "outputs": [
+        {
+          "name": "detailer_pipe",
+          "type": "DETAILER_PIPE",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            125,
+            137
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            116,
+            138,
+            143
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            117,
+            139,
+            145
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            120,
+            147
+          ],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            121,
+            148
+          ],
+          "shape": 3,
+          "slot_index": 5
+        },
+        {
+          "name": "bbox_detector",
+          "type": "BBOX_DETECTOR",
+          "links": [
+            129,
+            133
+          ],
+          "shape": 3,
+          "slot_index": 6
+        },
+        {
+          "name": "sam_model_opt",
+          "type": "SAM_MODEL",
+          "links": [
+            130,
+            134
+          ],
+          "shape": 3,
+          "slot_index": 7
+        },
+        {
+          "name": "segm_detector_opt",
+          "type": "SEGM_DETECTOR",
+          "links": [
+            131,
+            135
+          ],
+          "shape": 3,
+          "slot_index": 8
+        },
+        {
+          "name": "detailer_hook",
+          "type": "DETAILER_HOOK",
+          "links": [
+            132,
+            136
+          ],
+          "shape": 3,
+          "slot_index": 9
+        },
+        {
+          "name": "refiner_model",
+          "type": "MODEL",
+          "links": [
+            124,
+            142
+          ],
+          "shape": 3,
+          "slot_index": 10
+        },
+        {
+          "name": "refiner_clip",
+          "type": "CLIP",
+          "links": [
+            126
+          ],
+          "shape": 3,
+          "slot_index": 11
+        },
+        {
+          "name": "refiner_positive",
+          "type": "CONDITIONING",
+          "links": [
+            127,
+            149
+          ],
+          "shape": 3,
+          "slot_index": 12
+        },
+        {
+          "name": "refiner_negative",
+          "type": "CONDITIONING",
+          "links": [
+            128,
+            150
+          ],
+          "shape": 3,
+          "slot_index": 13
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FromDetailerPipeSDXL"
       }
     }
   ],
@@ -1622,118 +1654,6 @@
       "CONDITIONING"
     ],
     [
-      71,
-      6,
-      0,
-      39,
-      0,
-      "DETAILER_PIPE"
-    ],
-    [
-      73,
-      39,
-      1,
-      40,
-      0,
-      "MODEL"
-    ],
-    [
-      74,
-      39,
-      2,
-      40,
-      1,
-      "CLIP"
-    ],
-    [
-      75,
-      39,
-      3,
-      40,
-      2,
-      "VAE"
-    ],
-    [
-      76,
-      39,
-      4,
-      40,
-      3,
-      "CONDITIONING"
-    ],
-    [
-      77,
-      39,
-      5,
-      40,
-      4,
-      "CONDITIONING"
-    ],
-    [
-      78,
-      39,
-      10,
-      40,
-      5,
-      "MODEL"
-    ],
-    [
-      79,
-      39,
-      11,
-      40,
-      6,
-      "CLIP"
-    ],
-    [
-      80,
-      39,
-      12,
-      40,
-      7,
-      "CONDITIONING"
-    ],
-    [
-      81,
-      39,
-      13,
-      40,
-      8,
-      "CONDITIONING"
-    ],
-    [
-      82,
-      39,
-      6,
-      40,
-      9,
-      "BBOX_DETECTOR"
-    ],
-    [
-      83,
-      39,
-      7,
-      40,
-      10,
-      "SAM_MODEL"
-    ],
-    [
-      84,
-      39,
-      8,
-      40,
-      11,
-      "SEGM_DETECTOR"
-    ],
-    [
-      85,
-      39,
-      9,
-      40,
-      12,
-      "DETAILER_HOOK"
-    ],
-    [
       86,
       41,
       0,
@@ -1756,118 +1676,6 @@
       41,
       1,
       "BASIC_PIPE"
-    ],
-    [
-      89,
-      39,
-      6,
-      41,
-      2,
-      "BBOX_DETECTOR"
-    ],
-    [
-      90,
-      39,
-      7,
-      41,
-      3,
-      "SAM_MODEL"
-    ],
-    [
-      91,
-      39,
-      8,
-      41,
-      4,
-      "SEGM_DETECTOR"
-    ],
-    [
-      92,
-      39,
-      9,
-      41,
-      5,
-      "DETAILER_HOOK"
-    ],
-    [
-      93,
-      39,
-      1,
-      42,
-      0,
-      "MODEL"
-    ],
-    [
-      94,
-      39,
-      2,
-      42,
-      1,
-      "CLIP"
-    ],
-    [
-      95,
-      39,
-      3,
-      42,
-      2,
-      "VAE"
-    ],
-    [
-      96,
-      39,
-      3,
-      43,
-      2,
-      "VAE"
-    ],
-    [
-      97,
-      39,
-      4,
-      42,
-      3,
-      "CONDITIONING"
-    ],
-    [
-      98,
-      39,
-      5,
-      42,
-      4,
-      "CONDITIONING"
-    ],
-    [
-      99,
-      39,
-      10,
-      43,
-      0,
-      "MODEL"
-    ],
-    [
-      100,
-      39,
-      11,
-      43,
-      1,
-      "CLIP"
-    ],
-    [
-      101,
-      39,
-      12,
-      43,
-      3,
-      "CONDITIONING"
-    ],
-    [
-      102,
-      39,
-      13,
-      43,
-      4,
-      "CONDITIONING"
     ],
     [
       103,
@@ -1948,6 +1756,230 @@
       50,
       0,
       "IMAGE"
+    ],
+    [
+      114,
+      6,
+      0,
+      51,
+      0,
+      "DETAILER_PIPE"
+    ],
+    [
+      116,
+      51,
+      2,
+      40,
+      1,
+      "CLIP"
+    ],
+    [
+      117,
+      51,
+      3,
+      40,
+      2,
+      "VAE"
+    ],
+    [
+      120,
+      51,
+      4,
+      40,
+      3,
+      "CONDITIONING"
+    ],
+    [
+      121,
+      51,
+      5,
+      40,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      124,
+      51,
+      10,
+      40,
+      5,
+      "MODEL"
+    ],
+    [
+      125,
+      51,
+      1,
+      40,
+      0,
+      "MODEL"
+    ],
+    [
+      126,
+      51,
+      11,
+      40,
+      6,
+      "CLIP"
+    ],
+    [
+      127,
+      51,
+      12,
+      40,
+      7,
+      "CONDITIONING"
+    ],
+    [
+      128,
+      51,
+      13,
+      40,
+      8,
+      "CONDITIONING"
+    ],
+    [
+      129,
+      51,
+      6,
+      40,
+      9,
+      "BBOX_DETECTOR"
+    ],
+    [
+      130,
+      51,
+      7,
+      40,
+      10,
+      "SAM_MODEL"
+    ],
+    [
+      131,
+      51,
+      8,
+      40,
+      11,
+      "SEGM_DETECTOR"
+    ],
+    [
+      132,
+      51,
+      9,
+      40,
+      12,
+      "DETAILER_HOOK"
+    ],
+    [
+      133,
+      51,
+      6,
+      41,
+      2,
+      "BBOX_DETECTOR"
+    ],
+    [
+      134,
+      51,
+      7,
+      41,
+      3,
+      "SAM_MODEL"
+    ],
+    [
+      135,
+      51,
+      8,
+      41,
+      4,
+      "SEGM_DETECTOR"
+    ],
+    [
+      136,
+      51,
+      9,
+      41,
+      5,
+      "DETAILER_HOOK"
+    ],
+    [
+      137,
+      51,
+      1,
+      42,
+      0,
+      "MODEL"
+    ],
+    [
+      138,
+      51,
+      2,
+      42,
+      1,
+      "CLIP"
+    ],
+    [
+      139,
+      51,
+      3,
+      42,
+      2,
+      "VAE"
+    ],
+    [
+      142,
+      51,
+      10,
+      43,
+      0,
+      "MODEL"
+    ],
+    [
+      143,
+      51,
+      2,
+      43,
+      1,
+      "CLIP"
+    ],
+    [
+      145,
+      51,
+      3,
+      43,
+      2,
+      "VAE"
+    ],
+    [
+      147,
+      51,
+      4,
+      42,
+      3,
+      "CONDITIONING"
+    ],
+    [
+      148,
+      51,
+      5,
+      42,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      149,
+      51,
+      12,
+      43,
+      3,
+      "CONDITIONING"
+    ],
+    [
+      150,
+      51,
+      13,
+      43,
+      4,
+      "CONDITIONING"
     ]
   ],
   "groups": [],

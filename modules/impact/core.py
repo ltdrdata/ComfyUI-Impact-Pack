@@ -21,6 +21,9 @@ SEG = namedtuple("SEG",
 
 
 def erosion_mask(mask, grow_mask_by):
+    if len(mask.shape) == 3:
+        mask = mask.squeeze(0)
+
     w = mask.shape[1]
     h = mask.shape[0]
 
@@ -44,8 +47,8 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
                      refiner_negative=None):
     if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
         refined_latent = \
-        nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                denoise)[0]
+            nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
+                                    denoise)[0]
     else:
         advanced_steps = math.floor(steps / denoise)
         start_at_step = advanced_steps - steps
@@ -79,6 +82,9 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
 class REGIONAL_PROMPT:
     def __init__(self, mask, sampler):
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         self.mask = mask
         self.sampler = sampler
         self.mask_erosion = None
@@ -112,6 +118,9 @@ def create_segmasks(results):
 
 
 def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
+    if len(mask.shape) == 3:
+        mask = mask.squeeze(0)
+
     points = []
     plabs = []
 
@@ -154,6 +163,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None):
+    if len(noise_mask.shape) == 3:
+        noise_mask = noise_mask.squeeze(0)
+
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
 
@@ -585,6 +597,9 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
 
 
 def segs_bitwise_and_mask(segs, mask):
+    if len(mask.shape) == 3:
+        mask = mask.squeeze(0)
+
     if mask is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
         return ([],)
@@ -1159,6 +1174,10 @@ class TwoSamplersForMaskUpscaler:
                  full_sampler_opt=None, upscale_model_opt=None, hook_base_opt=None, hook_mask_opt=None,
                  hook_full_opt=None,
                  tile_size=512):
+
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1]))
 
         self.params = scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae
@@ -1172,6 +1191,9 @@ class TwoSamplersForMaskUpscaler:
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
+
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
 
         self.prepare_hook(step_info)
 
@@ -1200,6 +1222,9 @@ class TwoSamplersForMaskUpscaler:
 
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
+
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
 
         self.prepare_hook(step_info)
 
@@ -1255,6 +1280,9 @@ class TwoSamplersForMaskUpscaler:
             return cur_step % 2 == 0 or cur_step >= total_step - 1
 
     def do_samples(self, step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent):
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         if self.is_full_sample_time(step_info, sample_schedule):
             print(f"step_info={step_info} / full time")
 
@@ -1527,6 +1555,10 @@ class BBoxDetectorBasedOnCLIPSeg:
 
     def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size=1):
         mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
+
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
         segs = mask_to_segs(mask, False, bbox_crop_factor, True, drop_size)
         return segs
 
