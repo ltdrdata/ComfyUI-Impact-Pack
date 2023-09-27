@@ -319,7 +319,7 @@ app.registerExtension({
 
                 if(type == 2) {
                     // connect output
-                    if(connected){
+                    if(connected && index == 0){
                         if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
                             app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
                         }
