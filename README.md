@@ -26,7 +26,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * UltralyticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
   - Unlike `MMDetDetectorProvider`, for segm models, `BBOX_DETECTOR` is also provided.
   - The various models available in UltralyticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
-* ONNXDetectorProvider - Loads the ONNX model to provide SEGM_DETECTOR.
+* ONNXDetectorProvider - Loads the ONNX model to provide BBOX_DETECTOR.
 * CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
   * You need to install the ComfyUI-CLIPSeg node extension.
 * SEGM Detector (combined) - Detects segmentation and returns a mask from the input image.
@@ -49,7 +49,6 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * Bitwise(MASK + MASK) - Combine two masks.
 * SEGM Detector (SEGS) - Detects segmentation and returns SEGS from the input image.
 * BBOX Detector (SEGS) - Detects bounding boxes and returns SEGS from the input image.
-* ONNX Detector (SEGS) - Utilizes the ONNX model to identify the bbox and retrieve the SEGS from the input image.
 * Detailer (SEGS) - Refines the image based on SEGS.
 * DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
   * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
@@ -180,6 +179,7 @@ This takes latent as input and outputs latent as the result.
 
 ## Deprecated
 * The following nodes have been kept only for compatibility with existing workflows, and are no longer supported. Please replace them with new nodes.
+   * ONNX Detector (SEGS) - BBOX Detector (SEGS)
    * MMDetLoader -> MMDetDetectorProvider
    * SegsMaskCombine -> SEGS to MASK (combined)
    * BboxDetectorForEach -> BBOX Detector (SEGS)

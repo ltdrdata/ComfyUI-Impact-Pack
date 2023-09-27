@@ -167,7 +167,7 @@ NODE_CLASS_MAPPINGS = {
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
-    "ONNXDetectorSEGS": ONNXDetectorForEach,
+    "ONNXDetectorSEGS": BboxDetectorForEach,
     "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
     "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
     "ImpactControlNetApplySEGS": ControlNetApplySEGS,
@@ -257,7 +257,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
-    "ONNXDetectorSEGS": "ONNX Detector (SEGS)",
+    "ONNXDetectorSEGS": "ONNX Detector (SEGS/legacy) - use BBOXDetector",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
     "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",

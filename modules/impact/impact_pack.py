@@ -44,7 +44,7 @@ class ONNXDetectorProvider:
     def INPUT_TYPES(s):
         return {"required": {"model_name": (folder_paths.get_filename_list("onnx"), )}}
 
-    RETURN_TYPES = ("ONNX_DETECTOR", )
+    RETURN_TYPES = ("BBOX_DETECTOR", )
     FUNCTION = "load_onnx"
 
     CATEGORY = "ImpactPack"

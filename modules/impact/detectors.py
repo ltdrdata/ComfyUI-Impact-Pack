@@ -152,13 +152,13 @@ class SimpleDetectorForEach:
                         "image": ("IMAGE", ),
 
                         "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "bbox_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                        "bbox_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
 
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
 
                         "sub_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "sub_dilation": ("INT", {"default": 0, "min": 0, "max": 255, "step": 1}),
+                        "sub_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
                         "sub_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
 
                         "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
