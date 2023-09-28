@@ -1,6 +1,8 @@
 import os
 import sys
 
+import torch
+
 import folder_paths
 import comfy
 from nodes import MAX_RESOLUTION
@@ -557,7 +559,14 @@ class Edit_SEG_ELT:
         control_net_wrapper = seg_elt.control_net_wrapper if control_net_wrapper_opt is None else control_net_wrapper_opt
 
         cropped_image = cropped_image.numpy() if cropped_image is not None else None
-        seg = SEG(cropped_image, cropped_mask.numpy(), confidence, crop_region, bbox, label, control_net_wrapper)
+
+        if isinstance(cropped_mask, torch.Tensor):
+            if len(cropped_mask.shape) == 3:
+                cropped_mask = cropped_mask.squeeze(0)
+
+            cropped_mask = cropped_mask.numpy()
+
+        seg = SEG(cropped_image, cropped_mask, confidence, crop_region, bbox, label, control_net_wrapper)
 
         return (seg,)
 
