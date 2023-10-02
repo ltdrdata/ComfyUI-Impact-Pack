@@ -514,6 +514,46 @@ def merge_and_stack_masks(stacked_masks, group_size):
     return merged_masks
 
 
+def segs_scale_match(segs, target_shape):
+    h = segs[0][0]
+    w = segs[0][1]
+
+    th = target_shape[1]
+    tw = target_shape[2]
+
+    if h == th and w == tw:
+        return segs
+
+    rh = th / h
+    rw = tw / w
+
+    new_segs = []
+    for seg in segs[1]:
+        cropped_image = seg.cropped_image
+        cropped_mask = seg.cropped_mask
+        x1, y1, x2, y2 = seg.crop_region
+        bx1, by1, bx2, by2 = seg.bbox
+
+        crop_region = int(x1*rw), int(y1*rw), int(x2*rh), int(y2*rh)
+        bbox = int(bx1*rw), int(by1*rw), int(bx2*rh), int(by2*rh)
+        new_w = crop_region[2] - crop_region[0]
+        new_h = crop_region[3] - crop_region[1]
+
+        cropped_mask = torch.from_numpy(cropped_mask)
+        cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
+                                                       mode='bilinear', align_corners=False)
+        cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
+
+        if cropped_image is not None:
+            cropped_image = torch.nn.functional.interpolate(cropped_image, size=(new_h, new_w),
+                                                            mode='bilinear', align_corners=False)
+
+        new_seg = SEG(cropped_image, cropped_mask, seg.confidence, crop_region, bbox, seg.label, seg.control_net_wrapper)
+        new_segs.append(new_seg)
+
+    return ((th, tw), new_segs)
+
+
 # Used Python's slicing feature. stacked_masks[2::3] means starting from index 2, selecting every third tensor with a step size of 3.
 # This allows for quickly obtaining the last tensor of every three tensors in stacked_masks.
 def every_three_pick_last(stacked_masks):
@@ -764,13 +804,18 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                 if w > drop_size and h > drop_size:
                     cropped_mask = np.array(
                         separated_mask[
-                        crop_region[1]: crop_region[3],
-                        crop_region[0]: crop_region[2],
+                            crop_region[1]: crop_region[3],
+                            crop_region[0]: crop_region[2],
                         ]
                     )
 
                     if bbox_fill:
-                        cropped_mask.fill(1.0)
+                        cx1, cy1, _, _ = crop_region
+                        bx1 = x - cx1
+                        bx2 = x+w - cx1
+                        by1 = y - cy1
+                        by2 = y+h - cy1
+                        cropped_mask[by1:by2, bx1:bx2] = 1.0
 
                     if cropped_mask is not None:
                         item = SEG(None, cropped_mask, 1.0, crop_region, bbox, label, None)

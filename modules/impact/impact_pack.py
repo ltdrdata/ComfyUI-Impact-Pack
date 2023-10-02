@@ -382,8 +382,11 @@ class FaceDetailer:
 
         elif segm_detector is not None:
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
-            segm_mask = core.segs_to_combined_mask(segm_segs)
-            segs = core.segs_bitwise_and_mask(segs, segm_mask)
+            if hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm:
+                segs = segm_segs
+            else:
+                segm_mask = core.segs_to_combined_mask(segm_segs)
+                segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
         enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,

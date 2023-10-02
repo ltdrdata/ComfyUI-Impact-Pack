@@ -54,6 +54,8 @@ class SEGSDetailer:
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
+        segs = core.segs_scale_match(segs, image.shape)
+
         new_segs = []
         cnet_pil_list = []
 
@@ -170,6 +172,9 @@ class SEGSPreview:
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
 
         results = list()
+
+        if fallback_image_opt is not None:
+            segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
         for seg in segs[1]:
             cropped_image = None
