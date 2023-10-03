@@ -16,7 +16,7 @@ from PIL import Image
 import io
 import impact.wildcards as wildcards
 import comfy
-import impact.util_nodes as utils_nodes
+from io import BytesIO
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -194,7 +194,37 @@ async def populate_wildcards(request):
     return web.json_response({"text": populated})
 
 
-def onprompt(json_data):
+segs_picker_map = {}
+
+@server.PromptServer.instance.routes.get("/impact/segs/picker/count")
+async def segs_picker_count(request):
+    node_id = request.rel_url.query.get('id', '')
+
+    if node_id in segs_picker_map:
+        res = len(segs_picker_map[node_id])
+        return web.Response(status=200, text=str(res))
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/segs/picker/view")
+async def segs_picker(request):
+    node_id = request.rel_url.query.get('id', '')
+    idx = int(request.rel_url.query.get('idx', ''))
+
+    if node_id in segs_picker_map and idx < len(segs_picker_map[node_id]):
+        pil = segs_picker_map[node_id][idx]
+
+        image_bytes = BytesIO()
+        pil.save(image_bytes, format="PNG")
+        image_bytes.seek(0)
+
+        return web.Response(status=200, body=image_bytes, content_type='image/png', headers={"Content-Disposition": f"filename={node_id}{idx}.png"})
+
+    return web.Response(status=400)
+
+
+def onprompt_for_switch(json_data):
     inversed_switch_info = {}
     onprompt_switch_info = {}
 
@@ -225,7 +255,7 @@ def onprompt(json_data):
         for kk, vv in v['inputs'].items():
             if isinstance(vv, list) and len(vv) == 2:
                 if vv[0] in inversed_switch_info:
-                    if vv[1]+1 != inversed_switch_info[vv[0]]:
+                    if vv[1] + 1 != inversed_switch_info[vv[0]]:
                         disable_targets.add(kk)
 
         if k in onprompt_switch_info:
@@ -236,6 +266,27 @@ def onprompt(json_data):
 
         for kk in disable_targets:
             del v['inputs'][kk]
+
+    return json_data
+
+
+def onprompt_for_pickers(json_data):
+    detected_pickers = set()
+
+    for k, v in json_data['prompt'].items():
+        cls = v['class_type']
+        if cls == 'ImpactSEGSPicker':
+            detected_pickers.add(k)
+
+    # garbage collection
+    keys_to_remove = [key for key in segs_picker_map if key not in detected_pickers]
+    for key in keys_to_remove:
+        del segs_picker_map[key]
+
+
+def onprompt(json_data):
+    json_data = onprompt_for_switch(json_data)
+    onprompt_for_pickers(json_data)
 
     return json_data
 

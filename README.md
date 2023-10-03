@@ -77,6 +77,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * SEGS Filter (ordered) - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
   * SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
   * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different then segs2 will be ignored.
+  * Picker (SEGS) - Among the input SEGS, you can select a specific SEG through a dialog. If no SEG is selected, it outputs an empty SEGS. Increasing the batch_size of SEGSDetailer can be used for the purpose of selecting from the candidates.
   * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
   * AssembleSEGS - Reassemble the decomposed SEGS.
   * From SEG_ELT - Extract detailed information from SEG_ELT.

@@ -215,6 +215,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSToMaskList": SEGSToMaskList,
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
     "ImpactSEGSConcat": SEGSConcat,
+    "ImpactSEGSPicker": SEGSPicker,
 
     "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
     "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
@@ -309,6 +310,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSConcat": "SEGS Concat",
     "ImpactSEGSToMaskList": "SEGS to Mask List",
     "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
+    "ImpactSEGSPicker": "Picker (SEGS)",
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",

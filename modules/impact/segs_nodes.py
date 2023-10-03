@@ -5,6 +5,7 @@ import torch
 
 import folder_paths
 import comfy
+import impact.impact_server
 from nodes import MAX_RESOLUTION
 
 from impact.utils import *
@@ -30,6 +31,7 @@ class SEGSDetailer:
                      "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "basic_pipe": ("BASIC_PIPE",),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                     "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
@@ -46,7 +48,7 @@ class SEGSDetailer:
 
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+                  denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -59,46 +61,48 @@ class SEGSDetailer:
         new_segs = []
         cnet_pil_list = []
 
-        for seg in segs[1]:
-            cropped_image = seg.cropped_image if seg.cropped_image is not None \
-                                              else crop_ndarray4(image.numpy(), seg.crop_region)
+        for i in range(batch_size):
+            seed += 1
+            for seg in segs[1]:
+                cropped_image = seg.cropped_image if seg.cropped_image is not None \
+                                                  else crop_ndarray4(image.numpy(), seg.crop_region)
 
-            is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
-            if is_mask_all_zeros:
-                print(f"Detailer: segment skip [empty mask]")
-                new_segs.append(seg)
-                continue
+                is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
+                if is_mask_all_zeros:
+                    print(f"Detailer: segment skip [empty mask]")
+                    new_segs.append(seg)
+                    continue
 
-            if noise_mask:
-                cropped_mask = seg.cropped_mask
-            else:
-                cropped_mask = None
+                if noise_mask:
+                    cropped_mask = seg.cropped_mask
+                else:
+                    cropped_mask = None
 
-            enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
-                                                         seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                         positive, negative, denoise, cropped_mask, force_inpaint,
-                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                         refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                                         control_net_wrapper=seg.control_net_wrapper)
+                enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
+                                                             seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                             positive, negative, denoise, cropped_mask, force_inpaint,
+                                                             refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                             refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                                             control_net_wrapper=seg.control_net_wrapper)
 
-            if cnet_pil is not None:
-                cnet_pil_list.append(cnet_pil)
+                if cnet_pil is not None:
+                    cnet_pil_list.append(cnet_pil)
 
-            if enhanced_pil is None:
-                new_cropped_image = cropped_image
-            else:
-                new_cropped_image = pil2numpy(enhanced_pil)
+                if enhanced_pil is None:
+                    new_cropped_image = cropped_image
+                else:
+                    new_cropped_image = pil2numpy(enhanced_pil)
 
-            new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
-            new_segs.append(new_seg)
+                new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+                new_segs.append(new_seg)
 
         return (segs[0], new_segs), cnet_pil_list
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+             denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, refiner_basic_pipe_opt=None):
 
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-                                                     scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, refiner_basic_pipe_opt)
+                                                     scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, refiner_basic_pipe_opt)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -115,7 +119,7 @@ class SEGSPaste:
                      "segs": ("SEGS", ),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                      },
-                "optional": {"ref_image_opt": ("IMAGE", ),}
+                "optional": {"ref_image_opt": ("IMAGE", ), }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -126,6 +130,8 @@ class SEGSPaste:
     @staticmethod
     def doit(image, segs, feather, ref_image_opt=None):
         image_pil = tensor2pil(image).convert('RGBA')
+
+        segs = core.segs_scale_match(segs, image.shape)
 
         for seg in segs[1]:
             ref_image_pil = None
@@ -390,6 +396,9 @@ class SEGSToImageList:
 
     def doit(self, segs, fallback_image_opt=None):
         results = list()
+
+        if fallback_image_opt is not None:
+            segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
         for seg in segs[1]:
             if seg.cropped_image is not None:
@@ -836,3 +845,68 @@ class SEGSSwitch:
         else:
             print(f"SEGSSwitch: invalid select index ('segs1' is selected)")
             return (kwargs['segs1'],)
+
+
+class SEGSPicker:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "picks": ("STRING", {"multiline": True, "dynamicPrompts": False, "pysssss.autocomplete": False}),
+                    "segs": ("SEGS",),
+                    },
+                "optional": {
+                     "fallback_image_opt": ("IMAGE", ),
+                    },
+                "hidden": {"unique_id": "UNIQUE_ID"},
+                }
+
+    RETURN_TYPES = ("SEGS", )
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, picks, segs, fallback_image_opt=None, unique_id=None):
+        if fallback_image_opt is not None:
+            segs = core.segs_scale_match(segs, fallback_image_opt.shape)
+
+        # generate candidates image
+        cands = []
+        for seg in segs[1]:
+            cropped_image = None
+
+            if seg.cropped_image is not None:
+                cropped_image = seg.cropped_image
+            elif fallback_image_opt is not None:
+                # take from original image
+                cropped_image = crop_image(fallback_image_opt, seg.crop_region)
+
+            if cropped_image is not None:
+                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
+
+            if cropped_image is not None:
+                pil = cropped_image
+            else:
+                pil = tensor2pil(empty_pil_tensor())
+
+            cands.append(pil)
+
+        impact.impact_server.segs_picker_map[unique_id] = cands
+
+        # pass only selected
+        pick_ids = set()
+
+        for pick in picks.split(","):
+            try:
+                pick_ids.add(int(pick)-1)
+            except Exception:
+                pass
+
+        new_segs = []
+        for i in pick_ids:
+            if 0 <= i < len(segs[1]):
+                new_segs.append(segs[1][i])
+
+        return ((segs[0], new_segs),)
