@@ -14,7 +14,7 @@ def read_wildcard_dict(wildcard_path):
             if file.endswith('.txt'):
                 file_path = os.path.join(root, file)
                 rel_path = os.path.relpath(file_path, wildcard_path)
-                key = os.path.splitext(rel_path)[0].replace('\\', '/')
+                key = os.path.splitext(rel_path)[0].replace('\\', '/').lower()
 
                 with open(file_path, 'r', encoding="UTF-8") as f:
                     lines = f.read().splitlines()
@@ -64,16 +64,24 @@ def process(text, seed=None):
 
     def replace_wildcard(string):
         global wildcard_dict
-        pattern = r"__([\w.\-/]+)__"
+        pattern = r"__([\w.\-/*]+)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
 
         for match in matches:
-            if match in wildcard_dict:
-                replacement = random.choice(wildcard_dict[match])
+            keyword = match.lower()
+            if keyword in wildcard_dict:
+                replacement = random.choice(wildcard_dict[keyword])
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
+            elif '*' in keyword:
+                subpattern = keyword.replace('*', '.*')
+                for k, v in wildcard_dict.items():
+                    if re.match(subpattern, k) is not None:
+                        replacement = random.choice(v)
+                        replacements_found = True
+                        string = string.replace(f"__{match}__", replacement, 1)
 
         return string, replacements_found
 
