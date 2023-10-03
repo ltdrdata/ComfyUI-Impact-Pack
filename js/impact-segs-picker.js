@@ -100,7 +100,7 @@ async function open_picker(node) {
     hint.innerHTML = 'Click: Toggle Selection<BR>Ctrl-click: Single Selection';
     gallery.appendChild(hint);
 
-    let max_size = 200;
+    let max_size = 300;
 
     for(let i=0; i<cnt; i++) {
         let image = new Image();
