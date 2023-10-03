@@ -77,11 +77,17 @@ def process(text, seed=None):
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
                 subpattern = keyword.replace('*', '.*')
+                total_patterns = []
+                found = False
                 for k, v in wildcard_dict.items():
                     if re.match(subpattern, k) is not None:
-                        replacement = random.choice(v)
-                        replacements_found = True
-                        string = string.replace(f"__{match}__", replacement, 1)
+                        total_patterns += v
+                        found = True
+
+                if found:
+                    replacement = random.choice(total_patterns)
+                    replacements_found = True
+                    string = string.replace(f"__{match}__", replacement, 1)
 
         return string, replacements_found
 
