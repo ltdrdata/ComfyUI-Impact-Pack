@@ -321,8 +321,6 @@ class RegionalSampler:
 
         if restore_latent:
             new_latent_image = base_latent_image
-        else:
-            base_latent_image = new_latent_image
 
         if 'noise_mask' in new_latent_image:
             del new_latent_image['noise_mask']
