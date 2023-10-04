@@ -313,6 +313,9 @@ class RegionalSampler:
         core.update_node_status(unique_id, f"finalize")
         if base_latent_image is not None:
             new_latent_image = base_latent_image
+        else:
+            base_latent_image = new_latent_image
+
         new_latent_image['noise_mask'] = inv_mask
         new_latent_image = base_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, adv_steps, adv_steps+1, "disable", recover_special_sampler=False)
 
