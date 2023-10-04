@@ -229,6 +229,9 @@ def onprompt_for_switch(json_data):
     onprompt_switch_info = {}
 
     for k, v in json_data['prompt'].items():
+        if 'class_type' not in v:
+            continue
+
         cls = v['class_type']
         if cls == 'ImpactInversedSwitch':
             select_input = v['inputs']['select']
@@ -274,6 +277,9 @@ def onprompt_for_pickers(json_data):
     detected_pickers = set()
 
     for k, v in json_data['prompt'].items():
+        if 'class_type' not in v:
+            continue
+
         cls = v['class_type']
         if cls == 'ImpactSEGSPicker':
             detected_pickers.add(k)
