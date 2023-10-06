@@ -7,6 +7,10 @@ import folder_paths
 wildcard_dict = {}
 
 
+def get_wildcard_list():
+    return [f"__{x}__" for x in wildcard_dict.keys()]
+
+
 def read_wildcard_dict(wildcard_path):
     global wildcard_dict
     for root, directories, files in os.walk(wildcard_path, followlinks=True):

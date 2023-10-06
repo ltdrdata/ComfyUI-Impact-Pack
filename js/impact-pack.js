@@ -490,12 +490,33 @@ app.registerExtension({
                 case "ToDetailerPipe":
 		        case "ToDetailerPipeSDXL":
                 case "EditDetailerPipe":
+                case "EditDetailerPipeSDXL":
                 case "BasicPipeToDetailerPipe":
 		        case "BasicPipeToDetailerPipeSDXL":
                     tbox_id = 0;
                     combo_id = 1;
                     break;
             }
+
+			Object.defineProperty(node.widgets[combo_id+1], "value", {
+				set: (value) => {
+				        const stackTrace = new Error().stack;
+                        if(stackTrace.includes('inner_value_change')) {
+                            if(value != "Select the Wildcard to add to the text") {
+                                if(node.widgets[tbox_id].value != '')
+                                    node.widgets[tbox_id].value += ', '
+
+
+	                            node.widgets[tbox_id].value += value;
+                            }
+                        }
+
+						node._wvalue = value;
+					},
+				get: () => {
+                        return node._wvalue;
+					 }
+			});
 
 			Object.defineProperty(node.widgets[combo_id], "value", {
 				set: (value) => {
@@ -520,6 +541,7 @@ app.registerExtension({
                         return node._value;
 					 }
 			});
+
 
 			// Preventing validation errors from occurring in any situation.
 			node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }

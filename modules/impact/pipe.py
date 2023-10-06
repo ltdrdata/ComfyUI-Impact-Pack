@@ -1,4 +1,5 @@
 import folder_paths
+import impact.wildcards
 
 class ToDetailerPipe:
     @classmethod
@@ -12,6 +13,7 @@ class ToDetailerPipe:
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                     "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL",),
@@ -49,6 +51,7 @@ class ToDetailerPipeSDXL(ToDetailerPipe):
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                     "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL",),
@@ -167,6 +170,7 @@ class BasicPipeToDetailerPipe:
                              "bbox_detector": ("BBOX_DETECTOR", ),
                              "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                              "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                             "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
                              },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -202,6 +206,7 @@ class BasicPipeToDetailerPipeSDXL:
                              "bbox_detector": ("BBOX_DETECTOR", ),
                              "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                              "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                             "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
                              },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -300,6 +305,7 @@ class EditDetailerPipe:
                 "detailer_pipe": ("DETAILER_PIPE",),
                 "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                 "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
             },
             "optional": {
                 "model": ("MODEL",),
@@ -396,6 +402,7 @@ class EditDetailerPipeSDXL(EditDetailerPipe):
                 "detailer_pipe": ("DETAILER_PIPE",),
                 "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                 "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"),),
+                "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(),),
             },
             "optional": {
                 "model": ("MODEL",),
