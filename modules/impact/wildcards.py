@@ -21,7 +21,6 @@ def read_wildcard_dict(wildcard_path):
                         lines = f.read().splitlines()
                         wildcard_dict[key] = lines
                 except UnicodeDecodeError:
-                    printf(f"failed...")
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         lines = f.read().splitlines()
                         wildcard_dict[key] = lines
