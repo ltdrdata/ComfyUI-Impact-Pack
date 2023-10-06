@@ -187,7 +187,21 @@ def remove_lora_tags(string):
     return result
 
 
+def resolve_lora_name(lora_name_cache, name):
+    if os.path.exists(name):
+        return name
+    else:
+        if len(lora_name_cache) == 0:
+            lora_name_cache.extend(folder_paths.get_filename_list("loras"))
+
+        for x in lora_name_cache:
+            if x.endswith(name):
+                return x
+
+
 def process_with_loras(wildcard_opt, model, clip):
+    lora_name_cache = []
+
     pass1 = process(wildcard_opt)
     loras = extract_lora_values(pass1)
     pass2 = remove_lora_tags(pass1)
@@ -195,6 +209,8 @@ def process_with_loras(wildcard_opt, model, clip):
     for lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b in loras:
         if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
+
+        lora_name = resolve_lora_name(lora_name_cache, lora_name)
 
         path = folder_paths.get_full_path("loras", lora_name)
 

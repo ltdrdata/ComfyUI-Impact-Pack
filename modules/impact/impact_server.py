@@ -3,7 +3,7 @@ import threading
 
 from aiohttp import web
 
-import impact.config
+import impact
 import server
 import folder_paths
 
