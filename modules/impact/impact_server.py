@@ -249,6 +249,11 @@ def onprompt_for_switch(json_data):
                     input_node = json_data['prompt'][select_input[0]]
                     if input_node['class_type'] == 'ImpactInt' and 'inputs' in input_node and 'value' in input_node['inputs']:
                         onprompt_switch_info[k] = input_node['inputs']['value']
+                    if input_node['class_type'] == 'ImpactSwitch' and 'inputs' in input_node and 'select' in input_node['inputs']:
+                        if isinstance(input_node['inputs']['select'], int):
+                            onprompt_switch_info[k] = input_node['inputs']['select']
+                        else:
+                            print(f"\n##### ##### #####\n[WARN] {cls}: For the 'select' operation, only 'select_index' of the 'ImpactSwitch', which is not an input, or 'ImpactInt' and 'Primitive' are allowed as inputs.\n##### ##### #####\n")
                 else:
                     onprompt_switch_info[k] = select_input
 
