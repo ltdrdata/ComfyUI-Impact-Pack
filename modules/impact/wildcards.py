@@ -16,9 +16,15 @@ def read_wildcard_dict(wildcard_path):
                 rel_path = os.path.relpath(file_path, wildcard_path)
                 key = os.path.splitext(rel_path)[0].replace('\\', '/').lower()
 
-                with open(file_path, 'r', encoding="UTF-8") as f:
-                    lines = f.read().splitlines()
-                    wildcard_dict[key] = lines
+                try:
+                    with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                        lines = f.read().splitlines()
+                        wildcard_dict[key] = lines
+                except UnicodeDecodeError:
+                    printf(f"failed...")
+                    with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                        lines = f.read().splitlines()
+                        wildcard_dict[key] = lines
 
     return wildcard_dict
 
