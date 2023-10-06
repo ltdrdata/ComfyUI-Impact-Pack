@@ -477,6 +477,7 @@ app.registerExtension({
 		if(node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
 		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
+			node._wvalue = "Select the Wildcard to add to the text";
 
             var tbox_id = 0;
             var combo_id = 3;
