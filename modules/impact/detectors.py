@@ -185,7 +185,7 @@ class SimpleDetectorForEach:
                                       sub_threshold, sub_bbox_expansion, sam_mask_hint_threshold, False)
             segs = core.segs_bitwise_and_mask(segs, mask)
         elif segm_detector_opt is not None:
-            segm_segs = segm_detector_opt.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size)
+            segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size)
             mask = core.segs_to_combined_mask(segm_segs)
             segs = core.segs_bitwise_and_mask(segs, mask)
 

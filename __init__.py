@@ -330,6 +330,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MasksToMaskList": "Masks to Mask List",
     "MaskListToMaskBatch": "Mask List to Masks",
     "ImpactImageBatchToImageList": "Image batch to Image List",
+    "ImageListToImageBatch": "Image List to Image Batch",
     "ImpactMakeImageList": "Make Image List",
     "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
