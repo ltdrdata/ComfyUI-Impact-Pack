@@ -185,6 +185,8 @@ class DetailerForEach:
         cropped_list = []
         cnet_pil_list = []
 
+        segs = core.segs_scale_match(segs, image.shape)
+
         for seg in segs[1]:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
