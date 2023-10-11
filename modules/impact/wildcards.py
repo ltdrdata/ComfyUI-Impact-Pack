@@ -12,6 +12,14 @@ def get_wildcard_list():
     return [f"__{x}__" for x in wildcard_dict.keys()]
 
 
+def read_wildcard(k, v):
+    if isinstance(v, list):
+        wildcard_dict[k.lower()] = v
+    else:
+        for k2, v2 in v.items():
+            read_wildcard(f"{k}/{k2}", v2)
+
+
 def read_wildcard_dict(wildcard_path):
     global wildcard_dict
     for root, directories, files in os.walk(wildcard_path, followlinks=True):
@@ -35,11 +43,7 @@ def read_wildcard_dict(wildcard_path):
                     yaml_data = yaml.load(f, Loader=yaml.FullLoader)
 
                     for k, v in yaml_data.items():
-                        if isinstance(v, list):
-                            wildcard_dict[k.lower()] = v2
-                        else:
-                            for k2, v2 in v.items():
-                                wildcard_dict[f"{k}.{k2}".lower()] = v2
+                        read_wildcard(k, v)
 
     return wildcard_dict
 
@@ -55,14 +59,38 @@ def process(text, seed=None):
             nonlocal replacements_found
             options = match.group(1).split('|')
 
+            multi_select_pattern = options[0].split('$$')
+            select_range = None
+            select_sep = ''
+            range_pattern = r'(\d+)(-(\d+))?'
+
+            if len(multi_select_pattern) > 1:
+                r = re.match(range_pattern, options[0])
+
+                if r.group(3) is not None and is_numeric_string(r.group(1)) and is_numeric_string(r.group(3)):
+                    # PATTERN: num1-num2
+                    select_range = int(r.group(1)), int(r.group(3))
+                elif is_numeric_string(r.group(1)):
+                    # PATTERN: num
+                    x = int(r.group(1))
+                    select_range = (x, x)
+
+                if select_range is not None and len(multi_select_pattern) == 2:
+                    # PATTERN: count$$
+                    options[0] = multi_select_pattern[1]
+                elif select_range is not None and len(multi_select_pattern) == 3:
+                    # PATTERN: count$$ sep $$
+                    select_sep = multi_select_pattern[1]
+                    options[0] = multi_select_pattern[2]
+
             adjusted_probabilities = []
 
             total_prob = 0
 
             for option in options:
                 parts = option.split('::', 1)
-                if len(parts) == 2 and parts[0].isdigit():
-                    config_value = int(parts[0])
+                if len(parts) == 2 and is_numeric_string(parts[0]):
+                    config_value = float(parts[0])
                 else:
                     config_value = 1  # Default value if no configuration is provided
 
@@ -71,9 +99,26 @@ def process(text, seed=None):
 
             normalized_probabilities = [prob / total_prob for prob in adjusted_probabilities]
 
-            replacement = random.choices(options, weights=normalized_probabilities, k=1)[0]
+            if select_range is None:
+                select_count = 1
+            else:
+                select_count = random.randint(select_range[0], select_range[1])
+
+            if select_count > len(options):
+                selected_items = options
+            else:
+                selected_items = random.choices(options, weights=normalized_probabilities, k=select_count)
+                selected_items = set(selected_items)
+
+                while len(selected_items) < select_count:
+                    remaining_count = select_count - len(selected_items)
+                    additional_items = random.choices(options, weights=normalized_probabilities, k=remaining_count)
+                    selected_items |= set(additional_items)
+
+            selected_items = [re.sub(r'^[0-9.]+::', '', x, 1) for x in selected_items]
+            replacement = select_sep.join(selected_items)
             replacements_found = True
-            return re.sub(r'^[0-9]+::', '', replacement, 1)
+            return replacement
 
         pattern = r'{([^{}]*?)}'
         replaced_string = re.sub(pattern, replace_option, string)
