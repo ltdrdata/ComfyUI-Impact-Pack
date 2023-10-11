@@ -99,8 +99,8 @@ def process(text, seed=None):
 
             for option in options:
                 parts = option.split('::', 1)
-                if len(parts) == 2 and is_numeric_string(parts[0]):
-                    config_value = float(parts[0])
+                if len(parts) == 2 and is_numeric_string(parts[0].strip()):
+                    config_value = float(parts[0].strip())
                 else:
                     config_value = 1  # Default value if no configuration is provided
 
@@ -127,8 +127,11 @@ def process(text, seed=None):
                     selected_items |= set(additional_items)
                     try_count += 1
 
-            selected_items = [re.sub(r'^[0-9.]+::', '', x, 1) for x in selected_items]
-            replacement = select_sep.join(selected_items)
+            selected_items2 = [re.sub(r'^\s*[0-9.]+::', '', x, 1) for x in selected_items]
+            replacement = select_sep.join(selected_items2)
+            if '::' in replacement:
+                pass
+
             replacements_found = True
             return replacement
 
