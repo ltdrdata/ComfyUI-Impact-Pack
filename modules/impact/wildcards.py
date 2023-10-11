@@ -61,7 +61,7 @@ def process(text, seed=None):
 
             multi_select_pattern = options[0].split('$$')
             select_range = None
-            select_sep = ''
+            select_sep = ' '
             range_pattern = r'(\d+)(-(\d+))?'
             range_pattern2 = r'-(\d+)'
 
