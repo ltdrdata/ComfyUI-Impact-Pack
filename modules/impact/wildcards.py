@@ -271,7 +271,7 @@ def resolve_lora_name(lora_name_cache, name):
                 return x
 
 
-def process_with_loras(wildcard_opt, model, clip):
+def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
     lora_name_cache = []
 
     pass1 = process(wildcard_opt)
@@ -305,5 +305,8 @@ def process_with_loras(wildcard_opt, model, clip):
             print(f"LORA NOT FOUND: {lora_name}")
 
     print(f"CLIP: {pass2}")
-    return model, clip, nodes.CLIPTextEncode().encode(clip, pass2)[0]
 
+    if clip_encoder is None:
+        return model, clip, nodes.CLIPTextEncode().encode(clip, pass2)[0]
+    else:
+        return model, clip, clip_encoder.encode(clip, pass2)[0]

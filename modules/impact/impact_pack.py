@@ -1943,6 +1943,14 @@ class ImpactWildcardEncode:
     RETURN_NAMES = ("model", "clip", "conditioning", "populated_text")
     FUNCTION = "doit"
 
+    @staticmethod
+    def process_with_loras(**kwargs):
+        return impact.wildcards.process_with_loras(**kwargs)
+
+    @staticmethod
+    def get_wildcard_list():
+        return impact.wildcards.get_wildcard_list()
+
     def doit(self, *args, **kwargs):
         populated = kwargs['populated_text']
         model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])

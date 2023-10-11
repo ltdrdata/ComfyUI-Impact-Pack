@@ -546,6 +546,7 @@ app.registerExtension({
 
 			// Preventing validation errors from occurring in any situation.
 			node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
+			node.widgets[combo_id+1].serializeValue = () => { return "Select the Wildcard to add to the text"; }
 		}
 
 		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
