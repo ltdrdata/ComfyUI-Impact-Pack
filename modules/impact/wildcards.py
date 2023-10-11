@@ -63,25 +63,35 @@ def process(text, seed=None):
             select_range = None
             select_sep = ''
             range_pattern = r'(\d+)(-(\d+))?'
+            range_pattern2 = r'-(\d+)'
 
             if len(multi_select_pattern) > 1:
                 r = re.match(range_pattern, options[0])
 
-                if r.group(3) is not None and is_numeric_string(r.group(1)) and is_numeric_string(r.group(3)):
-                    # PATTERN: num1-num2
-                    select_range = int(r.group(1)), int(r.group(3))
-                elif is_numeric_string(r.group(1)):
-                    # PATTERN: num
-                    x = int(r.group(1))
-                    select_range = (x, x)
+                if r is None:
+                    r = re.match(range_pattern2, options[0])
+                    a = '1'
+                    b = r.group(1)
+                else:
+                    a = r.group(1)
+                    b = r.group(3)
 
-                if select_range is not None and len(multi_select_pattern) == 2:
-                    # PATTERN: count$$
-                    options[0] = multi_select_pattern[1]
-                elif select_range is not None and len(multi_select_pattern) == 3:
-                    # PATTERN: count$$ sep $$
-                    select_sep = multi_select_pattern[1]
-                    options[0] = multi_select_pattern[2]
+                if r is not None:
+                    if b is not None and is_numeric_string(a) and is_numeric_string(b):
+                        # PATTERN: num1-num2
+                        select_range = int(a), int(b)
+                    elif is_numeric_string(a):
+                        # PATTERN: num
+                        x = int(a)
+                        select_range = (x, x)
+
+                    if select_range is not None and len(multi_select_pattern) == 2:
+                        # PATTERN: count$$
+                        options[0] = multi_select_pattern[1]
+                    elif select_range is not None and len(multi_select_pattern) == 3:
+                        # PATTERN: count$$ sep $$
+                        select_sep = multi_select_pattern[1]
+                        options[0] = multi_select_pattern[2]
 
             adjusted_probabilities = []
 
