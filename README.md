@@ -22,20 +22,21 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## Custom Nodes
-* SAMLoader - Loads the SAM model.
-* UltralyticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
-  - Unlike `MMDetDetectorProvider`, for segm models, `BBOX_DETECTOR` is also provided.
-  - The various models available in UltralyticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
-* ONNXDetectorProvider - Loads the ONNX model to provide BBOX_DETECTOR.
-* CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
-  * You need to install the ComfyUI-CLIPSeg node extension.
-* SEGM Detector (combined) - Detects segmentation and returns a mask from the input image.
-* BBOX Detector (combined) - Detects bounding boxes and returns a mask from the input image.
-* SAMDetector (combined) - Utilizes the SAM technology to extract the segment at the location indicated by the input SEGS on the input image and outputs it as a unified mask.
-* SAMDetector (Segmented) - It is similar to `SAMDetector (combined)`, but it separates and outputs the detected segments. Multiple segments can be found for the same detected area, and currently, a policy is in place to group them arbitrarily in sets of three. This aspect is expected to be improved in the future.
-  * As a result, it outputs the `combined_mask`, which is a unified mask, and `batch_masks`, which are multiple masks grouped together in batch form.
-  * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
-* Simple Detector (SEGS) - Operating primarily with `BBOX_DETECTOR`, and with the additional provision of `SAM_MODEL` or `SEGM_DETECTOR`, this node internally generates improved SEGS through mask operations on both *bbox* and *silhouette*. It serves as a convenient tool to simplify a somewhat intricate workflow.
+* [Detectors](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/detectors.md)
+  * SAMLoader - Loads the SAM model.
+  * UltralyticsDetectorProvider - Loads the Ultralystics model to provide SEGM_DETECTOR, BBOX_DETECTOR.
+    - Unlike `MMDetDetectorProvider`, for segm models, `BBOX_DETECTOR` is also provided.
+    - The various models available in UltralyticsDetectorProvider can be downloaded through **ComfyUI-Manager**.
+  * ONNXDetectorProvider - Loads the ONNX model to provide BBOX_DETECTOR.
+  * CLIPSegDetectorProvider - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
+    * You need to install the ComfyUI-CLIPSeg node extension.
+  * SEGM Detector (combined) - Detects segmentation and returns a mask from the input image.
+  * BBOX Detector (combined) - Detects bounding boxes and returns a mask from the input image.
+  * SAMDetector (combined) - Utilizes the SAM technology to extract the segment at the location indicated by the input SEGS on the input image and outputs it as a unified mask.
+  * SAMDetector (Segmented) - It is similar to `SAMDetector (combined)`, but it separates and outputs the detected segments. Multiple segments can be found for the same detected area, and currently, a policy is in place to group them arbitrarily in sets of three. This aspect is expected to be improved in the future.
+    * As a result, it outputs the `combined_mask`, which is a unified mask, and `batch_masks`, which are multiple masks grouped together in batch form.
+    * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
+  * Simple Detector (SEGS) - Operating primarily with `BBOX_DETECTOR`, and with the additional provision of `SAM_MODEL` or `SEGM_DETECTOR`, this node internally generates improved SEGS through mask operations on both *bbox* and *silhouette*. It serves as a convenient tool to simplify a somewhat intricate workflow.
 
 * ControlNetApply (SEGS) - To apply ControlNet in SEGS, you need to use the Preprocessor Provider node from the Inspire Pack to utilize this node.
 
@@ -132,7 +133,7 @@ This takes latent as input and outputs latent as the result.
   * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
   * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
-* Switche nodes
+* Switch nodes
   * Switch (image,mask), Switch (latent), Switch (SEGS) - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
   * Switch (Any) - This is a Switch node that takes an arbitrary number of inputs and produces a single output. Its type is determined when connected to any node, and connecting inputs increases the available slots for connections.
   * Inversed Switch (Any) - In contrast to `Switch (Any)`, it takes a single input and outputs one of many. Due to ComfyUI's functional limitations, the value of `select` must be determined at the time of queuing a prompt, and while it can serve as a `Primitive Node` or `ImpactInt`, it cannot function properly when connected through other nodes. 
@@ -141,11 +142,14 @@ This takes latent as input and outputs latent as the result.
     * `Switch (image,mask)`, `Switch (latent)`, `Switch (SEGS)`, `Switch (Any)` supports `sel_mode` param. The `sel_mode` sets the moment at which the `select` parameter is determined. `select_on_prompt` determines the `select` at the time of queuing the prompt, while `select_on_execution` determines it during the execution of the workflow. While `select_on_execution` offers more flexibility, it can potentially trigger workflow execution errors due to running nodes that may be impossible to execute within the limitations of ComfyUI. `select_on_prompt` bypasses this constraint by treating any inputs not selected as if they were disconnected. However, please note that when using `select_on_prompt`, the `select` can only be used with widgets or `Primitive Nodes` determined at the queue prompt.
     * There is an issue when connecting the built-in reroute node with the switch's input/output slots. it can lead to forced disconnections during workflow loading. Therefore, it is advisable not to use reroute for making connections in such cases. However, there are no issues when using the reroute node in Pythongossss.
 
-* ImpactWildcardProcessor - The text is generated by processing the wildcard in the Text. If the mode is set to "populate", a dynamic prompt is generated with each execution and the input is filled in the second textbox. If the mode is set to "fixed", the content of the second textbox remains unchanged.
-  * When an image is generated with the "fixed" mode, the prompt used for that particular generation is stored in the metadata.
-* ImpactWildcardEncode - Similar to ImpactWildcardProcessor, this provides the loading functionality of LoRAs (e.g. `<lora:some_awesome_lora:0.7:1.2>`). Populated prompts are encoded using the clip after all the lora loading is done.
-  * If the `Inspire Pack` is installed, you can use **Lora Block Weight** in the form of `LBW=lbw spec;`
-  * `<lora:chunli:1.0:1.0:LBW=B11:0,0,0,0,0,0,0,0,0,0,A,0,0,0,0,0,0;A=0.;>`, `<lora:chunli:1.0:1.0:LBW=0,0,0,0,0,0,0,0,0,0,A,B,0,0,0,0,0;A=0.5;B=0.2;>`, `<lora:chunli:1.0:1.0:LBW=SD-MIDD;>` 
+* [Wildcards](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md) - These are nodes that supports syntax in the form of `__wildcard-name__` and dynamic prompt syntax like `{a|b|c}`.
+  * Wildcard files can be used by placing `.txt` or `.yaml` files under either `ComfyUI-Impact-Pack/wildcards` or `ComfyUI-Impact-Pack/custom_wildcards` paths.
+    * You can download and use [Wildcard YAML](https://civitai.com/models/138970/billions-of-wildcards-all-in-one) files in this format.
+  * ImpactWildcardProcessor - The text is generated by processing the wildcard in the Text. If the mode is set to "populate", a dynamic prompt is generated with each execution and the input is filled in the second textbox. If the mode is set to "fixed", the content of the second textbox remains unchanged.
+    * When an image is generated with the "fixed" mode, the prompt used for that particular generation is stored in the metadata.
+  * ImpactWildcardEncode - Similar to ImpactWildcardProcessor, this provides the loading functionality of LoRAs (e.g. `<lora:some_awesome_lora:0.7:1.2>`). Populated prompts are encoded using the clip after all the lora loading is done.
+    * If the `Inspire Pack` is installed, you can use **Lora Block Weight** in the form of `LBW=lbw spec;`
+    * `<lora:chunli:1.0:1.0:LBW=B11:0,0,0,0,0,0,0,0,0,0,A,0,0,0,0,0,0;A=0.;>`, `<lora:chunli:1.0:1.0:LBW=0,0,0,0,0,0,0,0,0,0,A,B,0,0,0,0,0;A=0.5;B=0.2;>`, `<lora:chunli:1.0:1.0:LBW=SD-MIDD;>`
 
 * Regional Sampling - These nodes offer the capability to divide regions and perform partial sampling using a mask. Unlike TwoSamplersForMask, sampling for each region is applied during each step.
   * RegionalPrompt - This node combines a **mask** for specifying regions and the **sampler** to apply to each region to create `REGIONAL_PROMPTS`.
