@@ -110,10 +110,12 @@ def process(text, seed=None):
                 selected_items = random.choices(options, weights=normalized_probabilities, k=select_count)
                 selected_items = set(selected_items)
 
-                while len(selected_items) < select_count:
+                try_count = 0
+                while len(selected_items) < select_count and try_count < 10:
                     remaining_count = select_count - len(selected_items)
                     additional_items = random.choices(options, weights=normalized_probabilities, k=remaining_count)
                     selected_items |= set(additional_items)
+                    try_count += 1
 
             selected_items = [re.sub(r'^[0-9.]+::', '', x, 1) for x in selected_items]
             replacement = select_sep.join(selected_items)
