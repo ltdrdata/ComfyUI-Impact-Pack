@@ -619,16 +619,28 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
         mask = combine_masks2(total_masks)
 
     finally:
-        if sam_model.is_auto_mode:
-            print(f"semd to {device}")
-            sam_model.to(device="cpu")
+        # Temporarily disabling the switch back to CPU after inference.
+        # Rationale: After multiple tests and comparisons, it's concluded that not only does it fail to conserve GPU memory, 
+        # but it also introduces additional IO overhead from transferring the model between devices.
+
+        # if sam_model.is_auto_mode:
+        #     sam_model.to(device=torch.device("cpu"))
+
+        pass
+
+    mask_working_device = torch.device("cpu")
 
     if mask is not None:
         mask = mask.float()
         mask = dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
+        mask = mask.to(device=mask_working_device)
     else:
-        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+        # Extracting batch, height and width
+        height, width, _ = image.shape
+        mask = torch.zeros(
+            (height, width), dtype=torch.float32, device=mask_working_device
+        )  # empty mask
 
     stacked_masks = convert_and_stack_masks(total_masks)
 
