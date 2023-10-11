@@ -71,10 +71,10 @@ def process(text, seed=None):
                 if r is None:
                     r = re.match(range_pattern2, options[0])
                     a = '1'
-                    b = r.group(1)
+                    b = r.group(1).strip()
                 else:
-                    a = r.group(1)
-                    b = r.group(3)
+                    a = r.group(1).strip()
+                    b = r.group(3).strip()
 
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):
