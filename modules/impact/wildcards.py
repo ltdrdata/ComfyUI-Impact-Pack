@@ -3,6 +3,7 @@ import random
 import os
 import nodes
 import folder_paths
+import yaml
 
 wildcard_dict = {}
 
@@ -28,6 +29,17 @@ def read_wildcard_dict(wildcard_path):
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         lines = f.read().splitlines()
                         wildcard_dict[key] = lines
+            elif file.endswith('.yaml'):
+                file_path = os.path.join(root, file)
+                with open(file_path, 'r') as f:
+                    yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+
+                    for k, v in yaml_data.items():
+                        if isinstance(v, list):
+                            wildcard_dict[k.lower()] = v2
+                        else:
+                            for k2, v2 in v.items():
+                                wildcard_dict[f"{k}.{k2}".lower()] = v2
 
     return wildcard_dict
 
