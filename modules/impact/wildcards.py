@@ -15,7 +15,7 @@ def get_wildcard_list():
 def read_wildcard(k, v):
     if isinstance(v, list):
         wildcard_dict[k.lower()] = v
-    else:
+    elif isinstance(v, dict):
         for k2, v2 in v.items():
             read_wildcard(f"{k}/{k2}", v2)
 
