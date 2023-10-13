@@ -110,9 +110,11 @@ function imgSendHandler(event) {
 						nodes[i].widgets[0].value = `${data.filename} [${data.type}]`;
 
 					let img = new Image();
+					img.onload = (event) => {
+						nodes[i].imgs = [img];
+						nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
+					};
 					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
-					nodes[i].imgs = [img];
-					nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
 				}
 			}
 		}

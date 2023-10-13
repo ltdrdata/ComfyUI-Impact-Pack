@@ -304,10 +304,20 @@ def gc_preview_bridge_cache(json_data):
             del core.preview_bridge_cache[key]
 
 
+def workflow_imagereceiver_update(json_data):
+    prompt = json_data['prompt']
+
+    for v in prompt.values():
+        if 'class_type' in v and v['class_type'] == 'ImageReceiver':
+            if v['inputs']['save_to_workflow']:
+                v['inputs']['image'] = "#DATA"
+
+
 def onprompt(json_data):
     json_data = onprompt_for_switch(json_data)
     onprompt_for_pickers(json_data)
     gc_preview_bridge_cache(json_data)
+    workflow_imagereceiver_update(json_data)
 
     return json_data
 
