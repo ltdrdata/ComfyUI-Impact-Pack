@@ -636,7 +636,7 @@ app.registerExtension({
             populated_text_widget.serializeValue = force_serializeValue;
 		}
 
-		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
+		if (node.comfyClass == "MaskPainter") {
 			node.widgets[0].value = '#placeholder';
 
 			Object.defineProperty(node, "images", {

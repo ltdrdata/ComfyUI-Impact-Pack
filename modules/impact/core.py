@@ -20,6 +20,9 @@ SEG = namedtuple("SEG",
                  defaults=[None])
 
 
+preview_bridge_cache = {}
+
+
 def erosion_mask(mask, grow_mask_by):
     if len(mask.shape) == 3:
         mask = mask.squeeze(0)

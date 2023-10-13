@@ -1405,17 +1405,44 @@ def get_image_hash(arr):
     return hash((sum1, sum2, sum3, sum4))
 
 
+def get_file_item(base_type, path):
+    path_type = base_type
+
+    if path == "[output]":
+        path_type = "output"
+        path = path[:-9]
+    elif path == "[input]":
+        path_type = "input"
+        path = path[:-8]
+    elif path == "[temp]":
+        path_type = "temp"
+        path = path[:-7]
+
+    subfolder = os.path.dirname(path)
+    filename = os.path.basename(path)
+
+    return {
+            "filename": filename,
+            "subfolder": subfolder,
+            "type": path_type
+           }
+
+
 class PreviewBridge(nodes.PreviewImage):
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"images": ("IMAGE",), },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"},
-                "optional": {"image": (["#placeholder"], )},
+        return {"required": {
+                    "images": ("IMAGE",),
+                    "image": ("STRING", {"default": ""}),
+                    },
+                "hidden": {"unique_id": "UNIQUE_ID"},
                 }
 
     RETURN_TYPES = ("IMAGE", "MASK", )
 
     FUNCTION = "doit"
+
+    OUTPUT_NODE = True
 
     CATEGORY = "ImpactPack/Util"
 
@@ -1423,63 +1450,33 @@ class PreviewBridge(nodes.PreviewImage):
         super().__init__()
         self.prev_hash = None
 
-    def doit(self, images, image, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, unique_id=None):
-        if image != "#placeholder" and isinstance(image, str):
-            image_path = folder_paths.get_annotated_filepath(image)
-            img = Image.open(image_path).convert("RGB")
-            data = np.array(img)
-            image_hash = get_image_hash(data)
-        else:
-            data = (255. * images[0].cpu().numpy()).astype(int)
-            image_hash = get_image_hash(data)
+    def doit(self, images, image, unique_id):
+        if unique_id not in impact.core.preview_bridge_cache:
+            image = ""
+        elif impact.core.preview_bridge_cache[unique_id] is not images:
+            image = ""
 
-        is_changed = False
-        if self.prev_hash is None or self.prev_hash != image_hash:
-            self.prev_hash = image_hash
-            is_changed = True
+        if image != "":
+            try:
+                pixels, mask = nodes.LoadImage().load_image(image)
+                image = [get_file_item("temp", image)]
+            except:
+                image = ""
 
-        if is_changed or image == "#placeholder":
-            # new input image
-            res = self.save_images(images, filename_prefix, prompt, extra_pnginfo)
+        if image == "":
+            impact.core.preview_bridge_cache[unique_id] = images
 
-            item = res['ui']['images'][0]
+            res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-")
+            image = res['ui']['images']
+            pixels = images
+            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+            image_feedback = f"${image[0]['filename']} [temp]"
+            PromptServer.instance.send_sync("impact-node-feedback", {"id": unique_id, "widget_name": "image", "type": "text", "value": image_feedback})
 
-            if not item['filename'].endswith(']'):
-                filepath = f"{item['filename']} [{item['type']}]"
-            else:
-                filepath = item['filename']
-
-            image, mask = nodes.LoadImage().load_image(filepath)
-
-            res['ui']['aux'] = [image_hash, res['ui']['images']]
-            res['result'] = (image, mask, )
-
-            return res
-
-        else:
-            # new mask
-            if '0' in image:  # fallback
-                image = image['0']
-
-            forward = {'filename': image['forward_filename'],
-                       'subfolder': image['forward_subfolder'],
-                       'type': image['forward_type'], }
-
-            res = {'ui': {'images': [forward]}}
-
-            imgpath = ""
-            if 'subfolder' in image and image['subfolder'] != "":
-                imgpath = image['subfolder'] + "/"
-
-            imgpath += f"{image['filename']}"
-
-            if 'type' in image and image['type'] != "":
-                imgpath += f" [{image['type']}]"
-
-            res['ui']['aux'] = [image_hash, [forward]]
-            res['result'] = nodes.LoadImage().load_image(imgpath)
-
-            return res
+        return {
+            "ui": {"images": image},
+            "result": (pixels, mask, ),
+        }
 
 
 class ImageReceiver(nodes.LoadImage):

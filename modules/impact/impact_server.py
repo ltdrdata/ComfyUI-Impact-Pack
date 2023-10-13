@@ -295,9 +295,19 @@ def onprompt_for_pickers(json_data):
         del segs_picker_map[key]
 
 
+def gc_preview_bridge_cache(json_data):
+    prompt_keys = json_data['prompt'].keys()
+
+    for key in list(core.preview_bridge_cache.keys()):
+        if key not in prompt_keys:
+            print(f"key deleted: {key}")
+            del core.preview_bridge_cache[key]
+
+
 def onprompt(json_data):
     json_data = onprompt_for_switch(json_data)
     onprompt_for_pickers(json_data)
+    gc_preview_bridge_cache(json_data)
 
     return json_data
 
