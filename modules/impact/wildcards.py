@@ -12,12 +12,19 @@ def get_wildcard_list():
     return [f"__{x}__" for x in wildcard_dict.keys()]
 
 
+def wildcard_normalize(x):
+    return x.replace("\\", "/").lower()
+
+
 def read_wildcard(k, v):
     if isinstance(v, list):
-        wildcard_dict[k.lower()] = v
+        k = wildcard_normalize(k)
+        wildcard_dict[k] = v
     elif isinstance(v, dict):
         for k2, v2 in v.items():
-            read_wildcard(f"{k}/{k2}", v2)
+            new_key = f"{k}/{k2}"
+            new_key = wildcard_normalize(new_key)
+            read_wildcard(new_key, v2)
 
 
 def read_wildcard_dict(wildcard_path):
@@ -145,13 +152,14 @@ def process(text, seed=None):
 
     def replace_wildcard(string):
         global wildcard_dict
-        pattern = r"__([\w.\-/*]+)__"
+        pattern = r"__([\w.\-/*\\]+)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
 
         for match in matches:
             keyword = match.lower()
+            keyword = wildcard_normalize(keyword)
             if keyword in wildcard_dict:
                 replacement = random.choice(wildcard_dict[keyword])
                 replacements_found = True
@@ -169,6 +177,9 @@ def process(text, seed=None):
                     replacement = random.choice(total_patterns)
                     replacements_found = True
                     string = string.replace(f"__{match}__", replacement, 1)
+            elif '/' not in keyword:
+                string_fallback = string.replace(f"__{keyword}__", f"__*/{keyword}__", 1)
+                string, replacements_found = replace_wildcard(string_fallback)
 
         return string, replacements_found
 
