@@ -41,13 +41,21 @@ app.registerExtension({
 					w._value = v;
 					let image = new Image();
 
-					let item = getFileItem('temp', v);
+					try {
+						let item = getFileItem('temp', v);
 
-					let v2 = v.replace(/\[temp\]$/, '')
-					image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+						let v2 = v.replace(/\[temp\]$/, '')
+						image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+					}
+					catch {
+						w._value = undefined;
+					}
 					node.imgs = [image];
 				},
 				get() {
+					if(w._value == undefined) {
+						return undefined;
+					}
 					return w._value;
 				}
 			});
