@@ -1521,7 +1521,7 @@ class ImageReceiver(nodes.LoadImage):
 
     @classmethod
     def VALIDATE_INPUTS(s, image, link_id, save_to_workflow, image_data):
-        if not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
+        if image != '#DATA' and not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
             return "Invalid image file: {}".format(image)
 
         return True
