@@ -1480,7 +1480,7 @@ class PreviewBridge(nodes.PreviewImage):
         }
 
 
-class ImageReceiver(nodes.LoadImage):
+class ImageReceiver:
     @classmethod
     def INPUT_TYPES(s):
         input_dir = folder_paths.get_input_directory()
@@ -1494,6 +1494,8 @@ class ImageReceiver(nodes.LoadImage):
                 }
 
     FUNCTION = "doit"
+
+    RETURN_TYPES = ("IMAGE", "MASK")
 
     CATEGORY = "ImpactPack/Util"
 
@@ -1525,6 +1527,13 @@ class ImageReceiver(nodes.LoadImage):
             return "Invalid image file: {}".format(image)
 
         return True
+
+    @classmethod
+    def IS_CHANGED(s, image, link_id, save_to_workflow, image_data):
+        if save_to_workflow:
+            return hash(image_data)
+        else:
+            return get_image_hash(image)
 
 
 from server import PromptServer
