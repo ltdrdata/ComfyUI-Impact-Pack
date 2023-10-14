@@ -36,16 +36,30 @@ app.registerExtension({
 
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
-					this._img = v;
-					var canvas = document.createElement('canvas');
-					canvas.width = v[0].width;
-					canvas.height = v[0].height;
+					let act = () => {
+						this._img = v;
+						var canvas = document.createElement('canvas');
+						canvas.width = v[0].width;
+						canvas.height = v[0].height;
 
-					var context = canvas.getContext('2d');
-					context.drawImage(v[0], 0, 0, v[0].width, v[0].height);
+						var context = canvas.getContext('2d');
+						context.drawImage(v[0], 0, 0, v[0].width, v[0].height);
 
-					var base64Image = canvas.toDataURL('image/png');
-					w.value = base64Image;
+						var base64Image = canvas.toDataURL('image/png');
+						w.value = base64Image;
+					};
+
+					if (!v[0].complete) {
+						let orig_onload = v[0].onload;
+						v[0].onload = function() {
+							if(orig_onload)
+								orig_onload();
+							act();
+						};
+					}
+					else {
+						act();
+					}
 				},
 				get() {
 					if(this._img == undefined && w.value != '') {

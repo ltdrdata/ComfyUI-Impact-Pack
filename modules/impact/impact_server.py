@@ -17,6 +17,7 @@ import io
 import impact.wildcards as wildcards
 import comfy
 from io import BytesIO
+import random
 
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
@@ -313,11 +314,38 @@ def workflow_imagereceiver_update(json_data):
                 v['inputs']['image'] = "#DATA"
 
 
+def regional_sampler_seed_update(json_data):
+    prompt = json_data['prompt']
+
+    for k, v in prompt.items():
+        if 'class_type' in v and v['class_type'] == 'RegionalSampler':
+            seed_2nd_mode = v['inputs']['seed_2nd_mode']
+
+            new_seed = None
+            if seed_2nd_mode == 'increment':
+                new_seed = v['inputs']['seed_2nd']+1
+                if new_seed > 1125899906842624:
+                    new_seed = 0
+            elif seed_2nd_mode == 'decrement':
+                new_seed = v['inputs']['seed_2nd']-1
+                if new_seed < 0:
+                    new_seed = 1125899906842624
+            elif seed_2nd_mode == 'randomize':
+                new_seed = random.randint(0, 1125899906842624)
+
+            if new_seed is not None:
+                server.PromptServer.instance.send_sync("impact-node-feedback", {"id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
+
+
 def onprompt(json_data):
-    json_data = onprompt_for_switch(json_data)
-    onprompt_for_pickers(json_data)
-    gc_preview_bridge_cache(json_data)
-    workflow_imagereceiver_update(json_data)
+    try:
+        json_data = onprompt_for_switch(json_data)
+        onprompt_for_pickers(json_data)
+        gc_preview_bridge_cache(json_data)
+        workflow_imagereceiver_update(json_data)
+        regional_sampler_seed_update(json_data)
+    except Exception as e:
+        print(f"[ComfyUI-Impact-Pack] Error on prompt: Several features will not work.\n{e}")
 
     return json_data
 

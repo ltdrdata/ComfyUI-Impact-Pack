@@ -222,13 +222,16 @@ class RegionalSampler:
     def INPUT_TYPES(s):
         return {"required": {
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "seed_2nd": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "seed_2nd_mode": (["ignore", "fixed", "seed+seed_2nd", "seed-seed_2nd", "increment", "decrement", "randomize"], ),
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "base_only_steps": ("INT", {"default": 2, "min": 0, "max": 10000}),
                      "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                      "samples": ("LATENT", ),
                      "base_sampler": ("KSAMPLER_ADVANCED", ),
                      "regional_prompts": ("REGIONAL_PROMPTS", ),
                      "overlap_factor": ("INT", {"default": 10, "min": 0, "max": 10000}),
-                     "restore_latent": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"})
+                     "restore_latent": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      },
                  "hidden": {"unique_id": "UNIQUE_ID"},
                 }
@@ -256,7 +259,7 @@ class RegionalSampler:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent, unique_id=None):
+    def doit(self, seed, seed_2nd, seed_2nd_mode, steps, base_only_steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent, unique_id=None):
         if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
         else:
@@ -274,19 +277,41 @@ class RegionalSampler:
         region_len = len(regional_prompts)
         total = steps*region_len
 
+        leftover_noise = 'disable'
+        if base_only_steps > 0:
+            if seed_2nd_mode == 'ignore':
+                leftover_noise = 'enable'
+
+            samples = base_sampler.sample_advanced("enable", seed, adv_steps, samples, start_at_step, start_at_step + base_only_steps, leftover_noise, recover_special_sampler=False)
+
+        if seed_2nd_mode == "seed+seed_2nd":
+            seed += seed_2nd
+            if seed > 1125899906842624:
+                seed = seed - 1125899906842624
+        elif seed_2nd_mode == "seed-seed_2nd":
+            seed -= seed_2nd
+            if seed < 0:
+                seed += 1125899906842624
+        elif seed_2nd_mode != 'ignore':
+            seed = seed_2nd
+
         new_latent_image = samples.copy()
         base_latent_image = None
 
-        for i in range(start_at_step, adv_steps):
-            core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
+        if leftover_noise != 'enable':
+            add_noise = "enable"
+        else:
+            add_noise = "disable"
 
-            add_noise = "enable" if i == start_at_step else "disable"
+        for i in range(start_at_step+base_only_steps, adv_steps):
+            core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             new_latent_image['noise_mask'] = inv_mask
             new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable", recover_special_sampler=True)
 
             if restore_latent:
-                del new_latent_image['noise_mask']
+                if 'noise_mask' in new_latent_image:
+                    del new_latent_image['noise_mask']
                 base_latent_image = new_latent_image.copy()
 
             j = 1
@@ -308,6 +333,8 @@ class RegionalSampler:
                     new_latent_image = base_latent_image
 
                 j += 1
+
+            add_noise = 'disable'
 
         # finalize
         core.update_node_status(unique_id, f"finalize")
@@ -420,7 +447,7 @@ class RegionalSamplerAdvanced:
             base_latent_image = new_latent_image
 
         new_latent_image['noise_mask'] = inv_mask
-        new_latent_image = base_sampler.sample_advanced("disable", noise_seed, steps, new_latent_image, end_at_step, end_at_step+1, "disable", recover_special_sampler=False)
+        new_latent_image = base_sampler.sample_advanced("disable", noise_seed, steps, new_latent_image, end_at_step, end_at_step+1, return_with_leftover_noise, recover_special_sampler=False)
 
         core.update_node_status(unique_id, f"{end_at_step}/{end_at_step} steps", total)
         core.update_node_status(unique_id, "", None)

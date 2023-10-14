@@ -17,13 +17,14 @@ from impact.utils import *
 import impact.core as core
 from impact.core import SEG
 from impact.config import MAX_RESOLUTION, latent_letter_path
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 import hashlib
 import json
 import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import comfy.model_management
+import base64
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -1498,18 +1499,23 @@ class ImageReceiver(nodes.LoadImage):
 
     def doit(self, image, link_id, save_to_workflow, image_data):
         if save_to_workflow:
-            image_data = base64.b64decode(image_data.split(",")[1])
-            i = Image.open(BytesIO(image_data))
-            i = ImageOps.exif_transpose(i)
-            image = i.convert("RGB")
-            image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image)[None,]
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
+            try:
+                image_data = base64.b64decode(image_data.split(",")[1])
+                i = Image.open(BytesIO(image_data))
+                i = ImageOps.exif_transpose(i)
+                image = i.convert("RGB")
+                image = np.array(image).astype(np.float32) / 255.0
+                image = torch.from_numpy(image)[None,]
+                if 'A' in i.getbands():
+                    mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                    mask = 1. - torch.from_numpy(mask)
+                else:
+                    mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+                return (image, mask.unsqueeze(0))
+            except Exception as e:
+                print(f"[ComfyUI-Impact-Pack] ImageReceiver - invalid 'image_data'")
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-            return (image, mask.unsqueeze(0))
+                return (empty_pil_tensor(64, 64), mask, )
         else:
             return nodes.LoadImage().load_image(image)
 
