@@ -1429,7 +1429,7 @@ def get_file_item(base_type, path):
            }
 
 
-class PreviewBridge(nodes.PreviewImage):
+class PreviewBridge:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
@@ -1449,6 +1449,8 @@ class PreviewBridge(nodes.PreviewImage):
 
     def __init__(self):
         super().__init__()
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
         self.prev_hash = None
 
     def doit(self, images, image, unique_id):
@@ -1471,7 +1473,8 @@ class PreviewBridge(nodes.PreviewImage):
             image = res['ui']['images']
             pixels = images
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-            image_feedback = f"${image[0]['filename']} [temp]"
+
+            image_feedback = f"PreviewBridge/{image[0]['filename']} [temp]"
             PromptServer.instance.send_sync("impact-node-feedback", {"id": unique_id, "widget_name": "image", "type": "text", "value": image_feedback})
 
         return {

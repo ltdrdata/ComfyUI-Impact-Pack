@@ -6,10 +6,53 @@ function load_image(str) {
 	img.src = base64String;
 }
 
+function getFileItem(baseType, path) {
+    let pathType = baseType;
+
+    if (path === "[output]") {
+        pathType = "output";
+        path = path.slice(0, -9);
+    } else if (path === "[input]") {
+        pathType = "input";
+        path = path.slice(0, -8);
+    } else if (path === "[temp]") {
+        pathType = "temp";
+        path = path.slice(0, -7);
+    }
+
+    const subfolder = path.substring(0, path.lastIndexOf('/'));
+    const filename = path.substring(path.lastIndexOf('/') + 1);
+
+    return {
+        filename: filename,
+        subfolder: subfolder,
+        type: pathType
+    };
+}
+
 app.registerExtension({
 	name: "Comfy.Impact.img",
 
 	nodeCreated(node, app) {
+		if(node.comfyClass == "PreviewBridge") {
+			let w = node.widgets.find(obj => obj.name === 'image');
+			Object.defineProperty(w, 'value', {
+				set(v) {
+					w._value = v;
+					let image = new Image();
+
+					let item = getFileItem('temp', v);
+
+					let v2 = v.replace(/\[temp\]$/, '')
+					image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+					node.imgs = [image];
+				},
+				get() {
+					return w._value;
+				}
+			});
+		}
+
 		if(node.comfyClass == "ImageReceiver") {
 			let w = node.widgets.find(obj => obj.name === 'image_data');
 			let stw_widget = node.widgets.find(obj => obj.name === 'save_to_workflow');

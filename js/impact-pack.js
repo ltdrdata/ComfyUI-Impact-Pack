@@ -183,7 +183,7 @@ api.addEventListener("executed", progressExecuteHandler);
 app.registerExtension({
 	name: "Comfy.Impack",
 	loadedGraphNode(node, app) {
-		if (node.comfyClass == "PreviewBridge" || node.comfyClass == "MaskPainter") {
+		if (node.comfyClass == "MaskPainter") {
 			input_dirty[node.id + ""] = true;
 		}
 	},
