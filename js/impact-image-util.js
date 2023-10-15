@@ -40,6 +40,9 @@ app.registerExtension({
 				set(v) {
 					w._value = v;
 					let image = new Image();
+					image.addEventListener('load', (e) => {
+						node.imgs = [image];
+					});
 
 					try {
 						let item = getFileItem('temp', v);
@@ -48,7 +51,6 @@ app.registerExtension({
 					catch {
 						w._value = undefined;
 					}
-					node.imgs = [image];
 				},
 				get() {
 					if(w._value == undefined) {
