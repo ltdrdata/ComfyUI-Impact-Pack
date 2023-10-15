@@ -232,6 +232,8 @@ NODE_CLASS_MAPPINGS = {
     "CombineRegionalPrompts": CombineRegionalPrompts,
     "RegionalPrompt": RegionalPrompt,
 
+    "ImpactCombineConditionings": CombineConditionings,
+
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
     "ImpactSEGSRangeFilter": SEGSRangeFilter,
     "ImpactSEGSOrderedFilter": SEGSOrderedFilter,
@@ -336,6 +338,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactStringSelector": "String Selector",
 
     "RemoveNoiseMask": "Remove Noise Mask",
+
+    "ImpactCombineConditionings": "Combine Conditionings",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)"

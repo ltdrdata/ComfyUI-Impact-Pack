@@ -217,6 +217,27 @@ class CombineRegionalPrompts:
         return (res, )
 
 
+class CombineConditionings:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "conditioning1": ("CONDITIONING", ),
+                     },
+                }
+
+    RETURN_TYPES = ("CONDITIONING", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        res = []
+        for k, v in kwargs.items():
+            res += v
+
+        return (res, )
+
+
 class RegionalSampler:
     @classmethod
     def INPUT_TYPES(s):
