@@ -254,6 +254,10 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactLogger": ImpactLogger,
     "ImpactDummyInput": ImpactDummyInput,
+
+    "ImpactQueueTrigger": ImpactQueueTrigger,
+    "ImpactSetWidgetValue": ImpactSetWidgetValue,
+    "ImpactNodeSetMuteState": ImpactNodeSetMuteState,
 }
 
 
@@ -340,6 +344,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RemoveNoiseMask": "Remove Noise Mask",
 
     "ImpactCombineConditionings": "Combine Conditionings",
+
+    "ImpactQueueTrigger": "Queue Trigger",
+    "ImpactSetWidgetValue": "Set Widget Value",
+    "ImpactNodeSetMuteState": "Set Mute State",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)"

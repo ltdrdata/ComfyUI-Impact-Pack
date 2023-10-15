@@ -175,6 +175,12 @@ This takes latent as input and outputs latent as the result.
 * String Selector - It selects and returns a portion of the string. When `multiline` mode is disabled, it simply returns the string of the line pointed to by the selector. When `multiline` mode is enabled, it divides the string based on lines that start with `#` and returns them. If the `select` value is larger than the number of items, it will start counting from the first line again and return accordingly.
 * Combine Conditionings - It takes multiple conditionings as input and combines them into a single conditioning.
 
+* Logics (experimental) - These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
+  * Queue Trigger - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
+  * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
+  * Set Mute State - This node changes the mute state of a specific node.
+  * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
+
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
 * To use the existing MMDetDetectorProvider, you need to enable the MMDet usage configuration.

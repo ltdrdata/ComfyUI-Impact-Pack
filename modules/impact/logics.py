@@ -245,3 +245,99 @@ class ImpactMinMax:
             return (max(a, b), )
         else:
             return (min(a, b),)
+
+
+class ImpactQueueTrigger:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                                "signal": (any_typ,),
+                                "mode": ("BOOLEAN", {"default": True, "label_on": "Trigger", "label_off": "Don't trigger"}),
+                            }
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+
+    def doit(self, signal, mode):
+        if(mode):
+            PromptServer.instance.send_sync("impact-add-queue", {})
+
+        return {}
+
+    # @classmethod
+    # def IS_CHANGED(cls, *args):
+    #     # This value will be compared with previous 'IS_CHANGED' outputs
+    #     # If inequal, then this node will be considered as modified
+    #     # NaN is never equal to itself
+    #     return float("NaN")
+
+
+class ImpactSetWidgetValue:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                        "signal": (any_typ,),
+                        "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                        "widget_name": ("STRING", {"multiline": False}),
+                    },
+                    "optional": {
+                        "boolean_value": ("BOOLEAN", {"forceInput": True}),
+                        "int_value": ("INT", {"forceInput": True}),
+                        "float_value": ("FLOAT", {"forceInput": True}),
+                        "string_value": ("STRING", {"forceInput": True}),
+                    }
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+
+    def doit(self, signal, node_id, widget_name, boolean_value=None, int_value=None, float_value=None, string_value=None, ):
+        kind = None
+        if boolean_value is not None:
+            value = boolean_value
+            kind = "BOOLEAN"
+        elif int_value is not None:
+            value = int_value
+            kind = "INT"
+        elif float_value is not None:
+            value = float_value
+            kind = "FLOAT"
+        elif string_value is not None:
+            value = string_value
+            kind = "STRING"
+        else:
+            value = None
+
+        if value is not None:
+            PromptServer.instance.send_sync("impact-node-feedback",
+                                            {"id": node_id, "widget_name": widget_name, "type": kind, "value": value})
+
+        return {}
+
+
+class ImpactNodeSetMuteState:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "signal": (any_typ,),
+            "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+            "set_state": ("BOOLEAN", {"default": True, "label_on": "active", "label_off": "mute"}),
+        }}
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+
+    def doit(self, signal, node_id, set_state):
+        PromptServer.instance.send_sync("impact-node-mute-state", {"id": node_id, "is_active": set_state})
+        return {}
+
