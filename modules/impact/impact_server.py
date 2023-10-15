@@ -226,15 +226,16 @@ async def segs_picker(request):
 
 
 @server.PromptServer.instance.routes.get("/view/validate")
-async def segs_picker(request):
+async def view_validate(request):
     if "filename" in request.rel_url.query:
         filename = request.rel_url.query["filename"]
+        subfolder = request.rel_url.query["subfolder"]
         filename, output_dir = folder_paths.annotated_filepath(filename)
 
         if filename[0] == '/' or '..' in filename:
             return web.Response(status=400)
 
-        file = os.path.join(output_dir, filename)
+        file = os.path.join(output_dir, subfolder, filename)
 
         if os.path.isfile(file):
             return web.Response(status=200)

@@ -1,4 +1,5 @@
 import { ComfyApp, app } from "../../scripts/app.js";
+import { api } from "../../scripts/api.js";
 
 function load_image(str) {
 	let base64String = canvas.toDataURL('image/png');
@@ -38,6 +39,10 @@ app.registerExtension({
 			let w = node.widgets.find(obj => obj.name === 'image');
 			Object.defineProperty(w, 'value', {
 				async set(v) {
+					const stackTrace = new Error().stack;
+					if(stackTrace.includes('presetText.js'))
+						return;
+
 					w._value = v;
 					let image = new Image();
 
@@ -52,7 +57,8 @@ app.registerExtension({
 						else
 							w._value = '';
 					}
-					catch {
+					catch(exception) {
+						console.log(exception);
 						w._value = '';
 					}
 					node.imgs = [image];
