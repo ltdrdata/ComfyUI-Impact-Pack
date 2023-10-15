@@ -389,6 +389,7 @@ class ImpactControlBridge:
 
     CATEGORY = "ImpactPack/Logic/_for_test"
     RETURN_TYPES = (any_typ,)
+    RETURN_NAMES = ("value",)
     OUTPUT_NODE = True
 
     def doit(self, value, mode, unique_id, prompt, extra_pnginfo):
