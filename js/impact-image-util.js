@@ -50,16 +50,16 @@ app.registerExtension({
 							image.src = 'view'+params;
 						}
 						else
-							w._value = undefined;
+							w._value = '';
 					}
 					catch {
-						w._value = undefined;
+						w._value = '';
 					}
 					node.imgs = [image];
 				},
 				get() {
 					if(w._value == undefined) {
-						return undefined;
+						return '';
 					}
 					return w._value;
 				}
