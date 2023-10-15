@@ -1,6 +1,11 @@
 import sys
+
+import execution
+import folder_paths
+import impact.impact_server
 from server import PromptServer
 from impact.utils import any_typ
+import impact.core as core
 
 
 class ImpactCompare:
@@ -251,51 +256,46 @@ class ImpactQueueTrigger:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-                                "signal": (any_typ,),
-                                "mode": ("BOOLEAN", {"default": True, "label_on": "Trigger", "label_off": "Don't trigger"}),
-                            }
-                }
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Logic/_for_test"
-    RETURN_TYPES = ()
-    OUTPUT_NODE = True
-
-    def doit(self, signal, mode):
-        if(mode):
-            PromptServer.instance.send_sync("impact-add-queue", {})
-
-        return {}
-
-    # @classmethod
-    # def IS_CHANGED(cls, *args):
-    #     # This value will be compared with previous 'IS_CHANGED' outputs
-    #     # If inequal, then this node will be considered as modified
-    #     # NaN is never equal to itself
-    #     return float("NaN")
-
-
-class ImpactSetWidgetValue:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {
-                        "signal": (any_typ,),
-                        "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                        "widget_name": ("STRING", {"multiline": False}),
-                    },
-                    "optional": {
-                        "boolean_value": ("BOOLEAN", {"forceInput": True}),
-                        "int_value": ("INT", {"forceInput": True}),
-                        "float_value": ("FLOAT", {"forceInput": True}),
-                        "string_value": ("STRING", {"forceInput": True}),
+                    "signal": (any_typ,),
+                    "mode": ("BOOLEAN", {"default": True, "label_on": "Trigger", "label_off": "Don't trigger"}),
                     }
                 }
 
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Logic/_for_test"
-    RETURN_TYPES = ()
+    RETURN_TYPES = (any_typ,)
+    RETURN_NAMES = ("signal_opt",)
+    OUTPUT_NODE = True
+
+    def doit(self, signal, mode):
+        if(mode):
+            PromptServer.instance.send_sync("impact-add-queue", {})
+
+        return (signal,)
+
+
+class ImpactSetWidgetValue:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "signal": (any_typ,),
+                    "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "widget_name": ("STRING", {"multiline": False}),
+                    },
+                "optional": {
+                    "boolean_value": ("BOOLEAN", {"forceInput": True}),
+                    "int_value": ("INT", {"forceInput": True}),
+                    "float_value": ("FLOAT", {"forceInput": True}),
+                    "string_value": ("STRING", {"forceInput": True}),
+                    }
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = (any_typ,)
+    RETURN_NAMES = ("signal_opt",)
     OUTPUT_NODE = True
 
     def doit(self, signal, node_id, widget_name, boolean_value=None, int_value=None, float_value=None, string_value=None, ):
@@ -319,25 +319,108 @@ class ImpactSetWidgetValue:
             PromptServer.instance.send_sync("impact-node-feedback",
                                             {"id": node_id, "widget_name": widget_name, "type": kind, "value": value})
 
-        return {}
+        return (signal,)
 
 
 class ImpactNodeSetMuteState:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-            "signal": (any_typ,),
-            "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-            "set_state": ("BOOLEAN", {"default": True, "label_on": "active", "label_off": "mute"}),
-        }}
+                    "signal": (any_typ,),
+                    "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "set_state": ("BOOLEAN", {"default": True, "label_on": "active", "label_off": "mute"}),
+                    }
+                }
 
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Logic/_for_test"
-    RETURN_TYPES = ()
+    RETURN_TYPES = (any_typ,)
+    RETURN_NAMES = ("signal_opt",)
     OUTPUT_NODE = True
 
     def doit(self, signal, node_id, set_state):
         PromptServer.instance.send_sync("impact-node-mute-state", {"id": node_id, "is_active": set_state})
-        return {}
+        return (signal,)
+
+
+error_skip_flag = False
+try:
+    import sys
+    def filter_message(str):
+        global error_skip_flag
+
+        if "IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE" in str:
+            return True
+        elif error_skip_flag and "ERROR:root:!!! Exception during processing !!!\n" == str:
+            error_skip_flag = False
+            return True
+        else:
+            return False
+
+    sys.__comfyui_manager_register_message_collapse(filter_message)
+
+except Exception as e:
+    print(f"e: {e}")
+    pass
+
+
+def workflow_to_map(workflow):
+    nodes = {}
+    links = {}
+    for link in workflow['links']:
+        links[link[0]] = link[1:]
+    for node in workflow['nodes']:
+        nodes[str(node['id'])] = node
+
+    return nodes, links
+
+class ImpactControlBridge:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                      "value": (any_typ,),
+                      "mode": ("BOOLEAN", {"default": True, "label_on": "pass", "label_off": "block"}),
+                    },
+                "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"}
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = (any_typ,)
+    OUTPUT_NODE = True
+
+    def doit(self, value, mode, unique_id, prompt, extra_pnginfo):
+        global error_skip_flag
+
+        nodes, links = workflow_to_map(extra_pnginfo['workflow'])
+
+        outputs = [str(links[link][2]) for link in nodes[unique_id]['outputs'][0]['links']]
+
+        prompt_set = set(prompt.keys())
+        output_set = set(outputs)
+
+        if mode:
+            should_active_but_muted = output_set - prompt_set
+            if len(should_active_but_muted) > 0:
+                PromptServer.instance.send_sync("impact-bridge-continue", {"id": unique_id, 'actives': list(should_active_but_muted)})
+                error_skip_flag = True
+                raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
+        else:
+            should_muted_but_active = prompt_set.intersection(output_set)
+            if len(should_muted_but_active) > 0:
+                PromptServer.instance.send_sync("impact-bridge-continue", {"id": unique_id, 'mutes': list(should_muted_but_active)})
+                error_skip_flag = True
+                raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
+
+        return (value, )
+
+
+original_handle_execution = execution.PromptExecutor.handle_execution_error
+
+
+def handle_execution_error(**kwargs):
+    print(f" handled")
+    execution.PromptExecutor.handle_execution_error(**kwargs)
 

@@ -258,6 +258,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactQueueTrigger": ImpactQueueTrigger,
     "ImpactSetWidgetValue": ImpactSetWidgetValue,
     "ImpactNodeSetMuteState": ImpactNodeSetMuteState,
+    "ImpactControlBridge": ImpactControlBridge,
 }
 
 
@@ -348,6 +349,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactQueueTrigger": "Queue Trigger",
     "ImpactSetWidgetValue": "Set Widget Value",
     "ImpactNodeSetMuteState": "Set Mute State",
+    "ImpactControlBridge": "Control Bridge",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)"

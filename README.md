@@ -179,6 +179,11 @@ This takes latent as input and outputs latent as the result.
   * Queue Trigger - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
   * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
   * Set Mute State - This node changes the mute state of a specific node.
+  * Control Bridge - Depending on whether the mode is set to `block` or `pass`, it changes the mute status of connected nodes. If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted.
+    * **Limitation**: Due to these characteristics, it does not function correctly when the batch count exceeds 1. Additionally, it does not guarantee proper operation when the seed is randomized or when the state of nodes is altered by actions such as `Queue Trigger`, `Set Widget Value`, `Set Mute`, before the Control Bridge.
+    * When utilizing this node, please structure the workflow in such a way that `Queue Trigger`, `Set Widget Value`, `Set Mute State`, and similar actions are executed at the end of the workflow.
+    * If you want to change the value of the seed at each iteration, please ensure that Set Widget Value is executed at the end of the workflow instead of using randomization.
+      * It is not a problem if the seed changes due to randomization as long as it occurs after the Control Bridge section.
   * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
 
 ## MMDet nodes

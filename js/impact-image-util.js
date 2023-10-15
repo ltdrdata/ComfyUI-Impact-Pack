@@ -37,13 +37,20 @@ app.registerExtension({
 		if(node.comfyClass == "PreviewBridge") {
 			let w = node.widgets.find(obj => obj.name === 'image');
 			Object.defineProperty(w, 'value', {
-				set(v) {
+				async set(v) {
 					w._value = v;
 					let image = new Image();
 
 					try {
 						let item = getFileItem('temp', v);
-						image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+						let params = `?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+
+						let res = await api.fetchApi('/view/validate'+params, { cache: "no-store" });
+						if(res.status == 200) {
+							image.src = 'view'+params;
+						}
+						else
+							w._value = undefined;
 					}
 					catch {
 						w._value = undefined;
@@ -123,7 +130,12 @@ app.registerExtension({
 
 						try {
 							let item = getFileItem('temp', path_widget.value);
-							image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+							let params = `?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+
+							let res = api.fetchApi('/view/validate'+params, { cache: "no-store" }).then(response => response);
+							if(res.status == 200) {
+								image.src = 'view'+params;
+							}
 
 							this._img = [new Image()]; // placeholder
 							image.onload = function(v) {

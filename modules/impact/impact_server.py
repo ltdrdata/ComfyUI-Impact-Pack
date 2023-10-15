@@ -225,6 +225,23 @@ async def segs_picker(request):
     return web.Response(status=400)
 
 
+@server.PromptServer.instance.routes.get("/view/validate")
+async def segs_picker(request):
+    if "filename" in request.rel_url.query:
+        filename = request.rel_url.query["filename"]
+        filename, output_dir = folder_paths.annotated_filepath(filename)
+
+        if filename[0] == '/' or '..' in filename:
+            return web.Response(status=400)
+
+        file = os.path.join(output_dir, filename)
+
+        if os.path.isfile(file):
+            return web.Response(status=200)
+        else:
+            return web.Response(status=400)
+
+
 def onprompt_for_switch(json_data):
     inversed_switch_info = {}
     onprompt_switch_info = {}
