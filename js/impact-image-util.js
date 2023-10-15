@@ -43,8 +43,6 @@ app.registerExtension({
 
 					try {
 						let item = getFileItem('temp', v);
-
-						let v2 = v.replace(/\[temp\]$/, '')
 						image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
 					}
 					catch {
@@ -62,6 +60,7 @@ app.registerExtension({
 		}
 
 		if(node.comfyClass == "ImageReceiver") {
+			let path_widget = node.widgets.find(obj => obj.name === 'image');
 			let w = node.widgets.find(obj => obj.name === 'image_data');
 			let stw_widget = node.widgets.find(obj => obj.name === 'save_to_workflow');
 			w._value = "";
@@ -85,31 +84,31 @@ app.registerExtension({
 				}
 			});
 
+			let set_img_act = (v) => {
+				node._img = v;
+				var canvas = document.createElement('canvas');
+				canvas.width = v[0].width;
+				canvas.height = v[0].height;
+
+				var context = canvas.getContext('2d');
+				context.drawImage(v[0], 0, 0, v[0].width, v[0].height);
+
+				var base64Image = canvas.toDataURL('image/png');
+				w.value = base64Image;
+			};
+
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
-					let act = () => {
-						this._img = v;
-						var canvas = document.createElement('canvas');
-						canvas.width = v[0].width;
-						canvas.height = v[0].height;
-
-						var context = canvas.getContext('2d');
-						context.drawImage(v[0], 0, 0, v[0].width, v[0].height);
-
-						var base64Image = canvas.toDataURL('image/png');
-						w.value = base64Image;
-					};
-
 					if (!v[0].complete) {
 						let orig_onload = v[0].onload;
-						v[0].onload = function() {
+						v[0].onload = function(v2) {
 							if(orig_onload)
 								orig_onload();
-							act();
+							set_img_act(v);
 						};
 					}
 					else {
-						act();
+						set_img_act(v);
 					}
 				},
 				get() {
@@ -118,7 +117,23 @@ app.registerExtension({
 						if(stw_widget.value && w.value != '[IMAGE DATA]')
 							this._img[0].src = w.value;
 					}
+					else if(this._img == undefined && path_widget.value) {
+						let image = new Image();
+						image.src = path_widget.value;
 
+						try {
+							let item = getFileItem('temp', path_widget.value);
+							image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+
+							this._img = [new Image()]; // placeholder
+							image.onload = function(v) {
+								set_img_act([image]);
+							};
+						}
+						catch {
+
+						}
+					}
 					return this._img;
 				}
 			});
