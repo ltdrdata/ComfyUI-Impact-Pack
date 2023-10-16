@@ -145,9 +145,6 @@ def process(text, seed=None):
         pattern = r'{([^{}]*?)}'
         replaced_string = re.sub(pattern, replace_option, string)
 
-        pattern = r'\[([^[\]]*?)\]'
-        replaced_string = re.sub(pattern, replace_option, replaced_string)
-
         return replaced_string, replacements_found
 
     def replace_wildcard(string):
