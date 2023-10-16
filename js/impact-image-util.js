@@ -8,27 +8,64 @@ function load_image(str) {
 }
 
 function getFileItem(baseType, path) {
-    let pathType = baseType;
+	try {
+	    let pathType = baseType;
 
-    if (path === "[output]") {
-        pathType = "output";
-        path = path.slice(0, -9);
-    } else if (path === "[input]") {
-        pathType = "input";
-        path = path.slice(0, -8);
-    } else if (path === "[temp]") {
-        pathType = "temp";
-        path = path.slice(0, -7);
+	    if (path === "[output]") {
+	        pathType = "output";
+	        path = path.slice(0, -9);
+	    } else if (path === "[input]") {
+	        pathType = "input";
+	        path = path.slice(0, -8);
+	    } else if (path === "[temp]") {
+	        pathType = "temp";
+	        path = path.slice(0, -7);
+	    }
+
+	    const subfolder = path.substring(0, path.lastIndexOf('/'));
+	    const filename = path.substring(path.lastIndexOf('/') + 1);
+
+	    return {
+	        filename: filename,
+	        subfolder: subfolder,
+	        type: pathType
+	    };
     }
+    catch(exception) {
+        return null;
+    }
+}
 
-    const subfolder = path.substring(0, path.lastIndexOf('/'));
-    const filename = path.substring(path.lastIndexOf('/') + 1);
+async function loadImageFromUrl(image, node_id, v, need_to_load) {
+	let item = getFileItem('temp', v);
 
-    return {
-        filename: filename,
-        subfolder: subfolder,
-        type: pathType
-    };
+	if(item) {
+		let params = `?node_id=${node_id}&filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+
+		let res = await api.fetchApi('/impact/set/pb_id_image'+params, { cache: "no-store" });
+		if(res.status == 200) {
+			let pb_id = await res.text();
+			if(need_to_load)
+				image.src = 'impact/view/pb_id_image?id='+pb_id;
+			return pb_id;
+		}
+		else {
+			return `$${node_id}-0`;
+		}
+	}
+	else {
+		return `$${node_id}-0`;
+	}
+}
+
+async function loadImageFromId(image, v) {
+	let res = await api.fetchApi('/impact/validate/pb_id_image?id='+v, { cache: "no-store" });
+	if(res.status == 200) {
+		image.src = 'impact/view/pb_id_image?id='+v;
+		return true;
+	}
+
+	return false;
 }
 
 app.registerExtension({
@@ -37,37 +74,51 @@ app.registerExtension({
 	nodeCreated(node, app) {
 		if(node.comfyClass == "PreviewBridge") {
 			let w = node.widgets.find(obj => obj.name === 'image');
+			node._imgs = [new Image()];
+
 			Object.defineProperty(w, 'value', {
 				async set(v) {
 					const stackTrace = new Error().stack;
 					if(stackTrace.includes('presetText.js'))
 						return;
 
-					w._value = v;
-					let image = new Image();
-
-					try {
-						let item = getFileItem('temp', v);
-						let params = `?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
-
-						let res = await api.fetchApi('/view/validate'+params, { cache: "no-store" });
-						if(res.status == 200) {
-							image.src = 'view'+params;
+					var image = new Image();
+					if(v && v.startsWith('$')) {
+						// from node feedback
+						let need_to_load = node._imgs[0].src == '';
+						if(await loadImageFromId(image, v, need_to_load)) {
+							w._value = v;
+							if(node._imgs[0].src == '') {
+								node._imgs = [image];
+							}
 						}
-						else
-							w._value = '';
+						else {
+							w._value = `$${node.id}-0`;
+						}
 					}
-					catch(exception) {
-						console.log(exception);
-						w._value = '';
+					else {
+						// from clipspace
+						w._value = await loadImageFromUrl(image, node.id, v, false);
 					}
-					node.imgs = [image];
 				},
 				get() {
 					if(w._value == undefined) {
-						return '';
+						w._value = `$${node.id}-0`;
 					}
 					return w._value;
+				}
+			});
+
+			Object.defineProperty(node, 'imgs', {
+				set(v) {
+					const stackTrace = new Error().stack;
+					if(stackTrace.includes('onDrawBackground'))
+						return;
+
+					node._imgs = v;
+				},
+				get() {
+					return node._imgs;
 				}
 			});
 		}

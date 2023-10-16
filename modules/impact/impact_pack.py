@@ -1453,29 +1453,94 @@ class PreviewBridge:
         self.type = "temp"
         self.prev_hash = None
 
+
+    @staticmethod
+    def load_image(pb_id):
+        is_fail = False
+        if pb_id not in impact.core.preview_bridge_image_id_map:
+            is_fail = True
+
+        image_path = impact.core.preview_bridge_image_id_map[pb_id]
+
+        if not os.path.isfile(image_path):
+            is_fail = True
+
+        if not is_fail:
+            i = Image.open(image_path)
+            i = ImageOps.exif_transpose(i)
+            image = i.convert("RGB")
+            image = np.array(image).astype(np.float32) / 255.0
+            image = torch.from_numpy(image)[None,]
+
+            if 'A' in i.getbands():
+                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                mask = 1. - torch.from_numpy(mask)
+            else:
+                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+
+            temp_dir = folder_paths.get_temp_directory()
+            input_dir = folder_paths.get_input_directory()
+            output_dir = folder_paths.get_output_directory()
+
+            file_dir = os.path.dirname(image_path)
+            base_dir = ""
+            dir_type = "temp"
+            if file_dir.startswith(temp_dir):
+                base_dir = temp_dir
+                dir_type = "temp"
+            elif file_dir.startswith(input_dir):
+                base_dir = input_dir
+                dir_type = "input"
+            elif file_dir.startswith(output_dir):
+                base_dir = output_dir
+                dir_type = "output"
+            else:
+                print(f"[ComfyUI-Impact-Pack] Unexpected image file_dir: {file_dir}")
+
+            file_dir = file_dir[len(base_dir)+1:]
+            
+            ui_item = {
+                "filename": os.path.basename(image_path),
+                "subfolder": file_dir,
+                "type": dir_type
+            }
+
+        if is_fail:
+            image = empty_pil_tensor()
+            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+            ui_item = {
+                "filename": 'empty.png',
+                "subfolder": '',
+                "type": 'temp'
+            }
+
+        return (image, mask.unsqueeze(0), ui_item)
+
     def doit(self, images, image, unique_id):
+        need_refresh = False
+
         if unique_id not in impact.core.preview_bridge_cache:
-            image = ""
-        elif impact.core.preview_bridge_cache[unique_id] is not images:
-            image = ""
+            need_refresh = True
 
-        if image != "":
-            try:
-                pixels, mask = nodes.LoadImage().load_image(image)
-                image = [get_file_item("temp", image)]
-            except:
-                image = ""
+        elif impact.core.preview_bridge_cache[unique_id][0] is not images:
+            need_refresh = True
 
-        if image == "":
-            impact.core.preview_bridge_cache[unique_id] = images
-
+        if not need_refresh:
+            pixels, mask, ui_item = PreviewBridge.load_image(image)
+            image = [ui_item]
+        else:
             res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-")
-            image = res['ui']['images']
+            image2 = res['ui']['images']
             pixels = images
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
 
-            image_feedback = f"PreviewBridge/{image[0]['filename']} [temp]"
-            PromptServer.instance.send_sync("impact-node-feedback", {"id": unique_id, "widget_name": "image", "type": "text", "value": image_feedback})
+            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
+            impact.core.set_previewbridge_image(unique_id, path)
+            impact.core.preview_bridge_image_id_map[image] = path
+            impact.core.preview_bridge_image_name_map[path] = image
+            impact.core.preview_bridge_cache[unique_id] = (images, image2)
+
+            image = image2
 
         return {
             "ui": {"images": image},

@@ -19,6 +19,7 @@ import comfy
 from io import BytesIO
 import random
 
+
 @server.PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
     upload_dir = folder_paths.get_temp_directory()
@@ -239,8 +240,57 @@ async def view_validate(request):
 
         if os.path.isfile(file):
             return web.Response(status=200)
-        else:
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/validate/pb_id_image")
+async def view_validate(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id not in core.preview_bridge_image_id_map:
             return web.Response(status=400)
+
+        file = core.preview_bridge_image_id_map[pb_id]
+        if os.path.isfile(file):
+            return web.Response(status=200)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/set/pb_id_image")
+async def set_previewbridge_image(request):
+    if "filename" in request.rel_url.query:
+        node_id = request.rel_url.query["node_id"]
+        filename = request.rel_url.query["filename"]
+        subfolder = request.rel_url.query["subfolder"]
+        filename, output_dir = folder_paths.annotated_filepath(filename)
+
+        if filename == '' or filename[0] == '/' or '..' in filename:
+            return web.Response(status=400)
+
+        file = os.path.join(output_dir, subfolder, filename)
+        pb_id = core.set_previewbridge_image(node_id, file)
+
+        return web.Response(status=200, text=pb_id)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/view/pb_id_image")
+async def view_previewbridge_image(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id in core.preview_bridge_image_id_map:
+            file = core.preview_bridge_image_id_map[pb_id]
+
+            with Image.open(file) as img:
+                filename = os.path.basename(file)
+                return web.FileResponse(file, headers={"Content-Disposition": f"filename=\"{filename}\""})
+
+    return web.Response(status=400)
 
 
 def onprompt_for_switch(json_data):
