@@ -232,7 +232,7 @@ async def view_validate(request):
         subfolder = request.rel_url.query["subfolder"]
         filename, output_dir = folder_paths.annotated_filepath(filename)
 
-        if filename[0] == '/' or '..' in filename:
+        if filename == '' or filename[0] == '/' or '..' in filename:
             return web.Response(status=400)
 
         file = os.path.join(output_dir, subfolder, filename)
