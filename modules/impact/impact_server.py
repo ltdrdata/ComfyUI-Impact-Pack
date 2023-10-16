@@ -264,16 +264,42 @@ async def set_previewbridge_image(request):
     if "filename" in request.rel_url.query:
         node_id = request.rel_url.query["node_id"]
         filename = request.rel_url.query["filename"]
+        path_type = request.rel_url.query["type"]
         subfolder = request.rel_url.query["subfolder"]
         filename, output_dir = folder_paths.annotated_filepath(filename)
 
         if filename == '' or filename[0] == '/' or '..' in filename:
             return web.Response(status=400)
 
+        if output_dir is None:
+            if path_type == 'input':
+                output_dir = folder_paths.get_input_directory()
+            elif path_type == 'output':
+                output_dir = folder_paths.get_output_directory()
+            else:
+                output_dir = folder_paths.get_temp_directory()
+
         file = os.path.join(output_dir, subfolder, filename)
-        pb_id = core.set_previewbridge_image(node_id, file)
+        item = {
+            'filename': filename,
+            'type': path_type,
+            'subfolder': subfolder,
+        }
+        pb_id = core.set_previewbridge_image(node_id, file, item)
 
         return web.Response(status=200, text=pb_id)
+
+    return web.Response(status=400)
+
+
+@server.PromptServer.instance.routes.get("/impact/get/pb_id_image")
+async def get_previewbridge_image(request):
+    if "id" in request.rel_url.query:
+        pb_id = request.rel_url.query["id"]
+
+        if pb_id in core.preview_bridge_image_id_map:
+            _, path_item = core.preview_bridge_image_id_map[pb_id]
+            return web.json_response(path_item)
 
     return web.Response(status=400)
 

@@ -11,13 +11,13 @@ function getFileItem(baseType, path) {
 	try {
 	    let pathType = baseType;
 
-	    if (path === "[output]") {
+	    if (path.endsWith("[output]")) {
 	        pathType = "output";
 	        path = path.slice(0, -9);
-	    } else if (path === "[input]") {
+	    } else if (path.endsWith("[input]")) {
 	        pathType = "input";
 	        path = path.slice(0, -8);
-	    } else if (path === "[temp]") {
+	    } else if (path.endsWith("[temp]")) {
 	        pathType = "temp";
 	        path = path.slice(0, -7);
 	    }
@@ -45,8 +45,9 @@ async function loadImageFromUrl(image, node_id, v, need_to_load) {
 		let res = await api.fetchApi('/impact/set/pb_id_image'+params, { cache: "no-store" });
 		if(res.status == 200) {
 			let pb_id = await res.text();
-			if(need_to_load)
-				image.src = 'impact/view/pb_id_image?id='+pb_id;
+			if(need_to_load) {;
+				image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+			}
 			return pb_id;
 		}
 		else {
@@ -59,9 +60,10 @@ async function loadImageFromUrl(image, node_id, v, need_to_load) {
 }
 
 async function loadImageFromId(image, v) {
-	let res = await api.fetchApi('/impact/validate/pb_id_image?id='+v, { cache: "no-store" });
+	let res = await api.fetchApi('/impact/get/pb_id_image?id='+v, { cache: "no-store" });
 	if(res.status == 200) {
-		image.src = 'impact/view/pb_id_image?id='+v;
+		let item = await res.json();
+		image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
 		return true;
 	}
 
@@ -112,7 +114,7 @@ app.registerExtension({
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
 					const stackTrace = new Error().stack;
-					if(stackTrace.includes('onDrawBackground'))
+					if(stackTrace.includes('onDrawBackground') || v == [])
 						return;
 
 					node._imgs = v;

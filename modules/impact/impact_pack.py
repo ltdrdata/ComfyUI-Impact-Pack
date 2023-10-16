@@ -1453,14 +1453,13 @@ class PreviewBridge:
         self.type = "temp"
         self.prev_hash = None
 
-
     @staticmethod
     def load_image(pb_id):
         is_fail = False
         if pb_id not in impact.core.preview_bridge_image_id_map:
             is_fail = True
 
-        image_path = impact.core.preview_bridge_image_id_map[pb_id]
+        image_path, ui_item = impact.core.preview_bridge_image_id_map[pb_id]
 
         if not os.path.isfile(image_path):
             is_fail = True
@@ -1477,33 +1476,6 @@ class PreviewBridge:
                 mask = 1. - torch.from_numpy(mask)
             else:
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-
-            temp_dir = folder_paths.get_temp_directory()
-            input_dir = folder_paths.get_input_directory()
-            output_dir = folder_paths.get_output_directory()
-
-            file_dir = os.path.dirname(image_path)
-            base_dir = ""
-            dir_type = "temp"
-            if file_dir.startswith(temp_dir):
-                base_dir = temp_dir
-                dir_type = "temp"
-            elif file_dir.startswith(input_dir):
-                base_dir = input_dir
-                dir_type = "input"
-            elif file_dir.startswith(output_dir):
-                base_dir = output_dir
-                dir_type = "output"
-            else:
-                print(f"[ComfyUI-Impact-Pack] Unexpected image file_dir: {file_dir}")
-
-            file_dir = file_dir[len(base_dir)+1:]
-            
-            ui_item = {
-                "filename": os.path.basename(image_path),
-                "subfolder": file_dir,
-                "type": dir_type
-            }
 
         if is_fail:
             image = empty_pil_tensor()
@@ -1526,8 +1498,8 @@ class PreviewBridge:
             need_refresh = True
 
         if not need_refresh:
-            pixels, mask, ui_item = PreviewBridge.load_image(image)
-            image = [ui_item]
+            pixels, mask, path_item = PreviewBridge.load_image(image)
+            image = [path_item]
         else:
             res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-")
             image2 = res['ui']['images']
@@ -1535,9 +1507,9 @@ class PreviewBridge:
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
 
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
-            impact.core.set_previewbridge_image(unique_id, path)
-            impact.core.preview_bridge_image_id_map[image] = path
-            impact.core.preview_bridge_image_name_map[path] = image
+            impact.core.set_previewbridge_image(unique_id, path, image2[0])
+            impact.core.preview_bridge_image_id_map[image] = (path, image2[0])
+            impact.core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
             impact.core.preview_bridge_cache[unique_id] = (images, image2)
 
             image = image2

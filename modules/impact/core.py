@@ -25,17 +25,17 @@ preview_bridge_image_name_map = {}
 preview_bridge_cache = {}
 
 
-def set_previewbridge_image(node_id, file):
+def set_previewbridge_image(node_id, file, item):
     global pb_id_cnt
 
     if file in preview_bridge_image_name_map:
-        pb_id = preview_bridge_image_name_map[file]
+        pb_id = preview_bridge_image_name_map[node_id, file]
         if pb_id.startswith(f"${node_id}"):
             return pb_id
 
     pb_id = f"${node_id}-{pb_id_cnt}"
-    preview_bridge_image_id_map[pb_id] = file
-    preview_bridge_image_name_map[file] = pb_id
+    preview_bridge_image_id_map[pb_id] = (file, item)
+    preview_bridge_image_name_map[node_id, file] = (pb_id, item)
     pb_id_cnt += 1
 
     return pb_id
