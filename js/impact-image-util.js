@@ -85,7 +85,7 @@ app.registerExtension({
 						return;
 
 					var image = new Image();
-					if(v && v.startsWith('$')) {
+					if(v && v instanceof String && v.startsWith('$')) {
 						// from node feedback
 						let need_to_load = node._imgs[0].src == '';
 						if(await loadImageFromId(image, v, need_to_load)) {
