@@ -243,6 +243,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # ksampler
     latent_image = to_latent_image(upscaled_image, vae)
 
+    upscaled_mask = None
     if noise_mask is not None:
         # upscale the mask tensor by a factor of 2 using bilinear interpolation
         noise_mask = torch.from_numpy(noise_mask)
@@ -258,7 +259,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     cnet_pil = None
     if control_net_wrapper is not None:
-        positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image)
+        positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
 
     refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       latent_image, denoise,
@@ -566,8 +567,8 @@ def segs_scale_match(segs, target_shape):
         cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
         if cropped_image is not None:
-            cropped_image = torch.nn.functional.interpolate(cropped_image, size=(new_h, new_w),
-                                                            mode='bilinear', align_corners=False)
+            cropped_image = scale_tensor(new_w, new_h, torch.from_numpy(cropped_image))
+            cropped_image = cropped_image.numpy()
 
         new_seg = SEG(cropped_image, cropped_mask, seg.confidence, crop_region, bbox, seg.label, seg.control_net_wrapper)
         new_segs.append(new_seg)
@@ -1458,9 +1459,9 @@ class ControlNetWrapper:
         self.preprocessor = preprocessor
         self.image = None
 
-    def apply(self, conditioning, image):
+    def apply(self, conditioning, image, mask=None):
         if self.preprocessor is not None:
-            image = self.preprocessor.apply(image)
+            image = self.preprocessor.apply(image, mask)
 
         return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, image, self.strength)[0], image
 
