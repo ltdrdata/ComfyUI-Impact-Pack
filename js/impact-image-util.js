@@ -77,6 +77,7 @@ app.registerExtension({
 		if(node.comfyClass == "PreviewBridge") {
 			let w = node.widgets.find(obj => obj.name === 'image');
 			node._imgs = [new Image()];
+			node.imageIndex = 0;
 
 			Object.defineProperty(w, 'value', {
 				async set(v) {
@@ -85,7 +86,7 @@ app.registerExtension({
 						return;
 
 					var image = new Image();
-					if(v && v instanceof String && v.startsWith('$')) {
+					if(v && v.constructor == String && v.startsWith('$')) {
 						// from node feedback
 						let need_to_load = node._imgs[0].src == '';
 						if(await loadImageFromId(image, v, need_to_load)) {
@@ -114,8 +115,18 @@ app.registerExtension({
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
 					const stackTrace = new Error().stack;
-					if(stackTrace.includes('onDrawBackground') || v == [])
+					if(v && v.length == 0)
 						return;
+					else if(stackTrace.includes('pasteFromClipspace')) {
+						let sp = new URLSearchParams(v[0].src.split("?")[1]);
+						let str = "";
+						if(sp.get('subfolder')) {
+							str += sp.get('subfolder') + '/';
+						}
+						str += `${sp.get("filename")} [${sp.get("type")}]`;
+
+						w.value = str;
+					}
 
 					node._imgs = v;
 				},
