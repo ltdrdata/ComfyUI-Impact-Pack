@@ -155,7 +155,10 @@ function valueSendHandler(event) {
                 nodes[i].widgets[1].value = event.detail.value;
 
                 let typ = typeof event.detail.value;
-                if(typ != "number") {
+                if(typ == 'string') {
+                    nodes[i].widgets[0].value = "STRING";
+                }
+                else if(typ != "number") {
                     nodes[i].widgets[0].value = typeof event.detail.value;
                 }
                 else if(Number.isInteger(event.detail.value)) {
