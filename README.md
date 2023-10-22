@@ -209,6 +209,10 @@ This takes latent as input and outputs latent as the result.
 * To use the existing deprecated legacy nodes, you need to enable the MMDet usage configuration.
 
 
+## Ultralytics models
+* huggingface.co/Bingsu/[adetailer](https://github.com/ultralytics/assets/releases/) - You can download face, people detection models, and clothing detection models.
+* ultralytics/[assets](https://github.com/ultralytics/assets/releases/) - You can download various types of detection models other than faces or people.
+
 ## How to activate 'MMDet usage'
 * Upon the initial execution, an `impact-pack.ini` file will be generated in the custom_nodes/ComfyUI-Impact-Pack directory.
 ```
