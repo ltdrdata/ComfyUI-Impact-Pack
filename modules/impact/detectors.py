@@ -1,5 +1,6 @@
 import impact.core as core
 from impact.config import MAX_RESOLUTION
+import impact.segs_nodes as segs_nodes
 
 
 class SAMDetectorCombined:
@@ -71,6 +72,7 @@ class BboxDetectorForEach:
                         "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                        "labels": ("STRING", {"multiline": True, "default": "all", "placeholder": "List the types of segments to be allowed, separated by commas"}),
                       }
                 }
 
@@ -79,8 +81,14 @@ class BboxDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size):
+    def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size, labels=None):
         segs = bbox_detector.detect(image, threshold, dilation, crop_factor, drop_size)
+
+        if labels is not None and labels != '':
+            labels = labels.split(',')
+            if len(labels) > 0:
+                segs, _ = segs_nodes.SEGSLabelFilter.filter(segs, labels)
+
         return (segs, )
 
 
@@ -94,6 +102,7 @@ class SegmDetectorForEach:
                         "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                        "labels": ("STRING", {"multiline": True, "default": "all", "placeholder": "List the types of segments to be allowed, separated by commas"}),
                       }
                 }
 
@@ -102,8 +111,14 @@ class SegmDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size):
+    def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size, labels=None):
         segs = segm_detector.detect(image, threshold, dilation, crop_factor, drop_size)
+
+        if labels is not None and labels != '':
+            labels = labels.split(',')
+            if len(labels) > 0:
+                segs, _ = segs_nodes.SEGSLabelFilter.filter(segs, labels)
+
         return (segs, )
 
 
