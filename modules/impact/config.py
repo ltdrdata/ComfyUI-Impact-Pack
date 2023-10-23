@@ -2,7 +2,7 @@ import configparser
 import os
 
 
-version = "V4.26"
+version = "V4.26.1"
 
 dependency_version = 14
 

@@ -175,7 +175,7 @@ def process(text, seed=None):
                     replacements_found = True
                     string = string.replace(f"__{match}__", replacement, 1)
             elif '/' not in keyword:
-                string_fallback = string.replace(f"__{keyword}__", f"__*/{keyword}__", 1)
+                string_fallback = string.replace(f"__{match}__", f"__*/{match}__", 1)
                 string, replacements_found = replace_wildcard(string_fallback)
 
         return string, replacements_found
