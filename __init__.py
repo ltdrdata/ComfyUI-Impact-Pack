@@ -153,6 +153,7 @@ NODE_CLASS_MAPPINGS = {
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
     "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
     "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
+    "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,

@@ -373,7 +373,7 @@ class FaceDetailer:
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         bbox_detector.setAux(None)
 
         # bbox + sam combination
@@ -385,7 +385,9 @@ class FaceDetailer:
 
         elif segm_detector is not None:
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
-            if hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm:
+
+            if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
+                    not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
                 segs = segm_segs
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
@@ -486,6 +488,21 @@ class NoiseInjectionDetailerHookProvider:
             print("[ERROR] NoiseInjectionDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
             print(f"\t{e}")
             pass
+
+
+class CoreMLDetailerHookProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {}, }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self):
+        hook = core.CoreMLHook()
+        return (hook, )
 
 
 class CfgScheduleHookProvider:
