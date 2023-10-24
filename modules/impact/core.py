@@ -1,3 +1,4 @@
+import copy
 import os
 from segment_anything import SamPredictor
 import torch.nn.functional as F
@@ -267,6 +268,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       latent_image, denoise,
                                       refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+
+    if detailer_hook is not None:
+        refined_latent = detailer_hook.pre_decode(refined_latent)
 
     # non-latent downscale - latent downscale cause bad quality
     refined_image = vae.decode(refined_latent['samples'])
@@ -1084,6 +1088,9 @@ class PixelKSampleHook:
     def post_encode(self, samples):
         return samples
 
+    def pre_decode(self, samples):
+        return samples
+
     def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent,
                     denoise):
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise
@@ -1490,6 +1497,16 @@ class CoreMLHook(PixelKSampleHook):
     def __init__(self):
         super().__init__()
         self.override_bbox_by_segm = False
+
+    def pre_decode(self, samples):
+        new_samples = copy.deepcopy(samples)
+        new_samples['samples'] = samples['samples'][0].unsqueeze(0)
+        return new_samples
+
+    def post_encode(self, samples):
+        new_samples = copy.deepcopy(samples)
+        new_samples['samples'] = samples['samples'].repeat(2, 1, 1, 1)
+        return new_samples
 
     def post_crop_region(self, w, h, item_bbox, crop_region):
         x1, y1, x2, y2 = crop_region
