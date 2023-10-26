@@ -158,7 +158,7 @@ function valueSendHandler(event) {
                 if(typ == 'string') {
                     nodes[i].widgets[0].value = "STRING";
                 }
-                else if(typ != "boolean") {
+                else if(typ == "boolean") {
                     nodes[i].widgets[0].value = "BOOLEAN";
                 }
                 else if(typ != "number") {
