@@ -1494,8 +1494,9 @@ class ControlNetWrapper:
 
 
 class CoreMLHook(PixelKSampleHook):
-    def __init__(self):
+    def __init__(self, mode):
         super().__init__()
+        self.is_neural_engine_mode = mode
         self.override_bbox_by_segm = False
 
     def pre_decode(self, samples):
@@ -1549,7 +1550,10 @@ class CoreMLHook(PixelKSampleHook):
         return crop_region
 
     def touch_scaled_size(self, w, h):
-        return 512, 512
+        if self.is_neural_engine_mode:
+            return 512, 512
+        else:
+            return 768, 768
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI Noise
