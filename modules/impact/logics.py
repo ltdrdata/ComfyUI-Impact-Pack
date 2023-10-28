@@ -153,11 +153,12 @@ class ImpactValueSender:
 
     CATEGORY = "ImpactPack/Logic"
 
-    RETURN_TYPES = ()
+    RETURN_TYPES = (any_typ, )
+    RETURN_NAMES = ("signal", )
 
     def doit(self, value, link_id=0):
         PromptServer.instance.send_sync("value-send", {"link_id": link_id, "value": value})
-        return {}
+        return (value, )
 
 
 class ImpactIntConstSender:
