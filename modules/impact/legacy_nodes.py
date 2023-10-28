@@ -53,7 +53,7 @@ class BboxDetectorForEach:
     CATEGORY = "ImpactPack/Legacy"
 
     @staticmethod
-    def detect(bbox_model, image, threshold, dilation, crop_factor, drop_size=1):
+    def detect(bbox_model, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         mmdet_results = mmdet_nodes.inference_bbox(bbox_model, image, threshold)
         segmasks = core.create_segmasks(mmdet_results)
 
