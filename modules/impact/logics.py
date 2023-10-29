@@ -365,7 +365,7 @@ try:
     sys.__comfyui_manager_register_message_collapse(filter_message)
 
 except Exception as e:
-    print(f"e: {e}")
+    print(f"[WARN] ComfyUI-Impact-Pack: `ComfyUI` or `ComfyUI-Manager` is an outdated version.")
     pass
 
 

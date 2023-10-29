@@ -106,7 +106,7 @@ async def sam_prepare(request):
 
         model_name = os.path.join(impact_pack.model_path, "sams", model_name)
 
-        print(f"ComfyUI-Impact-Pack: Loading SAM model '{impact_pack.model_path}'")
+        print(f"[INFO] ComfyUI-Impact-Pack: Loading SAM model '{impact_pack.model_path}'")
 
         filename, image_dir = folder_paths.annotated_filepath(data["filename"])
 
@@ -122,7 +122,7 @@ async def sam_prepare(request):
         thread = threading.Thread(target=async_prepare_sam, args=(image_dir, model_name, filename,))
         thread.start()
 
-        print(f"ComfyUI-Impact-Pack: SAM model loaded. ")
+        print(f"[INFO] ComfyUI-Impact-Pack: SAM model loaded. ")
 
 
 @server.PromptServer.instance.routes.post("/sam/release")
@@ -133,7 +133,7 @@ async def release_sam(request):
         del sam_predictor
         sam_predictor = None
 
-    print(f"ComfyUI-Impact-Pack: unloading SAM model")
+    print(f"[INFO] ComfyUI-Impact-Pack: unloading SAM model")
 
 
 @server.PromptServer.instance.routes.post("/sam/detect")
@@ -439,7 +439,7 @@ def onprompt(json_data):
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)
     except Exception as e:
-        print(f"[ComfyUI-Impact-Pack] Error on prompt: Several features will not work.\n{e}")
+        print(f"[WARN] ComfyUI-Impact-Pack: Error on prompt - several features will not work.\n{e}")
 
     return json_data
 

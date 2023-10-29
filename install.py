@@ -118,7 +118,7 @@ try:
             try:
                 subprocess.check_call(pip_install + ['opencv-python'])
             except:
-                print(f"ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
+                print(f"[ERROR] ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
         try:
             import git
@@ -190,5 +190,5 @@ try:
     install()
 
 except Exception as e:
-    print("[ComfyUI-Impact-Pack]: Dependency installation has failed. Please install manually.")
+    print("[ERROR] ComfyUI-Impact-Pack: Dependency installation has failed. Please install manually.")
     print(e)

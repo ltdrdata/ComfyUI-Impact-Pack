@@ -1572,7 +1572,7 @@ class ImageReceiver:
                     mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
                 return (image, mask.unsqueeze(0))
             except Exception as e:
-                print(f"[ComfyUI-Impact-Pack] ImageReceiver - invalid 'image_data'")
+                print(f"[WARN] ComfyUI-Impact-Pack: ImageReceiver - invalid 'image_data'")
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
                 return (empty_pil_tensor(64, 64), mask, )
         else:
