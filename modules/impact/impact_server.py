@@ -231,12 +231,15 @@ async def view_validate(request):
     if "filename" in request.rel_url.query:
         filename = request.rel_url.query["filename"]
         subfolder = request.rel_url.query["subfolder"]
-        filename, output_dir = folder_paths.annotated_filepath(filename)
+        filename, base_dir = folder_paths.annotated_filepath(filename)
 
         if filename == '' or filename[0] == '/' or '..' in filename:
             return web.Response(status=400)
 
-        file = os.path.join(output_dir, subfolder, filename)
+        if base_dir is None:
+            base_dir = folder_paths.get_input_directory()
+
+        file = os.path.join(base_dir, subfolder, filename)
 
         if os.path.isfile(file):
             return web.Response(status=200)
