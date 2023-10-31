@@ -486,18 +486,27 @@ app.registerExtension({
 			});
 		}
 
-		if(node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
+		if(
+		node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ImpactWildcardProcessor"
+		|| node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
 		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
 			node._wvalue = "Select the Wildcard to add to the text";
 
             var tbox_id = 0;
             var combo_id = 3;
+            var has_lora = true;
 
             switch(node.comfyClass){
                 case "ImpactWildcardEncode":
                     tbox_id = 0;
                     combo_id = 3;
+                    break;
+
+                case "ImpactWildcardProcessor":
+                    tbox_id = 0;
+                    combo_id = 4;
+                    has_lora = false;
                     break;
 
                 case "ToDetailerPipe":
@@ -519,7 +528,6 @@ app.registerExtension({
                                 if(node.widgets[tbox_id].value != '')
                                     node.widgets[tbox_id].value += ', '
 
-
 	                            node.widgets[tbox_id].value += value;
                             }
                         }
@@ -531,33 +539,36 @@ app.registerExtension({
 					 }
 			});
 
-			Object.defineProperty(node.widgets[combo_id], "value", {
-				set: (value) => {
-				        const stackTrace = new Error().stack;
-                        if(stackTrace.includes('inner_value_change')) {
-                            if(value != "Select the LoRA to add to the text") {
-	                            let lora_name = value;
-	                            if (lora_name.endsWith('.safetensors')) {
-	                                lora_name = lora_name.slice(0, -12);
-	                            }
+			if(has_lora) {
+				Object.defineProperty(node.widgets[combo_id], "value", {
+					set: (value) => {
+							const stackTrace = new Error().stack;
+							if(stackTrace.includes('inner_value_change')) {
+								if(value != "Select the LoRA to add to the text") {
+									let lora_name = value;
+									if (lora_name.endsWith('.safetensors')) {
+										lora_name = lora_name.slice(0, -12);
+									}
 
-	                            node.widgets[tbox_id].value += `<lora:${lora_name}>`;
-	                            if(node.widgets_values) {
-	                                node.widgets_values[tbox_id] = node.widgets[tbox_id].value;
-                                }
-                            }
-                        }
+									node.widgets[tbox_id].value += `<lora:${lora_name}>`;
+									if(node.widgets_values) {
+										node.widgets_values[tbox_id] = node.widgets[tbox_id].value;
+									}
+								}
+							}
 
-						node._value = value;
-					},
-				get: () => {
-                        return node._value;
-					 }
-			});
-
+							node._value = value;
+						},
+					get: () => {
+							return node._value;
+						 }
+				});
+			}
 
 			// Preventing validation errors from occurring in any situation.
-			node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
+			if(has_lora) {
+				node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
+			}
 			node.widgets[combo_id+1].serializeValue = () => { return "Select the Wildcard to add to the text"; }
 		}
 

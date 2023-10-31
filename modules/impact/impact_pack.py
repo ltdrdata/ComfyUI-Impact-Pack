@@ -1996,6 +1996,7 @@ class ImpactWildcardProcessor:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                        "Select to add Wildcard": (["Select the Wildcard to add to the text"] + impact.wildcards.get_wildcard_list(), ),
                     },
                 }
 
@@ -2004,7 +2005,8 @@ class ImpactWildcardProcessor:
     RETURN_TYPES = ("STRING", )
     FUNCTION = "doit"
 
-    def doit(self, wildcard_text, populated_text, mode, seed):
+    def doit(self, *args, **kwargs):
+        populated_text = kwargs['populated_text']
         return (populated_text, )
 
 
