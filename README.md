@@ -165,9 +165,6 @@ This takes latent as input and outputs latent as the result.
 
 * KSampler (pipe), KSampler (advanced/pipe)
 
-* ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
-- Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
-
 * Image batch To Image List - Convert Image batch to Image List
 - You can use images generated in a multi batch to handle them
 * Make Image List - Convert multiple images into a single image list
@@ -178,6 +175,8 @@ This takes latent as input and outputs latent as the result.
 * Combine Conditionings - It takes multiple conditionings as input and combines them into a single conditioning.
 
 * Logics (experimental) - These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
+  * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
+  * ImpactIsNotEmptySEGS - This node returns `true` only if the input SEGS is not empty. 
   * Queue Trigger - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
   * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
   * Set Mute State - This node changes the mute state of a specific node.
@@ -187,6 +186,7 @@ This takes latent as input and outputs latent as the result.
     * If you want to change the value of the seed at each iteration, please ensure that Set Widget Value is executed at the end of the workflow instead of using randomization.
       * It is not a problem if the seed changes due to randomization as long as it occurs after the Control Bridge section.
   * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
+  * Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
 
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.

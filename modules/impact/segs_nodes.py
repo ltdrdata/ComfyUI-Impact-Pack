@@ -450,6 +450,9 @@ class SEGSToMaskList:
 
     def doit(self, segs):
         masks = core.segs_to_masklist(segs)
+        if len(masks) == 0:
+            empty_mask = torch.zeros(segs[0], dtype=torch.float32, device="cpu")
+            masks = [empty_mask]
         return (masks,)
 
 

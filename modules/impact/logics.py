@@ -43,6 +43,20 @@ class ImpactCompare:
             return (False, )
 
 
+class ImpactNotEmptySEGS:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"segs": ("SEGS",)}}
+
+    FUNCTION = "doit"
+    CATEGORY = "ImpactPack/Logic"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, segs):
+        return (segs[1] != [], )
+
+
 class ImpactConditionalBranch:
     @classmethod
     def INPUT_TYPES(cls):
