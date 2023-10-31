@@ -2,7 +2,7 @@ import configparser
 import os
 
 
-version = "V4.28.1"
+version = "V4.28.2"
 
 dependency_version = 15
 
@@ -38,7 +38,7 @@ def read_config():
                     'mmdet_skip': default_conf['mmdet_skip'].lower() == 'true' if 'mmdet_skip' in default_conf else True,
                     'sam_editor_cpu': default_conf['sam_editor_cpu'].lower() == 'true' if 'sam_editor_cpu' in default_conf else False,
                     'sam_editor_model': 'sam_vit_b_01ec64.pth',
-                    'custom_wildcards': get_config()['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards"))
+                    'custom_wildcards': default_conf['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards"))
                }
 
     except Exception:
