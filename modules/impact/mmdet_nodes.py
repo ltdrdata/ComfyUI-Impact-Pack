@@ -102,7 +102,7 @@ class BBoxDetector:
     def __init__(self, bbox_model):
         self.bbox_model = bbox_model
 
-    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         drop_size = max(drop_size, 1)
         mmdet_results = inference_bbox(self.bbox_model, image, threshold)
         segmasks = create_segmasks(mmdet_results)
@@ -152,7 +152,7 @@ class SegmDetector(BBoxDetector):
     def __init__(self, segm_model):
         self.segm_model = segm_model
 
-    def detect(self, image, threshold, dilation, crop_factor, drop_size=1):
+    def detect(self, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         drop_size = max(drop_size, 1)
         mmdet_results = inference_segm(image, self.segm_model, threshold)
         segmasks = create_segmasks(mmdet_results)
