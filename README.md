@@ -188,6 +188,16 @@ This takes latent as input and outputs latent as the result.
   * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
   * Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
 
+* HuggingFace - These nodes provide functionalities based on HuggingFace repository models.
+  * `HF Transformers Classifier Provider` - This is a node that provides a classifier based on HuggingFace's transformers models.
+    * The 'repo id' parameter should contain HuggingFace's repo id. When `preset_repo_id` is set to `Manual repo id`, use the manually entered repo id in `manual_repo_id`.
+    * e.g. 'rizvandwiki/gender-classification-2' is a repository that provides a model for gender classification.
+  * `SEGS Classify` - This node utilizes the `TRANSFORMERS_CLASSIFIER` loaded with 'HF Transformers Classifier Provider' to classify `SEGS`.
+    * The 'expr' allows for forms like `label > number`, and in the case of `preset_expr` being `Manual expr`, it uses the expression entered in `manual_expr`.
+    * For example, in the case of `male <= 0.4`, if the score of the `male` label in the classification result is less than or equal to 0.4, it is categorized as `filtered_SEGS`, otherwise, it is categorized as `remained_SEGS`.
+      * For supported labels, please refer to the `config.json` of the respective HuggingFace repository.
+    * `#Female` and `#Male` are symbols that group multiple labels such as `Female, women, woman, ...`, for convenience, rather than being single labels.
+
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
 * To use the existing MMDetDetectorProvider, you need to enable the MMDet usage configuration.

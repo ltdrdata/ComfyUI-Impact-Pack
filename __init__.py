@@ -97,6 +97,7 @@ from impact.logics import *
 from impact.util_nodes import *
 from impact.segs_nodes import *
 from impact.special_samplers import *
+from impact.hf_nodes import *
 
 impact.wildcards.read_wildcard_dict(wildcards_path)
 try:
@@ -264,6 +265,9 @@ NODE_CLASS_MAPPINGS = {
     "ImpactNodeSetMuteState": ImpactNodeSetMuteState,
     "ImpactControlBridge": ImpactControlBridge,
     "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS,
+
+    "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
+    "ImpactSEGSClassify": SEGS_Classify
 }
 
 
@@ -356,6 +360,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSetWidgetValue": "Set Widget Value",
     "ImpactNodeSetMuteState": "Set Mute State",
     "ImpactControlBridge": "Control Bridge",
+
+    "ImpactHFTransformersClassifierProvider": "HF Transformers Classifier Provider",
+    "ImpactSEGSClassify": "SEGS Classify",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)"
