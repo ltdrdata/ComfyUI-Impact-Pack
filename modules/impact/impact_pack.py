@@ -1,7 +1,6 @@
 import os
 import sys
 
-import folder_paths
 import comfy.samplers
 import comfy.sd
 import warnings
@@ -31,15 +30,15 @@ warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is
 model_path = folder_paths.models_dir
 
 
-# Nodes
 # folder_paths.supported_pt_extensions
-folder_paths.folder_names_and_paths["mmdets_bbox"] = ([os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["mmdets_segm"] = ([os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["mmdets"] = ([os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["sams"] = ([os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
-folder_paths.folder_names_and_paths["onnx"] = ([os.path.join(model_path, "onnx")], {'.onnx'})
+add_folder_path_and_extensions("mmdets_bbox", [os.path.join(model_path, "mmdets", "bbox")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("mmdets_segm", [os.path.join(model_path, "mmdets", "segm")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("mmdets", [os.path.join(model_path, "mmdets")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
+add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
 
 
+# Nodes
 class ONNXDetectorProvider:
     @classmethod
     def INPUT_TYPES(s):
