@@ -49,19 +49,19 @@ def erosion_mask(mask, grow_mask_by):
     w = mask.shape[1]
     h = mask.shape[0]
 
-    mask = mask.clone()
-
+    device = comfy.model_management.get_torch_device()
+    mask = mask.clone().to(device)
     mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h),
-                                            mode="bilinear")
+                                            mode="bilinear").to(device)
     if grow_mask_by == 0:
         mask_erosion = mask2
     else:
-        kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by))
+        kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by)).to(device)
         padding = math.ceil((grow_mask_by - 1) / 2)
 
         mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask2.round(), kernel_tensor, padding=padding), 0, 1)
 
-    return mask_erosion[:, :, :w, :h].round()
+    return mask_erosion[:, :, :w, :h].round().cpu()
 
 
 def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,
@@ -115,6 +115,7 @@ class REGIONAL_PROMPT:
     def get_mask_erosion(self, factor):
         if self.mask_erosion is None or self.erosion_factor != factor:
             self.mask_erosion = erosion_mask(self.mask, factor)
+            self.erosion_factor = factor
 
         return self.mask_erosion
 

@@ -95,12 +95,15 @@ def dilate_mask(mask, dilation_factor, iter=1):
     if len(mask.shape) == 3:
         mask = mask.squeeze(0)
 
+    kernel = np.ones((abs(dilation_factor), abs(dilation_factor)), np.uint8)
+    gpu_mask = cv2.UMat(mask)
+    gpu_kernel = cv2.UMat(kernel)
     if dilation_factor > 0:
-        kernel = np.ones((dilation_factor, dilation_factor), np.uint8)
-        return cv2.dilate(mask, kernel, iter)
+        result = cv2.dilate(gpu_mask, gpu_kernel, iter)
     else:
-        kernel = np.ones((-dilation_factor, -dilation_factor), np.uint8)
-        return cv2.erode(mask, kernel, iter)
+        result = cv2.erode(gpu_mask, gpu_kernel, iter)
+
+    return result.get()
 
 
 def dilate_masks(segmasks, dilation_factor, iter=1):
@@ -108,12 +111,22 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
         return segmasks
 
     dilated_masks = []
-    kernel = np.ones((dilation_factor, dilation_factor), np.uint8)
+    kernel = np.ones((abs(dilation_factor), abs(dilation_factor)), np.uint8)
+
+    gpu_kernel = cv2.UMat(kernel)
+
     for i in range(len(segmasks)):
         cv2_mask = segmasks[i][1]
-        dilated_mask = cv2.dilate(cv2_mask, kernel, iter)
+        gpu_mask = cv2.UMat(cv2_mask)
+
+        if dilation_factor > 0:
+            dilated_mask = cv2.dilate(gpu_mask, gpu_kernel, iter).get()
+        else:
+            dilated_mask = cv2.erode(gpu_mask, gpu_kernel, iter).get()
+
         item = (segmasks[i][0], dilated_mask, segmasks[i][2])
         dilated_masks.append(item)
+
     return dilated_masks
 
 
