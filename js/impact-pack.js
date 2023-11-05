@@ -2,6 +2,16 @@ import { ComfyApp, app } from "../../scripts/app.js";
 import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { api } from "../../scripts/api.js";
 
+let wildcards_list = [];
+async function load_wildcards() {
+	let res = await api.fetchApi('/impact/wildcards/list');
+	let data = await res.json();
+	wildcards_list = data.data;
+}
+
+load_wildcards();
+
+
 // temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 // I think this should be included into master!!
 class ImpactProgressBadge {
@@ -531,12 +541,15 @@ app.registerExtension({
 	                            node.widgets[tbox_id].value += value;
                             }
                         }
-
-						node._wvalue = value;
 					},
-				get: () => {
-                        return node._wvalue;
-					 }
+				get: () => { return "Select the Wildcard to add to the text"; }
+			});
+
+			Object.defineProperty(node.widgets[combo_id+1].options, "values", {
+			    set: (x) => {},
+			    get: () => {
+			    	return wildcards_list;
+			    }
 			});
 
 			if(has_lora) {
