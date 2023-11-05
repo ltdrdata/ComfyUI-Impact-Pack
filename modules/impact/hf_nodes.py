@@ -154,11 +154,14 @@ class SEGS_Classify:
             if b_is_lab:
                 bvalue = SEGS_Classify.lookup_classified_label_score(res, b)
             else:
-                bvalue = a
+                bvalue = b
 
             if avalue is None or bvalue is None:
                 remained_SEGS.append(seg)
                 continue
+
+            avalue = float(avalue)
+            bvalue = float(bvalue)
 
             if op == '>':
                 cond = avalue > bvalue
