@@ -123,6 +123,7 @@ NODE_CLASS_MAPPINGS = {
 
     "FaceDetailer": FaceDetailer,
     "FaceDetailerPipe": FaceDetailerPipe,
+    "MaskDetailerPipe": MaskDetailerPipe,
 
     "ToDetailerPipe": ToDetailerPipe,
     "ToDetailerPipeSDXL": ToDetailerPipeSDXL,
@@ -206,9 +207,6 @@ NODE_CLASS_MAPPINGS = {
     "SEGSSwitch": GeneralSwitch,
     "ImpactSwitch": GeneralSwitch,
     "ImpactInversedSwitch": GeneralInversedSwitch,
-
-    # "SaveConditioning": SaveConditioning,
-    # "LoadConditioning": LoadConditioning,
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
@@ -298,6 +296,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SAMDetectorCombined": "SAMDetector (combined)",
     "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
+    "MaskDetailerPipe": "MaskDetailer (Pipe)",
 
     "FromDetailerPipeSDXL": "FromDetailer (SDXL/pipe)",
     "BasicPipeToDetailerPipeSDXL": "BasicPipe -> DetailerPipe (SDXL)",

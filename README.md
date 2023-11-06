@@ -51,19 +51,22 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * Bitwise(MASK + MASK) - Combine two masks.
 * SEGM Detector (SEGS) - Detects segmentation and returns SEGS from the input image.
 * BBOX Detector (SEGS) - Detects bounding boxes and returns SEGS from the input image.
-* Detailer (SEGS) - Refines the image based on SEGS.
-* DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
-  * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
-* MASK to SEGS - Generates SEGS based on the mask.
-* MediaPipe FaceMesh to SEGS - Separate each landmark from the mediapipe facemesh image to create labeled SEGS.
-  * Usually, the size of images created through the MediaPipe facemesh preprocessor is downscaled. It resizes the MediaPipe facemesh image to the original size given as reference_image_opt for matching sizes during processing. 
-* ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
-* Masks to Mask List - This node converts the MASKS in batch form to a list of individual masks.
-* Mask List to Masks - This node converts the MASK list to MASK batch form.
-* EmptySEGS - Provides an empty SEGS.
-* MaskPainter - Provides a feature to draw masks.
-* FaceDetailer - Easily detects faces and improves them.
-* FaceDetailer (pipe) - Easily detects faces and improves them (for multipass).
+
+* Detailer
+  * Detailer (SEGS) - Refines the image based on SEGS.
+  * DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
+    * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
+  * MASK to SEGS - Generates SEGS based on the mask.
+  * MediaPipe FaceMesh to SEGS - Separate each landmark from the mediapipe facemesh image to create labeled SEGS.
+    * Usually, the size of images created through the MediaPipe facemesh preprocessor is downscaled. It resizes the MediaPipe facemesh image to the original size given as reference_image_opt for matching sizes during processing. 
+  * ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
+  * Masks to Mask List - This node converts the MASKS in batch form to a list of individual masks.
+  * Mask List to Masks - This node converts the MASK list to MASK batch form.
+  * EmptySEGS - Provides an empty SEGS.
+  * MaskPainter - Provides a feature to draw masks.
+  * FaceDetailer - Easily detects faces and improves them.
+  * FaceDetailer (pipe) - Easily detects faces and improves them (for multipass).
+  * MaskDetailer (pipe) - This is a simple inpaint node that applies the Detailer to the mask area.
 
 * `FromDetailer (SDXL/pipe), BasicPipe -> DetailerPipe (SDXL), Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
 

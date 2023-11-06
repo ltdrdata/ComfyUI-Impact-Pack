@@ -1012,6 +1012,93 @@ class FaceDetailerPipe:
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, detailer_pipe, cnet_pil_list
 
 
+class MaskDetailerPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "mask": ("MASK", ),
+                     "basic_pipe": ("BASIC_PIPE",),
+
+                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "mask bbox", "label_off": "crop region"}),
+                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                     "mask_mode": ("BOOLEAN", {"default": True, "label_on": "masked only", "label_off": "whole"}),
+
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                     "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+                     },
+                "optional": {
+                     "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
+                     "detailer_hook": ("DETAILER_HOOK",),
+                     }
+                }
+
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "BASIC_PIPE", "BASIC_PIPE")
+    RETURN_NAMES = ("image", "cropped_refined", "cropped_enhanced_alpha", "basic_pipe", "refiner_basic_pipe_opt")
+    OUTPUT_IS_LIST = (False, True, True, False, False)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/__for_test"
+
+    def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
+             seed, steps, cfg, sampler_name, scheduler, denoise,
+             feather, crop_factor, drop_size, refiner_ratio, batch_size,
+             refiner_basic_pipe_opt=None, detailer_hook=None):
+
+        model, clip, vae, positive, negative = basic_pipe
+
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
+
+        # create segs
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
+        segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+
+        enhanced_img_batch = None
+        cropped_enhanced_list = []
+        cropped_enhanced_alpha_list = []
+
+        for i in range(batch_size):
+            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _ = \
+                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
+                                          cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
+                                          force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
+                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
+                                          refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+
+            if enhanced_img_batch is None:
+                enhanced_img_batch = enhanced_img
+            else:
+                enhanced_img_batch = torch.cat((enhanced_img_batch, enhanced_img), dim=0)
+
+            cropped_enhanced_list += cropped_enhanced
+            cropped_enhanced_alpha_list += cropped_enhanced_alpha_list
+
+        # set fallback image
+        if len(cropped_enhanced_list) == 0:
+            cropped_enhanced_list = [empty_pil_tensor()]
+
+        if len(cropped_enhanced_alpha_list) == 0:
+            cropped_enhanced_alpha_list = [empty_pil_tensor()]
+
+        return enhanced_img_batch, cropped_enhanced_list, cropped_enhanced_alpha_list, basic_pipe, refiner_basic_pipe_opt
+
+
 class DetailerForEachTest(DetailerForEach):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE")
     RETURN_NAMES = ("image", "cropped", "cropped_refined", "cropped_refined_alpha", "cnet_images")
@@ -1906,85 +1993,6 @@ class LatentSwitch:
         else:
             print(f"LatentSwitch: invalid select index ('latent1' is selected)")
             return (kwargs['latent1'],)
-
-
-class SaveConditioning:
-    def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"conditioning": ("CONDITIONING", ),
-                             "filename_prefix": ("STRING", {"default": "conditioning/ComfyUI"}),
-                             },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
-                }
-
-    RETURN_TYPES = ()
-    FUNCTION = "doit"
-
-    OUTPUT_NODE = True
-
-    CATEGORY = "_for_testing"
-
-    def doit(self, conditioning, filename_prefix, prompt=None, extra_pnginfo=None):
-        # support save metadata for latent sharing
-        prompt_info = ""
-        if prompt is not None:
-            prompt_info = json.dumps(prompt)
-
-        for tensor_data, meta_data in conditioning:
-            full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
-
-            metadata = {"prompt": prompt_info}
-            if extra_pnginfo is not None:
-                for x in extra_pnginfo:
-                    metadata[x] = json.dumps(extra_pnginfo[x])
-
-            file = f"{filename}_{counter:05}_.conditioning"
-            file = os.path.join(full_output_folder, file)
-
-            print(f"meta_data:{meta_data}")
-            print(f"tensor_data:{tensor_data}")
-
-            output = {"conditioning": tensor_data}
-            metadata['conditioning_aux'] = json.dumps(meta_data)
-
-            safetensors.torch.save_file(output, file, metadata=metadata)
-
-        return {}
-
-
-class LoadConditioning:
-    @classmethod
-    def INPUT_TYPES(s):
-        input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f)) and f.endswith(".conditioning")]
-        return {"required": {"conditioning": [sorted(files), ]}, }
-
-    CATEGORY = "_for_testing"
-
-    RETURN_TYPES = ("CONDITIONING", )
-    FUNCTION = "load"
-
-    def load(self, conditioning):
-        conditioning_path = folder_paths.get_annotated_filepath(conditioning)
-        data = safetensors.torch.load_file(conditioning_path, device="cpu")
-        return ([[data['conditioning'], {}]], )
-
-    @classmethod
-    def IS_CHANGED(s, conditioning):
-        image_path = folder_paths.get_annotated_filepath(conditioning)
-        m = hashlib.sha256()
-        with open(image_path, 'rb') as f:
-            m.update(f.read())
-        return m.digest().hex()
-
-    @classmethod
-    def VALIDATE_INPUTS(s, conditioning):
-        if not folder_paths.exists_annotated_filepath(conditioning):
-            return "Invalid conditioning file: {}".format(conditioning)
-        return True
 
 
 class ImpactWildcardProcessor:
