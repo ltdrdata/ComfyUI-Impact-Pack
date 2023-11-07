@@ -1633,6 +1633,7 @@ class ImageReceiver:
                     "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                     "save_to_workflow": ("BOOLEAN", {"default": False}),
                     "image_data": ("STRING", {"multiline": False}),
+                    "trigger_always": ("BOOLEAN", {"default": False, "label_on": "enable", "label_off": "disable"}),
                     },
                 }
 
@@ -1642,7 +1643,7 @@ class ImageReceiver:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, image, link_id, save_to_workflow, image_data):
+    def doit(self, image, link_id, save_to_workflow, image_data, trigger_always):
         if save_to_workflow:
             try:
                 image_data = base64.b64decode(image_data.split(",")[1])
@@ -1665,19 +1666,22 @@ class ImageReceiver:
             return nodes.LoadImage().load_image(image)
 
     @classmethod
-    def VALIDATE_INPUTS(s, image, link_id, save_to_workflow, image_data):
+    def VALIDATE_INPUTS(s, image, link_id, save_to_workflow, image_data, trigger_always):
         if image != '#DATA' and not folder_paths.exists_annotated_filepath(image) or image.startswith("/") or ".." in image:
             return "Invalid image file: {}".format(image)
 
         return True
 
     @classmethod
-    def IS_CHANGED(s, image, link_id, save_to_workflow, image_data):
-        if save_to_workflow:
-            return hash(image_data)
+    def IS_CHANGED(s, image, link_id, save_to_workflow, image_data, trigger_always):
+        if trigger_always:
+            return float("NaN")
         else:
-            return get_image_hash(image)
-
+            if save_to_workflow:
+                return hash(image_data)
+            else:
+                return hash(image)
+                
 
 from server import PromptServer
 
@@ -1718,6 +1722,7 @@ class LatentReceiver:
         return {"required": {
                     "latent": (sorted(files), ),
                     "link_id": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
+                    "trigger_always": ("BOOLEAN", {"default": False, "label_on": "enable", "label_off": "disable"}),
                     },
                 }
 
@@ -1786,15 +1791,18 @@ class LatentReceiver:
                 }
 
     @classmethod
-    def IS_CHANGED(s, latent, link_id):
-        image_path = folder_paths.get_annotated_filepath(latent)
-        m = hashlib.sha256()
-        with open(image_path, 'rb') as f:
-            m.update(f.read())
-        return m.digest().hex()
+    def IS_CHANGED(s, latent, link_id, trigger_always):
+        if trigger_always:
+            return float("NaN")
+        else:
+            image_path = folder_paths.get_annotated_filepath(latent)
+            m = hashlib.sha256()
+            with open(image_path, 'rb') as f:
+                m.update(f.read())
+            return m.digest().hex()
 
     @classmethod
-    def VALIDATE_INPUTS(s, latent, link_id):
+    def VALIDATE_INPUTS(s, latent, link_id, trigger_always):
         if not folder_paths.exists_annotated_filepath(latent) or latent.startswith("/") or ".." in latent:
             return "Invalid latent file: {}".format(latent)
         return True
