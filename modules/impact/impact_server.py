@@ -189,6 +189,12 @@ async def sam_detect(request):
             return web.Response(status=400)
 
 
+@server.PromptServer.instance.routes.get("/impact/wildcards/list")
+async def wildcards_list(request):
+    data = {'data': impact.wildcards.get_wildcard_list()}
+    return web.json_response(data)
+
+
 @server.PromptServer.instance.routes.post("/impact/wildcards")
 async def populate_wildcards(request):
     data = await request.json()
