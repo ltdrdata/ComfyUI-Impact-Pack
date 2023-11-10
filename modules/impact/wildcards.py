@@ -149,7 +149,7 @@ def process(text, seed=None):
 
     def replace_wildcard(string):
         global wildcard_dict
-        pattern = r"__([\w.\-/*\\]+)__"
+        pattern = r"__([\w.\-+/*\\]+)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
@@ -162,7 +162,7 @@ def process(text, seed=None):
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
-                subpattern = keyword.replace('*', '.*')
+                subpattern = keyword.replace('*', '.*').replace('+','\+')
                 total_patterns = []
                 found = False
                 for k, v in wildcard_dict.items():
