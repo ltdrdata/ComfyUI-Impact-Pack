@@ -174,6 +174,7 @@ NODE_CLASS_MAPPINGS = {
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
     "ONNXDetectorSEGS": BboxDetectorForEach,
+    "ImpactSimpleDetectorSEGS_for_AD": SimpleDetectorForAnimateDiff,
     "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
     "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
     "ImpactControlNetApplySEGS": ControlNetApplySEGS,
@@ -219,6 +220,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
     "ImpactSEGSConcat": SEGSConcat,
     "ImpactSEGSPicker": SEGSPicker,
+
+    "SEGSDetailerForAnimateDiff": SEGSDetailerForAnimateDiff,
 
     "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
     "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
@@ -273,6 +276,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
     "ONNXDetectorSEGS": "ONNX Detector (SEGS/legacy) - use BBOXDetector",
+    "ImpactSimpleDetectorSEGS_for_AD": "Simple Detector for AnimateDiff (SEGS)",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
     "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",
@@ -293,6 +297,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",
+    "SEGSDetailerForAnimateDiff": "Detailer For AnimateDiff (SEGS/pipe)",
+
     "SAMDetectorCombined": "SAMDetector (combined)",
     "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",

@@ -287,6 +287,114 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     return refined_image, cnet_pil
 
 
+def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg,
+                                   sampler_name,
+                                   scheduler, positive, negative, denoise, noise_mask, wildcard_opt=None,
+                                   detailer_hook=None,
+                                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
+                                   refiner_negative=None):
+    if noise_mask is not None and len(noise_mask.shape) == 3:
+        noise_mask = noise_mask.squeeze(0)
+
+    if wildcard_opt is not None and wildcard_opt != "":
+        model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+
+    h = image_frames.shape[1]
+    w = image_frames.shape[2]
+
+    bbox_h = bbox[3] - bbox[1]
+    bbox_w = bbox[2] - bbox[0]
+
+    # Skip processing if the detected bbox is already larger than the guide_size
+    if guide_size_for_bbox:  # == "bbox"
+        # Scale up based on the smaller dimension between width and height.
+        upscale = guide_size / min(bbox_w, bbox_h)
+    else:
+        # for cropped_size
+        upscale = guide_size / min(w, h)
+
+    new_w = int(w * upscale)
+    new_h = int(h * upscale)
+
+    # safeguard
+    if 'aitemplate_keep_loaded' in model.model_options:
+        max_size = min(4096, max_size)
+
+    if new_w > max_size or new_h > max_size:
+        upscale *= max_size / max(new_w, new_h)
+        new_w = int(w * upscale)
+        new_h = int(h * upscale)
+
+    if upscale <= 1.0 or new_w == 0 or new_h == 0:
+        print(f"Detailer: force inpaint")
+        upscale = 1.0
+        new_w = w
+        new_h = h
+
+    if detailer_hook is not None:
+        new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
+
+    print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
+
+    # upscale the mask tensor by a factor of 2 using bilinear interpolation
+    noise_mask = torch.from_numpy(noise_mask)
+    upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
+                                                    mode='bilinear', align_corners=False)
+
+    upscaled_mask = upscaled_mask.squeeze().squeeze()
+
+    latent_frames = None
+    for image in image_frames:
+        image = torch.from_numpy(image).unsqueeze(0)
+
+        # upscale
+        upscaled_image = scale_tensor(new_w, new_h, image)
+
+        # ksampler
+        samples = to_latent_image(upscaled_image, vae)['samples']
+
+        if latent_frames is None:
+            latent_frames = samples
+        else:
+            latent_frames = torch.concat((latent_frames, samples), dim=0)
+
+    upscaled_mask = upscaled_mask.expand(len(image_frames), -1, -1)
+
+    latent = {
+        'noise_mask': upscaled_mask,
+        'samples': latent_frames
+    }
+
+    if detailer_hook is not None:
+        latent = detailer_hook.post_encode(latent)
+
+    refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
+                                             latent, denoise,
+                                             refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+
+    if detailer_hook is not None:
+        refined_latent = detailer_hook.pre_decode(refined_latent)
+
+    refined_image_frames = None
+    for refined_sample in refined_latent['samples']:
+        refined_sample = refined_sample.unsqueeze(0)
+
+        # non-latent downscale - latent downscale cause bad quality
+        refined_image = vae.decode(refined_sample)
+
+        if refined_image_frames is None:
+            refined_image_frames = refined_image
+        else:
+            refined_image_frames = torch.concat((refined_image_frames, refined_image), dim=0)
+
+    if detailer_hook is not None:
+        refined_image_frames = detailer_hook.post_decode(refined_image_frames)
+
+    refined_image_frames = nodes.ImageScale().upscale(image=refined_image_frames, upscale_method='lanczos', width=w, height=h, crop='disabled')[0]
+
+    return refined_image_frames
+
+
 def composite_to(dest_latent, crop_region, src_latent):
     x1 = crop_region[0]
     y1 = crop_region[1]
@@ -982,6 +1090,10 @@ def segs_to_masklist(segs):
         mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
         mask = torch.from_numpy(mask.astype(np.float32) / 255.0)
         masks.append(mask)
+
+    if len(masks) == 0:
+        empty_mask = torch.zeros((h, w), dtype=torch.float32, device="cpu")
+        masks = [empty_mask]
 
     return masks
 

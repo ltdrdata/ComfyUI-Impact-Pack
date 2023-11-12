@@ -111,6 +111,89 @@ class SEGSDetailer:
         return (segs, cnet_pil_list)
 
 
+class SEGSDetailerForAnimateDiff:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image_frames": ("IMAGE", ),
+                     "segs": ("SEGS", ),
+                     "guide_size": ("FLOAT", {"default": 256, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                     "max_size": ("FLOAT", {"default": 768, "min": 64, "max": MAX_RESOLUTION, "step": 8}),
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                     "basic_pipe": ("BASIC_PIPE",),
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0})
+                     },
+                "optional": {
+                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                    }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    RETURN_NAMES = ("segs",)
+    OUTPUT_IS_LIST = (False,)
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    @staticmethod
+    def do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
+                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+
+        model, clip, vae, positive, negative = basic_pipe
+        if refiner_basic_pipe_opt is None:
+            refiner_model, refiner_clip, refiner_positive, refiner_negative = None, None, None, None
+        else:
+            refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
+
+        segs = core.segs_scale_match(segs, image_frames.shape)
+
+        new_segs = []
+
+        for seg in segs[1]:
+            cropped_image_frames = None
+
+            for image in image_frames:
+                image = image.unsqueeze(0)
+                cropped_image = seg.cropped_image if seg.cropped_image is not None else crop_ndarray4(image.numpy(), seg.crop_region)
+
+                if cropped_image_frames is None:
+                    cropped_image_frames = torch.from_numpy(cropped_image)
+                else:
+                    cropped_image_frames = torch.concat((cropped_image_frames, torch.from_numpy(cropped_image)), dim=0)
+
+            cropped_image_frames = cropped_image_frames.numpy()
+            enhanced_image_tensor = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
+                                                                        seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                                        positive, negative, denoise, seg.cropped_mask,
+                                                                        refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                                        refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+
+            if enhanced_image_tensor is None:
+                new_cropped_image = cropped_image_frames
+            else:
+                new_cropped_image = enhanced_image_tensor.numpy()
+
+            new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_segs.append(new_seg)
+
+        return (segs[0], new_segs)
+
+    def doit(self, image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
+             denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+
+        segs = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
+                                                    scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt)
+
+        return (segs,)
+
+
 class SEGSPaste:
     @classmethod
     def INPUT_TYPES(s):
@@ -129,26 +212,37 @@ class SEGSPaste:
 
     @staticmethod
     def doit(image, segs, feather, ref_image_opt=None):
-        image_pil = tensor2pil(image).convert('RGBA')
 
         segs = core.segs_scale_match(segs, image.shape)
 
-        for seg in segs[1]:
-            ref_image_pil = None
-            if ref_image_opt is None and seg.cropped_image is not None:
-                ref_image_pil = tensor2pil(torch.from_numpy(seg.cropped_image))
-            elif ref_image_opt is not None:
-                cropped = crop_image(ref_image_opt, seg.crop_region)
-                cropped = np.clip(255. * cropped.squeeze(), 0, 255).astype(np.uint8)
-                ref_image_pil = Image.fromarray(cropped).convert('RGBA')
+        result = None
+        for i in range(image.shape[0]):
+            image_i = image[i].unsqueeze(0)
+            image_pil = tensor2pil(image_i).convert('RGBA')
+            for seg in segs[1]:
+                ref_image_pil = None
+                if ref_image_opt is None and seg.cropped_image is not None:
+                    cropped_tensor = torch.from_numpy(seg.cropped_image)[i]
+                    cropped_tensor = cropped_tensor.unsqueeze(0)
+                    ref_image_pil = tensor2pil(cropped_tensor)
+                elif ref_image_opt is not None:
+                    ref_tensor = ref_image_opt[i].unsqueeze(0)
+                    cropped = crop_image(ref_tensor, seg.crop_region)
+                    cropped = np.clip(255. * cropped.squeeze(), 0, 255).astype(np.uint8)
+                    ref_image_pil = Image.fromarray(cropped).convert('RGBA')
 
-            if ref_image_pil is not None:
-                mask_pil = feather_mask(seg.cropped_mask, feather)
-                image_pil.paste(ref_image_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
+                if ref_image_pil is not None:
+                    mask_pil = feather_mask(seg.cropped_mask, feather)
+                    image_pil.paste(ref_image_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
 
-        image_tensor = pil2tensor(image_pil.convert('RGB'))
+            image_tensor = pil2tensor(image_pil.convert('RGB'))
 
-        return (image_tensor, )
+            if result is None:
+                result = image_tensor
+            else:
+                result = torch.concat((result, image_tensor), dim=0)
+
+        return (result, )
 
 
 class SEGSPreview:
@@ -160,6 +254,7 @@ class SEGSPreview:
     def INPUT_TYPES(s):
         return {"required": {
                      "segs": ("SEGS", ),
+                     "alpha_mode": ("BOOLEAN", {"default": True, "label_on": "enable", "label_off": "disable"}),
                      },
                 "optional": {
                      "fallback_image_opt": ("IMAGE", ),
@@ -173,7 +268,7 @@ class SEGSPreview:
 
     OUTPUT_NODE = True
 
-    def doit(self, segs, fallback_image_opt=None):
+    def doit(self, segs, alpha_mode=True, fallback_image_opt=None):
         full_output_folder, filename, counter, subfolder, filename_prefix = \
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
 
@@ -182,27 +277,42 @@ class SEGSPreview:
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
-        for seg in segs[1]:
-            cropped_image = None
-
-            if seg.cropped_image is not None:
-                cropped_image = seg.cropped_image
+        if len(segs[1]) > 0:
+            if segs[1][0].cropped_image is not None:
+                batch_count = len(segs[1][0].cropped_image)
             elif fallback_image_opt is not None:
-                # take from original image
-                cropped_image = crop_image(fallback_image_opt, seg.crop_region)
+                batch_count = len(fallback_image_opt)
+            else:
+                return {"ui": {"images": results}}
 
-            if cropped_image is not None:
-                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
+            for i in range(batch_count):
+                for seg in segs[1]:
+                    cropped_image = None
 
-                file = f"{filename}_{counter:05}_.webp"
-                cropped_image.save(os.path.join(full_output_folder, file))
-                results.append({
-                    "filename": file,
-                    "subfolder": subfolder,
-                    "type": self.type
-                })
+                    if seg.cropped_image is not None:
+                        cropped_image = seg.cropped_image[i]
+                    elif fallback_image_opt is not None:
+                        # take from original image
+                        ref_image = fallback_image_opt[i].unsqueeze(0)
+                        cropped_image = crop_image(ref_image, seg.crop_region).squeeze(0)
 
-                counter += 1
+                    if cropped_image is not None:
+                        cropped_image = Image.fromarray(np.clip(255. * cropped_image, 0, 255).astype(np.uint8))
+
+                        if alpha_mode:
+                            mask_array = seg.cropped_mask.astype(np.uint8) * 255
+                            mask_image = Image.fromarray(mask_array, mode='L').resize(cropped_image.size)
+                            cropped_image.putalpha(mask_image)
+
+                        file = f"{filename}_{counter:05}_.webp"
+                        cropped_image.save(os.path.join(full_output_folder, file))
+                        results.append({
+                            "filename": file,
+                            "subfolder": subfolder,
+                            "type": self.type
+                        })
+
+                        counter += 1
 
         return {"ui": {"images": results}}
 
