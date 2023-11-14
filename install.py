@@ -12,7 +12,7 @@ impact_path = os.path.join(os.path.dirname(__file__), "modules")
 old_subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
 subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
 subpack_repo = "https://github.com/ltdrdata/ComfyUI-Impact-Subpack"
-comfy_path = os.path.join(os.path.dirname(__file__), '..', '..')
+comfy_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
 sys.path.append(impact_path)

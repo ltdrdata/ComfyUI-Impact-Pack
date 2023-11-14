@@ -9,6 +9,7 @@ import shutil
 import folder_paths
 import os
 import sys
+import traceback
 
 comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
@@ -33,8 +34,12 @@ def do_install():
 
 
 # ensure dependency
+if not os.path.exists(os.path.join(subpack_path, ".git")) and os.path.exists(subpack_path):
+    print(f"### CompfyUI-Impact-Pack: corrupted subpack detected.")
+    shutil.rmtree(subpack_path)
+
 if impact.config.get_config()['dependency_version'] < impact.config.dependency_version or not os.path.exists(subpack_path):
-    print(f"## ComfyUI-Impact-Pack: Updating dependencies")
+    print(f"### ComfyUI-Impact-Pack: Updating dependencies [{impact.config.get_config()['dependency_version']} -> {impact.config.dependency_version}]")
     do_install()
 
 sys.path.append(subpack_path)
@@ -402,9 +407,14 @@ try:
 
     NODE_CLASS_MAPPINGS.update(impact.subpack_nodes.NODE_CLASS_MAPPINGS)
     NODE_DISPLAY_NAME_MAPPINGS.update(impact.subpack_nodes.NODE_DISPLAY_NAME_MAPPINGS)
-
-except:
-    pass
+except Exception as e:
+    print("### ComfyUI-Impact-Pack: (IMPORT FAILED) Subpack\n")
+    print("  The module at the `custom_nodes/ComfyUI-Impact-Pack/impact_subpack` path appears to be incomplete.")
+    print("  Recommended to delete the path and restart ComfyUI.")
+    print("  If the issue persists, please report it to https://github.com/ltdrdata/ComfyUI-Impact-Pack/issues.")
+    print("\n---------------------------------")
+    traceback.print_exc()
+    print("---------------------------------\n")
 
 WEB_DIRECTORY = "js"
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
