@@ -179,6 +179,8 @@ try:
         if os.path.exists(subpack_install_script):
             subprocess.run([sys.executable, 'install.py'], cwd=subpack_path)
             subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
+        else:
+            print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
 
         if not os.path.exists(onnx_path):
             print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
