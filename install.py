@@ -2,7 +2,8 @@ import os
 import shutil
 import sys
 import subprocess
-
+import threading
+import locale
 
 if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
@@ -17,6 +18,38 @@ comfy_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')
 
 sys.path.append(impact_path)
 sys.path.append(comfy_path)
+
+
+# ---
+def handle_stream(stream, is_stdout):
+    stream.reconfigure(encoding=locale.getpreferredencoding(), errors='replace')
+
+    for msg in stream:
+        if is_stdout:
+            print(msg, end="", file=sys.stdout)
+        else: 
+            print(msg, end="", file=sys.stderr)
+            
+
+def process_wrap(cmd_str, cwd=None, handler=None):
+    print(f"[Impact Pack] EXECUTE: {cmd_str} in '{cwd}'")
+    process = subprocess.Popen(cmd_str, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+
+    if handler is None:
+        handler = handle_stream
+
+    stdout_thread = threading.Thread(target=handler, args=(process.stdout, True))
+    stderr_thread = threading.Thread(target=handler, args=(process.stderr, False))
+
+    stdout_thread.start()
+    stderr_thread.start()
+
+    stdout_thread.join()
+    stderr_thread.join()
+
+    return process.wait()
+# ---
+
 
 try:
     import platform
@@ -76,10 +109,10 @@ try:
     def ensure_pip_packages_first():
         subpack_req = os.path.join(subpack_path, "requirements.txt")
         if os.path.exists(subpack_req):
-            subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
+            process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
 
         if not impact.config.get_config()['mmdet_skip']:
-            subprocess.run(pip_install + ['openmim'])
+            process_wrap(pip_install + ['openmim'])
 
             try:
                 import pycocotools
@@ -87,7 +120,7 @@ try:
                 if platform.system() not in ["Windows"] or platform.machine() not in ["AMD64", "x86_64"]:
                     print(f"Your system is {platform.system()}; !! You need to install 'libpython3-dev' for this step. !!")
 
-                    subprocess.check_call(pip_install + ['pycocotools'])
+                    process_wrap(pip_install + ['pycocotools'])
                 else:
                     pycocotools = {
                         (3, 8): "https://github.com/Bing-su/dddetailer/releases/download/pycocotools/pycocotools-2.0.6-cp38-cp38-win_amd64.whl",
@@ -98,7 +131,7 @@ try:
 
                     version = sys.version_info[:2]
                     url = pycocotools[version]
-                    subprocess.check_call(pip_install + [url])
+                    process_wrap(pip_install + [url])
 
 
     def ensure_pip_packages_last():
@@ -109,21 +142,21 @@ try:
         except Exception:
             my_path = os.path.dirname(__file__)
             requirements_path = os.path.join(my_path, "requirements.txt")
-            subprocess.check_call(pip_install + ['-r', requirements_path])
+            process_wrap(pip_install + ['-r', requirements_path])
 
         # !! cv2 importing test must be very last !!
         try:
             import cv2
         except Exception:
             try:
-                subprocess.check_call(pip_install + ['opencv-python'])
+                process_wrap(pip_install + ['opencv-python'])
             except:
                 print(f"[ERROR] ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
         try:
             import git
         except Exception:
-            subprocess.check_call(pip_install + ['gitpython'])
+            process_wrap(pip_install + ['gitpython'])
 
 
     def ensure_mmdet_package():
@@ -132,11 +165,11 @@ try:
             import mmdet
             from mmdet.evaluation import get_classes
         except Exception:
-            subprocess.check_call(pip_install + ['opendatalab==0.0.9'])
-            subprocess.check_call(pip_install + ['-U', 'openmim'])
-            subprocess.check_call(mim_install + ['mmcv==2.0.0'])
-            subprocess.check_call(mim_install + ['mmdet==3.0.0'])
-            subprocess.check_call(mim_install + ['mmengine==0.7.4'])
+            process_wrap(pip_install + ['opendatalab==0.0.9'])
+            process_wrap(pip_install + ['-U', 'openmim'])
+            process_wrap(mim_install + ['mmcv==2.0.0'])
+            process_wrap(mim_install + ['mmdet==3.0.0'])
+            process_wrap(mim_install + ['mmengine==0.7.4'])
 
 
     def install():
@@ -177,8 +210,8 @@ try:
         ensure_subpack()
 
         if os.path.exists(subpack_install_script):
-            subprocess.run([sys.executable, 'install.py'], cwd=subpack_path)
-            subprocess.run(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
+            process_wrap([sys.executable, 'install.py'], cwd=subpack_path)
+            process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
         else:
             print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
 
