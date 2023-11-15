@@ -2,7 +2,7 @@ import configparser
 import os
 
 
-version = "V4.30.7"
+version = "V4.30.8"
 
 dependency_version = 17
 
@@ -40,7 +40,7 @@ def read_config():
                     'sam_editor_cpu': default_conf['sam_editor_cpu'].lower() == 'true' if 'sam_editor_cpu' in default_conf else False,
                     'sam_editor_model': 'sam_vit_b_01ec64.pth',
                     'custom_wildcards': default_conf['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
-                    'disable_gpu_opencv': default_conf['disable_gpu_opencv'].lower() == 'true' if 'disable_gpu_opencv' in default_conf else False
+                    'disable_gpu_opencv': default_conf['disable_gpu_opencv'].lower() == 'true' if 'disable_gpu_opencv' in default_conf else True
                }
 
     except Exception:
@@ -50,7 +50,7 @@ def read_config():
             'sam_editor_cpu': False,
             'sam_editor_model': 'sam_vit_b_01ec64.pth',
             'custom_wildcards': os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
-            'disable_gpu_opencv': False
+            'disable_gpu_opencv': True
         }
 
 
