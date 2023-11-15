@@ -14,6 +14,22 @@
         2. execute ```(YOUR PYTHON) -s -m custom_nodes\ComfyUI-Impact-Pack\install.py```
 
 
+## If the nodes of the Impact Pack hang during execution
+
+* During the execution of processes related to dilation, issues like this may arise depending on the compatibility of the computer environment.
+* Please set `disable_gpu_opencv = True` in the `ComfyUI-Impact-Pack/impact-pack.ini` file. Occasionally, issues may arise when the OpenCV GPU mode is activated depending on the environment.
+
+    e.g.
+```
+[default]
+dependency_version = 17
+mmdet_skip = True
+sam_editor_cpu = False
+sam_editor_model = sam_vit_b_01ec64.pth
+custom_wildcards = /home/me/github/ComfyUI/custom_nodes/ComfyUI-Impact-Pack/custom_wildcards
+disable_gpu_opencv = True
+```
+
 
 ## Destortion on Detailer
 
