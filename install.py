@@ -174,6 +174,18 @@ try:
 
     def install():
         remove_olds()
+
+        subpack_install_script = os.path.join(subpack_path, "install.py")
+
+        print(f"### ComfyUI-Impact-Pack: Updating subpack")
+        ensure_subpack()  # The installation of the subpack must take place before ensure_pip. cv2 triggers a permission error.
+
+        if os.path.exists(subpack_install_script):
+            process_wrap([sys.executable, 'install.py'], cwd=subpack_path)
+            process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
+        else:
+            print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
+
         ensure_pip_packages_first()
 
         if not impact.config.get_config()['mmdet_skip']:
@@ -203,17 +215,6 @@ try:
 
             if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
                 download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
-
-        subpack_install_script = os.path.join(subpack_path, "install.py")
-
-        print(f"### ComfyUI-Impact-Pack: Updating subpack")
-        ensure_subpack()
-
-        if os.path.exists(subpack_install_script):
-            process_wrap([sys.executable, 'install.py'], cwd=subpack_path)
-            process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
-        else:
-            print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
 
         if not os.path.exists(onnx_path):
             print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")

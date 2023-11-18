@@ -47,6 +47,8 @@ sys.path.append(subpack_path)
 # Core
 # recheck dependencies for colab
 try:
+    import impact.subpack_nodes  # This import must be done before cv2.
+
     import folder_paths
     import torch
     import cv2
