@@ -30,6 +30,10 @@ custom_wildcards = /home/me/github/ComfyUI/custom_nodes/ComfyUI-Impact-Pack/cust
 disable_gpu_opencv = True
 ```
 
+## AttributeError: 'Logger' object has no attribute 'reconfigure'
+
+* Update `ComfyUI-Manager` to V1.0.2 or above
+
 
 ## Destortion on Detailer
 
