@@ -201,6 +201,7 @@ class SEGSPaste:
                      "image": ("IMAGE", ),
                      "segs": ("SEGS", ),
                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "alpha": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
                      },
                 "optional": {"ref_image_opt": ("IMAGE", ), }
                 }
@@ -211,7 +212,7 @@ class SEGSPaste:
     CATEGORY = "ImpactPack/Detailer"
 
     @staticmethod
-    def doit(image, segs, feather, ref_image_opt=None):
+    def doit(image, segs, feather, alpha=255, ref_image_opt=None):
 
         segs = core.segs_scale_match(segs, image.shape)
 
@@ -232,7 +233,7 @@ class SEGSPaste:
                     ref_image_pil = Image.fromarray(cropped).convert('RGBA')
 
                 if ref_image_pil is not None:
-                    mask_pil = feather_mask(seg.cropped_mask, feather)
+                    mask_pil = feather_mask(seg.cropped_mask, feather, base_alpha=alpha)
                     image_pil.paste(ref_image_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
 
             image_tensor = pil2tensor(image_pil.convert('RGB'))

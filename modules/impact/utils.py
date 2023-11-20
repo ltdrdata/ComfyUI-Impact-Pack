@@ -147,8 +147,8 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
     return dilated_masks
 
 
-def feather_mask(mask, thickness):
-    pil_mask = Image.fromarray(np.uint8(mask * 255))
+def feather_mask(mask, thickness, base_alpha=255):
+    pil_mask = Image.fromarray(np.uint8(mask * base_alpha))
 
     # Create a feathered mask by applying a Gaussian blur to the mask
     blurred_mask = pil_mask.filter(ImageFilter.GaussianBlur(thickness))
