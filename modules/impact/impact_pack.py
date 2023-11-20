@@ -186,6 +186,7 @@ class DetailerForEach:
         cnet_pil_list = []
 
         segs = core.segs_scale_match(segs, image.shape)
+        new_segs = []
 
         for seg in segs[1]:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
@@ -231,18 +232,21 @@ class DetailerForEach:
 
             cropped_list.append(torch.from_numpy(cropped_image))
 
+            new_seg = SEG(pil2numpy(enhanced_pil), seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_segs.append(new_seg)
+
         image_tensor = pil2tensor(image_pil.convert('RGB'))
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
 
-        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list
+        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook)
@@ -295,7 +299,7 @@ class DetailerForEachPipe:
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
@@ -306,7 +310,7 @@ class DetailerForEachPipe:
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return (enhanced_img, segs, basic_pipe, cnet_pil_list)
+        return (enhanced_img, new_segs, basic_pipe, cnet_pil_list)
 
 
 class FaceDetailer:
@@ -392,7 +396,7 @@ class FaceDetailer:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
-        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard_opt, detailer_hook,
@@ -1074,7 +1078,7 @@ class MaskDetailerPipe:
         cropped_enhanced_alpha_list = []
 
         for i in range(batch_size):
-            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _ = \
+            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
                                           cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
                                           force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
@@ -1111,7 +1115,7 @@ class DetailerForEachTest(DetailerForEach):
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook)
@@ -1151,7 +1155,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
@@ -1172,7 +1176,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return enhanced_img, segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list
+        return enhanced_img, new_segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list
 
 
 class SegsBitwiseAndMask:
