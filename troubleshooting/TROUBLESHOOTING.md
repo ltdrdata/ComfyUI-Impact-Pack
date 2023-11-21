@@ -32,7 +32,7 @@ disable_gpu_opencv = True
 
 ## `AttributeError: 'Logger' object has no attribute 'reconfigure'` or
 `AttributeError: 'Logger' object has no attribute 'encoding'`
-* Update `ComfyUI-Manager` to V1.1.1 or above
+* Update `ComfyUI-Manager` to V1.1.2 or above
 
 
 ## Destortion on Detailer
