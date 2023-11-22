@@ -5,6 +5,8 @@ import subprocess
 import threading
 import locale
 import traceback
+import re
+
 
 if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
@@ -51,6 +53,46 @@ def process_wrap(cmd_str, cwd=None, handler=None):
     return process.wait()
 # ---
 
+
+pip_list = None
+
+
+def get_installed_packages():
+    global pip_list
+
+    if pip_list is None:
+        try:
+            result = subprocess.check_output([sys.executable, '-m', 'pip', 'list'], universal_newlines=True)
+            pip_list = set([line.split()[0].lower() for line in result.split('\n') if line.strip()])
+        except subprocess.CalledProcessError as e:
+            print(f"[ComfyUI-Manager] Failed to retrieve the information of installed pip packages.")
+            return set()
+    
+    return pip_list
+    
+
+def is_installed(name):
+    name = name.strip()
+    pattern = r'([^<>!=]+)([<>!=]=?)'
+    match = re.search(pattern, name)
+    
+    if match:
+        name = match.group(1)
+        
+    result = name.lower() in get_installed_packages()
+    return result
+    
+
+def is_requirements_installed(file_path):
+    print(f"req_path: {file_path}")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                if not is_installed(line):
+                    return False
+                    
+    return True
 
 try:
     import platform
@@ -109,7 +151,7 @@ try:
 
     def ensure_pip_packages_first():
         subpack_req = os.path.join(subpack_path, "requirements.txt")
-        if os.path.exists(subpack_req):
+        if os.path.exists(subpack_req) and not is_requirements_installed(subpack_req):
             process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
 
         if not impact.config.get_config()['mmdet_skip']:
@@ -136,13 +178,18 @@ try:
 
 
     def ensure_pip_packages_last():
+        my_path = os.path.dirname(__file__)
+        requirements_path = os.path.join(my_path, "requirements.txt")
+        
+        if not is_requirements_installed(requirements_path):
+            process_wrap(pip_install + ['-r', requirements_path])
+            
+        # fallback
         try:
             import segment_anything
             from skimage.measure import label, regionprops
             import piexif
         except Exception:
-            my_path = os.path.dirname(__file__)
-            requirements_path = os.path.join(my_path, "requirements.txt")
             process_wrap(pip_install + ['-r', requirements_path])
 
         # !! cv2 importing test must be very last !!
@@ -150,14 +197,18 @@ try:
             import cv2
         except Exception:
             try:
-                process_wrap(pip_install + ['opencv-python'])
+                if not is_installed('opencv-python'):
+                    process_wrap(pip_install + ['opencv-python'])
+                if not is_installed('opencv-python-headless'):
+                    process_wrap(pip_install + ['opencv-python-headless'])
             except:
                 print(f"[ERROR] ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
         try:
             import git
         except Exception:
-            process_wrap(pip_install + ['gitpython'])
+            if not is_installed('gitpython'):
+                process_wrap(pip_install + ['gitpython'])
 
 
     def ensure_mmdet_package():
@@ -183,7 +234,8 @@ try:
 
         if os.path.exists(subpack_install_script):
             process_wrap([sys.executable, 'install.py'], cwd=subpack_path)
-            process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
+            if not is_requirements_installed(os.path.join(subpack_path, 'requirements.txt')):
+                process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
         else:
             print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
 
