@@ -119,8 +119,11 @@ try:
                 repo.remotes.origin.pull()
             except:
                 traceback.print_exc()
-                shutil.rmtree(subpack_path)
-                git.Repo.clone_from(subpack_repo, subpack_path)
+                if platform.system() == 'Windows':
+                    print(f"[ComfyUI-Impact-Pack] Please turn off ComfyUI and remove '{subpack_path}' and restart ComfyUI.")
+                else:
+                    shutil.rmtree(subpack_path)
+                    git.Repo.clone_from(subpack_repo, subpack_path)
         else:
             git.Repo.clone_from(subpack_repo, subpack_path)
 

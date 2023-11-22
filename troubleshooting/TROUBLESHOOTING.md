@@ -43,8 +43,7 @@ disable_gpu_opencv = True
     .\python_embeded\python.exe -m pip install -U opencv-python opencv-python-headless
     ```
 
-    * When using the WAS node suite or reactor nodes, using the latest version may not work as expected. 
-You can downgrade using the following command:
+    * When using the WAS node suite or reactor nodes, using the latest version may not work as expected. You can downgrade using the following command:
 
     ```
     .\python_embeded\python.exe -m pip install -U opencv-python==4.6.0.66 opencv-python-headless==4.6.0.66
