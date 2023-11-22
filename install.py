@@ -4,6 +4,7 @@ import sys
 import subprocess
 import threading
 import locale
+import traceback
 
 if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
@@ -227,4 +228,4 @@ try:
 
 except Exception as e:
     print("[ERROR] ComfyUI-Impact-Pack: Dependency installation has failed. Please install manually.")
-    print(e)
+    traceback.print_exc()
