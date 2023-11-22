@@ -71,12 +71,12 @@ try:
 
     def ensure_subpack():
         import git
-
         if os.path.exists(subpack_path):
             try:
                 repo = git.Repo(subpack_path)
                 repo.remotes.origin.pull()
             except:
+                traceback.print_exc()
                 shutil.rmtree(subpack_path)
                 git.Repo.clone_from(subpack_repo, subpack_path)
         else:
