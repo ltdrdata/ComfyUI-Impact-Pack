@@ -34,6 +34,24 @@ disable_gpu_opencv = True
 `AttributeError: 'Logger' object has no attribute 'encoding'`
 * Update `ComfyUI-Manager` to V1.1.2 or above
 
+## AttributeError: module 'cv2' has no attribute 'setNumThreads'
+* Update 'opencv-python' and 'opencv-python-headless' to latest version
+    * Once you update to the latest version, you can also downgrade back to 4.6.0.66 if needed.
+    *  For the portable version, navigate to the portable installation directory in the command prompt, and enter the following command: 
+
+    ```
+    .\python_embeded\python.exe -m pip install -U opencv-python opencv-python-headless
+    ```
+
+    * When using the WAS node suite or reactor nodes, using the latest version may not work as expected. 
+You can downgrade using the following command:
+
+    ```
+    .\python_embeded\python.exe -m pip install -U opencv-python==4.6.0.66 opencv-python-headless==4.6.0.66
+    ```
+
+
+
 
 ## Destortion on Detailer
 
