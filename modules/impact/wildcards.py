@@ -81,8 +81,11 @@ def process(text, seed=None):
                     b = r.group(1).strip()
                 else:
                     a = r.group(1).strip()
-                    b = r.group(3).strip()
-
+                    try:
+                        b = r.group(3).strip()
+                    except:
+                        b = None
+                        
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):
                         # PATTERN: num1-num2
