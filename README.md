@@ -184,6 +184,8 @@ This takes latent as input and outputs latent as the result.
   * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
   * ImpactIsNotEmptySEGS - This node returns `true` only if the input SEGS is not empty. 
   * Queue Trigger - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
+  * Queue Trigger (Countdown) - Like the Queue Trigger, it adds a queue, but only adds it if it's greater than 1, and decrements the count by one each time it runs.
+  * Sleep - Waits for the specified time (in seconds).
   * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
   * Set Mute State - This node changes the mute state of a specific node.
   * Control Bridge - Depending on whether the mode is set to `block` or `pass`, it changes the mute status of connected nodes. If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted.
