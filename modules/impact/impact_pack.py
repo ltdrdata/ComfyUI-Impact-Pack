@@ -229,10 +229,13 @@ class DetailerForEach:
                 mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
                 enhanced_pil_alpha.putalpha(mask_image)
                 enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
+                new_seg_pil = pil2numpy(enhanced_pil),
+            else:
+                new_seg_pil = None
 
             cropped_list.append(torch.from_numpy(cropped_image))
 
-            new_seg = SEG(pil2numpy(enhanced_pil), seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_seg = SEG(new_seg_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
