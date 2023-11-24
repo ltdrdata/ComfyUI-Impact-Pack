@@ -1621,7 +1621,11 @@ class ControlNetWrapper:
 class CoreMLHook(PixelKSampleHook):
     def __init__(self, mode):
         super().__init__()
-        self.is_neural_engine_mode = mode
+        resolution = mode.split('x')
+
+        self.w = int(resolution[0])
+        self.h = int(resolution[1])
+
         self.override_bbox_by_segm = False
 
     def pre_decode(self, samples):
@@ -1640,45 +1644,40 @@ class CoreMLHook(PixelKSampleHook):
         crop_w = x2-x1
         crop_h = y2-y1
 
-        if crop_w < crop_h:
+        crop_ratio = crop_w/crop_h
+        target_ratio = self.w/self.h
+        if crop_ratio < target_ratio:
             # shrink height
             top_gap = by1 - y1
             bottom_gap = y2 - by2
 
-            if top_gap > bottom_gap:
-                ratio = bottom_gap / top_gap
-                delta = (crop_h - crop_w) * (1.0 - ratio)
-            else:
-                ratio = top_gap / bottom_gap
-                delta = (crop_h - crop_w) * ratio
+            gap_ratio = top_gap / bottom_gap
 
-            new_y1 = int(y1 + delta)
-            new_y2 = int(new_y1 + crop_w)
+            target_height = 1/target_ratio*crop_w
+            delta_height = crop_h - target_height
+
+            new_y1 = int(y1 + delta_height*gap_ratio)
+            new_y2 = int(new_y1 + target_height)
             crop_region = x1, new_y1, x2, new_y2
 
-        elif crop_w > crop_h:
+        elif crop_ratio > target_ratio:
             # shrink width
             left_gap = bx1 - x1
             right_gap = x2 - bx2
 
-            if left_gap > right_gap:
-                ratio = right_gap / left_gap
-                delta = (crop_w - crop_h) * (1.0 - ratio)
-            else:
-                ratio = left_gap / right_gap
-                delta = (crop_w - crop_h) * ratio
+            gap_ratio = left_gap / right_gap
 
-            new_x1 = int(x1 + delta)
-            new_x2 = int(new_x1 + crop_h)
+            target_width = target_ratio*crop_h
+            delta_width = crop_w - target_width
+
+            new_x1 = int(x1 + delta_width*gap_ratio)
+            new_x2 = int(new_x1 + target_width)
             crop_region = new_x1, y1, new_x2, y2
 
         return crop_region
 
     def touch_scaled_size(self, w, h):
-        if self.is_neural_engine_mode:
-            return 512, 512
-        else:
-            return 768, 768
+        return self.w, self.h
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI Noise

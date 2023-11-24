@@ -74,7 +74,8 @@ class BboxDetectorForEach:
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                         "labels": ("STRING", {"multiline": True, "default": "all", "placeholder": "List the types of segments to be allowed, separated by commas"}),
-                      }
+                      },
+                "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
 
     RETURN_TYPES = ("SEGS", )
@@ -82,8 +83,8 @@ class BboxDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size, labels=None):
-        segs = bbox_detector.detect(image, threshold, dilation, crop_factor, drop_size)
+    def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size, labels=None, detailer_hook=None):
+        segs = bbox_detector.detect(image, threshold, dilation, crop_factor, drop_size, detailer_hook)
 
         if labels is not None and labels != '':
             labels = labels.split(',')
@@ -104,7 +105,8 @@ class SegmDetectorForEach:
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                         "labels": ("STRING", {"multiline": True, "default": "all", "placeholder": "List the types of segments to be allowed, separated by commas"}),
-                      }
+                      },
+                "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
 
     RETURN_TYPES = ("SEGS", )
@@ -112,8 +114,8 @@ class SegmDetectorForEach:
 
     CATEGORY = "ImpactPack/Detector"
 
-    def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size, labels=None):
-        segs = segm_detector.detect(image, threshold, dilation, crop_factor, drop_size)
+    def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size, labels=None, detailer_hook=None):
+        segs = segm_detector.detect(image, threshold, dilation, crop_factor, drop_size, detailer_hook)
 
         if labels is not None and labels != '':
             labels = labels.split(',')

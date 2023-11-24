@@ -499,7 +499,7 @@ class NoiseInjectionDetailerHookProvider:
 class CoreMLDetailerHookProvider:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"mode": (["Neural Engine", "CPU & GPU"], )}, }
+        return {"required": {"mode": (["512x512", "768x768", "512x768", "768x512"], )}, }
 
     RETURN_TYPES = ("DETAILER_HOOK",)
     FUNCTION = "doit"
@@ -507,7 +507,7 @@ class CoreMLDetailerHookProvider:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, mode):
-        hook = core.CoreMLHook(mode == "Neural Engine")
+        hook = core.CoreMLHook(mode)
         return (hook, )
 
 
