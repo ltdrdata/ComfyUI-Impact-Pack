@@ -218,6 +218,7 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
+    "ImpactWildcardUnprocessed": ImpactWildcardUnprocessed,
 
     "SEGSDetailer": SEGSDetailer,
     "SEGSPaste": SEGSPaste,

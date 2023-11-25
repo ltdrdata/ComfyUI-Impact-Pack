@@ -2007,6 +2007,23 @@ class LatentSwitch:
             return (kwargs['latent1'],)
 
 
+class ImpactWildcardUnprocessed:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "wildcard_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Prompt"
+
+    RETURN_TYPES = ("STRING", )
+    FUNCTION = "doit"
+
+    def doit(self, *args, **kwargs):
+        wildcard_text = kwargs['wildcard_text']
+        return (wildcard_text, )
+
 class ImpactWildcardProcessor:
     @classmethod
     def INPUT_TYPES(s):
