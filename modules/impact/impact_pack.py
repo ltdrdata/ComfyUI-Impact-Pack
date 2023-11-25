@@ -229,7 +229,7 @@ class DetailerForEach:
                 mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
                 enhanced_pil_alpha.putalpha(mask_image)
                 enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
-                new_seg_pil = pil2numpy(enhanced_pil),
+                new_seg_pil = pil2numpy(enhanced_pil)
             else:
                 new_seg_pil = None
 
