@@ -6,7 +6,7 @@ original_sample = comfy.sample.sample
 
 def informative_sample(*args, **kwargs):
     try:
-        return original_sample(*args, **kwargs)
+        return original_sample(*args, **kwargs)  # This code helps interpret error messages that occur within exceptions but does not have any impact on other operations.
     except RuntimeError as e:
         is_model_mix_issue = False
         try:

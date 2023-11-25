@@ -229,10 +229,13 @@ class DetailerForEach:
                 mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
                 enhanced_pil_alpha.putalpha(mask_image)
                 enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
+                new_seg_pil = pil2numpy(enhanced_pil)
+            else:
+                new_seg_pil = None
 
             cropped_list.append(torch.from_numpy(cropped_image))
 
-            new_seg = SEG(pil2numpy(enhanced_pil), seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_seg = SEG(new_seg_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
         image_tensor = pil2tensor(image_pil.convert('RGB'))
@@ -496,7 +499,7 @@ class NoiseInjectionDetailerHookProvider:
 class CoreMLDetailerHookProvider:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"mode": (["Neural Engine", "CPU & GPU"], )}, }
+        return {"required": {"mode": (["512x512", "768x768", "512x768", "768x512"], )}, }
 
     RETURN_TYPES = ("DETAILER_HOOK",)
     FUNCTION = "doit"
@@ -504,7 +507,7 @@ class CoreMLDetailerHookProvider:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, mode):
-        hook = core.CoreMLHook(mode == "Neural Engine")
+        hook = core.CoreMLHook(mode)
         return (hook, )
 
 

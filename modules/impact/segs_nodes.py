@@ -592,7 +592,6 @@ class SEGSConcat:
     def INPUT_TYPES(s):
         return {"required": {
                      "segs1": ("SEGS", ),
-                     "segs2": ("SEGS", ),
                      },
                 }
 
@@ -601,12 +600,17 @@ class SEGSConcat:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs1, segs2):
-        if segs1[0] == segs2[0]:
-            return ((segs1[0], segs1[1] + segs2[1]), )
-        else:
-            print(f"ERROR: source shape of 'segs1' and 'segs2' are different. 'segs2' will be ignored")
-            return (segs1, )
+    def doit(self, **kwargs):
+        dim = kwargs['segs1'][0]
+        res = kwargs['segs1'][1]
+        if len(kwargs) > 1:
+            for k, v in list(kwargs.items())[1:]:
+                if v[0] == dim:
+                    res = res + v[1]
+                else:
+                    print(f"ERROR: source shape of 'segs1'{dim} and '{k}'{v[0]} are different. '{k}' will be ignored")
+
+        return ((dim, res), )
 
 
 class DecomposeSEGS:

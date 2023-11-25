@@ -305,6 +305,7 @@ app.registerExtension({
 
         if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
             nodeData.name === 'CombineRegionalPrompts' || nodeData.name === 'ImpactCombineConditionings' ||
+            nodeData.name === 'ImpactSEGSConcat' ||
             nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
 
@@ -312,6 +313,10 @@ app.registerExtension({
             case 'ImpactMakeImageList':
             case 'ImpactMakeImageBatch':
                 input_name = "image";
+                break;
+
+            case 'ImpactSEGSConcat':
+                input_name = "segs";
                 break;
 
             case 'CombineRegionalPrompts':

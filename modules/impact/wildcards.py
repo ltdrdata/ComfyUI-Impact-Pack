@@ -86,7 +86,7 @@ def process(text, seed=None):
                     b = r.group(3)
                     if b is not None:
                         b = b.strip()
-
+                        
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):
                         # PATTERN: num1-num2

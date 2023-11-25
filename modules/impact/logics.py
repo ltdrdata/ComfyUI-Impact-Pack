@@ -1,4 +1,5 @@
 import sys
+import time
 
 import execution
 import folder_paths
@@ -293,6 +294,32 @@ class ImpactQueueTrigger:
         return (signal,)
 
 
+class ImpactQueueTriggerCountdown:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "signal": (any_typ,),
+                    "count": ("INT", {"default": 10, "min": 0, "max": 0xffffffffffffffff})
+                    },
+                "hidden": {"unique_id": "UNIQUE_ID"}
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = (any_typ, "INT")
+    RETURN_NAMES = ("signal_opt", "count")
+    OUTPUT_NODE = True
+
+    def doit(self, signal, count, unique_id):
+        if count > 0:
+            PromptServer.instance.send_sync("impact-node-feedback",
+                                            {"id": unique_id, "widget_name": "count", "type": "int", "value": count-1})
+            PromptServer.instance.send_sync("impact-add-queue", {})
+
+        return (signal, count)
+
+
 class ImpactSetWidgetValue:
     @classmethod
     def INPUT_TYPES(cls):
@@ -362,6 +389,27 @@ class ImpactNodeSetMuteState:
         return (signal,)
 
 
+class ImpactSleep:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "signal": (any_typ,),
+                    "seconds": ("FLOAT", {"default": 0.5, "min": 0, "max": 3600}),
+                    }
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = (any_typ,)
+    RETURN_NAMES = ("signal_opt",)
+    OUTPUT_NODE = True
+
+    def doit(self, signal, seconds):
+        time.sleep(seconds)
+        return (signal,)
+
+
 error_skip_flag = False
 try:
     import sys
@@ -392,6 +440,7 @@ def workflow_to_map(workflow):
         nodes[str(node['id'])] = node
 
     return nodes, links
+
 
 class ImpactControlBridge:
     @classmethod

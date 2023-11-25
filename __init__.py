@@ -270,10 +270,12 @@ NODE_CLASS_MAPPINGS = {
     "ImpactDummyInput": ImpactDummyInput,
 
     "ImpactQueueTrigger": ImpactQueueTrigger,
+    "ImpactQueueTriggerCountdown": ImpactQueueTriggerCountdown,
     "ImpactSetWidgetValue": ImpactSetWidgetValue,
     "ImpactNodeSetMuteState": ImpactNodeSetMuteState,
     "ImpactControlBridge": ImpactControlBridge,
     "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS,
+    "ImpactSleep": ImpactSleep,
 
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
     "ImpactSEGSClassify": SEGS_Classify
@@ -370,9 +372,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactCombineConditionings": "Combine Conditionings",
 
     "ImpactQueueTrigger": "Queue Trigger",
+    "ImpactQueueTriggerCountdown": "Queue Trigger (Countdown)",
     "ImpactSetWidgetValue": "Set Widget Value",
     "ImpactNodeSetMuteState": "Set Mute State",
     "ImpactControlBridge": "Control Bridge",
+    "ImpactSleep": "Sleep",
 
     "ImpactHFTransformersClassifierProvider": "HF Transformers Classifier Provider",
     "ImpactSEGSClassify": "SEGS Classify",
