@@ -892,7 +892,7 @@ class ONNXDetector:
         pass
 
 
-def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None):
+def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
@@ -961,8 +961,13 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                     crop_region = detailer_hook.post_crop_region(mask_i.shape[1], mask_i.shape[0], bbox, crop_region)
 
                 if w > drop_size and h > drop_size:
+                    if is_contour:
+                        mask_src = separated_mask
+                    else:
+                        mask_src = mask_i
+
                     cropped_mask = np.array(
-                        separated_mask[
+                        mask_src[
                             crop_region[1]: crop_region[3],
                             crop_region[0]: crop_region[2],
                         ]
