@@ -173,6 +173,7 @@ NODE_CLASS_MAPPINGS = {
 
     "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS,
     "MaskToSEGS": MaskToSEGS,
+    "MaskToSEGS_for_AnimateDiff": MaskToSEGS_for_AnimateDiff,
     "ToBinaryMask": ToBinaryMask,
     "MasksToMaskList": MasksToMaskList,
     "MaskListToMaskBatch": MaskListToMaskBatch,
@@ -295,6 +296,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SegsToCombinedMask": "SEGS to MASK (combined)",
     "MediaPipeFaceMeshToSEGS": "MediaPipe FaceMesh to SEGS",
     "MaskToSEGS": "MASK to SEGS",
+    "MaskToSEGS_for_AnimateDiff": "MASK to SEGS for AnimateDiff",
     "BitwiseAndMaskForEach": "Bitwise(SEGS & SEGS)",
     "SubtractMaskForEach": "Bitwise(SEGS - SEGS)",
     "ImpactSegsAndMask": "Bitwise(SEGS & MASK)",

@@ -11,6 +11,7 @@ from nodes import MAX_RESOLUTION
 from impact.utils import *
 import impact.core as core
 from impact.core import SEG
+import impact.utils as utils
 
 class SEGSDetailer:
     @classmethod
@@ -924,6 +925,40 @@ class MaskToSEGS:
 
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
         return (result, )
+
+
+class MaskToSEGS_for_AnimateDiff:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                                "mask": ("MASK",),
+                                "combined": ("BOOLEAN", {"default": False, "label_on": "True", "label_off": "False"}),
+                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
+                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                             }
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size):
+        if len(mask.shape) == 3:
+            mask = mask.squeeze(0)
+
+        segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
+
+        all_masks = SEGSToMaskList().doit(segs)[0]
+
+        result_mask = all_masks[0]
+        for mask in all_masks[1:]:
+            result_mask += mask
+
+        result_mask = utils.to_binary_mask(result_mask, 0.1)
+
+        return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size)
 
 
 class ControlNetApplySEGS:

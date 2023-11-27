@@ -915,8 +915,6 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
     if len(mask.shape) == 2:
         mask = np.expand_dims(mask, axis=0)
-    else:
-        mask = np.squeeze(mask, axis=1)
 
     for i in range(mask.shape[0]):
         mask_i = mask[i]
