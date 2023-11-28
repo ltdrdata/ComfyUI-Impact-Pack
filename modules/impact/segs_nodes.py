@@ -911,7 +911,7 @@ class MaskToSEGS:
                                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                                 "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                                "fill_inside": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                                "contour_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                              }
                 }
 
@@ -920,11 +920,11 @@ class MaskToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, fill_inside=False):
+    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         if len(mask.shape) == 3:
             mask = mask.squeeze(0)
 
-        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=fill_inside)
+        result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
         return (result, )
 
 
@@ -937,7 +937,7 @@ class MaskToSEGS_for_AnimateDiff:
                                 "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                                 "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                                 "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                                "fill_inside": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                                "contour_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                              }
                 }
 
@@ -946,11 +946,11 @@ class MaskToSEGS_for_AnimateDiff:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, fill_inside=False):
+    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         if len(mask.shape) == 3:
             mask = mask.squeeze(0)
 
-        segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=fill_inside)
+        segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
 
         all_masks = SEGSToMaskList().doit(segs)[0]
 
