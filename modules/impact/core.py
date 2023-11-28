@@ -659,7 +659,7 @@ def segs_scale_match(segs, target_shape):
     th = target_shape[1]
     tw = target_shape[2]
 
-    if h == th and w == tw:
+    if (h == th and w == tw) or h == 0 or w == 0:
         return segs
 
     rh = th / h

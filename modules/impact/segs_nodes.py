@@ -602,16 +602,27 @@ class SEGSConcat:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, **kwargs):
-        dim = kwargs['segs1'][0]
-        res = kwargs['segs1'][1]
-        if len(kwargs) > 1:
-            for k, v in list(kwargs.items())[1:]:
+        dim = None
+        res = None
+
+        for k, v in list(kwargs.items()):
+            if v[0] == (0, 0) or len(v[1]) == 0:
+                continue
+
+            if dim is None:
+                dim = v[0]
+                res = v[1]
+            else:
                 if v[0] == dim:
                     res = res + v[1]
                 else:
                     print(f"ERROR: source shape of 'segs1'{dim} and '{k}'{v[0]} are different. '{k}' will be ignored")
 
-        return ((dim, res), )
+        if dim is None:
+            empty_segs = ((0, 0), [])
+            return (empty_segs, )
+        else:
+            return ((dim, res), )
 
 
 class DecomposeSEGS:
