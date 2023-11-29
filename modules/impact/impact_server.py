@@ -437,7 +437,7 @@ def regional_sampler_seed_update(json_data):
                 new_seed = random.randint(0, 1125899906842624)
 
             if new_seed is not None:
-                server.PromptServer.instance.send_sync("impact-node-feedback", {"id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
+                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
 
 
 def onprompt(json_data):

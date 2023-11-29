@@ -314,7 +314,7 @@ class ImpactQueueTriggerCountdown:
     def doit(self, signal, count, unique_id):
         if count > 0:
             PromptServer.instance.send_sync("impact-node-feedback",
-                                            {"id": unique_id, "widget_name": "count", "type": "int", "value": count-1})
+                                            {"node_id": unique_id, "widget_name": "count", "type": "int", "value": count-1})
             PromptServer.instance.send_sync("impact-add-queue", {})
 
         return (signal, count)
@@ -362,7 +362,7 @@ class ImpactSetWidgetValue:
 
         if value is not None:
             PromptServer.instance.send_sync("impact-node-feedback",
-                                            {"id": node_id, "widget_name": widget_name, "type": kind, "value": value})
+                                            {"node_id": node_id, "widget_name": widget_name, "type": kind, "value": value})
 
         return (signal,)
 
@@ -385,7 +385,7 @@ class ImpactNodeSetMuteState:
     OUTPUT_NODE = True
 
     def doit(self, signal, node_id, set_state):
-        PromptServer.instance.send_sync("impact-node-mute-state", {"id": node_id, "is_active": set_state})
+        PromptServer.instance.send_sync("impact-node-mute-state", {"node_id": node_id, "is_active": set_state})
         return (signal,)
 
 
@@ -472,13 +472,13 @@ class ImpactControlBridge:
         if mode:
             should_active_but_muted = output_set - prompt_set
             if len(should_active_but_muted) > 0:
-                PromptServer.instance.send_sync("impact-bridge-continue", {"id": unique_id, 'actives': list(should_active_but_muted)})
+                PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_active_but_muted)})
                 error_skip_flag = True
                 raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
         else:
             should_muted_but_active = prompt_set.intersection(output_set)
             if len(should_muted_but_active) > 0:
-                PromptServer.instance.send_sync("impact-bridge-continue", {"id": unique_id, 'mutes': list(should_muted_but_active)})
+                PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_muted_but_active)})
                 error_skip_flag = True
                 raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
 

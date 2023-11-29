@@ -21,7 +21,7 @@ app.ui.dialog.show = dialog_show_wrapper;
 
 function nodeFeedbackHandler(event) {
 	let nodes = app.graph._nodes_by_id;
-	let node = nodes[event.detail.id];
+	let node = nodes[event.detail.node_id];
 	if(node) {
 		const w = node.widgets.find((w) => event.detail.widget_name === w.name);
 		if(w) {
@@ -35,7 +35,7 @@ api.addEventListener("impact-node-feedback", nodeFeedbackHandler);
 
 function setMuteState(event) {
 	let nodes = app.graph._nodes_by_id;
-	let node = nodes[event.detail.id];
+	let node = nodes[event.detail.node_id];
 	if(node) {
 		if(event.detail.is_active)
 			node.mode = 0;
@@ -49,7 +49,7 @@ api.addEventListener("impact-node-mute-state", setMuteState);
 
 async function bridgeContinue(event) {
 	let nodes = app.graph._nodes_by_id;
-	let node = nodes[event.detail.id];
+	let node = nodes[event.detail.node_id];
 	if(node) {
 		const mutes = new Set(event.detail.mutes);
 		const actives = new Set(event.detail.actives);
