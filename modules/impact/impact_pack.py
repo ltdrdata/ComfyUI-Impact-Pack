@@ -24,6 +24,7 @@ import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import comfy.model_management
 import base64
+import impact.wildcards as wildcards
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -188,7 +189,20 @@ class DetailerForEach:
         segs = core.segs_scale_match(segs, image.shape)
         new_segs = []
 
-        for seg in segs[1]:
+        if wildcard_opt is not None:
+            wmode, wildcard_chooser = wildcards.process_wildcard_for_segs(wildcard_opt)
+        else:
+            wmode, wildcard_chooser = None, None
+
+        if wmode in ['ASC', 'DSC']:
+            if wmode == 'ASC':
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]))
+            else:
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]), reverse=True)
+        else:
+            ordered_segs = segs[1]
+
+        for seg in ordered_segs:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
 
@@ -204,9 +218,14 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
+            if wildcard_chooser is not None:
+                wildcard_item = wildcard_chooser.get(seg)
+            else:
+                wildcard_item = None
+
             enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                          seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                         positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt, detailer_hook,
+                                                         positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
                                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                          refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                          refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper)
