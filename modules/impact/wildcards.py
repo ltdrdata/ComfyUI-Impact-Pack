@@ -329,7 +329,7 @@ def starts_with_regex(pattern, text):
 
 
 def split_to_dict(text):
-    pattern = r'\[([A-Za-z0-9_.]+)\]([^\[]+)(?=\[|$)'
+    pattern = r'\[([A-Za-z0-9_. ]+)\]([^\[]+)(?=\[|$)'
     matches = re.findall(pattern, text)
 
     result_dict = {key: value.strip() for key, value in matches}
