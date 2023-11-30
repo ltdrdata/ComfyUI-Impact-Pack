@@ -971,7 +971,7 @@ class MaskToSEGS_for_AnimateDiff:
 
         result_mask = utils.to_binary_mask(result_mask, 0.1)
 
-        return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size, fill_inside)
+        return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
 
 
 class ControlNetApplySEGS:
