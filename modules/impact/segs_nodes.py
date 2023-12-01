@@ -33,6 +33,8 @@ class SEGSDetailer:
                      "basic_pipe": ("BASIC_PIPE",),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
@@ -49,7 +51,8 @@ class SEGSDetailer:
 
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, refiner_basic_pipe_opt=None):
+                  denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
+                  refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -84,7 +87,7 @@ class SEGSDetailer:
                                                              positive, negative, denoise, cropped_mask, force_inpaint,
                                                              refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                              refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                                             control_net_wrapper=seg.control_net_wrapper)
+                                                             control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
                 if cnet_pil is not None:
                     cnet_pil_list.append(cnet_pil)
@@ -100,10 +103,12 @@ class SEGSDetailer:
         return (segs[0], new_segs), cnet_pil_list
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, refiner_basic_pipe_opt=None):
+             denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
+             refiner_basic_pipe_opt=None):
 
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-                                                     scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, refiner_basic_pipe_opt)
+                                                     scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, cycle=cycle,
+                                                     refiner_basic_pipe_opt=refiner_basic_pipe_opt)
 
         # set fallback image
         if len(cnet_pil_list) == 0:

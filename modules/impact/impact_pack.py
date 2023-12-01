@@ -165,6 +165,8 @@ class DetailerForEach:
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
@@ -177,7 +179,7 @@ class DetailerForEach:
     @staticmethod
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
-                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1):
 
         image_pil = tensor2pil(image).convert('RGBA')
 
@@ -228,7 +230,7 @@ class DetailerForEach:
                                                          positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
                                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                          refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                         refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper)
+                                                         refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
             if cnet_pil is not None:
                 cnet_pil_list.append(cnet_pil)
@@ -266,12 +268,12 @@ class DetailerForEach:
         return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1, detailer_hook=None):
 
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle)
 
         return (enhanced_img, )
 
@@ -297,6 +299,8 @@ class DetailerForEachPipe:
                      "basic_pipe": ("BASIC_PIPE", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                     "detailer_hook": ("DETAILER_HOOK",),
@@ -312,7 +316,8 @@ class DetailerForEachPipe:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, cycle=1):
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -326,7 +331,8 @@ class DetailerForEachPipe:
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                      cycle=cycle)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -373,6 +379,8 @@ class FaceDetailer:
 
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -394,7 +402,7 @@ class FaceDetailer:
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -424,7 +432,7 @@ class FaceDetailer:
                                       force_inpaint, wildcard_opt, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+                                      refiner_negative=refiner_negative, cycle=cycle)
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
@@ -444,14 +452,15 @@ class FaceDetailer:
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
+             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
+             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
 
         enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
             image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
             positive, negative, denoise, feather, noise_mask, force_inpaint,
             bbox_threshold, bbox_dilation, bbox_crop_factor,
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook)
+            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook, cycle=cycle)
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
         return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe, cnet_pil_list
@@ -999,6 +1008,8 @@ class FaceDetailerPipe:
 
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 }
 
@@ -1012,7 +1023,7 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None, cycle=1):
 
         model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt, detailer_hook, \
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
@@ -1024,7 +1035,8 @@ class FaceDetailerPipe:
             sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
             sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
             refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-            refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+            refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+            cycle=cycle)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [empty_pil_tensor()]
@@ -1063,6 +1075,8 @@ class MaskDetailerPipe:
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
@@ -1079,7 +1093,7 @@ class MaskDetailerPipe:
 
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
-             feather, crop_factor, drop_size, refiner_ratio, batch_size,
+             feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
              refiner_basic_pipe_opt=None, detailer_hook=None):
 
         model, clip, vae, positive, negative = basic_pipe
@@ -1105,7 +1119,7 @@ class MaskDetailerPipe:
                                           cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
                                           force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
                                           refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
-                                          refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+                                          refiner_positive=refiner_positive, refiner_negative=refiner_negative, cycle=cycle)
 
             if enhanced_img_batch is None:
                 enhanced_img_batch = enhanced_img
@@ -1135,12 +1149,13 @@ class DetailerForEachTest(DetailerForEach):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
+             cycle=1):
 
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1168,7 +1183,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -1183,7 +1199,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+                                      refiner_negative=refiner_negative, cycle=cycle)
 
         # set fallback image
         if len(cropped) == 0:

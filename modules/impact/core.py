@@ -185,7 +185,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None,
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                   refiner_negative=None, control_net_wrapper=None):
+                   refiner_negative=None, control_net_wrapper=None, cycle=1):
     if noise_mask is not None and len(noise_mask.shape) == 3:
         noise_mask = noise_mask.squeeze(0)
 
@@ -266,9 +266,11 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if control_net_wrapper is not None:
         positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
 
-    refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                                      latent_image, denoise,
-                                      refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+    refined_latent = latent_image
+    for i in range(0, cycle):
+        refined_latent = ksampler_wrapper(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative,
+                                          refined_latent, denoise,
+                                          refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -1025,7 +1027,7 @@ def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, dro
             mask_tensor = torch.any(tensor != 0, dim=-1).float()
             mask_tensor = mask_tensor.squeeze(0)
             mask_tensor = torch.from_numpy(dilate_mask(mask_tensor.numpy(), dilation))
-            return mask_tensor.unsqueeze(0).unsqueeze(0)
+            return mask_tensor.unsqueeze(0)
 
         return None
 
