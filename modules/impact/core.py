@@ -268,6 +268,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     refined_latent = latent_image
     for i in range(0, cycle):
+        if detailer_hook is not None and hasattr(detailer_hook, 'cycle_latent'):
+            refined_latent = detailer_hook.cycle_latent(i, refined_latent)
+            
         refined_latent = ksampler_wrapper(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative,
                                           refined_latent, denoise,
                                           refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
@@ -1694,10 +1697,10 @@ class InjectNoiseHook(PixelKSampleHook):
         self.start_strength = start_strength
         self.end_strength = end_strength
 
-    def post_encode(self, samples):
+    def post_encode(self, samples, seed_idx=0):
         # gen noise
         size = samples['samples'].shape
-        seed = self.cur_step + self.seed
+        seed = self.cur_step + self.seed + seed_idx
 
         if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
             NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
@@ -1719,6 +1722,13 @@ class InjectNoiseHook(PixelKSampleHook):
             samples['noise_mask'] = mask
 
         return samples
+
+    def cycle_latent(self, i, latent):
+        if i == 0:
+            return latent
+        else:
+            return self.post_encode(latent, i)
+
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
 class TiledKSamplerWrapper:
