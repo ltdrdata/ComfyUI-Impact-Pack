@@ -483,17 +483,17 @@ class LatentPixelScale:
                     }
                 }
 
-    RETURN_TYPES = ("LATENT",)
+    RETURN_TYPES = ("LATENT","IMAGE")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
         if upscale_model_opt is None:
-            latent = core.latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
+            latimg = core.latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
         else:
-            latent = core.latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
-        return (latent,)
+            latimg = core.latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
+        return latimg
 
 
 class NoiseInjectionDetailerHookProvider:

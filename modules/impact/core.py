@@ -1312,7 +1312,7 @@ def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_ti
     return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
-def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512,
+def latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512,
                                   save_temp_prefix=None, hook=None):
     pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
@@ -1326,8 +1326,11 @@ def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
+    return (vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size), pixels)
 
+def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512,
+                                  save_temp_prefix=None, hook=None):
+	return latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
 
 def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae,
                                                    use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
@@ -1356,7 +1359,7 @@ def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscal
     return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
 
 
-def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False,
+def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False,
                                              tile_size=512, save_temp_prefix=None, hook=None):
     pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
@@ -1384,8 +1387,11 @@ def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_mode
     if hook is not None:
         pixels = hook.post_upscale(pixels)
 
-    return vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size)
+    return (vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size), pixels)
 
+def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False,
+                                             tile_size=512, save_temp_prefix=None, hook=None):
+	return latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
 
 class TwoSamplersForMaskUpscaler:
     params = None
