@@ -621,8 +621,10 @@ app.registerExtension({
 
 						let populated = await response.json();
 
-						n.widgets_values[2] = false;
-						n.widgets_values[1] = populated.text;
+						if(n.widgets_values) {
+							n.widgets_values[2] = false;
+							n.widgets_values[1] = populated.text;
+						}
 						populate_setter.call(populated_text_widget, populated.text);
 
 						return populated.text;
