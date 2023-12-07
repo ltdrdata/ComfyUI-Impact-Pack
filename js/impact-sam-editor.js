@@ -240,7 +240,111 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		pointsCanvas.style.position = "absolute";
 	}
 
-	show() {
+	setEventHandler(targetCanvas) {
+		const self = this;
+
+		if(!this.handler_registered) {
+			targetCanvas.addEventListener("contextmenu", (event) => {
+				event.preventDefault();
+			});
+
+			this.element.addEventListener('wheel', (event) => this.handleWheelEvent(self,event));
+			this.element.addEventListener('pointermove', (event) => this.pointMoveEvent(self,event));
+			this.element.addEventListener('touchmove', (event) => this.pointMoveEvent(self,event));
+
+			this.element.addEventListener('dragstart', (event) => {
+				if(event.ctrlKey) {
+					event.preventDefault();
+				}
+			});
+
+			targetCanvas.addEventListener('pointerdown', (event) => this.handlePointerDown(self,event));
+			targetCanvas.addEventListener('pointermove', (event) => this.draw_move(self,event));
+			targetCanvas.addEventListener('touchmove', (event) => this.draw_move(self,event));
+			targetCanvas.addEventListener('pointerover', (event) => { this.brush.style.display = "block"; });
+			targetCanvas.addEventListener('pointerleave', (event) => { this.brush.style.display = "none"; });
+
+			document.addEventListener('pointerup', MaskEditorDialog.handlePointerUp);
+
+			this.handler_registered = true;
+		}
+	}
+	
+	handleWheelEvent(self, event) {
+		event.preventDefault();
+
+		if(event.ctrlKey) {
+			// zoom canvas
+			if(event.deltaY < 0) {
+				this.zoom_ratio = Math.min(10.0, this.zoom_ratio+0.2);
+			}
+			else {
+				this.zoom_ratio = Math.max(0.2, this.zoom_ratio-0.2);
+			}
+
+			this.invalidatePanZoom();
+		}
+	}
+
+	pointMoveEvent(self, event) {
+		this.cursorX = event.pageX;
+		this.cursorY = event.pageY;
+
+		self.updateBrushPreview(self);
+
+		if(event.ctrlKey) {
+			event.preventDefault();
+			self.pan_move(self, event);
+		}
+	}
+
+	handlePointerDown(self, event) {
+		if(event.ctrlKey) {
+			if (event.buttons == 1) {
+				this.mousedown_x = event.clientX;
+				this.mousedown_y = event.clientY;
+
+				this.mousedown_pan_x = this.pan_x;
+				this.mousedown_pan_y = this.pan_y;
+			}
+			return;
+		}
+
+		var brush_size = this.brush_size;
+		if(event instanceof PointerEvent && event.pointerType == 'pen') {
+			brush_size *= event.pressure;
+			this.last_pressure = event.pressure;
+		}
+
+		if ([0, 2, 5].includes(event.button)) {
+			event.preventDefault();
+			const rect = self.pointerCanvas.getBoundingClientRect();
+			const x = (event.offsetX || event.targetTouches[0].clientX - rect.left) / self.zoom_ratio;
+			const y = (event.offsetY || event.targetTouches[0].clientY - rect.top) / self.zoom_ratio;
+
+			const originalX = x * self.image.width / self.pointsCanvas.width;
+			const originalY = y * self.image.height / self.pointsCanvas.height;
+
+			var point = null;
+			if (event.button == 0) {
+				// positive
+				point = [true, originalX, originalY];
+			} else {
+				// negative
+				point = [false, originalX, originalY];
+			}
+
+			self.prompt_points.push(point);
+
+			self.invalidatePointsCanvas(self);
+		}
+	}	
+	
+	async show() {
+		this.zoom_ratio = 1.0;
+		this.pan_x = 0;
+		this.pan_y = 0;
+
 		this.mask_image = null;
 		self.prompt_points = [];
 
@@ -273,6 +377,8 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			this.maskCtx = maskCanvas.getContext('2d');
 			this.pointsCtx = pointsCanvas.getContext('2d');
 
+			this.setEventHandler(pointsCanvas);
+			
 			this.is_layout_created = true;
 
 			// replacement of onClose hook since close is not real close
@@ -293,6 +399,9 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			observer.observe(this.element, config);
 		}
 
+		// The keydown event needs to be reconfigured when closing the dialog as it gets removed.
+		document.addEventListener('keydown', ImpactSamEditorDialog.handleKeyDown);
+
 		this.setImages(target_image_path, this.imgCanvas, this.pointsCanvas);
 
 		if(ComfyApp.clipspace_return_node) {
@@ -309,16 +418,10 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 	updateBrushPreview(self, event) {
 		event.preventDefault();
-
-		const centerX = event.pageX;
-		const centerY = event.pageY;
-
-		const brush = self.brush;
-
-		brush.style.width = self.brush_size * 2 + "px";
-		brush.style.height = self.brush_size * 2 + "px";
-		brush.style.left = (centerX - self.brush_size) + "px";
-		brush.style.top = (centerY - self.brush_size) + "px";
+		brush.style.width = self.brush_size * 2 * this.zoom_ratio + "px";
+		brush.style.height = self.brush_size * 2 * this.zoom_ratio + "px";
+		brush.style.left = (centerX - self.brush_size * this.zoom_ratio) + "px";
+		brush.style.top = (centerY - self.brush_size * this.zoom_ratio) + "px";
 	}
 
 	setImages(target_image_path, imgCanvas, pointsCanvas) {
@@ -383,21 +486,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 		window.dispatchEvent(new Event('resize'));
 
-		self.setEventHandler(pointsCanvas);
 		self.saveButton.disabled = false;
-	}
-
-	setEventHandler(targetCanvas) {
-		targetCanvas.addEventListener("contextmenu", (event) => {
-			event.preventDefault();
-		});
-
-		const self = this;
-		targetCanvas.addEventListener('pointermove', (event) => this.updateBrushPreview(self,event));
-		targetCanvas.addEventListener('pointerdown', (event) => this.handlePointerDown(self,event));
-		targetCanvas.addEventListener('pointerover', (event) => { this.brush.style.display = "block"; });
-		targetCanvas.addEventListener('pointerleave', (event) => { this.brush.style.display = "none"; });
-		document.addEventListener('keydown', ImpactSamEditorDialog.handleKeyDown);
 	}
 
 	static handleKeyDown(event) {
@@ -499,30 +588,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			image.onerror = reject;
 			image.src = url;
 		});
-	}
-
-	handlePointerDown(self, event) {
-		if ([0, 2, 5].includes(event.button)) {
-			event.preventDefault();
-			const x = event.offsetX || event.targetTouches[0].clientX - maskRect.left;
-			const y = event.offsetY || event.targetTouches[0].clientY - maskRect.top;
-
-			const originalX = x * self.image.width / self.pointsCanvas.width;
-			const originalY = y * self.image.height / self.pointsCanvas.height;
-
-			var point = null;
-			if (event.button == 0) {
-				// positive
-				point = [true, originalX, originalY];
-			} else {
-				// negative
-				point = [false, originalX, originalY];
-			}
-
-			self.prompt_points.push(point);
-
-			self.invalidatePointsCanvas(self);
-		}
 	}
 
 	async save(self) {
