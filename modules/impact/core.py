@@ -267,12 +267,22 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
 
     refined_latent = latent_image
+
     for i in range(0, cycle):
-        if detailer_hook is not None and hasattr(detailer_hook, 'cycle_latent'):
-            refined_latent = detailer_hook.cycle_latent(i, refined_latent)
-            
-        refined_latent = ksampler_wrapper(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative,
-                                          refined_latent, denoise,
+        if detailer_hook is not None:
+            if detailer_hook is not None:
+                detailer_hook.set_steps((i, cycle))
+
+            refined_latent = detailer_hook.cycle_latent(refined_latent)
+
+            model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
+                detailer_hook.pre_ksample(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
+        else:
+            model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
+                model, seed + i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise
+
+        refined_latent = ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
+                                          refined_latent, denoise2,
                                           refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
     if detailer_hook is not None:
@@ -1248,6 +1258,11 @@ class PixelKSampleHook:
         return w, h
 
 
+class DetailerHook(PixelKSampleHook):
+    def cycle_latent(self, latent):
+        return latent
+
+
 class PixelKSampleHookCombine(PixelKSampleHook):
     hook1 = None
     hook2 = None
@@ -1261,6 +1276,9 @@ class PixelKSampleHookCombine(PixelKSampleHook):
         self.hook1.set_steps(info)
         self.hook2.set_steps(info)
 
+    def pre_decode(self, samples):
+        return self.hook2.pre_decode(self.hook1.pre_decode(samples))
+
     def post_decode(self, pixels):
         return self.hook2.post_decode(self.hook1.post_decode(pixels))
 
@@ -1270,6 +1288,14 @@ class PixelKSampleHookCombine(PixelKSampleHook):
     def post_encode(self, samples):
         return self.hook2.post_encode(self.hook1.post_encode(samples))
 
+    def post_crop_region(self, w, h, item_bbox, crop_region):
+        crop_region = self.hook1.post_crop_region(w, h, item_bbox, crop_region)
+        return self.hook2.post_crop_region(w, h, item_bbox, crop_region)
+
+    def touch_scaled_size(self, w, h):
+        w, h = self.hook1.touch_scaled_size(w, h)
+        return self.hook2.touch_scaled_size(w, h)
+
     def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent,
                     denoise):
         model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
@@ -1278,6 +1304,13 @@ class PixelKSampleHookCombine(PixelKSampleHook):
 
         return self.hook2.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
+
+
+class DetailerHookCombine(PixelKSampleHookCombine):
+    def cycle_latent(self, latent):
+        latent = self.hook1.cycle_latent(latent)
+        latent = self.hook2.cycle_latent(latent)
+        return latent
 
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
@@ -1296,8 +1329,6 @@ class SimpleCfgScheduleHook(PixelKSampleHook):
 
 
 class SimpleDenoiseScheduleHook(PixelKSampleHook):
-    target_denoise = 0
-
     def __init__(self, target_denoise):
         super().__init__()
         self.target_denoise = target_denoise
@@ -1308,6 +1339,18 @@ class SimpleDenoiseScheduleHook(PixelKSampleHook):
         gap = self.target_denoise - denoise
         current_denoise = denoise + gap * progress
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, current_denoise
+
+
+class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
+    def __init__(self, target_denoise):
+        super().__init__()
+        self.target_denoise = target_denoise
+
+    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, denoise):
+        progress = self.cur_step / self.total_step
+        gap = self.target_denoise - denoise
+        current_denoise = denoise + gap * progress
+        return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, current_denoise
 
 
 def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_tile=False, tile_size=512,
@@ -1645,7 +1688,7 @@ class ControlNetWrapper:
         return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, image, self.strength)[0], image
 
 
-class CoreMLHook(PixelKSampleHook):
+class CoreMLHook(DetailerHook):
     def __init__(self, mode):
         super().__init__()
         resolution = mode.split('x')
@@ -1716,10 +1759,11 @@ class InjectNoiseHook(PixelKSampleHook):
         self.start_strength = start_strength
         self.end_strength = end_strength
 
-    def post_encode(self, samples, seed_idx=0):
-        # gen noise
+    def post_encode(self, samples):
+        cur_step = self.cur_step if self.from_start else self.cur_step - 1
+
         size = samples['samples'].shape
-        seed = self.cur_step + self.seed + seed_idx
+        seed = cur_step + self.seed + cur_step
 
         if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
             NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
@@ -1734,7 +1778,7 @@ class InjectNoiseHook(PixelKSampleHook):
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
 
-        strength = self.start_strength + (self.end_strength - self.start_strength) * self.cur_step / self.total_step
+        strength = self.start_strength + (self.end_strength - self.start_strength) * cur_step / self.total_step
         samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
 
         if mask is not None:
@@ -1742,11 +1786,48 @@ class InjectNoiseHook(PixelKSampleHook):
 
         return samples
 
-    def cycle_latent(self, i, latent):
-        if i == 0:
+
+class InjectNoiseHookForDetailer(DetailerHook):
+    def __init__(self, source, seed, start_strength, end_strength, from_start=False):
+        super().__init__()
+        self.source = source
+        self.seed = seed
+        self.start_strength = start_strength
+        self.end_strength = end_strength
+        self.from_start = from_start
+
+    def inject_noise(self, samples):
+        cur_step = self.cur_step if self.from_start else self.cur_step - 1
+
+        size = samples['samples'].shape
+        seed = cur_step + self.seed + cur_step
+
+        if "BNK_NoisyLatentImage" in nodes.NODE_CLASS_MAPPINGS and "BNK_InjectNoise" in nodes.NODE_CLASS_MAPPINGS:
+            NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
+            InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
+        else:
+            raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
+
+        noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
+
+        # inj noise
+        mask = None
+        if 'noise_mask' in samples:
+            mask = samples['noise_mask']
+
+        strength = self.start_strength + (self.end_strength - self.start_strength) * cur_step / self.total_step
+        samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
+
+        if mask is not None:
+            samples['noise_mask'] = mask
+
+        return samples
+
+    def cycle_latent(self, latent):
+        if self.cur_step == 0 and not self.from_start:
             return latent
         else:
-            return self.post_encode(latent, i)
+            return self.inject_noise(latent)
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler

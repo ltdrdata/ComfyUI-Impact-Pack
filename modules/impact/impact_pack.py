@@ -483,7 +483,7 @@ class LatentPixelScale:
                     }
                 }
 
-    RETURN_TYPES = ("LATENT","IMAGE")
+    RETURN_TYPES = ("LATENT", "IMAGE")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
@@ -497,14 +497,16 @@ class LatentPixelScale:
 
 
 class NoiseInjectionDetailerHookProvider:
-    schedules = ["simple"]
+    schedules = ["skip_start", "from_start"]
 
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
                      "source": (["CPU", "GPU"],),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "start_strength": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "end_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
                     },
                 }
 
@@ -513,15 +515,36 @@ class NoiseInjectionDetailerHookProvider:
 
     CATEGORY = "ImpactPack/Detailer"
 
-    def doit(self, source, seed, strength):
+    def doit(self, schedule_for_cycle, source, seed, start_strength, end_strength):
         try:
-            hook = core.InjectNoiseHook(source, seed, strength, strength)
-            hook.set_steps((1, 1))
+            hook = core.InjectNoiseHookForDetailer(source, seed, start_strength, end_strength,
+                                                   from_start=('from_start' in schedule_for_cycle))
             return (hook, )
         except Exception as e:
             print("[ERROR] NoiseInjectionDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
             print(f"\t{e}")
             pass
+
+
+class DenoiseSchedulerDetailerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
+                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 200.0, "step": 0.01}),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, schedule_for_cycle, target_denoise):
+        hook = core.SimpleDetailerDenoiseSchedulerHook(target_denoise)
+        return (hook, )
 
 
 class CoreMLDetailerHookProvider:
@@ -561,6 +584,40 @@ class CfgScheduleHookProvider:
             hook = core.SimpleCfgScheduleHook(target_cfg)
 
         return (hook, )
+
+
+# class UnsamplerHookProvider:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required":
+#                     {"model": ("MODEL",),
+#                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+#                      "end_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
+#                      "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+#                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+#                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+#                      "normalize": (["disable", "enable"], ),
+#                      "positive": ("CONDITIONING", ),
+#                      "negative": ("CONDITIONING", ),
+#                      "latent_image": ("LATENT", ),
+#                      }}
+#
+#     RETURN_TYPES = ("PK_HOOK",)
+#     FUNCTION = "doit"
+#
+#     CATEGORY = "ImpactPack/Upscale"
+#
+#     def doit(self, model, steps, end_at_step, cfg, sampler_name, scheduler, normalize, positive, negative, latent_image):
+#         try:
+#             hook = None
+#             if schedule_for_iteration == "simple":
+#                 hook = core.UnsamplerHook(source, seed, start_strength, end_strength)
+#
+#             return (hook, )
+#         except Exception as e:
+#             print("[ERROR] UnsamplerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
+#             print(f"\t{e}")
+#             pass
 
 
 class NoiseInjectionHookProvider:
@@ -616,6 +673,25 @@ class DenoiseScheduleHookProvider:
         if schedule_for_iteration == "simple":
             hook = core.SimpleDenoiseScheduleHook(target_denoise)
 
+        return (hook, )
+
+
+class DetailerHookCombine:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "hook1": ("DETAILER_HOOK",),
+                     "hook2": ("DETAILER_HOOK",),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, hook1, hook2):
+        hook = core.DetailerHookCombine(hook1, hook2)
         return (hook, )
 
 
