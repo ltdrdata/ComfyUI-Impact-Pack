@@ -843,6 +843,19 @@ def apply_mask_to_each_seg(segs, masks):
     return segs[0], items
 
 
+def dilate_segs(segs, factor):
+    if factor == 0:
+        return segs
+
+    new_segs = []
+    for seg in segs[1]:
+        new_mask = dilate_mask(seg.cropped_mask, factor)
+        new_seg = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+        new_segs.append(new_seg)
+
+    return (segs[0], new_segs)
+
+
 class ONNXDetector:
     onnx_model = None
 

@@ -170,21 +170,22 @@ class SimpleDetectorForEach:
                         "image": ("IMAGE", ),
 
                         "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "bbox_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
+                        "bbox_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
 
                         "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
                         "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
 
                         "sub_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "sub_dilation": ("INT", {"default": 0, "min": -255, "max": 255, "step": 1}),
+                        "sub_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
                         "sub_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
 
                         "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
                       },
                 "optional": {
+                        "post_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
                         "sam_model_opt": ("SAM_MODEL", ),
                         "segm_detector_opt": ("SEGM_DETECTOR", ),
-                 }
+                      }
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -195,7 +196,7 @@ class SimpleDetectorForEach:
     @staticmethod
     def detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion,
-             sam_mask_hint_threshold, sam_model_opt=None, segm_detector_opt=None):
+             sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size)
 
         if sam_model_opt is not None:
@@ -207,16 +208,18 @@ class SimpleDetectorForEach:
             mask = core.segs_to_combined_mask(segm_segs)
             segs = core.segs_bitwise_and_mask(segs, mask)
 
-        return (segs,)
+        segs = core.dilate_segs(segs, post_dilation)
 
+        return (segs,)
 
     def doit(self, bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion,
-             sam_mask_hint_threshold, sam_model_opt=None, segm_detector_opt=None):
+             sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
 
         return SimpleDetectorForEach.detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
                                             sub_threshold, sub_dilation, sub_bbox_expansion,
-                                            sam_mask_hint_threshold, sam_model_opt, segm_detector_opt)
+                                            sam_mask_hint_threshold, post_dilation=post_dilation,
+                                            sam_model_opt=sam_model_opt, segm_detector_opt=segm_detector_opt)
 
 
 class SimpleDetectorForEachPipe:
@@ -238,6 +241,9 @@ class SimpleDetectorForEachPipe:
 
                         "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
                       },
+                "optional": {
+                        "post_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
+                      }
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -246,13 +252,13 @@ class SimpleDetectorForEachPipe:
     CATEGORY = "ImpactPack/Detector"
 
     def doit(self, detailer_pipe, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
-             sub_threshold, sub_dilation, sub_bbox_expansion, sam_mask_hint_threshold):
+             sub_threshold, sub_dilation, sub_bbox_expansion, sam_mask_hint_threshold, post_dilation=0):
 
         model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         return SimpleDetectorForEach.detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
                                             sub_threshold, sub_dilation, sub_bbox_expansion,
-                                            sam_mask_hint_threshold, sam_model_opt, segm_detector_opt)
+                                            sam_mask_hint_threshold, post_dilation=post_dilation, sam_model_opt=sam_model_opt, segm_detector_opt=segm_detector_opt)
 
 
 class SimpleDetectorForAnimateDiff:
