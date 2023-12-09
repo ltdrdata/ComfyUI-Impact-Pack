@@ -11,6 +11,9 @@ async function load_wildcards() {
 
 load_wildcards();
 
+export function get_wildcards_list() {
+	return wildcards_list;
+}
 
 // temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 // I think this should be included into master!!
@@ -577,9 +580,8 @@ app.registerExtension({
 
 							node._value = value;
 						},
-					get: () => {
-							return node._value;
-						 }
+
+					get: () => { return "Select the LoRA to add to the text"; }
 				});
 			}
 

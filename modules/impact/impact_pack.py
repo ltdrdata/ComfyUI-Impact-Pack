@@ -2062,6 +2062,10 @@ class ImpactWildcardProcessor:
     RETURN_TYPES = ("STRING", )
     FUNCTION = "doit"
 
+    @staticmethod
+    def process(**kwargs):
+        return impact.wildcards.process(**kwargs)
+
     def doit(self, *args, **kwargs):
         populated_text = kwargs['populated_text']
         return (populated_text, )
