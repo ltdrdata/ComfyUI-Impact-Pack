@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 import folder_paths
+import nodes
 from . import config
 
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
@@ -259,6 +260,7 @@ def to_latent_image(pixels, vae):
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
         pixels = pixels[:, :x, :y, :]
+    pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
     t = vae.encode(pixels[:, :, :, :3])
     return {"samples": t}
 
