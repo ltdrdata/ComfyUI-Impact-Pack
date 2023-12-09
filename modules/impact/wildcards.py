@@ -4,12 +4,22 @@ import os
 import nodes
 import folder_paths
 import yaml
+import threading
 
+
+wildcard_lock = threading.Lock()
 wildcard_dict = {}
 
 
 def get_wildcard_list():
-    return [f"__{x}__" for x in wildcard_dict.keys()]
+    with wildcard_lock:
+        return [f"__{x}__" for x in wildcard_dict.keys()]
+
+
+def get_wildcard_dict():
+    global wildcard_dict
+    with wildcard_lock:
+        return wildcard_dict
 
 
 def wildcard_normalize(x):
@@ -151,7 +161,7 @@ def process(text, seed=None):
         return replaced_string, replacements_found
 
     def replace_wildcard(string):
-        global wildcard_dict
+        local_wildcard_dict = get_wildcard_dict()
         pattern = r"__([\w.\-+/*\\]+)__"
         matches = re.findall(pattern, string)
 
@@ -160,15 +170,15 @@ def process(text, seed=None):
         for match in matches:
             keyword = match.lower()
             keyword = wildcard_normalize(keyword)
-            if keyword in wildcard_dict:
-                replacement = random.choice(wildcard_dict[keyword])
+            if keyword in local_wildcard_dict:
+                replacement = random.choice(local_wildcard_dict[keyword])
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
                 subpattern = keyword.replace('*', '.*').replace('+','\+')
                 total_patterns = []
                 found = False
-                for k, v in wildcard_dict.items():
+                for k, v in local_wildcard_dict.items():
                     if re.match(subpattern, k) is not None:
                         total_patterns += v
                         found = True

@@ -105,12 +105,25 @@ from impact.util_nodes import *
 from impact.segs_nodes import *
 from impact.special_samplers import *
 from impact.hf_nodes import *
+import threading
 
-impact.wildcards.read_wildcard_dict(wildcards_path)
-try:
-    impact.wildcards.read_wildcard_dict(impact.config.get_config()['custom_wildcards'])
-except Exception as e:
-    print(f"[Impact Pack] Failed to load custom wildcards directory.")
+wildcard_path = impact.config.get_config()['custom_wildcards']
+
+
+def wildcard_load():
+    with wildcards.wildcard_lock:
+        impact.wildcards.read_wildcard_dict(wildcards_path)
+
+        try:
+            impact.wildcards.read_wildcard_dict(impact.config.get_config()['custom_wildcards'])
+        except Exception as e:
+            print(f"[Impact Pack] Failed to load custom wildcards directory.")
+
+        print(f"[Impact Pack] Wildcards loading done.")
+
+
+threading.Thread(target=wildcard_load).start()
+
 
 NODE_CLASS_MAPPINGS = {
     "SAMLoader": SAMLoader,

@@ -440,10 +440,33 @@ def regional_sampler_seed_update(json_data):
                 server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
 
 
+def populate_wildcards(json_data):
+    prompt = json_data['prompt']
+
+    updated_widget_values = {}
+    for k, v in prompt.items():
+        if 'class_type' in v and (v['class_type'] == 'ImpactWildcardEncode' or v['class_type'] == 'ImpactWildcardProcessor'):
+            inputs = v['inputs']
+            if inputs['mode'] and isinstance(inputs['populated_text'], str):
+                inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], int(inputs['seed']))
+                inputs['mode'] = False
+
+                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
+                updated_widget_values[k] = inputs['populated_text']
+
+    if 'extra_data' in json_data and 'extra_pnginfo' in json_data['extra_data']:
+        for node in json_data['extra_data']['extra_pnginfo']['workflow']['nodes']:
+            key = str(node['id'])
+            if key in updated_widget_values:
+                node['widgets_values'][1] = updated_widget_values[key]
+                node['widgets_values'][2] = False
+
+
 def onprompt(json_data):
     try:
         json_data = onprompt_for_switch(json_data)
         onprompt_for_pickers(json_data)
+        populate_wildcards(json_data)
         gc_preview_bridge_cache(json_data)
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)

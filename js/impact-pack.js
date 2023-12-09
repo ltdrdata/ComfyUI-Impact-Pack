@@ -594,42 +594,9 @@ app.registerExtension({
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";
 			node.widgets[1].inputEl.disabled = true;
-			node.widgets[0].dynamicPrompts = false;
-			node.widgets[1].dynamicPrompts = false;
 
-            let populate_getter = node.widgets[1].__lookupGetter__('value');
-            let populate_setter = node.widgets[1].__lookupSetter__('value');
-
-			const wildcard_text_widget = node.widgets.find((w) => w.name == 'wildcard_text');
 			const populated_text_widget = node.widgets.find((w) => w.name == 'populated_text');
 			const mode_widget = node.widgets.find((w) => w.name == 'mode');
-			const seed_widget = node.widgets.find((w) => w.name == 'seed');
-
-			let force_serializeValue = async (n,i) =>
-				{
-					if(!mode_widget.value) {
-						return populated_text_widget.value;
-					}
-					else {
-				        let wildcard_text = await wildcard_text_widget.serializeValue();
-
-						let response = await api.fetchApi(`/impact/wildcards`, {
-																method: 'POST',
-																headers: { 'Content-Type': 'application/json' },
-																body: JSON.stringify({text: wildcard_text, seed: seed_widget.value})
-															});
-
-						let populated = await response.json();
-
-						if(n.widgets_values) {
-							n.widgets_values[2] = false;
-							n.widgets_values[1] = populated.text;
-						}
-						populate_setter.call(populated_text_widget, populated.text);
-
-						return populated.text;
-					}
-				};
 
 			// mode combo
 			Object.defineProperty(mode_widget, "value", {
@@ -644,39 +611,6 @@ app.registerExtension({
 							return true;
 					 }
 			});
-
-            // to avoid conflict with presetText.js of pythongosssss
-			Object.defineProperty(populated_text_widget, "value", {
-				set: (value) => {
-				        const stackTrace = new Error().stack;
-                        if(!stackTrace.includes('serializeValue'))
-				            populate_setter.call(populated_text_widget, value);
-					},
-				get: () => {
-				        return populate_getter.call(populated_text_widget);
-					 }
-			});
-
-            wildcard_text_widget.serializeValue = (n,i) => {
-                if(node.inputs) {
-	                let link_id = node.inputs.find(x => x.name=="wildcard_text")?.link;
-	                if(link_id != undefined) {
-	                    let link = app.graph.links[link_id];
-	                    let input_widget = app.graph._nodes_by_id[link.origin_id].widgets[link.origin_slot];
-	                    if(input_widget.type == "customtext") {
-	                        return input_widget.value;
-	                    }
-	                }
-	                else {
-	                    return wildcard_text_widget.value;
-	                }
-                }
-                else {
-                    return wildcard_text_widget.value;
-                }
-            };
-
-            populated_text_widget.serializeValue = force_serializeValue;
 		}
 
 		if (node.comfyClass == "MaskPainter") {
