@@ -526,6 +526,45 @@ class NoiseInjectionDetailerHookProvider:
             pass
 
 
+class UnsamplerDetailerHookProvider:
+    schedules = ["skip_start", "from_start"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_cycle": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_cycle):
+        try:
+            hook = None
+            hook = core.UnsamplerDetailerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                              scheduler, normalize, positive, negative,
+                                              from_start=('from_start' in schedule_for_cycle))
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
+
+
 class DenoiseSchedulerDetailerHookProvider:
     schedules = ["simple"]
 
@@ -586,38 +625,43 @@ class CfgScheduleHookProvider:
         return (hook, )
 
 
-# class UnsamplerHookProvider:
-#     @classmethod
-#     def INPUT_TYPES(s):
-#         return {"required":
-#                     {"model": ("MODEL",),
-#                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-#                      "end_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
-#                      "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
-#                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-#                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
-#                      "normalize": (["disable", "enable"], ),
-#                      "positive": ("CONDITIONING", ),
-#                      "negative": ("CONDITIONING", ),
-#                      "latent_image": ("LATENT", ),
-#                      }}
-#
-#     RETURN_TYPES = ("PK_HOOK",)
-#     FUNCTION = "doit"
-#
-#     CATEGORY = "ImpactPack/Upscale"
-#
-#     def doit(self, model, steps, end_at_step, cfg, sampler_name, scheduler, normalize, positive, negative, latent_image):
-#         try:
-#             hook = None
-#             if schedule_for_iteration == "simple":
-#                 hook = core.UnsamplerHook(source, seed, start_strength, end_strength)
-#
-#             return (hook, )
-#         except Exception as e:
-#             print("[ERROR] UnsamplerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
-#             print(f"\t{e}")
-#             pass
+class UnsamplerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_iteration": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_iteration):
+        try:
+            hook = None
+            if schedule_for_iteration == "simple":
+                hook = core.UnsamplerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                          scheduler, normalize, positive, negative)
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
 
 
 class NoiseInjectionHookProvider:

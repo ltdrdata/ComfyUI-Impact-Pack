@@ -115,11 +115,14 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.
     * The source determines the types of CPU noise and GPU noise to be configured.
     * Currently, there is only a simple schedule available, where the strength of the noise varies from start_strength to end_strength during the progression of each iteration.
+  * UnsamplerHookProvider - Apply Unsampler during each iteration. To use this node, ComfyUI_Noise must be installed.
   * PixelKSampleHookCombine - This is used to connect two PK_HOOKs. hook1 is executed first and then hook2 is executed.
     * If you want to simultaneously change cfg and denoise, you can combine the PK_HOOKs of CfgScheduleHookProvider and PixelKSampleHookCombine.
  
 * DETAILER_HOOK
   * NoiseInjectionDetailerHookProvider - The `detailer_hook` is a hook in the `Detailer` that injects noise during the processing of each SEGS.
+  * UnsamplerDetailerHookProvider - Apply Unsampler during each cycle. To use this node, ComfyUI_Noise must be installed.
+    * There is a bug in applying the noise mask to the current Unsampler, so this [ComfyUI_Noise/PR-13](https://github.com/BlenderNeko/ComfyUI_Noise/pull/13) must be applied for it to be usable. 
   * DenoiseSchedulerDetailerHookProvider - During the progress of the cycle, the detailer's denoise is altered up to the `target_denoise`. 
   * CoreMLDetailerHookProvider - CoreML supports only 512x512, 512x768, 768x512, 768x768 size sampling. CoreMLDetailerHookProvider precisely fixes the upscale of the crop_region to this size. When using this hook, it will always be selected size, regardless of the guide_size. However, if the guide_size is too small, skipping will occur.
   * DetailerHookCombine - This is used to connect two DETAILER_HOOKs. Similar to PixelKSampleHookCombine.

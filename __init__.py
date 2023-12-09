@@ -175,7 +175,9 @@ NODE_CLASS_MAPPINGS = {
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
     "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
+    "UnsamplerHookProvider": UnsamplerHookProvider,
     "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
+    "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider,
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
     "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider,
 

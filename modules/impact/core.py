@@ -256,7 +256,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                                                         mode='bilinear', align_corners=False)
 
         # remove the extra dimensions added by unsqueeze
-        upscaled_mask = upscaled_mask.squeeze().squeeze()
+        upscaled_mask = upscaled_mask.squeeze(0).squeeze(0)
         latent_image['noise_mask'] = upscaled_mask
 
     if detailer_hook is not None:
@@ -1787,6 +1787,46 @@ class InjectNoiseHook(PixelKSampleHook):
         return samples
 
 
+class UnsamplerHook(PixelKSampleHook):
+    def __init__(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                 scheduler, normalize, positive, negative):
+        super().__init__()
+        self.model = model
+        self.cfg = cfg
+        self.sampler_name = sampler_name
+        self.steps = steps
+        self.start_end_at_step = start_end_at_step
+        self.end_end_at_step = end_end_at_step
+        self.scheduler = scheduler
+        self.normalize = normalize
+        self.positive = positive
+        self.negative = negative
+
+    def post_encode(self, samples):
+        cur_step = self.cur_step
+
+        if "BNK_Unsampler" in nodes.NODE_CLASS_MAPPINGS:
+            Unsampler = nodes.NODE_CLASS_MAPPINGS["BNK_Unsampler"]
+        else:
+            raise Exception("'BNK_Unsampler' nodes are not installed.")
+
+        end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
+        end_at_step = int(end_at_step)
+
+        # inj noise
+        mask = None
+        if 'noise_mask' in samples:
+            mask = samples['noise_mask']
+
+        samples = Unsampler().unsampler(self.model, self.cfg, self.sampler_name, self.steps, end_at_step,
+                                        self.scheduler, self.normalize, self.positive, self.negative, samples)[0]
+
+        if mask is not None:
+            samples['noise_mask'] = mask
+
+        return samples
+
+
 class InjectNoiseHookForDetailer(DetailerHook):
     def __init__(self, source, seed, start_strength, end_strength, from_start=False):
         super().__init__()
@@ -1828,6 +1868,53 @@ class InjectNoiseHookForDetailer(DetailerHook):
             return latent
         else:
             return self.inject_noise(latent)
+
+
+class UnsamplerDetailerHook(DetailerHook):
+    def __init__(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                 scheduler, normalize, positive, negative, from_start=False):
+        super().__init__()
+        self.model = model
+        self.cfg = cfg
+        self.sampler_name = sampler_name
+        self.steps = steps
+        self.start_end_at_step = start_end_at_step
+        self.end_end_at_step = end_end_at_step
+        self.scheduler = scheduler
+        self.normalize = normalize
+        self.positive = positive
+        self.negative = negative
+        self.from_start = from_start
+
+    def unsample(self, samples):
+        cur_step = self.cur_step if self.from_start else self.cur_step - 1
+
+        if "BNK_Unsampler" in nodes.NODE_CLASS_MAPPINGS:
+            Unsampler = nodes.NODE_CLASS_MAPPINGS["BNK_Unsampler"]
+        else:
+            raise Exception("'BNK_Unsampler' nodes are not installed.")
+
+        end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
+        end_at_step = int(end_at_step)
+
+        # inj noise
+        mask = None
+        if 'noise_mask' in samples:
+            mask = samples['noise_mask']
+
+        samples = Unsampler().unsampler(self.model, self.cfg, self.sampler_name, self.steps, end_at_step,
+                                        self.scheduler, self.normalize, self.positive, self.negative, samples)[0]
+
+        if mask is not None:
+            samples['noise_mask'] = mask
+
+        return samples
+
+    def cycle_latent(self, latent):
+        if self.cur_step == 0 and not self.from_start:
+            return latent
+        else:
+            return self.unsample(latent)
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
