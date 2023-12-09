@@ -1760,7 +1760,7 @@ class InjectNoiseHook(PixelKSampleHook):
         self.end_strength = end_strength
 
     def post_encode(self, samples):
-        cur_step = self.cur_step if self.from_start else self.cur_step - 1
+        cur_step = self.cur_step
 
         size = samples['samples'].shape
         seed = cur_step + self.seed + cur_step
