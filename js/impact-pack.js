@@ -507,7 +507,8 @@ app.registerExtension({
 		if(
 		node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ImpactWildcardProcessor"
 		|| node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
-		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
+		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "EditDetailerPipeSDXL"
+		|| node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
 			node._wvalue = "Select the Wildcard to add to the text";
 
