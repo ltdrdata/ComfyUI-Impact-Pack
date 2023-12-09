@@ -303,9 +303,13 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
         if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
 
+        orig_lora_name = lora_name
         lora_name = resolve_lora_name(lora_name_cache, lora_name)
 
-        path = folder_paths.get_full_path("loras", lora_name)
+        if lora_name is not None:
+            path = folder_paths.get_full_path("loras", lora_name)
+        else:
+            path = None
 
         if path is not None:
             print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}, LBW={lbw}, A={lbw_a}, B={lbw_b}")
@@ -323,7 +327,7 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
             else:
                 model, clip = default_lora()
         else:
-            print(f"LORA NOT FOUND: {lora_name}")
+            print(f"LORA NOT FOUND: {orig_lora_name}")
 
     print(f"CLIP: {pass2}")
 
