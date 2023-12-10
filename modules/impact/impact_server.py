@@ -437,7 +437,7 @@ def regional_sampler_seed_update(json_data):
                 server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
 
 
-def populate_wildcards(json_data):
+def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
 
     updated_widget_values = {}
@@ -445,7 +445,24 @@ def populate_wildcards(json_data):
         if 'class_type' in v and (v['class_type'] == 'ImpactWildcardEncode' or v['class_type'] == 'ImpactWildcardProcessor'):
             inputs = v['inputs']
             if inputs['mode'] and isinstance(inputs['populated_text'], str):
-                inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], int(inputs['seed']))
+                if isinstance(inputs['seed'], list):
+                    try:
+                        input_node = prompt[inputs['seed'][0]]
+                        if input_node['class_type'] == 'ImpactInt':
+                            input_seed = int(input_node['inputs']['value'])
+                            if not isinstance(input_seed, int):
+                                continue
+                        else:
+                            print(f"[Impact Pack] Only ImpactInt and Primitive Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
+                            continue
+                    except:
+                        continue
+                else:
+                    input_seed = int(inputs['seed'])
+
+                print(f"input_seed: {input_seed}")
+
+                inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], input_seed)
                 inputs['mode'] = False
 
                 server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
@@ -495,7 +512,7 @@ def onprompt(json_data):
         onprompt_for_remote(json_data)  # NOTE: top priority
         onprompt_for_switch(json_data)
         onprompt_for_pickers(json_data)
-        populate_wildcards(json_data)
+        onprompt_populate_wildcards(json_data)
         gc_preview_bridge_cache(json_data)
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)
