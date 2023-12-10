@@ -53,6 +53,7 @@ async function bridgeContinue(event) {
 	if(node) {
 		const mutes = new Set(event.detail.mutes);
 		const actives = new Set(event.detail.actives);
+		const bypasses = new Set(event.detail.bypasses);
 
 		for(let i in app.graph._nodes_by_id) {
 			let this_node = app.graph._nodes_by_id[i];
@@ -61,6 +62,9 @@ async function bridgeContinue(event) {
 			}
 			else if(actives.has(i)) {
 				this_node.mode = 0;
+			}
+			else if(bypasses.has(i)) {
+				this_node.mode = 4;
 			}
 		}
 

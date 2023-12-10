@@ -197,7 +197,9 @@ This takes latent as input and outputs latent as the result.
   * Sleep - Waits for the specified time (in seconds).
   * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
   * Set Mute State - This node changes the mute state of a specific node.
-  * Control Bridge - Depending on whether the mode is set to `block` or `pass`, it changes the mute status of connected nodes. If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted.
+  * Control Bridge - This node modifies the state of the connected control nodes based on the `mode` and `behavior` . If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted. 
+    * When the `mode` is `active`, it makes the connected control nodes active regardless of the behavior. 
+    * When the `mode` is `Bypass/Mute`, it changes the state of the connected nodes based on whether the behavior is `Bypass` or `Mute`.
     * **Limitation**: Due to these characteristics, it does not function correctly when the batch count exceeds 1. Additionally, it does not guarantee proper operation when the seed is randomized or when the state of nodes is altered by actions such as `Queue Trigger`, `Set Widget Value`, `Set Mute`, before the Control Bridge.
     * When utilizing this node, please structure the workflow in such a way that `Queue Trigger`, `Set Widget Value`, `Set Mute State`, and similar actions are executed at the end of the workflow.
     * If you want to change the value of the seed at each iteration, please ensure that Set Widget Value is executed at the end of the workflow instead of using randomization.
