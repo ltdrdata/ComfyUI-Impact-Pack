@@ -293,6 +293,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactControlBridge": ImpactControlBridge,
     "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS,
     "ImpactSleep": ImpactSleep,
+    "ImpactRemoteBoolean": ImpactRemoteBoolean,
+    "ImpactRemoteInt": ImpactRemoteInt,
 
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
     "ImpactSEGSClassify": SEGS_Classify
@@ -395,6 +397,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactNodeSetMuteState": "Set Mute State",
     "ImpactControlBridge": "Control Bridge",
     "ImpactSleep": "Sleep",
+    "ImpactRemoteBoolean": "Remote Boolean (on prompt)",
+    "ImpactRemoteInt": "Remote Int (on prompt)",
 
     "ImpactHFTransformersClassifierProvider": "HF Transformers Classifier Provider",
     "ImpactSEGSClassify": "SEGS Classify",

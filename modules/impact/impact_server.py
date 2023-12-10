@@ -379,9 +379,6 @@ def onprompt_for_switch(json_data):
         for kk in disable_targets:
             del v['inputs'][kk]
 
-    return json_data
-
-
 def onprompt_for_pickers(json_data):
     detected_pickers = set()
 
@@ -462,9 +459,41 @@ def populate_wildcards(json_data):
                 node['widgets_values'][2] = False
 
 
+def onprompt_for_remote(json_data):
+    prompt = json_data['prompt']
+
+    for v in prompt.values():
+        if 'class_type' in v:
+            cls = v['class_type']
+            if cls == 'ImpactRemoteBoolean' or cls == 'ImpactRemoteInt':
+                inputs = v['inputs']
+                node_id = str(inputs['node_id'])
+
+                if node_id not in prompt:
+                    continue
+
+                target_inputs = prompt[node_id]['inputs']
+
+                widget_name = inputs['widget_name']
+                if widget_name in target_inputs:
+                    widget_type = None
+                    if cls == 'ImpactRemoteBoolean' and isinstance(target_inputs[widget_name], bool):
+                        widget_type = 'BOOLEAN'
+
+                    elif cls == 'ImpactRemoteInt' and (isinstance(target_inputs[widget_name], int) or isinstance(target_inputs[widget_name], float)):
+                        widget_type = 'INT'
+
+                    if widget_type is None:
+                        break
+
+                    target_inputs[widget_name] = inputs['value']
+                    server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": node_id, "widget_name": widget_name, "type": widget_type, "value": inputs['value']})
+
+
 def onprompt(json_data):
     try:
-        json_data = onprompt_for_switch(json_data)
+        onprompt_for_remote(json_data)  # NOTE: top priority
+        onprompt_for_switch(json_data)
         onprompt_for_pickers(json_data)
         populate_wildcards(json_data)
         gc_preview_bridge_cache(json_data)

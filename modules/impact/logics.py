@@ -442,6 +442,43 @@ def workflow_to_map(workflow):
     return nodes, links
 
 
+class ImpactRemoteBoolean:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "widget_name": ("STRING", {"multiline": False}),
+                    "value": ("BOOLEAN", {"default": True, "label_on": "True", "label_off": "False"}),
+                    }}
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+
+    def doit(self, **kwargs):
+        return {}
+
+
+class ImpactRemoteInt:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "node_id": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "widget_name": ("STRING", {"multiline": False}),
+                    "value": ("INT", {"default": 0, "min": -0xffffffffffffffff, "max": 0xffffffffffffffff}),
+                    }}
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+
+    def doit(self, **kwargs):
+        return {}
+
 class ImpactControlBridge:
     @classmethod
     def INPUT_TYPES(cls):
