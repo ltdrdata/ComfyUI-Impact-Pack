@@ -1247,7 +1247,7 @@ class MaskDetailerPipe:
                 enhanced_img_batch = torch.cat((enhanced_img_batch, enhanced_img), dim=0)
 
             cropped_enhanced_list += cropped_enhanced
-            cropped_enhanced_alpha_list += cropped_enhanced_alpha_list
+            cropped_enhanced_alpha_list += cropped_enhanced_alpha
 
         # set fallback image
         if len(cropped_enhanced_list) == 0:
