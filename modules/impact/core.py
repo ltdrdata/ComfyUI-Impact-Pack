@@ -1838,6 +1838,7 @@ class InjectNoiseHookForDetailer(DetailerHook):
 
     def inject_noise(self, samples):
         cur_step = self.cur_step if self.from_start else self.cur_step - 1
+        total_step = self.total_step if self.from_start else self.total_step - 1
 
         size = samples['samples'].shape
         seed = cur_step + self.seed + cur_step
@@ -1855,7 +1856,7 @@ class InjectNoiseHookForDetailer(DetailerHook):
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
 
-        strength = self.start_strength + (self.end_strength - self.start_strength) * cur_step / self.total_step
+        strength = self.start_strength + (self.end_strength - self.start_strength) * cur_step / total_step
         samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
 
         if mask is not None:
@@ -1888,13 +1889,14 @@ class UnsamplerDetailerHook(DetailerHook):
 
     def unsample(self, samples):
         cur_step = self.cur_step if self.from_start else self.cur_step - 1
+        total_step = self.total_step if self.from_start else self.total_step - 1
 
         if "BNK_Unsampler" in nodes.NODE_CLASS_MAPPINGS:
             Unsampler = nodes.NODE_CLASS_MAPPINGS["BNK_Unsampler"]
         else:
             raise Exception("'BNK_Unsampler' nodes are not installed.")
 
-        end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
+        end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / total_step
         end_at_step = int(end_at_step)
 
         # inj noise
