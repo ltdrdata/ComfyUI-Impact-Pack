@@ -126,6 +126,7 @@ function imgSendHandler(event) {
 					img.onload = (event) => {
 						nodes[i].imgs = [img];
 						nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
+						app.canvas.setDirty(true);
 					};
 					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
 				}
