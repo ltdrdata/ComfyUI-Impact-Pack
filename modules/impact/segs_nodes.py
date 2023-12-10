@@ -937,8 +937,7 @@ class MaskToSEGS:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
         return (result, )
@@ -963,8 +962,7 @@ class MaskToSEGS_for_AnimateDiff:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
 

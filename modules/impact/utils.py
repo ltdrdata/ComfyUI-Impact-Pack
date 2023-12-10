@@ -81,8 +81,7 @@ def bitwise_and_masks(mask1, mask2):
 
 
 def to_binary_mask(mask, threshold=0):
-    if len(mask.shape) == 3:
-        mask = mask.squeeze(0)
+    mask = make_2d_mask(mask)
 
     mask = mask.clone().cpu()
     mask[mask > threshold] = 1.
@@ -98,8 +97,7 @@ def dilate_mask(mask, dilation_factor, iter=1):
     if dilation_factor == 0:
         return mask
 
-    if len(mask.shape) == 3:
-        mask = mask.squeeze(0)
+    mask = make_2d_mask(mask)
 
     kernel = np.ones((abs(dilation_factor), abs(dilation_factor)), np.uint8)
 
@@ -281,6 +279,16 @@ def empty_pil_tensor(w=64, h=64):
     draw = ImageDraw.Draw(image)
     draw.rectangle((0, 0, w-1, h-1), fill=(0, 0, 0))
     return pil2tensor(image)
+
+
+def make_2d_mask(mask):
+    if len(mask.shape) == 4:
+        return mask.squeeze(0).squeeze(0)
+
+    elif len(mask.shape) == 3:
+        return mask.squeeze(0)
+
+    return mask
 
 
 class NonListIterable:

@@ -43,8 +43,7 @@ def set_previewbridge_image(node_id, file, item):
 
 
 def erosion_mask(mask, grow_mask_by):
-    if len(mask.shape) == 3:
-        mask = mask.squeeze(0)
+    mask = make_2d_mask(mask)
 
     w = mask.shape[1]
     h = mask.shape[0]
@@ -104,8 +103,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
 class REGIONAL_PROMPT:
     def __init__(self, mask, sampler):
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         self.mask = mask
         self.sampler = sampler
@@ -141,8 +139,7 @@ def create_segmasks(results):
 
 
 def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
-    if len(mask.shape) == 3:
-        mask = mask.squeeze(0)
+    mask = make_2d_mask(mask)
 
     points = []
     plabs = []
@@ -802,8 +799,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
 
 
 def segs_bitwise_and_mask(segs, mask):
-    if len(mask.shape) == 3:
-        mask = mask.squeeze(0)
+    mask = make_2d_mask(mask)
 
     if mask is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
@@ -1464,8 +1460,7 @@ class TwoSamplersForMaskUpscaler:
                  hook_full_opt=None,
                  tile_size=512):
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1]))
 
@@ -1481,8 +1476,7 @@ class TwoSamplersForMaskUpscaler:
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         self.prepare_hook(step_info)
 
@@ -1512,8 +1506,7 @@ class TwoSamplersForMaskUpscaler:
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         self.prepare_hook(step_info)
 
@@ -1569,8 +1562,7 @@ class TwoSamplersForMaskUpscaler:
             return cur_step % 2 == 0 or cur_step >= total_step - 1
 
     def do_samples(self, step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent):
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         if self.is_full_sample_time(step_info, sample_schedule):
             print(f"step_info={step_info} / full time")
@@ -2041,8 +2033,7 @@ class BBoxDetectorBasedOnCLIPSeg:
     def detect(self, image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size=1, detailer_hook=None):
         mask = self.detect_combined(image, bbox_threshold, bbox_dilation)
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         segs = mask_to_segs(mask, False, bbox_crop_factor, True, drop_size, detailer_hook=detailer_hook)
         return segs
