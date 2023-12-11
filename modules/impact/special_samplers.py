@@ -252,7 +252,7 @@ class ConcatConditionings:
     CATEGORY = "ImpactPack/__for_testing"
 
     def doit(self, **kwargs):
-        conditioning_to = kwargs[0].values()[0]
+        conditioning_to = kwargs.values()[0]
 
         for k, conditioning_from in kwargs.items()[1:]:
             out = []
