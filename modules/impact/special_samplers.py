@@ -252,9 +252,9 @@ class ConcatConditionings:
     CATEGORY = "ImpactPack/__for_testing"
 
     def doit(self, **kwargs):
-        conditioning_to = kwargs.values()[0]
+        conditioning_to = list(kwargs.values())[0]
 
-        for k, conditioning_from in kwargs.items()[1:]:
+        for k, conditioning_from in list(kwargs.items())[1:]:
             out = []
             if len(conditioning_from) > 1:
                 print("Warning: ConcatConditionings {k} contains more than 1 cond, only the first one will actually be applied to conditioning1.")
@@ -263,7 +263,7 @@ class ConcatConditionings:
 
             for i in range(len(conditioning_to)):
                 t1 = conditioning_to[i][0]
-                tw = torch.cat((t1, cond_from),1)
+                tw = torch.cat((t1, cond_from), 1)
                 n = [tw, conditioning_to[i][1].copy()]
                 out.append(n)
 
