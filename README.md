@@ -188,6 +188,7 @@ This takes latent as input and outputs latent as the result.
 
 * String Selector - It selects and returns a portion of the string. When `multiline` mode is disabled, it simply returns the string of the line pointed to by the selector. When `multiline` mode is enabled, it divides the string based on lines that start with `#` and returns them. If the `select` value is larger than the number of items, it will start counting from the first line again and return accordingly.
 * Combine Conditionings - It takes multiple conditionings as input and combines them into a single conditioning.
+* Concat Conditionings - It takes multiple conditionings as input and concat them into a single conditioning.
 
 * Logics (experimental) - These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
   * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration

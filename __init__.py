@@ -264,6 +264,7 @@ NODE_CLASS_MAPPINGS = {
     "RegionalPrompt": RegionalPrompt,
 
     "ImpactCombineConditionings": CombineConditionings,
+    "ImpactConcatConditionings": ConcatConditionings,
 
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
     "ImpactSEGSRangeFilter": SEGSRangeFilter,
@@ -390,6 +391,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RemoveNoiseMask": "Remove Noise Mask",
 
     "ImpactCombineConditionings": "Combine Conditionings",
+    "ImpactConcatConditionings": "Concat Conditionings",
 
     "ImpactQueueTrigger": "Queue Trigger",
     "ImpactQueueTriggerCountdown": "Queue Trigger (Countdown)",

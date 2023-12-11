@@ -370,7 +370,8 @@ app.registerExtension({
         }
 
         if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
-            nodeData.name === 'CombineRegionalPrompts' || nodeData.name === 'ImpactCombineConditionings' ||
+            nodeData.name === 'CombineRegionalPrompts' || 
+			nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
             nodeData.name === 'ImpactSEGSConcat' ||
             nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
@@ -390,6 +391,7 @@ app.registerExtension({
                 break;
 
             case 'ImpactCombineConditionings':
+            case 'ImpactConcatConditionings':
                 input_name = "conditioning";
                 break;
 
