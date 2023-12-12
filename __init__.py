@@ -195,6 +195,7 @@ NODE_CLASS_MAPPINGS = {
     "MasksToMaskList": MasksToMaskList,
     "MaskListToMaskBatch": MaskListToMaskBatch,
     "ImageListToImageBatch": ImageListToMaskBatch,
+    "SetDefaultImageForSEGS": DefaultImageForSEGS,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
@@ -387,6 +388,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
     "ImpactIsNotEmptySEGS": "SEGS isn't Empty",
+    "SetDefaultImageForSEGS": "Set Default Image for SEGS",
 
     "RemoveNoiseMask": "Remove Noise Mask",
 
