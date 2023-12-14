@@ -1223,21 +1223,24 @@ class MaskDetailerPipe:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
         # create segs
-        mask = make_2d_mask(mask)
-
-        segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+        if mask is not None:
+            mask = make_2d_mask(mask)
+            segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
 
         enhanced_img_batch = None
         cropped_enhanced_list = []
         cropped_enhanced_alpha_list = []
 
         for i in range(batch_size):
-            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, new_segs = \
-                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
-                                          cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
-                                          force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
-                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
-                                          refiner_positive=refiner_positive, refiner_negative=refiner_negative, cycle=cycle)
+            if mask is not None:
+                enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, _ = \
+                    DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
+                                              cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
+                                              force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
+                                              refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
+                                              refiner_positive=refiner_positive, refiner_negative=refiner_negative, cycle=cycle)
+            else:
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
 
             if enhanced_img_batch is None:
                 enhanced_img_batch = enhanced_img
