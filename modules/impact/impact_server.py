@@ -7,6 +7,9 @@ import impact
 import server
 import folder_paths
 
+import torch
+import torchvision
+
 import impact.core as core
 import impact.impact_pack as impact_pack
 from segment_anything import SamPredictor, sam_model_registry
@@ -221,10 +224,8 @@ async def segs_picker(request):
     idx = int(request.rel_url.query.get('idx', ''))
 
     if node_id in segs_picker_map and idx < len(segs_picker_map[node_id]):
-        pil = segs_picker_map[node_id][idx]
-
         image_bytes = BytesIO()
-        pil.save(image_bytes, format="PNG")
+        torch.save(torchvision.io.encode_png(segs_picker_map[node_id][idx]), image_bytes)
         image_bytes.seek(0)
 
         return web.Response(status=200, body=image_bytes, content_type='image/png', headers={"Content-Disposition": f"filename={node_id}{idx}.png"})

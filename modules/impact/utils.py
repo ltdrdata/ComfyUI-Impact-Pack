@@ -1,24 +1,172 @@
 import torch
+import torchvision
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
 import folder_paths
 import nodes
 from . import config
-
-LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
-
-
-def pil2numpy(image):
-    return (np.array(image).astype(np.float32) / 255.0)[np.newaxis, :, :, :]
+from PIL import Image
 
 
-def pil2tensor(image):
-    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+def tensor_convert_rgba(image, prefer_copy=True):
+    """Assumes NHWC format tensor with 1, 3 or 4 channels."""
+    _tensor_check_image(image)
+    n_channel = image.shape[-1]
+    if n_channel == 4:
+        return image
+
+    if n_channel == 3:
+        alpha = torch.ones((*image.shape[:-1], 1))
+        return torch.cat((image, alpha), axis=-1)
+
+    if n_channel == 1:
+        if prefer_copy:
+            image = image.repeat(1, -1, -1, 4)
+        else:
+            image = image.expand(1, -1, -1, 3)
+        return image
+
+    # NOTE: Similar error message as in PIL, for easier googling :P
+    raise ValueError(f"illegal conversion (channels: {n_channel} -> 4)")
+
+
+def tensor_convert_rgb(image, prefer_copy=True):
+    """Assumes NHWC format tensor with 1, 3 or 4 channels."""
+    _tensor_check_image(image)
+    n_channel = image.shape[-1]
+    if n_channel == 3:
+        return image
+
+    if n_channel == 4:
+        image = image[..., :3]
+        if prefer_copy:
+            image = image.copy()
+        return image
+
+    if n_channel == 1:
+        if prefer_copy:
+            image = image.repeat(1, -1, -1, 4)
+        else:
+            image = image.expand(1, -1, -1, 3)
+        return image
+
+    # NOTE: Same error message as in PIL, for easier googling :P
+    raise ValueError(f"illegal conversion (channels: {n_channel} -> 3)")
+
+
+def tensor_resize(image, w: int, h: int):
+    _tensor_check_image(image)
+    image = image.permute(0, 3, 1, 2)
+    image = torch.nn.functional.interpolate(image, size=(h, w), mode="bilinear")
+    image = image.permute(0, 2, 3, 1)
+    return image
+
+
+def tensor_get_size(image):
+    """Mimicking `PIL.Image.size`"""
+    _tensor_check_image(image)
+    _, h, w, _ = image.shape
+    return (w, h)
 
 
 def tensor2pil(image):
+    _tensor_check_image(image)
     return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
+
+
+def numpy2pil(image):
+    return Image.fromarray(np.clip(255. * image.squeeze(), 0, 255).astype(np.uint8))
+
+
+def to_pil(image):
+    if isinstance(image, Image.Image):
+        return image
+    if isinstance(image, torch.Tensor):
+        return tensor2pil(image)
+    if isinstance(image, np.ndarray):
+        return numpy2pil(image)
+    raise ValueError(f"Cannot convert {type(image)} to PIL.Image")
+
+
+def to_tensor(image):
+    if isinstance(image, Image.Image):
+        return torch.from_numpy(np.array(image))
+    if isinstance(image, torch.Tensor):
+        return image
+    if isinstance(image, np.ndarray):
+        return torch.from_numpy(image)
+    raise ValueError(f"Cannot convert {type(image)} to torch.Tensor")
+
+
+def to_numpy(image):
+    if isinstance(image, Image.Image):
+        return np.array(image)
+    if isinstance(image, torch.Tensor):
+        return image.numpy()
+    if isinstance(image, np.ndarray):
+        return image
+    raise ValueError(f"Cannot convert {type(image)} to numpy.ndarray")
+    
+
+
+def tensor_putalpha(image, mask):
+    _tensor_check_image(image)
+    _tensor_check_mask(mask)
+    image[..., -1] = mask[..., 0]
+
+
+def _tensor_check_image(image):
+    if image.ndim != 4:
+        raise ValueError(f"Expected NHWC tensor, but found {image.ndim} dimensions")
+    if image.shape[-1] not in (1, 3, 4):
+        raise ValueError(f"Expected 1, 3 or 4 channels for image, but found {image.shape[-1]} channels")
+    return
+
+
+def _tensor_check_mask(mask):
+    if mask.ndim != 4:
+        raise ValueError(f"Expected NHWC tensor, but found {mask.ndim} dimensions")
+    if mask.shape[-1] != 1:
+        raise ValueError(f"Expected 1 channel for mask, but found {mask.shape[-1]} channels")
+    return
+
+
+def tensor_crop(image, crop_region):
+    _tensor_check_image(image)
+    return crop_ndarray4(image, crop_region)
+
+
+def tensor2numpy(image):
+    _tensor_check_image(image)
+    return image.numpy()
+
+
+def tensor_paste(image1, image2, left_top, mask):
+    """Mask and image2 has to be the same size"""
+    _tensor_check_image(image1)
+    _tensor_check_image(image2)
+    _tensor_check_mask(mask)
+    if image2.shape[1:3] != mask.shape[1:3]:
+        raise ValueError(f"Inconsistent size: Image ({image2.shape[1:3]}) != Mask ({mask.shape[1:3]})")
+
+    x, y = left_top
+    _, h1, w1, _ = image1.shape
+    _, h2, w2, _ = image2.shape
+
+    # calculate image patch size
+    w = min(w1, x + w2) - x
+    h = min(h1, y + h2) - y
+
+    # If the patch is out of bound, nothing to do!
+    if w <= 0 or h <= 0:
+        return
+
+    mask = mask[:, :h, :w, :]
+    image1[:, y:y+h, x:x+w, :] = (
+        (1 - mask) * image1[:, y:y+h, x:x+w, :] +
+        mask * image2[:, :h, :w, :]
+    )
+    return
 
 
 def center_of_bbox(bbox):
@@ -146,13 +294,22 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
     return dilated_masks
 
 
-def feather_mask(mask, thickness, base_alpha=255):
-    pil_mask = Image.fromarray(np.uint8(mask * base_alpha))
+def tensor_feather_mask(mask, thickness, base_alpha=1.0):
+    """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
+    if isinstance(mask, np.ndarray):
+        mask = torch.from_numpy(mask)
+
+    if mask.ndim == 2:
+        mask = mask[None, ..., None]
+    _tensor_check_mask(mask)
+    feathered_mask = mask * base_alpha
 
     # Create a feathered mask by applying a Gaussian blur to the mask
-    blurred_mask = pil_mask.filter(ImageFilter.GaussianBlur(thickness))
-    feathered_mask = Image.new("L", pil_mask.size, 0)
-    feathered_mask.paste(blurred_mask, (0, 0), blurred_mask)
+    mask = mask[:, None, ..., 0]
+    blurred_mask = torchvision.transforms.GaussianBlur(thickness)(mask)
+    blurred_mask = blurred_mask[:, 0, ..., None]
+
+    tensor_paste(feathered_mask, blurred_mask, (0, 0), blurred_mask)
     return feathered_mask
 
 
@@ -238,6 +395,9 @@ def crop_ndarray4(npimg, crop_region):
     return cropped
 
 
+crop_tensor4 = crop_ndarray4
+
+
 def crop_ndarray2(npimg, crop_region):
     x1 = crop_region[0]
     y1 = crop_region[1]
@@ -250,7 +410,7 @@ def crop_ndarray2(npimg, crop_region):
 
 
 def crop_image(image, crop_region):
-    return crop_ndarray4(np.array(image), crop_region)
+    return crop_tensor4(image, crop_region)
 
 
 def to_latent_image(pixels, vae):
@@ -263,22 +423,8 @@ def to_latent_image(pixels, vae):
     return {"samples": t}
 
 
-def scale_tensor(w, h, image):
-    image = tensor2pil(image)
-    scaled_image = image.resize((w, h), resample=LANCZOS)
-    return pil2tensor(scaled_image)
-
-
-def scale_tensor_and_to_pil(w, h, image):
-    image = tensor2pil(image)
-    return image.resize((w, h), resample=LANCZOS)
-
-
 def empty_pil_tensor(w=64, h=64):
-    image = Image.new("RGB", (w, h))
-    draw = ImageDraw.Draw(image)
-    draw.rectangle((0, 0, w-1, h-1), fill=(0, 0, 0))
-    return pil2tensor(image)
+    return torch.zeros((1, h, w, 3), dtype=torch.float32)
 
 
 def make_2d_mask(mask):

@@ -240,7 +240,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale
-    upscaled_image = scale_tensor(new_w, new_h, torch.from_numpy(image))
+    upscaled_image = tensor_resize(image, new_w, new_h)
 
     # ksampler
     latent_image = to_latent_image(upscaled_image, vae)
@@ -292,7 +292,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         refined_image = detailer_hook.post_decode(refined_image)
 
     # downscale
-    refined_image = scale_tensor_and_to_pil(w, h, refined_image)
+    refined_image = tensor_resize(refined_image, w, h)
 
     # don't convert to latent - latent break image
     # preserving pil is much better
@@ -360,7 +360,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         image = torch.from_numpy(image).unsqueeze(0)
 
         # upscale
-        upscaled_image = scale_tensor(new_w, new_h, image)
+        upscaled_image = tensor_resize(image, new_w, new_h)
 
         # ksampler
         samples = to_latent_image(upscaled_image, vae)['samples']
@@ -1574,6 +1574,8 @@ class TwoSamplersForMaskUpscaler:
         else:
             print(f"step_info={step_info} / non-full time")
             # upscale mask
+            if mask.ndim == 2:
+                mask = mask[None, :, :, None]
             upscaled_mask = F.interpolate(mask, size=(
             upscaled_latent['samples'].shape[2], upscaled_latent['samples'].shape[3]),
                                           mode='bilinear', align_corners=True)
