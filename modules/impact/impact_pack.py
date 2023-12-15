@@ -225,11 +225,11 @@ class DetailerForEach:
                 wildcard_item = None
 
             enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
-                                                         seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                         positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
-                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                         refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                         refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
+                                                           seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                           positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
+                                                           refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                                           refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
             if cnet_pil is not None:
                 cnet_pil_list.append(cnet_pil)
@@ -243,19 +243,19 @@ class DetailerForEach:
             if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = tensor_convert_rgba(enhanced_image)
-
+                new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
+                
                 # Apply the mask
                 mask = torch.from_numpy(seg.cropped_mask)[None, ..., None]
                 mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
                 tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
-                new_seg_image = enhanced_image_alpha.numpy()
             else:
                 new_seg_image = None
 
             cropped_list.append(cropped_image)
 
-            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
         image_tensor = tensor_convert_rgb(image)
