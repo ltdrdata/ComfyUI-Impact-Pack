@@ -180,9 +180,7 @@ class DetailerForEach:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1):
-
-        image_pil = tensor2pil(image).convert('RGBA')
-
+        image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
@@ -207,8 +205,9 @@ class DetailerForEach:
         for seg in ordered_segs:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
-
-            mask_pil = feather_mask(seg.cropped_mask, feather)
+            cropped_image = to_tensor(cropped_image)
+            mask = to_tensor(seg.cropped_mask)
+            mask = tensor_feather_mask(mask, feather)
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -225,7 +224,7 @@ class DetailerForEach:
             else:
                 wildcard_item = None
 
-            enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
+            enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                          seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                          positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
                                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
@@ -235,31 +234,31 @@ class DetailerForEach:
             if cnet_pil is not None:
                 cnet_pil_list.append(cnet_pil)
 
-            if not (enhanced_pil is None):
+            if not (enhanced_image is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-                enhanced_list.append(pil2tensor(enhanced_pil))
+                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
+                enhanced_list.append(enhanced_image)
 
-            if not (enhanced_pil is None):
+            if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
-                enhanced_pil_alpha = enhanced_pil.copy().convert('RGBA')
+                enhanced_image_alpha = tensor_convert_rgba(enhanced_image)
 
                 # Apply the mask
-                mask_array = seg.cropped_mask.astype(np.uint8) * 255
-                mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
-                enhanced_pil_alpha.putalpha(mask_image)
-                enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
-                new_seg_pil = pil2numpy(enhanced_pil)
+                mask = torch.from_numpy(seg.cropped_mask)[None, ..., None]
+                mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
+                tensor_putalpha(enhanced_image_alpha, mask)
+                enhanced_alpha_list.append(enhanced_image_alpha)
+                new_seg_image = enhanced_image_alpha.numpy()
             else:
-                new_seg_pil = None
+                new_seg_image = None
 
-            cropped_list.append(torch.from_numpy(cropped_image))
+            cropped_list.append(cropped_image)
 
-            new_seg = SEG(new_seg_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
-        image_tensor = pil2tensor(image_pil.convert('RGB'))
+        image_tensor = tensor_convert_rgb(image)
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
@@ -270,7 +269,7 @@ class DetailerForEach:
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1, detailer_hook=None):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
+        enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook, cycle=cycle)

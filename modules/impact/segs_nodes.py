@@ -70,6 +70,7 @@ class SEGSDetailer:
             for seg in segs[1]:
                 cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                                   else crop_ndarray4(image.numpy(), seg.crop_region)
+                cropped_image = to_tensor(cropped_image)
 
                 is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
                 if is_mask_all_zeros:
@@ -82,7 +83,7 @@ class SEGSDetailer:
                 else:
                     cropped_mask = None
 
-                enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
+                enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
                                                              seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                              positive, negative, denoise, cropped_mask, force_inpaint,
                                                              refiner_ratio=refiner_ratio, refiner_model=refiner_model,
@@ -92,12 +93,12 @@ class SEGSDetailer:
                 if cnet_pil is not None:
                     cnet_pil_list.append(cnet_pil)
 
-                if enhanced_pil is None:
+                if enhanced_image is None:
                     new_cropped_image = cropped_image
                 else:
-                    new_cropped_image = pil2numpy(enhanced_pil)
+                    new_cropped_image = enhanced_image
 
-                new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+                new_seg = SEG(to_numpy(new_cropped_image), seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
                 new_segs.append(new_seg)
 
         return (segs[0], new_segs), cnet_pil_list
@@ -167,12 +168,12 @@ class SEGSDetailerForAnimateDiff:
 
             for image in image_frames:
                 image = image.unsqueeze(0)
-                cropped_image = seg.cropped_image if seg.cropped_image is not None else crop_ndarray4(image.numpy(), seg.crop_region)
-
+                cropped_image = seg.cropped_image if seg.cropped_image is not None else crop_tensor4(image, seg.crop_region)
+                cropped_image = to_tensor(cropped_image)
                 if cropped_image_frames is None:
-                    cropped_image_frames = torch.from_numpy(cropped_image)
+                    cropped_image_frames = cropped_image
                 else:
-                    cropped_image_frames = torch.concat((cropped_image_frames, torch.from_numpy(cropped_image)), dim=0)
+                    cropped_image_frames = torch.concat((cropped_image_frames, cropped_image), dim=0)
 
             cropped_image_frames = cropped_image_frames.numpy()
             enhanced_image_tensor = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
@@ -224,30 +225,27 @@ class SEGSPaste:
 
         result = None
         for i in range(image.shape[0]):
-            image_i = image[i].unsqueeze(0)
-            image_pil = tensor2pil(image_i).convert('RGBA')
+            image_i = image[i].unsqueeze(0).clone()
+
             for seg in segs[1]:
-                ref_image_pil = None
+                ref_image = None
                 if ref_image_opt is None and seg.cropped_image is not None:
-                    cropped_tensor = torch.from_numpy(seg.cropped_image)[i]
-                    cropped_tensor = cropped_tensor.unsqueeze(0)
-                    ref_image_pil = tensor2pil(cropped_tensor)
+                    cropped_image = seg.cropped_image
+                    if isinstance(cropped_image, np.ndarray):
+                        cropped_image = torch.from_numpy(cropped_image)
+                    ref_image = cropped_image[i].unsqueeze(0)
                 elif ref_image_opt is not None:
                     ref_tensor = ref_image_opt[i].unsqueeze(0)
-                    cropped = crop_image(ref_tensor, seg.crop_region)
-                    cropped = np.clip(255. * cropped.squeeze(), 0, 255).astype(np.uint8)
-                    ref_image_pil = Image.fromarray(cropped).convert('RGBA')
-
-                if ref_image_pil is not None:
-                    mask_pil = feather_mask(seg.cropped_mask, feather, base_alpha=alpha)
-                    image_pil.paste(ref_image_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-
-            image_tensor = pil2tensor(image_pil.convert('RGB'))
+                    ref_image = crop_image(ref_tensor, seg.crop_region)
+                if ref_image is not None:
+                    mask = tensor_feather_mask(seg.cropped_mask, feather, alpha/255)
+                    x, y, *_ = seg.crop_region
+                    tensor_paste(image_i, ref_image, (x, y), mask)
 
             if result is None:
-                result = image_tensor
+                result = image_i
             else:
-                result = torch.concat((result, image_tensor), dim=0)
+                result = torch.concat((result, image_i), dim=0)
 
         return (result, )
 
@@ -297,14 +295,14 @@ class SEGSPreview:
                     cropped_image = None
 
                     if seg.cropped_image is not None:
-                        cropped_image = seg.cropped_image[i]
+                        cropped_image = seg.cropped_image[i, None]
                     elif fallback_image_opt is not None:
                         # take from original image
                         ref_image = fallback_image_opt[i].unsqueeze(0)
-                        cropped_image = crop_image(ref_image, seg.crop_region).squeeze(0)
+                        cropped_image = crop_image(ref_image, seg.crop_region)
 
                     if cropped_image is not None:
-                        cropped_image = Image.fromarray(np.clip(255. * cropped_image, 0, 255).astype(np.uint8))
+                        cropped_image = to_pil(cropped_image)
 
                         if alpha_mode:
                             mask_array = seg.cropped_mask.astype(np.uint8) * 255
@@ -536,10 +534,10 @@ class SEGSToImageList:
 
         for seg in segs[1]:
             if seg.cropped_image is not None:
-                cropped_image = torch.from_numpy(seg.cropped_image)
+                cropped_image = to_tensor(seg.cropped_image)
             elif fallback_image_opt is not None:
                 # take from original image
-                cropped_image = torch.from_numpy(crop_image(fallback_image_opt, seg.crop_region))
+                cropped_image = to_tensor(crop_image(fallback_image_opt, seg.crop_region))
             else:
                 cropped_image = empty_pil_tensor()
 
@@ -686,8 +684,8 @@ class From_SEG_ELT:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, seg_elt):
-        cropped_image = torch.tensor(seg_elt.cropped_image) if seg_elt.cropped_image is not None else None
-        return (seg_elt, cropped_image, torch.tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label,)
+        cropped_image = to_tensor(seg_elt.cropped_image) if seg_elt.cropped_image is not None else None
+        return (seg_elt, cropped_image, to_tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label,)
 
 
 class Edit_SEG_ELT:
@@ -1068,16 +1066,10 @@ class SEGSPicker:
             elif fallback_image_opt is not None:
                 # take from original image
                 cropped_image = crop_image(fallback_image_opt, seg.crop_region)
-
-            if cropped_image is not None:
-                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
-
-            if cropped_image is not None:
-                pil = cropped_image
             else:
-                pil = tensor2pil(empty_pil_tensor())
+                cropped_image = empty_pil_tensor()
 
-            cands.append(pil)
+            cands.append(cropped_image)
 
         impact.impact_server.segs_picker_map[unique_id] = cands
 
