@@ -225,7 +225,6 @@ async def segs_picker(request):
 
     if node_id in segs_picker_map and idx < len(segs_picker_map[node_id]):
         img = to_tensor(segs_picker_map[node_id][idx]).permute(0, 3, 1, 2).squeeze(0)
-        img = (255 * img).type('uint8')
         pil = torchvision.transforms.ToPILImage('RGB')(img)
 
         image_bytes = BytesIO()
