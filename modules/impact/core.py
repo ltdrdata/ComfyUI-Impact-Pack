@@ -1380,9 +1380,11 @@ def latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use
 
     return (vae_encode(vae, pixels, use_tile, hook, tile_size=tile_size), pixels)
 
+
 def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512,
                                   save_temp_prefix=None, hook=None):
 	return latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
+
 
 def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae,
                                                    use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
@@ -1443,18 +1445,10 @@ def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_mod
 
 def latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False,
                                              tile_size=512, save_temp_prefix=None, hook=None):
-	return latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
+    return latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
+
 
 class TwoSamplersForMaskUpscaler:
-    params = None
-    upscale_model = None
-    hook_base = None
-    hook_mask = None
-    hook_full = None
-    use_tiled_vae = False
-    is_tiled = False
-    tile_size = 512
-
     def __init__(self, scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae,
                  full_sampler_opt=None, upscale_model_opt=None, hook_base_opt=None, hook_mask_opt=None,
                  hook_full_opt=None,
@@ -1472,6 +1466,7 @@ class TwoSamplersForMaskUpscaler:
         self.hook_full = hook_full_opt
         self.use_tiled_vae = use_tiled_vae
         self.tile_size = tile_size
+        self.vae = vae
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, sample_schedule, use_tiled_vae, base_sampler, mask_sampler, mask, vae = self.params
@@ -1597,13 +1592,6 @@ class TwoSamplersForMaskUpscaler:
 
 
 class PixelKSampleUpscaler:
-    params = None
-    upscale_model = None
-    hook = None
-    use_tiled_vae = False
-    is_tiled = False
-    tile_size = 512
-
     def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
                  use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
@@ -1611,6 +1599,8 @@ class PixelKSampleUpscaler:
         self.hook = hook_opt
         self.use_tiled_vae = use_tiled_vae
         self.tile_size = tile_size
+        self.is_tiled = False
+        self.vae = vae
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1941,22 +1931,17 @@ class TiledKSamplerWrapper:
 
 
 class PixelTiledKSampleUpscaler:
-    params = None
-    upscale_model = None
-    tile_params = None
-    hook = None
-    is_tiled = True
-    tile_size = 512
-
     def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                  denoise,
                  tile_width, tile_height, tiling_strategy,
                  upscale_model_opt=None, hook_opt=None, tile_size=512):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
+        self.vae = vae
         self.tile_params = tile_width, tile_height, tiling_strategy
         self.upscale_model = upscale_model_opt
         self.hook = hook_opt
         self.tile_size = tile_size
+        self.is_tiled = True
 
     def tiled_ksample(self, latent):
         if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:

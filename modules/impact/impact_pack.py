@@ -425,13 +425,19 @@ class FaceDetailer:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
-        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
-            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
-                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard_opt, detailer_hook,
-                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative, cycle=cycle)
+        if len(segs[1]) > 0:
+            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
+                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
+                                          sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                          force_inpaint, wildcard_opt, detailer_hook,
+                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                          refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                          refiner_negative=refiner_negative, cycle=cycle)
+        else:
+            enhanced_img = image
+            cropped_enhanced = []
+            cropped_enhanced_alpha = []
+            cnet_pil_list = []
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
@@ -1012,8 +1018,8 @@ class IterativeLatentUpscale:
                 "hidden": {"unique_id": "UNIQUE_ID"},
         }
 
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("latent",)
+    RETURN_TYPES = ("LATENT", "VAE")
+    RETURN_NAMES = ("latent", "vae")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
@@ -1048,7 +1054,7 @@ class IterativeLatentUpscale:
 
         core.update_node_status(unique_id, "", None)
 
-        return (current_latent, )
+        return (current_latent, upscaler.vae)
 
 
 class IterativeImageUpscale:
