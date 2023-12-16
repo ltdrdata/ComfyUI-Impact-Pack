@@ -1764,6 +1764,7 @@ class InjectNoiseHook(PixelKSampleHook):
 
         strength = self.start_strength + (self.end_strength - self.start_strength) * cur_step / self.total_step
         samples = InjectNoise().inject_noise(samples, strength, noise, mask)[0]
+        print(f"[Impact Pack] InjectNoiseHook: strength = {strength}")
 
         if mask is not None:
             samples['noise_mask'] = mask
@@ -1796,6 +1797,8 @@ class UnsamplerHook(PixelKSampleHook):
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
         end_at_step = int(end_at_step)
+
+        print(f"[Impact Pack] UnsamplerHook: end_at_step = {end_at_step}")
 
         # inj noise
         mask = None

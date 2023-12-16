@@ -296,6 +296,9 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
 
 def tensor_feather_mask(mask, thickness, base_alpha=1.0):
     """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
+    if thickness <= 0:
+        return mask
+
     if isinstance(mask, np.ndarray):
         mask = torch.from_numpy(mask)
 
@@ -306,6 +309,10 @@ def tensor_feather_mask(mask, thickness, base_alpha=1.0):
 
     # Create a feathered mask by applying a Gaussian blur to the mask
     mask = mask[:, None, ..., 0]
+
+    if thickness % 2 == 0:  # NOTE: GaussianBlur requires odd number for thickness
+        thickness -= 1
+
     blurred_mask = torchvision.transforms.GaussianBlur(thickness)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
 
