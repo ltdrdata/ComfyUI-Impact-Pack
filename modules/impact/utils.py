@@ -310,8 +310,7 @@ def tensor_feather_mask(mask, thickness, base_alpha=1.0):
     # Create a feathered mask by applying a Gaussian blur to the mask
     mask = mask[:, None, ..., 0]
 
-    if thickness % 2 == 0:  # NOTE: GaussianBlur requires odd number for thickness
-        thickness -= 1
+    thickness = thickness * 2 - 1  # NOTE: GaussianBlur requires odd number for thickness
 
     blurred_mask = torchvision.transforms.GaussianBlur(thickness)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]

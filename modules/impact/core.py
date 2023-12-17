@@ -969,7 +969,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
         else:
             mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
-            contours, _ = cv2.findContours(mask_i_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(mask_i_uint8, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
                 separated_mask = np.zeros_like(mask_i_uint8)
                 cv2.drawContours(separated_mask, [contour], 0, 255, -1)
@@ -1032,35 +1032,37 @@ def mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, dro
         "right_pupil": np.array([0x0A, 0xC8, 0xFA]),
     }
 
-    def create_segment(image, color):
+    def create_segments(image, color):
         image = (image * 255).to(torch.uint8)
         image = image.squeeze(0).numpy()
         mask = cv2.inRange(image, color, color)
 
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if contours:
-            max_contour = max(contours, key=cv2.contourArea)
-            convex_hull = cv2.convexHull(max_contour)
-            convex_segment = np.zeros_like(image)
-            cv2.fillPoly(convex_segment, [convex_hull], (255, 255, 255))
+        contours, ctree = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        mask_list = []
+        for i, contour in enumerate(contours):
+            hierarchy = ctree[0][i]
+            if hierarchy[3] == -1:
+                convex_hull = cv2.convexHull(contour)
+                convex_segment = np.zeros_like(image)
+                cv2.fillPoly(convex_segment, [convex_hull], (255, 255, 255))
 
-            convex_segment = np.expand_dims(convex_segment, axis=0).astype(np.float32) / 255.0
-            tensor = torch.from_numpy(convex_segment)
-            mask_tensor = torch.any(tensor != 0, dim=-1).float()
-            mask_tensor = mask_tensor.squeeze(0)
-            mask_tensor = torch.from_numpy(dilate_mask(mask_tensor.numpy(), dilation))
-            return mask_tensor.unsqueeze(0)
+                convex_segment = np.expand_dims(convex_segment, axis=0).astype(np.float32) / 255.0
+                tensor = torch.from_numpy(convex_segment)
+                mask_tensor = torch.any(tensor != 0, dim=-1).float()
+                mask_tensor = mask_tensor.squeeze(0)
+                mask_tensor = torch.from_numpy(dilate_mask(mask_tensor.numpy(), dilation))
+                mask_list.append(mask_tensor.unsqueeze(0))
 
-        return None
+        return mask_list
 
     segs = []
 
     def create_seg(label):
-        mask = create_segment(image, parts[label])
-        if mask is not None:
+        mask_list = create_segments(image, parts[label])
+        for mask in mask_list:
             seg = mask_to_segs(mask, False, crop_factor, bbox_fill, drop_size=drop_size, label=label, crop_min_size=crop_min_size)
             if len(seg[1]) > 0:
-                segs.append(seg[1][0])
+                segs.extend(seg[1])
 
     if face:
         create_seg('face')
