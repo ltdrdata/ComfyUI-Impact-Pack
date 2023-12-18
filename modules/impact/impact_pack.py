@@ -577,7 +577,7 @@ class DenoiseSchedulerDetailerHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_cycle": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
                     },
                 }
 
@@ -708,7 +708,7 @@ class DenoiseScheduleHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_iteration": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0}),
+                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0, "step": 0.01}),
                     },
                 }
 
