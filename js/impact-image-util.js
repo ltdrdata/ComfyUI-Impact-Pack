@@ -74,7 +74,7 @@ app.registerExtension({
 	name: "Comfy.Impact.img",
 
 	nodeCreated(node, app) {
-		if(node.comfyClass == "PreviewBridge") {
+		if(node.comfyClass == "PreviewBridge" || node.comfyClass == "PreviewBridgeLatent") {
 			let w = node.widgets.find(obj => obj.name === 'image');
 			node._imgs = [new Image()];
 			node.imageIndex = 0;

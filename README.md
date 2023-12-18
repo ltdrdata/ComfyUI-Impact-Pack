@@ -145,11 +145,13 @@ This takes latent as input and outputs latent as the result.
 * TwoSamplersForMaskUpscalerProvider - This is an Upscaler that extends TwoSamplersForMask to be used in Iterative Upscale.
   * TwoSamplersForMaskUpscalerProviderPipe - pipe version of TwoSamplersForMaskUpscalerProvider.
 
-* PreviewBridge - This custom node can be used with a bridge when using the MaskEditor feature of Clipspace.
-* ImageSender, ImageReceiver - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
-* LatentSender, LatentReceiver - The latent generated in LatentSender are automatically sent to the LatentReceiver with the same link_id.
-  * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
-  * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
+* Image Utils
+  * PreviewBridge (image) - This custom node can be used with a bridge for image when using the MaskEditor feature of Clipspace.
+  * PreviewBridge (latent) - This custom node can be used with a bridge for latent image when using the MaskEditor feature of Clipspace.
+  * ImageSender, ImageReceiver - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
+  * LatentSender, LatentReceiver - The latent generated in LatentSender are automatically sent to the LatentReceiver with the same link_id.
+    * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
+    * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
 * Switch nodes
   * Switch (image,mask), Switch (latent), Switch (SEGS) - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.

@@ -443,6 +443,22 @@ def make_2d_mask(mask):
     return mask
 
 
+from torchvision.transforms.functional import to_pil_image
+
+
+def resize_mask(mask, size):
+    resized_mask = torch.nn.functional.interpolate(mask.unsqueeze(0), size=size, mode='bilinear', align_corners=False)
+    return resized_mask.squeeze(0)
+
+
+def apply_mask_alpha_to_pil(decoded_pil, mask):
+    decoded_rgba = decoded_pil.convert('RGBA')
+    mask_pil = to_pil_image(mask)
+    decoded_rgba.putalpha(mask_pil)
+
+    return decoded_rgba
+
+
 class NonListIterable:
     def __init__(self, data):
         self.data = data
