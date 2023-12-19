@@ -294,6 +294,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # downscale
     refined_image = tensor_resize(refined_image, w, h)
 
+    # prevent mixing of device
+    refined_image = refined_image.cpu()
+
     # don't convert to latent - latent break image
     # preserving pil is much better
     return refined_image, cnet_pil
