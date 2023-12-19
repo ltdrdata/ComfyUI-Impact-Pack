@@ -1,4 +1,3 @@
-from transformers import pipeline
 import comfy
 import re
 from impact.utils import *
@@ -31,6 +30,8 @@ class HF_TransformersClassifierProvider:
     CATEGORY = "ImpactPack/HuggingFace"
 
     def doit(self, preset_repo_id, manual_repo_id, device_mode):
+        from transformers import pipeline
+
         if preset_repo_id == 'Manual repo id':
             url = manual_repo_id
         else:

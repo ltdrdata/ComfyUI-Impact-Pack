@@ -237,6 +237,8 @@ class DetailerForEach:
             if not (enhanced_image is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
+                image = image.cpu()
+                enhanced_image = enhanced_image.cpu()
                 tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
                 enhanced_list.append(enhanced_image)
 

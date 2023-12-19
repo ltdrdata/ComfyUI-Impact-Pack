@@ -15,12 +15,13 @@ import comfy
 import impact.wildcards as wildcards
 import math
 import cv2
+import time
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
                  defaults=[None])
 
-pb_id_cnt = 0
+pb_id_cnt = time.time()
 preview_bridge_image_id_map = {}
 preview_bridge_image_name_map = {}
 preview_bridge_cache = {}
