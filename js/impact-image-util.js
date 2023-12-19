@@ -81,6 +81,9 @@ app.registerExtension({
 
 			Object.defineProperty(w, 'value', {
 				async set(v) {
+					if(w._lock)
+						return;
+
 					const stackTrace = new Error().stack;
 					if(stackTrace.includes('presetText.js'))
 						return;
@@ -101,7 +104,9 @@ app.registerExtension({
 					}
 					else {
 						// from clipspace
+						w._lock = true;
 						w._value = await loadImageFromUrl(image, node.id, v, false);
+						w._lock = false;
 					}
 				},
 				get() {

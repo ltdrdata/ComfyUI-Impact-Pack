@@ -52,8 +52,7 @@ class PreviewBridge:
                 mask = 1. - torch.from_numpy(mask)
             else:
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-
-        if is_fail:
+        else:
             image = empty_pil_tensor()
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
             ui_item = {
@@ -62,7 +61,7 @@ class PreviewBridge:
                 "type": 'temp'
             }
 
-        return (image, mask.unsqueeze(0), ui_item)
+        return image, mask.unsqueeze(0), ui_item
 
     def doit(self, images, image, unique_id):
         need_refresh = False
@@ -96,27 +95,34 @@ class PreviewBridge:
         }
 
 
-def decode_latent(latent_tensor, preview_method):
+def decode_latent(latent_tensor, preview_method, vae_opt=None):
+    if vae_opt is not None:
+        image = nodes.VAEDecode().decode(vae_opt, latent_tensor)[0]
+        return image
+
     from comfy.cli_args import LatentPreviewMethod
     import comfy.latent_formats as latent_formats
 
-    if preview_method == "Latent2RGB-SD15":
-        latent_format = latent_formats.SD15()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "TAESD15":
-        latent_format = latent_formats.SD15()
-        method = LatentPreviewMethod.TAESD
-    elif preview_method == "TAESDXL":
-        latent_format = latent_formats.SDXL()
-        method = LatentPreviewMethod.TAESD
-    else:  # preview_method == "Latent2RGB-SDXL"
-        latent_format = latent_formats.SDXL()
-        method = LatentPreviewMethod.Latent2RGB
+    if preview_method.startswith("TAE"):
+        if preview_method == "TAESD15":
+            decoder_name = "taesd"
+        else:
+            decoder_name = "taesdxl"
 
-    previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
+        vae = nodes.VAELoader().load_vae(decoder_name)[0]
+        image = nodes.VAEDecode().decode(vae, latent_tensor)[0]
+        return image
 
-    decoded_pil = previewer.decode_latent_to_preview(latent_tensor)
-    return decoded_pil
+    else:
+        if preview_method == "Latent2RGB-SD15":
+            latent_format = latent_formats.SD15()
+            method = LatentPreviewMethod.Latent2RGB
+        else:  # preview_method == "Latent2RGB-SDXL"
+            latent_format = latent_formats.SDXL()
+            method = LatentPreviewMethod.Latent2RGB
+
+        previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
+        return to_tensor(previewer.decode_latent_to_preview(latent_tensor['samples'])).unsqueeze(0)
 
 
 class PreviewBridgeLatent:
@@ -127,6 +133,9 @@ class PreviewBridgeLatent:
                     "image": ("STRING", {"default": ""}),
                     "preview_method": (["Latent2RGB-SDXL", "Latent2RGB-SD15", "TAESDXL", "TAESD15"],),
                     },
+                "optional": {
+                    "vae_opt": ("VAE", )
+                },
                 "hidden": {"unique_id": "UNIQUE_ID"},
                 }
 
@@ -168,8 +177,7 @@ class PreviewBridgeLatent:
                 mask = 1. - torch.from_numpy(mask)
             else:
                 mask = None
-
-        if is_fail:
+        else:
             image = empty_pil_tensor()
             mask = None
             ui_item = {
@@ -178,15 +186,18 @@ class PreviewBridgeLatent:
                 "type": 'temp'
             }
 
-        return (image, mask, ui_item)
+        return image, mask, ui_item
 
-    def doit(self, latent, image, preview_method, unique_id):
+    def doit(self, latent, image, preview_method, vae_opt=None, unique_id=None):
         need_refresh = False
 
         if unique_id not in core.preview_bridge_cache:
             need_refresh = True
 
-        elif core.preview_bridge_cache[unique_id][0] is not latent or core.preview_bridge_cache[unique_id][1] != preview_method:
+        elif (core.preview_bridge_cache[unique_id][0] is not latent
+              or (vae_opt is None and core.preview_bridge_cache[unique_id][2] is not None)
+              or (vae_opt is None and core.preview_bridge_cache[unique_id][1] != preview_method)
+              or (vae_opt is not None and core.preview_bridge_cache[unique_id][2] is not vae_opt)):
             need_refresh = True
 
         if not need_refresh:
@@ -205,13 +216,15 @@ class PreviewBridgeLatent:
 
             res_image = [path_item]
         else:
-            decoded_pil = decode_latent(latent['samples'], preview_method)
+            decoded_image = decode_latent(latent, preview_method, vae_opt)
 
             if 'noise_mask' in latent:
                 mask = latent['noise_mask']
 
+                decoded_pil = to_pil(decoded_image)
+
                 inverted_mask = 1 - mask  # invert
-                resized_mask = resize_mask(inverted_mask, decoded_pil.size)
+                resized_mask = resize_mask(inverted_mask, (decoded_image.shape[1], decoded_image.shape[2]))
                 result_pil = apply_mask_alpha_to_pil(decoded_pil, resized_mask)
 
                 full_output_folder, filename, counter, _, _ = folder_paths.get_save_image_path("PreviewBridge/PBL-"+self.prefix_append, folder_paths.get_temp_directory(), result_pil.size[0], result_pil.size[1])
@@ -224,7 +237,6 @@ class PreviewBridgeLatent:
                             }]
             else:
                 mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
-                decoded_image = to_tensor(decoded_pil).unsqueeze(0)
                 res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-")
                 res_image = res['ui']['images']
 
@@ -232,7 +244,7 @@ class PreviewBridgeLatent:
             core.set_previewbridge_image(unique_id, path, res_image[0])
             core.preview_bridge_image_id_map[image] = (path, res_image[0])
             core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
-            core.preview_bridge_cache[unique_id] = (latent, preview_method, res_image)
+            core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
 
             res_latent = latent
 
