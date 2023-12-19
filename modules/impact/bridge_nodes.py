@@ -122,7 +122,11 @@ def decode_latent(latent_tensor, preview_method, vae_opt=None):
             method = LatentPreviewMethod.Latent2RGB
 
         previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
-        return to_tensor(previewer.decode_latent_to_preview(latent_tensor['samples'])).unsqueeze(0)
+        pil_image = previewer.decode_latent_to_preview(latent_tensor['samples'])
+        pixels_size = pil_image.size[0]*8, pil_image.size[1]*8
+        resized_image = pil_image.resize(pixels_size, Image.NONE)
+
+        return to_tensor(resized_image).unsqueeze(0)
 
 
 class PreviewBridgeLatent:
