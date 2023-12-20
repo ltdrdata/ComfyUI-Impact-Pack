@@ -444,7 +444,7 @@ def make_2d_mask(mask):
 
 
 def collect_non_reroute_nodes(node_map, links, res, node_id):
-    if node_map[node_id]['type'] != 'Reroute':
+    if node_map[node_id]['type'] != 'Reroute' and node_map[node_id]['type'] != 'Reroute (rgthree)':
         res.append(node_id)
     else:
         for link in node_map[node_id]['outputs'][0]['links']:
