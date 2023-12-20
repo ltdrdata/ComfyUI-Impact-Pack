@@ -5,7 +5,7 @@ import numpy as np
 import folder_paths
 import nodes
 from . import config
-from PIL import Image
+from PIL import Image, ImageFilter
 from scipy.ndimage import zoom
 import comfy
 
@@ -310,30 +310,46 @@ def dilate_masks(segmasks, dilation_factor, iter=1):
 
     return dilated_masks
 
+import torch.nn.functional as F
+def feather_mask(mask, thickness):
+    mask = mask.permute(0, 3, 1, 2)
+
+    # Gaussian kernel for blurring
+    kernel_size = 2 * int(thickness) + 1
+    sigma = thickness / 3  # Adjust the sigma value as needed
+    blur_kernel = _gaussian_kernel(kernel_size, sigma).to(mask.device, mask.dtype)
+
+    # Apply blur to the mask
+    blurred_mask = F.conv2d(mask, blur_kernel.unsqueeze(0).unsqueeze(0), padding=thickness)
+
+    blurred_mask = blurred_mask.permute(0, 2, 3, 1)
+
+    return blurred_mask
+
+def _gaussian_kernel(kernel_size, sigma):
+    # Generate a 1D Gaussian kernel
+    kernel = torch.exp(-(torch.arange(kernel_size) - kernel_size // 2)**2 / (2 * sigma**2))
+    return kernel / kernel.sum()
+
 
 def tensor_feather_mask(mask, thickness, base_alpha=1.0):
     """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
-    if thickness <= 0:
-        return mask
-
     if isinstance(mask, np.ndarray):
         mask = torch.from_numpy(mask)
 
     if mask.ndim == 2:
         mask = mask[None, ..., None]
     _tensor_check_mask(mask)
-    feathered_mask = mask * base_alpha
+
+    if thickness <= 0:
+        return mask
 
     # Create a feathered mask by applying a Gaussian blur to the mask
     mask = mask[:, None, ..., 0]
 
-    thickness = thickness * 2 - 1  # NOTE: GaussianBlur requires odd number for thickness
-
-    blurred_mask = torchvision.transforms.GaussianBlur(thickness)(mask)
+    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=thickness*2+1, sigma=10.0)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
-
-    tensor_paste(feathered_mask, blurred_mask, (0, 0), blurred_mask)
-    return feathered_mask
+    return blurred_mask
 
 
 def subtract_masks(mask1, mask2):

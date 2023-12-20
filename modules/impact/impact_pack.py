@@ -248,7 +248,6 @@ class DetailerForEach:
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
                 
                 # Apply the mask
-                mask = torch.from_numpy(seg.cropped_mask)[None, ..., None]
                 mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
                 tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
