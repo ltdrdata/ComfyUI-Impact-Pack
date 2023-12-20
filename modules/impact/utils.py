@@ -468,6 +468,22 @@ def apply_mask_alpha_to_pil(decoded_pil, mask):
     return decoded_rgba
 
 
+# author: Trung0246 --->
+class TautologyStr(str):
+    def __ne__(self, other):
+        return False
+
+
+class ByPassTypeTuple(tuple):
+    def __getitem__(self, index):
+        if index > 0:
+            index = 0
+        item = super().__getitem__(index)
+        if isinstance(item, str):
+            return TautologyStr(item)
+        return item
+
+
 class NonListIterable:
     def __init__(self, data):
         self.data = data
@@ -476,7 +492,6 @@ class NonListIterable:
         return self.data[index]
 
 
-# author: Trung0246
 def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
     # Iterate over the list of full folder paths
     for full_folder_path in full_folder_paths:
@@ -496,7 +511,7 @@ def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
         # Now we just need to update the set of extensions as it would be an empty set
         # Also ensure that all paths are included (since add_model_folder_path adds only one path at a time)
         folder_paths.folder_names_and_paths[folder_name] = (full_folder_paths, extensions)
-
+# <---
 
 # wildcard trick is taken from pythongossss's
 class AnyType(str):
