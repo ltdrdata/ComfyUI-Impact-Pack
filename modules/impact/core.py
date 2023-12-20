@@ -699,7 +699,7 @@ def segs_scale_match(segs, target_shape):
         cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
         if cropped_image is not None:
-            cropped_image = scale_tensor(new_w, new_h, torch.from_numpy(cropped_image))
+            cropped_image = tensor_resize(torch.from_numpy(cropped_image), new_w, new_h)
             cropped_image = cropped_image.numpy()
 
         new_seg = SEG(cropped_image, cropped_mask, seg.confidence, crop_region, bbox, seg.label, seg.control_net_wrapper)
