@@ -497,6 +497,19 @@ class ImpactControlBridge:
     RETURN_NAMES = ("value",)
     OUTPUT_NODE = True
 
+    @classmethod
+    def IS_CHANGED(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
+        nodes, links = workflow_to_map(extra_pnginfo['workflow'])
+
+        next_nodes = []
+
+        for link in nodes[unique_id]['outputs'][0]['links']:
+            node_id = str(links[link][2])
+            impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
+
+        return next_nodes
+
+
     def doit(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
         global error_skip_flag
 
@@ -508,14 +521,19 @@ class ImpactControlBridge:
 
         for link in nodes[unique_id]['outputs'][0]['links']:
             node_id = str(links[link][2])
-            node_mode = nodes[node_id]['mode']
 
-            if node_mode == 0:
-                active_nodes.append(node_id)
-            elif node_mode == 2:
-                mute_nodes.append(node_id)
-            elif node_mode == 4:
-                bypass_nodes.append(node_id)
+            next_nodes = []
+            impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
+
+            for next_node_id in next_nodes:
+                node_mode = nodes[next_node_id]['mode']
+
+                if node_mode == 0:
+                    active_nodes.append(next_node_id)
+                elif node_mode == 2:
+                    mute_nodes.append(next_node_id)
+                elif node_mode == 4:
+                    bypass_nodes.append(next_node_id)
 
         if mode:
             # active
