@@ -51,8 +51,7 @@ def erosion_mask(mask, grow_mask_by):
 
     device = comfy.model_management.get_torch_device()
     mask = mask.clone().to(device)
-    mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h),
-                                            mode="bilinear").to(device)
+    mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h), mode="bilinear").to(device)
     if grow_mask_by == 0:
         mask_erosion = mask2
     else:
@@ -250,8 +249,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if noise_mask is not None:
         # upscale the mask tensor by a factor of 2 using bilinear interpolation
         noise_mask = torch.from_numpy(noise_mask)
-        upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
-                                                        mode='bilinear', align_corners=False)
+        upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
 
         # remove the extra dimensions added by unsqueeze
         upscaled_mask = upscaled_mask.squeeze(0).squeeze(0)
@@ -354,8 +352,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
 
     # upscale the mask tensor by a factor of 2 using bilinear interpolation
     noise_mask = torch.from_numpy(noise_mask)
-    upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
-                                                    mode='bilinear', align_corners=False)
+    upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
 
     upscaled_mask = upscaled_mask.squeeze().squeeze()
 
@@ -694,8 +691,7 @@ def segs_scale_match(segs, target_shape):
         new_h = crop_region[3] - crop_region[1]
 
         cropped_mask = torch.from_numpy(cropped_mask)
-        cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w),
-                                                       mode='bilinear', align_corners=False)
+        cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
         cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
         if cropped_image is not None:
@@ -1420,7 +1416,7 @@ def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscal
 
 
 def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model, scale_factor, vae, use_tile=False,
-                                             tile_size=512, save_temp_prefix=None, hook=None):
+                                              tile_size=512, save_temp_prefix=None, hook=None):
     pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
 
     if save_temp_prefix is not None:
@@ -1577,11 +1573,8 @@ class TwoSamplersForMaskUpscaler:
             # upscale mask
             if mask.ndim == 2:
                 mask = mask[None, :, :, None]
-            upscaled_mask = F.interpolate(mask, size=(
-            upscaled_latent['samples'].shape[2], upscaled_latent['samples'].shape[3]),
-                                          mode='bilinear', align_corners=True)
-            upscaled_mask = upscaled_mask[:, :, :upscaled_latent['samples'].shape[2],
-                            :upscaled_latent['samples'].shape[3]]
+            upscaled_mask = F.interpolate(mask, size=(upscaled_latent['samples'].shape[2], upscaled_latent['samples'].shape[3]), mode='bilinear', align_corners=True)
+            upscaled_mask = upscaled_mask[:, :, :upscaled_latent['samples'].shape[2], :upscaled_latent['samples'].shape[3]]
 
             # base sampler
             upscaled_inv_mask = torch.where(upscaled_mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))

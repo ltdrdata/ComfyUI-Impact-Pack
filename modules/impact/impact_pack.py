@@ -474,7 +474,7 @@ class FaceDetailer:
 
 
 class LatentPixelScale:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -766,7 +766,7 @@ class PixelKSampleHookCombine:
 
 
 class PixelTiledKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -806,7 +806,7 @@ class PixelTiledKSampleUpscalerProvider:
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -844,7 +844,7 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
 
 class PixelKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -883,7 +883,7 @@ class PixelKSampleUpscalerProvider:
 
 
 class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -920,7 +920,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
 
 
 class TwoSamplersForMaskUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -962,7 +962,7 @@ class TwoSamplersForMaskUpscalerProvider:
 
 
 class TwoSamplersForMaskUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -1548,7 +1548,7 @@ class MaskListToMaskBatch:
                 if len(mask2.shape) == 2:
                     mask2 = mask2.unsqueeze(0)
                 if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "bilinear", "center").movedim(1, -1)
+                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
                 mask1 = torch.cat((mask1, mask2), dim=0)
             return (mask1,)
         else:
@@ -1578,7 +1578,7 @@ class ImageListToMaskBatch:
             image1 = images[0]
             for image2 in images[1:]:
                 if image1.shape[1:] != image2.shape[1:]:
-                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
             return (image1,)
 
@@ -2250,7 +2250,7 @@ class MakeImageBatch:
         else:
             for image2 in images:
                 if image1.shape[1:] != image2.shape[1:]:
-                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
             return (image1,)
 

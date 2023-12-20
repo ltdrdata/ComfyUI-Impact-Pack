@@ -6,7 +6,8 @@ import folder_paths
 import nodes
 from . import config
 from PIL import Image
-
+from scipy.ndimage import zoom
+import comfy
 
 def tensor_convert_rgba(image, prefer_copy=True):
     """Assumes NHWC format tensor with 1, 3 or 4 channels."""
@@ -54,12 +55,24 @@ def tensor_convert_rgb(image, prefer_copy=True):
     raise ValueError(f"illegal conversion (channels: {n_channel} -> 3)")
 
 
-def tensor_resize(image, w: int, h: int):
+def general_tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
     image = image.permute(0, 3, 1, 2)
     image = torch.nn.functional.interpolate(image, size=(h, w), mode="bilinear")
     image = image.permute(0, 2, 3, 1)
     return image
+
+
+# TODO: Sadly, we need LANCZOS
+LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
+def tensor_resize(image, w: int, h: int):
+    _tensor_check_image(image)
+    if image.shape[3] >= 3:
+        image = tensor2pil(image)
+        scaled_image = image.resize((w, h), resample=LANCZOS)
+        return pil2tensor(scaled_image)
+    else:
+        return general_tensor_resize(image, w, h)
 
 
 def tensor_get_size(image):
@@ -71,11 +84,15 @@ def tensor_get_size(image):
 
 def tensor2pil(image):
     _tensor_check_image(image)
-    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
+    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(0), 0, 255).astype(np.uint8))
+
+
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
 
 
 def numpy2pil(image):
-    return Image.fromarray(np.clip(255. * image.squeeze(), 0, 255).astype(np.uint8))
+    return Image.fromarray(np.clip(255. * image.squeeze(0), 0, 255).astype(np.uint8))
 
 
 def to_pil(image):
