@@ -17,6 +17,8 @@ import math
 import cv2
 import time
 
+from thirdparty import noise_nodes
+
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
                  defaults=[None])
@@ -1789,10 +1791,7 @@ class UnsamplerHook(PixelKSampleHook):
     def post_encode(self, samples):
         cur_step = self.cur_step
 
-        if "BNK_Unsampler" in nodes.NODE_CLASS_MAPPINGS:
-            Unsampler = nodes.NODE_CLASS_MAPPINGS["BNK_Unsampler"]
-        else:
-            raise Exception("'BNK_Unsampler' nodes are not installed.")
+        Unsampler = noise_nodes.Unsampler
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
         end_at_step = int(end_at_step)
@@ -1877,10 +1876,7 @@ class UnsamplerDetailerHook(DetailerHook):
         cur_step = self.cur_step if self.from_start else self.cur_step - 1
         total_step = self.total_step if self.from_start else self.total_step - 1
 
-        if "BNK_Unsampler" in nodes.NODE_CLASS_MAPPINGS:
-            Unsampler = nodes.NODE_CLASS_MAPPINGS["BNK_Unsampler"]
-        else:
-            raise Exception("'BNK_Unsampler' nodes are not installed.")
+        Unsampler = noise_nodes.Unsampler
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / total_step
         end_at_step = int(end_at_step)
