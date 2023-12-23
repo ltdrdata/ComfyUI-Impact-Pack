@@ -352,7 +352,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "EditDetailerPipe": "Edit DetailerPipe",
 
     "LatentPixelScale": "Latent Scale (on Pixel Space)",
-    "IterativeLatentUpscale": "Iterative Upscale (Latent)",
+    "IterativeLatentUpscale": "Iterative Upscale (Latent/on Pixel Space)",
     "IterativeImageUpscale": "Iterative Upscale (Image)",
 
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",

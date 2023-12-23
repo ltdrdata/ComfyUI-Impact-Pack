@@ -107,6 +107,9 @@ class SEGSDetailer:
              denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
              refiner_basic_pipe_opt=None):
 
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: SEGSDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                      scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, cycle=cycle,
                                                      refiner_basic_pipe_opt=refiner_basic_pipe_opt)
@@ -224,8 +227,8 @@ class SEGSPaste:
         segs = core.segs_scale_match(segs, image.shape)
 
         result = None
-        for i in range(image.shape[0]):
-            image_i = image[i].unsqueeze(0).clone()
+        for i, single_image in enumerate(image):
+            image_i = single_image.unsqueeze(0).clone()
 
             for seg in segs[1]:
                 ref_image = None
