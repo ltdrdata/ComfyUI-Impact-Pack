@@ -5,6 +5,7 @@ import nodes
 import folder_paths
 import yaml
 import threading
+from impact import utils
 
 
 wildcard_lock = threading.Lock()
@@ -319,6 +320,10 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
 
             if lbw is not None:
                 if 'LoraLoaderBlockWeight //Inspire' not in nodes.NODE_CLASS_MAPPINGS:
+                    utils.try_install_custom_node(
+                        'https://github.com/ltdrdata/ComfyUI-Inspire-Pack',
+                        "To use 'LBW=' syntax in wildcards, 'Inspire Pack' extension is required.")
+
                     print(f"'LBW(Lora Block Weight)' is given, but the 'Inspire Pack' is not installed. The LBW= attribute is being ignored.")
                     model, clip = default_lora()
                 else:

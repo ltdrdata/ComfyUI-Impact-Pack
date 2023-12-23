@@ -16,6 +16,7 @@ import impact.wildcards as wildcards
 import math
 import cv2
 import time
+from impact import utils
 
 from thirdparty import noise_nodes
 
@@ -1758,6 +1759,8 @@ class InjectNoiseHook(PixelKSampleHook):
             NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
             InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
         else:
+            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_Noise',
+                                          "To use 'NoiseInjectionHookProvider', 'ComfyUI Noise' extension is required.")
             raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
 
         noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
@@ -1836,6 +1839,8 @@ class InjectNoiseHookForDetailer(DetailerHook):
             NoisyLatentImage = nodes.NODE_CLASS_MAPPINGS["BNK_NoisyLatentImage"]
             InjectNoise = nodes.NODE_CLASS_MAPPINGS["BNK_InjectNoise"]
         else:
+            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_Noise',
+                                          "To use 'NoiseInjectionDetailerHookProvider', 'ComfyUI Noise' extension is required.")
             raise Exception("'BNK_NoisyLatentImage', 'BNK_InjectNoise' nodes are not installed.")
 
         noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
@@ -1917,6 +1922,8 @@ class TiledKSamplerWrapper:
         if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
             TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
         else:
+            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                                          "To use 'TiledKSamplerProvider', 'Tiled sampling for ComfyUI' extension is required.")
             raise Exception("'BNK_TiledKSampler' node isn't installed.")
 
         model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
@@ -1949,6 +1956,8 @@ class PixelTiledKSampleUpscaler:
         if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
             TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
         else:
+            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                                          "To use 'PixelTiledKSampleUpscalerProvider', 'Tiled sampling for ComfyUI' extension is required.")
             raise Exception("'BNK_TiledKSampler' node isn't installed.")
 
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -2031,6 +2040,8 @@ class BBoxDetectorBasedOnCLIPSeg:
         if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
             CLIPSeg = nodes.NODE_CLASS_MAPPINGS['CLIPSeg']
         else:
+            utils.try_install_custom_node('https://github.com/biegert/ComfyUI-CLIPSeg/raw/main/custom_nodes/clipseg.py',
+                                          "To use 'CLIPSegDetectorProvider', 'CLIPSeg' extension is required.")
             raise Exception("'CLIPSeg' node isn't installed.")
         
         if self.threshold is None:
