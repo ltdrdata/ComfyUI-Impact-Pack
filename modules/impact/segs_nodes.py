@@ -238,7 +238,7 @@ class SEGSPaste:
                     ref_tensor = ref_image_opt[i].unsqueeze(0)
                     ref_image = crop_image(ref_tensor, seg.crop_region)
                 if ref_image is not None:
-                    mask = tensor_feather_mask(seg.cropped_mask, feather, alpha/255)
+                    mask = tensor_gaussian_blur_mask(seg.cropped_mask, feather) * (alpha/255)
                     x, y, *_ = seg.crop_region
                     tensor_paste(image_i, ref_image, (x, y), mask)
 
@@ -305,7 +305,7 @@ class SEGSPreview:
                         cropped_image = to_pil(cropped_image)
 
                         if alpha_mode:
-                            mask_array = seg.cropped_mask.astype(np.uint8) * 255
+                            mask_array = (seg.cropped_mask * 255).astype(np.uint8)
                             mask_image = Image.fromarray(mask_array, mode='L').resize(cropped_image.size)
                             cropped_image.putalpha(mask_image)
 
@@ -752,6 +752,78 @@ class DilateMask:
     def doit(self, mask, dilation):
         mask = core.dilate_mask(mask.numpy(), dilation)
         return (torch.from_numpy(mask), )
+
+
+class GaussianBlurMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "mask": ("MASK", ),
+                     "kernel_size": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                     "sigma": ("FLOAT", {"default": 10.0, "min": 0.1, "max": 100.0, "step": 0.1}),
+                }}
+
+    RETURN_TYPES = ("MASK", )
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, mask, kernel_size, sigma):
+        mask = torch.unsqueeze(mask, dim=-1)
+        mask = utils.tensor_gaussian_blur_mask(mask, kernel_size, sigma)
+        mask = torch.squeeze(mask, dim=-1)
+        return (mask, )
+
+
+class DilateMaskInSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
+                }}
+
+    RETURN_TYPES = ("SEGS", )
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, dilation):
+        new_segs = []
+        for seg in segs[1]:
+            mask = core.dilate_mask(seg.cropped_mask, dilation)
+            seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_segs.append(seg)
+
+        return ((segs[0], new_segs), )
+
+
+class GaussianBlurMaskInSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     "kernel_size": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                     "sigma": ("FLOAT", {"default": 10.0, "min": 0.1, "max": 100.0, "step": 0.1}),
+                }}
+
+    RETURN_TYPES = ("SEGS", )
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs, kernel_size, sigma):
+        new_segs = []
+        for seg in segs[1]:
+            mask = utils.tensor_gaussian_blur_mask(seg.cropped_mask, kernel_size, sigma)
+            mask = torch.squeeze(mask, dim=-1).squeeze(0).numpy()
+            seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_segs.append(seg)
+
+        return ((segs[0], new_segs), )
 
 
 class Dilate_SEG_ELT:

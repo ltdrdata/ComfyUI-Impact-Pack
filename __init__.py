@@ -213,6 +213,9 @@ NODE_CLASS_MAPPINGS = {
     "ImpactEdit_SEG_ELT": Edit_SEG_ELT,
     "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT,
     "ImpactDilateMask": DilateMask,
+    "ImpactGaussianBlurMask": GaussianBlurMask,
+    "ImpactDilateMaskInSEGS": DilateMaskInSEGS,
+    "ImpactGaussianBlurMaskInSEGS": GaussianBlurMaskInSEGS,
     "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
@@ -375,6 +378,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactDilate_Mask_SEG_ELT": "Dilate Mask (SEG_ELT)",
     "ImpactScaleBy_BBOX_SEG_ELT": "ScaleBy BBOX (SEG_ELT)",
     "ImpactDilateMask": "Dilate Mask",
+    "ImpactGaussianBlurMask": "Gaussian Blur Mask",
+    "ImpactDilateMaskInSEGS": "Dilate Mask (SEGS)",
+    "ImpactGaussianBlurMaskInSEGS": "Gaussian Blur Mask (SEGS)",
 
     "PreviewBridge": "Preview Bridge (Image)",
     "PreviewBridgeLatent": "Preview Bridge (Latent)",

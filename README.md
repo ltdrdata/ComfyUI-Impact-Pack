@@ -86,15 +86,20 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
   * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different from segs2 will be ignored.
   * Picker (SEGS) - Among the input SEGS, you can select a specific SEG through a dialog. If no SEG is selected, it outputs an empty SEGS. Increasing the batch_size of SEGSDetailer can be used for the purpose of selecting from the candidates.
-  * Set Default Image For SEGS - Set a default image for SEGS. SEGS with images set this way do not need to have a fallback image set. When override is set to false, the original image is preserved. 
-  * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
-  * AssembleSEGS - Reassemble the decomposed SEGS.
-  * From SEG_ELT - Extract detailed information from SEG_ELT.
-  * Edit SEG_ELT - Modify some of the information in SEG_ELT.
-  * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
+  * Set Default Image For SEGS - Set a default image for SEGS. SEGS with images set this way do not need to have a fallback image set. When override is set to false, the original image is preserved.
+  * Dilate Mask (SEGS) - Dilate/Erosion Mask in SEGS
+  * Gaussian Blur Mask (SEGS) - Apply Gaussian Blur to Mask in SEGS
+  * SEGS_ELT Manipulation - experimental nodes
+    * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
+    * AssembleSEGS - Reassemble the decomposed SEGS.
+    * From SEG_ELT - Extract detailed information from SEG_ELT.
+    * Edit SEG_ELT - Modify some of the information in SEG_ELT.
+    * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
 
-* Dilate Mask - Dilate Mask. 
-  * Support erosion for negative value.
+* Mask Manipulation
+  * Dilate Mask - Dilate Mask. 
+    * Support erosion for negative value.
+  * Gaussian Blur Mask - Apply Gaussian Blur to Mask. You can utilize this for mask feathering.
  
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.

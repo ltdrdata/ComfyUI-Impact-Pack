@@ -971,8 +971,12 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
         else:
             mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
-            contours, _ = cv2.findContours(mask_i_uint8, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
+            contours, ctree = cv2.findContours(mask_i_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            for j, contour in enumerate(contours):
+                hierarchy = ctree[0][j]
+                if hierarchy[3] != -1:
+                    continue
+
                 separated_mask = np.zeros_like(mask_i_uint8)
                 cv2.drawContours(separated_mask, [contour], 0, 255, -1)
                 separated_mask = np.array(separated_mask / 255.0).astype(np.float32)

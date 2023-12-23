@@ -207,7 +207,7 @@ class DetailerForEach:
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
             cropped_image = to_tensor(cropped_image)
             mask = to_tensor(seg.cropped_mask)
-            mask = tensor_feather_mask(mask, feather)
+            mask = tensor_gaussian_blur_mask(mask, feather)
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:

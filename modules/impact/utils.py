@@ -332,7 +332,7 @@ def _gaussian_kernel(kernel_size, sigma):
     return kernel / kernel.sum()
 
 
-def tensor_feather_mask(mask, thickness, base_alpha=1.0):
+def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
     if isinstance(mask, np.ndarray):
         mask = torch.from_numpy(mask)
@@ -341,14 +341,20 @@ def tensor_feather_mask(mask, thickness, base_alpha=1.0):
         mask = mask[None, ..., None]
     _tensor_check_mask(mask)
 
-    if thickness <= 0:
+    if kernel_size <= 0:
         return mask
 
-    # Create a feathered mask by applying a Gaussian blur to the mask
-    mask = mask[:, None, ..., 0]
+    prev_device = mask.device
+    device = comfy.model_management.get_torch_device()
+    mask.to(device)
 
-    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=thickness*2+1, sigma=10.0)(mask)
+    # apply gaussian blur
+    mask = mask[:, None, ..., 0]
+    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size*2+1, sigma=sigma)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
+
+    blurred_mask.to(prev_device)
+
     return blurred_mask
 
 
