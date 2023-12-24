@@ -265,7 +265,7 @@ def extract_lora_values(string):
         if a is None:
             a = 1.0
         if b is None:
-            b = 1.0
+            b = a
 
         if lora is not None and lora not in added:
             result.append((lora, a, b, lbw, lbw_a, lbw_b))
