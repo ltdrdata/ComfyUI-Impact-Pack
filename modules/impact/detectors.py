@@ -84,6 +84,9 @@ class BboxDetectorForEach:
     CATEGORY = "ImpactPack/Detector"
 
     def doit(self, bbox_detector, image, threshold, dilation, crop_factor, drop_size, labels=None, detailer_hook=None):
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: BboxDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
         segs = bbox_detector.detect(image, threshold, dilation, crop_factor, drop_size, detailer_hook)
 
         if labels is not None and labels != '':
@@ -115,6 +118,9 @@ class SegmDetectorForEach:
     CATEGORY = "ImpactPack/Detector"
 
     def doit(self, segm_detector, image, threshold, dilation, crop_factor, drop_size, labels=None, detailer_hook=None):
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: SegmDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
         segs = segm_detector.detect(image, threshold, dilation, crop_factor, drop_size, detailer_hook)
 
         if labels is not None and labels != '':
@@ -197,6 +203,9 @@ class SimpleDetectorForEach:
     def detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion,
              sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size)
 
         if sam_model_opt is not None:
@@ -253,6 +262,9 @@ class SimpleDetectorForEachPipe:
 
     def doit(self, detailer_pipe, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
              sub_threshold, sub_dilation, sub_bbox_expansion, sam_mask_hint_threshold, post_dilation=0):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
