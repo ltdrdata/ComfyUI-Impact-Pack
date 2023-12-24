@@ -471,6 +471,7 @@ class FaceDetailer:
         result_img = None
         result_mask = None
         result_cropped_enhanced = []
+        result_cropped_enhanced_alpha = []
         result_cnet_images = []
 
         if len(image) > 1:
@@ -487,10 +488,11 @@ class FaceDetailer:
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
             result_cropped_enhanced.extend(cropped_enhanced)
+            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
             result_cnet_images.extend(cnet_pil_list)
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
-        return result_img, result_cropped_enhanced, result_cropped_enhanced, result_mask, pipe, result_cnet_images
+        return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
 
 
 class LatentPixelScale:
