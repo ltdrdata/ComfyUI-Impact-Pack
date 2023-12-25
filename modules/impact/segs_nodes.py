@@ -1,6 +1,7 @@
 import os
 import sys
 
+import numpy as np
 import torch
 
 import folder_paths
@@ -241,7 +242,21 @@ class SEGSPaste:
                     ref_tensor = ref_image_opt[i].unsqueeze(0)
                     ref_image = crop_image(ref_tensor, seg.crop_region)
                 if ref_image is not None:
-                    mask = tensor_gaussian_blur_mask(seg.cropped_mask, feather) * (alpha/255)
+                    if seg.cropped_mask.ndim == 3 and len(seg.cropped_mask) == len(image):
+                        mask = seg.cropped_mask[i]
+                    elif seg.cropped_mask.ndim == 3 and len(seg.cropped_mask) > 1:
+                        print(f"[Impact Pack] WARN: SEGSPaste - The number of the mask batch({len(seg.cropped_mask)}) and the image batch({len(image)}) are different. Combine the mask frames and apply.")
+                        combined_mask = (seg.cropped_mask[0] * 255).to(torch.uint8)
+
+                        for frame_mask in seg.cropped_mask[1:]:
+                            combined_mask |= (frame_mask * 255).to(torch.uint8)
+
+                        combined_mask = (combined_mask/255.0).to(torch.float32)
+                        mask = utils.to_binary_mask(combined_mask, 0.1)
+                    else:  # ndim == 2
+                        mask = seg.cropped_mask
+
+                    mask = tensor_gaussian_blur_mask(mask, feather) * (alpha/255)
                     x, y, *_ = seg.crop_region
                     tensor_paste(image_i, ref_image, (x, y), mask)
 
@@ -269,7 +284,8 @@ class SEGSPreview:
                     }
                 }
 
-    RETURN_TYPES = ()
+    RETURN_TYPES = ("IMAGE", )
+    OUTPUT_IS_LIST = (True, )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -281,6 +297,7 @@ class SEGSPreview:
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
 
         results = list()
+        result_image_list = []
 
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
@@ -293,8 +310,45 @@ class SEGSPreview:
             else:
                 return {"ui": {"images": results}}
 
-            for i in range(batch_count):
-                for seg in segs[1]:
+            for seg in segs[1]:
+                result_image_batch = None
+                cached_mask = None
+
+                def get_combined_mask():
+                    nonlocal cached_mask
+
+                    if cached_mask is not None:
+                        return cached_mask
+                    else:
+                        if isinstance(seg.cropped_mask, np.ndarray):
+                            masks = torch.tensor(seg.cropped_mask)
+                        else:
+                            masks = seg.cropped_mask
+
+                        cached_mask = (masks[0] * 255).to(torch.uint8)
+                        for x in masks[1:]:
+                            cached_mask |= (x * 255).to(torch.uint8)
+                        cached_mask = (cached_mask/255.0).to(torch.float32)
+                        cached_mask = utils.to_binary_mask(cached_mask, 0.1)
+                        cached_mask = cached_mask.numpy()
+
+                        return cached_mask
+
+                def stack_image(image, mask=None):
+                    nonlocal result_image_batch
+
+                    if isinstance(image, np.ndarray):
+                        image = torch.from_numpy(image)
+
+                    if mask is not None:
+                        image *= torch.tensor(mask)[None, ..., None]
+
+                    if result_image_batch is None:
+                        result_image_batch = image
+                    else:
+                        result_image_batch = torch.concat((result_image_batch, image), dim=0)
+
+                for i in range(batch_count):
                     cropped_image = None
 
                     if seg.cropped_image is not None:
@@ -305,15 +359,27 @@ class SEGSPreview:
                         cropped_image = crop_image(ref_image, seg.crop_region)
 
                     if cropped_image is not None:
-                        cropped_image = to_pil(cropped_image)
+                        cropped_image = cropped_image.clone()
+                        cropped_pil = to_pil(cropped_image)
 
                         if alpha_mode:
-                            mask_array = (seg.cropped_mask * 255).astype(np.uint8)
-                            mask_image = Image.fromarray(mask_array, mode='L').resize(cropped_image.size)
-                            cropped_image.putalpha(mask_image)
+                            if isinstance(seg.cropped_mask, np.ndarray):
+                                cropped_mask = seg.cropped_mask
+                            else:
+                                if len(seg.cropped_image) != len(seg.cropped_mask):
+                                    cropped_mask = get_combined_mask()
+                                else:
+                                    cropped_mask = seg.cropped_mask[i].numpy()
+
+                            mask_array = (cropped_mask * 255).astype(np.uint8)
+                            mask_pil = Image.fromarray(mask_array, mode='L').resize(cropped_pil.size)
+                            cropped_pil.putalpha(mask_pil)
+                            stack_image(cropped_image, cropped_mask)
+                        else:
+                            stack_image(cropped_image)
 
                         file = f"{filename}_{counter:05}_.webp"
-                        cropped_image.save(os.path.join(full_output_folder, file))
+                        cropped_pil.save(os.path.join(full_output_folder, file))
                         results.append({
                             "filename": file,
                             "subfolder": subfolder,
@@ -322,7 +388,10 @@ class SEGSPreview:
 
                         counter += 1
 
-        return {"ui": {"images": results}}
+                if result_image_batch is not None:
+                    result_image_list.append(result_image_batch)
+
+        return {"ui": {"images": results}, "result": (result_image_list,) }
 
 
 detection_labels = [
@@ -1041,11 +1110,12 @@ class MaskToSEGS_for_AnimateDiff:
 
         all_masks = SEGSToMaskList().doit(segs)[0]
 
-        result_mask = all_masks[0]
+        result_mask = (all_masks[0] * 255).to(torch.uint8)
         for mask in all_masks[1:]:
-            result_mask += mask
+            result_mask |= (mask * 255).to(torch.uint8)
 
-        result_mask = utils.to_binary_mask(result_mask, 0.1)
+        result_mask = (result_mask/255.0).to(torch.float32)
+        result_mask = utils.to_binary_mask(result_mask, 0.1)[0]
 
         return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
 
@@ -1203,7 +1273,7 @@ class DefaultImageForSEGS:
                         if cropped_image is None:
                             cropped_image = cropped_image2
                         else:
-                            torch.cat((cropped_image, cropped_image2), dim=0)
+                            cropped_image = torch.cat((cropped_image, cropped_image2), dim=0)
 
                 new_seg = SEG(cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
                 results.append(new_seg)

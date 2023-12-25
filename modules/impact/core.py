@@ -1,5 +1,8 @@
 import copy
 import os
+
+import numpy
+import torch
 from segment_anything import SamPredictor
 import torch.nn.functional as F
 
@@ -354,10 +357,25 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale the mask tensor by a factor of 2 using bilinear interpolation
-    noise_mask = torch.from_numpy(noise_mask)
-    upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
+    if isinstance(noise_mask, numpy.ndarray):
+        noise_mask = torch.from_numpy(noise_mask)
 
-    upscaled_mask = upscaled_mask.squeeze().squeeze()
+    if len(noise_mask.shape) == 2:
+        noise_mask = noise_mask.unsqueeze(0)
+    else:  # == 3
+        noise_mask = noise_mask
+
+    upscaled_mask = None
+
+    for single_mask in noise_mask:
+        single_mask = single_mask.unsqueeze(0).unsqueeze(0)
+        upscaled_single_mask = torch.nn.functional.interpolate(single_mask, size=(new_h, new_w), mode='bilinear', align_corners=False)
+        upscaled_single_mask = upscaled_single_mask.squeeze(0)
+
+        if upscaled_mask is None:
+            upscaled_mask = upscaled_single_mask
+        else:
+            upscaled_mask = torch.cat((upscaled_mask, upscaled_single_mask), dim=0)
 
     latent_frames = None
     for image in image_frames:
@@ -374,7 +392,17 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         else:
             latent_frames = torch.concat((latent_frames, samples), dim=0)
 
-    upscaled_mask = upscaled_mask.expand(len(image_frames), -1, -1)
+    if len(upscaled_mask) != len(image_frames) and len(upscaled_mask) > 1:
+        print(f"[Impact Pack] WARN: DetailerForAnimateDiff - The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
+        combined_mask = upscaled_mask[0].to(torch.uint8)
+
+        for frame_mask in upscaled_mask[1:]:
+            combined_mask |= (frame_mask * 255).to(torch.uint8)
+
+        combined_mask = (combined_mask/255.0).to(torch.float32)
+
+        upscaled_mask = combined_mask.expand(len(image_frames), -1, -1)
+        upscaled_mask = utils.to_binary_mask(upscaled_mask, 0.1)
 
     latent = {
         'noise_mask': upscaled_mask,
@@ -385,8 +413,8 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         latent = detailer_hook.post_encode(latent)
 
     refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                                             latent, denoise,
-                                             refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+                                      latent, denoise,
+                                      refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -995,7 +1023,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                     if is_contour:
                         mask_src = separated_mask
                     else:
-                        mask_src = mask_i
+                        mask_src = mask_i * separated_mask
 
                     cropped_mask = np.array(
                         mask_src[
@@ -1013,7 +1041,8 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         cropped_mask[by1:by2, bx1:bx2] = 1.0
 
                     if cropped_mask is not None:
-                        item = SEG(None, cropped_mask, 1.0, crop_region, bbox, label, None)
+                        cropped_mask = utils.to_binary_mask(torch.from_numpy(cropped_mask), 0.1)[0]
+                        item = SEG(None, cropped_mask.numpy(), 1.0, crop_region, bbox, label, None)
                         result.append(item)
 
     if not result:
@@ -1120,12 +1149,23 @@ def segs_to_masklist(segs):
 
     masks = []
     for seg in segs[1]:
-        mask = np.zeros((h, w), dtype=np.uint8)
-        cropped_mask = seg.cropped_mask
+        if isinstance(seg.cropped_mask, numpy.ndarray):
+            cropped_mask = torch.from_numpy(seg.cropped_mask)
+        else:
+            cropped_mask = seg.cropped_mask
+
+        if cropped_mask.ndim == 2:
+            cropped_mask = cropped_mask.unsqueeze(0)
+
+        n = len(cropped_mask)
+
+        mask = torch.zeros((n, h, w), dtype=torch.uint8)
         crop_region = seg.crop_region
-        mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
-        mask = torch.from_numpy(mask.astype(np.float32) / 255.0)
-        masks.append(mask)
+        mask[:, crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).to(torch.uint8)
+        mask = (mask / 255.0).to(torch.float32)
+
+        for x in mask:
+            masks.append(x)
 
     if len(masks) == 0:
         empty_mask = torch.zeros((h, w), dtype=torch.float32, device="cpu")

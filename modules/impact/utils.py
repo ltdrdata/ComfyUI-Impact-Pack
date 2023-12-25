@@ -246,7 +246,7 @@ def bitwise_and_masks(mask1, mask2):
 
 
 def to_binary_mask(mask, threshold=0):
-    mask = make_2d_mask(mask)
+    mask = make_3d_mask(mask)
 
     mask = mask.clone().cpu()
     mask[mask > threshold] = 1.
@@ -339,6 +339,9 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
 
     if mask.ndim == 2:
         mask = mask[None, ..., None]
+    elif mask.ndim == 3:
+        mask = mask[..., None]
+
     _tensor_check_mask(mask)
 
     if kernel_size <= 0:
@@ -478,6 +481,16 @@ def make_2d_mask(mask):
 
     elif len(mask.shape) == 3:
         return mask.squeeze(0)
+
+    return mask
+
+
+def make_3d_mask(mask):
+    if len(mask.shape) == 4:
+        return mask.squeeze(0)
+
+    elif len(mask.shape) == 2:
+        return mask.unsqueeze(0)
 
     return mask
 
