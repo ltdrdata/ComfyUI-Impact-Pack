@@ -359,6 +359,9 @@ class SEGSPreview:
                         cropped_image = crop_image(ref_image, seg.crop_region)
 
                     if cropped_image is not None:
+                        if isinstance(cropped_image, np.ndarray):
+                            cropped_image = torch.from_numpy(cropped_image)
+
                         cropped_image = cropped_image.clone()
                         cropped_pil = to_pil(cropped_image)
 
