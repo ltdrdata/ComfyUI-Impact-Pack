@@ -1603,7 +1603,7 @@ class MaskListToMaskBatch:
             return (empty_mask,)
 
 
-class ImageListToMaskBatch:
+class ImageListToImageBatch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
