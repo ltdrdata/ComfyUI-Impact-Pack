@@ -193,7 +193,11 @@ class DetailerForEach:
         segs = core.segs_scale_match(segs, image.shape)
         new_segs = []
 
+        wildcard_concat_mode = None
         if wildcard_opt is not None:
+            if wildcard_opt.startswith('[CONCAT]'):
+                wildcard_concat_mode = 'concat'
+                wildcard_opt = wildcard_opt[8:]
             wmode, wildcard_chooser = wildcards.process_wildcard_for_segs(wildcard_opt)
         else:
             wmode, wildcard_chooser = None, None
@@ -230,7 +234,9 @@ class DetailerForEach:
 
             enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                            seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                           positive, negative, denoise, cropped_mask, force_inpaint, wildcard_item, detailer_hook,
+                                                           positive, negative, denoise, cropped_mask, force_inpaint,
+                                                           wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
+                                                           detailer_hook=detailer_hook,
                                                            refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                            refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                            refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper, cycle=cycle)

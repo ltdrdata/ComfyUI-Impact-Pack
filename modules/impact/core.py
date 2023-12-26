@@ -185,7 +185,8 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
 
 def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg,
                    sampler_name,
-                   scheduler, positive, negative, denoise, noise_mask, force_inpaint, wildcard_opt=None,
+                   scheduler, positive, negative, denoise, noise_mask, force_inpaint,
+                   wildcard_opt=None, wildcard_opt_concat_mode=None,
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None, cycle=1):
@@ -193,7 +194,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         noise_mask = noise_mask.squeeze(0)
 
     if wildcard_opt is not None and wildcard_opt != "":
-        model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+        model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+
+        if wildcard_opt_concat_mode == "concat":
+            positive = nodes.ConditioningConcat().concat(positive, wildcard_positive)[0]
+        else:
+            positive = wildcard_positive
 
     h = image.shape[1]
     w = image.shape[2]
@@ -309,7 +315,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
 def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg,
                                    sampler_name,
-                                   scheduler, positive, negative, denoise, noise_mask, wildcard_opt=None,
+                                   scheduler, positive, negative, denoise, noise_mask,
+                                   wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                                    refiner_negative=None):
@@ -317,7 +324,12 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         noise_mask = noise_mask.squeeze(0)
 
     if wildcard_opt is not None and wildcard_opt != "":
-        model, _, positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+        model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+
+        if wildcard_opt_concat_mode == "concat":
+            positive = nodes.ConditioningConcat().concat(positive, wildcard_positive)[0]
+        else:
+            positive = wildcard_positive
 
     h = image_frames.shape[1]
     w = image_frames.shape[2]

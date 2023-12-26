@@ -85,11 +85,11 @@ class SEGSDetailer:
                     cropped_mask = None
 
                 enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
-                                                             seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                             positive, negative, denoise, cropped_mask, force_inpaint,
-                                                             refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                             refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                                             control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
+                                                               seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                               positive, negative, denoise, cropped_mask, force_inpaint,
+                                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                               refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                                               control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
                 if cnet_pil is not None:
                     cnet_pil_list.append(cnet_pil)
