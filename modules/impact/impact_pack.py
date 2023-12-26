@@ -81,9 +81,10 @@ class CLIPSegDetectorProvider:
 class SAMLoader:
     @classmethod
     def INPUT_TYPES(cls):
+        models = [x for x in folder_paths.get_filename_list("sams") if 'hq' not in x]
         return {
             "required": {
-                "model_name": (folder_paths.get_filename_list("sams"), ),
+                "model_name": (models, ),
                 "device_mode": (["AUTO", "Prefer GPU", "CPU"],),
             }
         }
@@ -1559,7 +1560,7 @@ class MasksToMaskList:
 
     def doit(self, masks):
         if masks is None:
-            empty_mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
             return ([empty_mask], )
 
         res = []
@@ -1568,6 +1569,8 @@ class MasksToMaskList:
             res.append(mask)
 
         print(f"mask len: {len(res)}")
+
+        res = [make_3d_mask(x) for x in res]
 
         return (res, )
 
@@ -1589,23 +1592,20 @@ class MaskListToMaskBatch:
 
     def doit(self, mask):
         if len(mask) == 1:
-            if len(mask[0].shape) == 2:
-                mask = mask[0].unsqueeze(0)
+            mask = make_3d_mask(mask[0])
             return (mask,)
         elif len(mask) > 1:
-            mask1 = mask[0]
-            if len(mask1.shape) == 2:
-                mask1 = mask1.unsqueeze(0)
+            mask1 = make_3d_mask(mask[0])
 
             for mask2 in mask[1:]:
-                if len(mask2.shape) == 2:
-                    mask2 = mask2.unsqueeze(0)
+                mask2 = make_3d_mask(mask2)
                 if mask1.shape[1:] != mask2.shape[1:]:
                     mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
                 mask1 = torch.cat((mask1, mask2), dim=0)
+
             return (mask1,)
         else:
-            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+            empty_mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
             return (empty_mask,)
 
 

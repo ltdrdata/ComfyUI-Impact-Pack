@@ -203,8 +203,8 @@ class SimpleDetectorForEach:
 
     @staticmethod
     def detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
-             sub_threshold, sub_dilation, sub_bbox_expansion,
-             sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
+               sub_threshold, sub_dilation, sub_bbox_expansion,
+               sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 

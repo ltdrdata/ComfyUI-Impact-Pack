@@ -610,6 +610,7 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
     else:
         mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
 
+    mask = utils.make_3d_mask(mask)
     return mask
 
 

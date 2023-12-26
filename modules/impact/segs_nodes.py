@@ -643,6 +643,7 @@ class SEGSToMaskList:
         if len(masks) == 0:
             empty_mask = torch.zeros(segs[0], dtype=torch.float32, device="cpu")
             masks = [empty_mask]
+        masks = [utils.make_3d_mask(mask) for mask in masks]
         return (masks,)
 
 
@@ -655,14 +656,14 @@ class SEGSToMaskBatch:
                 }
 
     RETURN_TYPES = ("MASK",)
-    OUTPUT_IS_LIST = (True,)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, segs):
         masks = core.segs_to_masklist(segs)
-        mask_batch = torch.stack(masks, dim=0)
+        masks = [utils.make_3d_mask(mask) for mask in masks]
+        mask_batch = torch.concat(masks)
         return (mask_batch,)
 
 
@@ -826,7 +827,9 @@ class DilateMask:
 
     def doit(self, mask, dilation):
         mask = core.dilate_mask(mask.numpy(), dilation)
-        return (torch.from_numpy(mask), )
+        mask = torch.from_numpy(mask)
+        mask = utils.make_3d_mask(mask)
+        return (mask, )
 
 
 class GaussianBlurMask:
@@ -987,7 +990,7 @@ class EmptySEGS:
 class SegsToCombinedMask:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": { "segs": ("SEGS",), } }
+        return {"required": {"segs": ("SEGS",), }}
 
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
@@ -995,7 +998,9 @@ class SegsToCombinedMask:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, segs):
-        return (core.segs_to_combined_mask(segs),)
+        mask = core.segs_to_combined_mask(segs)
+        mask = utils.make_3d_mask(mask)
+        return (mask,)
 
 
 class MediaPipeFaceMeshToSEGS:
