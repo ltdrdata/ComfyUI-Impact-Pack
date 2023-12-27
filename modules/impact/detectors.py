@@ -1,10 +1,10 @@
 import impact.core as core
 from impact.config import MAX_RESOLUTION
 import impact.segs_nodes as segs_nodes
-import numpy as np
 import impact.utils as utils
 import torch
 from impact.core import SEG
+
 
 class SAMDetectorCombined:
     @classmethod
@@ -204,18 +204,19 @@ class SimpleDetectorForEach:
     @staticmethod
     def detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
                sub_threshold, sub_dilation, sub_bbox_expansion,
-               sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None):
+               sam_mask_hint_threshold, post_dilation=0, sam_model_opt=None, segm_detector_opt=None,
+               detailer_hook=None):
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size)
+        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
 
         if sam_model_opt is not None:
             mask = core.make_sam_mask(sam_model_opt, segs, image, "center-1", sub_dilation,
                                       sub_threshold, sub_bbox_expansion, sam_mask_hint_threshold, False)
             segs = core.segs_bitwise_and_mask(segs, mask)
         elif segm_detector_opt is not None:
-            segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size)
+            segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
             mask = core.segs_to_combined_mask(segm_segs)
             segs = core.segs_bitwise_and_mask(segs, mask)
 
@@ -272,7 +273,8 @@ class SimpleDetectorForEachPipe:
 
         return SimpleDetectorForEach.detect(bbox_detector, image, bbox_threshold, bbox_dilation, crop_factor, drop_size,
                                             sub_threshold, sub_dilation, sub_bbox_expansion,
-                                            sam_mask_hint_threshold, post_dilation=post_dilation, sam_model_opt=sam_model_opt, segm_detector_opt=segm_detector_opt)
+                                            sam_mask_hint_threshold, post_dilation=post_dilation, sam_model_opt=sam_model_opt, segm_detector_opt=segm_detector_opt,
+                                            detailer_hook=detailer_hook)
 
 
 class SimpleDetectorForAnimateDiff:

@@ -549,7 +549,7 @@ app.registerExtension({
 		        break;
 		}
 
-		if(node.comfyClass == "ImpactSEGSLabelFilter") {
+		if(node.comfyClass == "ImpactSEGSLabelFilter" || node.comfyClass == "SEGSLabelFilterDetailerHookProvider") {
 			Object.defineProperty(node.widgets[0], "value", {
 				set: (value) => {
 				        const stackTrace = new Error().stack;

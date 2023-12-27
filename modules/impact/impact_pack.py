@@ -25,6 +25,7 @@ from PIL.PngImagePlugin import PngInfo
 import comfy.model_management
 import base64
 import impact.wildcards as wildcards
+from . import hooks
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -553,8 +554,8 @@ class NoiseInjectionDetailerHookProvider:
 
     def doit(self, schedule_for_cycle, source, seed, start_strength, end_strength):
         try:
-            hook = core.InjectNoiseHookForDetailer(source, seed, start_strength, end_strength,
-                                                   from_start=('from_start' in schedule_for_cycle))
+            hook = hooks.InjectNoiseHookForDetailer(source, seed, start_strength, end_strength,
+                                                    from_start=('from_start' in schedule_for_cycle))
             return (hook, )
         except Exception as e:
             print("[ERROR] NoiseInjectionDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
@@ -589,10 +590,9 @@ class UnsamplerDetailerHookProvider:
     def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
              scheduler, normalize, positive, negative, schedule_for_cycle):
         try:
-            hook = None
-            hook = core.UnsamplerDetailerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
-                                              scheduler, normalize, positive, negative,
-                                              from_start=('from_start' in schedule_for_cycle))
+            hook = hooks.UnsamplerDetailerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                               scheduler, normalize, positive, negative,
+                                               from_start=('from_start' in schedule_for_cycle))
 
             return (hook, )
         except Exception as e:
@@ -618,7 +618,7 @@ class DenoiseSchedulerDetailerHookProvider:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, schedule_for_cycle, target_denoise):
-        hook = core.SimpleDetailerDenoiseSchedulerHook(target_denoise)
+        hook = hooks.SimpleDetailerDenoiseSchedulerHook(target_denoise)
         return (hook, )
 
 
@@ -633,7 +633,7 @@ class CoreMLDetailerHookProvider:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, mode):
-        hook = core.CoreMLHook(mode)
+        hook = hooks.CoreMLHook(mode)
         return (hook, )
 
 
@@ -656,7 +656,7 @@ class CfgScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_cfg):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleCfgScheduleHook(target_cfg)
+            hook = hooks.SimpleCfgScheduleHook(target_cfg)
 
         return (hook, )
 
@@ -690,8 +690,8 @@ class UnsamplerHookProvider:
         try:
             hook = None
             if schedule_for_iteration == "simple":
-                hook = core.UnsamplerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
-                                          scheduler, normalize, positive, negative)
+                hook = hooks.UnsamplerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                           scheduler, normalize, positive, negative)
 
             return (hook, )
         except Exception as e:
@@ -723,7 +723,7 @@ class NoiseInjectionHookProvider:
         try:
             hook = None
             if schedule_for_iteration == "simple":
-                hook = core.InjectNoiseHook(source, seed, start_strength, end_strength)
+                hook = hooks.InjectNoiseHook(source, seed, start_strength, end_strength)
 
             return (hook, )
         except Exception as e:
@@ -751,7 +751,7 @@ class DenoiseScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_denoise):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleDenoiseScheduleHook(target_denoise)
+            hook = hooks.SimpleDenoiseScheduleHook(target_denoise)
 
         return (hook, )
 
@@ -771,7 +771,7 @@ class DetailerHookCombine:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, hook1, hook2):
-        hook = core.DetailerHookCombine(hook1, hook2)
+        hook = hooks.DetailerHookCombine(hook1, hook2)
         return (hook, )
 
 
@@ -790,7 +790,7 @@ class PixelKSampleHookCombine:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, hook1, hook2):
-        hook = core.PixelKSampleHookCombine(hook1, hook2)
+        hook = hooks.PixelKSampleHookCombine(hook1, hook2)
         return (hook, )
 
 
@@ -1281,6 +1281,8 @@ class MaskDetailerPipe:
         if mask is not None:
             mask = make_2d_mask(mask)
             segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+        else:
+            segs = ((image.shape[1], image.shape[2]), [])
 
         enhanced_img_batch = None
         cropped_enhanced_list = []
@@ -1942,6 +1944,7 @@ class LatentReceiver:
 
 class LatentSender(nodes.SaveLatent):
     def __init__(self):
+        super().__init__()
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
 

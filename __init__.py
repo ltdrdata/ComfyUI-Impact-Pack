@@ -20,7 +20,6 @@ custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcard
 
 sys.path.append(modules_path)
 
-
 import impact.config
 import impact.sample_error_enhancer
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
@@ -106,6 +105,7 @@ from impact.segs_nodes import *
 from impact.special_samplers import *
 from impact.hf_nodes import *
 from impact.bridge_nodes import *
+from impact.hook_nodes import *
 
 import threading
 
@@ -173,15 +173,19 @@ NODE_CLASS_MAPPINGS = {
     "TwoSamplersForMaskUpscalerProviderPipe": TwoSamplersForMaskUpscalerProviderPipe,
 
     "PixelKSampleHookCombine": PixelKSampleHookCombine,
-    "DetailerHookCombine": DetailerHookCombine,
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
     "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
     "UnsamplerHookProvider": UnsamplerHookProvider,
+    "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
+
+    "DetailerHookCombine": DetailerHookCombine,
     "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
     "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider,
-    "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
     "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider,
+    "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider,
+    "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider,
+    "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,

@@ -178,7 +178,12 @@ class SegmDetector(BBoxDetector):
                 item = SEG(cropped_image, cropped_mask, confidence, crop_region, item_bbox, None, None)
                 items.append(item)
 
-        return image.shape, items
+        segs = image.shape, items
+
+        if detailer_hook is not None and hasattr(detailer_hook, "post_detection"):
+            segs = detailer_hook.post_detection(segs)
+
+        return segs
 
     def detect_combined(self, image, threshold, dilation):
         mmdet_results = inference_bbox(self.bbox_model, image, threshold)
