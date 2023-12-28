@@ -248,6 +248,26 @@ class ImpactImageInfo:
         return (value.shape[0], value.shape[1], value.shape[2], value.shape[3])
 
 
+class ImpactLatentInfo:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+                    "value": ("LATENT", ),
+                    },
+                }
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic/_for_test"
+
+    RETURN_TYPES = ("INT", "INT", "INT", "INT")
+    RETURN_NAMES = ("batch", "height", "width", "channel")
+
+    def doit(self, value):
+        shape = value['samples'].shape
+        return (shape[0], shape[2] * 8, shape[3] * 8, shape[1])
+
+
 class ImpactMinMax:
     @classmethod
     def INPUT_TYPES(cls):
