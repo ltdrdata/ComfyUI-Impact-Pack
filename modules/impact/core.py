@@ -1012,6 +1012,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
                     if bbox_fill:
                         bx1, by1, bx2, by2 = bbox
+                        cropped_mask = cropped_mask.copy()
                         cropped_mask[by1:by2, bx1:bx2] = 1.0
 
                     if cropped_mask is not None:
