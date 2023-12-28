@@ -288,6 +288,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactValueSender": ImpactValueSender,
     "ImpactValueReceiver": ImpactValueReceiver,
     "ImpactImageInfo": ImpactImageInfo,
+    "ImpactLatentInfo": ImpactLatentInfo,
     "ImpactMinMax": ImpactMinMax,
     "ImpactNeg": ImpactNeg,
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
