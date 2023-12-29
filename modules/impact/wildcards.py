@@ -328,12 +328,29 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
         else:
             print(f"LORA NOT FOUND: {orig_lora_name}")
 
-    print(f"CLIP: {pass2}")
+    pass3 = [x.strip() for x in pass2.split("BREAK")]
+    pass3 = [x for x in pass3 if x != '']
 
-    if clip_encoder is None:
-        return model, clip, nodes.CLIPTextEncode().encode(clip, pass2)[0]
-    else:
-        return model, clip, clip_encoder.encode(clip, pass2)[0]
+    if len(pass3) == 0:
+        pass3 = ['']
+
+    pass3_str = [f'[{x}]' for x in pass3]
+    print(f"CLIP: {str.join(' + ', pass3_str)}")
+
+    result = None
+
+    for prompt in pass3:
+        if clip_encoder is None:
+            cur = nodes.CLIPTextEncode().encode(clip, prompt)[0]
+        else:
+            cur = clip_encoder.encode(clip, prompt)[0]
+
+        if result is not None:
+            result = nodes.ConditioningConcat().concat(result, cur)[0]
+        else:
+            result = cur
+
+    return model, clip, result
 
 
 def starts_with_regex(pattern, text):
