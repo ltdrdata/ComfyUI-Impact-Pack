@@ -137,7 +137,8 @@ def process(text, seed=None):
                 select_count = random_gen.integers(low=select_range[0], high=select_range[1]+1, size=1)
 
             if select_count > len(options):
-                selected_items = random_gen.shuffle(options)
+                random_gen.shuffle(options)
+                selected_items = options
             else:
                 selected_items = random_gen.choice(options, p=normalized_probabilities, size=select_count, replace=False)
 
