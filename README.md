@@ -57,6 +57,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * DetailerDebug (SEGS) - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
     * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
   * MASK to SEGS - Generates SEGS based on the mask.
+    * MASK to SEGS For AnimateDiff - Generates SEGS based on the mask for AnimateDiff.
   * MediaPipe FaceMesh to SEGS - Separate each landmark from the mediapipe facemesh image to create labeled SEGS.
     * Usually, the size of images created through the MediaPipe facemesh preprocessor is downscaled. It resizes the MediaPipe facemesh image to the original size given as reference_image_opt for matching sizes during processing. 
   * ToBinaryMask - Separates the mask generated with alpha values between 0 and 255 into 0 and 255. The non-zero parts are always set to 255.
@@ -85,14 +86,20 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * SEGS Filter (range) - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
   * SEGSConcat - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different from segs2 will be ignored.
   * Picker (SEGS) - Among the input SEGS, you can select a specific SEG through a dialog. If no SEG is selected, it outputs an empty SEGS. Increasing the batch_size of SEGSDetailer can be used for the purpose of selecting from the candidates.
-  * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
-  * AssembleSEGS - Reassemble the decomposed SEGS.
-  * From SEG_ELT - Extract detailed information from SEG_ELT.
-  * Edit SEG_ELT - Modify some of the information in SEG_ELT.
-  * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
+  * Set Default Image For SEGS - Set a default image for SEGS. SEGS with images set this way do not need to have a fallback image set. When override is set to false, the original image is preserved.
+  * Dilate Mask (SEGS) - Dilate/Erosion Mask in SEGS
+  * Gaussian Blur Mask (SEGS) - Apply Gaussian Blur to Mask in SEGS
+  * SEGS_ELT Manipulation - experimental nodes
+    * DecomposeSEGS - Decompose SEGS to allow for detailed manipulation.
+    * AssembleSEGS - Reassemble the decomposed SEGS.
+    * From SEG_ELT - Extract detailed information from SEG_ELT.
+    * Edit SEG_ELT - Modify some of the information in SEG_ELT.
+    * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
 
-* Dilate Mask - Dilate Mask. 
-  * Support erosion for negative value.
+* Mask Manipulation
+  * Dilate Mask - Dilate Mask. 
+    * Support erosion for negative value.
+  * Gaussian Blur Mask - Apply Gaussian Blur to Mask. You can utilize this for mask feathering.
  
 * Pipe nodes
    * ToDetailerPipe, FromDetailerPipe - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
@@ -106,19 +113,28 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 * PixelTiledKSampleUpscalerProvider - It is similar to PixelKSampleUpscalerProvider, but it uses ComfyUI_TiledKSampler and Tiled VAE Decoder/Encoder to avoid GPU VRAM issues at high resolutions.
   * You need to install the [BlenderNeko/ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
 
-* DenoiseScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the denoise to target_denoise as the step progresses.
-* CfgScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the cfg to target_cfg as the step progresses.
-* PixelKSampleHookCombine - This is used to connect two PK_HOOKs. hook1 is executed first and then hook2 is executed.
-  * If you want to simultaneously change cfg and denoise, you can combine the PK_HOOKs of CfgScheduleHookProvider and PixelKSampleHookCombine.
-* NoiseInjectionHookProvider - During each iteration of IterativeUpscale, noise is injected into the latent space while varying the strength according to a schedule.
-  * You need to install the [BlenderNeko/ComfyUI_Noise](https://github.com/BlenderNeko/ComfyUI_Noise) node extension.
-  * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.
-  * The source determines the types of CPU noise and GPU noise to be configured.
-  * Currently, there is only a simple schedule available, where the strength of the noise varies from start_strength to end_strength during the progression of each iteration.
-* NoiseInjectionDetailerHookProvider - The `detailer_hook` is a hook in the `Detailer` that injects noise during the processing of each SEGS.
-* CoreMLDetailerHookProvider - CoreML supports only 512x512, 512x768, 768x512, 768x768 size sampling. CoreMLDetailerHookProvider precisely fixes the upscale of the crop_region to this size. When using this hook, it will always be selected size, regardless of the guide_size. However, if the guide_size is too small, skipping will occur.
+* PK_HOOK
+  * DenoiseScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the denoise to target_denoise as the step progresses.
+  * CfgScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the cfg to target_cfg as the step progresses.
+  * NoiseInjectionHookProvider - During each iteration of IterativeUpscale, noise is injected into the latent space while varying the strength according to a schedule.
+    * You need to install the [BlenderNeko/ComfyUI_Noise](https://github.com/BlenderNeko/ComfyUI_Noise) node extension.
+    * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.
+    * The source determines the types of CPU noise and GPU noise to be configured.
+    * Currently, there is only a simple schedule available, where the strength of the noise varies from start_strength to end_strength during the progression of each iteration.
+  * UnsamplerHookProvider - Apply Unsampler during each iteration. To use this node, ComfyUI_Noise must be installed.
+  * PixelKSampleHookCombine - This is used to connect two PK_HOOKs. hook1 is executed first and then hook2 is executed.
+    * If you want to simultaneously change cfg and denoise, you can combine the PK_HOOKs of CfgScheduleHookProvider and PixelKSampleHookCombine.
+ 
+* DETAILER_HOOK
+  * NoiseInjectionDetailerHookProvider - The `detailer_hook` is a hook in the `Detailer` that injects noise during the processing of each SEGS.
+  * UnsamplerDetailerHookProvider - Apply Unsampler during each cycle. To use this node, ComfyUI_Noise must be installed.
+    * There is a bug in applying the noise mask to the current Unsampler, so this [ComfyUI_Noise/PR-13](https://github.com/BlenderNeko/ComfyUI_Noise/pull/13) must be applied for it to be usable. 
+  * DenoiseSchedulerDetailerHookProvider - During the progress of the cycle, the detailer's denoise is altered up to the `target_denoise`. 
+  * CoreMLDetailerHookProvider - CoreML supports only 512x512, 512x768, 768x512, 768x768 size sampling. CoreMLDetailerHookProvider precisely fixes the upscale of the crop_region to this size. When using this hook, it will always be selected size, regardless of the guide_size. However, if the guide_size is too small, skipping will occur.
+  * DetailerHookCombine - This is used to connect two DETAILER_HOOKs. Similar to PixelKSampleHookCombine.
+  * SEGSOrderedFilterDetailerHook, SEGSRangeFilterDetailerHook, SEGSLabelFilterDetailerHook - There are a wrapper node that provides SEGSFilter nodes to be applied in FaceDetailer or Detector by creating DETAILER_HOOK.
 
-* Iterative Upscale (Latent) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. 
+* Iterative Upscale (Latent/on Pixel Space) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. 
 This takes latent as input and outputs latent as the result.
 * Iterative Upscale (Image) - The upscaler takes the input upscaler and splits the scale_factor into steps, then iteratively performs upscaling. This takes image as input and outputs image as the result.
   * Internally, this node uses 'Iterative Upscale (Latent)'.
@@ -135,11 +151,17 @@ This takes latent as input and outputs latent as the result.
 * TwoSamplersForMaskUpscalerProvider - This is an Upscaler that extends TwoSamplersForMask to be used in Iterative Upscale.
   * TwoSamplersForMaskUpscalerProviderPipe - pipe version of TwoSamplersForMaskUpscalerProvider.
 
-* PreviewBridge - This custom node can be used with a bridge when using the MaskEditor feature of Clipspace.
-* ImageSender, ImageReceiver - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
-* LatentSender, LatentReceiver - The latent generated in LatentSender are automatically sent to the LatentReceiver with the same link_id.
-  * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
-  * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
+* Image Utils
+  * PreviewBridge (image) - This custom node can be used with a bridge for image when using the MaskEditor feature of Clipspace.
+  * PreviewBridge (latent) - This custom node can be used with a bridge for latent image when using the MaskEditor feature of Clipspace.
+    * If a latent with a mask is provided as input, it displays the mask. Additionally, the mask output provides the mask set in the latent.
+    * If a latent without a mask is provided as input, it outputs the original latent as is, but the mask output provides an output with the entire region set as a mask.
+    * When set mask through MaskEditor, a mask is applied to the latent, and the output includes the stored mask. The same mask is also output as the mask output.
+    * When connected to `vae_opt`, it takes higher priority than the `preview_method`.
+  * ImageSender, ImageReceiver - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
+  * LatentSender, LatentReceiver - The latent generated in LatentSender are automatically sent to the LatentReceiver with the same link_id.
+    * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
+    * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
 * Switch nodes
   * Switch (image,mask), Switch (latent), Switch (SEGS) - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
@@ -179,6 +201,7 @@ This takes latent as input and outputs latent as the result.
 
 * String Selector - It selects and returns a portion of the string. When `multiline` mode is disabled, it simply returns the string of the line pointed to by the selector. When `multiline` mode is enabled, it divides the string based on lines that start with `#` and returns them. If the `select` value is larger than the number of items, it will start counting from the first line again and return accordingly.
 * Combine Conditionings - It takes multiple conditionings as input and combines them into a single conditioning.
+* Concat Conditionings - It takes multiple conditionings as input and concat them into a single conditioning.
 
 * Logics (experimental) - These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
   * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
@@ -188,11 +211,14 @@ This takes latent as input and outputs latent as the result.
   * Sleep - Waits for the specified time (in seconds).
   * Set Widget Value - This node sets one of the optional inputs to the specified node's widget. An error may occur if the types do not match.
   * Set Mute State - This node changes the mute state of a specific node.
-  * Control Bridge - Depending on whether the mode is set to `block` or `pass`, it changes the mute status of connected nodes. If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted.
+  * Control Bridge - This node modifies the state of the connected control nodes based on the `mode` and `behavior` . If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted. 
+    * When the `mode` is `active`, it makes the connected control nodes active regardless of the behavior. 
+    * When the `mode` is `Bypass/Mute`, it changes the state of the connected nodes based on whether the behavior is `Bypass` or `Mute`.
     * **Limitation**: Due to these characteristics, it does not function correctly when the batch count exceeds 1. Additionally, it does not guarantee proper operation when the seed is randomized or when the state of nodes is altered by actions such as `Queue Trigger`, `Set Widget Value`, `Set Mute`, before the Control Bridge.
     * When utilizing this node, please structure the workflow in such a way that `Queue Trigger`, `Set Widget Value`, `Set Mute State`, and similar actions are executed at the end of the workflow.
     * If you want to change the value of the seed at each iteration, please ensure that Set Widget Value is executed at the end of the workflow instead of using randomization.
       * It is not a problem if the seed changes due to randomization as long as it occurs after the Control Bridge section.
+  * Remote Boolean (on prompt), Remote Int (on prompt) - At the start of the prompt, this node forcibly sets the `widget_value` of `node_id`. It is disregarded if the target widget type is different.
   * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
   * Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
 
@@ -408,3 +434,5 @@ The tile sampler allows high-resolution sampling even in places with low GPU VRA
 BlenderNeok/[ComfyUI_Noise](https://github.com/BlenderNeko/ComfyUI_Noise) - The noise injection feature relies on this function.
 
 WASasquatch/[was-node-suite-comfyui](https://github.com/WASasquatch/was-node-suite-comfyui) - A powerful custom node extensions of ComfyUI.
+
+Trung0246/[ComfyUI-0246](https://github.com/Trung0246/ComfyUI-0246) - Nice bypass hack!

@@ -24,6 +24,8 @@ import safetensors.torch
 from PIL.PngImagePlugin import PngInfo
 import comfy.model_management
 import base64
+import impact.wildcards as wildcards
+from . import hooks
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -80,9 +82,10 @@ class CLIPSegDetectorProvider:
 class SAMLoader:
     @classmethod
     def INPUT_TYPES(cls):
+        models = [x for x in folder_paths.get_filename_list("sams") if 'hq' not in x]
         return {
             "required": {
-                "model_name": (folder_paths.get_filename_list("sams"), ),
+                "model_name": (models, ),
                 "device_mode": (["AUTO", "Prefer GPU", "CPU"],),
             }
         }
@@ -164,6 +167,8 @@ class DetailerForEach:
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {"detailer_hook": ("DETAILER_HOOK",), }
                 }
@@ -176,10 +181,12 @@ class DetailerForEach:
     @staticmethod
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
-                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                  refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1):
 
-        image_pil = tensor2pil(image).convert('RGBA')
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
@@ -188,11 +195,29 @@ class DetailerForEach:
         segs = core.segs_scale_match(segs, image.shape)
         new_segs = []
 
-        for seg in segs[1]:
+        wildcard_concat_mode = None
+        if wildcard_opt is not None:
+            if wildcard_opt.startswith('[CONCAT]'):
+                wildcard_concat_mode = 'concat'
+                wildcard_opt = wildcard_opt[8:]
+            wmode, wildcard_chooser = wildcards.process_wildcard_for_segs(wildcard_opt)
+        else:
+            wmode, wildcard_chooser = None, None
+
+        if wmode in ['ASC', 'DSC']:
+            if wmode == 'ASC':
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]))
+            else:
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]), reverse=True)
+        else:
+            ordered_segs = segs[1]
+
+        for seg in ordered_segs:
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
-
-            mask_pil = feather_mask(seg.cropped_mask, feather)
+            cropped_image = to_tensor(cropped_image)
+            mask = to_tensor(seg.cropped_mask)
+            mask = tensor_gaussian_blur_mask(mask, feather)
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -204,41 +229,49 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
-            enhanced_pil, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
-                                                         seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                         positive, negative, denoise, cropped_mask, force_inpaint, wildcard_opt, detailer_hook,
-                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                         refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                         refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper)
+            if wildcard_chooser is not None:
+                wildcard_item = wildcard_chooser.get(seg)
+            else:
+                wildcard_item = None
+
+            enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
+                                                           seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                           positive, negative, denoise, cropped_mask, force_inpaint,
+                                                           wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
+                                                           detailer_hook=detailer_hook,
+                                                           refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                                           refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
             if cnet_pil is not None:
                 cnet_pil_list.append(cnet_pil)
 
-            if not (enhanced_pil is None):
+            if not (enhanced_image is None):
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image_pil.paste(enhanced_pil, (seg.crop_region[0], seg.crop_region[1]), mask_pil)
-                enhanced_list.append(pil2tensor(enhanced_pil))
+                image = image.cpu()
+                enhanced_image = enhanced_image.cpu()
+                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
+                enhanced_list.append(enhanced_image)
 
-            if not (enhanced_pil is None):
+            if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
-                enhanced_pil_alpha = enhanced_pil.copy().convert('RGBA')
-
+                enhanced_image_alpha = tensor_convert_rgba(enhanced_image)
+                new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
+                
                 # Apply the mask
-                mask_array = seg.cropped_mask.astype(np.uint8) * 255
-                mask_image = Image.fromarray(mask_array, mode='L').resize(enhanced_pil_alpha.size)
-                enhanced_pil_alpha.putalpha(mask_image)
-                enhanced_alpha_list.append(pil2tensor(enhanced_pil_alpha))
-                new_seg_pil = pil2numpy(enhanced_pil)
+                mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
+                tensor_putalpha(enhanced_image_alpha, mask)
+                enhanced_alpha_list.append(enhanced_image_alpha)
             else:
-                new_seg_pil = None
+                new_seg_image = None
 
-            cropped_list.append(torch.from_numpy(cropped_image))
+            cropped_list.append(cropped_image)
 
-            new_seg = SEG(new_seg_pil, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-        image_tensor = pil2tensor(image_pil.convert('RGB'))
+        image_tensor = tensor_convert_rgb(image)
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
@@ -247,12 +280,12 @@ class DetailerForEach:
         return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1, detailer_hook=None):
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
+        enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle)
 
         return (enhanced_img, )
 
@@ -278,6 +311,8 @@ class DetailerForEachPipe:
                      "basic_pipe": ("BASIC_PIPE", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                     "detailer_hook": ("DETAILER_HOOK",),
@@ -293,7 +328,11 @@ class DetailerForEachPipe:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, cycle=1):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -307,7 +346,8 @@ class DetailerForEachPipe:
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                      cycle=cycle)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -354,6 +394,8 @@ class FaceDetailer:
 
                      "bbox_detector": ("BBOX_DETECTOR", ),
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -375,7 +417,7 @@ class FaceDetailer:
                      sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -399,13 +441,19 @@ class FaceDetailer:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
-        enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
-            DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
-                                      sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard_opt, detailer_hook,
-                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+        if len(segs[1]) > 0:
+            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
+                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
+                                          sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
+                                          force_inpaint, wildcard_opt, detailer_hook,
+                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                          refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                          refiner_negative=refiner_negative, cycle=cycle)
+        else:
+            enhanced_img = image
+            cropped_enhanced = []
+            cropped_enhanced_alpha = []
+            cnet_pil_list = []
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
@@ -425,21 +473,38 @@ class FaceDetailer:
              positive, negative, denoise, feather, noise_mask, force_inpaint,
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
+             sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
+             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None):
 
-        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-            image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-            positive, negative, denoise, feather, noise_mask, force_inpaint,
-            bbox_threshold, bbox_dilation, bbox_crop_factor,
-            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook)
+        result_img = None
+        result_mask = None
+        result_cropped_enhanced = []
+        result_cropped_enhanced_alpha = []
+        result_cnet_images = []
+
+        if len(image) > 1:
+            print(f"[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
+
+        for i, single_image in enumerate(image):
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                positive, negative, denoise, feather, noise_mask, force_inpaint,
+                bbox_threshold, bbox_dilation, bbox_crop_factor,
+                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook, cycle=cycle)
+
+            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
+            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_cropped_enhanced.extend(cropped_enhanced)
+            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+            result_cnet_images.extend(cnet_pil_list)
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, pipe, cnet_pil_list
+        return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
 
 
 class LatentPixelScale:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -455,28 +520,30 @@ class LatentPixelScale:
                     }
                 }
 
-    RETURN_TYPES = ("LATENT",)
+    RETURN_TYPES = ("LATENT", "IMAGE")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
         if upscale_model_opt is None:
-            latent = core.latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
+            latimg = core.latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
         else:
-            latent = core.latent_upscale_on_pixel_space_with_model(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
-        return (latent,)
+            latimg = core.latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
+        return latimg
 
 
 class NoiseInjectionDetailerHookProvider:
-    schedules = ["simple"]
+    schedules = ["skip_start", "from_start"]
 
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
                      "source": (["CPU", "GPU"],),
                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "start_strength": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 200.0, "step": 0.01}),
+                     "end_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 200.0, "step": 0.01}),
                     },
                 }
 
@@ -485,15 +552,74 @@ class NoiseInjectionDetailerHookProvider:
 
     CATEGORY = "ImpactPack/Detailer"
 
-    def doit(self, source, seed, strength):
+    def doit(self, schedule_for_cycle, source, seed, start_strength, end_strength):
         try:
-            hook = core.InjectNoiseHook(source, seed, strength, strength)
-            hook.set_steps((1, 1))
+            hook = hooks.InjectNoiseHookForDetailer(source, seed, start_strength, end_strength,
+                                                    from_start=('from_start' in schedule_for_cycle))
             return (hook, )
         except Exception as e:
             print("[ERROR] NoiseInjectionDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
             print(f"\t{e}")
             pass
+
+
+class UnsamplerDetailerHookProvider:
+    schedules = ["skip_start", "from_start"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_cycle": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_cycle):
+        try:
+            hook = hooks.UnsamplerDetailerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                               scheduler, normalize, positive, negative,
+                                               from_start=('from_start' in schedule_for_cycle))
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
+
+
+class DenoiseSchedulerDetailerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_cycle": (s.schedules,),
+                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, schedule_for_cycle, target_denoise):
+        hook = hooks.SimpleDetailerDenoiseSchedulerHook(target_denoise)
+        return (hook, )
 
 
 class CoreMLDetailerHookProvider:
@@ -507,7 +633,7 @@ class CoreMLDetailerHookProvider:
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, mode):
-        hook = core.CoreMLHook(mode)
+        hook = hooks.CoreMLHook(mode)
         return (hook, )
 
 
@@ -530,9 +656,48 @@ class CfgScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_cfg):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleCfgScheduleHook(target_cfg)
+            hook = hooks.SimpleCfgScheduleHook(target_cfg)
 
         return (hook, )
+
+
+class UnsamplerHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"model": ("MODEL",),
+                     "steps": ("INT", {"default": 25, "min": 1, "max": 10000}),
+                     "start_end_at_step": ("INT", {"default": 21, "min": 0, "max": 10000}),
+                     "end_end_at_step": ("INT", {"default": 24, "min": 0, "max": 10000}),
+                     "cfg": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 100.0}),
+                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
+                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "normalize": (["disable", "enable"], ),
+                     "positive": ("CONDITIONING", ),
+                     "negative": ("CONDITIONING", ),
+                     "schedule_for_iteration": (s.schedules,),
+                     }}
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+             scheduler, normalize, positive, negative, schedule_for_iteration):
+        try:
+            hook = None
+            if schedule_for_iteration == "simple":
+                hook = hooks.UnsamplerHook(model, steps, start_end_at_step, end_end_at_step, cfg, sampler_name,
+                                           scheduler, normalize, positive, negative)
+
+            return (hook, )
+        except Exception as e:
+            print("[ERROR] UnsamplerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.")
+            print(f"\t{e}")
+            pass
 
 
 class NoiseInjectionHookProvider:
@@ -558,7 +723,7 @@ class NoiseInjectionHookProvider:
         try:
             hook = None
             if schedule_for_iteration == "simple":
-                hook = core.InjectNoiseHook(source, seed, start_strength, end_strength)
+                hook = hooks.InjectNoiseHook(source, seed, start_strength, end_strength)
 
             return (hook, )
         except Exception as e:
@@ -574,7 +739,7 @@ class DenoiseScheduleHookProvider:
     def INPUT_TYPES(s):
         return {"required": {
                      "schedule_for_iteration": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 100.0}),
+                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0, "step": 0.01}),
                     },
                 }
 
@@ -586,8 +751,27 @@ class DenoiseScheduleHookProvider:
     def doit(self, schedule_for_iteration, target_denoise):
         hook = None
         if schedule_for_iteration == "simple":
-            hook = core.SimpleDenoiseScheduleHook(target_denoise)
+            hook = hooks.SimpleDenoiseScheduleHook(target_denoise)
 
+        return (hook, )
+
+
+class DetailerHookCombine:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "hook1": ("DETAILER_HOOK",),
+                     "hook2": ("DETAILER_HOOK",),
+                    },
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, hook1, hook2):
+        hook = hooks.DetailerHookCombine(hook1, hook2)
         return (hook, )
 
 
@@ -606,12 +790,12 @@ class PixelKSampleHookCombine:
     CATEGORY = "ImpactPack/Upscale"
 
     def doit(self, hook1, hook2):
-        hook = core.PixelKSampleHookCombine(hook1, hook2)
+        hook = hooks.PixelKSampleHookCombine(hook1, hook2)
         return (hook, )
 
 
 class PixelTiledKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -651,7 +835,7 @@ class PixelTiledKSampleUpscalerProvider:
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -689,7 +873,7 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
 
 class PixelKSampleUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -728,7 +912,7 @@ class PixelKSampleUpscalerProvider:
 
 
 class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -765,7 +949,7 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
 
 
 class TwoSamplersForMaskUpscalerProvider:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -807,7 +991,7 @@ class TwoSamplersForMaskUpscalerProvider:
 
 
 class TwoSamplersForMaskUpscalerProviderPipe:
-    upscale_methods = ["nearest-exact", "bilinear", "area"]
+    upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
     def INPUT_TYPES(s):
@@ -843,8 +1027,7 @@ class TwoSamplersForMaskUpscalerProviderPipe:
              full_sampler_opt=None, upscale_model_opt=None,
              pk_hook_base_opt=None, pk_hook_mask_opt=None, pk_hook_full_opt=None, tile_size=512):
 
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
+        mask = make_2d_mask(mask)
 
         _, _, vae, _, _ = basic_pipe
         upscaler = core.TwoSamplersForMaskUpscaler(scale_method, full_sample_schedule, use_tiled_vae,
@@ -866,8 +1049,8 @@ class IterativeLatentUpscale:
                 "hidden": {"unique_id": "UNIQUE_ID"},
         }
 
-    RETURN_TYPES = ("LATENT",)
-    RETURN_NAMES = ("latent",)
+    RETURN_TYPES = ("LATENT", "VAE")
+    RETURN_NAMES = ("latent", "vae")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Upscale"
@@ -902,7 +1085,7 @@ class IterativeLatentUpscale:
 
         core.update_node_status(unique_id, "", None)
 
-        return (current_latent, )
+        return (current_latent, upscaler.vae)
 
 
 class IterativeImageUpscale:
@@ -980,6 +1163,8 @@ class FaceDetailerPipe:
 
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 }
 
@@ -993,30 +1178,47 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None, cycle=1):
+
+        result_img = None
+        result_mask = None
+        result_cropped_enhanced = []
+        result_cropped_enhanced_alpha = []
+        result_cnet_images = []
+
+        if len(image) > 1:
+            print(f"[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
 
         model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector, sam_model_opt, detailer_hook, \
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
-        enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-            image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-            positive, negative, denoise, feather, noise_mask, force_inpaint,
-            bbox_threshold, bbox_dilation, bbox_crop_factor,
-            sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-            sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
-            refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-            refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+        for i, single_image in enumerate(image):
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                positive, negative, denoise, feather, noise_mask, force_inpaint,
+                bbox_threshold, bbox_dilation, bbox_crop_factor,
+                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
+                refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                cycle=cycle)
 
-        if len(cropped_enhanced) == 0:
-            cropped_enhanced = [empty_pil_tensor()]
+            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
+            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_cropped_enhanced.extend(cropped_enhanced)
+            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+            result_cnet_images.extend(cnet_pil_list)
 
-        if len(cropped_enhanced_alpha) == 0:
-            cropped_enhanced_alpha = [empty_pil_tensor()]
+        if len(result_cropped_enhanced) == 0:
+            result_cropped_enhanced = [empty_pil_tensor()]
 
-        if len(cnet_pil_list) == 0:
-            cnet_pil_list = [empty_pil_tensor()]
+        if len(result_cropped_enhanced_alpha) == 0:
+            result_cropped_enhanced_alpha = [empty_pil_tensor()]
 
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, detailer_pipe, cnet_pil_list
+        if len(result_cnet_images) == 0:
+            result_cnet_images = [empty_pil_tensor()]
+
+        return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, detailer_pipe, result_cnet_images
 
 
 class MaskDetailerPipe:
@@ -1044,6 +1246,8 @@ class MaskDetailerPipe:
                      "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+
+                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
@@ -1060,8 +1264,11 @@ class MaskDetailerPipe:
 
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
-             feather, crop_factor, drop_size, refiner_ratio, batch_size,
+             feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
              refiner_basic_pipe_opt=None, detailer_hook=None):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: MaskDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -1071,22 +1278,26 @@ class MaskDetailerPipe:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
         # create segs
-        if len(mask.shape) == 3:
-            mask = mask.squeeze(0)
-
-        segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+        if mask is not None:
+            mask = make_2d_mask(mask)
+            segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+        else:
+            segs = ((image.shape[1], image.shape[2]), [])
 
         enhanced_img_batch = None
         cropped_enhanced_list = []
         cropped_enhanced_alpha_list = []
 
         for i in range(batch_size):
-            enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, new_segs = \
-                DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
-                                          cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
-                                          force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
-                                          refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
-                                          refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+            if mask is not None:
+                enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, _, _ = \
+                    DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed+i, steps,
+                                              cfg, sampler_name, scheduler, positive, negative, denoise, feather, mask_mode,
+                                              force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
+                                              refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
+                                              refiner_positive=refiner_positive, refiner_negative=refiner_negative, cycle=cycle)
+            else:
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
 
             if enhanced_img_batch is None:
                 enhanced_img_batch = enhanced_img
@@ -1094,7 +1305,7 @@ class MaskDetailerPipe:
                 enhanced_img_batch = torch.cat((enhanced_img_batch, enhanced_img), dim=0)
 
             cropped_enhanced_list += cropped_enhanced
-            cropped_enhanced_alpha_list += cropped_enhanced_alpha_list
+            cropped_enhanced_alpha_list += cropped_enhanced_alpha
 
         # set fallback image
         if len(cropped_enhanced_list) == 0:
@@ -1116,12 +1327,16 @@ class DetailerForEachTest(DetailerForEach):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None):
+             scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
+             cycle=1):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1149,7 +1364,11 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+             denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None):
+
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         model, clip, vae, positive, negative = basic_pipe
 
@@ -1164,7 +1383,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative)
+                                      refiner_negative=refiner_negative, cycle=cycle)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1343,7 +1562,7 @@ class MasksToMaskList:
 
     def doit(self, masks):
         if masks is None:
-            empty_mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
             return ([empty_mask], )
 
         res = []
@@ -1352,6 +1571,8 @@ class MasksToMaskList:
             res.append(mask)
 
         print(f"mask len: {len(res)}")
+
+        res = [make_3d_mask(x) for x in res]
 
         return (res, )
 
@@ -1373,27 +1594,24 @@ class MaskListToMaskBatch:
 
     def doit(self, mask):
         if len(mask) == 1:
-            if len(mask[0].shape) == 2:
-                mask = mask[0].unsqueeze(0)
+            mask = make_3d_mask(mask[0])
             return (mask,)
         elif len(mask) > 1:
-            mask1 = mask[0]
-            if len(mask1.shape) == 2:
-                mask1 = mask1.unsqueeze(0)
+            mask1 = make_3d_mask(mask[0])
 
             for mask2 in mask[1:]:
-                if len(mask2.shape) == 2:
-                    mask2 = mask2.unsqueeze(0)
+                mask2 = make_3d_mask(mask2)
                 if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "bilinear", "center").movedim(1, -1)
+                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
                 mask1 = torch.cat((mask1, mask2), dim=0)
+
             return (mask1,)
         else:
-            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+            empty_mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
             return (empty_mask,)
 
 
-class ImageListToMaskBatch:
+class ImageListToImageBatch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
@@ -1415,7 +1633,7 @@ class ImageListToMaskBatch:
             image1 = images[0]
             for image2 in images[1:]:
                 if image1.shape[1:] != image2.shape[1:]:
-                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
             return (image1,)
 
@@ -1537,97 +1755,6 @@ def get_file_item(base_type, path):
             "subfolder": subfolder,
             "type": path_type
            }
-
-
-class PreviewBridge:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "images": ("IMAGE",),
-                    "image": ("STRING", {"default": ""}),
-                    },
-                "hidden": {"unique_id": "UNIQUE_ID"},
-                }
-
-    RETURN_TYPES = ("IMAGE", "MASK", )
-
-    FUNCTION = "doit"
-
-    OUTPUT_NODE = True
-
-    CATEGORY = "ImpactPack/Util"
-
-    def __init__(self):
-        super().__init__()
-        self.output_dir = folder_paths.get_temp_directory()
-        self.type = "temp"
-        self.prev_hash = None
-
-    @staticmethod
-    def load_image(pb_id):
-        is_fail = False
-        if pb_id not in impact.core.preview_bridge_image_id_map:
-            is_fail = True
-
-        image_path, ui_item = impact.core.preview_bridge_image_id_map[pb_id]
-
-        if not os.path.isfile(image_path):
-            is_fail = True
-
-        if not is_fail:
-            i = Image.open(image_path)
-            i = ImageOps.exif_transpose(i)
-            image = i.convert("RGB")
-            image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image)[None,]
-
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-
-        if is_fail:
-            image = empty_pil_tensor()
-            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-            ui_item = {
-                "filename": 'empty.png',
-                "subfolder": '',
-                "type": 'temp'
-            }
-
-        return (image, mask.unsqueeze(0), ui_item)
-
-    def doit(self, images, image, unique_id):
-        need_refresh = False
-
-        if unique_id not in impact.core.preview_bridge_cache:
-            need_refresh = True
-
-        elif impact.core.preview_bridge_cache[unique_id][0] is not images:
-            need_refresh = True
-
-        if not need_refresh:
-            pixels, mask, path_item = PreviewBridge.load_image(image)
-            image = [path_item]
-        else:
-            res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-")
-            image2 = res['ui']['images']
-            pixels = images
-            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-
-            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
-            impact.core.set_previewbridge_image(unique_id, path, image2[0])
-            impact.core.preview_bridge_image_id_map[image] = (path, image2[0])
-            impact.core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
-            impact.core.preview_bridge_cache[unique_id] = (images, image2)
-
-            image = image2
-
-        return {
-            "ui": {"images": image},
-            "result": (pixels, mask, ),
-        }
 
 
 class ImageReceiver:
@@ -1817,6 +1944,7 @@ class LatentReceiver:
 
 class LatentSender(nodes.SaveLatent):
     def __init__(self):
+        super().__init__()
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
 
@@ -2010,23 +2138,6 @@ class LatentSwitch:
             return (kwargs['latent1'],)
 
 
-class ImpactWildcardUnprocessed:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "wildcard_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
-                    },
-                }
-
-    CATEGORY = "ImpactPack/Prompt"
-
-    RETURN_TYPES = ("STRING", )
-    FUNCTION = "doit"
-
-    def doit(self, *args, **kwargs):
-        wildcard_text = kwargs['wildcard_text']
-        return (wildcard_text, )
-
 class ImpactWildcardProcessor:
     @classmethod
     def INPUT_TYPES(s):
@@ -2043,6 +2154,10 @@ class ImpactWildcardProcessor:
 
     RETURN_TYPES = ("STRING", )
     FUNCTION = "doit"
+
+    @staticmethod
+    def process(**kwargs):
+        return impact.wildcards.process(**kwargs)
 
     def doit(self, *args, **kwargs):
         populated_text = kwargs['populated_text']
@@ -2191,7 +2306,7 @@ class MakeImageBatch:
         else:
             for image2 in images:
                 if image1.shape[1:] != image2.shape[1:]:
-                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "bilinear", "center").movedim(1, -1)
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
             return (image1,)
 

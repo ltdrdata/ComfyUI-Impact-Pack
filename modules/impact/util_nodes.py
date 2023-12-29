@@ -1,4 +1,4 @@
-from impact.utils import any_typ
+from impact.utils import any_typ, ByPassTypeTuple
 import comfy_extras.nodes_mask
 from nodes import MAX_RESOLUTION
 
@@ -55,7 +55,7 @@ class GeneralInversedSwitch:
                 "hidden": {"unique_id": "UNIQUE_ID"},
                 }
 
-    RETURN_TYPES = tuple([any_typ] * 100)
+    RETURN_TYPES = ByPassTypeTuple((any_typ, ))
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"

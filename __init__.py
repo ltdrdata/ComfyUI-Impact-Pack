@@ -20,7 +20,6 @@ custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcard
 
 sys.path.append(modules_path)
 
-
 import impact.config
 import impact.sample_error_enhancer
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
@@ -105,12 +104,28 @@ from impact.util_nodes import *
 from impact.segs_nodes import *
 from impact.special_samplers import *
 from impact.hf_nodes import *
+from impact.bridge_nodes import *
+from impact.hook_nodes import *
 
-impact.wildcards.read_wildcard_dict(wildcards_path)
-try:
-    impact.wildcards.read_wildcard_dict(impact.config.get_config()['custom_wildcards'])
-except Exception as e:
-    print(f"[Impact Pack] Failed to load custom wildcards directory.")
+import threading
+
+wildcard_path = impact.config.get_config()['custom_wildcards']
+
+
+def wildcard_load():
+    with wildcards.wildcard_lock:
+        impact.wildcards.read_wildcard_dict(wildcards_path)
+
+        try:
+            impact.wildcards.read_wildcard_dict(impact.config.get_config()['custom_wildcards'])
+        except Exception as e:
+            print(f"[Impact Pack] Failed to load custom wildcards directory.")
+
+        print(f"[Impact Pack] Wildcards loading done.")
+
+
+threading.Thread(target=wildcard_load).start()
+
 
 NODE_CLASS_MAPPINGS = {
     "SAMLoader": SAMLoader,
@@ -161,22 +176,32 @@ NODE_CLASS_MAPPINGS = {
     "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
     "CfgScheduleHookProvider": CfgScheduleHookProvider,
     "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
-    "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
+    "UnsamplerHookProvider": UnsamplerHookProvider,
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
+
+    "DetailerHookCombine": DetailerHookCombine,
+    "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
+    "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider,
+    "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider,
+    "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider,
+    "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider,
+    "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,
     "AddMask": AddMask,
-    "Segs & Mask": SegsBitwiseAndMask,
-    "Segs & Mask ForEach": SegsBitwiseAndMaskForEach,
+    "ImpactSegsAndMask": SegsBitwiseAndMask,
+    "ImpactSegsAndMaskForEach": SegsBitwiseAndMaskForEach,
     "EmptySegs": EmptySEGS,
 
     "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS,
     "MaskToSEGS": MaskToSEGS,
+    "MaskToSEGS_for_AnimateDiff": MaskToSEGS_for_AnimateDiff,
     "ToBinaryMask": ToBinaryMask,
     "MasksToMaskList": MasksToMaskList,
     "MaskListToMaskBatch": MaskListToMaskBatch,
-    "ImageListToImageBatch": ImageListToMaskBatch,
+    "ImageListToImageBatch": ImageListToImageBatch,
+    "SetDefaultImageForSEGS": DefaultImageForSEGS,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
@@ -192,6 +217,9 @@ NODE_CLASS_MAPPINGS = {
     "ImpactEdit_SEG_ELT": Edit_SEG_ELT,
     "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT,
     "ImpactDilateMask": DilateMask,
+    "ImpactGaussianBlurMask": GaussianBlurMask,
+    "ImpactDilateMaskInSEGS": DilateMaskInSEGS,
+    "ImpactGaussianBlurMaskInSEGS": GaussianBlurMaskInSEGS,
     "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
@@ -206,6 +234,7 @@ NODE_CLASS_MAPPINGS = {
     "TwoAdvancedSamplersForMask": TwoAdvancedSamplersForMask,
 
     "PreviewBridge": PreviewBridge,
+    "PreviewBridgeLatent": PreviewBridgeLatent,
     "ImageSender": ImageSender,
     "ImageReceiver": ImageReceiver,
     "LatentSender": LatentSender,
@@ -218,7 +247,6 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
-    "ImpactWildcardUnprocessed": ImpactWildcardUnprocessed,
 
     "SEGSDetailer": SEGSDetailer,
     "SEGSPaste": SEGSPaste,
@@ -247,6 +275,7 @@ NODE_CLASS_MAPPINGS = {
     "RegionalPrompt": RegionalPrompt,
 
     "ImpactCombineConditionings": CombineConditionings,
+    "ImpactConcatConditionings": ConcatConditionings,
 
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
     "ImpactSEGSRangeFilter": SEGSRangeFilter,
@@ -255,10 +284,11 @@ NODE_CLASS_MAPPINGS = {
     "ImpactCompare": ImpactCompare,
     "ImpactConditionalBranch": ImpactConditionalBranch,
     "ImpactInt": ImpactInt,
-    # "ImpactFloat": ImpactFloat,
+    "ImpactFloat": ImpactFloat,
     "ImpactValueSender": ImpactValueSender,
     "ImpactValueReceiver": ImpactValueReceiver,
     "ImpactImageInfo": ImpactImageInfo,
+    "ImpactLatentInfo": ImpactLatentInfo,
     "ImpactMinMax": ImpactMinMax,
     "ImpactNeg": ImpactNeg,
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
@@ -276,6 +306,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactControlBridge": ImpactControlBridge,
     "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS,
     "ImpactSleep": ImpactSleep,
+    "ImpactRemoteBoolean": ImpactRemoteBoolean,
+    "ImpactRemoteInt": ImpactRemoteInt,
 
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
     "ImpactSEGSClassify": SEGS_Classify
@@ -283,6 +315,8 @@ NODE_CLASS_MAPPINGS = {
 
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "SAMLoader": "SAMLoader (Impact)",
+
     "BboxDetectorSEGS": "BBOX Detector (SEGS)",
     "SegmDetectorSEGS": "SEGM Detector (SEGS)",
     "ONNXDetectorSEGS": "ONNX Detector (SEGS/legacy) - use BBOXDetector",
@@ -296,10 +330,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SegsToCombinedMask": "SEGS to MASK (combined)",
     "MediaPipeFaceMeshToSEGS": "MediaPipe FaceMesh to SEGS",
     "MaskToSEGS": "MASK to SEGS",
+    "MaskToSEGS_for_AnimateDiff": "MASK to SEGS for AnimateDiff",
     "BitwiseAndMaskForEach": "Bitwise(SEGS & SEGS)",
     "SubtractMaskForEach": "Bitwise(SEGS - SEGS)",
-    "Segs & Mask": "Bitwise(SEGS & MASK)",
-    "Segs & Mask ForEach": "Bitwise(SEGS & MASKS ForEach)",
+    "ImpactSegsAndMask": "Bitwise(SEGS & MASK)",
+    "ImpactSegsAndMaskForEach": "Bitwise(SEGS & MASKS ForEach)",
     "BitwiseAndMask": "Bitwise(MASK & MASK)",
     "SubtractMask": "Bitwise(MASK - MASK)",
     "AddMask": "Bitwise(MASK + MASK)",
@@ -324,7 +359,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "EditDetailerPipe": "Edit DetailerPipe",
 
     "LatentPixelScale": "Latent Scale (on Pixel Space)",
-    "IterativeLatentUpscale": "Iterative Upscale (Latent)",
+    "IterativeLatentUpscale": "Iterative Upscale (Latent/on Pixel Space)",
     "IterativeImageUpscale": "Iterative Upscale (Image)",
 
     "TwoSamplersForMaskUpscalerProvider": "TwoSamplersForMask Upscaler Provider",
@@ -350,8 +385,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactDilate_Mask_SEG_ELT": "Dilate Mask (SEG_ELT)",
     "ImpactScaleBy_BBOX_SEG_ELT": "ScaleBy BBOX (SEG_ELT)",
     "ImpactDilateMask": "Dilate Mask",
+    "ImpactGaussianBlurMask": "Gaussian Blur Mask",
+    "ImpactDilateMaskInSEGS": "Dilate Mask (SEGS)",
+    "ImpactGaussianBlurMaskInSEGS": "Gaussian Blur Mask (SEGS)",
 
-    "PreviewBridge": "Preview Bridge",
+    "PreviewBridge": "Preview Bridge (Image)",
+    "PreviewBridgeLatent": "Preview Bridge (Latent)",
     "ImageSender": "Image Sender",
     "ImageReceiver": "Image Receiver",
     "ImageMaskSwitch": "Switch (images, mask)",
@@ -366,10 +405,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
     "ImpactIsNotEmptySEGS": "SEGS isn't Empty",
+    "SetDefaultImageForSEGS": "Set Default Image for SEGS",
 
     "RemoveNoiseMask": "Remove Noise Mask",
 
     "ImpactCombineConditionings": "Combine Conditionings",
+    "ImpactConcatConditionings": "Concat Conditionings",
 
     "ImpactQueueTrigger": "Queue Trigger",
     "ImpactQueueTriggerCountdown": "Queue Trigger (Countdown)",
@@ -377,6 +418,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactNodeSetMuteState": "Set Mute State",
     "ImpactControlBridge": "Control Bridge",
     "ImpactSleep": "Sleep",
+    "ImpactRemoteBoolean": "Remote Boolean (on prompt)",
+    "ImpactRemoteInt": "Remote Int (on prompt)",
 
     "ImpactHFTransformersClassifierProvider": "HF Transformers Classifier Provider",
     "ImpactSEGSClassify": "SEGS Classify",

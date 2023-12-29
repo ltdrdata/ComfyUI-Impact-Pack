@@ -1,4 +1,3 @@
-from transformers import pipeline
 import comfy
 import re
 from impact.utils import *
@@ -31,6 +30,8 @@ class HF_TransformersClassifierProvider:
     CATEGORY = "ImpactPack/HuggingFace"
 
     def doit(self, preset_repo_id, manual_repo_id, device_mode):
+        from transformers import pipeline
+
         if preset_repo_id == 'Manual repo id':
             url = manual_repo_id
         else:
@@ -138,7 +139,7 @@ class SEGS_Classify:
                 cropped_image = crop_image(ref_image_opt, seg.crop_region)
 
             if cropped_image is not None:
-                cropped_image = Image.fromarray(np.clip(255. * cropped_image.squeeze(), 0, 255).astype(np.uint8))
+                cropped_image = to_pil(cropped_image)
                 res = classifier(cropped_image)
                 classified.append((seg, res))
             else:

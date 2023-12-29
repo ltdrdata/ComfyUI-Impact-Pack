@@ -617,7 +617,7 @@ app.registerExtension({
 	},
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
-		if (nodeData.output.includes("MASK") && nodeData.output.includes("IMAGE")) {
+		if (Array.isArray(nodeData.output) && (nodeData.output.includes("MASK") || nodeData.output.includes("IMAGE"))) {
 			addMenuHandler(nodeType, function (_, options) {
 				options.unshift({
 					content: "Open in SAM Detector",

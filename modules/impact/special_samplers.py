@@ -236,8 +236,42 @@ class CombineConditionings:
             res += v
 
         return (res, )
+    
 
+class ConcatConditionings:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "conditioning1": ("CONDITIONING", ),
+                     },
+                }
 
+    RETURN_TYPES = ("CONDITIONING", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/__for_testing"
+
+    def doit(self, **kwargs):
+        conditioning_to = list(kwargs.values())[0]
+
+        for k, conditioning_from in list(kwargs.items())[1:]:
+            out = []
+            if len(conditioning_from) > 1:
+                print("Warning: ConcatConditionings {k} contains more than 1 cond, only the first one will actually be applied to conditioning1.")
+
+            cond_from = conditioning_from[0][0]
+
+            for i in range(len(conditioning_to)):
+                t1 = conditioning_to[i][0]
+                tw = torch.cat((t1, cond_from), 1)
+                n = [tw, conditioning_to[i][1].copy()]
+                out.append(n)
+
+            conditioning_to = out
+
+        return (out, )
+    
+    
 class RegionalSampler:
     @classmethod
     def INPUT_TYPES(s):

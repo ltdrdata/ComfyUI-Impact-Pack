@@ -74,13 +74,16 @@ app.registerExtension({
 	name: "Comfy.Impact.img",
 
 	nodeCreated(node, app) {
-		if(node.comfyClass == "PreviewBridge") {
+		if(node.comfyClass == "PreviewBridge" || node.comfyClass == "PreviewBridgeLatent") {
 			let w = node.widgets.find(obj => obj.name === 'image');
 			node._imgs = [new Image()];
 			node.imageIndex = 0;
 
 			Object.defineProperty(w, 'value', {
 				async set(v) {
+					if(w._lock)
+						return;
+
 					const stackTrace = new Error().stack;
 					if(stackTrace.includes('presetText.js'))
 						return;
@@ -101,7 +104,9 @@ app.registerExtension({
 					}
 					else {
 						// from clipspace
+						w._lock = true;
 						w._value = await loadImageFromUrl(image, node.id, v, false);
+						w._lock = false;
 					}
 				},
 				get() {
