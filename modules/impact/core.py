@@ -737,7 +737,7 @@ def segs_scale_match(segs, target_shape):
         cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
         if cropped_image is not None:
-            cropped_image = tensor_resize(torch.from_numpy(cropped_image), new_w, new_h)
+            cropped_image = tensor_resize(cropped_image if isinstance(cropped_image, torch.Tensor) else torch.from_numpy(cropped_image), new_w, new_h)
             cropped_image = cropped_image.numpy()
 
         new_seg = SEG(cropped_image, cropped_mask, seg.confidence, crop_region, bbox, seg.label, seg.control_net_wrapper)
@@ -812,7 +812,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
 
     finally:
         # Temporarily disabling the switch back to CPU after inference.
-        # Rationale: After multiple tests and comparisons, it's concluded that not only does it fail to conserve GPU memory, 
+        # Rationale: After multiple tests and comparisons, it's concluded that not only does it fail to conserve GPU memory,
         # but it also introduces additional IO overhead from transferring the model between devices.
 
         # if sam_model.is_auto_mode:
@@ -1748,7 +1748,7 @@ class BBoxDetectorBasedOnCLIPSeg:
             utils.try_install_custom_node('https://github.com/biegert/ComfyUI-CLIPSeg/raw/main/custom_nodes/clipseg.py',
                                           "To use 'CLIPSegDetectorProvider', 'CLIPSeg' extension is required.")
             raise Exception("'CLIPSeg' node isn't installed.")
-        
+
         if self.threshold is None:
             threshold = bbox_threshold
         else:
@@ -1768,7 +1768,7 @@ class BBoxDetectorBasedOnCLIPSeg:
     def setAux(self, x):
         self.aux = x
 
-        
+
 def update_node_status(node, text, progress=None):
     if PromptServer.instance.client_id is None:
         return
