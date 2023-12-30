@@ -591,7 +591,7 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
         mask = dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
     else:
-        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+        mask = torch.zeros((image.shape[0], image.shape[1]), dtype=torch.float32, device="cpu")  # empty mask
 
     mask = utils.make_3d_mask(mask)
     return mask
