@@ -1333,7 +1333,7 @@ def latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use
 def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae,
                                                    use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
     return latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upscale_model, new_w, new_h, vae,
-                                                           use_tile, tile_size, save_temp_prefix, hook)
+                                                           use_tile, tile_size, save_temp_prefix, hook)[0]
 
 def latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upscale_model, new_w, new_h, vae,
                                                     use_tile=False, tile_size=512, save_temp_prefix=None, hook=None):
