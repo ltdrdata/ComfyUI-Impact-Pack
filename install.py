@@ -207,12 +207,6 @@ try:
             except:
                 print(f"[ERROR] ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
 
-        try:
-            import git
-        except Exception:
-            if not is_installed('gitpython'):
-                process_wrap(pip_install + ['gitpython'])
-
     def ensure_mmdet_package():
         try:
             import mmcv
@@ -232,6 +226,12 @@ try:
         subpack_install_script = os.path.join(subpack_path, "install.py")
 
         print(f"### ComfyUI-Impact-Pack: Updating subpack")
+        try:
+            import git
+        except Exception:
+            if not is_installed('GitPython'):
+                process_wrap(pip_install + ['GitPython'])
+
         ensure_subpack()  # The installation of the subpack must take place before ensure_pip. cv2 triggers a permission error.
 
         if os.path.exists(subpack_install_script):
