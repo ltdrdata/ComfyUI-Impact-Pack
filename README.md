@@ -39,7 +39,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * While `batch_masks` may not be completely separated, it provides functionality to perform some level of segmentation.
   * Simple Detector (SEGS) - Operating primarily with `BBOX_DETECTOR`, and with the additional provision of `SAM_MODEL` or `SEGM_DETECTOR`, this node internally generates improved SEGS through mask operations on both *bbox* and *silhouette*. It serves as a convenient tool to simplify a somewhat intricate workflow.
 
-* ControlNetApply (SEGS) - To apply ControlNet in SEGS, you need to use the Preprocessor Provider node from the Inspire Pack to utilize this node.
+* ControlNet
+  * ControlNetApply (SEGS) - To apply ControlNet in SEGS, you need to use the Preprocessor Provider node from the Inspire Pack to utilize this node.
+  * ControlNetClear (SEGS) - Clear applied ControlNet in SEGS 
 
 * Bitwise(SEGS & SEGS) - Performs a 'bitwise and' operation between two SEGS.
 * Bitwise(SEGS - SEGS) - Subtracts one SEGS from another.

@@ -2,7 +2,7 @@ import configparser
 import os
 
 
-version_code = [4, 57]
+version_code = [4, 58]
 version = f"V{version_code[0]}.{version_code[1]}" + (f'.{version_code[2]}' if len(version_code) > 2 else '')
 
 dependency_version = 20

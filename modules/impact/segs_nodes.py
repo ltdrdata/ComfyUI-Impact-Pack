@@ -81,15 +81,15 @@ class SEGSDetailer:
                 else:
                     cropped_mask = None
 
-                enhanced_image, cnet_pil = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
+                enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
                                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                                positive, negative, denoise, cropped_mask, force_inpaint,
                                                                refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                                                control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
 
-                if cnet_pil is not None:
-                    cnet_pil_list.append(cnet_pil)
+                if cnet_pils is not None:
+                    cnet_pil_list.extend(cnet_pils)
 
                 if enhanced_image is None:
                     new_cropped_image = cropped_image
@@ -1127,8 +1127,28 @@ class ControlNetApplySEGS:
         new_segs = []
 
         for seg in segs[1]:
-            control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor)
+            control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor, seg.control_net_wrapper)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
+            new_segs.append(new_seg)
+
+        return ((segs[0], new_segs), )
+
+
+class ControlNetClearSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"segs": ("SEGS",), }, }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs):
+        new_segs = []
+
+        for seg in segs[1]:
+            new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
         return ((segs[0], new_segs), )

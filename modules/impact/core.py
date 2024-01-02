@@ -268,9 +268,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         latent_image = detailer_hook.post_encode(latent_image)
 
-    cnet_pil = None
+    cnet_pils = None
     if control_net_wrapper is not None:
-        positive, cnet_pil = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
+        positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
 
     refined_latent = latent_image
 
@@ -308,7 +308,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # don't convert to latent - latent break image
     # preserving pil is much better
-    return refined_image, cnet_pil
+    return refined_image, cnet_pils
 
 
 def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg,
@@ -1598,17 +1598,29 @@ class PixelKSampleUpscaler:
 
 
 class ControlNetWrapper:
-    def __init__(self, control_net, strength, preprocessor):
+    def __init__(self, control_net, strength, preprocessor, prev_control_net=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
         self.image = None
+        self.prev_control_net = prev_control_net
 
     def apply(self, conditioning, image, mask=None):
-        if self.preprocessor is not None:
-            image = self.preprocessor.apply(image, mask)
+        cnet_pils = []
+        prev_cnet_pils = []
 
-        return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, image, self.strength)[0], image
+        if self.prev_control_net is not None:
+            conditioning, prev_cnet_pils = self.prev_control_net.apply(conditioning, image, mask)
+
+        if self.preprocessor is not None:
+            cnet_pil = self.preprocessor.apply(image, mask)
+        else:
+            cnet_pil = image
+
+        cnet_pils.extend(prev_cnet_pils)
+        cnet_pils.append(cnet_pil)
+
+        return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, cnet_pil, self.strength)[0], cnet_pils
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
