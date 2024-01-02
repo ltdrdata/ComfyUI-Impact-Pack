@@ -468,3 +468,14 @@ except Exception as e:
 
 WEB_DIRECTORY = "js"
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+
+
+try:
+    import cm_global
+    cm_global.register_extension('ComfyUI-Impact-Pack',
+                                 {'version': config.version_code,
+                                  'name': 'Impact Pack',
+                                  'nodes': set(NODE_CLASS_MAPPINGS.keys()),
+                                  'description': 'This extension provides inpainting functionality based on the detector and detailer, along with convenient workflow features like wildcards and logics.', })
+except:
+    pass

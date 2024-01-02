@@ -432,7 +432,7 @@ class ImpactSleep:
 
 error_skip_flag = False
 try:
-    import sys
+    import cm_global
     def filter_message(str):
         global error_skip_flag
 
@@ -444,7 +444,7 @@ try:
         else:
             return False
 
-    sys.__comfyui_manager_register_message_collapse(filter_message)
+    cm_global.try_call(api='cm.register_message_collapse', f=filter_message)
 
 except Exception as e:
     print(f"[WARN] ComfyUI-Impact-Pack: `ComfyUI` or `ComfyUI-Manager` is an outdated version.")

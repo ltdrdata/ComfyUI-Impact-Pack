@@ -521,12 +521,11 @@ def apply_mask_alpha_to_pil(decoded_pil, mask):
 
 
 def try_install_custom_node(custom_node_url, msg):
-    import sys
     try:
-        confirm_try_install = sys.CM_api['cm.try-install-custom-node']
-        print(f"confirm_try_install: {confirm_try_install}")
-        confirm_try_install('Impact Pack', custom_node_url, msg)
-    except Exception as e:
+        import cm_global
+        cm_global.try_call(api='cm.try-install-custom-node',
+                           sender="Impact Pack", custom_node_url=custom_node_url, msg=msg)
+    except Exception:
         print(msg)
         print(f"[Impact Pack] ComfyUI-Manager is outdated. The custom node installation feature is not available.")
 
