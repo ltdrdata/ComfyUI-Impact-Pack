@@ -811,12 +811,8 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
         mask = combine_masks2(total_masks)
 
     finally:
-        # Temporarily disabling the switch back to CPU after inference.
-        # Rationale: After multiple tests and comparisons, it's concluded that not only does it fail to conserve GPU memory,
-        # but it also introduces additional IO overhead from transferring the model between devices.
-
-        # if sam_model.is_auto_mode:
-        #     sam_model.to(device=torch.device("cpu"))
+        if sam_model.is_auto_mode:
+            sam_model.cpu()
 
         pass
 
