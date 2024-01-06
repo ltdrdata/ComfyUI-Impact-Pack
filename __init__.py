@@ -202,6 +202,7 @@ NODE_CLASS_MAPPINGS = {
     "MaskListToMaskBatch": MaskListToMaskBatch,
     "ImageListToImageBatch": ImageListToImageBatch,
     "SetDefaultImageForSEGS": DefaultImageForSEGS,
+    "RemoveImageFromSEGS": RemoveImageFromSEGS,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
@@ -257,6 +258,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
     "ImpactSEGSConcat": SEGSConcat,
     "ImpactSEGSPicker": SEGSPicker,
+    "ImpactMakeTileSEGS": MakeTileSEGS,
 
     "SEGSDetailerForAnimateDiff": SEGSDetailerForAnimateDiff,
 
@@ -378,6 +380,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSToMaskList": "SEGS to Mask List",
     "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
     "ImpactSEGSPicker": "Picker (SEGS)",
+    "ImpactMakeTileSEGS": "Make Tile SEGS",
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",
@@ -407,6 +410,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactStringSelector": "String Selector",
     "ImpactIsNotEmptySEGS": "SEGS isn't Empty",
     "SetDefaultImageForSEGS": "Set Default Image for SEGS",
+    "RemoveImageFromSEGS": "Remove Image from SEGS",
 
     "RemoveNoiseMask": "Remove Noise Mask",
 

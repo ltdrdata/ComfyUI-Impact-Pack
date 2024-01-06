@@ -1,6 +1,8 @@
 import os
 import sys
 
+import torch
+
 import impact.impact_server
 from nodes import MAX_RESOLUTION
 
@@ -275,7 +277,8 @@ class SEGSPreview:
         return {"required": {
                      "segs": ("SEGS", ),
                      "alpha_mode": ("BOOLEAN", {"default": True, "label_on": "enable", "label_off": "disable"}),
-                     },
+                     "min_alpha": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    },
                 "optional": {
                      "fallback_image_opt": ("IMAGE", ),
                     }
@@ -289,7 +292,7 @@ class SEGSPreview:
 
     OUTPUT_NODE = True
 
-    def doit(self, segs, alpha_mode=True, fallback_image_opt=None):
+    def doit(self, segs, alpha_mode=True, min_alpha=0.0, fallback_image_opt=None):
         full_output_folder, filename, counter, subfolder, filename_prefix = \
             folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
 
@@ -366,10 +369,13 @@ class SEGSPreview:
                             if isinstance(seg.cropped_mask, np.ndarray):
                                 cropped_mask = seg.cropped_mask
                             else:
-                                if len(seg.cropped_image) != len(seg.cropped_mask):
+                                if seg.cropped_image is not None and len(seg.cropped_image) != len(seg.cropped_mask):
                                     cropped_mask = get_combined_mask()
                                 else:
                                     cropped_mask = seg.cropped_mask[i].numpy()
+
+                            if min_alpha != 0:
+                                cropped_mask[cropped_mask < min_alpha] = min_alpha
 
                             mask_array = (cropped_mask * 255).astype(np.uint8)
                             mask_pil = Image.fromarray(mask_array, mode='L').resize(cropped_pil.size)
@@ -1286,3 +1292,110 @@ class DefaultImageForSEGS:
             return ((segs[0], results), )
         else:
             return (segs, )
+
+
+class RemoveImageFromSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"segs": ("SEGS", ), }}
+
+    RETURN_TYPES = ("SEGS", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs):
+        results = []
+
+        if len(segs[1]) > 0:
+            for seg in segs[1]:
+                new_seg = SEG(None, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+                results.append(new_seg)
+
+            return ((segs[0], results), )
+        else:
+            return (segs, )
+
+
+class MakeTileSEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "images": ("IMAGE", ),
+                     "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
+                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
+                    }}
+
+    RETURN_TYPES = ("SEGS",)
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/__for_testing"
+
+    def doit(self, images, bbox_size, crop_factor, min_overlap):
+        if bbox_size <= 2*min_overlap:
+            new_min_overlap = 2 / bbox_size
+            print(f"[TileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
+            min_overlap = new_min_overlap
+
+        _, h, w, _ = images.size()
+
+        n_horizontal = int(w / (bbox_size - min_overlap))
+        n_vertical = int(h / (bbox_size - min_overlap))
+
+        w_overlap_sum = (bbox_size * n_horizontal) - w
+        if w_overlap_sum < 0:
+            n_horizontal += 1
+            w_overlap_sum = (bbox_size * n_horizontal) - w
+
+        w_overlap_size = 0 if n_horizontal == 1 else int(w_overlap_sum/(n_horizontal-1))
+
+        h_overlap_sum = (bbox_size * n_vertical) - h
+        if h_overlap_sum < 0:
+            n_vertical += 1
+            h_overlap_sum = (bbox_size * n_vertical) - h
+
+        h_overlap_size = 0 if n_vertical == 1 else int(h_overlap_sum/(n_vertical-1))
+
+        new_segs = []
+
+        y = 0
+        for j in range(0, n_vertical):
+            x = 0
+            for i in range(0, n_horizontal):
+                x1 = x
+                y1 = y
+
+                if x+bbox_size < w-1:
+                    x2 = x+bbox_size
+                else:
+                    x2 = w-1
+                    x1 = w-1-bbox_size
+
+                if y+bbox_size < h-1:
+                    y2 = y+bbox_size
+                else:
+                    y2 = h-1
+                    y1 = h-1-bbox_size
+
+                bbox = x1, y1, x2, y2
+                crop_region = make_crop_region(w, h, bbox, crop_factor)
+                cx1, cy1, cx2, cy2 = crop_region
+
+                rel_left = x1 - cx1
+                rel_top = y1 - cy1
+                rel_right = x2 - cx1
+                rel_bot = y2 - cy1
+
+                mask = torch.zeros((cy2-cy1, cx2-cx1), dtype=torch.float32, device="cpu")
+                mask[rel_top:rel_bot, rel_left:rel_right] = 1.0
+
+                item = SEG(None, mask.numpy(), 1.0, crop_region, bbox, "", None)
+                new_segs.append(item)
+
+                x += bbox_size - w_overlap_size
+            y += bbox_size - h_overlap_size
+
+        res = (h, w), new_segs  # segs
+        return (res,)

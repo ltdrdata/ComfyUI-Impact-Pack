@@ -1,6 +1,11 @@
-from impact.utils import any_typ, ByPassTypeTuple
+from impact.utils import any_typ, ByPassTypeTuple, make_3d_mask
 import comfy_extras.nodes_mask
 from nodes import MAX_RESOLUTION
+import torch
+import comfy
+import sys
+import nodes
+
 
 class GeneralSwitch:
     @classmethod
@@ -45,6 +50,72 @@ class GeneralSwitch:
             return (None, "", selected_index)
 
 
+class LatentSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "select": ("INT", {"default": 1, "min": 1, "max": 99999, "step": 1}),
+                    "latent1": ("LATENT",),
+                    },
+                }
+
+    RETURN_TYPES = ("LATENT", )
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, *args, **kwargs):
+        input_name = f"latent{int(kwargs['select'])}"
+
+        if input_name in kwargs:
+            return (kwargs[input_name],)
+        else:
+            print(f"LatentSwitch: invalid select index ('latent1' is selected)")
+            return (kwargs['latent1'],)
+
+
+class ImageMaskSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
+            "images1": ("IMAGE",),
+        },
+
+            "optional": {
+                "mask1_opt": ("MASK",),
+                "images2_opt": ("IMAGE",),
+                "mask2_opt": ("MASK",),
+                "images3_opt": ("IMAGE",),
+                "mask3_opt": ("MASK",),
+                "images4_opt": ("IMAGE",),
+                "mask4_opt": ("MASK",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK",)
+
+    OUTPUT_NODE = True
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, select, images1, mask1_opt=None, images2_opt=None, mask2_opt=None, images3_opt=None, mask3_opt=None,
+             images4_opt=None, mask4_opt=None):
+        if select == 1:
+            return images1, mask1_opt,
+        elif select == 2:
+            return images2_opt, mask2_opt,
+        elif select == 3:
+            return images3_opt, mask3_opt,
+        else:
+            return images4_opt, mask4_opt,
+
+
 class GeneralInversedSwitch:
     @classmethod
     def INPUT_TYPES(s):
@@ -70,42 +141,6 @@ class GeneralInversedSwitch:
                 res.append(None)
 
         return res
-
-
-class ImageMaskSwitch:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "select": ("INT", {"default": 1, "min": 1, "max": 4, "step": 1}),
-            "images1": ("IMAGE",),
-        },
-
-            "optional": {
-                "mask1_opt": ("MASK",),
-                "images2_opt": ("IMAGE",),
-                "mask2_opt": ("MASK",),
-                "images3_opt": ("IMAGE",),
-                "mask3_opt": ("MASK",),
-                "images4_opt": ("IMAGE",),
-                "mask4_opt": ("MASK",),
-            },
-        }
-
-    RETURN_TYPES = ("IMAGE", "MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, select, images1, mask1_opt=None, images2_opt=None, mask2_opt=None, images3_opt=None, mask3_opt=None,
-             images4_opt=None, mask4_opt=None):
-        if select == 1:
-            return images1, mask1_opt,
-        elif select == 2:
-            return images2_opt, mask2_opt,
-        elif select == 3:
-            return images3_opt, mask3_opt,
-        else:
-            return images4_opt, mask4_opt,
 
 
 class RemoveNoiseMask:
@@ -199,3 +234,254 @@ class ImpactDummyInput:
 
     def doit(self):
         return ("DUMMY",)
+
+
+class MasksToMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "masks": ("MASK", ),
+                      }
+                }
+
+    RETURN_TYPES = ("MASK", )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, masks):
+        if masks is None:
+            empty_mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+            return ([empty_mask], )
+
+        res = []
+
+        for mask in masks:
+            res.append(mask)
+
+        print(f"mask len: {len(res)}")
+
+        res = [make_3d_mask(x) for x in res]
+
+        return (res, )
+
+
+class MaskListToMaskBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "mask": ("MASK", ),
+                      }
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("MASK", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, mask):
+        if len(mask) == 1:
+            mask = make_3d_mask(mask[0])
+            return (mask,)
+        elif len(mask) > 1:
+            mask1 = make_3d_mask(mask[0])
+
+            for mask2 in mask[1:]:
+                mask2 = make_3d_mask(mask2)
+                if mask1.shape[1:] != mask2.shape[1:]:
+                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
+                mask1 = torch.cat((mask1, mask2), dim=0)
+
+            return (mask1,)
+        else:
+            empty_mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
+            return (empty_mask,)
+
+
+class ImageListToImageBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "images": ("IMAGE", ),
+                      }
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, images):
+        if len(images) <= 1:
+            return (images,)
+        else:
+            image1 = images[0]
+            for image2 in images[1:]:
+                if image1.shape[1:] != image2.shape[1:]:
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
+                image1 = torch.cat((image1, image2), dim=0)
+            return (image1,)
+
+
+class ImageBatchToImageList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"image": ("IMAGE",), }}
+
+    RETURN_TYPES = ("IMAGE",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, image):
+        images = [image[i:i + 1, ...] for i in range(image.shape[0])]
+        return (images, )
+
+
+class MakeImageList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"image1": ("IMAGE",), }}
+
+    RETURN_TYPES = ("IMAGE",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        images = []
+
+        for k, v in kwargs.items():
+            images.append(v)
+
+        return (images, )
+
+
+class MakeImageBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"image1": ("IMAGE",), }}
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        image1 = kwargs['image1']
+        del kwargs['image1']
+        images = [value for value in kwargs.values()]
+
+        if len(images) == 0:
+            return (image1,)
+        else:
+            for image2 in images:
+                if image1.shape[1:] != image2.shape[1:]:
+                    image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
+                image1 = torch.cat((image1, image2), dim=0)
+            return (image1,)
+
+
+class ReencodeLatent:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "samples": ("LATENT", ),
+                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
+                        "input_vae": ("VAE", ),
+                        "output_vae": ("VAE", ),
+                        "tile_size": ("INT", {"default": 512, "min": 320, "max": 4096, "step": 64}),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    def doit(self, samples, tile_mode, input_vae, output_vae, tile_size=512):
+        if tile_mode in ["Both", "Decode(input) only"]:
+            pixels = nodes.VAEDecodeTiled().decode(input_vae, samples, tile_size)[0]
+        else:
+            pixels = nodes.VAEDecode().decode(input_vae, samples)[0]
+
+        if tile_mode in ["Both", "Encode(output) only"]:
+            return nodes.VAEEncodeTiled().encode(output_vae, pixels, tile_size)
+        else:
+            return nodes.VAEEncode().encode(output_vae, pixels)
+
+
+class ReencodeLatentPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "samples": ("LATENT", ),
+                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
+                        "input_basic_pipe": ("BASIC_PIPE", ),
+                        "output_basic_pipe": ("BASIC_PIPE", ),
+                    },
+                }
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    def doit(self, samples, tile_mode, input_basic_pipe, output_basic_pipe):
+        _, _, input_vae, _, _ = input_basic_pipe
+        _, _, output_vae, _, _ = output_basic_pipe
+        return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
+
+
+class StringSelector:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "strings": ("STRING", {"multiline": True}),
+            "multiline": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+            "select": ("INT", {"min": 0, "max": sys.maxsize, "step": 1, "default": 0}),
+        }}
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, strings, multiline, select):
+        lines = strings.split('\n')
+
+        if multiline:
+            result = []
+            current_string = ""
+
+            for line in lines:
+                if line.startswith("#"):
+                    if current_string:
+                        result.append(current_string.strip())
+                        current_string = ""
+                current_string += line + "\n"
+
+            if current_string:
+                result.append(current_string.strip())
+
+            if len(result) == 0:
+                selected = strings
+            else:
+                selected = result[select % len(result)]
+
+            if selected.startswith('#'):
+                selected = selected[1:]
+        else:
+            if len(lines) == 0:
+                selected = strings
+            else:
+                selected = lines[select % len(lines)]
+
+        return (selected, )
