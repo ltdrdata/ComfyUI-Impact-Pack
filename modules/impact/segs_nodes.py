@@ -1348,6 +1348,11 @@ class MakeTileSEGS:
         # calculate tile factors
         _, h, w, _ = images.size()
 
+        if bbox_size > h or bbox_size > w:
+            new_bbox_size = min(bbox_size, min(w, h))
+            print(f"[MaskTileSEGS] bbox_size is greater than resolution (value changed: {bbox_size} => {new_bbox_size}")
+            bbox_size = new_bbox_size
+
         n_horizontal = int(w / (bbox_size - min_overlap))
         n_vertical = int(h / (bbox_size - min_overlap))
 
@@ -1394,14 +1399,14 @@ class MakeTileSEGS:
                 if x+bbox_size < w-1:
                     x2 = x+bbox_size
                 else:
-                    x2 = w-1
-                    x1 = w-1-bbox_size
+                    x2 = w
+                    x1 = w-bbox_size
 
                 if y+bbox_size < h-1:
                     y2 = y+bbox_size
                 else:
-                    y2 = h-1
-                    y1 = h-1-bbox_size
+                    y2 = h
+                    y1 = h-bbox_size
 
                 bbox = x1, y1, x2, y2
                 crop_region = make_crop_region(w, h, bbox, crop_factor)
