@@ -212,7 +212,7 @@ class DetailerForEach:
         else:
             ordered_segs = segs[1]
 
-        for seg in ordered_segs:
+        for i, seg in enumerate(ordered_segs):
             cropped_image = seg.cropped_image if seg.cropped_image is not None \
                                               else crop_ndarray4(image.numpy(), seg.crop_region)
             cropped_image = to_tensor(cropped_image)
@@ -235,7 +235,7 @@ class DetailerForEach:
                 wildcard_item = None
 
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
-                                                            seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                            seg.bbox, seed + i, steps, cfg, sampler_name, scheduler,
                                                             positive, negative, denoise, cropped_mask, force_inpaint,
                                                             wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
                                                             detailer_hook=detailer_hook,

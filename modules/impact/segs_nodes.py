@@ -1325,7 +1325,13 @@ class MakeTileSEGS:
                      "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
                      "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                      "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
-                    }}
+                     "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
+                    },
+                "optional": {
+                    "filter_in_segs_opt": ("SEGS", ),
+                    "filter_out_segs_opt": ("SEGS", ),
+                    }
+                }
 
     RETURN_TYPES = ("SEGS",)
 
@@ -1333,12 +1339,13 @@ class MakeTileSEGS:
 
     CATEGORY = "ImpactPack/__for_testing"
 
-    def doit(self, images, bbox_size, crop_factor, min_overlap):
+    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
             new_min_overlap = 2 / bbox_size
-            print(f"[TileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
+            print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
             min_overlap = new_min_overlap
 
+        # calculate tile factors
         _, h, w, _ = images.size()
 
         n_horizontal = int(w / (bbox_size - min_overlap))
@@ -1357,6 +1364,23 @@ class MakeTileSEGS:
             h_overlap_sum = (bbox_size * n_vertical) - h
 
         h_overlap_size = 0 if n_vertical == 1 else int(h_overlap_sum/(n_vertical-1))
+
+        # create exclusion mask
+        if filter_out_segs_opt is not None:
+            exclusion_mask = core.segs_to_combined_mask(filter_out_segs_opt)
+            exclusion_mask = utils.make_3d_mask(exclusion_mask)
+            exclusion_mask = utils.resize_mask(exclusion_mask, (h, w))
+            exclusion_mask = dilate_mask(exclusion_mask.cpu().numpy(), filter_segs_dilation)
+        else:
+            exclusion_mask = None
+
+        if filter_in_segs_opt is not None:
+            and_mask = core.segs_to_combined_mask(filter_in_segs_opt)
+            and_mask = utils.make_3d_mask(and_mask)
+            and_mask = utils.resize_mask(and_mask, (h, w))
+            and_mask = dilate_mask(and_mask.cpu().numpy(), filter_segs_dilation)
+        else:
+            and_mask = None
 
         new_segs = []
 
@@ -1391,8 +1415,19 @@ class MakeTileSEGS:
                 mask = torch.zeros((cy2-cy1, cx2-cx1), dtype=torch.float32, device="cpu")
                 mask[rel_top:rel_bot, rel_left:rel_right] = 1.0
 
-                item = SEG(None, mask.numpy(), 1.0, crop_region, bbox, "", None)
-                new_segs.append(item)
+                if exclusion_mask is not None:
+                    exclusion_mask_cropped = exclusion_mask[cy1:cy2, cx1:cx2]
+                    mask[exclusion_mask_cropped != 0] = 0.0
+
+                if and_mask is not None:
+                    and_mask_cropped = and_mask[cy1:cy2, cx1:cx2]
+                    mask[and_mask_cropped == 0] = 0.0
+
+                is_mask_zero = torch.all(mask == 0.0).item()
+
+                if not is_mask_zero:
+                    item = SEG(None, mask.numpy(), 1.0, crop_region, bbox, "", None)
+                    new_segs.append(item)
 
                 x += bbox_size - w_overlap_size
             y += bbox_size - h_overlap_size
