@@ -1411,20 +1411,20 @@ class MakeTileSEGS:
                 x1 = x
                 y1 = y
 
-                if x+bbox_size < w-1:
+                if x+bbox_size < iw-1:
                     x2 = x+bbox_size
                 else:
-                    x2 = w
-                    x1 = w-bbox_size
+                    x2 = iw
+                    x1 = iw-bbox_size
 
-                if y+bbox_size < h-1:
+                if y+bbox_size < ih-1:
                     y2 = y+bbox_size
                 else:
-                    y2 = h
-                    y1 = h-bbox_size
+                    y2 = ih
+                    y1 = ih-bbox_size
 
                 bbox = x1, y1, x2, y2
-                crop_region = make_crop_region(w, h, bbox, crop_factor)
+                crop_region = make_crop_region(iw, ih, bbox, crop_factor)
                 cx1, cy1, cx2, cy2 = crop_region
 
                 rel_left = x1 - cx1
