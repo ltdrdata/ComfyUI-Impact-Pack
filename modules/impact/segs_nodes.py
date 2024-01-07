@@ -302,6 +302,9 @@ class SEGSPreview:
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
+        if min_alpha != 0:
+            min_alpha = int(255 * min_alpha)
+
         if len(segs[1]) > 0:
             if segs[1][0].cropped_image is not None:
                 batch_count = len(segs[1][0].cropped_image)
@@ -374,10 +377,11 @@ class SEGSPreview:
                                 else:
                                     cropped_mask = seg.cropped_mask[i].numpy()
 
-                            if min_alpha != 0:
-                                cropped_mask[cropped_mask < min_alpha] = min_alpha
-
                             mask_array = (cropped_mask * 255).astype(np.uint8)
+
+                            if min_alpha != 0:
+                                mask_array[mask_array < min_alpha] = min_alpha
+
                             mask_pil = Image.fromarray(mask_array, mode='L').resize(cropped_pil.size)
                             cropped_pil.putalpha(mask_pil)
                             stack_image(cropped_image, cropped_mask)
