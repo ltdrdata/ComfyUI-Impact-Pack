@@ -187,7 +187,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                   refiner_negative=None, control_net_wrapper=None, cycle=1):
+                   refiner_negative=None, control_net_wrapper=None, cycle=1, inpaint_model=False):
     if noise_mask is not None and len(noise_mask.shape) == 3:
         noise_mask = noise_mask.squeeze(0)
 
@@ -253,10 +253,13 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     upscaled_image = tensor_resize(image, new_w, new_h)
 
     # ksampler
-    latent_image = to_latent_image(upscaled_image, vae)
-
     upscaled_mask = None
-    if noise_mask is not None:
+    if inpaint_model:
+        noise_mask = torch.from_numpy(noise_mask)
+        latent_image = nodes.VAEEncodeForInpaint().encode(vae, upscaled_image, noise_mask)[0]
+    elif noise_mask is not None:
+        latent_image = to_latent_image(upscaled_image, vae)
+
         # upscale the mask tensor by a factor of 2 using bilinear interpolation
         noise_mask = torch.from_numpy(noise_mask)
         upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
@@ -317,7 +320,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None):
+                                   refiner_negative=None, inpaint_model=False):
     if noise_mask is not None and len(noise_mask.shape) == 3:
         noise_mask = noise_mask.squeeze(0)
 

@@ -38,7 +38,8 @@ class SEGSDetailer:
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                    }
+                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     }
                 }
 
     RETURN_TYPES = ("SEGS", "IMAGE")
@@ -52,7 +53,7 @@ class SEGSDetailer:
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
                   denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-                  refiner_basic_pipe_opt=None):
+                  refiner_basic_pipe_opt=None, inpaint_model=False):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -84,11 +85,11 @@ class SEGSDetailer:
                     cropped_mask = None
 
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
-                                                               seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                               positive, negative, denoise, cropped_mask, force_inpaint,
-                                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                               refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                                               control_net_wrapper=seg.control_net_wrapper, cycle=cycle)
+                                                                seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                                positive, negative, denoise, cropped_mask, force_inpaint,
+                                                                refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                                refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                                                                control_net_wrapper=seg.control_net_wrapper, cycle=cycle, inpaint_model=inpaint_model)
 
                 if cnet_pils is not None:
                     cnet_pil_list.extend(cnet_pils)
@@ -105,14 +106,14 @@ class SEGSDetailer:
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-             refiner_basic_pipe_opt=None):
+             refiner_basic_pipe_opt=None, inpaint_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SEGSDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                      scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, cycle=cycle,
-                                                     refiner_basic_pipe_opt=refiner_basic_pipe_opt)
+                                                     refiner_basic_pipe_opt=refiner_basic_pipe_opt, inpaint_model=inpaint_model)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -141,7 +142,8 @@ class SEGSDetailerForAnimateDiff:
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                    }
+                     # TODO: "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     }
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -154,7 +156,7 @@ class SEGSDetailerForAnimateDiff:
 
     @staticmethod
     def do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -183,7 +185,8 @@ class SEGSDetailerForAnimateDiff:
                                                                         seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                                         positive, negative, denoise, seg.cropped_mask,
                                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                                        refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative)
+                                                                        refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                                                        refiner_negative=refiner_negative, inpaint_model=inpaint_model)
 
             if enhanced_image_tensor is None:
                 new_cropped_image = cropped_image_frames
@@ -196,10 +199,10 @@ class SEGSDetailerForAnimateDiff:
         return (segs[0], new_segs)
 
     def doit(self, image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None):
+             denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False):
 
         segs = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-                                                    scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt)
+                                                    scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, inpaint_model=inpaint_model)
 
         return (segs,)
 
