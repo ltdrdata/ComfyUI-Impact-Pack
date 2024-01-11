@@ -20,6 +20,7 @@ import math
 import cv2
 import time
 from impact import utils
+from impact.uniformers import ensure_nhwc_mask_torch, ensure_nhwc_mask_numpy
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -814,30 +815,33 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
         mask = combine_masks2(total_masks)
 
     finally:
+        mask_working_device = torch.device("cpu")
         if sam_model.is_auto_mode:
             sam_model.cpu()
+        if mask is not None:
+            mask = mask.float()
+            # Convert to CPU and add one channel dimension to the mask at the end
+            mask = np.expand_dims(dilate_mask(mask.cpu().numpy(), dilation), axis=-1)
+            mask = np.expand_dims(mask, axis=0)  # Add a batch dimension to the mask at the beginning
+            mask = torch.from_numpy(mask)
+            mask = mask.to(device=mask_working_device)
+        else:
+            # Extract the batch, height, and width
+            height, width, _ = image.shape
+            # Create an empty mask with the shape (N, H, W, 1), where N is the batch size, set to 1
+            mask = torch.zeros(
+                (1, height, width, 1), dtype=torch.float32, device=mask_working_device
+            )
+            
+        # Handle the stacked_masks at the return statement location
+        stacked_masks = convert_and_stack_masks(total_masks).numpy()
+        stacked_masks = np.transpose(stacked_masks, (0, 2, 3, 1))  # Move the channel dimension from second position to the last position
+        stacked_masks = torch.from_numpy(stacked_masks)  # Convert back to a torch tensor
 
-        pass
+        combined_mask = mask
+        batch_masks = merge_and_stack_masks(stacked_masks, group_size=3)
 
-    mask_working_device = torch.device("cpu")
-
-    if mask is not None:
-        mask = mask.float()
-        mask = dilate_mask(mask.cpu().numpy(), dilation)
-        mask = torch.from_numpy(mask)
-        mask = mask.to(device=mask_working_device)
-    else:
-        # Extracting batch, height and width
-        height, width, _ = image.shape
-        mask = torch.zeros(
-            (height, width), dtype=torch.float32, device=mask_working_device
-        )  # empty mask
-
-    stacked_masks = convert_and_stack_masks(total_masks)
-
-    return (mask, merge_and_stack_masks(stacked_masks, group_size=3))
-    # return every_three_pick_last(stacked_masks)
-
+        return (combined_mask, batch_masks)
 
 def segs_bitwise_and_mask(segs, mask):
     mask = make_2d_mask(mask)
@@ -999,6 +1003,8 @@ def optimized_mask_to_uint8(mask):
         return None
 
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
+    print(f'mask shape: {mask.shape}')
+    
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
@@ -1019,8 +1025,10 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
     result = []
 
-    if len(mask.shape) == 2:
-        mask = np.expand_dims(mask, axis=0)
+    # make sure the mask is in NHWC format
+    mask = ensure_nhwc_mask_numpy(mask)
+    # then we need to remove the channel dimension
+    mask = mask.squeeze(-1)
 
     for i in range(mask.shape[0]):
         mask_i = mask[i]
