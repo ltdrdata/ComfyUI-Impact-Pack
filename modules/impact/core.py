@@ -964,25 +964,41 @@ class ONNXDetector:
         pass
 
 def optimized_mask_to_uint8(mask):
-    # print(f'The shape of the mask to be converted: {mask.shape}')
+    """
+    Convert the input mask to uint8 type, and perform appropriate clipping and dimension compression.
     
-    # Ensure the mask values are between 0 and 1
-    mask_clamped = np.clip(mask, 0, 1)
+    Args:
+    mask: Could be a numpy array of any shape.
 
-    # If the mask is of float type, convert it to float32 first to avoid overflow
-    if mask_clamped.dtype.kind == 'f':
-        mask_clamped = mask_clamped.astype(np.float32)
+    Returns:
+    mask_uint8: A numpy array which has been converted to uint8 type and properly dimension-compressed.
+    """
+    try:
+        # Ensure the input is numpy array
+        if not isinstance(mask, np.ndarray):
+            raise ValueError("The type of the input mask needs to be numpy.ndarray!")
 
-    # Convert to uint8
-    mask_uint8 = (mask_clamped * 255).astype(np.uint8)
+        # Clamping, make sure values are within 0-1
+        if np.any(mask < 0) or np.any(mask > 1):
+            print("Warning: Values within the mask are out of the range [0,1], will be clamped.")
+        mask_clamped = np.clip(mask, 0, 1)
 
-    # Check if dimension reduction is needed
-    if mask_uint8.ndim == 3 and mask_uint8.shape[0] == 1:
-        # Reduce from (1, height, width) to (height, width)
-        mask_uint8 = mask_uint8.squeeze(0)
+        # If mask is floating-point type, convert it to np.float32 to avoid overflow
+        if mask_clamped.dtype.kind == 'f':
+            mask_clamped = mask_clamped.astype(np.float32)
 
-    # print(f'The shape of the converted mask: {mask_uint8.shape}')
-    return mask_uint8
+        # Convert to uint8
+        mask_uint8 = (mask_clamped * 255).astype(np.uint8)
+
+        # If dimensional reduction is needed, do it
+        if mask_uint8.ndim == 3 and mask_uint8.shape[0] == 1:
+            mask_uint8 = mask_uint8.squeeze(0)
+
+        return mask_uint8
+
+    except Exception as e:
+        print(f"An error occurred during the process of optimizing mask to uint8: {repr(e)}")
+        return None
 
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
     drop_size = max(drop_size, 1)
