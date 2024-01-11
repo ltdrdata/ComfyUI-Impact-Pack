@@ -18,13 +18,17 @@ app.registerExtension({
 
 			if(widget.type == "toggle") {
 			    let value = widget.value;
-				Object.defineProperty(widget, "value", {
-					set: (value) => {
-							delete widget.value;
-							widget.value = value == true || value == widget.options.on;
-						},
-					get: () => { return value; }
-				});
+
+			    var v = Object.getOwnPropertyDescriptor(widget, 'value');
+			    if(!v) {
+					Object.defineProperty(widget, "value", {
+						set: (value) => {
+								delete widget.value;
+								widget.value = value == true || value == widget.options.on;
+							},
+						get: () => { return value; }
+					});
+				}
 			}
 		}
 	}
