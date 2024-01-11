@@ -251,32 +251,27 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # upscale
     upscaled_image = tensor_resize(image, new_w, new_h)
+    noise_mask = torch.from_numpy(noise_mask)
+    noise_mask = utils.make_3d_mask(noise_mask)
 
-    # ksampler
-    upscaled_mask = None
+    cnet_pils = None
+    if control_net_wrapper is not None:
+        positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, noise_mask)
+
+    # prepare mask
     if inpaint_model:
-        noise_mask = torch.from_numpy(noise_mask)
-        latent_image = nodes.VAEEncodeForInpaint().encode(vae, upscaled_image, noise_mask)[0]
-    elif noise_mask is not None:
+        positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
+    else:
         latent_image = to_latent_image(upscaled_image, vae)
-
-        # upscale the mask tensor by a factor of 2 using bilinear interpolation
-        noise_mask = torch.from_numpy(noise_mask)
-        upscaled_mask = torch.nn.functional.interpolate(noise_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
-
-        # remove the extra dimensions added by unsqueeze
-        upscaled_mask = upscaled_mask.squeeze(0).squeeze(0)
-        latent_image['noise_mask'] = upscaled_mask
+        if noise_mask is not None:
+            latent_image['noise_mask'] = noise_mask
 
     if detailer_hook is not None:
         latent_image = detailer_hook.post_encode(latent_image)
 
-    cnet_pils = None
-    if control_net_wrapper is not None:
-        positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, upscaled_mask)
-
     refined_latent = latent_image
 
+    # ksampler
     for i in range(0, cycle):
         if detailer_hook is not None:
             if detailer_hook is not None:
