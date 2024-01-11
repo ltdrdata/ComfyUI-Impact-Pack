@@ -20,6 +20,8 @@ import math
 import cv2
 import time
 from impact import utils
+import gc
+import sys
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -961,6 +963,26 @@ class ONNXDetector:
     def setAux(self, x):
         pass
 
+def optimized_mask_to_uint8(mask):
+    # print(f'The shape of the mask to be converted: {mask.shape}')
+    
+    # Ensure the mask values are between 0 and 1
+    mask_clamped = np.clip(mask, 0, 1)
+
+    # If the mask is of float type, convert it to float32 first to avoid overflow
+    if mask_clamped.dtype.kind == 'f':
+        mask_clamped = mask_clamped.astype(np.float32)
+
+    # Convert to uint8
+    mask_uint8 = (mask_clamped * 255).astype(np.uint8)
+
+    # Check if dimension reduction is needed
+    if mask_uint8.ndim == 3 and mask_uint8.shape[0] == 1:
+        # Reduce from (1, height, width) to (height, width)
+        mask_uint8 = mask_uint8.squeeze(0)
+
+    # print(f'The shape of the converted mask: {mask_uint8.shape}')
+    return mask_uint8
 
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
     drop_size = max(drop_size, 1)
@@ -1019,7 +1041,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         result.append(item)
 
         else:
-            mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
+            mask_i_uint8 = optimized_mask_to_uint8(mask_i)
             contours, ctree = cv2.findContours(mask_i_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for j, contour in enumerate(contours):
                 hierarchy = ctree[0][j]
