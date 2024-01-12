@@ -834,13 +834,27 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
             )
             
         # Handle the stacked_masks at the return statement location
-        stacked_masks = convert_and_stack_masks(total_masks).numpy()
-        stacked_masks = np.transpose(stacked_masks, (0, 2, 3, 1))  # Move the channel dimension from second position to the last position
-        stacked_masks = torch.from_numpy(stacked_masks)  # Convert back to a torch tensor
+        batch_masks = None
+        
+        if not total_masks:
+            height, width, _ = image.shape
+            # Create a blank mask that matches the size of the input image
+            stacked_masks = np.zeros((1, height, width, 1), dtype=np.float32)
+            # As there is only one image, so batch_masks is equivalent to stacked_masks
+            batch_masks = stacked_masks
+        else:
+            # Attempt to convert and stack masks
+            stacked_masks = convert_and_stack_masks(total_masks)
+            if stacked_masks is not None:
+                stacked_masks = np.transpose(stacked_masks, (0, 2, 3, 1))
+                batch_masks = merge_and_stack_masks(stacked_masks, group_size=3)
+            else:
+                # If None is returned, create a blank mask that matches the size of the input image
+                height, width, _ = image.shape
+                stacked_masks = np.zeros((1, height, width, 1), dtype=np.float32)
+                batch_masks = stacked_masks
 
         combined_mask = mask
-        batch_masks = merge_and_stack_masks(stacked_masks, group_size=3)
-
         return (combined_mask, batch_masks)
 
 def segs_bitwise_and_mask(segs, mask):
