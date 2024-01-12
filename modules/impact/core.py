@@ -19,6 +19,7 @@ import impact.wildcards as wildcards
 import math
 import cv2
 import time
+from comfy import model_management
 from impact import utils
 
 SEG = namedtuple("SEG",
@@ -491,7 +492,7 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
     if sam_model.is_auto_mode:
         device = comfy.model_management.get_torch_device()
-        sam_model.to(device=device)
+        sam_model.safe_to.to_device(sam_model, device=device)
 
     try:
         predictor = SamPredictor(sam_model)
@@ -755,7 +756,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
     if sam_model.is_auto_mode:
         device = comfy.model_management.get_torch_device()
-        sam_model.to(device=device)
+        sam_model.safe_to.to_device(sam_model, device=device)
 
     try:
         predictor = SamPredictor(sam_model)
@@ -1792,6 +1793,19 @@ def update_node_status(node, text, progress=None):
         "progress": progress,
         "text": text
     }, PromptServer.instance.client_id)
+
+
+class SafeToGPU:
+    def __init__(self, size):
+        self.size = size
+
+    def to_device(self, obj, device):
+        if utils.is_same_device(device, 'cpu'):
+            obj.to(device)
+        else:
+            if utils.is_same_device(obj.device, 'cpu'):  # cpu to gpu
+                model_management.free_memory(self.size * 1.3, device)
+                obj.to(device)
 
 
 from comfy.cli_args import args, LatentPreviewMethod

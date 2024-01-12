@@ -495,6 +495,12 @@ def make_3d_mask(mask):
     return mask
 
 
+def is_same_device(a, b):
+    a_device = torch.device(a) if isinstance(a, str) else a
+    b_device = torch.device(b) if isinstance(b, str) else b
+    return a_device.type == b_device.type and a_device.index == b_device.index
+
+
 def collect_non_reroute_nodes(node_map, links, res, node_id):
     if node_map[node_id]['type'] != 'Reroute' and node_map[node_id]['type'] != 'Reroute (rgthree)':
         res.append(node_id)

@@ -106,11 +106,14 @@ class SAMLoader:
             model_kind = 'vit_b'
 
         sam = sam_model_registry[model_kind](checkpoint=modelname)
+        size = os.path.getsize(modelname)
+        sam.safe_to = core.SafeToGPU(size)
+
         # Unless user explicitly wants to use CPU, we use GPU
         device = comfy.model_management.get_torch_device() if device_mode == "Prefer GPU" else "CPU"
 
         if device_mode == "Prefer GPU":
-            sam.to(device=device)
+            sam.safe_to.to_device(sam, device)
 
         sam.is_auto_mode = device_mode == "AUTO"
 
