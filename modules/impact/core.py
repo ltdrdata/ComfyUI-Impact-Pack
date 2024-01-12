@@ -187,7 +187,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                   refiner_negative=None, control_net_wrapper=None, cycle=1, inpaint_model=False):
+                   refiner_negative=None, control_net_wrapper=None, cycle=1, inpainting_model=False):
     if noise_mask is not None and len(noise_mask.shape) == 3:
         noise_mask = noise_mask.squeeze(0)
 
@@ -259,7 +259,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, noise_mask)
 
     # prepare mask
-    if inpaint_model:
+    if inpainting_model:
         positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
     else:
         latent_image = to_latent_image(upscaled_image, vae)
@@ -315,7 +315,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None, inpaint_model=False):
+                                   refiner_negative=None, inpainting_model=False):
     if noise_mask is not None and len(noise_mask.shape) == 3:
         noise_mask = noise_mask.squeeze(0)
 

@@ -172,7 +172,7 @@ class DetailerForEach:
                      },
                 "optional": {
                      "detailer_hook": ("DETAILER_HOOK",),
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "inpainting_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      }
                 }
 
@@ -185,7 +185,7 @@ class DetailerForEach:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False):
+                  cycle=1, inpainting_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -246,7 +246,7 @@ class DetailerForEach:
                                                             refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                             refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                             refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
-                                                            cycle=cycle, inpaint_model=inpaint_model)
+                                                            cycle=cycle, inpainting_model=inpainting_model)
 
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
@@ -286,12 +286,12 @@ class DetailerForEach:
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
-             detailer_hook=None, inpaint_model=False):
+             detailer_hook=None, inpainting_model=False):
 
         enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpaint_model=inpaint_model)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpainting_model=inpainting_model)
 
         return (enhanced_img, )
 
@@ -323,7 +323,7 @@ class DetailerForEachPipe:
                 "optional": {
                     "detailer_hook": ("DETAILER_HOOK",),
                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "inpainting_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     }
                 }
 
@@ -336,7 +336,7 @@ class DetailerForEachPipe:
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
-             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, cycle=1, inpaint_model=False):
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, cycle=1, inpainting_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -354,7 +354,7 @@ class DetailerForEachPipe:
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                      cycle=cycle, inpaint_model=inpaint_model)
+                                      cycle=cycle, inpainting_model=inpainting_model)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -408,7 +408,7 @@ class FaceDetailer:
                     "sam_model_opt": ("SAM_MODEL", ),
                     "segm_detector_opt": ("SEGM_DETECTOR", ),
                     "detailer_hook": ("DETAILER_HOOK",),
-                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "inpainting_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -426,7 +426,7 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False):
+                     inpainting_model=False):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -457,7 +457,7 @@ class FaceDetailer:
                                           force_inpaint, wildcard_opt, detailer_hook,
                                           refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                          refiner_negative=refiner_negative, cycle=cycle, inpaint_model=inpaint_model)
+                                          refiner_negative=refiner_negative, cycle=cycle, inpainting_model=inpainting_model)
         else:
             enhanced_img = image
             cropped_enhanced = []
@@ -483,7 +483,7 @@ class FaceDetailer:
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
-             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False):
+             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpainting_model=False):
 
         result_img = None
         result_mask = None
@@ -501,7 +501,7 @@ class FaceDetailer:
                 bbox_threshold, bbox_dilation, bbox_crop_factor,
                 sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
-                cycle=cycle, inpaint_model=inpaint_model)
+                cycle=cycle, inpainting_model=inpainting_model)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1177,7 +1177,7 @@ class FaceDetailerPipe:
                      "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                     },
                 "optional": {
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "inpainting_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     }
                 }
 
@@ -1191,7 +1191,7 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None, cycle=1, inpaint_model=False):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None, cycle=1, inpainting_model=False):
 
         result_img = None
         result_mask = None
@@ -1214,7 +1214,7 @@ class FaceDetailerPipe:
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                cycle=cycle, inpaint_model=inpaint_model)
+                cycle=cycle, inpainting_model=inpainting_model)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1265,7 +1265,7 @@ class MaskDetailerPipe:
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
                      "detailer_hook": ("DETAILER_HOOK",),
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "inpainting_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      }
                 }
 
@@ -1279,7 +1279,7 @@ class MaskDetailerPipe:
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
              feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
-             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False):
+             refiner_basic_pipe_opt=None, detailer_hook=None, inpainting_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: MaskDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1310,7 +1310,7 @@ class MaskDetailerPipe:
                                               force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
                                               refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                              cycle=cycle, inpaint_model=inpaint_model)
+                                              cycle=cycle, inpainting_model=inpainting_model)
             else:
                 enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
 
@@ -1343,7 +1343,7 @@ class DetailerForEachTest(DetailerForEach):
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
-             cycle=1, inpaint_model=False):
+             cycle=1, inpainting_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1351,7 +1351,7 @@ class DetailerForEachTest(DetailerForEach):
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpaint_model=inpaint_model)
+                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpainting_model=inpainting_model)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1380,7 +1380,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
-             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False):
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpainting_model=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1398,7 +1398,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative, cycle=cycle, inpaint_model=inpaint_model)
+                                      refiner_negative=refiner_negative, cycle=cycle, inpainting_model=inpainting_model)
 
         # set fallback image
         if len(cropped) == 0:
