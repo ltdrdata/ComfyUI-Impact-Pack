@@ -1592,12 +1592,18 @@ class PixelKSampleUpscaler:
 
 
 class ControlNetWrapper:
-    def __init__(self, control_net, strength, preprocessor, prev_control_net=None):
+    def __init__(self, control_net, strength, preprocessor, prev_control_net=None,
+                 original_size=None, crop_region=None, control_image=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
-        self.image = None
         self.prev_control_net = prev_control_net
+
+        if original_size is not None and crop_region is not None and control_image is not None:
+            self.control_image = utils.tensor_resize(control_image, original_size[1], original_size[0])
+            self.control_image = torch.tensor(utils.tensor_crop(self.control_image, crop_region))
+        else:
+            self.control_image = None
 
     def apply(self, conditioning, image, mask=None):
         cnet_pils = []
@@ -1606,7 +1612,9 @@ class ControlNetWrapper:
         if self.prev_control_net is not None:
             conditioning, prev_cnet_pils = self.prev_control_net.apply(conditioning, image, mask)
 
-        if self.preprocessor is not None:
+        if self.control_image is not None:
+            cnet_pil = self.control_image
+        elif self.preprocessor is not None:
             cnet_pil = self.preprocessor.apply(image, mask)
         else:
             cnet_pil = image

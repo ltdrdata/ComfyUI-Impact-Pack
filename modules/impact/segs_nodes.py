@@ -270,6 +270,53 @@ class SEGSPaste:
         return (result, )
 
 
+class SEGSPreviewCNet:
+    def __init__(self):
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"segs": ("SEGS", ),}, }
+
+    RETURN_TYPES = ("IMAGE", )
+    OUTPUT_IS_LIST = (True, )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    OUTPUT_NODE = True
+
+    def doit(self, segs):
+        full_output_folder, filename, counter, subfolder, filename_prefix = \
+            folder_paths.get_save_image_path("impact_seg_preview", self.output_dir, segs[0][1], segs[0][0])
+
+        results = list()
+        result_image_list = []
+
+        for seg in segs[1]:
+            file = f"{filename}_{counter:05}_.webp"
+
+            if seg.control_net_wrapper is not None and seg.control_net_wrapper.control_image is not None:
+                cnet_image = seg.control_net_wrapper.control_image
+                result_image_list.append(cnet_image)
+            else:
+                cnet_image = empty_pil_tensor(64, 64)
+
+            cnet_pil = utils.tensor2pil(cnet_image)
+            cnet_pil.save(os.path.join(full_output_folder, file))
+
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
+            })
+
+            counter += 1
+
+        return {"ui": {"images": results}, "result": (result_image_list,)}
+
+
 class SEGSPreview:
     def __init__(self):
         self.output_dir = folder_paths.get_temp_directory()
@@ -1128,6 +1175,7 @@ class ControlNetApplySEGS:
                     },
                 "optional": {
                     "segs_preprocessor": ("SEGS_PREPROCESSOR",),
+                    "control_image": ("IMAGE",)
                     }
                 }
 
@@ -1136,11 +1184,12 @@ class ControlNetApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, segs_preprocessor=None):
+    def doit(self, segs, control_net, strength, segs_preprocessor=None, control_image=None):
         new_segs = []
 
         for seg in segs[1]:
-            control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor, seg.control_net_wrapper)
+            control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor, seg.control_net_wrapper,
+                                                         original_size=segs[0], crop_region=seg.crop_region, control_image=control_image)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
             new_segs.append(new_seg)
 

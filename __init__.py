@@ -253,6 +253,7 @@ NODE_CLASS_MAPPINGS = {
     "SEGSDetailer": SEGSDetailer,
     "SEGSPaste": SEGSPaste,
     "SEGSPreview": SEGSPreview,
+    "SEGSPreviewCNet": SEGSPreviewCNet,
     "SEGSToImageList": SEGSToImageList,
     "ImpactSEGSToMaskList": SEGSToMaskList,
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
@@ -430,7 +431,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSClassify": "SEGS Classify",
 
     "LatentSwitch": "Switch (latent/legacy)",
-    "SEGSSwitch": "Switch (SEGS/legacy)"
+    "SEGSSwitch": "Switch (SEGS/legacy)",
+
+    "SEGSPreviewCNet": "SEGSPreview (CNET Image)"
 }
 
 if not impact.config.get_config()['mmdet_skip']:
