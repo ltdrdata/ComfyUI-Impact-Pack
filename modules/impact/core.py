@@ -252,15 +252,17 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # upscale
     upscaled_image = tensor_resize(image, new_w, new_h)
-    noise_mask = torch.from_numpy(noise_mask)
-    noise_mask = utils.make_3d_mask(noise_mask)
+
+    if noise_mask is not None:
+        noise_mask = utils.to_tensor(noise_mask)
+        noise_mask = utils.make_3d_mask(noise_mask)
 
     cnet_pils = None
     if control_net_wrapper is not None:
         positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, noise_mask)
 
     # prepare mask
-    if inpaint_model:
+    if noise_mask is not None and inpaint_model:
         positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
     else:
         latent_image = to_latent_image(upscaled_image, vae)
