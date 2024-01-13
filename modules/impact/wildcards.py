@@ -401,7 +401,7 @@ class WildcardChooserDict:
 
 
 def split_string_with_sep(input_string):
-    sep_pattern = r'\[SEP(?:\:\d+)?\]'
+    sep_pattern = r'\[SEP(?:\:\w+)?\]'
 
     substrings = re.split(sep_pattern, input_string)
 
@@ -412,8 +412,14 @@ def split_string_with_sep(input_string):
         if i < len(matches):
             if matches[i] == '[SEP]':
                 result_list.append(None)
+            elif matches[i] == '[SEP:R]':
+                result_list.append(random.randint(0, 1125899906842624))
             else:
-                result_list.append(int(matches[i][5:-1]))
+                try:
+                    seed = int(matches[i][5:-1])
+                except:
+                    seed = None
+                result_list.append(seed)
 
     iterable = iter(result_list)
     return list(zip(iterable, iterable))
