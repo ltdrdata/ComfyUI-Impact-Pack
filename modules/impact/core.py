@@ -188,9 +188,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                   refiner_negative=None, control_net_wrapper=None, cycle=1, inpaint_model=False):
-    if noise_mask is not None and len(noise_mask.shape) == 3:
-        noise_mask = noise_mask.squeeze(0)
+                   refiner_negative=None, control_net_wrapper=None, cycle=1,
+                   inpaint_model=False, noise_mask_feather=0):
+
+    if noise_mask is not None:
+        noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        noise_mask = noise_mask.squeeze(3)
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
@@ -253,10 +256,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # upscale
     upscaled_image = tensor_resize(image, new_w, new_h)
 
-    if noise_mask is not None:
-        noise_mask = utils.to_tensor(noise_mask)
-        noise_mask = utils.make_3d_mask(noise_mask)
-
     cnet_pils = None
     if control_net_wrapper is not None:
         positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, noise_mask)
@@ -318,9 +317,10 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None, inpaint_model=False):
-    if noise_mask is not None and len(noise_mask.shape) == 3:
-        noise_mask = noise_mask.squeeze(0)
+                                   refiner_negative=None, inpaint_model=False, noise_mask_feather=0):
+    if noise_mask is not None:
+        noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        noise_mask = noise_mask.squeeze(3)
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)

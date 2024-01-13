@@ -150,33 +150,34 @@ class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "segs": ("SEGS", ),
-                     "model": ("MODEL",),
-                     "clip": ("CLIP",),
-                     "vae": ("VAE",),
-                     "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "positive": ("CONDITIONING",),
-                     "negative": ("CONDITIONING",),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                    "image": ("IMAGE", ),
+                    "segs": ("SEGS", ),
+                    "model": ("MODEL",),
+                    "clip": ("CLIP",),
+                    "vae": ("VAE",),
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                    "positive": ("CONDITIONING",),
+                    "negative": ("CONDITIONING",),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
 
-                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
-                     },
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
                 "optional": {
-                     "detailer_hook": ("DETAILER_HOOK",),
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     }
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                   }
                 }
 
     RETURN_TYPES = ("IMAGE", )
@@ -188,7 +189,7 @@ class DetailerForEach:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False):
+                  cycle=1, inpaint_model=False, noise_mask_feather=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -251,7 +252,7 @@ class DetailerForEach:
                                                             refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                             refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                             refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
-                                                            cycle=cycle, inpaint_model=inpaint_model)
+                                                            cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
@@ -291,12 +292,13 @@ class DetailerForEach:
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
-             detailer_hook=None, inpaint_model=False):
+             detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
 
         enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpaint_model=inpaint_model)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         return (enhanced_img, )
 
@@ -305,30 +307,31 @@ class DetailerForEachPipe:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "segs": ("SEGS", ),
-                     "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "basic_pipe": ("BASIC_PIPE", ),
-                     "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                      "image": ("IMAGE", ),
+                      "segs": ("SEGS", ),
+                      "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                      "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                      "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                      "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                      "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                      "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                      "basic_pipe": ("BASIC_PIPE", ),
+                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
 
-                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                      "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
                      },
                 "optional": {
-                    "detailer_hook": ("DETAILER_HOOK",),
-                    "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "detailer_hook": ("DETAILER_HOOK",),
+                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                     "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
                     }
                 }
 
@@ -341,7 +344,8 @@ class DetailerForEachPipe:
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
-             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, cycle=1, inpaint_model=False):
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -359,7 +363,7 @@ class DetailerForEachPipe:
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                      cycle=cycle, inpaint_model=inpaint_model)
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -414,6 +418,7 @@ class FaceDetailer:
                     "segm_detector_opt": ("SEGM_DETECTOR", ),
                     "detailer_hook": ("DETAILER_HOOK",),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -431,7 +436,7 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False):
+                     inpaint_model=False, noise_mask_feather=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -462,7 +467,8 @@ class FaceDetailer:
                                           force_inpaint, wildcard_opt, detailer_hook,
                                           refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                          refiner_negative=refiner_negative, cycle=cycle, inpaint_model=inpaint_model)
+                                          refiner_negative=refiner_negative,
+                                          cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
         else:
             enhanced_img = image
             cropped_enhanced = []
@@ -488,7 +494,7 @@ class FaceDetailer:
              bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
-             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False):
+             sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
 
         result_img = None
         result_mask = None
@@ -506,7 +512,7 @@ class FaceDetailer:
                 bbox_threshold, bbox_dilation, bbox_crop_factor,
                 sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
-                cycle=cycle, inpaint_model=inpaint_model)
+                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1150,40 +1156,41 @@ class FaceDetailerPipe:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "detailer_pipe": ("DETAILER_PIPE",),
-                     "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
-                     "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                     "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "image": ("IMAGE", ),
+                    "detailer_pipe": ("DETAILER_PIPE",),
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "bbox", "label_off": "crop_region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "force_inpaint": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
 
-                     "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "bbox_dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                     "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                    "bbox_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "bbox_dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
+                    "bbox_crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
 
-                     "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
-                     "sam_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
-                     "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
-                     "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
+                    "sam_detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"],),
+                    "sam_dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
+                    "sam_threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "sam_bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1}),
+                    "sam_mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "sam_mask_hint_use_negative": (["False", "Small", "Outter"],),
 
-                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                    "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                    "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
 
-                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
-                    },
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
                 "optional": {
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    }
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                   }
                 }
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -1196,7 +1203,8 @@ class FaceDetailerPipe:
     def doit(self, image, detailer_pipe, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, bbox_threshold, bbox_dilation, bbox_crop_factor,
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
-             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None, cycle=1, inpaint_model=False):
+             sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
 
         result_img = None
         result_mask = None
@@ -1219,7 +1227,7 @@ class FaceDetailerPipe:
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                cycle=cycle, inpaint_model=inpaint_model)
+                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1243,35 +1251,36 @@ class MaskDetailerPipe:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "image": ("IMAGE", ),
-                     "mask": ("MASK", ),
-                     "basic_pipe": ("BASIC_PIPE",),
+                    "image": ("IMAGE", ),
+                    "mask": ("MASK", ),
+                    "basic_pipe": ("BASIC_PIPE",),
 
-                     "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "mask bbox", "label_off": "crop region"}),
-                     "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
-                     "mask_mode": ("BOOLEAN", {"default": True, "label_on": "masked only", "label_off": "whole"}),
+                    "guide_size": ("FLOAT", {"default": 384, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "guide_size_for": ("BOOLEAN", {"default": True, "label_on": "mask bbox", "label_off": "crop region"}),
+                    "max_size": ("FLOAT", {"default": 1024, "min": 64, "max": nodes.MAX_RESOLUTION, "step": 8}),
+                    "mask_mode": ("BOOLEAN", {"default": True, "label_on": "masked only", "label_off": "whole"}),
 
-                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
-                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
 
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
-                     "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
-                     "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                    "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
+                    "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+                    "batch_size": ("INT", {"default": 1, "min": 1, "max": 100}),
 
-                     "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
-                     },
+                    "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                   },
                 "optional": {
-                     "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
-                     "detailer_hook": ("DETAILER_HOOK",),
-                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     }
+                    "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
+                    "detailer_hook": ("DETAILER_HOOK",),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                   }
                 }
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "BASIC_PIPE", "BASIC_PIPE")
@@ -1284,7 +1293,7 @@ class MaskDetailerPipe:
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
              feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
-             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False):
+             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: MaskDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1315,7 +1324,7 @@ class MaskDetailerPipe:
                                               force_inpaint=True, wildcard_opt=None, detailer_hook=detailer_hook,
                                               refiner_ratio=refiner_ratio, refiner_model=refiner_model, refiner_clip=refiner_clip,
                                               refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                                              cycle=cycle, inpaint_model=inpaint_model)
+                                              cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
             else:
                 enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
 
@@ -1348,7 +1357,7 @@ class DetailerForEachTest(DetailerForEach):
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
-             cycle=1, inpaint_model=False):
+             cycle=1, inpaint_model=False, noise_mask_feather=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1356,7 +1365,8 @@ class DetailerForEachTest(DetailerForEach):
         enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
-                                      force_inpaint, wildcard, detailer_hook, cycle=cycle, inpaint_model=inpaint_model)
+                                      force_inpaint, wildcard, detailer_hook,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1385,7 +1395,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
-             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False):
+             refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1403,7 +1413,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       force_inpaint, wildcard, detailer_hook,
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                      refiner_negative=refiner_negative, cycle=cycle, inpaint_model=inpaint_model)
+                                      refiner_negative=refiner_negative,
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
         # set fallback image
         if len(cropped) == 0:
