@@ -21,6 +21,7 @@ import cv2
 import time
 from comfy import model_management
 from impact import utils
+from scipy.ndimage import distance_transform_edt
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -1797,6 +1798,74 @@ def update_node_status(node, text, progress=None):
     }, PromptServer.instance.client_id)
 
 
+from concurrent.futures import ThreadPoolExecutor
+
+
+def random_mask_raw(mask, bbox, factor):
+    x1, y1, x2, y2 = bbox
+    w = x2 - x1
+    h = y2 - y1
+
+    factor = int(min(w, h) * factor / 4)
+
+    def draw_random_circle(center, radius):
+        i, j = center
+        for x in range(int(i - radius), int(i + radius)):
+            for y in range(int(j - radius), int(j + radius)):
+                if np.linalg.norm(np.array([x, y]) - np.array([i, j])) <= radius:
+                    mask[x, y] = 1
+
+    def draw_irregular_line(start, end, pivot, is_vertical):
+        i = start
+        while i < end:
+            base_radius = np.random.randint(5, factor)
+            radius = int(base_radius)
+
+            if is_vertical:
+                draw_random_circle((i, pivot), radius)
+            else:
+                draw_random_circle((pivot, i), radius)
+
+            i += radius
+
+    def draw_irregular_line_parallel(start, end, pivot, is_vertical):
+        with ThreadPoolExecutor(max_workers=16) as executor:
+            futures = []
+            step = (end - start) // 16
+            for i in range(start, end, step):
+                future = executor.submit(draw_irregular_line, i, min(i + step, end), pivot, is_vertical)
+                futures.append(future)
+
+            for future in futures:
+                future.result()
+
+    draw_irregular_line_parallel(y1 + factor, y2 - factor, x1 + factor, True)
+    draw_irregular_line_parallel(y1 + factor, y2 - factor, x2 - factor, True)
+    draw_irregular_line_parallel(x1 + factor, x2 - factor, y1 + factor, False)
+    draw_irregular_line_parallel(x1 + factor, x2 - factor, y2 - factor, False)
+
+    mask[y1 + factor:y2 - factor, x1 + factor:x2 - factor] = 1.0
+
+
+def random_mask(mask, bbox, factor, size=128):
+    small_mask = np.zeros((size, size)).astype(np.float32)
+    random_mask_raw(small_mask, (0, 0, size, size), factor)
+
+    x1, y1, x2, y2 = bbox
+    small_mask = torch.tensor(small_mask).unsqueeze(0).unsqueeze(0)
+    bbox_mask = torch.nn.functional.interpolate(small_mask, size=(y2 - y1, x2 - x1), mode='bilinear', align_corners=False)
+    bbox_mask = bbox_mask.squeeze(0).squeeze(0)
+    mask[y1:y2, x1:x2] = bbox_mask
+
+
+def adaptive_mask_paste(dest_mask, src_mask, bbox):
+    x1, y1, x2, y2 = bbox
+    small_mask = torch.tensor(src_mask).unsqueeze(0).unsqueeze(0)
+    bbox_mask = torch.nn.functional.interpolate(small_mask, size=(y2 - y1, x2 - x1), mode='bilinear', align_corners=False)
+    bbox_mask = bbox_mask.squeeze(0).squeeze(0)
+    dest_mask[y1:y2, x1:x2] = bbox_mask
+
+
 class SafeToGPU:
     def __init__(self, size):
         self.size = size
@@ -1811,6 +1880,7 @@ class SafeToGPU:
                     obj.to(device)
                 else:
                     print(f"WARN: The model is not moved to the '{device}' due to insufficient memory.")
+
 
 from comfy.cli_args import args, LatentPreviewMethod
 import folder_paths

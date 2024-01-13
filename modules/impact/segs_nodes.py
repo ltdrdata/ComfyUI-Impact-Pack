@@ -1388,6 +1388,8 @@ class MakeTileSEGS:
                      "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
                      "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
                      "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
+                     "mask_irregularity": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
+                     "irregular_mask_mode": (["Reuse fast", "Reuse quality", "All random fast", "All random quality"],)
                     },
                 "optional": {
                     "filter_in_segs_opt": ("SEGS", ),
@@ -1401,13 +1403,27 @@ class MakeTileSEGS:
 
     CATEGORY = "ImpactPack/__for_testing"
 
-    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, filter_in_segs_opt=None, filter_out_segs_opt=None):
+    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
             new_min_overlap = 2 / bbox_size
             print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
             min_overlap = new_min_overlap
 
         _, ih, iw, _ = images.size()
+
+        mask_cache = None
+        mask_quality = 512
+        if mask_irregularity > 0:
+            if irregular_mask_mode == "Reuse fast":
+                mask_quality = 128
+                mask_cache = np.zeros((128, 128)).astype(np.float32)
+                core.random_mask(mask_cache, (0, 0, 128, 128), factor=mask_irregularity, size=mask_quality)
+            elif irregular_mask_mode == "Reuse quality":
+                mask_quality = 512
+                mask_cache = np.zeros((512, 512)).astype(np.float32)
+                core.random_mask(mask_cache, (0, 0, 512, 512), factor=mask_irregularity, size=mask_quality)
+            elif irregular_mask_mode == "All random fast":
+                mask_quality = 512
 
         # create exclusion mask
         if filter_out_segs_opt is not None:
@@ -1485,13 +1501,39 @@ class MakeTileSEGS:
                 crop_region = make_crop_region(iw, ih, bbox, crop_factor)
                 cx1, cy1, cx2, cy2 = crop_region
 
+                mask = np.zeros((cy2 - cy1, cx2 - cx1)).astype(np.float32)
+
                 rel_left = x1 - cx1
                 rel_top = y1 - cy1
                 rel_right = x2 - cx1
                 rel_bot = y2 - cy1
 
-                mask = torch.zeros((cy2-cy1, cx2-cx1), dtype=torch.float32, device="cpu")
-                mask[rel_top:rel_bot, rel_left:rel_right] = 1.0
+                if mask_irregularity > 0:
+                    if mask_cache is not None:
+                        core.adaptive_mask_paste(mask, mask_cache, (rel_left, rel_top, rel_right, rel_bot))
+                    else:
+                        core.random_mask(mask, (rel_left, rel_top, rel_right, rel_bot), factor=mask_irregularity, size=mask_quality)
+
+                    # corner filling
+                    if rel_left == 0:
+                        pad = int((x2 - x1) / 8)
+                        mask[rel_top:rel_bot, :pad] = 1.0
+
+                    if rel_top == 0:
+                        pad = int((y2 - y1) / 8)
+                        mask[:pad, rel_left:rel_right] = 1.0
+
+                    if rel_right == mask.shape[1]:
+                        pad = int((x2 - x1) / 8)
+                        mask[rel_top:rel_bot, -pad:] = 1.0
+
+                    if rel_bot == mask.shape[0]:
+                        pad = int((y2 - y1) / 8)
+                        mask[-pad:, rel_left:rel_right] = 1.0
+                else:
+                    mask[rel_top:rel_bot, rel_left:rel_right] = 1.0
+
+                mask = torch.tensor(mask)
 
                 if exclusion_mask is not None:
                     exclusion_mask_cropped = exclusion_mask[cy1:cy2, cx1:cx2]

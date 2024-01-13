@@ -260,7 +260,7 @@ def use_gpu_opencv():
 
 def dilate_mask(mask, dilation_factor, iter=1):
     if dilation_factor == 0:
-        return mask
+        return make_2d_mask(mask)
 
     mask = make_2d_mask(mask)
 
