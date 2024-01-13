@@ -21,6 +21,7 @@ import cv2
 import time
 from comfy import model_management
 from impact import utils
+from impact.uniformers import ensure_nhwc_mask_torch, ensure_nhwc_mask_numpy
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -812,30 +813,47 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
         mask = combine_masks2(total_masks)
 
     finally:
+        mask_working_device = torch.device("cpu")
         if sam_model.is_auto_mode:
             sam_model.cpu()
+        if mask is not None:
+            mask = mask.float()
+            # Convert to CPU and add one channel dimension to the mask at the end
+            mask = np.expand_dims(dilate_mask(mask.cpu().numpy(), dilation), axis=-1)
+            mask = np.expand_dims(mask, axis=0)  # Add a batch dimension to the mask at the beginning
+            mask = torch.from_numpy(mask)
+            mask = mask.to(device=mask_working_device)
+        else:
+            # Extract the batch, height, and width
+            height, width, _ = image.shape
+            # Create an empty mask with the shape (N, H, W, 1), where N is the batch size, set to 1
+            mask = torch.zeros(
+                (1, height, width, 1), dtype=torch.float32, device=mask_working_device
+            )
+            
+        # Handle the stacked_masks at the return statement location
+        batch_masks = None
+        
+        if not total_masks:
+            height, width, _ = image.shape
+            # Create a blank mask that matches the size of the input image
+            stacked_masks = np.zeros((1, height, width, 1), dtype=np.float32)
+            # As there is only one image, so batch_masks is equivalent to stacked_masks
+            batch_masks = stacked_masks
+        else:
+            # Attempt to convert and stack masks
+            stacked_masks = convert_and_stack_masks(total_masks)
+            if stacked_masks is not None:
+                stacked_masks = np.transpose(stacked_masks, (0, 2, 3, 1))
+                batch_masks = merge_and_stack_masks(stacked_masks, group_size=3)
+            else:
+                # If None is returned, create a blank mask that matches the size of the input image
+                height, width, _ = image.shape
+                stacked_masks = np.zeros((1, height, width, 1), dtype=np.float32)
+                batch_masks = stacked_masks
 
-        pass
-
-    mask_working_device = torch.device("cpu")
-
-    if mask is not None:
-        mask = mask.float()
-        mask = dilate_mask(mask.cpu().numpy(), dilation)
-        mask = torch.from_numpy(mask)
-        mask = mask.to(device=mask_working_device)
-    else:
-        # Extracting batch, height and width
-        height, width, _ = image.shape
-        mask = torch.zeros(
-            (height, width), dtype=torch.float32, device=mask_working_device
-        )  # empty mask
-
-    stacked_masks = convert_and_stack_masks(total_masks)
-
-    return (mask, merge_and_stack_masks(stacked_masks, group_size=3))
-    # return every_three_pick_last(stacked_masks)
-
+        combined_mask = mask
+        return (combined_mask, batch_masks)
 
 def segs_bitwise_and_mask(segs, mask):
     mask = make_2d_mask(mask)
@@ -959,8 +977,46 @@ class ONNXDetector:
     def setAux(self, x):
         pass
 
+def optimized_mask_to_uint8(mask):
+    """
+    Convert the input mask to uint8 type, and perform appropriate clipping and dimension compression.
+    
+    Args:
+    mask: Could be a numpy array of any shape.
+
+    Returns:
+    mask_uint8: A numpy array which has been converted to uint8 type and properly dimension-compressed.
+    """
+    try:
+        # Ensure the input is numpy array
+        if not isinstance(mask, np.ndarray):
+            raise ValueError("The type of the input mask needs to be numpy.ndarray!")
+
+        # Clamping, make sure values are within 0-1
+        if np.any(mask < 0) or np.any(mask > 1):
+            print("Warning: Values within the mask are out of the range [0,1], will be clamped.")
+        mask_clamped = np.clip(mask, 0, 1)
+
+        # If mask is floating-point type, convert it to np.float32 to avoid overflow
+        if mask_clamped.dtype.kind == 'f':
+            mask_clamped = mask_clamped.astype(np.float32)
+
+        # Convert to uint8
+        mask_uint8 = (mask_clamped * 255).astype(np.uint8)
+
+        # If dimensional reduction is needed, do it
+        if mask_uint8.ndim == 3 and mask_uint8.shape[0] == 1:
+            mask_uint8 = mask_uint8.squeeze(0)
+
+        return mask_uint8
+
+    except Exception as e:
+        print(f"An error occurred during the process of optimizing mask to uint8: {repr(e)}")
+        return None
 
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
+    print(f'mask shape: {mask.shape}')
+    
     drop_size = max(drop_size, 1)
     if mask is None:
         print("[mask_to_segs] Cannot operate: MASK is empty.")
@@ -981,8 +1037,10 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
 
     result = []
 
-    if len(mask.shape) == 2:
-        mask = np.expand_dims(mask, axis=0)
+    # make sure the mask is in NHWC format
+    mask = ensure_nhwc_mask_numpy(mask)
+    # then we need to remove the channel dimension
+    mask = mask.squeeze(-1)
 
     for i in range(mask.shape[0]):
         mask_i = mask[i]
@@ -1017,7 +1075,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         result.append(item)
 
         else:
-            mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
+            mask_i_uint8 = optimized_mask_to_uint8(mask_i)
             contours, ctree = cv2.findContours(mask_i_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for j, contour in enumerate(contours):
                 hierarchy = ctree[0][j]
