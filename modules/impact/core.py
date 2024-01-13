@@ -600,7 +600,6 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
 
     finally:
         if sam_model.is_auto_mode:
-            print(f"semd to {device}")
             sam_model.to(device="cpu")
 
     if mask is not None:
@@ -608,7 +607,8 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
         mask = dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
     else:
-        mask = torch.zeros((8, 8), dtype=torch.float32, device="cpu")  # empty mask
+        size = image.shape[0] // 8, image.shape[1] // 8
+        mask = torch.zeros(size, dtype=torch.float32, device="cpu")  # empty mask
 
     mask = utils.make_3d_mask(mask)
     return mask
