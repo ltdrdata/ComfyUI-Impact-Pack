@@ -237,12 +237,14 @@ class DetailerForEach:
                 cropped_mask = None
 
             if wildcard_chooser is not None:
-                wildcard_item = wildcard_chooser.get(seg)
+                seg_seed, wildcard_item = wildcard_chooser.get(seg)
             else:
-                wildcard_item = None
+                seg_seed, wildcard_item = None, None
+
+            seg_seed = seed + i if seg_seed is None else seg_seed
 
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
-                                                            seg.bbox, seed + i, steps, cfg, sampler_name, scheduler,
+                                                            seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                             positive, negative, denoise, cropped_mask, force_inpaint,
                                                             wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
                                                             detailer_hook=detailer_hook,

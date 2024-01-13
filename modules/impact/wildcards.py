@@ -400,6 +400,25 @@ class WildcardChooserDict:
         return text
 
 
+def split_string_with_sep(input_string):
+    sep_pattern = r'\[SEP(?:\:\d+)?\]'
+
+    substrings = re.split(sep_pattern, input_string)
+
+    result_list = [None]
+    matches = re.findall(sep_pattern, input_string)
+    for i, substring in enumerate(substrings):
+        result_list.append(substring)
+        if i < len(matches):
+            if matches[i] == '[SEP]':
+                result_list.append(None)
+            else:
+                result_list.append(int(matches[i][5:-1]))
+
+    iterable = iter(result_list)
+    return list(zip(iterable, iterable))
+
+
 def process_wildcard_for_segs(wildcard):
     if wildcard.startswith('[LAB]'):
         raw_items = split_to_dict(wildcard)
@@ -414,13 +433,7 @@ def process_wildcard_for_segs(wildcard):
 
     elif starts_with_regex(r"\[(ASC|DSC|RND)\]", wildcard):
         mode = wildcard[1:4]
-        raw_items = wildcard[5:].split('[SEP]')
-
-        items = []
-        for x in raw_items:
-            x = x.strip()
-            if x != '':
-                items.append(x)
+        items = split_string_with_sep(wildcard[5:])
 
         if mode == 'RND':
             random.shuffle(items)
@@ -429,4 +442,4 @@ def process_wildcard_for_segs(wildcard):
             return mode, WildcardChooser(items, False)
 
     else:
-        return None, WildcardChooser([wildcard], False)
+        return None, WildcardChooser([(None, wildcard)], False)
