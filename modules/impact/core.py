@@ -1807,8 +1807,10 @@ class SafeToGPU:
         else:
             if utils.is_same_device(obj.device, 'cpu'):  # cpu to gpu
                 model_management.free_memory(self.size * 1.3, device)
-                obj.to(device)
-
+                if model_management.get_free_memory(device) > self.size * 1.3:
+                    obj.to(device)
+                else:
+                    print(f"WARN: The model is not moved to the '{device}' due to insufficient memory.")
 
 from comfy.cli_args import args, LatentPreviewMethod
 import folder_paths
