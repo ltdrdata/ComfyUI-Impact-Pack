@@ -295,7 +295,8 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
     pass2 = remove_lora_tags(pass1)
 
     for lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b in loras:
-        if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
+        lora_name_ext = lora_name.split('.')
+        if ('.'+lora_name_ext[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
 
         orig_lora_name = lora_name
