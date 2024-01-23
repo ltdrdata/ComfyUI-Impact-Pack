@@ -63,7 +63,7 @@ class ImpactConditionalBranch:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "cond": ("BOOLEAN", {"forceInput": True}),
+                "cond": ("BOOLEAN",),
                 "tt_value": (any_typ,),
                 "ff_value": (any_typ,),
             },
