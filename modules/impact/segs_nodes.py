@@ -1277,8 +1277,6 @@ class SEGSPicker:
         # generate candidates image
         cands = []
         for seg in segs[1]:
-            cropped_image = None
-
             if seg.cropped_image is not None:
                 cropped_image = seg.cropped_image
             elif fallback_image_opt is not None:
@@ -1286,6 +1284,11 @@ class SEGSPicker:
                 cropped_image = crop_image(fallback_image_opt, seg.crop_region)
             else:
                 cropped_image = empty_pil_tensor()
+
+            mask_array = seg.cropped_mask
+            mask_array[mask_array < 0.3] = 0.3
+            mask_array = mask_array[None, ..., None]
+            cropped_image = cropped_image * mask_array
 
             cands.append(cropped_image)
 
