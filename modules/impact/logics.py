@@ -81,6 +81,33 @@ class ImpactConditionalBranch:
             return (ff_value,)
 
 
+class ImpactConditionalBranchSelMode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "cond": ("BOOLEAN",),
+                "sel_mode": ("BOOLEAN", {"default": True, "label_on": "select_on_prompt", "label_off": "select_on_execution"}),
+            },
+            "optional": {
+                "tt_value": (any_typ,),
+                "ff_value": (any_typ,),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "ImpactPack/Logic"
+
+    RETURN_TYPES = (any_typ, )
+
+    def doit(self, cond, sel_mode, tt_value=None, ff_value=None):
+        print(f'tt={tt_value is None}\nff={ff_value is None}')
+        if cond:
+            return (tt_value,)
+        else:
+            return (ff_value,)
+
+
 class ImpactConditionalStopIteration:
     @classmethod
     def INPUT_TYPES(cls):
@@ -224,7 +251,7 @@ class ImpactValueReceiver:
         elif typ == "FLOAT":
             return (float(value), )
         elif typ == "BOOLEAN":
-            return (bool(value), )
+            return (value.lower() == "true", )
         else:
             return (value, )
 

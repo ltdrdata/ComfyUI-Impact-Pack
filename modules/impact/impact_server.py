@@ -338,6 +338,7 @@ async def view_previewbridge_image(request):
 def onprompt_for_switch(json_data):
     inversed_switch_info = {}
     onprompt_switch_info = {}
+    onprompt_cond_branch_info = {}
 
     for k, v in json_data['prompt'].items():
         if 'class_type' not in v:
@@ -368,6 +369,21 @@ def onprompt_for_switch(json_data):
                 else:
                     onprompt_switch_info[k] = select_input
 
+        elif cls == 'ImpactConditionalBranchSelMode':
+            if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode'] and 'cond' in v['inputs']:
+                cond_input = v['inputs']['cond']
+                if isinstance(cond_input, list) and len(cond_input) == 2:
+                    input_node = json_data['prompt'][cond_input[0]]
+                    if (input_node['class_type'] == 'ImpactValueReceiver' and 'inputs' in input_node
+                            and 'value' in input_node['inputs'] and 'typ' in input_node['inputs']):
+                        if 'BOOLEAN' == input_node['inputs']['typ']:
+                            try:
+                                onprompt_cond_branch_info[k] = input_node['inputs']['value'].lower() == "true"
+                            except:
+                                pass
+                else:
+                    onprompt_cond_branch_info[k] = cond_input
+
     for k, v in json_data['prompt'].items():
         disable_targets = set()
 
@@ -381,6 +397,12 @@ def onprompt_for_switch(json_data):
             selected_slot_name = f"input{onprompt_switch_info[k]}"
             for kk, vv in v['inputs'].items():
                 if kk != selected_slot_name and kk.startswith('input'):
+                    disable_targets.add(kk)
+
+        if k in onprompt_cond_branch_info:
+            selected_slot_name = "tt_value" if onprompt_cond_branch_info[k] else "ff_value"
+            for kk, vv in v['inputs'].items():
+                if kk in ['tt_value', 'ff_value'] and kk != selected_slot_name:
                     disable_targets.add(kk)
 
         for kk in disable_targets:

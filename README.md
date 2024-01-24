@@ -212,7 +212,7 @@ This takes latent as input and outputs latent as the result.
 * Concat Conditionings - It takes multiple conditionings as input and concat them into a single conditioning.
 
 * Logics (experimental) - These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
-  * ImpactCompare, ImpactConditionalBranch, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
+  * ImpactCompare, ImpactConditionalBranch, ImpactConditionalBranchSelMode, ImpactInt, ImpactValueSender, ImpactValueReceiver, ImpactImageInfo, ImpactMinMax, ImpactNeg, ImpactConditionalStopIteration
   * ImpactIsNotEmptySEGS - This node returns `true` only if the input SEGS is not empty. 
   * Queue Trigger - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
   * Queue Trigger (Countdown) - Like the Queue Trigger, it adds a queue, but only adds it if it's greater than 1, and decrements the count by one each time it runs.

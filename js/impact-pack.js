@@ -237,11 +237,14 @@ app.registerExtension({
 			}
 		}
 
-		if(nodeData.name == "ImpactConditionalBranch") {
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
-            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(!link_info || this.inputs[0].type != '*')
-                    return;
+		if(nodeData.name == "ImpactConditionalBranch" || nodeData.name == "ImpactConditionalBranchSelMode") {
+			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+				if(!link_info || this.inputs[0].type != '*')
+					return;
+
+				if(index >= 2)
+					return;
 
 				// assign type
 				let slot_type = '*';
@@ -370,8 +373,8 @@ app.registerExtension({
         }
 
         if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
-            nodeData.name === 'CombineRegionalPrompts' || 
-			nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
+            nodeData.name === 'CombineRegionalPrompts' ||
+            nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
             nodeData.name === 'ImpactSEGSConcat' ||
             nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
             var input_name = "input";
