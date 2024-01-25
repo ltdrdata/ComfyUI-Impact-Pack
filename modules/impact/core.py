@@ -259,7 +259,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     cnet_pils = None
     if control_net_wrapper is not None:
-        positive, cnet_pils = control_net_wrapper.apply(positive, upscaled_image, noise_mask)
+        positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, upscaled_image, noise_mask)
 
     # prepare mask
     if noise_mask is not None and inpaint_model:
@@ -1609,12 +1609,12 @@ class ControlNetWrapper:
         else:
             self.control_image = None
 
-    def apply(self, conditioning, image, mask=None):
+    def apply(self, positive, negative, image, mask=None):
         cnet_pils = []
         prev_cnet_pils = []
 
         if self.prev_control_net is not None:
-            conditioning, prev_cnet_pils = self.prev_control_net.apply(conditioning, image, mask)
+            positive, negative, prev_cnet_pils = self.prev_control_net.apply(positive, negative, image, mask)
 
         if self.control_image is not None:
             cnet_pil = self.control_image
@@ -1626,7 +1626,47 @@ class ControlNetWrapper:
         cnet_pils.extend(prev_cnet_pils)
         cnet_pils.append(cnet_pil)
 
-        return nodes.ControlNetApply().apply_controlnet(conditioning, self.control_net, cnet_pil, self.strength)[0], cnet_pils
+        positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_pil, self.strength)[0]
+
+        return positive, negative, cnet_pils
+
+
+class ControlNetAdvancedWrapper:
+    def __init__(self, control_net, strength, start_percent, end_percent, preprocessor, prev_control_net=None,
+                 original_size=None, crop_region=None, control_image=None):
+        self.control_net = control_net
+        self.strength = strength
+        self.preprocessor = preprocessor
+        self.prev_control_net = prev_control_net
+        self.start_percent = start_percent
+        self.end_percent = end_percent
+
+        if original_size is not None and crop_region is not None and control_image is not None:
+            self.control_image = utils.tensor_resize(control_image, original_size[1], original_size[0])
+            self.control_image = torch.tensor(utils.tensor_crop(self.control_image, crop_region))
+        else:
+            self.control_image = None
+
+    def apply(self, positive, negative, image, mask=None):
+        cnet_pils = []
+        prev_cnet_pils = []
+
+        if self.prev_control_net is not None:
+            positive, negative, prev_cnet_pils = self.prev_control_net.apply(positive, negative, image, mask)
+
+        if self.control_image is not None:
+            cnet_pil = self.control_image
+        elif self.preprocessor is not None:
+            cnet_pil = self.preprocessor.apply(image, mask)
+        else:
+            cnet_pil = image
+
+        cnet_pils.extend(prev_cnet_pils)
+        cnet_pils.append(cnet_pil)
+
+        conditioning = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_pil, self.strength, self.start_percent, self.end_percent)
+
+        return conditioning[0], conditioning[1], cnet_pils
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
