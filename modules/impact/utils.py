@@ -347,13 +347,23 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     if kernel_size <= 0:
         return mask
 
+    kernel_size = kernel_size*2+1
+
+    shortest = min(mask.shape[1], mask.shape[2])
+    if shortest <= kernel_size:
+        kernel_size = int(shortest/2)
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+        if kernel_size < 3:
+            return mask  # skip feathering
+
     prev_device = mask.device
     device = comfy.model_management.get_torch_device()
     mask.to(device)
 
     # apply gaussian blur
     mask = mask[:, None, ..., 0]
-    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size*2+1, sigma=sigma)(mask)
+    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
 
     blurred_mask.to(prev_device)
