@@ -162,38 +162,38 @@ function latentSendHandler(event) {
 
 
 function valueSendHandler(event) {
-    let nodes = app.graph._nodes;
-    for(let i in nodes) {
-        if(nodes[i].type == 'ImpactValueReceiver') {
-            if(nodes[i].widgets[2].value == event.detail.link_id) {
-                nodes[i].widgets[1].value = event.detail.value;
+	let nodes = app.graph._nodes;
+	for(let i in nodes) {
+		if(nodes[i].type == 'ImpactValueReceiver') {
+			if(nodes[i].widgets[2].value == event.detail.link_id) {
+				nodes[i].widgets[1].value = event.detail.value;
 
-                let typ = typeof event.detail.value;
-                if(typ == 'string') {
-                    nodes[i].widgets[0].value = "STRING";
-                }
-                else if(typ == "boolean") {
-                    nodes[i].widgets[0].value = "BOOLEAN";
-                }
-                else if(typ != "number") {
-                    nodes[i].widgets[0].value = typeof event.detail.value;
-                }
-                else if(Number.isInteger(event.detail.value)) {
-                    nodes[i].widgets[0].value = "INT";
-                }
-                else {
-                    nodes[i].widgets[0].value = "FLOAT";
-                }
-            }
-        }
-    }
+				let typ = typeof event.detail.value;
+				if(typ == 'string') {
+					nodes[i].widgets[0].value = "STRING";
+				}
+				else if(typ == "boolean") {
+					nodes[i].widgets[0].value = "BOOLEAN";
+				}
+				else if(typ != "number") {
+					nodes[i].widgets[0].value = typeof event.detail.value;
+				}
+				else if(Number.isInteger(event.detail.value)) {
+					nodes[i].widgets[0].value = "INT";
+				}
+				else {
+					nodes[i].widgets[0].value = "FLOAT";
+				}
+			}
+		}
+	}
 }
 
 
 const impactProgressBadge = new ImpactProgressBadge();
 
 api.addEventListener("stop-iteration", () => {
-    document.getElementById("autoQueueCheckbox").checked = false;
+	document.getElementById("autoQueueCheckbox").checked = false;
 });
 api.addEventListener("value-send", valueSendHandler);
 api.addEventListener("img-send", imgSendHandler);
@@ -210,15 +210,15 @@ app.registerExtension({
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale"
-		    || nodeData.name == "RegionalSampler"|| nodeData.name == "RegionalSamplerAdvanced") {
+			|| nodeData.name == "RegionalSampler"|| nodeData.name == "RegionalSamplerAdvanced") {
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
 
 		if(nodeData.name == "ImpactControlBridge") {
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
-            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(!link_info || this.inputs[0].type != '*')
-                    return;
+			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+				if(!link_info || this.inputs[0].type != '*')
+					return;
 
 				// assign type
 				let slot_type = '*';
@@ -265,10 +265,10 @@ app.registerExtension({
 		}
 
 		if(nodeData.name == "ImpactCompare") {
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
-            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(!link_info || this.inputs[0].type != '*' || type == 2)
-                    return;
+			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+				if(!link_info || this.inputs[0].type != '*' || type == 2)
+					return;
 
 				// assign type
 				const node = app.graph.getNodeById(link_info.origin_id);
@@ -279,242 +279,242 @@ app.registerExtension({
 			}
 		}
 
-        if(nodeData.name === 'ImpactInversedSwitch') {
-            nodeData.output = ['*'];
-            nodeData.output_is_list = [false];
-            nodeData.output_name = ['output1'];
+		if(nodeData.name === 'ImpactInversedSwitch') {
+			nodeData.output = ['*'];
+			nodeData.output_is_list = [false];
+			nodeData.output_name = ['output1'];
 
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
-            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(!link_info)
-                    return;
+			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+				if(!link_info)
+					return;
 
-                if(type == 2) {
-                    // connect output
-                    if(connected){
-                        if(app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
-                            app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
-                        }
+				if(type == 2) {
+					// connect output
+					if(connected){
+						if(app.graph._nodes_by_id[link_info.target_id].type == 'Reroute') {
+							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+						}
 
-                        if(this.outputs[0].type == '*'){
-                            if(link_info.type == '*') {
-                                app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
-                            }
-                            else {
-                                // propagate type
-                                this.outputs[0].type = link_info.type;
-                                this.outputs[0].name = link_info.type;
+						if(this.outputs[0].type == '*'){
+							if(link_info.type == '*') {
+								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+							}
+							else {
+								// propagate type
+								this.outputs[0].type = link_info.type;
+								this.outputs[0].name = link_info.type;
 
-                                for(let i in this.inputs) {
-                                    if(this.inputs[i].name != 'select')
-                                        this.inputs[i].type = link_info.type;
-                                }
-                            }
-                        }
-                    }
-                }
-                else {
-                    if(app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
-                        this.disconnectInput(link_info.target_slot);
+								for(let i in this.inputs) {
+									if(this.inputs[i].name != 'select')
+										this.inputs[i].type = link_info.type;
+								}
+							}
+						}
+					}
+				}
+				else {
+					if(app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+						this.disconnectInput(link_info.target_slot);
 
-                    // connect input
-                    if(this.inputs[0].type == '*'){
-                        const node = app.graph.getNodeById(link_info.origin_id);
-                        let origin_type = node.outputs[link_info.origin_slot].type;
+					// connect input
+					if(this.inputs[0].type == '*'){
+						const node = app.graph.getNodeById(link_info.origin_id);
+						let origin_type = node.outputs[link_info.origin_slot].type;
 
-                        if(origin_type == '*') {
-                            this.disconnectInput(link_info.target_slot);
-                            return;
-                        }
+						if(origin_type == '*') {
+							this.disconnectInput(link_info.target_slot);
+							return;
+						}
 
-                        for(let i in this.inputs) {
-                            if(this.inputs[i].name != 'select')
-                                this.inputs[i].type = origin_type;
-                        }
+						for(let i in this.inputs) {
+							if(this.inputs[i].name != 'select')
+								this.inputs[i].type = origin_type;
+						}
 
-                        this.outputs[0].type = origin_type;
-                        this.outputs[0].name = origin_type;
-                    }
+						this.outputs[0].type = origin_type;
+						this.outputs[0].name = origin_type;
+					}
 
-                    return;
-                }
+					return;
+				}
 
-                if (!connected && this.outputs.length > 1) {
-                    const stackTrace = new Error().stack;
+				if (!connected && this.outputs.length > 1) {
+					const stackTrace = new Error().stack;
 
-                    if(
-                        !stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
-                        !stackTrace.includes('LGraphNode.connect') && // for mouse device
-                        !stackTrace.includes('loadGraphData')) {
-                            if(this.outputs[link_info.origin_slot].links.length == 0)
-                                this.removeOutput(link_info.origin_slot);
-                    }
-                }
+					if(
+						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
+						!stackTrace.includes('LGraphNode.connect') && // for mouse device
+						!stackTrace.includes('loadGraphData')) {
+							if(this.outputs[link_info.origin_slot].links.length == 0)
+								this.removeOutput(link_info.origin_slot);
+					}
+				}
 
 				let slot_i = 1;
-                for (let i = 0; i < this.outputs.length; i++) {
-                    this.outputs[i].name = `output${slot_i}`
-                    slot_i++;
-                }
+				for (let i = 0; i < this.outputs.length; i++) {
+					this.outputs[i].name = `output${slot_i}`
+					slot_i++;
+				}
 
 				let last_slot = this.outputs[this.outputs.length - 1];
-                if (last_slot.slot_index == link_info.origin_slot) {
-                    this.addOutput(`output${slot_i}`, this.outputs[0].type);
-                }
+				if (last_slot.slot_index == link_info.origin_slot) {
+					this.addOutput(`output${slot_i}`, this.outputs[0].type);
+				}
 
-                let select_slot = this.inputs.find(x => x.name == "select");
-                if(this.widgets) {
-                    this.widgets[0].options.max = select_slot?this.outputs.length-1:this.outputs.length;
-                    this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
-                    if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
-                        this.widgets[0].value = 1;
-                }
-            }
-        }
+				let select_slot = this.inputs.find(x => x.name == "select");
+				if(this.widgets) {
+					this.widgets[0].options.max = select_slot?this.outputs.length-1:this.outputs.length;
+					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
+					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
+						this.widgets[0].value = 1;
+				}
+			}
+		}
 
-        if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
-            nodeData.name === 'CombineRegionalPrompts' ||
-            nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
-            nodeData.name === 'ImpactSEGSConcat' ||
-            nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
-            var input_name = "input";
+		if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
+			nodeData.name === 'CombineRegionalPrompts' ||
+			nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
+			nodeData.name === 'ImpactSEGSConcat' ||
+			nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
+			var input_name = "input";
 
-            switch(nodeData.name) {
-            case 'ImpactMakeImageList':
-            case 'ImpactMakeImageBatch':
-                input_name = "image";
-                break;
+			switch(nodeData.name) {
+			case 'ImpactMakeImageList':
+			case 'ImpactMakeImageBatch':
+				input_name = "image";
+				break;
 
-            case 'ImpactSEGSConcat':
-                input_name = "segs";
-                break;
+			case 'ImpactSEGSConcat':
+				input_name = "segs";
+				break;
 
-            case 'CombineRegionalPrompts':
-                input_name = "regional_prompts";
-                break;
+			case 'CombineRegionalPrompts':
+				input_name = "regional_prompts";
+				break;
 
-            case 'ImpactCombineConditionings':
-            case 'ImpactConcatConditionings':
-                input_name = "conditioning";
-                break;
+			case 'ImpactCombineConditionings':
+			case 'ImpactConcatConditionings':
+				input_name = "conditioning";
+				break;
 
-            case 'LatentSwitch':
-                input_name = "input";
-                break;
+			case 'LatentSwitch':
+				input_name = "input";
+				break;
 
-            case 'SEGSSwitch':
-                input_name = "input";
-                break;
+			case 'SEGSSwitch':
+				input_name = "input";
+				break;
 
-            case 'ImpactSwitch':
-                input_name = "input";
-            }
+			case 'ImpactSwitch':
+				input_name = "input";
+			}
 
-            const onConnectionsChange = nodeType.prototype.onConnectionsChange;
-            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(!link_info)
-                    return;
+			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+				if(!link_info)
+					return;
 
-                if(type == 2) {
-                    // connect output
-                    if(connected && index == 0){
-                        if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
-                            app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
-                        }
+				if(type == 2) {
+					// connect output
+					if(connected && index == 0){
+						if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
+							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+						}
 
-                        if(this.outputs[0].type == '*'){
-                            if(link_info.type == '*') {
-                                app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
-                            }
-                            else {
-                                // propagate type
-                                this.outputs[0].type = link_info.type;
-                                this.outputs[0].label = link_info.type;
-                                this.outputs[0].name = link_info.type;
+						if(this.outputs[0].type == '*'){
+							if(link_info.type == '*') {
+								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
+							}
+							else {
+								// propagate type
+								this.outputs[0].type = link_info.type;
+								this.outputs[0].label = link_info.type;
+								this.outputs[0].name = link_info.type;
 
-                                for(let i in this.inputs) {
-                                    let input_i = this.inputs[i];
-                                    if(input_i.name != 'select' && input_i.name != 'sel_mode')
-                                        input_i.type = link_info.type;
-                                }
-                            }
-                        }
-                    }
+								for(let i in this.inputs) {
+									let input_i = this.inputs[i];
+									if(input_i.name != 'select' && input_i.name != 'sel_mode')
+										input_i.type = link_info.type;
+								}
+							}
+						}
+					}
 
-                    return;
-                }
-                else {
-                    if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
-                        this.disconnectInput(link_info.target_slot);
+					return;
+				}
+				else {
+					if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+						this.disconnectInput(link_info.target_slot);
 
-                    // connect input
-                    if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
-                        return;
+					// connect input
+					if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
+						return;
 
-                    if(this.inputs[0].type == '*'){
-                        const node = app.graph.getNodeById(link_info.origin_id);
-                        let origin_type = node.outputs[link_info.origin_slot].type;
+					if(this.inputs[0].type == '*'){
+						const node = app.graph.getNodeById(link_info.origin_id);
+						let origin_type = node.outputs[link_info.origin_slot].type;
 
-                        if(origin_type == '*') {
-                            this.disconnectInput(link_info.target_slot);
-                            return;
-                        }
+						if(origin_type == '*') {
+							this.disconnectInput(link_info.target_slot);
+							return;
+						}
 
-                        for(let i in this.inputs) {
-                            let input_i = this.inputs[i];
-                            if(input_i.name != 'select' && input_i.name != 'sel_mode')
-                                input_i.type = origin_type;
-                        }
+						for(let i in this.inputs) {
+							let input_i = this.inputs[i];
+							if(input_i.name != 'select' && input_i.name != 'sel_mode')
+								input_i.type = origin_type;
+						}
 
-                        this.outputs[0].type = origin_type;
-                        this.outputs[0].label = origin_type;
-                        this.outputs[0].name = origin_type;
-                    }
-                }
+						this.outputs[0].type = origin_type;
+						this.outputs[0].label = origin_type;
+						this.outputs[0].name = origin_type;
+					}
+				}
 
-                let select_slot = this.inputs.find(x => x.name == "select");
-                let mode_slot = this.inputs.find(x => x.name == "sel_mode");
+				let select_slot = this.inputs.find(x => x.name == "select");
+				let mode_slot = this.inputs.find(x => x.name == "sel_mode");
 
-                let converted_count = 0;
-                converted_count += select_slot?1:0;
-                converted_count += mode_slot?1:0;
+				let converted_count = 0;
+				converted_count += select_slot?1:0;
+				converted_count += mode_slot?1:0;
 
-                if (!connected && (this.inputs.length > 1+converted_count)) {
-                    const stackTrace = new Error().stack;
+				if (!connected && (this.inputs.length > 1+converted_count)) {
+					const stackTrace = new Error().stack;
 
-                    if(
-                        !stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
-                        !stackTrace.includes('LGraphNode.connect') && // for mouse device
-                        !stackTrace.includes('loadGraphData') &&
-                        this.inputs[index].name != 'select') {
-                        this.removeInput(index);
-                    }
-                }
+					if(
+						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
+						!stackTrace.includes('LGraphNode.connect') && // for mouse device
+						!stackTrace.includes('loadGraphData') &&
+						this.inputs[index].name != 'select') {
+						this.removeInput(index);
+					}
+				}
 
 				let slot_i = 1;
-                for (let i = 0; i < this.inputs.length; i++) {
-                    let input_i = this.inputs[i];
-                    if(input_i.name != 'select'&& input_i.name != 'sel_mode') {
-	                    input_i.name = `${input_name}${slot_i}`
-                        slot_i++;
-                    }
-                }
+				for (let i = 0; i < this.inputs.length; i++) {
+					let input_i = this.inputs[i];
+					if(input_i.name != 'select'&& input_i.name != 'sel_mode') {
+						input_i.name = `${input_name}${slot_i}`
+						slot_i++;
+					}
+				}
 
 				let last_slot = this.inputs[this.inputs.length - 1];
-                if (
-                    (last_slot.name == 'select' && last_slot.name != 'sel_mode' && this.inputs[this.inputs.length - 2].link != undefined)
-                    || (last_slot.name != 'select' && last_slot.name != 'sel_mode' && last_slot.link != undefined)) {
-                        this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
-                }
+				if (
+					(last_slot.name == 'select' && last_slot.name != 'sel_mode' && this.inputs[this.inputs.length - 2].link != undefined)
+					|| (last_slot.name != 'select' && last_slot.name != 'sel_mode' && last_slot.link != undefined)) {
+						this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
+				}
 
-                if(this.widgets) {
-                    this.widgets[0].options.max = select_slot?this.inputs.length-1:this.inputs.length;
-                    this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
-                    if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
-                        this.widgets[0].value = 1;
-                }
-            }
-        }
+				if(this.widgets) {
+					this.widgets[0].options.max = select_slot?this.inputs.length-1:this.inputs.length;
+					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
+					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
+						this.widgets[0].value = 1;
+				}
+			}
+		}
 	},
 
 	nodeCreated(node, app) {
@@ -527,49 +527,75 @@ app.registerExtension({
 		}
 
 		switch(node.comfyClass) {
-		    case "ToDetailerPipe":
-		    case "ToDetailerPipeSDXL":
-		    case "BasicPipeToDetailerPipe":
-		    case "BasicPipeToDetailerPipeSDXL":
-		    case "EditDetailerPipe":
-		    case "FaceDetailer":
-		    case "DetailerForEach":
-		    case "DetailerForEachDebug":
-		    case "DetailerForEachPipe":
-		    case "DetailerForEachDebugPipe":
-		        {
-                    for(let i in node.widgets) {
-                        let widget = node.widgets[i];
-                        if(widget.type === "customtext") {
-                            widget.dynamicPrompts = false;
-                            widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
-                            widget.serializeValue = () => {
-                                return node.widgets[i].value;
-                            };
-                        }
-			        }
-			    }
-		        break;
+			case "ToDetailerPipe":
+			case "ToDetailerPipeSDXL":
+			case "BasicPipeToDetailerPipe":
+			case "BasicPipeToDetailerPipeSDXL":
+			case "EditDetailerPipe":
+			case "FaceDetailer":
+			case "DetailerForEach":
+			case "DetailerForEachDebug":
+			case "DetailerForEachPipe":
+			case "DetailerForEachDebugPipe":
+				{
+					for(let i in node.widgets) {
+						let widget = node.widgets[i];
+						if(widget.type === "customtext") {
+							widget.dynamicPrompts = false;
+							widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
+							widget.serializeValue = () => {
+								return node.widgets[i].value;
+							};
+						}
+					}
+				}
+				break;
 		}
 
 		if(node.comfyClass == "ImpactSEGSLabelFilter" || node.comfyClass == "SEGSLabelFilterDetailerHookProvider") {
 			Object.defineProperty(node.widgets[0], "value", {
 				set: (value) => {
-				        const stackTrace = new Error().stack;
-                        if(stackTrace.includes('inner_value_change')) {
-                            if(node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
-                                node.widgets[1].value += ", "
+						const stackTrace = new Error().stack;
+						if(stackTrace.includes('inner_value_change')) {
+							if(node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
+								node.widgets[1].value += ", "
 
-                            node.widgets[1].value += value;
-                            node.widgets_values[1] = node.widgets[1].value;
-                        }
+							node.widgets[1].value += value;
+							node.widgets_values[1] = node.widgets[1].value;
+						}
 
 						node._value = value;
 					},
 				get: () => {
-                        return node._value;
+						return node._value;
 					 }
 			});
+		}
+
+		if(node.comfyClass == "UltralyticsDetectorProvider") {
+			let model_name_widget = node.widgets.find((w) => w.name === "model_name");
+			let orig_draw = node.onDrawForeground;
+			node.onDrawForeground = function (ctx) {
+				const r = orig_draw?.apply?.(this, arguments);
+
+				let is_seg = model_name_widget.value.startsWith('segm/') || model_name_widget.value.includes('-seg');
+				if(!is_seg) {
+					var slot_pos = new Float32Array(2);
+					var pos = node.getConnectionPos(false, 1, slot_pos);
+
+					pos[0] -= node.pos[0] - 10;
+					pos[1] -= node.pos[1];
+
+					ctx.beginPath();
+					ctx.strokeStyle = "red";
+					ctx.lineWidth = 4;
+					ctx.moveTo(pos[0] - 5, pos[1] - 5);
+					ctx.lineTo(pos[0] + 5, pos[1] + 5);
+					ctx.moveTo(pos[0] + 5, pos[1] - 5);
+					ctx.lineTo(pos[0] - 5, pos[1] + 5);
+					ctx.stroke();
+				}
+			}
 		}
 
 		if(
@@ -580,53 +606,53 @@ app.registerExtension({
 			node._value = "Select the LoRA to add to the text";
 			node._wvalue = "Select the Wildcard to add to the text";
 
-            var tbox_id = 0;
-            var combo_id = 3;
-            var has_lora = true;
+			var tbox_id = 0;
+			var combo_id = 3;
+			var has_lora = true;
 
-            switch(node.comfyClass){
-                case "ImpactWildcardEncode":
-                    tbox_id = 0;
-                    combo_id = 3;
-                    break;
+			switch(node.comfyClass){
+				case "ImpactWildcardEncode":
+					tbox_id = 0;
+					combo_id = 3;
+					break;
 
-                case "ImpactWildcardProcessor":
-                    tbox_id = 0;
-                    combo_id = 4;
-                    has_lora = false;
-                    break;
+				case "ImpactWildcardProcessor":
+					tbox_id = 0;
+					combo_id = 4;
+					has_lora = false;
+					break;
 
-                case "ToDetailerPipe":
-		        case "ToDetailerPipeSDXL":
-                case "EditDetailerPipe":
-                case "EditDetailerPipeSDXL":
-                case "BasicPipeToDetailerPipe":
-		        case "BasicPipeToDetailerPipeSDXL":
-                    tbox_id = 0;
-                    combo_id = 1;
-                    break;
-            }
+				case "ToDetailerPipe":
+				case "ToDetailerPipeSDXL":
+				case "EditDetailerPipe":
+				case "EditDetailerPipeSDXL":
+				case "BasicPipeToDetailerPipe":
+				case "BasicPipeToDetailerPipeSDXL":
+					tbox_id = 0;
+					combo_id = 1;
+					break;
+			}
 
 			Object.defineProperty(node.widgets[combo_id+1], "value", {
 				set: (value) => {
-				        const stackTrace = new Error().stack;
-                        if(stackTrace.includes('inner_value_change')) {
-                            if(value != "Select the Wildcard to add to the text") {
-                                if(node.widgets[tbox_id].value != '')
-                                    node.widgets[tbox_id].value += ', '
+						const stackTrace = new Error().stack;
+						if(stackTrace.includes('inner_value_change')) {
+							if(value != "Select the Wildcard to add to the text") {
+								if(node.widgets[tbox_id].value != '')
+									node.widgets[tbox_id].value += ', '
 
-	                            node.widgets[tbox_id].value += value;
-                            }
-                        }
+								node.widgets[tbox_id].value += value;
+							}
+						}
 					},
 				get: () => { return "Select the Wildcard to add to the text"; }
 			});
 
 			Object.defineProperty(node.widgets[combo_id+1].options, "values", {
-			    set: (x) => {},
-			    get: () => {
-			    	return wildcards_list;
-			    }
+				set: (x) => {},
+				get: () => {
+					return wildcards_list;
+				}
 			});
 
 			if(has_lora) {
