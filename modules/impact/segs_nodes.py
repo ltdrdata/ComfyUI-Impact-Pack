@@ -37,7 +37,7 @@ class SEGSDetailer:
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                      }
                 }
 

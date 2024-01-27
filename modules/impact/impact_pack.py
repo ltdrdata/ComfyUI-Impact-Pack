@@ -176,7 +176,7 @@ class DetailerForEach:
                 "optional": {
                     "detailer_hook": ("DETAILER_HOOK",),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                    }
                 }
 
@@ -331,7 +331,7 @@ class DetailerForEachPipe:
                      "detailer_hook": ("DETAILER_HOOK",),
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                     }
                 }
 
@@ -418,7 +418,7 @@ class FaceDetailer:
                     "segm_detector_opt": ("SEGM_DETECTOR", ),
                     "detailer_hook": ("DETAILER_HOOK",),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -1189,7 +1189,7 @@ class FaceDetailerPipe:
                    },
                 "optional": {
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                    }
                 }
 
@@ -1279,7 +1279,7 @@ class MaskDetailerPipe:
                     "refiner_basic_pipe_opt": ("BASIC_PIPE", ),
                     "detailer_hook": ("DETAILER_HOOK",),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                    }
                 }
 
@@ -1288,7 +1288,7 @@ class MaskDetailerPipe:
     OUTPUT_IS_LIST = (False, True, True, False, False)
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/__for_test"
+    CATEGORY = "ImpactPack/Detailer"
 
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
