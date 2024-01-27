@@ -106,6 +106,7 @@ from impact.special_samplers import *
 from impact.hf_nodes import *
 from impact.bridge_nodes import *
 from impact.hook_nodes import *
+from impact.animatediff_nodes import *
 
 import threading
 
@@ -139,6 +140,7 @@ NODE_CLASS_MAPPINGS = {
     "DetailerForEachDebug": DetailerForEachTest,
     "DetailerForEachPipe": DetailerForEachPipe,
     "DetailerForEachDebugPipe": DetailerForEachTestPipe,
+    "DetailerForEachPipeForAnimateDiff": DetailerForEachPipeForAnimateDiff,
 
     "SAMDetectorCombined": SAMDetectorCombined,
     "SAMDetectorSegmented": SAMDetectorSegmented,
@@ -349,12 +351,13 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",
-    "SEGSDetailerForAnimateDiff": "Detailer For AnimateDiff (SEGS/pipe)",
+    "SEGSDetailerForAnimateDiff": "SEGSDetailer For AnimateDiff (SEGS/pipe)",
+    "DetailerForEachPipeForAnimateDiff": "Detailer For AnimateDiff (SEGS/pipe)",
 
     "SAMDetectorCombined": "SAMDetector (combined)",
     "SAMDetectorSegmented": "SAMDetector (segmented)",
     "FaceDetailerPipe": "FaceDetailer (pipe)",
-    "MaskDetailerPipe": "MaskDetailer (Pipe)",
+    "MaskDetailerPipe": "MaskDetailer (pipe)",
 
     "FromDetailerPipeSDXL": "FromDetailer (SDXL/pipe)",
     "BasicPipeToDetailerPipeSDXL": "BasicPipe -> DetailerPipe (SDXL)",
