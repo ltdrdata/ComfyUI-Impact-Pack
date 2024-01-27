@@ -1,15 +1,9 @@
-import copy
-import os
-
-import numpy
-import torch
 from segment_anything import SamPredictor
-import torch.nn.functional as F
 
 from impact.utils import *
 from collections import namedtuple
 import numpy as np
-from skimage.measure import label, regionprops
+from skimage.measure import label
 
 import nodes
 import comfy_extras.nodes_upscale_model as model_upscale
@@ -21,7 +15,9 @@ import cv2
 import time
 from comfy import model_management
 from impact import utils
-from scipy.ndimage import distance_transform_edt
+from impact import impact_sampling
+from concurrent.futures import ThreadPoolExecutor
+
 
 SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
@@ -67,44 +63,6 @@ def erosion_mask(mask, grow_mask_by):
         mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask2.round(), kernel_tensor, padding=padding), 0, 1)
 
     return mask_erosion[:, :, :w, :h].round().cpu()
-
-
-def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                     refiner_negative=None):
-    if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
-        refined_latent = \
-            nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                    denoise)[0]
-    else:
-        advanced_steps = math.floor(steps / denoise)
-        start_at_step = advanced_steps - steps
-        end_at_step = start_at_step + math.floor(steps * (1.0 - refiner_ratio))
-
-        print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
-        temp_latent = \
-            nodes.KSamplerAdvanced().sample(model, "enable", seed, advanced_steps, cfg, sampler_name, scheduler,
-                                            positive, negative, latent_image, start_at_step, end_at_step,
-                                            "enable")[0]
-
-        if 'noise_mask' in latent_image:
-            # noise_latent = \
-            #     nodes.KSamplerAdvanced().sample(refiner_model, "enable", seed, advanced_steps, cfg, sampler_name,
-            #                                     scheduler, refiner_positive, refiner_negative, latent_image, end_at_step,
-            #                                     end_at_step, "enable")[0]
-
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-            temp_latent = \
-                latent_compositor.composite(latent_image, temp_latent, 0, 0, False, latent_image['noise_mask'])[0]
-
-        print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
-        refined_latent = \
-            nodes.KSamplerAdvanced().sample(refiner_model, "disable", seed, advanced_steps, cfg, sampler_name, scheduler,
-                                            refiner_positive, refiner_negative, temp_latent, end_at_step,
-                                            advanced_steps + 1,
-                                            "disable")[0]
-
-    return refined_latent
 
 
 class REGIONAL_PROMPT:
@@ -288,9 +246,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
                 model, seed + i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise
 
-        refined_latent = ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
-                                          refined_latent, denoise2,
-                                          refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+        refined_latent = impact_sampling.ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
+                                                          refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -369,7 +326,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale the mask tensor by a factor of 2 using bilinear interpolation
-    if isinstance(noise_mask, numpy.ndarray):
+    if isinstance(noise_mask, np.ndarray):
         noise_mask = torch.from_numpy(noise_mask)
 
     if len(noise_mask.shape) == 2:
@@ -424,9 +381,8 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     if detailer_hook is not None:
         latent = detailer_hook.post_encode(latent)
 
-    refined_latent = ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                                      latent, denoise,
-                                      refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+    refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
+                                                      latent, denoise, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -474,6 +430,7 @@ def sam_predict(predictor, points, plabs, bbox, threshold):
 
     selected = False
     max_score = 0
+    max_mask = None
     for idx in range(len(scores)):
         if scores[idx] > max_score:
             max_score = scores[idx]
@@ -485,7 +442,7 @@ def sam_predict(predictor, points, plabs, bbox, threshold):
         else:
             pass
 
-    if not selected:
+    if not selected and max_mask is not None:
         total_masks.append(max_mask)
 
     return total_masks
@@ -745,7 +702,7 @@ def segs_scale_match(segs, target_shape):
         new_seg = SEG(cropped_image, cropped_mask, seg.confidence, crop_region, bbox, seg.label, seg.control_net_wrapper)
         new_segs.append(new_seg)
 
-    return ((th, tw), new_segs)
+    return (th, tw), new_segs
 
 
 # Used Python's slicing feature. stacked_masks[2::3] means starting from index 2, selecting every third tensor with a step size of 3.
@@ -1168,7 +1125,7 @@ def segs_to_masklist(segs):
 
     masks = []
     for seg in segs[1]:
-        if isinstance(seg.cropped_mask, numpy.ndarray):
+        if isinstance(seg.cropped_mask, np.ndarray):
             cropped_mask = torch.from_numpy(seg.cropped_mask)
         else:
             cropped_mask = seg.cropped_mask
@@ -1217,78 +1174,6 @@ def vae_encode(vae, pixels, use_tile, hook, tile_size=512):
     return samples
 
 
-class KSamplerWrapper:
-    params = None
-
-    def __init__(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise):
-        self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
-
-    def sample(self, latent_image, hook=None):
-        model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
-
-        if hook is not None:
-            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
-                hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                 denoise)
-
-        return nodes.common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                     denoise=denoise)[0]
-
-
-class KSamplerAdvancedWrapper:
-    params = None
-
-    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative):
-        self.params = model, cfg, sampler_name, scheduler, positive, negative
-
-    def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step,
-                        return_with_leftover_noise, hook=None, recover_special_sampler=False):
-        model, cfg, sampler_name, scheduler, positive, negative = self.params
-
-        if hook is not None:
-            model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent = \
-                hook.pre_ksample_advanced(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                          positive, negative, latent_image, start_at_step, end_at_step,
-                                          return_with_leftover_noise)
-
-        if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
-            base_image = latent_image.copy()
-        else:
-            base_image = None
-
-        try:
-            latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                                           positive, negative, latent_image, start_at_step, end_at_step,
-                                                           return_with_leftover_noise)[0]
-        except ValueError as e:
-            if str(e) == 'sigma_min and sigma_max must not be 0':
-                print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
-                return latent_image
-
-        if recover_special_sampler and sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu', 'dpmpp_2m_sde', 'dpmpp_2m_sde_gpu', 'dpmpp_3m_sde', 'dpmpp_3m_sde_gpu']:
-            compensate = 0 if sampler_name in ['uni_pc', 'uni_pc_bh2'] else 2
-            sampler_name = 'dpmpp_fast' if sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu'] else 'dpmpp_2m'
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-
-            noise_mask = latent_image['noise_mask']
-
-            if len(noise_mask.shape) == 4:
-                noise_mask = noise_mask.squeeze(0).squeeze(0)
-
-            latent_image = \
-                latent_compositor.composite(base_image, latent_image, 0, 0, False, noise_mask)[0]
-
-            try:
-                latent_image = nodes.KSamplerAdvanced().sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
-                                                               positive, negative, latent_image, start_at_step-compensate, end_at_step,
-                                                               return_with_leftover_noise)[0]
-            except ValueError as e:
-                if str(e) == 'sigma_min and sigma_max must not be 0':
-                    print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
-
-        return latent_image
-
-
 def latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae, use_tile=False, tile_size=512,
                                         save_temp_prefix=None, hook=None):
     pixels = vae_decode(vae, samples, use_tile, hook, tile_size=tile_size)
@@ -1323,7 +1208,7 @@ def latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use
 
 def latent_upscale_on_pixel_space(samples, scale_method, scale_factor, vae, use_tile=False, tile_size=512,
                                   save_temp_prefix=None, hook=None):
-	return latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
+    return latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile, tile_size, save_temp_prefix, hook)[0]
 
 
 def latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, upscale_model, new_w, new_h, vae,
@@ -1692,10 +1577,8 @@ class TiledKSamplerWrapper:
                 hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
                                  denoise)
 
-        return \
-        TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                               scheduler,
-                               positive, negative, latent_image, denoise)[0]
+        return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                                      scheduler, positive, negative, latent_image, denoise)[0]
 
 
 class PixelTiledKSampleUpscaler:
@@ -1722,10 +1605,8 @@ class PixelTiledKSampleUpscaler:
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
         tile_width, tile_height, tiling_strategy = self.tile_params
 
-        return \
-        TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                               scheduler,
-                               positive, negative, latent, denoise)[0]
+        return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                                      scheduler, positive, negative, latent, denoise)[0]
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1836,9 +1717,6 @@ def update_node_status(node, text, progress=None):
         "progress": progress,
         "text": text
     }, PromptServer.instance.client_id)
-
-
-from concurrent.futures import ThreadPoolExecutor
 
 
 def random_mask_raw(mask, bbox, factor):
