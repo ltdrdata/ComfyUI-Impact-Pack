@@ -62,11 +62,11 @@ class ImpactConditionalBranch:
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
-                "cond": ("BOOLEAN",),
+            "required": {"cond": ("BOOLEAN",),},
+            "optional":{
                 "tt_value": (any_typ,),
                 "ff_value": (any_typ,),
-            },
+            }
         }
 
     FUNCTION = "doit"
@@ -74,10 +74,14 @@ class ImpactConditionalBranch:
 
     RETURN_TYPES = (any_typ, )
 
-    def doit(self, cond, tt_value, ff_value):
+    def doit(self, cond, tt_value=None, ff_value=None):
         if cond:
+            if tt_value is None:
+                tt_value = ff_value
             return (tt_value,)
         else:
+            if ff_value is None:
+                ff_value = tt_value
             return (ff_value,)
 
 
@@ -103,8 +107,12 @@ class ImpactConditionalBranchSelMode:
     def doit(self, cond, sel_mode, tt_value=None, ff_value=None):
         print(f'tt={tt_value is None}\nff={ff_value is None}')
         if cond:
+            if tt_value is None:
+                tt_value = ff_value
             return (tt_value,)
         else:
+            if ff_value is None:
+                ff_value = tt_value
             return (ff_value,)
 
 
