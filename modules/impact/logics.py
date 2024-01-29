@@ -109,7 +109,7 @@ class ImpactConditionalBranchSelMode:
             return (ff_value,)
 
 
-class Convert_data_type:
+class ImpactConvertDataType:
     def __init__(self):
         pass
 
