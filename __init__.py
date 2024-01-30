@@ -293,6 +293,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactConditionalBranchSelMode": ImpactConditionalBranchSelMode,
     "ImpactIfNone": ImpactIfNone,
     "ImpactConvertDataType": ImpactConvertDataType,
+    "ImpactLogicalOperators": ImpactLogicalOperators,
     "ImpactInt": ImpactInt,
     "ImpactFloat": ImpactFloat,
     "ImpactValueSender": ImpactValueSender,
