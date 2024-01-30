@@ -162,6 +162,31 @@ class ImpactIfNone:
             return (signal, True, )
 
 
+class ImpactLogicalOperators:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "operator": (['and', 'or', 'xor'],),
+                "bool_a": ("BOOLEAN", {"forceInput": True}),
+                "bool_b": ("BOOLEAN", {"forceInput": True}),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "ImpactPack/Logic"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, operator, bool_a, bool_b):
+        if operator == "and":
+            return (bool_a and bool_b, )
+        elif operator == "or":
+            return (bool_a or bool_b, )
+        else:
+            return (bool_a != bool_b, )
+
+
 class ImpactConditionalStopIteration:
     @classmethod
     def INPUT_TYPES(cls):
