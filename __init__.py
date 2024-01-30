@@ -291,6 +291,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactCompare": ImpactCompare,
     "ImpactConditionalBranch": ImpactConditionalBranch,
     "ImpactConditionalBranchSelMode": ImpactConditionalBranchSelMode,
+    "ImpactIfNone": ImpactIfNone,
     "ImpactInt": ImpactInt,
     "ImpactFloat": ImpactFloat,
     "ImpactValueSender": ImpactValueSender,
