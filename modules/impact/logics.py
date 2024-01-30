@@ -7,6 +7,7 @@ import impact.impact_server
 from server import PromptServer
 from impact.utils import any_typ
 import impact.core as core
+import re
 
 
 class ImpactCompare:
@@ -106,6 +107,35 @@ class ImpactConditionalBranchSelMode:
             return (tt_value,)
         else:
             return (ff_value,)
+
+
+class ImpactConvertDataType:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"value": (any_typ,)}}
+
+    RETURN_TYPES = ("STRING", "FLOAT", "INT", "BOOLEAN")
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic"
+
+    @staticmethod
+    def is_number(string):
+        pattern = re.compile(r'^[-+]?[0-9]*\.?[0-9]+$')
+        return bool(pattern.match(string))
+
+    def doit(self, value):
+        if self.is_number(str(value)):
+            num = value
+        else:
+            if str.lower(str(value)) != "false":
+                num = 1
+            else:
+                num = 0
+        return (str(value), float(num), int(float(num)), bool(float(num)), )
 
 
 class ImpactIfNone:
