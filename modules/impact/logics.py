@@ -138,6 +138,30 @@ class ImpactConvertDataType:
         return (str(value), float(num), int(float(num)), bool(float(num)), )
 
 
+class ImpactIfNone:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {},
+            "optional": {"signal": (any_typ,), "any_input": (any_typ,), }
+        }
+
+    RETURN_TYPES = (any_typ, "BOOLEAN", )
+    RETURN_NAMES = ("signal_opt", "bool")
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Logic"
+
+    def doit(self, signal=None, any_input=None):
+        if any_input is None:
+            return (signal, False, )
+        else:
+            return (signal, True, )
+
+
 class ImpactConditionalStopIteration:
     @classmethod
     def INPUT_TYPES(cls):
