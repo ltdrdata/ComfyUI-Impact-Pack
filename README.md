@@ -265,6 +265,7 @@ This takes latent as input and outputs latent as the result.
 ## Ultralytics models
 * huggingface.co/Bingsu/[adetailer](https://github.com/ultralytics/assets/releases/) - You can download face, people detection models, and clothing detection models.
 * ultralytics/[assets](https://github.com/ultralytics/assets/releases/) - You can download various types of detection models other than faces or people.
+* civitai/[adetailer](https://civitai.com/search/models?sortBy=models_v5&query=adetailer) - You can download various types detection models....Many models are associated with NSFW content.
 
 ## How to activate 'MMDet usage'
 * Upon the initial execution, an `impact-pack.ini` file will be generated in the custom_nodes/ComfyUI-Impact-Pack directory.
