@@ -265,6 +265,9 @@ class DetailerForEach:
                 tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
                 enhanced_list.append(enhanced_image)
 
+                if detailer_hook is not None:
+                    detailer_hook.post_paste(image)
+
             if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = tensor_convert_rgba(enhanced_image)

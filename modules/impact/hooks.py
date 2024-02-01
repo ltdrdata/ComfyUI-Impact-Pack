@@ -4,7 +4,10 @@ import nodes
 from impact import utils
 from . import segs_nodes
 from thirdparty import noise_nodes
-
+from server import PromptServer
+import asyncio
+import folder_paths
+import os
 
 class PixelKSampleHook:
     cur_step = 0
@@ -128,6 +131,9 @@ class DetailerHook(PixelKSampleHook):
 
     def post_detection(self, segs):
         return segs
+
+    def post_paste(self, image):
+        return image
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
@@ -405,3 +411,35 @@ class SEGSLabelFilterDetailerHook(DetailerHook):
 
     def post_detection(self, segs):
         return segs_nodes.SEGSLabelFilter().doit(segs, "", self.labels)[0]
+
+
+class PreviewDetailerHook(DetailerHook):
+    def __init__(self, node_id, quality):
+        super().__init__()
+        self.node_id = node_id
+        self.quality = quality
+
+    async def send(self, image):
+        if len(image) > 0:
+            image = image[0].unsqueeze(0)
+        img = utils.tensor2pil(image)
+
+        temp_path = os.path.join(folder_paths.get_temp_directory(), 'pvhook')
+
+        if not os.path.exists(temp_path):
+            os.makedirs(temp_path)
+
+        fullpath = os.path.join(temp_path, f"{self.node_id}.webp")
+        img.save(fullpath, quality=self.quality)
+
+        item = {
+                "filename": f"{self.node_id}.webp",
+                "subfolder": 'pvhook',
+                "type": 'temp'
+                }
+
+        PromptServer.instance.send_sync("impact-preview", {'node_id': self.node_id, 'item': item})
+
+    def post_paste(self, image):
+        asyncio.run(self.send(image))
+        return image

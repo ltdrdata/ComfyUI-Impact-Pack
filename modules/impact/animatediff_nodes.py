@@ -139,6 +139,10 @@ class DetailerForEachPipeForAnimateDiff:
                                                                   denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, inpaint_model, noise_mask_feather)
 
             image_frames = SEGSPaste.doit(image_frames, enhanced_seg, feather, alpha=255)[0]
+
+            if detailer_hook is not None:
+                detailer_hook.post_paste(image_frames)
+
             enhanced_segs += enhanced_seg[1]
 
         new_segs = segs[0], enhanced_segs

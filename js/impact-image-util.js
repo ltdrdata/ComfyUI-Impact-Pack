@@ -9,31 +9,31 @@ function load_image(str) {
 
 function getFileItem(baseType, path) {
 	try {
-	    let pathType = baseType;
+		let pathType = baseType;
 
-	    if (path.endsWith("[output]")) {
-	        pathType = "output";
-	        path = path.slice(0, -9);
-	    } else if (path.endsWith("[input]")) {
-	        pathType = "input";
-	        path = path.slice(0, -8);
-	    } else if (path.endsWith("[temp]")) {
-	        pathType = "temp";
-	        path = path.slice(0, -7);
-	    }
+		if (path.endsWith("[output]")) {
+			pathType = "output";
+			path = path.slice(0, -9);
+		} else if (path.endsWith("[input]")) {
+			pathType = "input";
+			path = path.slice(0, -8);
+		} else if (path.endsWith("[temp]")) {
+			pathType = "temp";
+			path = path.slice(0, -7);
+		}
 
-	    const subfolder = path.substring(0, path.lastIndexOf('/'));
-	    const filename = path.substring(path.lastIndexOf('/') + 1);
+		const subfolder = path.substring(0, path.lastIndexOf('/'));
+		const filename = path.substring(path.lastIndexOf('/') + 1);
 
-	    return {
-	        filename: filename,
-	        subfolder: subfolder,
-	        type: pathType
-	    };
-    }
-    catch(exception) {
-        return null;
-    }
+		return {
+			filename: filename,
+			subfolder: subfolder,
+			type: pathType
+		};
+	}
+	catch(exception) {
+		return null;
+	}
 }
 
 async function loadImageFromUrl(image, node_id, v, need_to_load) {
@@ -225,5 +225,5 @@ app.registerExtension({
 				}
 			});
 		}
-    }
+	}
 })
