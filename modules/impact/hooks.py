@@ -96,6 +96,11 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         segs = self.hook2.post_detection(segs)
         return segs
 
+    def post_paste(self, image):
+        image = self.hook1.post_paste(image)
+        image = self.hook2.post_paste(image)
+        return image
+
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
     target_cfg = 0
