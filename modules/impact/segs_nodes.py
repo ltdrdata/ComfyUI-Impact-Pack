@@ -801,6 +801,8 @@ class GaussianBlurMask:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, mask, kernel_size, sigma):
+        # Some custom nodes use abnormal 4-dimensional masks in the format of b, c, h, w. In the impact pack, internal 4-dimensional masks are required in the format of b, h, w, c. Therefore, normalization is performed using the normal mask format, which is 3-dimensional, before proceeding with the operation.
+        mask = make_3d_mask(mask)
         mask = torch.unsqueeze(mask, dim=-1)
         mask = utils.tensor_gaussian_blur_mask(mask, kernel_size, sigma)
         mask = torch.squeeze(mask, dim=-1)
