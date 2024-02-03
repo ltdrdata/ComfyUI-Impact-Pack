@@ -1,3 +1,4 @@
+import torch
 from segment_anything import SamPredictor
 
 from impact.utils import *
@@ -275,7 +276,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None, inpaint_model=False, noise_mask_feather=0):
+                                   refiner_negative=None, control_net_wrapper=None, inpaint_model=False, noise_mask_feather=0):
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
@@ -360,6 +361,9 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
             latent_frames = samples
         else:
             latent_frames = torch.concat((latent_frames, samples), dim=0)
+
+    if control_net_wrapper is not None:
+        positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask)
 
     if len(upscaled_mask) != len(image_frames) and len(upscaled_mask) > 1:
         print(f"[Impact Pack] WARN: DetailerForAnimateDiff - The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
@@ -1495,25 +1499,25 @@ class ControlNetWrapper:
             self.control_image = None
 
     def apply(self, positive, negative, image, mask=None):
-        cnet_pils = []
-        prev_cnet_pils = []
+        cnet_tensors = []
+        prev_cnet_tensors = []
 
         if self.prev_control_net is not None:
-            positive, negative, prev_cnet_pils = self.prev_control_net.apply(positive, negative, image, mask)
+            positive, negative, prev_cnet_tensors = self.prev_control_net.apply(positive, negative, image, mask)
 
         if self.control_image is not None:
-            cnet_pil = self.control_image
+            cnet_tensor = self.control_image
         elif self.preprocessor is not None:
-            cnet_pil = self.preprocessor.apply(image, mask)
+            cnet_tensor = self.preprocessor.apply(image, mask)
         else:
-            cnet_pil = image
+            cnet_tensor = image
 
-        cnet_pils.extend(prev_cnet_pils)
-        cnet_pils.append(cnet_pil)
+        cnet_tensors.extend(prev_cnet_tensors)
+        cnet_tensors.append(cnet_tensor)
 
-        positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_pil, self.strength)[0]
+        positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_tensor, self.strength)[0]
 
-        return positive, negative, cnet_pils
+        return positive, negative, cnet_tensors
 
 
 class ControlNetAdvancedWrapper:
@@ -1533,25 +1537,25 @@ class ControlNetAdvancedWrapper:
             self.control_image = None
 
     def apply(self, positive, negative, image, mask=None):
-        cnet_pils = []
-        prev_cnet_pils = []
+        cnet_tensors = []
+        prev_cnet_tensors = []
 
         if self.prev_control_net is not None:
-            positive, negative, prev_cnet_pils = self.prev_control_net.apply(positive, negative, image, mask)
+            positive, negative, prev_cnet_tensors = self.prev_control_net.apply(positive, negative, image, mask)
 
         if self.control_image is not None:
-            cnet_pil = self.control_image
+            cnet_tensor = self.control_image
         elif self.preprocessor is not None:
-            cnet_pil = self.preprocessor.apply(image, mask)
+            cnet_tensor = self.preprocessor.apply(image, mask)
         else:
-            cnet_pil = image
+            cnet_tensor = image
 
-        cnet_pils.extend(prev_cnet_pils)
-        cnet_pils.append(cnet_pil)
+        cnet_tensors.extend(prev_cnet_tensors)
+        cnet_tensors.append(cnet_tensor)
 
-        conditioning = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_pil, self.strength, self.start_percent, self.end_percent)
+        conditioning = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_tensor, self.strength, self.start_percent, self.end_percent)
 
-        return conditioning[0], conditioning[1], cnet_pils
+        return conditioning[0], conditioning[1], cnet_tensors
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler

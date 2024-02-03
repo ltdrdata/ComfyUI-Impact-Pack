@@ -70,7 +70,7 @@ class SEGSDetailerForAnimateDiff:
                                                                         positive, negative, denoise, seg.cropped_mask,
                                                                         refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                         refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                                        refiner_negative=refiner_negative,
+                                                                        refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                         inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
             if enhanced_image_tensor is None:

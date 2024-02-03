@@ -68,9 +68,19 @@ LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.L
 def tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
     if image.shape[3] >= 3:
-        image = tensor2pil(image)
-        scaled_image = image.resize((w, h), resample=LANCZOS)
-        return pil2tensor(scaled_image)
+        scaled_images = None
+        for single_image in image:
+            single_image = single_image.unsqueeze(0)
+            single_pil = tensor2pil(single_image)
+            scaled_pil = single_pil.resize((w, h), resample=LANCZOS)
+
+            single_image = pil2tensor(scaled_pil)
+            if scaled_images is None:
+                scaled_images = single_image
+            else:
+                scaled_images = torch.cat((scaled_images, single_image), dim=1)
+
+        return scaled_images
     else:
         return general_tensor_resize(image, w, h)
 
@@ -597,3 +607,14 @@ class AnyType(str):
         return False
 
 any_typ = AnyType("*")
+
+
+class TensorBatchBuilder:
+    def __init__(self):
+        self.tensor = None
+
+    def concat(self, new_tensor):
+        if self.tensor is None:
+            self.tensor = new_tensor
+        else:
+            torch.concat((self.tensor, new_tensor), dim=0)
