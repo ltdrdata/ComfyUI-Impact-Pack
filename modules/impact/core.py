@@ -75,6 +75,12 @@ class REGIONAL_PROMPT:
         self.mask_erosion = None
         self.erosion_factor = None
 
+    def clone_with_sampler(self, sampler):
+        rp = REGIONAL_PROMPT(self.mask, sampler)
+        rp.mask_erosion = self.mask_erosion
+        rp.erosion_factor = self.erosion_factor
+        return rp
+
     def get_mask_erosion(self, factor):
         if self.mask_erosion is None or self.erosion_factor != factor:
             self.mask_erosion = erosion_mask(self.mask, factor)

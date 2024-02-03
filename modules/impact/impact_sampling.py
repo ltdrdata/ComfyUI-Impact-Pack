@@ -148,6 +148,10 @@ class KSamplerAdvancedWrapper:
     def __init__(self, model, cfg, sampler_name, scheduler, positive, negative):
         self.params = model, cfg, sampler_name, scheduler, positive, negative
 
+    def clone_with_conditionings(self, positive, negative):
+        model, cfg, sampler_name, scheduler, _, _ = self.params
+        return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative)
+
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0):
 
