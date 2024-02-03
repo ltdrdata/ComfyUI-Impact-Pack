@@ -95,11 +95,17 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
 
 
 def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                     latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0):
-    total_sigmas = calculate_sigmas(model, sampler_name, scheduler, steps)
+                     latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None):
+    if sampler_opt is None:
+        total_sigmas = calculate_sigmas(model, sampler_name, scheduler, steps)
+    else:
+        total_sigmas = calculate_sigmas(model, "", scheduler, steps)
 
     sigmas = total_sigmas[start_at_step:end_at_step+1] * sigma_ratio
-    impact_sampler = ksampler(sampler_name, total_sigmas)
+    if sampler_opt is None:
+        impact_sampler = ksampler(sampler_name, total_sigmas)
+    else:
+        impact_sampler = sampler_opt
 
     if len(sigmas) == 0 or (len(sigmas) == 1 and sigmas[0] == 0):
         return latent_image
@@ -145,12 +151,13 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 class KSamplerAdvancedWrapper:
     params = None
 
-    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative):
+    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=None):
         self.params = model, cfg, sampler_name, scheduler, positive, negative
+        self.sampler_opt = sampler_opt
 
     def clone_with_conditionings(self, positive, negative):
         model, cfg, sampler_name, scheduler, _, _ = self.params
-        return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative)
+        return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt)
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0):
@@ -176,7 +183,7 @@ class KSamplerAdvancedWrapper:
             if sigma_ratio > 0:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
                                                 positive, negative, latent_image, start_at_step, end_at_step,
-                                                return_with_leftover_noise, sigma_ratio=sigma_ratio)
+                                                return_with_leftover_noise, sigma_ratio=sigma_ratio, sampler_opt=self.sampler_opt)
         except ValueError as e:
             if str(e) == 'sigma_min and sigma_max must not be 0':
                 print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
@@ -200,7 +207,7 @@ class KSamplerAdvancedWrapper:
             try:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, recovery_sampler, scheduler,
                                                 positive, negative, latent_image, start_at_step-compensate, end_at_step,
-                                                return_with_leftover_noise, sigma_ratio=recovery_sigma_ratio)
+                                                return_with_leftover_noise, sigma_ratio=recovery_sigma_ratio, sampler_opt=self.sampler_opt)
             except ValueError as e:
                 if str(e) == 'sigma_min and sigma_max must not be 0':
                     print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
@@ -219,8 +226,6 @@ class KSamplerWrapper:
 
         if hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
-                hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                 denoise)
+                hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
 
-        return nodes.common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
-                                     denoise=denoise)[0]
+        return nodes.common_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=denoise)[0]

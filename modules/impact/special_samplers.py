@@ -69,6 +69,9 @@ class KSamplerAdvancedProvider:
                                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
+                "optional": {
+                                "sampler_opt": ("SAMPLER", )
+                            }
                 }
 
     RETURN_TYPES = ("KSAMPLER_ADVANCED",)
@@ -76,9 +79,9 @@ class KSamplerAdvancedProvider:
 
     CATEGORY = "ImpactPack/Sampler"
 
-    def doit(self, cfg, sampler_name, scheduler, basic_pipe):
+    def doit(self, cfg, sampler_name, scheduler, basic_pipe, sampler_opt=None):
         model, _, _, positive, negative = basic_pipe
-        sampler = KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative)
+        sampler = KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=sampler_opt)
         return (sampler, )
 
 
