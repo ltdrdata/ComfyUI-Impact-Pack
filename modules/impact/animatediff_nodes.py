@@ -30,9 +30,9 @@ class SEGSDetailerForAnimateDiff:
                      }
                 }
 
-    RETURN_TYPES = ("SEGS",)
-    RETURN_NAMES = ("segs",)
-    OUTPUT_IS_LIST = (False,)
+    RETURN_TYPES = ("SEGS", "IMAGE")
+    RETURN_NAMES = ("segs", "cnet_images")
+    OUTPUT_IS_LIST = (False, True)
 
     FUNCTION = "doit"
 
@@ -51,6 +51,7 @@ class SEGSDetailerForAnimateDiff:
         segs = core.segs_scale_match(segs, image_frames.shape)
 
         new_segs = []
+        cnet_image_list = []
 
         for seg in segs[1]:
             cropped_image_frames = None
@@ -65,13 +66,15 @@ class SEGSDetailerForAnimateDiff:
                     cropped_image_frames = torch.concat((cropped_image_frames, cropped_image), dim=0)
 
             cropped_image_frames = cropped_image_frames.numpy()
-            enhanced_image_tensor = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
-                                                                        seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                                        positive, negative, denoise, seg.cropped_mask,
-                                                                        refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                                                                        refiner_clip=refiner_clip, refiner_positive=refiner_positive,
-                                                                        refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
-                                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+            enhanced_image_tensor, cnet_images = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
+                                                                                     seg.bbox, seed, steps, cfg, sampler_name, scheduler,
+                                                                                     positive, negative, denoise, seg.cropped_mask,
+                                                                                     refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                                                                                     refiner_clip=refiner_clip, refiner_positive=refiner_positive,
+                                                                                     refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
+                                                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+            if cnet_images is not None:
+                cnet_image_list.extend(cnet_images)
 
             if enhanced_image_tensor is None:
                 new_cropped_image = cropped_image_frames
@@ -81,16 +84,19 @@ class SEGSDetailerForAnimateDiff:
             new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
-        return (segs[0], new_segs)
+        return (segs[0], new_segs), cnet_image_list
 
     def doit(self, image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
 
-        segs = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
-                                                    scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt,
-                                                    inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+        segs, cnet_images = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
+                                                                 scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt,
+                                                                 inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
 
-        return (segs,)
+        if len(cnet_images) == 0:
+            cnet_images = [empty_pil_tensor()]
+
+        return (segs, cnet_images)
 
 
 class DetailerForEachPipeForAnimateDiff:
@@ -120,8 +126,8 @@ class DetailerForEachPipeForAnimateDiff:
                     }
                 }
 
-    RETURN_TYPES = ("IMAGE", "SEGS", "BASIC_PIPE")
-    RETURN_NAMES = ("image", "segs", "basic_pipe")
+    RETURN_TYPES = ("IMAGE", "SEGS", "BASIC_PIPE", "IMAGE")
+    RETURN_NAMES = ("image", "segs", "basic_pipe", "cnet_images")
     OUTPUT_IS_LIST = (False, False, False, True)
     FUNCTION = "doit"
 
@@ -133,12 +139,17 @@ class DetailerForEachPipeForAnimateDiff:
              inpaint_model=False, noise_mask_feather=0):
 
         enhanced_segs = []
+        cnet_image_list = []
+
         for sub_seg in segs[1]:
             single_seg = segs[0], [sub_seg]
-            enhanced_seg = SEGSDetailerForAnimateDiff().do_detail(image_frames, single_seg, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                                                                  denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, inpaint_model, noise_mask_feather)
+            enhanced_seg, cnet_images = SEGSDetailerForAnimateDiff().do_detail(image_frames, single_seg, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
+                                                                             denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, inpaint_model, noise_mask_feather)
 
             image_frames = SEGSPaste.doit(image_frames, enhanced_seg, feather, alpha=255)[0]
+
+            if cnet_images is not None:
+                cnet_image_list.extend(cnet_images)
 
             if detailer_hook is not None:
                 detailer_hook.post_paste(image_frames)
@@ -146,4 +157,4 @@ class DetailerForEachPipeForAnimateDiff:
             enhanced_segs += enhanced_seg[1]
 
         new_segs = segs[0], enhanced_segs
-        return image_frames, new_segs, basic_pipe
+        return image_frames, new_segs, basic_pipe, cnet_image_list

@@ -368,8 +368,9 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         else:
             latent_frames = torch.concat((latent_frames, samples), dim=0)
 
+    cnet_images = None
     if control_net_wrapper is not None:
-        positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask)
+        positive, negative, cnet_images = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask)
 
     if len(upscaled_mask) != len(image_frames) and len(upscaled_mask) > 1:
         print(f"[Impact Pack] WARN: DetailerForAnimateDiff - The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
@@ -414,7 +415,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
 
     refined_image_frames = nodes.ImageScale().upscale(image=refined_image_frames, upscale_method='lanczos', width=w, height=h, crop='disabled')[0]
 
-    return refined_image_frames
+    return refined_image_frames, cnet_images
 
 
 def composite_to(dest_latent, crop_region, src_latent):
