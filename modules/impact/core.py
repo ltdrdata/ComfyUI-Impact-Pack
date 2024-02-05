@@ -370,7 +370,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
 
     cnet_images = None
     if control_net_wrapper is not None:
-        positive, negative, cnet_images = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask)
+        positive, negative, cnet_images = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask, use_acn=True)
 
     if len(upscaled_mask) != len(image_frames) and len(upscaled_mask) > 1:
         print(f"[Impact Pack] WARN: DetailerForAnimateDiff - The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
@@ -1505,26 +1505,36 @@ class ControlNetWrapper:
         else:
             self.control_image = None
 
-    def apply(self, positive, negative, image, mask=None):
-        cnet_tensors = []
-        prev_cnet_tensors = []
+    def apply(self, positive, negative, image, mask=None, use_acn=False):
+        cnet_image_list = []
+        prev_cnet_images = []
 
         if self.prev_control_net is not None:
-            positive, negative, prev_cnet_tensors = self.prev_control_net.apply(positive, negative, image, mask)
+            positive, negative, prev_cnet_images = self.prev_control_net.apply(positive, negative, image, mask, use_acn=use_acn)
 
         if self.control_image is not None:
-            cnet_tensor = self.control_image
+            cnet_image = self.control_image
         elif self.preprocessor is not None:
-            cnet_tensor = self.preprocessor.apply(image, mask)
+            cnet_image = self.preprocessor.apply(image, mask)
         else:
-            cnet_tensor = image
+            cnet_image = image
 
-        cnet_tensors.extend(prev_cnet_tensors)
-        cnet_tensors.append(cnet_tensor)
+        cnet_image_list.extend(prev_cnet_images)
+        cnet_image_list.append(cnet_image)
 
-        positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_tensor, self.strength)[0]
+        if use_acn:
+            if "ACN_AdvancedControlNetApply" in nodes.NODE_CLASS_MAPPINGS:
+                acn = nodes.NODE_CLASS_MAPPINGS['ACN_AdvancedControlNetApply']()
+                positive, negative, _ = acn.apply_controlnet(positive=positive, negative=negative, control_net=self.control_net, image=cnet_image,
+                                                             strength=self.strength, start_percent=0.0, end_percent=1.0)
+            else:
+                utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                                              "To use 'ControlNetWrapper' for AnimateDiff, 'ComfyUI-Advanced-ControlNet' extension is required.")
+                raise Exception("'ACN_AdvancedControlNetApply' node isn't installed.")
+        else:
+            positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_image, self.strength)[0]
 
-        return positive, negative, cnet_tensors
+        return positive, negative, cnet_image_list
 
 
 class ControlNetAdvancedWrapper:
@@ -1543,26 +1553,36 @@ class ControlNetAdvancedWrapper:
         else:
             self.control_image = None
 
-    def apply(self, positive, negative, image, mask=None):
-        cnet_tensors = []
-        prev_cnet_tensors = []
+    def apply(self, positive, negative, image, mask=None, use_acn=False):
+        cnet_image_list = []
+        prev_cnet_images = []
 
         if self.prev_control_net is not None:
-            positive, negative, prev_cnet_tensors = self.prev_control_net.apply(positive, negative, image, mask)
+            positive, negative, prev_cnet_images = self.prev_control_net.apply(positive, negative, image, mask)
 
         if self.control_image is not None:
-            cnet_tensor = self.control_image
+            cnet_image = self.control_image
         elif self.preprocessor is not None:
-            cnet_tensor = self.preprocessor.apply(image, mask)
+            cnet_image = self.preprocessor.apply(image, mask)
         else:
-            cnet_tensor = image
+            cnet_image = image
 
-        cnet_tensors.extend(prev_cnet_tensors)
-        cnet_tensors.append(cnet_tensor)
+        cnet_image_list.extend(prev_cnet_images)
+        cnet_image_list.append(cnet_image)
 
-        conditioning = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_tensor, self.strength, self.start_percent, self.end_percent)
+        if use_acn:
+            if "ACN_AdvancedControlNetApply" in nodes.NODE_CLASS_MAPPINGS:
+                acn = nodes.NODE_CLASS_MAPPINGS['ACN_AdvancedControlNetApply']()
+                positive, negative, _ = acn.apply_controlnet(positive=positive, negative=negative, control_net=self.control_net, image=cnet_image,
+                                                             strength=self.strength, start_percent=self.start_percent, end_percent=self.end_percent)
+            else:
+                utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                                              "To use 'ControlNetAdvancedWrapper' for AnimateDiff, 'ComfyUI-Advanced-ControlNet' extension is required.")
+                raise Exception("'ACN_AdvancedControlNetApply' node isn't installed.")
+        else:
+            positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent)
 
-        return conditioning[0], conditioning[1], cnet_tensors
+        return positive, negative, cnet_image_list
 
 
 # REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
