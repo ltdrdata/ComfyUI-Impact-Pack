@@ -251,7 +251,7 @@ class ConcatConditionings:
     RETURN_TYPES = ("CONDITIONING", )
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/__for_testing"
+    CATEGORY = "ImpactPack/Util"
 
     def doit(self, **kwargs):
         conditioning_to = list(kwargs.values())[0]

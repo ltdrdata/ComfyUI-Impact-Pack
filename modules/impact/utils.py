@@ -524,6 +524,17 @@ def make_3d_mask(mask):
     return mask
 
 
+def get_mask_size(mask):
+    if len(mask.shape) == 2:
+        return mask.shape[1], mask.shape[0]
+    elif len(mask.shape) == 3:
+        return mask.shape[2], mask.shape[1]
+    elif len(mask.shape) == 4:
+        return mask.shape[3], mask.shape[2]
+
+    raise Exception("unexpected mask dimension")
+
+
 def is_same_device(a, b):
     a_device = torch.device(a) if isinstance(a, str) else a
     b_device = torch.device(b) if isinstance(b, str) else b

@@ -1739,6 +1739,11 @@ class BBoxDetectorBasedOnCLIPSeg:
         self.aux = x
 
 
+def get_seg_size(seg):
+    x1, y1, x2, y2 = seg.crop_region
+    return x2-x1, y2-y1
+
+
 def update_node_status(node, text, progress=None):
     if PromptServer.instance.client_id is None:
         return

@@ -2,6 +2,7 @@ import os
 import sys
 
 import impact.impact_server
+import nodes
 from nodes import MAX_RESOLUTION
 
 from impact.utils import *
@@ -121,6 +122,81 @@ class SEGSDetailer:
             cnet_pil_list = [empty_pil_tensor()]
 
         return (segs, cnet_pil_list)
+
+
+class SEGSLatentComposite:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "src_segs": ("SEGS", ),
+                     "dest_segs": ("SEGS", ),
+                     "target_latent": ("LATENT", ),
+                     "vae": ("VAE", ),
+                     },
+                "optional": {"ref_image_opt": ("IMAGE", ), }
+                }
+
+    RETURN_TYPES = ("LATENT", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/__for_testing"
+
+    @staticmethod
+    def doit(src_segs, dest_segs, target_latent, vae, ref_image_opt):
+        apply_count = min(len(src_segs[1]), len(dest_segs[1]))
+
+        if apply_count == 0:
+            print(f"[Impact Pack] SEGSLatentComposite: src_segs or dest_segs is empty")
+            return (target_latent, )
+
+        if src_segs[1][0].cropped_image is None:
+            if ref_image_opt is None:
+                print(f"[Impact Pack] SEGSLatentComposite: there is no cropped_image nor ref_image_opt")
+                return (target_latent, )
+
+            src_segs = DefaultImageForSEGS().doit(src_segs, ref_image_opt, False)[0]
+
+        target_latent = target_latent.copy()
+
+        for i in range(0, apply_count-1):
+            seg1 = src_segs[1][i]
+            seg2 = dest_segs[1][i]
+
+            w1, h1 = core.get_seg_size(seg1)
+            w2, h2 = core.get_seg_size(seg2)
+
+            if w1-w2 < h1-h2:
+                # fit to vertical
+                target_h = h2
+                target_w = int(w1*(target_h/h1))
+                dy = 0
+                dx = int((w1-target_w)/2//8)
+            elif w1-w2 > h1-h2:
+                # fit to horizontal
+                target_w = w2
+                target_h = int(h1*(target_w/w1))
+                dx = 0
+                dy = int((h1-target_h)/2//8)
+            else:
+                # same ratio
+                target_h, target_w = w2, h2
+                dx, dy = 0, 0
+
+            seg1_image = utils.tensor_resize(seg1.cropped_image, target_w, target_h)
+            seg1_latent = nodes.VAEEncode().encode(vae, seg1_image)[0]
+            seg1_mask = utils.resize_mask(utils.make_3d_mask(seg1.cropped_mask), seg1_latent.shape[2:3])
+            seg1_mask = seg1_mask.unsqueeze(0).unsqueeze(0)
+            seg1_latent *= seg1_mask
+
+            x1, y1, _, _ = seg2.crop_region
+            x1 += dx
+            y1 += dy
+            x2 = x1 + target_w
+            y2 = y1 + target_h
+
+            target_latent[:, :, y1:y2, x1:x2] = seg1_latent
+
+        return (target_latent,)
 
 
 class SEGSPaste:
@@ -1350,7 +1426,7 @@ class MakeTileSEGS:
 
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/__for_testing"
+    CATEGORY = "ImpactPack/Util"
 
     def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:

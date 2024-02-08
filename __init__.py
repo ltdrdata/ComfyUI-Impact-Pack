@@ -227,6 +227,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactDilateMaskInSEGS": DilateMaskInSEGS,
     "ImpactGaussianBlurMaskInSEGS": GaussianBlurMaskInSEGS,
     "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
+    "ImpactSEGSLatentComposite": SEGSLatentComposite,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
     "SegmDetectorCombined_v2": SegmDetectorCombined,
