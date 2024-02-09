@@ -1,6 +1,8 @@
 import os
 import sys
 
+import torch
+
 import impact.impact_server
 import nodes
 from nodes import MAX_RESOLUTION
@@ -142,7 +144,7 @@ class SEGSLatentComposite:
     CATEGORY = "ImpactPack/__for_testing"
 
     @staticmethod
-    def doit(src_segs, dest_segs, target_latent, vae, ref_image_opt):
+    def doit(src_segs, dest_segs, target_latent, vae, ref_image_opt=None):
         apply_count = min(len(src_segs[1]), len(dest_segs[1]))
 
         if apply_count == 0:
@@ -157,44 +159,57 @@ class SEGSLatentComposite:
             src_segs = DefaultImageForSEGS().doit(src_segs, ref_image_opt, False)[0]
 
         target_latent = target_latent.copy()
+        target_latent['samples'] = torch.clone(target_latent['samples'])
 
-        for i in range(0, apply_count-1):
+        for i in range(0, apply_count):
             seg1 = src_segs[1][i]
             seg2 = dest_segs[1][i]
 
-            w1, h1 = core.get_seg_size(seg1)
-            w2, h2 = core.get_seg_size(seg2)
+            w1, h1 = core.get_bbox_size(seg1)
+            w2, h2 = core.get_bbox_size(seg2)
 
+            scale_factor = 1
             if w1-w2 < h1-h2:
                 # fit to vertical
                 target_h = h2
-                target_w = int(w1*(target_h/h1))
+                scale_factor = target_h/h1
+                target_w = int(w1 * scale_factor)
                 dy = 0
-                dx = int((w1-target_w)/2//8)
+                dx = int((w2-target_w)/2//8)
             elif w1-w2 > h1-h2:
                 # fit to horizontal
                 target_w = w2
-                target_h = int(h1*(target_w/w1))
+                scale_factor = target_w/w1
+                target_h = int(h1*scale_factor)
                 dx = 0
-                dy = int((h1-target_h)/2//8)
+                dy = int((h2-target_h)/2//8)
             else:
                 # same ratio
                 target_h, target_w = w2, h2
+                scale_factor = target_w/w1
                 dx, dy = 0, 0
 
-            seg1_image = utils.tensor_resize(seg1.cropped_image, target_w, target_h)
-            seg1_latent = nodes.VAEEncode().encode(vae, seg1_image)[0]
-            seg1_mask = utils.resize_mask(utils.make_3d_mask(seg1.cropped_mask), seg1_latent.shape[2:3])
-            seg1_mask = seg1_mask.unsqueeze(0).unsqueeze(0)
-            seg1_latent *= seg1_mask
+            ax1, ay1, ax2, ay2 = seg1.bbox
+            bx1, by1, _, _ = seg1.crop_region
+            ax1, ax2, ay1, ay2 = (ax1-bx1), (ax2-bx1), (ay1-by1), (ay2-by1)
 
-            x1, y1, _, _ = seg2.crop_region
-            x1 += dx
-            y1 += dy
-            x2 = x1 + target_w
-            y2 = y1 + target_h
+            seg1_bbox_image = seg1.cropped_image[:, ay1:ay2, ax1:ax2, :]
+            seg1_image = utils.tensor_resize(seg1_bbox_image, target_w, target_h)
+            seg1_samples = nodes.VAEEncode().encode(vae, seg1_image)[0]['samples']
+            seg1_mask = utils.make_3d_mask(torch.from_numpy(seg1.cropped_mask))
+            seg1_mask = seg1_mask[ :, ay1:ay2, ax1:ax2]
+            seg1_mask = utils.resize_mask(seg1_mask, tuple(seg1_samples.shape[2:4]))
+            seg1_mask = seg1_mask.unsqueeze(0)
 
-            target_latent[:, :, y1:y2, x1:x2] = seg1_latent
+            x1, y1, _, _ = seg2.bbox
+            x1 = int(x1//8 + dx)
+            y1 = int(y1//8 + dy)
+            x2 = x1 + seg1_samples.shape[3]
+            y2 = y1 + seg1_samples.shape[2]
+
+            target_samples = target_latent['samples'][:, :, y1:y2, x1:x2]
+            target_samples = seg1_samples*seg1_mask + target_samples*(1.0-seg1_mask)
+            target_latent['samples'][:, :, y1:y2, x1:x2] = target_samples
 
         return (target_latent,)
 
