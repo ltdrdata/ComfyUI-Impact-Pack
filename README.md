@@ -124,8 +124,9 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * You need to install the [BlenderNeko/ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
 
 * PK_HOOK
-  * DenoiseScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the denoise to target_denoise as the step progresses.
-  * CfgScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the cfg to target_cfg as the step progresses.
+  * DenoiseScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the denoise to target_denoise as the iterative-step progresses.
+  * CfgScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the cfg to target_cfg as the iterative-step progresses.
+  * StepsScheduleHookProvider - IterativeUpscale provides a hook that gradually changes the sampling-steps to target_steps as the iterative-step progresses.
   * NoiseInjectionHookProvider - During each iteration of IterativeUpscale, noise is injected into the latent space while varying the strength according to a schedule.
     * You need to install the [BlenderNeko/ComfyUI_Noise](https://github.com/BlenderNeko/ComfyUI_Noise) node extension.
     * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.

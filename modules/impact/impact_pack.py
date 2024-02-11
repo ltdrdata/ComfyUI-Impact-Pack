@@ -780,6 +780,30 @@ class DenoiseScheduleHookProvider:
         return (hook, )
 
 
+class StepsScheduleHookProvider:
+    schedules = ["simple"]
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "schedule_for_iteration": (s.schedules,),
+                     "target_steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    },
+                }
+
+    RETURN_TYPES = ("PK_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    def doit(self, schedule_for_iteration, target_steps):
+        hook = None
+        if schedule_for_iteration == "simple":
+            hook = hooks.SimpleStepsScheduleHook(target_steps)
+
+        return (hook, )
+
+
 class DetailerHookCombine:
     @classmethod
     def INPUT_TYPES(s):
