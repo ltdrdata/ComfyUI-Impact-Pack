@@ -128,7 +128,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
         start_at_step = advanced_steps - steps
         end_at_step = start_at_step + math.floor(steps * (1.0 - refiner_ratio))
 
-        print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
+        # print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
         temp_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler,
                                        positive, negative, latent_image, start_at_step, end_at_step, True)
 
@@ -141,7 +141,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
             temp_latent = latent_compositor.composite(latent_image, temp_latent, 0, 0, False, latent_image['noise_mask'])[0]
 
-        print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
+        # print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
         refined_latent = separated_sample(refiner_model, False, seed, advanced_steps, cfg, sampler_name, scheduler,
                                           refiner_positive, refiner_negative, temp_latent, end_at_step, advanced_steps + 1, False)
 
