@@ -159,7 +159,7 @@ This takes latent as input and outputs latent as the result.
   
 * TwoAdvancedSamplersForMask - TwoSamplersForMask is similar to TwoAdvancedSamplersForMask, but they differ in their operation. TwoSamplersForMask performs sampling in the mask area only after all the samples in the base area are finished. On the other hand, TwoAdvancedSamplersForMask performs sampling in both the base area and the mask area sequentially at each step.
 * KSamplerAdvancedProvider - This is a wrapper that enables KSampler to be used in TwoAdvancedSamplersForMask, RegionalSampler.
-  * sigma_factor: By multiplying the noise schedule by the sigma_factor, you can adjust the amount of denoising based on the configured denoise.
+  * sigma_factor: By multiplying the denoise schedule by the sigma_factor, you can adjust the amount of denoising based on the configured denoise.
 
 * TwoSamplersForMaskUpscalerProvider - This is an Upscaler that extends TwoSamplersForMask to be used in Iterative Upscale.
   * TwoSamplersForMaskUpscalerProviderPipe - pipe version of TwoSamplersForMaskUpscalerProvider.
