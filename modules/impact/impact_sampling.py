@@ -119,10 +119,10 @@ def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler
 
 
 def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None):
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, sigma_factor=1.0):
 
     if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
-        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
+        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise * sigma_factor)[0]
     else:
         advanced_steps = math.floor(steps / denoise)
         start_at_step = advanced_steps - steps
@@ -130,7 +130,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
         # print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
         temp_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler,
-                                       positive, negative, latent_image, start_at_step, end_at_step, True)
+                                       positive, negative, latent_image, start_at_step, end_at_step, True, sigma_ratio=sigma_factor)
 
         if 'noise_mask' in latent_image:
             # noise_latent = \
@@ -143,7 +143,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
         # print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
         refined_latent = separated_sample(refiner_model, False, seed, advanced_steps, cfg, sampler_name, scheduler,
-                                          refiner_positive, refiner_negative, temp_latent, end_at_step, advanced_steps + 1, False)
+                                          refiner_positive, refiner_negative, temp_latent, end_at_step, advanced_steps + 1, False, sigma_ratio=sigma_factor)
 
     return refined_latent
 
@@ -151,18 +151,19 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 class KSamplerAdvancedWrapper:
     params = None
 
-    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=None):
-        self.params = model, cfg, sampler_name, scheduler, positive, negative
+    def __init__(self, model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=None, sigma_factor=1.0):
+        self.params = model, cfg, sampler_name, scheduler, positive, negative, sigma_factor
         self.sampler_opt = sampler_opt
 
     def clone_with_conditionings(self, positive, negative):
-        model, cfg, sampler_name, scheduler, _, _ = self.params
+        model, cfg, sampler_name, scheduler, _, _, _ = self.params
         return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt)
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0):
 
-        model, cfg, sampler_name, scheduler, positive, negative = self.params
+        model, cfg, sampler_name, scheduler, positive, negative, sigma_factor = self.params
+        # steps, start_at_step, end_at_step = self.compensate_denoise(steps, start_at_step, end_at_step)
 
         if hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent = hook.pre_ksample_advanced(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
@@ -183,7 +184,7 @@ class KSamplerAdvancedWrapper:
             if sigma_ratio > 0:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
                                                 positive, negative, latent_image, start_at_step, end_at_step,
-                                                return_with_leftover_noise, sigma_ratio=sigma_ratio, sampler_opt=self.sampler_opt)
+                                                return_with_leftover_noise, sigma_ratio=sigma_ratio * sigma_factor, sampler_opt=self.sampler_opt)
         except ValueError as e:
             if str(e) == 'sigma_min and sigma_max must not be 0':
                 print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
@@ -207,7 +208,7 @@ class KSamplerAdvancedWrapper:
             try:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, recovery_sampler, scheduler,
                                                 positive, negative, latent_image, start_at_step-compensate, end_at_step,
-                                                return_with_leftover_noise, sigma_ratio=recovery_sigma_ratio, sampler_opt=self.sampler_opt)
+                                                return_with_leftover_noise, sigma_ratio=recovery_sigma_ratio * sigma_factor, sampler_opt=self.sampler_opt)
             except ValueError as e:
                 if str(e) == 'sigma_min and sigma_max must not be 0':
                     print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
