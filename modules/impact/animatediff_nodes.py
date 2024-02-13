@@ -65,7 +65,7 @@ class SEGSDetailerForAnimateDiff:
                 else:
                     cropped_image_frames = torch.concat((cropped_image_frames, cropped_image), dim=0)
 
-            cropped_image_frames = cropped_image_frames.numpy()
+            cropped_image_frames = cropped_image_frames.cpu().numpy()
             enhanced_image_tensor, cnet_images = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
                                                                                      seg.bbox, seed, steps, cfg, sampler_name, scheduler,
                                                                                      positive, negative, denoise, seg.cropped_mask,
@@ -79,7 +79,7 @@ class SEGSDetailerForAnimateDiff:
             if enhanced_image_tensor is None:
                 new_cropped_image = cropped_image_frames
             else:
-                new_cropped_image = enhanced_image_tensor.numpy()
+                new_cropped_image = enhanced_image_tensor.cpu().numpy()
 
             new_seg = SEG(new_cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
