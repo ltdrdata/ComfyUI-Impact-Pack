@@ -286,6 +286,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactCombineConditionings": CombineConditionings,
     "ImpactConcatConditionings": ConcatConditionings,
 
+    "ImpactSEGSLabelAssign": SEGSLabelAssign,
     "ImpactSEGSLabelFilter": SEGSLabelFilter,
     "ImpactSEGSRangeFilter": SEGSRangeFilter,
     "ImpactSEGSOrderedFilter": SEGSOrderedFilter,
@@ -385,6 +386,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactKSamplerBasicPipe": "KSampler (pipe)",
     "ImpactKSamplerAdvancedBasicPipe": "KSampler (Advanced/pipe)",
+    "ImpactSEGSLabelAssign": "SEGS Assign (label)",
     "ImpactSEGSLabelFilter": "SEGS Filter (label)",
     "ImpactSEGSRangeFilter": "SEGS Filter (range)",
     "ImpactSEGSOrderedFilter": "SEGS Filter (ordered)",
