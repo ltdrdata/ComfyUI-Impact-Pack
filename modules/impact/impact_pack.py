@@ -237,7 +237,9 @@ class DetailerForEach:
             else:
                 cropped_mask = None
 
-            if wildcard_chooser is not None:
+            if wildcard_chooser is not None and wmode != "LAB":
+                seg_seed, wildcard_item = wildcard_chooser.get(seg)
+            elif wildcard_chooser is not None and wmode == "LAB":
                 seg_seed, wildcard_item = None, wildcard_chooser.get(seg)
             else:
                 seg_seed, wildcard_item = None, None
