@@ -1,5 +1,6 @@
 import folder_paths
 from impact.core import *
+import os
 
 import mmcv
 from mmdet.apis import (inference_detector, init_detector)

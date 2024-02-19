@@ -415,6 +415,44 @@ class SEGSLabelFilter:
         return SEGSLabelFilter.filter(segs, labels)
 
 
+class SEGSLabelAssign:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs": ("SEGS", ),
+                        "labels": ("STRING", {"multiline": True, "placeholder": "List the label to be assigned in order of segs, separated by commas"}),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    RETURN_NAMES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    @staticmethod
+    def assign(segs, labels):
+        labels = [label.strip() for label in labels]
+
+        if len(labels) != len(segs[1]):
+            print(f'Warning (SEGSLabelAssign): length of labels ({len(labels)}) != length of segs ({len(segs[1])})')
+
+        labeled_segs = []
+
+        idx = 0
+        for x in segs[1]:
+            if len(labels) > idx:
+                x = x._replace(label=labels[idx])
+            labeled_segs.append(x)
+            idx += 1
+
+        return ((segs[0], labeled_segs), )
+
+    def doit(self, segs, labels):
+        labels = labels.split(',')
+        return SEGSLabelAssign.assign(segs, labels)
+
+
 class SEGSOrderedFilter:
     @classmethod
     def INPUT_TYPES(s):
