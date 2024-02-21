@@ -424,11 +424,11 @@ class ImpactQueueTriggerCountdown:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-                    "signal": (any_typ,),
                     "count": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     "total": ("INT", {"default": 10, "min": 1, "max": 0xffffffffffffffff}),
                     "mode": ("BOOLEAN", {"default": True, "label_on": "Trigger", "label_off": "Don't trigger"}),
                     },
+                "optional": {"signal": (any_typ,),},
                 "hidden": {"unique_id": "UNIQUE_ID"}
                 }
 
@@ -439,14 +439,15 @@ class ImpactQueueTriggerCountdown:
     RETURN_NAMES = ("signal_opt", "count", "total")
     OUTPUT_NODE = True
 
-    def doit(self, signal, count, total, mode, unique_id):
-        if count < total - 1 and (mode):
-            PromptServer.instance.send_sync("impact-node-feedback",
-                                            {"node_id": unique_id, "widget_name": "count", "type": "int", "value": count+1})
-            PromptServer.instance.send_sync("impact-add-queue", {})
-        if count >= total - 1:
-            PromptServer.instance.send_sync("impact-node-feedback",
-                                            {"node_id": unique_id, "widget_name": "count", "type": "int", "value": 0})
+    def doit(self, count, total, mode, unique_id, signal=None):
+        if (mode):
+            if count < total - 1:
+                PromptServer.instance.send_sync("impact-node-feedback",
+                                                {"node_id": unique_id, "widget_name": "count", "type": "int", "value": count+1})
+                PromptServer.instance.send_sync("impact-add-queue", {})
+            if count >= total - 1:
+                PromptServer.instance.send_sync("impact-node-feedback",
+                                                {"node_id": unique_id, "widget_name": "count", "type": "int", "value": 0})
 
         return (signal, count, total)
 
