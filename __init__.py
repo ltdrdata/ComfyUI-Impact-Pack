@@ -217,6 +217,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactControlNetApplySEGS": ControlNetApplySEGS,
     "ImpactControlNetApplyAdvancedSEGS": ControlNetApplyAdvancedSEGS,
     "ImpactControlNetClearSEGS": ControlNetClearSEGS,
+    "ImpactIPAdapterApplySEGS": IPAdapterApplySEGS,
 
     "ImpactDecomposeSEGS": DecomposeSEGS,
     "ImpactAssembleSEGS": AssembleSEGS,
@@ -339,6 +340,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
     "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",
     "ImpactControlNetApplyAdvancedSEGS": "ControlNetApplyAdvanced (SEGS)",
+    "ImpactIPAdapterApplySEGS": "IPAdapterApply (SEGS)",
 
     "BboxDetectorCombined_v2": "BBOX Detector (combined)",
     "SegmDetectorCombined_v2": "SEGM Detector (combined)",

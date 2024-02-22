@@ -225,6 +225,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     cnet_pils = None
     if control_net_wrapper is not None:
         positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, upscaled_image, noise_mask)
+        model, cnet_pils2 = control_net_wrapper.doit_ipadapter(model)
+        cnet_pils.extend(cnet_pils2)
 
     # prepare mask
     if noise_mask is not None and inpaint_model:
@@ -1491,9 +1493,57 @@ class PixelKSampleUpscaler:
         return refined_latent
 
 
+class IPAdapterWrapper:
+    def __init__(self, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, reference_image, prev_control_net=None):
+        self.reference_image = reference_image
+        self.ipadapter_pipe = ipadapter_pipe
+        self.weight = weight
+        self.weight_type = weight_type
+        self.noise = noise
+        self.start_at = start_at
+        self.end_at = end_at
+        self.unfold_batch = unfold_batch
+        self.prev_control_net = prev_control_net
+        self.faceid_v2 = faceid_v2
+        self.weight_v2 = weight_v2
+        self.image = reference_image
+
+    # name 'apply_ipadapter' isn't allowed
+    def doit_ipadapter(self, model):
+        cnet_image_list = [self.image]
+        prev_cnet_images = []
+
+        if 'IPAdapterApply' not in nodes.NODE_CLASS_MAPPINGS:
+            utils.try_install_custom_node('https://github.com/cubiq/ComfyUI_IPAdapter_plus',
+                                          "To use 'IPAdapterApplySEGS' node, 'ComfyUI IPAdapter Plus' extension is required.")
+            raise Exception(f"[ERROR] To use IPAdapterApplySEGS, you need to install 'ComfyUI IPAdapter Plus'")
+
+        obj = nodes.NODE_CLASS_MAPPINGS['IPAdapterApply']
+
+        ipadapter, _, clip_vision, insightface, lora_loader = self.ipadapter_pipe
+        model = lora_loader(model)
+
+        if self.prev_control_net is not None:
+            model, prev_cnet_images = self.prev_control_net.doit_ipadapter(model)
+
+        model = obj().apply_ipadapter(ipadapter, model, self.weight, clip_vision=clip_vision, image=self.image,
+                                      embeds=None, weight_type=self.weight_type, noise=self.noise,
+                                      attn_mask=None, start_at=self.start_at, end_at=self.end_at,
+                                      unfold_batch=self.unfold_batch, insightface=insightface, faceid_v2=self.faceid_v2, weight_v2=self.weight_v2)[0]
+
+        cnet_image_list.extend(prev_cnet_images)
+
+        return model, cnet_image_list
+
+    def apply(self, positive, negative, image, mask=None, use_acn=False):
+        if self.prev_control_net is not None:
+            return self.prev_control_net.apply(positive, negative, image, mask, use_acn=use_acn)
+        else:
+            return positive, negative, []
+
+
 class ControlNetWrapper:
-    def __init__(self, control_net, strength, preprocessor, prev_control_net=None,
-                 original_size=None, crop_region=None, control_image=None):
+    def __init__(self, control_net, strength, preprocessor, prev_control_net=None, original_size=None, crop_region=None, control_image=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
@@ -1535,6 +1585,12 @@ class ControlNetWrapper:
             positive = nodes.ControlNetApply().apply_controlnet(positive, self.control_net, cnet_image, self.strength)[0]
 
         return positive, negative, cnet_image_list
+
+    def doit_ipadapter(self, model):
+        if self.prev_control_net is not None:
+            return self.prev_control_net.doit_ipadapter(model)
+        else:
+            return model, []
 
 
 class ControlNetAdvancedWrapper:
