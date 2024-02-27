@@ -1,4 +1,6 @@
 import copy
+
+import comfy_extras.nodes_stable_cascade
 import nodes
 
 from impact import utils
@@ -8,6 +10,9 @@ from server import PromptServer
 import asyncio
 import folder_paths
 import os
+import torch
+import impact_sampling
+
 
 class PixelKSampleHook:
     cur_step = 0
@@ -101,6 +106,13 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
+    def stable_cascade_stage_b(self, positive, negative, latent):
+        image = self.hook1.stable_cascade_stage_b(positive, negative, latent)
+        if image is not None:
+            return image
+
+        return self.hook2.stable_cascade_stage_b(positive, negative, latent)
+
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
     target_cfg = 0
@@ -161,6 +173,39 @@ class DetailerHook(PixelKSampleHook):
 
     def post_paste(self, image):
         return image
+
+    def stable_cascade_stage_b(self, positive, negative, latent):
+        return None
+
+
+class StableCascade_DetailerHook(DetailerHook):
+    def __init__(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression):
+        super().__init__()
+        self.b_model = b_model
+        self.b_vae = b_vae
+        self.b_seed = b_seed
+        self.b_steps = b_steps
+        self.b_cfg = b_cfg
+        self.b_sampler_name = b_sampler_name
+        self.b_scheduler = b_scheduler
+        self.b_denoise = b_denoise
+        self.c_compression = c_compression
+        self.orig_size = None
+
+    def touch_scaled_size(self, w, h):
+        compression = min(self.c_compression, w, h)
+        self.orig_size = w, h
+        return w // compression, h // compression
+
+    def stable_cascade_stage_b(self, positive, negative, latent):
+        w, h = self.orig_size
+
+        # stage_b sampling
+        empty_latent = {'samples': torch.zeros([1, 4, h // 4, w // 4])}
+        b_positive = comfy_extras.nodes_stable_cascade.StableCascade_StageB_Conditioning().set_prior(positive, latent)
+        b_latent = impact_sampling.ksampler_wrapper(self.b_model, self.b_seed, self.b_steps, self.b_cfg, self.b_sampler_name, self.b_scheduler, b_positive, negative, empty_latent, self.b_denoise)
+
+        return self.b_vae.decode(b_latent['samples'])
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):

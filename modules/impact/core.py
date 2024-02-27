@@ -258,11 +258,17 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         refined_latent = impact_sampling.ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
                                                           refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
 
+    # non-latent downscale - latent downscale cause bad quality
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
+        stage_b = detailer_hook.stable_cascade_stage_b(positive, negative, refined_latent)
+    else:
+        stage_b = None
 
-    # non-latent downscale - latent downscale cause bad quality
-    refined_image = vae.decode(refined_latent['samples'])
+    if stage_b is None:
+        refined_image = vae.decode(refined_latent['samples'])
+    else:
+        refined_image = stage_b
 
     if detailer_hook is not None:
         refined_image = detailer_hook.post_decode(refined_image)

@@ -1,6 +1,7 @@
 import sys
 from . import hooks
 from . import defs
+import comfy
 
 
 class SEGSOrderedFilterDetailerHookProvider:
@@ -81,3 +82,31 @@ class PreviewDetailerHookProvider:
     def doit(self, quality, unique_id):
         hook = hooks.PreviewDetailerHook(unique_id, quality)
         return (hook, )
+
+
+class StableCascade_DetailerHookProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "b_model": ("MODEL",),
+                "b_vae": ("VAE",),
+                "b_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "b_steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                "b_cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "step": 0.1, "round": 0.01}),
+                "b_sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                "b_scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                "b_denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "c_compression": ("INT", {"default": 42, "min": 4, "max": 128, "step": 1}),
+            },
+        }
+
+    RETURN_TYPES = ("DETAILER_HOOK", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression):
+        hook = hooks.StableCascade_DetailerHook(b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression)
+        return (hook, )
+
