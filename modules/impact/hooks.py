@@ -11,7 +11,7 @@ import asyncio
 import folder_paths
 import os
 import torch
-import impact_sampling
+from impact import impact_sampling
 
 
 class PixelKSampleHook:
