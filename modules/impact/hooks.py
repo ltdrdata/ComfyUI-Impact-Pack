@@ -173,7 +173,7 @@ class DetailerHook(PixelKSampleHook):
     def post_paste(self, image):
         return image
 
-    def stable_cascade_stage_b(self, positive, negative, latent):
+    def stable_cascade_stage_b(self, c_vae, image, positive, negative, latent):
         return None
 
 

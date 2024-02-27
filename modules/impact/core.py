@@ -261,7 +261,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # non-latent downscale - latent downscale cause bad quality
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
-        stage_b = detailer_hook.stable_cascade_stage_b(positive, negative, refined_latent)
+        stage_b = detailer_hook.stable_cascade_stage_b(vae, image, positive, negative, refined_latent)
     else:
         stage_b = None
 
