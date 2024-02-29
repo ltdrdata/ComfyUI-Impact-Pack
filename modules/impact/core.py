@@ -1609,6 +1609,12 @@ class ControlNetAdvancedWrapper:
         else:
             self.control_image = None
 
+    def doit_ipadapter(self, model):
+        if self.prev_control_net is not None:
+            return self.prev_control_net.doit_ipadapter(model)
+        else:
+            return model, []
+
     def apply(self, positive, negative, image, mask=None, use_acn=False):
         cnet_image_list = []
         prev_cnet_images = []
