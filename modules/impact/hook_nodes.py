@@ -96,8 +96,7 @@ class StableCascade_DetailerHookProvider:
                 "b_cfg": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 100.0, "step": 0.1, "round": 0.01}),
                 "b_sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
                 "b_scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                "b_denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "c_compression": ("INT", {"default": 4, "min": 4, "max": 128, "step": 1}),
+                "c_compression": ("INT", {"default": 42, "min": 4, "max": 128, "step": 1}),
             },
         }
 
@@ -106,7 +105,7 @@ class StableCascade_DetailerHookProvider:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression):
-        hook = hooks.StableCascade_DetailerHook(b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression)
+    def doit(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, c_compression):
+        hook = hooks.StableCascade_DetailerHook(b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, c_compression)
         return (hook, )
 

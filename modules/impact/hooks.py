@@ -105,6 +105,13 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
+    def stable_cascade_vae_encode(self, vae, pixels):
+        latent = self.hook1.stable_cascade_vae_encode(vae, pixels)
+        if latent is not None:
+            return latent
+
+        return self.hook2.stable_cascade_vae_encode(vae, pixels)
+
     def stable_cascade_stage_b(self, image, positive, negative, latent):
         image = self.hook1.stable_cascade_stage_b(image, positive, negative, latent)
         if image is not None:
@@ -173,12 +180,15 @@ class DetailerHook(PixelKSampleHook):
     def post_paste(self, image):
         return image
 
+    def stable_cascade_vae_encode(self, vae, pixels):
+        return None
+
     def stable_cascade_stage_b(self, image, positive, negative, latent):
         return None
 
 
 class StableCascade_DetailerHook(DetailerHook):
-    def __init__(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, b_denoise, c_compression):
+    def __init__(self, b_model, b_vae, b_seed, b_steps, b_cfg, b_sampler_name, b_scheduler, c_compression):
         super().__init__()
         self.b_model = b_model
         self.b_vae = b_vae
@@ -187,28 +197,25 @@ class StableCascade_DetailerHook(DetailerHook):
         self.b_cfg = b_cfg
         self.b_sampler_name = b_sampler_name
         self.b_scheduler = b_scheduler
-        self.b_denoise = b_denoise
         self.c_compression = c_compression
-        self.orig_size = None
+        self.b_latent = None
 
-    def touch_scaled_size(self, w, h):
-        compression = min(self.c_compression, w, h)
-        self.orig_size = w, h
-        return w // compression, h // compression
+    def stable_cascade_vae_encode(self, vae, pixels):
+        obj = comfy_extras.nodes_stable_cascade.StableCascade_StageC_VAEEncode()
+        stage_c, stage_b = obj.generate(pixels, vae, compression=self.c_compression)
+        self.b_latent = stage_b
+        return stage_c
 
     def stable_cascade_stage_b(self, image, positive, negative, latent):
-        w, h = self.orig_size
-
         # prepare stage_b
-        upscaled_image = utils.tensor_resize(image, w, h)
-        b_latent = utils.to_latent_image(upscaled_image, self.b_vae)
-        b_latent['noise_mask'] = latent['noise_mask']
+        # self.b_latent['noise_mask'] = latent['noise_mask']
         b_positive = comfy_extras.nodes_stable_cascade.StableCascade_StageB_Conditioning().set_prior(positive, latent)[0]
 
         # stage_b sampling
-        b_latent = impact_sampling.ksampler_wrapper(self.b_model, self.b_seed, self.b_steps, self.b_cfg, self.b_sampler_name, self.b_scheduler, b_positive, negative, b_latent, self.b_denoise)
+        b_latent = impact_sampling.ksampler_wrapper(self.b_model, self.b_seed, self.b_steps, self.b_cfg, self.b_sampler_name, self.b_scheduler, b_positive, negative, self.b_latent, 1.0)
 
         # stage_b decoding
+        self.b_latent = None
         return self.b_vae.decode(b_latent['samples'])
 
 

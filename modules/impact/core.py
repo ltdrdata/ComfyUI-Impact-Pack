@@ -18,6 +18,7 @@ from comfy import model_management
 from impact import utils
 from impact import impact_sampling
 from concurrent.futures import ThreadPoolExecutor
+from comfy.ldm.cascade.stage_c_coder import StageC_coder
 
 
 SEG = namedtuple("SEG",
@@ -214,6 +215,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             new_w = w
             new_h = h
 
+    new_w += new_w % 2
+    new_h += new_h % 2
+
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
 
@@ -232,11 +236,14 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if noise_mask is not None and inpaint_model:
         positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
     else:
-        if isinstance(vae, cascade.StageC_coder):
-            nodes_stable_cascade.StableCascade_StageC_VAEEncode().generate(pixels, vae, compression=compression)
-            return vae_encode.encode(vae, pixels)[0]
+        if isinstance(vae.first_stage_model, StageC_coder):
+            latent_image = detailer_hook.stable_cascade_vae_encode(vae, upscaled_image)
+            if latent_image is None:
+                print(f"[Impact Pack] When using the StableCascade model, it is necessary to connect the StableCascade_DetailerHook.")
+                raise Exception("StableCascade_DetailerHook is not provided.")
+        else:
+            latent_image = to_latent_image(upscaled_image, vae)
 
-        latent_image = to_latent_image(upscaled_image, vae)
         if noise_mask is not None:
             latent_image['noise_mask'] = noise_mask
 
@@ -265,7 +272,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # non-latent downscale - latent downscale cause bad quality
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
-        stage_b = detailer_hook.stable_cascade_stage_b(vae, image, positive, negative, refined_latent)
+        stage_b = detailer_hook.stable_cascade_stage_b(image, positive, negative, refined_latent)
     else:
         stage_b = None
 
