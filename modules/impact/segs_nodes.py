@@ -1441,7 +1441,7 @@ class MakeTileSEGS:
 
     def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
-            new_min_overlap = 2 / bbox_size
+            new_min_overlap = bbox_size / 2
             print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
             min_overlap = new_min_overlap
 
