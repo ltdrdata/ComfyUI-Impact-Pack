@@ -755,6 +755,44 @@ class From_SEG_ELT:
         return (seg_elt, cropped_image, to_tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label,)
 
 
+class From_SEG_ELT_bbox:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "bbox": ("SEG_ELT_bbox", ),
+                     },
+                }
+
+    RETURN_TYPES = ("INT", "INT", "INT", "INT")
+    RETURN_NAMES = ("left", "top", "right", "bottom")
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, bbox):
+        return bbox
+
+
+class From_SEG_ELT_crop_region:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "crop_region": ("SEG_ELT_crop_region", ),
+                     },
+                }
+
+    RETURN_TYPES = ("INT", "INT", "INT", "INT")
+    RETURN_NAMES = ("left", "top", "right", "bottom")
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, crop_region):
+        return crop_region
+
+
 class Edit_SEG_ELT:
     @classmethod
     def INPUT_TYPES(s):

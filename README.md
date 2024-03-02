@@ -108,6 +108,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * From SEG_ELT - Extract detailed information from SEG_ELT.
     * Edit SEG_ELT - Modify some of the information in SEG_ELT.
     * Dilate SEG_ELT - Dilate the mask of SEG_ELT.
+    * From SEG_ELT bbox - Extract coordinate from bbox in SEG_ELT
+    * From SEG_ELT crop_region - Extract coordinate from crop_region in SEG_ELT
 
 * Mask Manipulation
   * Dilate Mask - Dilate Mask. 
