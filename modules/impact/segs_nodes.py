@@ -1460,7 +1460,6 @@ class MakeTileSEGS:
                      "images": ("IMAGE", ),
                      "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
                      "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
-                     "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
                      "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
                      "mask_irregularity": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
                      "irregular_mask_mode": (["Reuse fast", "Reuse quality", "All random fast", "All random quality"],)
@@ -1477,12 +1476,7 @@ class MakeTileSEGS:
 
     CATEGORY = "ImpactPack/__for_testing"
 
-    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
-        if bbox_size <= 2*min_overlap:
-            new_min_overlap = bbox_size / 2
-            print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
-            min_overlap = new_min_overlap
-
+    def doit(self, images, bbox_size, crop_factor, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         _, ih, iw, _ = images.size()
 
         mask_cache = None
@@ -1533,8 +1527,14 @@ class MakeTileSEGS:
             print(f"[MaskTileSEGS] bbox_size is greater than resolution (value changed: {bbox_size} => {new_bbox_size}")
             bbox_size = new_bbox_size
 
-        n_horizontal = int(w / (bbox_size - min_overlap))
-        n_vertical = int(h / (bbox_size - min_overlap))
+        n_horizontal = int(w / bbox_size)
+        n_vertical = int(h / bbox_size)
+        
+        while (((bbox_size - (bbox_size * mask_irregularity * 0.2)) * n_horizontal) - w) < 1:
+            n_horizontal += 1
+            
+        while (((bbox_size - (bbox_size * mask_irregularity * 0.2)) * n_vertical) - w) < 1:
+            n_vertical += 1
 
         w_overlap_sum = (bbox_size * n_horizontal) - w
         if w_overlap_sum < 0:
