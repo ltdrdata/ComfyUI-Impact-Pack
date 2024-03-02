@@ -1537,16 +1537,10 @@ class MakeTileSEGS:
             n_vertical += 1
 
         w_overlap_sum = (bbox_size * n_horizontal) - w
-        if w_overlap_sum < 0:
-            n_horizontal += 1
-            w_overlap_sum = (bbox_size * n_horizontal) - w
 
         w_overlap_size = 0 if n_horizontal == 1 else int(w_overlap_sum/(n_horizontal-1))
 
         h_overlap_sum = (bbox_size * n_vertical) - h
-        if h_overlap_sum < 0:
-            n_vertical += 1
-            h_overlap_sum = (bbox_size * n_vertical) - h
 
         h_overlap_size = 0 if n_vertical == 1 else int(h_overlap_sum/(n_vertical-1))
 
