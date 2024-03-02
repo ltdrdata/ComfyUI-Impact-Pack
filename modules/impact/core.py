@@ -232,6 +232,10 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if noise_mask is not None and inpaint_model:
         positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
     else:
+        if isinstance(vae, cascade.StageC_coder):
+            nodes_stable_cascade.StableCascade_StageC_VAEEncode().generate(pixels, vae, compression=compression)
+            return vae_encode.encode(vae, pixels)[0]
+
         latent_image = to_latent_image(upscaled_image, vae)
         if noise_mask is not None:
             latent_image['noise_mask'] = noise_mask

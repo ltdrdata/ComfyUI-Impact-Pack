@@ -105,12 +105,12 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
-    def stable_cascade_stage_b(self, c_vae, image, positive, negative, latent):
-        image = self.hook1.stable_cascade_stage_b(c_vae, image, positive, negative, latent)
+    def stable_cascade_stage_b(self, image, positive, negative, latent):
+        image = self.hook1.stable_cascade_stage_b(image, positive, negative, latent)
         if image is not None:
             return image
 
-        return self.hook2.stable_cascade_stage_b(c_vae, image, positive, negative, latent)
+        return self.hook2.stable_cascade_stage_b(image, positive, negative, latent)
 
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
@@ -173,7 +173,7 @@ class DetailerHook(PixelKSampleHook):
     def post_paste(self, image):
         return image
 
-    def stable_cascade_stage_b(self, c_vae, image, positive, negative, latent):
+    def stable_cascade_stage_b(self, image, positive, negative, latent):
         return None
 
 
@@ -196,14 +196,14 @@ class StableCascade_DetailerHook(DetailerHook):
         self.orig_size = w, h
         return w // compression, h // compression
 
-    def stable_cascade_stage_b(self, c_vae, image, positive, negative, latent):
+    def stable_cascade_stage_b(self, image, positive, negative, latent):
         w, h = self.orig_size
 
         # prepare stage_b
         upscaled_image = utils.tensor_resize(image, w, h)
-        b_latent = utils.to_latent_image(upscaled_image, c_vae)
+        b_latent = utils.to_latent_image(upscaled_image, self.b_vae)
         b_latent['noise_mask'] = latent['noise_mask']
-        b_positive = comfy_extras.nodes_stable_cascade.StableCascade_StageB_Conditioning().set_prior(positive, latent)
+        b_positive = comfy_extras.nodes_stable_cascade.StableCascade_StageB_Conditioning().set_prior(positive, latent)[0]
 
         # stage_b sampling
         b_latent = impact_sampling.ksampler_wrapper(self.b_model, self.b_seed, self.b_steps, self.b_cfg, self.b_sampler_name, self.b_scheduler, b_positive, negative, b_latent, self.b_denoise)

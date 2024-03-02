@@ -8,6 +8,8 @@ from . import config
 from PIL import Image, ImageFilter
 from scipy.ndimage import zoom
 import comfy
+import comfy.ldm.cascade as cascade
+from comfy_extras import nodes_stable_cascade
 
 
 class TensorBatchBuilder:
@@ -490,7 +492,7 @@ def crop_image(image, crop_region):
     return crop_tensor4(image, crop_region)
 
 
-def to_latent_image(pixels, vae):
+def to_latent_image(pixels, vae, compression=None):
     x = pixels.shape[1]
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
@@ -500,7 +502,7 @@ def to_latent_image(pixels, vae):
     if hasattr(nodes.VAEEncode, "vae_encode_crop_pixels"):
         # backward compatibility
         print(f"[Impact Pack] ComfyUI is outdated.")
-        pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
+        pixels = vae_encode.vae_encode_crop_pixels(pixels)
         t = vae.encode(pixels[:, :, :, :3])
         return {"samples": t}
 
