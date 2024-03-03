@@ -1817,7 +1817,7 @@ def random_mask_raw(mask, bbox, factor):
     w = x2 - x1
     h = y2 - y1
 
-    factor = int(min(w, h) * factor / 4)
+    factor = max(6, int(min(w, h) * factor / 4))
 
     def draw_random_circle(center, radius):
         i, j = center

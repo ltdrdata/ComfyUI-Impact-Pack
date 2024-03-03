@@ -96,17 +96,18 @@ def setup_js():
 
 setup_js()
 
-from impact.impact_pack import *
-from impact.detectors import *
-from impact.pipe import *
-from impact.logics import *
-from impact.util_nodes import *
-from impact.segs_nodes import *
-from impact.special_samplers import *
-from impact.hf_nodes import *
-from impact.bridge_nodes import *
-from impact.hook_nodes import *
-from impact.animatediff_nodes import *
+from .modules.impact.impact_pack import *
+from .modules.impact.detectors import *
+from .modules.impact.pipe import *
+from .modules.impact.logics import *
+from .modules.impact.util_nodes import *
+from .modules.impact.segs_nodes import *
+from .modules.impact.special_samplers import *
+from .modules.impact.hf_nodes import *
+from .modules.impact.bridge_nodes import *
+from .modules.impact.hook_nodes import *
+from .modules.impact.animatediff_nodes import *
+from .modules.impact.segs_upscaler import *
 
 import threading
 
@@ -258,6 +259,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
 
+    "SEGSUpscaler": SEGSUpscaler,
+    "SEGSUpscalerPipe": SEGSUpscalerPipe,
     "SEGSDetailer": SEGSDetailer,
     "SEGSPaste": SEGSPaste,
     "SEGSPreview": SEGSPreview,
@@ -363,6 +366,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",
     "SEGSDetailerForAnimateDiff": "SEGSDetailer For AnimateDiff (SEGS/pipe)",
     "DetailerForEachPipeForAnimateDiff": "Detailer For AnimateDiff (SEGS/pipe)",
+    "SEGSUpscaler": "Upscaler (SEGS)",
+    "SEGSUpscalerPipe": "Upscaler (SEGS/pipe)",
 
     "SAMDetectorCombined": "SAMDetector (combined)",
     "SAMDetectorSegmented": "SAMDetector (segmented)",

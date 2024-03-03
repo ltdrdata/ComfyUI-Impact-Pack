@@ -5,11 +5,12 @@ import impact.impact_server
 from nodes import MAX_RESOLUTION
 
 from impact.utils import *
-import impact.core as core
-from impact.core import SEG
+from . import core
+from .core import SEG
 import impact.utils as utils
 from . import defs
-
+from . import segs_upscaler
+import math
 
 class SEGSDetailer:
     @classmethod
@@ -1499,6 +1500,12 @@ class MakeTileSEGS:
             elif irregular_mask_mode == "All random fast":
                 mask_quality = 512
 
+        # compensate overlap/bbox_size for irregular mask
+        if mask_irregularity > 0:
+            compensate = max(6, int(mask_quality * mask_irregularity / 4))
+            min_overlap += compensate
+            bbox_size += compensate*2
+
         # create exclusion mask
         if filter_out_segs_opt is not None:
             exclusion_mask = core.segs_to_combined_mask(filter_out_segs_opt)
@@ -1533,8 +1540,8 @@ class MakeTileSEGS:
             print(f"[MaskTileSEGS] bbox_size is greater than resolution (value changed: {bbox_size} => {new_bbox_size}")
             bbox_size = new_bbox_size
 
-        n_horizontal = int(w / (bbox_size - min_overlap))
-        n_vertical = int(h / (bbox_size - min_overlap))
+        n_horizontal = math.ceil(w / (bbox_size - min_overlap))
+        n_vertical = math.ceil(h / (bbox_size - min_overlap))
 
         w_overlap_sum = (bbox_size * n_horizontal) - w
         if w_overlap_sum < 0:
@@ -1628,3 +1635,137 @@ class MakeTileSEGS:
 
         res = (ih, iw), new_segs  # segs
         return (res,)
+
+
+class SEGSUpscaler:
+    @classmethod
+    def INPUT_TYPES(s):
+        resampling_methods = ["lanczos", "nearest", "bilinear", "bicubic"]
+
+        return {"required": {
+                    "image": ("IMAGE",),
+                    "segs": ("SEGS",),
+                    "model": ("MODEL",),
+                    "clip": ("CLIP",),
+                    "vae": ("VAE",),
+                    "rescale_factor": ("FLOAT", {"default": 2, "min": 0.01, "max": 100.0, "step": 0.01}),
+                    "resampling_method": (resampling_methods,),
+                    "supersample": (["true", "false"],),
+                    "rounding_modulus": ("INT", {"default": 8, "min": 8, "max": 1024, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                    "positive": ("CONDITIONING",),
+                    "negative": ("CONDITIONING",),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                    },
+                "optional": {
+                    "upscale_model_opt": ("UPSCALE_MODEL",),
+                    "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    @staticmethod
+    def doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
+             seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+             upscale_model_opt=None, upscaler_hook_opt=None):
+
+        new_image = segs_upscaler.upscaler(image, upscale_model_opt, rescale_factor, resampling_method, supersample, rounding_modulus)
+
+        segs = core.segs_scale_match(segs, new_image.shape)
+
+        ordered_segs = segs[1]
+
+        for i, seg in enumerate(ordered_segs):
+            cropped_image = crop_ndarray4(new_image.numpy(), seg.crop_region)
+            cropped_image = to_tensor(cropped_image)
+            mask = to_tensor(seg.cropped_mask)
+            mask = tensor_gaussian_blur_mask(mask, feather)
+
+            is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
+            if is_mask_all_zeros:
+                print(f"SEGSUpscaler: segment skip [empty mask]")
+                continue
+
+            if noise_mask:
+                cropped_mask = seg.cropped_mask
+            else:
+                cropped_mask = None
+
+            seg_seed = seed + i
+
+            enhanced_image = segs_upscaler.img2img_segs(cropped_image, model, clip, vae, seg_seed, steps, cfg, sampler_name, scheduler,
+                                                        positive, negative, denoise,
+                                                        noise_mask=cropped_mask, control_net_wrapper=seg.control_net_wrapper,
+                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+            if not (enhanced_image is None):
+                new_image = new_image.cpu()
+                enhanced_image = enhanced_image.cpu()
+                left = seg.crop_region[0]
+                top = seg.crop_region[1]
+                tensor_paste(new_image, enhanced_image, (left, top), mask)
+
+                if upscaler_hook_opt is not None:
+                    upscaler_hook_opt.post_paste(new_image)
+
+        enhanced_img = tensor_convert_rgb(new_image)
+
+        return (enhanced_img,)
+
+
+class SEGSUpscalerPipe:
+    @classmethod
+    def INPUT_TYPES(s):
+        resampling_methods = ["lanczos", "nearest", "bilinear", "bicubic"]
+
+        return {"required": {
+                    "image": ("IMAGE",),
+                    "segs": ("SEGS",),
+                    "basic_pipe": ("BASIC_PIPE",),
+                    "rescale_factor": ("FLOAT", {"default": 2, "min": 0.01, "max": 100.0, "step": 0.01}),
+                    "resampling_method": (resampling_methods,),
+                    "supersample": (["true", "false"],),
+                    "rounding_modulus": ("INT", {"default": 8, "min": 8, "max": 1024, "step": 8}),
+                    "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                    "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
+                    "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
+                    "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
+                    "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
+                    "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                    "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
+                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                    },
+                "optional": {
+                    "upscale_model_opt": ("UPSCALE_MODEL",),
+                    "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Upscale"
+
+    @staticmethod
+    def doit(image, segs, basic_pipe, rescale_factor, resampling_method, supersample, rounding_modulus,
+             seed, steps, cfg, sampler_name, scheduler, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+             upscale_model_opt=None, upscaler_hook_opt=None):
+
+        model, clip, vae, positive, negative = basic_pipe
+
+        return SEGSUpscaler.doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
+                                 seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+                                 upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt)

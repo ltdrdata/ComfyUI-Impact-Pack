@@ -73,11 +73,11 @@ class PreviewDetailerHookProvider:
             "hidden": {"unique_id": "UNIQUE_ID"},
         }
 
-    RETURN_TYPES = ("DETAILER_HOOK", )
+    RETURN_TYPES = ("DETAILER_HOOK", "UPSCALER_HOOK")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, quality, unique_id):
         hook = hooks.PreviewDetailerHook(unique_id, quality)
-        return (hook, )
+        return (hook, hook)

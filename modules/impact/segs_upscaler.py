@@ -1,0 +1,111 @@
+from impact.utils import *
+from impact import impact_sampling
+from comfy_extras.chainner_models import model_loading
+from comfy import model_management
+import nodes
+
+
+# Implementation based on `https://github.com/lingondricka2/Upscaler-Detailer`
+
+# code from comfyroll --->
+# https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes/blob/main/nodes/functions_upscale.py
+
+def upscale_with_model(upscale_model, image):
+    device = model_management.get_torch_device()
+    upscale_model.to(device)
+    in_img = image.movedim(-1,-3).to(device)
+    free_memory = model_management.get_free_memory(device)
+
+    tile = 512
+    overlap = 32
+
+    oom = True
+    while oom:
+        try:
+            steps = in_img.shape[0] * comfy.utils.get_tiled_scale_steps(in_img.shape[3], in_img.shape[2], tile_x=tile, tile_y=tile, overlap=overlap)
+            pbar = comfy.utils.ProgressBar(steps)
+            s = comfy.utils.tiled_scale(in_img, lambda a: upscale_model(a), tile_x=tile, tile_y=tile, overlap=overlap, upscale_amount=upscale_model.scale, pbar=pbar)
+            oom = False
+        except model_management.OOM_EXCEPTION as e:
+            tile //= 2
+            if tile < 128:
+                raise e
+
+    upscale_model.cpu()
+    s = torch.clamp(s.movedim(-3, -1), min=0, max=1.0)
+    return s
+
+
+def apply_resize_image(image: Image.Image, original_width, original_height, rounding_modulus, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024,
+                       resample='bicubic'):
+    # Calculate the new width and height based on the given mode and parameters
+    if mode == 'rescale':
+        new_width, new_height = int(original_width * factor), int(original_height * factor)
+    else:
+        m = rounding_modulus
+        original_ratio = original_height / original_width
+        height = int(width * original_ratio)
+
+        new_width = width if width % m == 0 else width + (m - width % m)
+        new_height = height if height % m == 0 else height + (m - height % m)
+
+    # Define a dictionary of resampling filters
+    resample_filters = {'nearest': 0, 'bilinear': 2, 'bicubic': 3, 'lanczos': 1}
+
+    # Apply supersample
+    if supersample == 'true':
+        image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
+
+    # Resize the image using the given resampling filter
+    resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
+
+    return resized_image
+
+
+def upscaler(image, upscale_model, rescale_factor, resampling_method, supersample, rounding_modulus):
+    if upscale_model is not None:
+        up_image = upscale_with_model(upscale_model, image)
+    else:
+        up_image = image
+
+    pil_img = tensor2pil(image)
+    original_width, original_height = pil_img.size
+    scaled_image = pil2tensor(apply_resize_image(tensor2pil(up_image), original_width, original_height, rounding_modulus, 'rescale',
+                                                 supersample, rescale_factor, 1024, resampling_method))
+    return scaled_image
+
+# <---
+
+
+def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, scheduler,
+                 positive, negative, denoise, noise_mask, control_net_wrapper=None,
+                 inpaint_model=False, noise_mask_feather=0):
+    if noise_mask is not None:
+        noise_mask = tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        noise_mask = noise_mask.squeeze(3)
+
+    if control_net_wrapper is not None:
+        positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)
+
+    # prepare mask
+    if noise_mask is not None and inpaint_model:
+        positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, image, vae, noise_mask)
+    else:
+        latent_image = to_latent_image(image, vae)
+        if noise_mask is not None:
+            latent_image['noise_mask'] = noise_mask
+
+    refined_latent = latent_image
+
+    # ksampler
+    refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, refined_latent, denoise)
+
+    # non-latent downscale - latent downscale cause bad quality
+    refined_image = vae.decode(refined_latent['samples'])
+
+    # prevent mixing of device
+    refined_image = refined_image.cpu()
+
+    # don't convert to latent - latent break image
+    # preserving pil is much better
+    return refined_image
