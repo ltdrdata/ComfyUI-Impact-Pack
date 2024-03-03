@@ -215,8 +215,19 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             new_w = w
             new_h = h
 
-    new_w += new_w % 2
-    new_h += new_h % 2
+    is_stable_cascade_mode = isinstance(vae.first_stage_model, StageC_coder)
+
+    if is_stable_cascade_mode:
+        dw = new_w % 8
+        dh = new_h % 8
+
+        # preserve aspect ratio as possible
+        if dw > 3 or dh > 3:
+            new_w += 8 - dw
+            new_h += 8 - dh
+        elif dw > 0 or dh > 0:
+            new_w -= dw
+            new_h -= dh
 
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
@@ -236,7 +247,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if noise_mask is not None and inpaint_model:
         positive, negative, latent_image = nodes.InpaintModelConditioning().encode(positive, negative, upscaled_image, vae, noise_mask)
     else:
-        if isinstance(vae.first_stage_model, StageC_coder):
+        if is_stable_cascade_mode:
             latent_image = detailer_hook.stable_cascade_vae_encode(vae, upscaled_image)
             if latent_image is None:
                 print(f"[Impact Pack] When using the StableCascade model, it is necessary to connect the StableCascade_DetailerHook.")
