@@ -26,7 +26,7 @@ class SEGSDetailerForAnimateDiff:
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      # TODO: "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     # TODO: "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                     # TODO: "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                      }
                 }
 
@@ -122,7 +122,7 @@ class DetailerForEachPipeForAnimateDiff:
                      "detailer_hook": ("DETAILER_HOOK",),
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      # "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     # "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                     # "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                     }
                 }
 

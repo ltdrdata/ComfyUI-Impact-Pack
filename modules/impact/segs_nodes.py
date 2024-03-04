@@ -38,7 +38,7 @@ class SEGSDetailer:
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                      }
                 }
 
@@ -1523,7 +1523,7 @@ class MakeTileSEGS:
 
             a, b = core.mask_to_segs(and_mask, True, 1.0, False, 0)
             if len(b) == 0:
-                return a, b
+                return ((a, b),)
 
             start_x, start_y, c, d = b[0].crop_region
             w = c - start_x
@@ -1558,6 +1558,12 @@ class MakeTileSEGS:
         h_overlap_size = 0 if n_vertical == 1 else int(h_overlap_sum/(n_vertical-1))
 
         new_segs = []
+
+        if w_overlap_size == bbox_size:
+            n_horizontal = 1
+
+        if h_overlap_size == bbox_size:
+            n_vertical = 1
 
         y = start_y
         for j in range(0, n_vertical):
@@ -1662,8 +1668,7 @@ class SEGSUpscaler:
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                     },
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
@@ -1678,7 +1683,7 @@ class SEGSUpscaler:
 
     @staticmethod
     def doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
-             seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+             seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
              upscale_model_opt=None, upscaler_hook_opt=None):
 
         new_image = segs_upscaler.upscaler(image, upscale_model_opt, rescale_factor, resampling_method, supersample, rounding_modulus)
@@ -1698,10 +1703,7 @@ class SEGSUpscaler:
                 print(f"SEGSUpscaler: segment skip [empty mask]")
                 continue
 
-            if noise_mask:
-                cropped_mask = seg.cropped_mask
-            else:
-                cropped_mask = None
+            cropped_mask = seg.cropped_mask
 
             seg_seed = seed + i
 
@@ -1745,8 +1747,7 @@ class SEGSUpscalerPipe:
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
-                    "noise_mask_feather": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                    "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                     },
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
@@ -1761,11 +1762,11 @@ class SEGSUpscalerPipe:
 
     @staticmethod
     def doit(image, segs, basic_pipe, rescale_factor, resampling_method, supersample, rounding_modulus,
-             seed, steps, cfg, sampler_name, scheduler, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+             seed, steps, cfg, sampler_name, scheduler, denoise, feather, inpaint_model, noise_mask_feather,
              upscale_model_opt=None, upscaler_hook_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
 
         return SEGSUpscaler.doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
-                                 seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask, noise_mask_feather,
+                                 seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
                                  upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt)
