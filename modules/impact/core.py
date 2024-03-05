@@ -1,4 +1,3 @@
-import torch
 from segment_anything import SamPredictor
 
 from impact.utils import *
