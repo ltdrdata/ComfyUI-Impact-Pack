@@ -1314,6 +1314,7 @@ class TwoSamplersForMaskUpscaler:
         self.hook_full = hook_full_opt
         self.use_tiled_vae = use_tiled_vae
         self.tile_size = tile_size
+        self.is_tiled = False
         self.vae = vae
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
