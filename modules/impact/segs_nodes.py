@@ -177,6 +177,12 @@ class SEGSPaste:
 
                     mask = tensor_gaussian_blur_mask(mask, feather) * (alpha/255)
                     x, y, *_ = seg.crop_region
+
+                    # ensure same device
+                    mask.cpu()
+                    image_i.cpu()
+                    ref_image.cpu()
+
                     tensor_paste(image_i, ref_image, (x, y), mask)
 
             if result is None:
