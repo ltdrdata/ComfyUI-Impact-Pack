@@ -1,8 +1,12 @@
 from impact.utils import *
 from impact import impact_sampling
-from comfy_extras.chainner_models import model_loading
 from comfy import model_management
 import nodes
+
+try:
+    from comfy_extras import nodes_differential_diffusion
+except Exception:
+    print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
 
 
 # Implementation based on `https://github.com/lingondricka2/Upscaler-Detailer`
@@ -93,6 +97,12 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
     if noise_mask is not None:
         noise_mask = tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
+
+        if noise_mask_feather > 0:
+            try:
+                model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            except Exception:
+                print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
 
     if control_net_wrapper is not None:
         positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)
