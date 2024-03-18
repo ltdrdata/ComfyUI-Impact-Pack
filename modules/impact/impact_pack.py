@@ -1112,12 +1112,12 @@ class IterativeLatentUpscale:
         if temp_prefix == "":
             temp_prefix = None
 
-        upscale_factor_unit = max(0, (upscale_factor-1.0)/steps)
+        upscale_factor_unit = pow(upscale_factor, 1.0/steps)
         current_latent = samples
         scale = 1
 
         for i in range(steps-1):
-            scale += upscale_factor_unit
+            scale *= upscale_factor_unit
             new_w = w*scale
             new_h = h*scale
             core.update_node_status(unique_id, f"{i+1}/{steps} steps | x{scale:.2f}", (i+1)/steps)
