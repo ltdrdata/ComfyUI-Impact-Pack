@@ -1094,10 +1094,11 @@ class IterativeLatentUpscale:
                      "upscale_factor": ("FLOAT", {"default": 1.5, "min": 1, "max": 10000, "step": 0.1}),
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
                      "temp_prefix": ("STRING", {"default": ""}),
-                     "upscaler": ("UPSCALER",)
-                },
+                     "upscaler": ("UPSCALER",),
+                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                    },
                 "hidden": {"unique_id": "UNIQUE_ID"},
-        }
+                }
 
     RETURN_TYPES = ("LATENT", "VAE")
     RETURN_NAMES = ("latent", "vae")
@@ -1105,19 +1106,27 @@ class IterativeLatentUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, unique_id):
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None):
         w = samples['samples'].shape[3]*8  # image width
         h = samples['samples'].shape[2]*8  # image height
 
         if temp_prefix == "":
             temp_prefix = None
 
-        upscale_factor_unit = max(0, (upscale_factor-1.0)/steps)
+        if step_mode == "geometric":
+            upscale_factor_unit = pow(upscale_factor, 1.0/steps)
+        else:  # simple
+            upscale_factor_unit = max(0, (upscale_factor - 1.0) / steps)
+
         current_latent = samples
         scale = 1
 
         for i in range(steps-1):
-            scale += upscale_factor_unit
+            if step_mode == "geometric":
+                scale *= upscale_factor_unit
+            else:  # simple
+                scale += upscale_factor_unit
+
             new_w = w*scale
             new_h = h*scale
             core.update_node_status(unique_id, f"{i+1}/{steps} steps | x{scale:.2f}", (i+1)/steps)
@@ -1148,9 +1157,10 @@ class IterativeImageUpscale:
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
                      "vae": ("VAE",),
-                },
+                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                    },
                 "hidden": {"unique_id": "UNIQUE_ID"}
-        }
+                }
 
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
@@ -1158,7 +1168,7 @@ class IterativeImageUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, unique_id):
+    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", unique_id=None):
         if temp_prefix == "":
             temp_prefix = None
 
@@ -1168,7 +1178,7 @@ class IterativeImageUpscale:
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, unique_id)
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, unique_id)
 
         core.update_node_status(unique_id, "VAEDecode (final)", 1.0)
         if upscaler.is_tiled:
