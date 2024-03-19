@@ -183,7 +183,8 @@ def tensor_paste(image1, image2, left_top, mask):
     _tensor_check_image(image2)
     _tensor_check_mask(mask)
     if image2.shape[1:3] != mask.shape[1:3]:
-        raise ValueError(f"Inconsistent size: Image ({image2.shape[1:3]}) != Mask ({mask.shape[1:3]})")
+        mask = resize_mask(mask.squeeze(dim=3), image2.shape[1:3]).unsqueeze(dim=3)
+        # raise ValueError(f"Inconsistent size: Image ({image2.shape[1:3]}) != Mask ({mask.shape[1:3]})")
 
     x, y = left_top
     _, h1, w1, _ = image1.shape

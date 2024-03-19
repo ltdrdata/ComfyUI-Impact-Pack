@@ -1,8 +1,12 @@
 from impact.utils import *
 from impact import impact_sampling
-from comfy_extras.chainner_models import model_loading
 from comfy import model_management
 import nodes
+
+try:
+    from comfy_extras import nodes_differential_diffusion
+except Exception:
+    print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
 
 
 # Implementation based on `https://github.com/lingondricka2/Upscaler-Detailer`
@@ -80,9 +84,25 @@ def upscaler(image, upscale_model, rescale_factor, resampling_method, supersampl
 def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, scheduler,
                  positive, negative, denoise, noise_mask, control_net_wrapper=None,
                  inpaint_model=False, noise_mask_feather=0):
+
+    original_image_size = image.shape[1:3]
+
+    # Match to original image size
+    if original_image_size[0] % 8 > 0 or original_image_size[1] % 8 > 0:
+        scale = 8/min(original_image_size[0], original_image_size[1]) + 1
+        w = int(original_image_size[1] * scale)
+        h = int(original_image_size[0] * scale)
+        image = tensor_resize(image, w, h)
+
     if noise_mask is not None:
         noise_mask = tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
+
+        if noise_mask_feather > 0:
+            try:
+                model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            except Exception:
+                print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
 
     if control_net_wrapper is not None:
         positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)
@@ -105,6 +125,10 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
 
     # prevent mixing of device
     refined_image = refined_image.cpu()
+
+    # Match to original image size
+    if refined_image.shape[1:3] != original_image_size:
+        refined_image = tensor_resize(refined_image, original_image_size[1], original_image_size[0])
 
     # don't convert to latent - latent break image
     # preserving pil is much better
