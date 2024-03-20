@@ -298,7 +298,7 @@ mmdet_skip = False
 1. `cd custom_nodes`
 1. `git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git`
 3. `cd ComfyUI-Impact-Pack`
-4. (optional) `git submodule update --init --recursive`
+4. (optional) `git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack impact_subpack`
    * Impact Pack will automatically download subpack during its initial launch.
 5. (optional) `python install.py`
    * Impact Pack will automatically install its dependencies during its initial launch.
