@@ -1505,7 +1505,7 @@ class PixelKSampleUpscaler:
 
 
 class IPAdapterWrapper:
-    def __init__(self, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, reference_image, prev_control_net=None):
+    def __init__(self, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, reference_image, prev_control_net=None, combine_embeds='concat'):
         self.reference_image = reference_image
         self.ipadapter_pipe = ipadapter_pipe
         self.weight = weight
@@ -1518,18 +1518,22 @@ class IPAdapterWrapper:
         self.faceid_v2 = faceid_v2
         self.weight_v2 = weight_v2
         self.image = reference_image
+        self.combine_embeds = combine_embeds
 
     # name 'apply_ipadapter' isn't allowed
     def doit_ipadapter(self, model):
         cnet_image_list = [self.image]
         prev_cnet_images = []
 
-        if 'IPAdapterApply' not in nodes.NODE_CLASS_MAPPINGS:
+        if 'IPAdapterAdvanced' not in nodes.NODE_CLASS_MAPPINGS:
+            if 'IPAdapterApply' in nodes.NODE_CLASS_MAPPINGS:
+                raise Exception(f"[ERROR] 'ComfyUI IPAdapter Plus' is outdated.")
+
             utils.try_install_custom_node('https://github.com/cubiq/ComfyUI_IPAdapter_plus',
                                           "To use 'IPAdapterApplySEGS' node, 'ComfyUI IPAdapter Plus' extension is required.")
             raise Exception(f"[ERROR] To use IPAdapterApplySEGS, you need to install 'ComfyUI IPAdapter Plus'")
 
-        obj = nodes.NODE_CLASS_MAPPINGS['IPAdapterApply']
+        obj = nodes.NODE_CLASS_MAPPINGS['IPAdapterAdvanced']
 
         ipadapter, _, clip_vision, insightface, lora_loader = self.ipadapter_pipe
         model = lora_loader(model)
@@ -1537,10 +1541,10 @@ class IPAdapterWrapper:
         if self.prev_control_net is not None:
             model, prev_cnet_images = self.prev_control_net.doit_ipadapter(model)
 
-        model = obj().apply_ipadapter(ipadapter, model, self.weight, clip_vision=clip_vision, image=self.image,
-                                      embeds=None, weight_type=self.weight_type, noise=self.noise,
-                                      attn_mask=None, start_at=self.start_at, end_at=self.end_at,
-                                      unfold_batch=self.unfold_batch, insightface=insightface, faceid_v2=self.faceid_v2, weight_v2=self.weight_v2)[0]
+        model = obj().apply_ipadapter(model=model, ipadapter=ipadapter, weight=self.weight, weight_type=self.weight_type,
+                                      start_at=self.start_at, end_at=self.end_at, combine_embeds=self.combine_embeds,
+                                      clip_vision=clip_vision, image=self.image, attn_mask=None,
+                                      insightface=insightface, weight_faceidv2=self.weight_v2)[0]
 
         cnet_image_list.extend(prev_cnet_images)
 

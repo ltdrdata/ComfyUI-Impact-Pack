@@ -1182,7 +1182,10 @@ class IPAdapterApplySEGS:
                     "weight_v2": ("FLOAT", {"default": 1.0, "min": -1, "max": 3, "step": 0.05}),
                     "context_crop_factor": ("FLOAT", {"default": 1.2, "min": 1.0, "max": 100, "step": 0.1}),
                     "reference_image": ("IMAGE",),
-                    }
+                    },
+                "optional": {
+                    "combine_embeds": (["concat", "add", "subtract", "average", "norm average"],),
+                    },
                 }
 
     RETURN_TYPES = ("SEGS",)
@@ -1190,7 +1193,7 @@ class IPAdapterApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image):
+    def doit(self, segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image, combine_embeds="concat"):
 
         if len(ipadapter_pipe) == 4:
             print(f"[Impact Pack] IPAdapterApplySEGS: Installed Inspire Pack is outdated.")
@@ -1208,7 +1211,7 @@ class IPAdapterApplySEGS:
             context_crop_region = make_crop_region(w, h, seg.crop_region, context_crop_factor)
             cropped_image = crop_image(reference_image, context_crop_region)
 
-            control_net_wrapper = core.IPAdapterWrapper(ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, cropped_image, prev_control_net=seg.control_net_wrapper)
+            control_net_wrapper = core.IPAdapterWrapper(ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, cropped_image, prev_control_net=seg.control_net_wrapper, combine_embeds=combine_embeds)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
             new_segs.append(new_seg)
 

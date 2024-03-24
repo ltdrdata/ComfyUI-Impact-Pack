@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE 
+* V4.85: Incompatible with the outdated **ComfyUI IPAdapter Plus**. (A version dated March 24th or later is required.)
 * V4.77: Compatibility patch applied. Requires ComfyUI version (Oct. 8th) or later.
 * V4.73.3: ControlNetApply (SEGS) supports AnimateDiff
 * V4.20.1: Due to the feature update in `RegionalSampler`, the parameter order has changed, causing malfunctions in previously created `RegionalSamplers`. Please adjust the parameters accordingly.
