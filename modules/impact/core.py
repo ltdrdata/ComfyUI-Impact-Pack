@@ -1505,7 +1505,7 @@ class PixelKSampleUpscaler:
 
 
 class IPAdapterWrapper:
-    def __init__(self, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, reference_image, prev_control_net=None, combine_embeds='concat'):
+    def __init__(self, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, weight_v2, reference_image, neg_image=None, prev_control_net=None, combine_embeds='concat'):
         self.reference_image = reference_image
         self.ipadapter_pipe = ipadapter_pipe
         self.weight = weight
@@ -1515,9 +1515,9 @@ class IPAdapterWrapper:
         self.end_at = end_at
         self.unfold_batch = unfold_batch
         self.prev_control_net = prev_control_net
-        self.faceid_v2 = faceid_v2
         self.weight_v2 = weight_v2
         self.image = reference_image
+        self.neg_image = neg_image
         self.combine_embeds = combine_embeds
 
     # name 'apply_ipadapter' isn't allowed
@@ -1543,7 +1543,7 @@ class IPAdapterWrapper:
 
         model = obj().apply_ipadapter(model=model, ipadapter=ipadapter, weight=self.weight, weight_type=self.weight_type,
                                       start_at=self.start_at, end_at=self.end_at, combine_embeds=self.combine_embeds,
-                                      clip_vision=clip_vision, image=self.image, attn_mask=None,
+                                      clip_vision=clip_vision, image=self.image, image_negative=self.neg_image, attn_mask=None,
                                       insightface=insightface, weight_faceidv2=self.weight_v2)[0]
 
         cnet_image_list.extend(prev_cnet_images)
