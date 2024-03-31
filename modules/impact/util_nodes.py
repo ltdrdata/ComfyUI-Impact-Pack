@@ -306,7 +306,7 @@ class ImageListToImageBatch:
     def INPUT_TYPES(s):
         return {"required": {
                         "images": ("IMAGE", ),
-                        "resize": ("BOOLEAN", {"default": True, "label_on": "when needed", "label_off": "never"}),
+                        "resize": ("BOOLEAN", {"default": True, "label_on": "when needed", "label_off": "never (faster)"}),
                       }
                 }
 
