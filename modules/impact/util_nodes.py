@@ -5,6 +5,7 @@ import torch
 import comfy
 import sys
 import nodes
+import re
 
 
 class GeneralSwitch:
@@ -485,3 +486,62 @@ class StringSelector:
                 selected = lines[select % len(lines)]
 
         return (selected, )
+
+
+class WildcardPromptFromStringList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "string_list": ("STRING", {"forceInput": True}),
+                "prefix_all": ("STRING", {"multiline": False}),
+                "postfix_all": ("STRING", {"multiline": False}),
+                "restrict_to_tags": ("STRING", {"multiline": False}),
+                "exclude_tags": ("STRING", {"multiline": False})
+            },
+        }
+
+    INPUT_IS_LIST = True
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("wildcard", "segs_labels",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, string_list, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
+        # need to access as list due to INPUT_IS_LIST
+        # some sanity checks and normalization for later processing
+        if prefix_all[0] == None: prefix_all[0] = ""
+        if postfix_all[0] == None: postfix_all[0] = ""
+        if restrict_to_tags[0] == None: restrict_to_tags[0] = ""
+        if exclude_tags[0] == None: exclude_tags[0] = ""
+        if not isinstance(restrict_to_tags[0], list):
+            restrict_to_tags[0] = restrict_to_tags[0].split(", ")
+        if not isinstance(exclude_tags[0], list):
+            exclude_tags[0] = exclude_tags[0].split(", ")
+
+        # build the wildcard prompt per list entry
+        output = ["[LAB]"]
+        labels = []
+        for x in string_list:
+            label = str(len(labels) + 1)
+            labels.append(label)
+            x = x.split(", ")
+            # restrict to tags
+            if restrict_to_tags[0][0] != "":
+                x = list(set(x) & set(restrict_to_tags[0]))
+            # remove tags
+            if exclude_tags[0][0] != "":
+                x = list(set(x) - set(exclude_tags[0]))
+            # next row: <LABEL> <PREFIX> <TAGS> <POSTFIX>
+            prompt_for_seg = f'[{label}] {prefix_all[0]} {", ".join(x)} {postfix_all[0]}'.strip()
+            output.append(prompt_for_seg)
+        output = "\n".join(output)
+
+        # clean string: fixup double spaces, commas etc.
+        output = re.sub(r' ,', ',', output)
+        output = re.sub(r'  +', ' ', output)
+        output = re.sub(r',,+', ',', output)
+        output = re.sub(r'\n, ', '\n', output)
+
+        return (output, ", ".join(labels),)
