@@ -151,7 +151,7 @@ class SegmDetectorCombined:
 
     def doit(self, segm_detector, image, threshold, dilation):
         mask = segm_detector.detect_combined(image, threshold, dilation)
-        return (mask,)
+        return (mask.unsqueeze(0),)
 
 
 class BboxDetectorCombined(SegmDetectorCombined):
@@ -167,7 +167,7 @@ class BboxDetectorCombined(SegmDetectorCombined):
 
     def doit(self, bbox_detector, image, threshold, dilation):
         mask = bbox_detector.detect_combined(image, threshold, dilation)
-        return (mask,)
+        return (mask.unsqueeze(0),)
 
 
 class SimpleDetectorForEach:
