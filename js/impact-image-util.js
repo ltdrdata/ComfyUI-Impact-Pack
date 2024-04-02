@@ -63,7 +63,7 @@ async function loadImageFromId(image, v) {
 	let res = await api.fetchApi('/impact/get/pb_id_image?id='+v, { cache: "no-store" });
 	if(res.status == 200) {
 		let item = await res.json();
-		image.src = api.apiURL(`view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
+		image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
 		return true;
 	}
 
