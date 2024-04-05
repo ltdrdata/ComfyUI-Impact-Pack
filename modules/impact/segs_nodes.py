@@ -12,11 +12,6 @@ from . import defs
 from . import segs_upscaler
 import math
 
-def crop_condition_mask(mask, image, crop_region):
-    cond_scale = (mask.shape[1] / image.shape[1], mask.shape[2] / image.shape[2])
-    mask_region = [round(v * cond_scale[i % 2]) for i, v in enumerate(crop_region)]
-    return crop_ndarray3(mask, mask_region)
-
 
 class SEGSDetailer:
     @classmethod
@@ -92,7 +87,7 @@ class SEGSDetailer:
 
                 cropped_positive = [
                     [condition, {
-                        k: crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                        k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
                         for k, v in details.items()
                     }]
                     for condition, details in positive
@@ -100,7 +95,7 @@ class SEGSDetailer:
 
                 cropped_negative = [
                     [condition, {
-                        k: crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                        k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
                         for k, v in details.items()
                     }]
                     for condition, details in negative

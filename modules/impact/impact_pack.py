@@ -246,9 +246,25 @@ class DetailerForEach:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
+            cropped_positive = [
+                [condition, {
+                    k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in positive
+            ]
+
+            cropped_negative = [
+                [condition, {
+                    k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in negative
+            ]
+
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                             seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
-                                                            positive, negative, denoise, cropped_mask, force_inpaint,
+                                                            cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
                                                             wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
                                                             detailer_hook=detailer_hook,
                                                             refiner_ratio=refiner_ratio, refiner_model=refiner_model,

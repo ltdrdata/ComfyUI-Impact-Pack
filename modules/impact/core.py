@@ -1892,6 +1892,12 @@ def adaptive_mask_paste(dest_mask, src_mask, bbox):
     dest_mask[y1:y2, x1:x2] = bbox_mask
 
 
+def crop_condition_mask(mask, image, crop_region):
+    cond_scale = (mask.shape[1] / image.shape[1], mask.shape[2] / image.shape[2])
+    mask_region = [round(v * cond_scale[i % 2]) for i, v in enumerate(crop_region)]
+    return crop_ndarray3(mask, mask_region)
+
+
 class SafeToGPU:
     def __init__(self, size):
         self.size = size
