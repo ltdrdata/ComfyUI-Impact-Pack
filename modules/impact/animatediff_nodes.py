@@ -66,9 +66,27 @@ class SEGSDetailerForAnimateDiff:
                     cropped_image_frames = torch.concat((cropped_image_frames, cropped_image), dim=0)
 
             cropped_image_frames = cropped_image_frames.cpu().numpy()
+
+            # It is assumed that AnimateDiff does not support conditioning masks based on test results, but it will be added for future consideration.
+            cropped_positive = [
+                [condition, {
+                    k: core.crop_condition_mask(v, cropped_image_frames, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in positive
+            ]
+
+            cropped_negative = [
+                [condition, {
+                    k: core.crop_condition_mask(v, cropped_image_frames, seg.crop_region) if k == "mask" else v
+                    for k, v in details.items()
+                }]
+                for condition, details in negative
+            ]
+
             enhanced_image_tensor, cnet_images = core.enhance_detail_for_animatediff(cropped_image_frames, model, clip, vae, guide_size, guide_size_for, max_size,
                                                                                      seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                                                     positive, negative, denoise, seg.cropped_mask,
+                                                                                     cropped_positive, cropped_negative, denoise, seg.cropped_mask,
                                                                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                                                      refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
