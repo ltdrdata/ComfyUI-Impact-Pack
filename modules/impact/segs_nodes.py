@@ -12,6 +12,12 @@ from . import defs
 from . import segs_upscaler
 import math
 
+def crop_condition_mask(mask, image, crop_region):
+    cond_scale = (mask.shape[1] / image.shape[1], mask.shape[2] / image.shape[2])
+    mask_region = [round(v * cond_scale[i % 2]) for i, v in enumerate(crop_region)]
+    return crop_ndarray3(mask, mask_region)
+
+
 class SEGSDetailer:
     @classmethod
     def INPUT_TYPES(s):
@@ -84,9 +90,25 @@ class SEGSDetailer:
                 else:
                     cropped_mask = None
 
+                cropped_positive = [
+                    [condition, {
+                        k: crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                        for k, v in details.items()
+                    }]
+                    for condition, details in positive
+                ]
+
+                cropped_negative = [
+                    [condition, {
+                        k: crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                        for k, v in details.items()
+                    }]
+                    for condition, details in negative
+                ]
+
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for, max_size,
                                                                 seg.bbox, seed, steps, cfg, sampler_name, scheduler,
-                                                                positive, negative, denoise, cropped_mask, force_inpaint,
+                                                                cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
                                                                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                                                 control_net_wrapper=seg.control_net_wrapper, cycle=cycle,

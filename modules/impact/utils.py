@@ -476,6 +476,17 @@ def crop_ndarray4(npimg, crop_region):
 crop_tensor4 = crop_ndarray4
 
 
+def crop_ndarray3(npimg, crop_region):
+    x1 = crop_region[0]
+    y1 = crop_region[1]
+    x2 = crop_region[2]
+    y2 = crop_region[3]
+
+    cropped = npimg[:, y1:y2, x1:x2]
+
+    return cropped
+
+
 def crop_ndarray2(npimg, crop_region):
     x1 = crop_region[0]
     y1 = crop_region[1]
