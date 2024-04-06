@@ -1627,7 +1627,7 @@ class SubtractMaskForEach:
                     item = SEG(bseg.cropped_image, cropped_mask1, bseg.confidence, bseg.crop_region, bseg.bbox, bseg.label, None)
                     result.append(item)
                 else:
-                    result.append(base_segs)
+                    result.append(bseg)
 
         return ((base_segs[0], result),)
 
