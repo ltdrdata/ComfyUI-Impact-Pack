@@ -471,16 +471,57 @@ def sam_predict(predictor, points, plabs, bbox, threshold):
     return total_masks
 
 
-def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
+class SAMWrapper:
+    def __init__(self, model, is_auto_mode, safe_to_gpu=None):
+        self.model = model
+        self.safe_to_gpu = safe_to_gpu if safe_to_gpu is not None else SafeToGPU_stub()
+        self.is_auto_mode = is_auto_mode
+
+    def prepare_device(self):
+        if self.is_auto_mode:
+            device = comfy.model_management.get_torch_device()
+            self.safe_to_gpu.to_device(self.model, device=device)
+
+    def release_device(self):
+        if self.is_auto_mode:
+            self.model.to(device="cpu")
+
+    def predict(self, image, points, plabs, bbox, threshold):
+        predictor = SamPredictor(self.model)
+        predictor.set_image(image, "RGB")
+
+        return sam_predict(predictor, points, plabs, bbox, threshold)
+
+
+class ESAMWrapper:
+    def __init__(self, model, device):
+        self.model = model
+        self.func_inference = nodes.NODE_CLASS_MAPPINGS['Yoloworld_ESAM_Zho']
+        self.device = device
+
+    def prepare_device(self):
+        pass
+
+    def release_device(self):
+        pass
+
+    def predict(self, image, points, plabs, bbox, threshold):
+        if self.device == 'CPU':
+            self.device = 'cpu'
+        else:
+            self.device = 'cuda'
+
+        detected_masks = self.func_inference.inference_sam_with_boxes(image=image, xyxy=[bbox], model=self.model, device=self.device)
+        return [detected_masks.squeeze(0)]
+
+
+def make_sam_mask(sam_obj, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
-    if sam_model.is_auto_mode:
-        device = comfy.model_management.get_torch_device()
-        sam_model.safe_to.to_device(sam_model, device=device)
+
+    sam_obj.prepare_device()
 
     try:
-        predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-        predictor.set_image(image, "RGB")
 
         total_masks = []
 
@@ -503,7 +544,7 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
-            detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+            detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
             total_masks += detected_masks
 
         else:
@@ -572,15 +613,14 @@ def make_sam_mask(sam_model, segs, image, detection_hint, dilation,
                     points += npoints
                     plabs += nplabs
 
-                detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+                detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
                 total_masks += detected_masks
 
         # merge every collected masks
         mask = combine_masks2(total_masks)
 
     finally:
-        if sam_model.is_auto_mode:
-            sam_model.to(device="cpu")
+        sam_obj.release_device()
 
     if mask is not None:
         mask = mask.float()
@@ -735,16 +775,13 @@ def every_three_pick_last(stacked_masks):
     return selected_masks
 
 
-def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
+def make_sam_mask_segmented(sam_obj, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
-    if sam_model.is_auto_mode:
-        device = comfy.model_management.get_torch_device()
-        sam_model.safe_to.to_device(sam_model, device=device)
+
+    sam_obj.prepare_device()
 
     try:
-        predictor = SamPredictor(sam_model)
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-        predictor.set_image(image, "RGB")
 
         total_masks = []
 
@@ -767,7 +804,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
-            detected_masks = sam_predict(predictor, points, plabs, None, threshold)
+            detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
             total_masks += detected_masks
 
         else:
@@ -785,7 +822,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                                                          mask_hint_threshold, use_small_negative,
                                                          mask_hint_use_negative)
 
-                detected_masks = sam_predict(predictor, points, plabs, dilated_bbox, threshold)
+                detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
 
                 total_masks += detected_masks
 
@@ -793,10 +830,7 @@ def make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
         mask = combine_masks2(total_masks)
 
     finally:
-        if sam_model.is_auto_mode:
-            sam_model.cpu()
-
-        pass
+        sam_obj.release_device()
 
     mask_working_device = torch.device("cpu")
 
