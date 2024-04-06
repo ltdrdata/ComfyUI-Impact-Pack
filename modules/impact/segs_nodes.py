@@ -1383,7 +1383,7 @@ class SEGSPicker:
             else:
                 cropped_image = empty_pil_tensor()
 
-            mask_array = seg.cropped_mask
+            mask_array = seg.cropped_mask.copy()
             mask_array[mask_array < 0.3] = 0.3
             mask_array = mask_array[None, ..., None]
             cropped_image = cropped_image * mask_array
