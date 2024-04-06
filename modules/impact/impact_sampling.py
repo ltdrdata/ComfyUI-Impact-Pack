@@ -13,7 +13,11 @@ def calculate_sigmas(model, sampler, scheduler, steps):
         steps += 1
         discard_penultimate_sigma = True
 
-    sigmas = samplers.calculate_sigmas_scheduler(model.model, scheduler, steps)
+    if hasattr(samplers, 'calculate_sigmas'):
+        sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
+    else:
+        print(f"[Impact Pack] calculate_sigmas: ComfyUI is an outdated version.")
+        sigmas = samplers.calculate_sigmas_scheduler(model.model, scheduler, steps)
 
     if discard_penultimate_sigma:
         sigmas = torch.cat([sigmas[:-2], sigmas[-1:]])
