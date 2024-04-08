@@ -43,21 +43,22 @@ class Unsampler:
         if "noise_mask" in latent:
             noise_mask = comfy.sampler_helpers.prepare_mask(latent["noise_mask"], noise.shape, device)
 
-        real_model = None
-        real_model = model.model
-
         noise = noise.to(device)
         latent_image = latent_image.to(device)
 
-        positive = comfy.sampler_helpers.convert_cond(positive)
-        negative = comfy.sampler_helpers.convert_cond(negative)
+        conds0 = \
+            {"positive": comfy.sampler_helpers.convert_cond(positive),
+             "negative": comfy.sampler_helpers.convert_cond(negative)}
 
-        models1, inference_memory1 = comfy.sampler_helpers.get_additional_models(positive, model.model_dtype())
-        models2, inference_memory2 = comfy.sampler_helpers.get_additional_models(negative, model.model_dtype())
+        conds = {}
+        for k in conds0:
+            conds[k] = list(map(lambda a: a.copy(), conds0[k]))
 
-        comfy.model_management.load_models_gpu([model] + models1 + models2, model.memory_required(noise.shape) + inference_memory1 + inference_memory2)
+        models, inference_memory = comfy.sampler_helpers.get_additional_models(conds, model.model_dtype())
 
-        sampler = comfy.samplers.KSampler(real_model, steps=steps, device=device, sampler=sampler_name,
+        comfy.model_management.load_models_gpu([model] + models, model.memory_required(noise.shape) + inference_memory)
+
+        sampler = comfy.samplers.KSampler(model, steps=steps, device=device, sampler=sampler_name,
                                           scheduler=scheduler, denoise=1.0, model_options=model.model_options)
 
         sigmas = sampler.sigmas.flip(0) + 0.0001
@@ -76,8 +77,7 @@ class Unsampler:
             samples /= samples.std()
         samples = samples.cpu()
 
-        comfy.sampler_helpers.cleanup_additional_models(models1)
-        comfy.sampler_helpers.cleanup_additional_models(models2)
+        comfy.sampler_helpers.cleanup_additional_models(models)
 
         out = latent.copy()
         out["samples"] = samples
