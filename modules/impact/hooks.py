@@ -300,7 +300,14 @@ class UnsamplerHook(PixelKSampleHook):
     def post_encode(self, samples):
         cur_step = self.cur_step
 
-        Unsampler = noise_nodes.Unsampler
+        try:
+            Unsampler = noise_nodes.Unsampler
+        except:
+            if 'BNK_Unsampler' not in nodes.NODE_CLASS_MAPPINGS:
+                print("[Impact Pack] ERROR: ComfyUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
+                raise Exception("ERROR: ComfyUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
+
+            Unsampler = nodes.NODE_CLASS_MAPPINGS['BNK_Unsampler']
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
         end_at_step = int(end_at_step)
