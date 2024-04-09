@@ -111,8 +111,10 @@ class SAMLoader:
                 esam = esam_loader.load_esam_model('CUDA')[0]
 
             sam_obj = core.ESAMWrapper(esam, device_mode)
+            esam.sam_wrapper = sam_obj
+            
             print(f"Loads EfficientSAM model: (device:{device_mode})")
-            return (sam_obj, )
+            return (esam, )
 
         modelname = folder_paths.get_full_path("sams", model_name)
 
@@ -136,9 +138,10 @@ class SAMLoader:
         is_auto_mode = device_mode == "AUTO"
 
         sam_obj = core.SAMWrapper(sam, is_auto_mode=is_auto_mode, safe_to_gpu=safe_to)
+        sam.sam_wrapper = sam_obj
 
         print(f"Loads SAM model: {modelname} (device:{device_mode})")
-        return (sam_obj, )
+        return (sam, )
 
 
 class ONNXDetectorForEach:

@@ -515,9 +515,10 @@ class ESAMWrapper:
         return [detected_masks.squeeze(0)]
 
 
-def make_sam_mask(sam_obj, segs, image, detection_hint, dilation,
+def make_sam_mask(sam, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
+    sam_obj = sam.sam_wrapper
     sam_obj.prepare_device()
 
     try:
@@ -775,9 +776,9 @@ def every_three_pick_last(stacked_masks):
     return selected_masks
 
 
-def make_sam_mask_segmented(sam_obj, segs, image, detection_hint, dilation,
+def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
-
+    sam_obj = sam.sam_wrapper
     sam_obj.prepare_device()
 
     try:
