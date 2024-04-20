@@ -5,7 +5,6 @@ import traceback
 from aiohttp import web
 
 import impact
-import server
 import folder_paths
 
 import torchvision
@@ -22,9 +21,10 @@ import impact.wildcards as wildcards
 import comfy
 from io import BytesIO
 import random
+from server import PromptServer
 
 
-@server.PromptServer.instance.routes.post("/upload/temp")
+@PromptServer.instance.routes.post("/upload/temp")
 async def upload_image(request):
     upload_dir = folder_paths.get_temp_directory()
 
@@ -91,7 +91,7 @@ def async_prepare_sam(image_dir, model_name, filename):
         sam_predictor.model.cpu()
 
 
-@server.PromptServer.instance.routes.post("/sam/prepare")
+@PromptServer.instance.routes.post("/sam/prepare")
 async def sam_prepare(request):
     global sam_predictor
     global last_prepare_data
@@ -127,9 +127,10 @@ async def sam_prepare(request):
         thread.start()
 
         print(f"[INFO] ComfyUI-Impact-Pack: SAM model loaded. ")
+    return web.Response(status=200)
 
 
-@server.PromptServer.instance.routes.post("/sam/release")
+@PromptServer.instance.routes.post("/sam/release")
 async def release_sam(request):
     global sam_predictor
 
@@ -140,7 +141,7 @@ async def release_sam(request):
     print(f"[INFO] ComfyUI-Impact-Pack: unloading SAM model")
 
 
-@server.PromptServer.instance.routes.post("/sam/detect")
+@PromptServer.instance.routes.post("/sam/detect")
 async def sam_detect(request):
     global sam_predictor
     with sam_lock:
@@ -193,13 +194,13 @@ async def sam_detect(request):
             return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/wildcards/list")
+@PromptServer.instance.routes.get("/impact/wildcards/list")
 async def wildcards_list(request):
     data = {'data': impact.wildcards.get_wildcard_list()}
     return web.json_response(data)
 
 
-@server.PromptServer.instance.routes.post("/impact/wildcards")
+@PromptServer.instance.routes.post("/impact/wildcards")
 async def populate_wildcards(request):
     data = await request.json()
     populated = wildcards.process(data['text'], data.get('seed', None))
@@ -208,7 +209,7 @@ async def populate_wildcards(request):
 
 segs_picker_map = {}
 
-@server.PromptServer.instance.routes.get("/impact/segs/picker/count")
+@PromptServer.instance.routes.get("/impact/segs/picker/count")
 async def segs_picker_count(request):
     node_id = request.rel_url.query.get('id', '')
 
@@ -219,7 +220,7 @@ async def segs_picker_count(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/segs/picker/view")
+@PromptServer.instance.routes.get("/impact/segs/picker/view")
 async def segs_picker(request):
     node_id = request.rel_url.query.get('id', '')
     idx = int(request.rel_url.query.get('idx', ''))
@@ -236,7 +237,7 @@ async def segs_picker(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/view/validate")
+@PromptServer.instance.routes.get("/view/validate")
 async def view_validate(request):
     if "filename" in request.rel_url.query:
         filename = request.rel_url.query["filename"]
@@ -257,7 +258,7 @@ async def view_validate(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/validate/pb_id_image")
+@PromptServer.instance.routes.get("/impact/validate/pb_id_image")
 async def view_validate(request):
     if "id" in request.rel_url.query:
         pb_id = request.rel_url.query["id"]
@@ -272,7 +273,7 @@ async def view_validate(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/set/pb_id_image")
+@PromptServer.instance.routes.get("/impact/set/pb_id_image")
 async def set_previewbridge_image(request):
     try:
         if "filename" in request.rel_url.query:
@@ -308,7 +309,7 @@ async def set_previewbridge_image(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/get/pb_id_image")
+@PromptServer.instance.routes.get("/impact/get/pb_id_image")
 async def get_previewbridge_image(request):
     if "id" in request.rel_url.query:
         pb_id = request.rel_url.query["id"]
@@ -320,7 +321,7 @@ async def get_previewbridge_image(request):
     return web.Response(status=400)
 
 
-@server.PromptServer.instance.routes.get("/impact/view/pb_id_image")
+@PromptServer.instance.routes.get("/impact/view/pb_id_image")
 async def view_previewbridge_image(request):
     if "id" in request.rel_url.query:
         pb_id = request.rel_url.query["id"]
@@ -463,7 +464,7 @@ def regional_sampler_seed_update(json_data):
                 new_seed = random.randint(0, 1125899906842624)
 
             if new_seed is not None:
-                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
+                PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
 
 
 def onprompt_populate_wildcards(json_data):
@@ -496,7 +497,7 @@ def onprompt_populate_wildcards(json_data):
                 inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], input_seed)
                 inputs['mode'] = False
 
-                server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
+                PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
                 updated_widget_values[k] = inputs['populated_text']
 
     if 'extra_data' in json_data and 'extra_pnginfo' in json_data['extra_data']:
@@ -535,7 +536,7 @@ def onprompt_for_remote(json_data):
                         break
 
                     target_inputs[widget_name] = inputs['value']
-                    server.PromptServer.instance.send_sync("impact-node-feedback", {"node_id": node_id, "widget_name": widget_name, "type": widget_type, "value": inputs['value']})
+                    PromptServer.instance.send_sync("impact-node-feedback", {"node_id": node_id, "widget_name": widget_name, "type": widget_type, "value": inputs['value']})
 
 
 def onprompt(json_data):
@@ -553,4 +554,4 @@ def onprompt(json_data):
     return json_data
 
 
-server.PromptServer.instance.add_on_prompt_handler(onprompt)
+PromptServer.instance.add_on_prompt_handler(onprompt)
