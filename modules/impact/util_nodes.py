@@ -511,10 +511,10 @@ class WildcardPromptFromStringList:
     def doit(self, string_list, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
         # need to access as list due to INPUT_IS_LIST
         # some sanity checks and normalization for later processing
-        if prefix_all[0] == None: prefix_all[0] = ""
-        if postfix_all[0] == None: postfix_all[0] = ""
-        if restrict_to_tags[0] == None: restrict_to_tags[0] = ""
-        if exclude_tags[0] == None: exclude_tags[0] = ""
+        if prefix_all[0] is None: prefix_all[0] = ""
+        if postfix_all[0] is None: postfix_all[0] = ""
+        if restrict_to_tags[0] is None: restrict_to_tags[0] = ""
+        if exclude_tags[0] is None: exclude_tags[0] = ""
         if not isinstance(restrict_to_tags[0], list):
             restrict_to_tags[0] = restrict_to_tags[0].split(", ")
         if not isinstance(exclude_tags[0], list):
