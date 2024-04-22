@@ -46,7 +46,7 @@ async function loadImageFromUrl(image, node_id, v, need_to_load) {
 		if(res.status == 200) {
 			let pb_id = await res.text();
 			if(need_to_load) {;
-				image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+				image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
 			}
 			return pb_id;
 		}
@@ -63,7 +63,7 @@ async function loadImageFromId(image, v) {
 	let res = await api.fetchApi('/impact/get/pb_id_image?id='+v, { cache: "no-store" });
 	if(res.status == 200) {
 		let item = await res.json();
-		image.src = `view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+		image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
 		return true;
 	}
 
@@ -209,7 +209,7 @@ app.registerExtension({
 
 							let res = api.fetchApi('/view/validate'+params, { cache: "no-store" }).then(response => response);
 							if(res.status == 200) {
-								image.src = 'view'+params;
+								image.src = api.apiURL('/view'+params);
 							}
 
 							this._img = [new Image()]; // placeholder
