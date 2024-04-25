@@ -1685,7 +1685,7 @@ class PixelTiledKSampleUpscaler:
                 # might add capacity to set pyrUp_iters later, not needed for now though
                 preprocced = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))
                 apply_cnet = getattr(nodes.ControlNetApply(), nodes.ControlNetApply.FUNCTION)
-                positive = apply_cnet(positive, self.tile_cnet, images, strength=1.0)[0]
+                positive = apply_cnet(positive, self.tile_cnet, preprocced, strength=1.0)[0]
 
         return \
         TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
