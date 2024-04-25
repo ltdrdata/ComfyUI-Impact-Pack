@@ -14,7 +14,10 @@ def calculate_sigmas(model, sampler, scheduler, steps):
         discard_penultimate_sigma = True
 
     if hasattr(samplers, 'calculate_sigmas'):
-        sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
+        if scheduler.startswith('AYS'):
+            sigmas = nodes.NODE_CLASS_MAPPINGS['AlignYourStepsScheduler']().get_sigmas(scheduler[4:], steps)[0]
+        else:
+            sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
     else:
         print(f"[Impact Pack] calculate_sigmas: ComfyUI is an outdated version.")
         sigmas = samplers.calculate_sigmas_scheduler(model.model, scheduler, steps)
@@ -126,7 +129,14 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, sigma_factor=1.0):
 
     if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
-        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise * sigma_factor)[0]
+        # Use separated_sample instead of KSampler for `AYS scheduler`
+        # refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise * sigma_factor)[0]
+
+        advanced_steps = math.floor(steps / denoise)
+        start_at_step = advanced_steps - steps
+        end_at_step = start_at_step + steps
+
+        refined_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False, sigma_ratio=sigma_factor)
     else:
         advanced_steps = math.floor(steps / denoise)
         start_at_step = advanced_steps - steps
