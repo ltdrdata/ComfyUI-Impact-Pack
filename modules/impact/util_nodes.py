@@ -32,16 +32,20 @@ class GeneralSwitch:
 
         selected_label = input_name
         node_id = kwargs['unique_id']
-        nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
-        for node in nodelist:
-            if str(node['id']) == node_id:
-                inputs = node['inputs']
 
-                for slot in inputs:
-                    if slot['name'] == input_name and 'label' in slot:
-                        selected_label = slot['label']
+        if 'extra_pnginfo' in kwargs:
+            nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
+            for node in nodelist:
+                if str(node['id']) == node_id:
+                    inputs = node['inputs']
 
-                break
+                    for slot in inputs:
+                        if slot['name'] == input_name and 'label' in slot:
+                            selected_label = slot['label']
+
+                    break
+        else:
+            print(f"[Impact-Pack] The switch node does not guarantee proper functioning in API mode.")
 
         if input_name in kwargs:
             return (kwargs[input_name], selected_label, selected_index)
