@@ -1775,9 +1775,9 @@ class PixelTiledKSampleUpscaler:
                     raise RuntimeError("'TilePreprocessor' node (from comfyui_controlnet_aux) isn't installed.")
                 preprocessor = nodes.NODE_CLASS_MAPPINGS['TilePreprocessor']()
                 # might add capacity to set pyrUp_iters later, not needed for now though
-                preprocced = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))
+                preprocessed = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))[0]
                 apply_cnet = getattr(nodes.ControlNetApply(), nodes.ControlNetApply.FUNCTION)
-                positive = apply_cnet(positive, self.tile_cnet, preprocced, strength=1.0)[0]
+                positive = apply_cnet(positive, self.tile_cnet, preprocessed, strength=1.0)[0]
 
         return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
                                       scheduler, positive, negative, latent, denoise)[0]
