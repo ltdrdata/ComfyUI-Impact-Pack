@@ -4,7 +4,10 @@ import nodes
 from impact import utils
 from . import segs_nodes
 from thirdparty import noise_nodes
-
+from server import PromptServer
+import asyncio
+import folder_paths
+import os
 
 class PixelKSampleHook:
     cur_step = 0
@@ -93,6 +96,11 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         segs = self.hook2.post_detection(segs)
         return segs
 
+    def post_paste(self, image):
+        image = self.hook1.post_paste(image)
+        image = self.hook2.post_paste(image)
+        return image
+
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
     target_cfg = 0
@@ -101,11 +109,14 @@ class SimpleCfgScheduleHook(PixelKSampleHook):
         super().__init__()
         self.target_cfg = target_cfg
 
-    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent,
-                    denoise):
-        progress = self.cur_step / self.total_step
-        gap = self.target_cfg - cfg
-        current_cfg = cfg + gap * progress
+    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise):
+        if self.total_step > 1:
+            progress = self.cur_step / (self.total_step - 1)
+            gap = self.target_cfg - cfg
+            current_cfg = int(cfg + gap * progress)
+        else:
+            current_cfg = self.target_cfg
+
         return model, seed, steps, current_cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise
 
 
@@ -114,12 +125,31 @@ class SimpleDenoiseScheduleHook(PixelKSampleHook):
         super().__init__()
         self.target_denoise = target_denoise
 
-    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent,
-                    denoise):
-        progress = self.cur_step / self.total_step
-        gap = self.target_denoise - denoise
-        current_denoise = denoise + gap * progress
+    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise):
+        if self.total_step > 1:
+            progress = self.cur_step / (self.total_step - 1)
+            gap = self.target_denoise - denoise
+            current_denoise = denoise + gap * progress
+        else:
+            current_denoise = self.target_denoise
+
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, current_denoise
+
+
+class SimpleStepsScheduleHook(PixelKSampleHook):
+    def __init__(self, target_steps):
+        super().__init__()
+        self.target_steps = target_steps
+
+    def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise):
+        if self.total_step > 1:
+            progress = self.cur_step / (self.total_step - 1)
+            gap = self.target_steps - steps
+            current_steps = int(steps + gap * progress)
+        else:
+            current_steps = self.target_steps
+
+        return model, seed, current_steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise
 
 
 class DetailerHook(PixelKSampleHook):
@@ -129,6 +159,9 @@ class DetailerHook(PixelKSampleHook):
     def post_detection(self, segs):
         return segs
 
+    def post_paste(self, image):
+        return image
+
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
     def __init__(self, target_denoise):
@@ -136,9 +169,14 @@ class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
         self.target_denoise = target_denoise
 
     def pre_ksample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, denoise):
-        progress = self.cur_step / self.total_step
-        gap = self.target_denoise - denoise
-        current_denoise = denoise + gap * progress
+        if self.total_step > 1:
+            progress = self.cur_step / (self.total_step - 1)
+            gap = self.target_denoise - denoise
+            current_denoise = denoise + gap * progress
+        else:
+            # ignore hook if total cycle <= 1
+            current_denoise = denoise
+
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, current_denoise
 
 
@@ -262,7 +300,14 @@ class UnsamplerHook(PixelKSampleHook):
     def post_encode(self, samples):
         cur_step = self.cur_step
 
-        Unsampler = noise_nodes.Unsampler
+        try:
+            Unsampler = noise_nodes.Unsampler
+        except:
+            if 'BNK_Unsampler' not in nodes.NODE_CLASS_MAPPINGS:
+                print("[Impact Pack] ERROR: ComfyUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
+                raise Exception("ERROR: ComfyUI version is outdated and the BNK_Unsampler node is not installed, so this feature cannot be used.")
+
+            Unsampler = nodes.NODE_CLASS_MAPPINGS['BNK_Unsampler']
 
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / self.total_step
         end_at_step = int(end_at_step)
@@ -405,3 +450,35 @@ class SEGSLabelFilterDetailerHook(DetailerHook):
 
     def post_detection(self, segs):
         return segs_nodes.SEGSLabelFilter().doit(segs, "", self.labels)[0]
+
+
+class PreviewDetailerHook(DetailerHook):
+    def __init__(self, node_id, quality):
+        super().__init__()
+        self.node_id = node_id
+        self.quality = quality
+
+    async def send(self, image):
+        if len(image) > 0:
+            image = image[0].unsqueeze(0)
+        img = utils.tensor2pil(image)
+
+        temp_path = os.path.join(folder_paths.get_temp_directory(), 'pvhook')
+
+        if not os.path.exists(temp_path):
+            os.makedirs(temp_path)
+
+        fullpath = os.path.join(temp_path, f"{self.node_id}.webp")
+        img.save(fullpath, quality=self.quality)
+
+        item = {
+                "filename": f"{self.node_id}.webp",
+                "subfolder": 'pvhook',
+                "type": 'temp'
+                }
+
+        PromptServer.instance.send_sync("impact-preview", {'node_id': self.node_id, 'item': item})
+
+    def post_paste(self, image):
+        asyncio.run(self.send(image))
+        return image

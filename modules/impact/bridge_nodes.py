@@ -2,8 +2,13 @@ import os
 from PIL import ImageOps
 from impact.utils import *
 
-from . import core
+# NOTE: this should not be `from . import core`.
+# I don't know why but... 'from .' and 'from impact' refer to different core modules.
+# This separates global variables of the core module and breaks the preview bridge.
+from impact import core
+# <--
 import random
+
 
 class PreviewBridge:
     @classmethod

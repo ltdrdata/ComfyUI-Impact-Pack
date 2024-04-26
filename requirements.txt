@@ -4,3 +4,4 @@ piexif
 transformers
 opencv-python-headless
 GitPython
+scipy>=1.11.4

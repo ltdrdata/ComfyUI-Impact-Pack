@@ -1,4 +1,5 @@
 import { app } from "../../scripts/app.js";
+import { api } from "../../scripts/api.js";
 import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
 import { ClipspaceDialog } from "../../extensions/core/clipspace.js";
@@ -42,7 +43,7 @@ function loadedImageToBlob(image) {
 }
 
 async function uploadMask(filepath, formData) {
-	await fetch('/upload/mask', {
+	await api.fetchApi('/upload/mask', {
 		method: 'POST',
 		body: formData
 	}).then(response => {}).catch(error => {
@@ -458,7 +459,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 				subfolder: subfolder
 			};
 
-		fetch('/sam/prepare', {
+		api.fetchApi('/sam/prepare', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(data)
@@ -484,7 +485,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			threshold: self.confidence/100
 		};
 		
-		const response = await fetch('/sam/detect', {
+		const response = await api.fetchApi('/sam/detect', {
 			method: 'POST',
 			headers: { 'Content-Type': 'image/png' },
 			body: JSON.stringify(data)

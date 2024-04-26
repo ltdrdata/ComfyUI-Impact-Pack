@@ -63,3 +63,21 @@ class SEGSLabelFilterDetailerHookProvider:
     def doit(self, preset, labels):
         hook = hooks.SEGSLabelFilterDetailerHook(labels)
         return (hook, )
+
+
+class PreviewDetailerHookProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {"quality": ("INT", {"default": 95, "min": 20, "max": 100})},
+            "hidden": {"unique_id": "UNIQUE_ID"},
+        }
+
+    RETURN_TYPES = ("DETAILER_HOOK", "UPSCALER_HOOK")
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, quality, unique_id):
+        hook = hooks.PreviewDetailerHook(unique_id, quality)
+        return (hook, hook)

@@ -4,6 +4,7 @@ import os
 import nodes
 import folder_paths
 import yaml
+import numpy as np
 import threading
 from impact import utils
 
@@ -69,6 +70,7 @@ def read_wildcard_dict(wildcard_path):
 def process(text, seed=None):
     if seed is not None:
         random.seed(seed)
+    random_gen = np.random.default_rng(seed)
 
     def replace_options(string):
         replacements_found = False
@@ -92,10 +94,9 @@ def process(text, seed=None):
                     b = r.group(1).strip()
                 else:
                     a = r.group(1).strip()
-                    try:
-                        b = r.group(3).strip()
-                    except:
-                        b = None
+                    b = r.group(3)
+                    if b is not None:
+                        b = b.strip()
                         
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):
@@ -133,20 +134,13 @@ def process(text, seed=None):
             if select_range is None:
                 select_count = 1
             else:
-                select_count = random.randint(select_range[0], select_range[1])
+                select_count = random_gen.integers(low=select_range[0], high=select_range[1]+1, size=1)
 
             if select_count > len(options):
+                random_gen.shuffle(options)
                 selected_items = options
             else:
-                selected_items = random.choices(options, weights=normalized_probabilities, k=select_count)
-                selected_items = set(selected_items)
-
-                try_count = 0
-                while len(selected_items) < select_count and try_count < 10:
-                    remaining_count = select_count - len(selected_items)
-                    additional_items = random.choices(options, weights=normalized_probabilities, k=remaining_count)
-                    selected_items |= set(additional_items)
-                    try_count += 1
+                selected_items = random_gen.choice(options, p=normalized_probabilities, size=select_count, replace=False)
 
             selected_items2 = [re.sub(r'^\s*[0-9.]+::', '', x, 1) for x in selected_items]
             replacement = select_sep.join(selected_items2)
@@ -172,7 +166,7 @@ def process(text, seed=None):
             keyword = match.lower()
             keyword = wildcard_normalize(keyword)
             if keyword in local_wildcard_dict:
-                replacement = random.choice(local_wildcard_dict[keyword])
+                replacement = random_gen.choice(local_wildcard_dict[keyword])
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
@@ -185,7 +179,7 @@ def process(text, seed=None):
                         found = True
 
                 if found:
-                    replacement = random.choice(total_patterns)
+                    replacement = random_gen.choice(total_patterns)
                     replacements_found = True
                     string = string.replace(f"__{match}__", replacement, 1)
             elif '/' not in keyword:
@@ -301,7 +295,8 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
     pass2 = remove_lora_tags(pass1)
 
     for lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b in loras:
-        if (lora_name.split('.')[-1]) not in folder_paths.supported_pt_extensions:
+        lora_name_ext = lora_name.split('.')
+        if ('.'+lora_name_ext[-1]) not in folder_paths.supported_pt_extensions:
             lora_name = lora_name+".safetensors"
 
         orig_lora_name = lora_name
@@ -334,12 +329,29 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
         else:
             print(f"LORA NOT FOUND: {orig_lora_name}")
 
-    print(f"CLIP: {pass2}")
+    pass3 = [x.strip() for x in pass2.split("BREAK")]
+    pass3 = [x for x in pass3 if x != '']
 
-    if clip_encoder is None:
-        return model, clip, nodes.CLIPTextEncode().encode(clip, pass2)[0]
-    else:
-        return model, clip, clip_encoder.encode(clip, pass2)[0]
+    if len(pass3) == 0:
+        pass3 = ['']
+
+    pass3_str = [f'[{x}]' for x in pass3]
+    print(f"CLIP: {str.join(' + ', pass3_str)}")
+
+    result = None
+
+    for prompt in pass3:
+        if clip_encoder is None:
+            cur = nodes.CLIPTextEncode().encode(clip, prompt)[0]
+        else:
+            cur = clip_encoder.encode(clip, prompt)[0]
+
+        if result is not None:
+            result = nodes.ConditioningConcat().concat(result, cur)[0]
+        else:
+            result = cur
+
+    return model, clip, result
 
 
 def starts_with_regex(pattern, text):
@@ -389,6 +401,31 @@ class WildcardChooserDict:
         return text
 
 
+def split_string_with_sep(input_string):
+    sep_pattern = r'\[SEP(?:\:\w+)?\]'
+
+    substrings = re.split(sep_pattern, input_string)
+
+    result_list = [None]
+    matches = re.findall(sep_pattern, input_string)
+    for i, substring in enumerate(substrings):
+        result_list.append(substring)
+        if i < len(matches):
+            if matches[i] == '[SEP]':
+                result_list.append(None)
+            elif matches[i] == '[SEP:R]':
+                result_list.append(random.randint(0, 1125899906842624))
+            else:
+                try:
+                    seed = int(matches[i][5:-1])
+                except:
+                    seed = None
+                result_list.append(seed)
+
+    iterable = iter(result_list)
+    return list(zip(iterable, iterable))
+
+
 def process_wildcard_for_segs(wildcard):
     if wildcard.startswith('[LAB]'):
         raw_items = split_to_dict(wildcard)
@@ -403,13 +440,7 @@ def process_wildcard_for_segs(wildcard):
 
     elif starts_with_regex(r"\[(ASC|DSC|RND)\]", wildcard):
         mode = wildcard[1:4]
-        raw_items = wildcard[5:].split('[SEP]')
-
-        items = []
-        for x in raw_items:
-            x = x.strip()
-            if x != '':
-                items.append(x)
+        items = split_string_with_sep(wildcard[5:])
 
         if mode == 'RND':
             random.shuffle(items)
@@ -418,4 +449,4 @@ def process_wildcard_for_segs(wildcard):
             return mode, WildcardChooser(items, False)
 
     else:
-        return None, WildcardChooser([wildcard], False)
+        return None, WildcardChooser([(None, wildcard)], False)

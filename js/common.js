@@ -80,3 +80,16 @@ function addQueue(event) {
 }
 
 api.addEventListener("impact-add-queue", addQueue);
+
+
+function refreshPreview(event) {
+	let node_id = event.detail.node_id;
+	let item = event.detail.item;
+	let img = new Image();
+	img.src = `/view?filename=${item.filename}&subfolder=${item.subfolder}&type=${item.type}&no-cache=${Date.now()}`;
+	let node = app.graph._nodes_by_id[node_id];
+	if(node)
+		node.imgs = [img];
+}
+
+api.addEventListener("impact-preview", refreshPreview);

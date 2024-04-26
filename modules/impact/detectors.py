@@ -151,7 +151,11 @@ class SegmDetectorCombined:
 
     def doit(self, segm_detector, image, threshold, dilation):
         mask = segm_detector.detect_combined(image, threshold, dilation)
-        return (mask,)
+
+        if mask is None:
+            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+
+        return (mask.unsqueeze(0),)
 
 
 class BboxDetectorCombined(SegmDetectorCombined):
@@ -167,7 +171,11 @@ class BboxDetectorCombined(SegmDetectorCombined):
 
     def doit(self, bbox_detector, image, threshold, dilation):
         mask = bbox_detector.detect_combined(image, threshold, dilation)
-        return (mask,)
+
+        if mask is None:
+            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+
+        return (mask.unsqueeze(0),)
 
 
 class SimpleDetectorForEach:
@@ -209,16 +217,20 @@ class SimpleDetectorForEach:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
+        if segm_detector_opt is not None and hasattr(segm_detector_opt, 'bbox_detector') and segm_detector_opt.bbox_detector == bbox_detector:
+            # Better segm support for YOLO-World detector
+            segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
+        else:
+            segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
 
-        if sam_model_opt is not None:
-            mask = core.make_sam_mask(sam_model_opt, segs, image, "center-1", sub_dilation,
-                                      sub_threshold, sub_bbox_expansion, sam_mask_hint_threshold, False)
-            segs = core.segs_bitwise_and_mask(segs, mask)
-        elif segm_detector_opt is not None:
-            segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
-            mask = core.segs_to_combined_mask(segm_segs)
-            segs = core.segs_bitwise_and_mask(segs, mask)
+            if sam_model_opt is not None:
+                mask = core.make_sam_mask(sam_model_opt, segs, image, "center-1", sub_dilation,
+                                          sub_threshold, sub_bbox_expansion, sam_mask_hint_threshold, False)
+                segs = core.segs_bitwise_and_mask(segs, mask)
+            elif segm_detector_opt is not None:
+                segm_segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
+                mask = core.segs_to_combined_mask(segm_segs)
+                segs = core.segs_bitwise_and_mask(segs, mask)
 
         segs = core.dilate_segs(segs, post_dilation)
 

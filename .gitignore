@@ -5,3 +5,5 @@ wildcards/**
 .idea/
 subpack
 impact_subpack
+*.txt
+*.yaml

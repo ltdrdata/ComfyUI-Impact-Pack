@@ -9,6 +9,18 @@ from PIL import Image, ImageFilter
 from scipy.ndimage import zoom
 import comfy
 
+
+class TensorBatchBuilder:
+    def __init__(self):
+        self.tensor = None
+
+    def concat(self, new_tensor):
+        if self.tensor is None:
+            self.tensor = new_tensor
+        else:
+            self.tensor = torch.concat((self.tensor, new_tensor), dim=0)
+
+
 def tensor_convert_rgba(image, prefer_copy=True):
     """Assumes NHWC format tensor with 1, 3 or 4 channels."""
     _tensor_check_image(image)
@@ -68,9 +80,16 @@ LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.L
 def tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
     if image.shape[3] >= 3:
-        image = tensor2pil(image)
-        scaled_image = image.resize((w, h), resample=LANCZOS)
-        return pil2tensor(scaled_image)
+        scaled_images = TensorBatchBuilder()
+        for single_image in image:
+            single_image = single_image.unsqueeze(0)
+            single_pil = tensor2pil(single_image)
+            scaled_pil = single_pil.resize((w, h), resample=LANCZOS)
+
+            single_image = pil2tensor(scaled_pil)
+            scaled_images.concat(single_image)
+
+        return scaled_images.tensor
     else:
         return general_tensor_resize(image, w, h)
 
@@ -164,7 +183,8 @@ def tensor_paste(image1, image2, left_top, mask):
     _tensor_check_image(image2)
     _tensor_check_mask(mask)
     if image2.shape[1:3] != mask.shape[1:3]:
-        raise ValueError(f"Inconsistent size: Image ({image2.shape[1:3]}) != Mask ({mask.shape[1:3]})")
+        mask = resize_mask(mask.squeeze(dim=3), image2.shape[1:3]).unsqueeze(dim=3)
+        # raise ValueError(f"Inconsistent size: Image ({image2.shape[1:3]}) != Mask ({mask.shape[1:3]})")
 
     x, y = left_top
     _, h1, w1, _ = image1.shape
@@ -260,7 +280,7 @@ def use_gpu_opencv():
 
 def dilate_mask(mask, dilation_factor, iter=1):
     if dilation_factor == 0:
-        return mask
+        return make_2d_mask(mask)
 
     mask = make_2d_mask(mask)
 
@@ -347,13 +367,23 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     if kernel_size <= 0:
         return mask
 
+    kernel_size = kernel_size*2+1
+
+    shortest = min(mask.shape[1], mask.shape[2])
+    if shortest <= kernel_size:
+        kernel_size = int(shortest/2)
+        if kernel_size % 2 == 0:
+            kernel_size += 1
+        if kernel_size < 3:
+            return mask  # skip feathering
+
     prev_device = mask.device
     device = comfy.model_management.get_torch_device()
     mask.to(device)
 
     # apply gaussian blur
     mask = mask[:, None, ..., 0]
-    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size*2+1, sigma=sigma)(mask)
+    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
 
     blurred_mask.to(prev_device)
@@ -446,6 +476,17 @@ def crop_ndarray4(npimg, crop_region):
 crop_tensor4 = crop_ndarray4
 
 
+def crop_ndarray3(npimg, crop_region):
+    x1 = crop_region[0]
+    y1 = crop_region[1]
+    x2 = crop_region[2]
+    y2 = crop_region[3]
+
+    cropped = npimg[:, y1:y2, x1:x2]
+
+    return cropped
+
+
 def crop_ndarray2(npimg, crop_region):
     x1 = crop_region[0]
     y1 = crop_region[1]
@@ -466,9 +507,16 @@ def to_latent_image(pixels, vae):
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
         pixels = pixels[:, :x, :y, :]
-    pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
-    t = vae.encode(pixels[:, :, :, :3])
-    return {"samples": t}
+
+    vae_encode = nodes.VAEEncode()
+    if hasattr(nodes.VAEEncode, "vae_encode_crop_pixels"):
+        # backward compatibility
+        print(f"[Impact Pack] ComfyUI is outdated.")
+        pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
+        t = vae.encode(pixels[:, :, :, :3])
+        return {"samples": t}
+
+    return vae_encode.encode(vae, pixels)[0]
 
 
 def empty_pil_tensor(w=64, h=64):
@@ -493,6 +541,12 @@ def make_3d_mask(mask):
         return mask.unsqueeze(0)
 
     return mask
+
+
+def is_same_device(a, b):
+    a_device = torch.device(a) if isinstance(a, str) else a
+    b_device = torch.device(b) if isinstance(b, str) else b
+    return a_device.type == b_device.type and a_device.index == b_device.index
 
 
 def collect_non_reroute_nodes(node_map, links, res, node_id):
@@ -521,12 +575,11 @@ def apply_mask_alpha_to_pil(decoded_pil, mask):
 
 
 def try_install_custom_node(custom_node_url, msg):
-    import sys
     try:
-        confirm_try_install = sys.CM_api['cm.try-install-custom-node']
-        print(f"confirm_try_install: {confirm_try_install}")
-        confirm_try_install('Impact Pack', custom_node_url, msg)
-    except Exception as e:
+        import cm_global
+        cm_global.try_call(api='cm.try-install-custom-node',
+                           sender="Impact Pack", custom_node_url=custom_node_url, msg=msg)
+    except Exception:
         print(msg)
         print(f"[Impact Pack] ComfyUI-Manager is outdated. The custom node installation feature is not available.")
 
