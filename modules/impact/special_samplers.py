@@ -3,7 +3,7 @@ import impact.core as core
 from impact.utils import *
 from nodes import MAX_RESOLUTION
 import nodes
-from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper
+from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper, separated_sample, impact_sample
 
 
 class TiledKSamplerProvider:
@@ -43,7 +43,7 @@ class KSamplerProvider:
                                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                                "scheduler": (core.SCHEDULERS, ),
                                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
@@ -66,7 +66,7 @@ class KSamplerAdvancedProvider:
         return {"required": {
                                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                                "scheduler": (core.SCHEDULERS, ),
                                 "sigma_factor": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
@@ -301,6 +301,10 @@ class RegionalSampler:
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Regional"
+
+    @staticmethod
+    def separated_sample(*args, **kwargs):
+        return separated_sample(*args, **kwargs)
 
     @staticmethod
     def mask_erosion(samples, mask, grow_mask_by):
@@ -540,7 +544,7 @@ class KSamplerBasicPipe:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "scheduler": (core.SCHEDULERS, ),
                      "latent_image": ("LATENT", ),
                      "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                      }
@@ -553,7 +557,7 @@ class KSamplerBasicPipe:
 
     def sample(self, basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
-        latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)[0]
+        latent = impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
         return basic_pipe, latent, vae
 
 
@@ -567,7 +571,7 @@ class KSamplerAdvancedBasicPipe:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, ),
-                     "scheduler": (comfy.samplers.KSampler.SCHEDULERS, ),
+                     "scheduler": (core.SCHEDULERS, ),
                      "latent_image": ("LATENT", ),
                      "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
                      "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
@@ -593,6 +597,6 @@ class KSamplerAdvancedBasicPipe:
         else:
             return_with_leftover_noise = "disable"
 
-        latent = nodes.KSamplerAdvanced().sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise)[0]
+        latent = separated_sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise)
         return basic_pipe, latent, vae
 

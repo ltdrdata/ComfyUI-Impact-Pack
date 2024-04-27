@@ -2150,7 +2150,3 @@ class ImpactWildcardEncode:
         populated = kwargs['populated_text']
         model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])
         return (model, clip, conditioning, populated)
-
-
-
-
