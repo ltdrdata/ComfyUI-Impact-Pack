@@ -140,6 +140,11 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
 def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                      latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None, noise=None):
 
+    # hotfix
+    # if 'sde' in sampler_name and end_at_step is None:
+    #     res = sample_with_custom_noise(model, add_noise, seed, cfg, positive, negative, impact_sampler, sigmas, latent_image, noise=noise)
+
+
     # still cannot preserve for 2s, 2m, 3m. that requires some more thing.
     if sampler_opt is None:
         total_sigmas = calculate_sigmas(model, sampler_name, scheduler, steps)
@@ -179,11 +184,23 @@ def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler
 
 
 def impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise=1.0, sigma_ratio=1.0, sampler_opt=None, noise=None):
-    advanced_steps = math.floor(steps / denoise)
-    start_at_step = advanced_steps - steps
-    end_at_step = start_at_step + steps
+    # hotfix
 
-    return separated_sample(model, True, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False)
+    sampler = nodes_custom_sampler.KSamplerSelect().get_sampler(sampler_name)[0]
+    if 'AYS' in scheduler:
+        sigmas = nodes.NODE_CLASS_MAPPINGS['AlignYourStepsScheduler']().get_sigmas(scheduler[4:], steps, denoise=1.0)[0]
+    else:
+        sigmas = nodes_custom_sampler.BasicScheduler().get_sigmas(model, scheduler, steps, denoise)[0]
+
+    sigma_ratio *= sigma_ratio
+
+    return nodes_custom_sampler.SamplerCustom().sample(model, True, seed, cfg, positive, negative, sampler, sigmas, latent_image)[1]
+
+    # HOTFIX - TODO
+    # advanced_steps = math.floor(steps / denoise)
+    # start_at_step = advanced_steps - steps
+    # end_at_step = start_at_step + steps
+    # return separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False)
 
 
 def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,
