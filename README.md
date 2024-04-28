@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE 
+* V5.0: It is no longer compatible with versions of ComfyUI before 2024.04.08. 
 * V4.87.4: Update to a version of ComfyUI after 2024.04.08 for proper functionality.
 * V4.85: Incompatible with the outdated **ComfyUI IPAdapter Plus**. (A version dated March 24th or later is required.)
 * V4.77: Compatibility patch applied. Requires ComfyUI version (Oct. 8th) or later.

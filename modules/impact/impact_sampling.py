@@ -2,9 +2,17 @@ import nodes
 from comfy.k_diffusion import sampling as k_diffusion_sampling
 from comfy import samplers
 from comfy_extras import nodes_custom_sampler
-
+import latent_preview
+import comfy
 import torch
 import math
+
+
+try:
+    from comfy_extras.nodes_custom_sampler import Noise_EmptyNoise, Noise_RandomNoise
+except:
+    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
 def calculate_sigmas(model, sampler, scheduler, steps):
@@ -13,14 +21,10 @@ def calculate_sigmas(model, sampler, scheduler, steps):
         steps += 1
         discard_penultimate_sigma = True
 
-    if hasattr(samplers, 'calculate_sigmas'):
-        if scheduler.startswith('AYS'):
-            sigmas = nodes.NODE_CLASS_MAPPINGS['AlignYourStepsScheduler']().get_sigmas(scheduler[4:], steps, denoise=1.0)[0]
-        else:
-            sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
+    if scheduler.startswith('AYS'):
+        sigmas = nodes.NODE_CLASS_MAPPINGS['AlignYourStepsScheduler']().get_sigmas(scheduler[4:], steps, denoise=1.0)[0]
     else:
-        print(f"[Impact Pack] calculate_sigmas: ComfyUI is an outdated version.")
-        sigmas = samplers.calculate_sigmas_scheduler(model.model, scheduler, steps)
+        sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
 
     if discard_penultimate_sigma:
         sigmas = torch.cat([sigmas[:-2], sigmas[-1:]])
@@ -99,11 +103,6 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
         return samplers.ksampler(sampler_name, extra_options, inpaint_options)
 
     return samplers.KSAMPLER(sampler_function, extra_options, inpaint_options)
-
-
-from comfy_extras.nodes_custom_sampler import Noise_EmptyNoise, Noise_RandomNoise
-import latent_preview
-import comfy
 
 
 # modified version of SamplerCustom.sample

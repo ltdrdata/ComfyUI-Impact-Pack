@@ -27,7 +27,8 @@ from concurrent.futures import ThreadPoolExecutor
 try:
     from comfy_extras import nodes_differential_diffusion
 except Exception:
-    print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
+    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
 SEG = namedtuple("SEG",
@@ -175,10 +176,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0:
-            try:
-                model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
-            except Exception:
-                print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
+            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)

@@ -99,10 +99,7 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0:
-            try:
-                model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
-            except Exception:
-                print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
+            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
     if control_net_wrapper is not None:
         positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)

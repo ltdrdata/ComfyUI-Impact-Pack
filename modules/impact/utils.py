@@ -509,12 +509,6 @@ def to_latent_image(pixels, vae):
         pixels = pixels[:, :x, :y, :]
 
     vae_encode = nodes.VAEEncode()
-    if hasattr(nodes.VAEEncode, "vae_encode_crop_pixels"):
-        # backward compatibility
-        print(f"[Impact Pack] ComfyUI is outdated.")
-        pixels = nodes.VAEEncode.vae_encode_crop_pixels(pixels)
-        t = vae.encode(pixels[:, :, :, :3])
-        return {"samples": t}
 
     return vae_encode.encode(vae, pixels)[0]
 

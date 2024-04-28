@@ -69,32 +69,8 @@ except:
     print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
     do_install()
 
+
 import impact.impact_server  # to load server api
-
-def setup_js():
-    import nodes
-    js_dest_path = os.path.join(comfy_path, "web", "extensions", "impact-pack")
-
-    if hasattr(nodes, "EXTENSION_WEB_DIRS"):
-        if os.path.exists(js_dest_path):
-            shutil.rmtree(js_dest_path)
-    else:
-        print(f"[WARN] ComfyUI-Impact-Pack: Your ComfyUI version is outdated. Please update to the latest version.")
-        # setup js
-        if not os.path.exists(js_dest_path):
-            os.makedirs(js_dest_path)
-
-        js_src_path = os.path.join(impact_path, "js", "impact-pack.js")
-        shutil.copy(js_src_path, js_dest_path)
-
-        js_src_path = os.path.join(impact_path, "js", "impact-sam-editor.js")
-        shutil.copy(js_src_path, js_dest_path)
-
-        js_src_path = os.path.join(impact_path, "js", "comboBoolMigration.js")
-        shutil.copy(js_src_path, js_dest_path)
-
-
-setup_js()
 
 from .modules.impact.impact_pack import *
 from .modules.impact.detectors import *
