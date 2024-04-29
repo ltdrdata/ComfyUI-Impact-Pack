@@ -100,7 +100,10 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
 
         sampler_function = sample_dpmpp_sde
     else:
-        return samplers.ksampler(sampler_name, extra_options, inpaint_options)
+        if sampler_name == 'ddim':
+            return samplers.ksampler("euler", inpaint_options={"random": True})
+        else:
+            return samplers.ksampler(sampler_name, extra_options, inpaint_options)
 
     return samplers.KSAMPLER(sampler_function, extra_options, inpaint_options)
 
