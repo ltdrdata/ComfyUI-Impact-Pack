@@ -253,6 +253,9 @@ This takes latent as input and outputs latent as the result.
       * For supported labels, please refer to the `config.json` of the respective HuggingFace repository.
     * `#Female` and `#Male` are symbols that group multiple labels such as `Female, women, woman, ...`, for convenience, rather than being single labels.
 
+* Etc
+  * `Impact Scheduler Adapter` - With the addition of AYS to the scheduler of the Impact Pack and Inspire Pack, there is an issue of incompatibility when the existing scheduler widget is converted to input. The Impact Scheduler Adapter allows for an indirect connection to be possible.
+
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
 * To use the existing MMDetDetectorProvider, you need to enable the MMDet usage configuration.
