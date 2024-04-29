@@ -33,7 +33,7 @@ class GeneralSwitch:
         selected_label = input_name
         node_id = kwargs['unique_id']
 
-        if 'extra_pnginfo' in kwargs:
+        if 'extra_pnginfo' in kwargs and kwargs['extra_pnginfo'] is not None:
             nodelist = kwargs['extra_pnginfo']['workflow']['nodes']
             for node in nodelist:
                 if str(node['id']) == node_id:
