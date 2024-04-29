@@ -306,7 +306,9 @@ NODE_CLASS_MAPPINGS = {
     "ImpactRemoteInt": ImpactRemoteInt,
 
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
-    "ImpactSEGSClassify": SEGS_Classify
+    "ImpactSEGSClassify": SEGS_Classify,
+
+    "ImpactSchedulerAdapter": ImpactSchedulerAdapter
 }
 
 
@@ -433,7 +435,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)",
 
-    "SEGSPreviewCNet": "SEGSPreview (CNET Image)"
+    "SEGSPreviewCNet": "SEGSPreview (CNET Image)",
+
+    "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
 }
 
 if not impact.config.get_config()['mmdet_skip']:

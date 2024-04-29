@@ -2150,3 +2150,26 @@ class ImpactWildcardEncode:
         populated = kwargs['populated_text']
         model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])
         return (model, clip, conditioning, populated)
+
+
+class ImpactSchedulerAdapter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"defaultInput": True,}),
+            "ays_scheduler": (['None', 'AYS SDXL', 'AYS SD1', 'AYS SVD'],),
+        }}
+
+    CATEGORY = "ImpactPack/Util"
+
+    RETURN_TYPES = (core.SCHEDULERS,)
+    RETURN_NAMES = ("scheduler",)
+
+    FUNCTION = "doit"
+
+    def doit(self, scheduler, ays_scheduler):
+        if ays_scheduler != 'None':
+            return (ays_scheduler,)
+
+        return (scheduler,)
+
