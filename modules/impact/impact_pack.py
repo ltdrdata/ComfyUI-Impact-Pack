@@ -627,6 +627,41 @@ class NoiseInjectionDetailerHookProvider:
             pass
 
 
+# class CustomNoiseDetailerHookProvider:
+#     @classmethod
+#     def INPUT_TYPES(s):
+#         return {"required": {
+#                     "noise": ("NOISE",)},
+#                 }
+#
+#     RETURN_TYPES = ("DETAILER_HOOK",)
+#     FUNCTION = "doit"
+#
+#     CATEGORY = "ImpactPack/Detailer"
+#
+#     def doit(self, noise):
+#         hook = hooks.CustomNoiseDetailerHookProvider(noise)
+#         return (hook, )
+
+
+class VariationNoiseDetailerHookProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                     "strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01})}
+                }
+
+    RETURN_TYPES = ("DETAILER_HOOK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    def doit(self, seed, strength):
+        hook = hooks.VariationNoiseDetailerHookProvider(seed, strength)
+        return (hook, )
+
+
 class UnsamplerDetailerHookProvider:
     schedules = ["skip_start", "from_start"]
 

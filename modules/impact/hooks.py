@@ -1,4 +1,7 @@
 import copy
+
+import torch
+
 import nodes
 
 from impact import utils
@@ -8,6 +11,8 @@ from server import PromptServer
 import asyncio
 import folder_paths
 import os
+from comfy_extras import nodes_custom_sampler
+
 
 class PixelKSampleHook:
     cur_step = 0
@@ -101,6 +106,15 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
+    def get_custom_noise(self, seed, noise, is_start):
+        noise_1st = self.hook1.get_custom_noise(seed, noise, is_start)
+        noise, is_start = (noise_1st, False) if noise_1st is not None else (noise, is_start)
+
+        noise_2nd = self.hook2.get_custom_noise(seed, noise, False)
+        noise = noise_2nd if noise_2nd is not None else noise
+
+        return noise
+
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
     target_cfg = 0
@@ -161,6 +175,35 @@ class DetailerHook(PixelKSampleHook):
 
     def post_paste(self, image):
         return image
+
+    def get_custom_noise(self, seed, noise, is_start):
+        return noise
+
+
+# class CustomNoiseDetailerHookProvider(DetailerHook):
+#     def __init__(self, noise):
+#         super().__init__()
+#         self.noise = noise
+#
+#     def get_custom_noise(self, seed, noise, is_start):
+#         return self.noise
+
+
+class VariationNoiseDetailerHookProvider(DetailerHook):
+    def __init__(self, variation_seed, variation_strength):
+        super().__init__()
+        self.variation_seed = variation_seed
+        self.variation_strength = variation_strength
+
+    def get_custom_noise(self, seed, noise, is_start):
+        empty_noise = {'samples': torch.zeros(noise.size())}
+        if is_start:
+            noise = nodes_custom_sampler.Noise_RandomNoise(seed).generate_noise(empty_noise)
+        noise_2nd = nodes_custom_sampler.Noise_RandomNoise(self.variation_seed).generate_noise(empty_noise)
+
+        noise = (1 - self.variation_strength) * noise + self.variation_strength * noise_2nd
+
+        return noise
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):

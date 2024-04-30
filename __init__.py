@@ -167,6 +167,8 @@ NODE_CLASS_MAPPINGS = {
     "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider,
     "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider,
     "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider,
+    "VariationNoiseDetailerHookProvider": VariationNoiseDetailerHookProvider,
+    # "CustomNoiseDetailerHookProvider": CustomNoiseDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
     "SubtractMask": SubtractMask,

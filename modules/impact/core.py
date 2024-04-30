@@ -268,12 +268,14 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
             model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
                 detailer_hook.pre_ksample(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
+            noise = detailer_hook.get_custom_noise(seed+i, torch.zeros(latent_image['samples'].size()), is_start=True)
         else:
             model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
                 model, seed + i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise
+            noise = None
 
         refined_latent = impact_sampling.ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
-                                                          refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+                                                          refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative, noise=noise)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)

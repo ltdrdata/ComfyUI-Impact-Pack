@@ -142,11 +142,6 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
 # When sampling one step at a time, it mitigates the problem. (especially for _sde series samplers)
 def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                      latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None, noise=None):
-
-    # hotfix
-    # if 'sde' in sampler_name and end_at_step is None:
-    #     res = sample_with_custom_noise(model, add_noise, seed, cfg, positive, negative, impact_sampler, sigmas, latent_image, noise=noise)
-
     if sampler_opt is None:
         total_sigmas = calculate_sigmas(model, sampler_name, scheduler, steps)
     else:
@@ -192,7 +187,7 @@ def impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, ne
 
 
 def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,
-                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, sigma_factor=1.0):
+                     refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, sigma_factor=1.0, noise=None):
 
     if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
         # Use separated_sample instead of KSampler for `AYS scheduler`
@@ -202,7 +197,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
         start_at_step = advanced_steps - steps
         end_at_step = start_at_step + steps
 
-        refined_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False, sigma_ratio=sigma_factor)
+        refined_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False, sigma_ratio=sigma_factor, noise=noise)
     else:
         advanced_steps = math.floor(steps / denoise)
         start_at_step = advanced_steps - steps
@@ -210,7 +205,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
 
         # print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
         temp_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler,
-                                       positive, negative, latent_image, start_at_step, end_at_step, True, sigma_ratio=sigma_factor)
+                                       positive, negative, latent_image, start_at_step, end_at_step, True, sigma_ratio=sigma_factor, noise=noise)
 
         if 'noise_mask' in latent_image:
             # noise_latent = \
