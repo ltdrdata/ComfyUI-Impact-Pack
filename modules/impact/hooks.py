@@ -1,9 +1,6 @@
 import copy
-
 import torch
-
 import nodes
-
 from impact import utils
 from . import segs_nodes
 from thirdparty import noise_nodes
@@ -12,6 +9,7 @@ import asyncio
 import folder_paths
 import os
 from comfy_extras import nodes_custom_sampler
+import math
 
 
 class PixelKSampleHook:
@@ -201,9 +199,13 @@ class VariationNoiseDetailerHookProvider(DetailerHook):
             noise = nodes_custom_sampler.Noise_RandomNoise(seed).generate_noise(empty_noise)
         noise_2nd = nodes_custom_sampler.Noise_RandomNoise(self.variation_seed).generate_noise(empty_noise)
 
-        noise = (1 - self.variation_strength) * noise + self.variation_strength * noise_2nd
+        mixed_noise = ((1 - self.variation_strength) * noise + self.variation_strength * noise_2nd)
 
-        return noise
+        # NOTE: mixed_noise is not gaussian noise; therefore, adjust the scale to correct it to gaussian noise.
+        scale_factor = math.sqrt((1 - self.variation_strength) ** 2 + self.variation_strength ** 2)
+        corrected_noise = mixed_noise / scale_factor  # Scale the noise to maintain variance of 1
+
+        return corrected_noise
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
