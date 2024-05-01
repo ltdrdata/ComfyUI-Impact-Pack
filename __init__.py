@@ -314,7 +314,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
     "ImpactStringSelector": StringSelector,
     "StringListToString": StringListToString,
-    "WildcardPromptFromStringList": WildcardPromptFromStringList,
+    "WildcardPromptFromString": WildcardPromptFromString,
 
     "RemoveNoiseMask": RemoveNoiseMask,
 
@@ -436,7 +436,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactStringSelector": "String Selector",
     "StringListToString": "String List to String",
-    "WildcardPromptFromStringList": "Wildcard Prompt from String List",
+    "WildcardPromptFromString": "Wildcard Prompt from String",
     "ImpactIsNotEmptySEGS": "SEGS isn't Empty",
     "SetDefaultImageForSEGS": "Set Default Image for SEGS",
     "RemoveImageFromSEGS": "Remove Image from SEGS",

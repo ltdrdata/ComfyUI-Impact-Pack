@@ -514,7 +514,7 @@ class StringListToString:
         return (joined_text,)
 
 
-class WildcardPromptFromStringList:
+class WildcardPromptFromString:
     @classmethod
     def INPUT_TYPES(s):
         return {
