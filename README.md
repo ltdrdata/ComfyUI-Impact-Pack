@@ -185,6 +185,7 @@ This takes latent as input and outputs latent as the result.
     * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
     * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
+
 * Switch nodes
   * Switch (image,mask), Switch (latent), Switch (SEGS) - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
   * Switch (Any) - This is a Switch node that takes an arbitrary number of inputs and produces a single output. Its type is determined when connected to any node, and connecting inputs increases the available slots for connections.
@@ -256,6 +257,9 @@ This takes latent as input and outputs latent as the result.
 
 * Etc
   * `Impact Scheduler Adapter` - With the addition of AYS to the scheduler of the Impact Pack and Inspire Pack, there is an issue of incompatibility when the existing scheduler widget is converted to input. The Impact Scheduler Adapter allows for an indirect connection to be possible.
+  * `StringListToString` - Convert String List to String
+  * `WildcardPromptFromString` - Create labeled wildcard for detailer from string. 
+    * This node works well when used with MakeTileSEGS. [[Link](https://github.com/ltdrdata/ComfyUI-Impact-Pack/pull/536#discussion_r1586060779)]
 
 ## MMDet nodes
 * MMDetDetectorProvider - Loads the MMDet model to provide BBOX_DETECTOR and SEGM_DETECTOR.
