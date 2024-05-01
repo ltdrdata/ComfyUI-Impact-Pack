@@ -488,12 +488,39 @@ class StringSelector:
         return (selected, )
 
 
+class StringListToString:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "join_with": ("STRING", {"default": "\\n"}),
+                "string_list": ("STRING", {"forceInput": True}),
+            }
+        }
+
+    INPUT_IS_LIST = True
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, join_with, string_list):
+        # convert \\n to newline character
+        if join_with[0] == "\\n":
+            join_with[0] = "\n"
+
+        joined_text = join_with[0].join(string_list)
+
+        return (joined_text,)
+
+
 class WildcardPromptFromStringList:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "string_list": ("STRING", {"forceInput": True}),
+                "string": ("STRING", {"forceInput": True}),
+                "delimiter": ("STRING", {"multiline": False, "default": "\\n" }),
                 "prefix_all": ("STRING", {"multiline": False}),
                 "postfix_all": ("STRING", {"multiline": False}),
                 "restrict_to_tags": ("STRING", {"multiline": False}),
@@ -501,40 +528,42 @@ class WildcardPromptFromStringList:
             },
         }
 
-    INPUT_IS_LIST = True
     RETURN_TYPES = ("STRING", "STRING",)
     RETURN_NAMES = ("wildcard", "segs_labels",)
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, string_list, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
-        # need to access as list due to INPUT_IS_LIST
+    def doit(self, string, delimiter, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
+        # convert \\n to newline character
+        if delimiter == "\\n":
+            delimiter = "\n"
+
         # some sanity checks and normalization for later processing
-        if prefix_all[0] is None: prefix_all[0] = ""
-        if postfix_all[0] is None: postfix_all[0] = ""
-        if restrict_to_tags[0] is None: restrict_to_tags[0] = ""
-        if exclude_tags[0] is None: exclude_tags[0] = ""
-        if not isinstance(restrict_to_tags[0], list):
-            restrict_to_tags[0] = restrict_to_tags[0].split(", ")
-        if not isinstance(exclude_tags[0], list):
-            exclude_tags[0] = exclude_tags[0].split(", ")
+        if prefix_all is None: prefix_all = ""
+        if postfix_all is None: postfix_all = ""
+        if restrict_to_tags is None: restrict_to_tags = ""
+        if exclude_tags is None: exclude_tags = ""
+        if not isinstance(restrict_to_tags, list):
+            restrict_to_tags = restrict_to_tags.split(", ")
+        if not isinstance(exclude_tags, list):
+            exclude_tags = exclude_tags.split(", ")
 
         # build the wildcard prompt per list entry
         output = ["[LAB]"]
         labels = []
-        for x in string_list:
+        for x in string.split(delimiter):
             label = str(len(labels) + 1)
             labels.append(label)
             x = x.split(", ")
             # restrict to tags
-            if restrict_to_tags[0][0] != "":
-                x = list(set(x) & set(restrict_to_tags[0]))
+            if restrict_to_tags != "":
+                x = list(set(x) & set(restrict_to_tags))
             # remove tags
-            if exclude_tags[0][0] != "":
-                x = list(set(x) - set(exclude_tags[0]))
+            if exclude_tags != "":
+                x = list(set(x) - set(exclude_tags))
             # next row: <LABEL> <PREFIX> <TAGS> <POSTFIX>
-            prompt_for_seg = f'[{label}] {prefix_all[0]} {", ".join(x)} {postfix_all[0]}'.strip()
+            prompt_for_seg = f'[{label}] {prefix_all} {", ".join(x)} {postfix_all}'.strip()
             output.append(prompt_for_seg)
         output = "\n".join(output)
 
