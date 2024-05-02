@@ -109,7 +109,7 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
 
 
 # modified version of SamplerCustom.sample
-def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negative, sampler, sigmas, latent_image, noise=None):
+def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negative, sampler, sigmas, latent_image, noise=None, callback=None):
     latent = latent_image
     latent_image = latent["samples"]
 
@@ -124,10 +124,17 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
         noise_mask = latent["noise_mask"]
 
     x0_output = {}
-    callback = latent_preview.prepare_callback(model, sigmas.shape[-1] - 1, x0_output)
+    preview_callback = latent_preview.prepare_callback(model, sigmas.shape[-1] - 1, x0_output)
+
+    if callback is not None:
+        def touched_callback(step, x0, x, total_steps):
+            callback(step, x0, x, total_steps)
+            preview_callback(step, x0, x, total_steps)
+    else:
+        touched_callback = preview_callback
 
     disable_pbar = not comfy.utils.PROGRESS_BAR_ENABLED
-    samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, noise_mask=noise_mask, callback=callback, disable_pbar=disable_pbar, seed=noise_seed)
+    samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, noise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
 
     out = latent.copy()
     out["samples"] = samples
@@ -141,7 +148,7 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
 
 # When sampling one step at a time, it mitigates the problem. (especially for _sde series samplers)
 def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                     latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None, noise=None):
+                     latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None, noise=None, callback=None):
     if sampler_opt is None:
         total_sigmas = calculate_sigmas(model, sampler_name, scheduler, steps)
     else:
@@ -171,7 +178,7 @@ def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler
     if len(sigmas) == 0 or (len(sigmas) == 1 and sigmas[0] == 0):
         return latent_image
     
-    res = sample_with_custom_noise(model, add_noise, seed, cfg, positive, negative, impact_sampler, sigmas, latent_image, noise=noise)
+    res = sample_with_custom_noise(model, add_noise, seed, cfg, positive, negative, impact_sampler, sigmas, latent_image, noise=noise, callback=callback)
 
     if return_with_leftover_noise:
         return res[0]

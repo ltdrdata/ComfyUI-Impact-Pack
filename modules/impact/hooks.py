@@ -201,7 +201,7 @@ class VariationNoiseDetailerHookProvider(DetailerHook):
 
         mixed_noise = ((1 - self.variation_strength) * noise + self.variation_strength * noise_2nd)
 
-        # NOTE: mixed_noise is not gaussian noise; therefore, adjust the scale to correct it to gaussian noise.
+        # NOTE: Since the variance of the Gaussian noise in mixed_noise has changed, it must be corrected through scaling.
         scale_factor = math.sqrt((1 - self.variation_strength) ** 2 + self.variation_strength ** 2)
         corrected_noise = mixed_noise / scale_factor  # Scale the noise to maintain variance of 1
 
