@@ -1523,8 +1523,8 @@ class PixelKSampleUpscaler:
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
 
-        refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                 positive, negative, upscaled_latent, denoise)[0]
+        refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
+                                                       positive, negative, upscaled_latent, denoise)[0]
         return refined_latent
 
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):

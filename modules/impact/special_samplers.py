@@ -587,16 +587,6 @@ class KSamplerAdvancedBasicPipe:
     def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
 
-        if add_noise:
-            add_noise = "enable"
-        else:
-            add_noise = "disable"
-
-        if return_with_leftover_noise:
-            return_with_leftover_noise = "enable"
-        else:
-            return_with_leftover_noise = "disable"
-
         latent = separated_sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise)
         return basic_pipe, latent, vae
 
