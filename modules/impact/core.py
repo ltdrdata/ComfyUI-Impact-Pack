@@ -268,7 +268,9 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
             model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
                 detailer_hook.pre_ksample(model, seed+i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
-            noise = detailer_hook.get_custom_noise(seed+i, torch.zeros(latent_image['samples'].size()), is_start=True)
+            noise, is_touched = detailer_hook.get_custom_noise(seed+i, torch.zeros(latent_image['samples'].size()), is_touched=False)
+            if not is_touched:
+                noise = None
         else:
             model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
                 model, seed + i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise

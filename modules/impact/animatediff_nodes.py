@@ -170,7 +170,7 @@ class DetailerForEachPipeForAnimateDiff:
                 cnet_image_list.extend(cnet_images)
 
             if detailer_hook is not None:
-                detailer_hook.post_paste(image_frames)
+                image_frames = detailer_hook.post_paste(image_frames)
 
             enhanced_segs += enhanced_seg[1]
 

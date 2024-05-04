@@ -306,7 +306,7 @@ class DetailerForEach:
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
-                    detailer_hook.post_paste(image)
+                    image = detailer_hook.post_paste(image)
 
             if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode

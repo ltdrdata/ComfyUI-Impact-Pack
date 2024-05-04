@@ -104,14 +104,10 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         image = self.hook2.post_paste(image)
         return image
 
-    def get_custom_noise(self, seed, noise, is_start):
-        noise_1st = self.hook1.get_custom_noise(seed, noise, is_start)
-        noise, is_start = (noise_1st, False) if noise_1st is not None else (noise, is_start)
-
-        noise_2nd = self.hook2.get_custom_noise(seed, noise, False)
-        noise = noise_2nd if noise_2nd is not None else noise
-
-        return noise
+    def get_custom_noise(self, seed, noise, is_touched):
+        noise_1st, is_touched = self.hook1.get_custom_noise(seed, noise, is_touched)
+        noise_2nd, is_touched = self.hook2.get_custom_noise(seed, noise, is_touched)
+        return noise, is_touched
 
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
@@ -174,8 +170,8 @@ class DetailerHook(PixelKSampleHook):
     def post_paste(self, image):
         return image
 
-    def get_custom_noise(self, seed, noise, is_start):
-        return noise
+    def get_custom_noise(self, seed, noise, is_touched):
+        return noise, is_touched
 
 
 # class CustomNoiseDetailerHookProvider(DetailerHook):
@@ -193,9 +189,9 @@ class VariationNoiseDetailerHookProvider(DetailerHook):
         self.variation_seed = variation_seed
         self.variation_strength = variation_strength
 
-    def get_custom_noise(self, seed, noise, is_start):
+    def get_custom_noise(self, seed, noise, is_touched):
         empty_noise = {'samples': torch.zeros(noise.size())}
-        if is_start:
+        if not is_touched:
             noise = nodes_custom_sampler.Noise_RandomNoise(seed).generate_noise(empty_noise)
         noise_2nd = nodes_custom_sampler.Noise_RandomNoise(self.variation_seed).generate_noise(empty_noise)
 
@@ -205,7 +201,7 @@ class VariationNoiseDetailerHookProvider(DetailerHook):
         scale_factor = math.sqrt((1 - self.variation_strength) ** 2 + self.variation_strength ** 2)
         corrected_noise = mixed_noise / scale_factor  # Scale the noise to maintain variance of 1
 
-        return corrected_noise
+        return corrected_noise, True
 
 
 class SimpleDetailerDenoiseSchedulerHook(DetailerHook):

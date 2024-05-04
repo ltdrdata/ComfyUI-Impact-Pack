@@ -1746,7 +1746,7 @@ class SEGSUpscaler:
                 tensor_paste(new_image, enhanced_image, (left, top), mask)
 
                 if upscaler_hook_opt is not None:
-                    upscaler_hook_opt.post_paste(new_image)
+                    new_image = upscaler_hook_opt.post_paste(new_image)
 
         enhanced_img = tensor_convert_rgb(new_image)
 
