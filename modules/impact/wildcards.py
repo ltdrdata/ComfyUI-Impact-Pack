@@ -170,7 +170,7 @@ def process(text, seed=None):
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
-                subpattern = keyword.replace('*', '.*').replace('+','\+')
+                subpattern = keyword.replace('*', '.*').replace('+','\\+')
                 total_patterns = []
                 found = False
                 for k, v in local_wildcard_dict.items():
@@ -198,7 +198,7 @@ def process(text, seed=None):
             keyword = match['keyword'].lower()
             quantifier = int(match['quantifier']) if match['quantifier'] else 1
             replacement = '__|__'.join([keyword,] * quantifier)
-            wilder_keyword = keyword.replace('*', '\*')
+            wilder_keyword = keyword.replace('*', '\\*')
             RE_TEMP = re.compile(fr"(?P<quantifier>\d+)#__(?P<keyword>{wilder_keyword})__", re.IGNORECASE)
             text = RE_TEMP.sub(f"__{replacement}__", text)
 
