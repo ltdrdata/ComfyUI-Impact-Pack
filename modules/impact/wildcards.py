@@ -296,10 +296,22 @@ def resolve_lora_name(lora_name_cache, name):
                 return x
 
 
-def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
+def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, processed=None):
+    """
+    process wildcard text including loras
+
+    :param wildcard_opt: wildcard text
+    :param model: model
+    :param clip: clip
+    :param clip_encoder: you can pass custom encoder such as adv_cliptext_encode
+    :param seed: seed for populating
+    :param processed: output variable - [pass1, pass2, pass3] will be saved into passed list
+    :return: model, clip, conditioning
+    """
+
     lora_name_cache = []
 
-    pass1 = process(wildcard_opt)
+    pass1 = process(wildcard_opt, seed)
     loras = extract_lora_values(pass1)
     pass2 = remove_lora_tags(pass1)
 
@@ -359,6 +371,11 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None):
             result = nodes.ConditioningConcat().concat(result, cur)[0]
         else:
             result = cur
+
+    if processed is not None:
+        processed.append(pass1)
+        processed.append(pass2)
+        processed.append(pass3)
 
     return model, clip, result
 

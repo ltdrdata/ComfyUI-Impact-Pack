@@ -2148,7 +2148,7 @@ class ImpactWildcardProcessor:
         return impact.wildcards.process(**kwargs)
 
     def doit(self, *args, **kwargs):
-        populated_text = kwargs['populated_text']
+        populated_text = ImpactWildcardProcessor.process(text=kwargs['populated_text'], seed=kwargs['seed'])
         return (populated_text, )
 
 
@@ -2183,8 +2183,9 @@ class ImpactWildcardEncode:
 
     def doit(self, *args, **kwargs):
         populated = kwargs['populated_text']
-        model, clip, conditioning = impact.wildcards.process_with_loras(populated, kwargs['model'], kwargs['clip'])
-        return (model, clip, conditioning, populated)
+        processed = []
+        model, clip, conditioning = impact.wildcards.process_with_loras(wildcard_opt=populated, model=kwargs['model'], clip=kwargs['clip'], seed=kwargs['seed'], processed=processed)
+        return model, clip, conditioning, processed[0]
 
 
 class ImpactSchedulerAdapter:
