@@ -100,14 +100,8 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
 
         sampler_function = sample_dpmpp_sde
 
-    elif sampler_name == "uni_pc":
-        return samplers.KSAMPLER(samplers.uni_pc.sample_unipc)
-    elif sampler_name == "uni_pc_bh2":
-        return samplers.KSAMPLER(samplers.uni_pc.sample_unipc_bh2)
-    elif sampler_name == 'ddim':
-        return samplers.ksampler("euler", inpaint_options={"random": True})
     else:
-        return samplers.ksampler(sampler_name, extra_options, inpaint_options)
+        return comfy.samplers.sampler_object(sampler_name)
 
     return samplers.KSAMPLER(sampler_function, extra_options, inpaint_options)
 
