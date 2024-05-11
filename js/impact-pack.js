@@ -116,7 +116,27 @@ function imgSendHandler(event) {
 		let nodes = app.graph._nodes;
 		for(let i in nodes) {
 			if(nodes[i].type == 'ImageReceiver') {
-				if(nodes[i].widgets[1].value == event.detail.link_id) {
+				let is_linked = false;
+
+				if(nodes[i].widgets[1].type == 'converted-widget') {
+					for(let j in nodes[i].inputs) {
+						let input = nodes[i].inputs[j];
+						if(input.name === 'link_id') {
+							if(input.link) {
+								let src_node = app.graph._nodes_by_id[app.graph.links[input.link].origin_id];
+								if(src_node.type == 'ImpactInt' || src_node.type == 'PrimitiveNode') {
+									is_linked = true;
+								}
+							}
+							break;
+						}
+					}
+				}
+				else if(nodes[i].widgets[1].value == event.detail.link_id) {
+					is_linked = true;
+				}
+
+				if(is_linked) {
 					if(data.subfolder)
 						nodes[i].widgets[0].value = `${data.subfolder}/${data.filename} [${data.type}]`;
 					else
