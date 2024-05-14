@@ -244,7 +244,7 @@ class DetailerForEach:
             ordered_segs = segs[1]
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = crop_ndarray4(image.numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            cropped_image = crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = to_tensor(cropped_image)
             mask = to_tensor(seg.cropped_mask)
             mask = tensor_gaussian_blur_mask(mask, feather)
