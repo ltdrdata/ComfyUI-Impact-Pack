@@ -51,6 +51,7 @@ try:
     import folder_paths
     import torch
     import cv2
+    from cv2 import setNumThreads
     import numpy as np
     import comfy.samplers
     import comfy.sd

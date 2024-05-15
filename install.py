@@ -105,9 +105,11 @@ try:
 
     if "python_embeded" in sys.executable or "python_embedded" in sys.executable:
         pip_install = [sys.executable, '-s', '-m', 'pip', 'install']
+        pip_upgrade = [sys.executable, '-s', '-m', 'pip', 'install', '-U']
         mim_install = [sys.executable, '-s', '-m', 'mim', 'install']
     else:
         pip_install = [sys.executable, '-m', 'pip', 'install']
+        pip_upgrade = [sys.executable, '-m', 'pip', 'install', '-U']
         mim_install = [sys.executable, '-m', 'mim', 'install']
 
 
@@ -197,12 +199,30 @@ try:
 
         # !! cv2 importing test must be very last !!
         try:
-            import cv2
+            from cv2 import setNumThreads
         except Exception:
             try:
-                if not is_installed('opencv-python'):
-                    process_wrap(pip_install + ['opencv-python'])
-                if not is_installed('opencv-python-headless'):
+                is_open_cv_installed = False
+
+                # upgrade if opencv is installed already
+                if is_installed('opencv-python'):
+                    process_wrap(pip_upgrade + ['opencv-python'])
+                    is_open_cv_installed = True
+
+                if is_installed('opencv-python-headless'):
+                    process_wrap(pip_upgrade + ['opencv-python-headless'])
+                    is_open_cv_installed = True
+
+                if is_installed('opencv-contrib-python'):
+                    process_wrap(pip_upgrade + ['opencv-contrib-python'])
+                    is_open_cv_installed = True
+
+                if is_installed('opencv-contrib-python-headless'):
+                    process_wrap(pip_upgrade + ['opencv-contrib-python-headless'])
+                    is_open_cv_installed = True
+
+                # if opencv is not installed install `opencv-python-headless`
+                if not is_open_cv_installed:
                     process_wrap(pip_install + ['opencv-python-headless'])
             except:
                 print(f"[ERROR] ComfyUI-Impact-Pack: failed to install 'opencv-python'. Please, install manually.")
