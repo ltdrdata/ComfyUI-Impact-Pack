@@ -2,13 +2,12 @@ import sys
 import time
 
 import execution
-import folder_paths
 import impact.impact_server
 from server import PromptServer
 from impact.utils import any_typ
 import impact.core as core
 import re
-
+import nodes
 
 class ImpactCompare:
     @classmethod
@@ -646,20 +645,20 @@ class ImpactControlBridge:
     def doit(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
         global error_skip_flag
 
-        nodes, links = workflow_to_map(extra_pnginfo['workflow'])
+        workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])
 
         active_nodes = []
         mute_nodes = []
         bypass_nodes = []
 
-        for link in nodes[unique_id]['outputs'][0]['links']:
+        for link in workflow_nodes[unique_id]['outputs'][0]['links']:
             node_id = str(links[link][2])
 
             next_nodes = []
-            impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
+            impact.utils.collect_non_reroute_nodes(workflow_nodes, links, next_nodes, node_id)
 
             for next_node_id in next_nodes:
-                node_mode = nodes[next_node_id]['mode']
+                node_mode = workflow_nodes[next_node_id]['mode']
 
                 if node_mode == 0:
                     active_nodes.append(next_node_id)
@@ -673,24 +672,21 @@ class ImpactControlBridge:
             should_be_active_nodes = mute_nodes + bypass_nodes
             if len(should_be_active_nodes) > 0:
                 PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
-                error_skip_flag = True
-                raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
+                nodes.interrupt_processing()
 
         elif behavior:
             # mute
             should_be_mute_nodes = active_nodes + bypass_nodes
             if len(should_be_mute_nodes) > 0:
                 PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_be_mute_nodes)})
-                error_skip_flag = True
-                raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
+                nodes.interrupt_processing()
 
         else:
             # bypass
             should_be_bypass_nodes = active_nodes + mute_nodes
             if len(should_be_bypass_nodes) > 0:
                 PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'bypasses': list(should_be_bypass_nodes)})
-                error_skip_flag = True
-                raise Exception("IMPACT-PACK-SIGNAL: STOP CONTROL BRIDGE\nIf you see this message, your ComfyUI-Manager is outdated. Please update it.")
+                nodes.interrupt_processing()
 
         return (value, )
 
@@ -699,6 +695,5 @@ original_handle_execution = execution.PromptExecutor.handle_execution_error
 
 
 def handle_execution_error(**kwargs):
-    print(f" handled")
     execution.PromptExecutor.handle_execution_error(**kwargs)
 
