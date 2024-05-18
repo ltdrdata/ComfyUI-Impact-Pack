@@ -890,6 +890,32 @@ def segs_bitwise_and_mask(segs, mask):
     return segs[0], items
 
 
+def segs_bitwise_subtract_mask(segs, mask):
+    mask = make_2d_mask(mask)
+
+    if mask is None:
+        print("[SegsBitwiseSubtractMask] Cannot operate: MASK is empty.")
+        return ([],)
+
+    items = []
+
+    mask = (mask.cpu().numpy() * 255).astype(np.uint8)
+
+    for seg in segs[1]:
+        cropped_mask = (seg.cropped_mask * 255).astype(np.uint8)
+        crop_region = seg.crop_region
+
+        cropped_mask2 = mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]]
+
+        new_mask = cv2.subtract(cropped_mask.astype(np.uint8), cropped_mask2)
+        new_mask = new_mask.astype(np.float32) / 255.0
+
+        item = SEG(seg.cropped_image, new_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
+        items.append(item)
+
+    return segs[0], items
+
+
 def apply_mask_to_each_seg(segs, masks):
     if masks is None:
         print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
