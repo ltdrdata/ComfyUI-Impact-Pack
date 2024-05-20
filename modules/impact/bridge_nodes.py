@@ -228,7 +228,7 @@ class PreviewBridgeLatent:
             decoded_image = decode_latent(latent, preview_method, vae_opt)
 
             if 'noise_mask' in latent:
-                mask = latent['noise_mask']
+                mask = latent['noise_mask'].squeeze(0)  # 4D mask -> 3D mask
 
                 decoded_pil = to_pil(decoded_image)
 
