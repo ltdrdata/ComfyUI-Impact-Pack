@@ -221,6 +221,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * These samplers supports basic_pipe and AYS scheduler
   * `KSampler (pipe)` - pipe version of KSampler
   * `KSampler (advanced/pipe)` - pipe version of KSamplerAdvacned
+  * When converting the scheduler widget to input, refer to the `Impact Scheduler Adapter` node to resolve compatibility issues.
+  
 
 ### Batch/List Util
   * `Image batch To Image List` - Convert Image batch to Image List
