@@ -67,7 +67,30 @@ def read_wildcard_dict(wildcard_path):
     return wildcard_dict
 
 
+def process_comment_out(text):
+    lines = text.split('\n')
+
+    lines0 = []
+    flag = False
+    for line in lines:
+        if line.lstrip().startswith('#'):
+            flag = True
+            continue
+
+        if len(lines0) == 0:
+            lines0.append(line)
+        elif flag:
+            lines0[-1] += ' ' + line
+            flag = False
+        else:
+            lines0.append(line)
+
+    return '\n'.join(lines0)
+
+
 def process(text, seed=None):
+    text = process_comment_out(text)
+
     if seed is not None:
         random.seed(seed)
     random_gen = np.random.default_rng(seed)
