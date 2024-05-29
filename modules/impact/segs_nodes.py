@@ -1141,10 +1141,11 @@ class MaskToSEGS:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @staticmethod
+    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         mask = make_2d_mask(mask)
-
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
+
         return (result, )
 
 
@@ -1166,11 +1167,17 @@ class MaskToSEGS_for_AnimateDiff:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @staticmethod
+    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+        if (len(mask.shape) == 4 and mask.shape[1] > 1) or (len(mask.shape) == 3 and mask.shape[0] > 1):
+            mask = make_3d_mask(mask)
+            if contour_fill:
+                print(f"[Impact Pack] MaskToSEGS_for_AnimateDiff: 'contour_fill' is ignored because batch mask 'contour_fill' is not supported.")
+            result = core.batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
+            return (result, )
+
         mask = make_2d_mask(mask)
-
         segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
-
         all_masks = SEGSToMaskList().doit(segs)[0]
 
         result_mask = (all_masks[0] * 255).to(torch.uint8)
@@ -1180,7 +1187,7 @@ class MaskToSEGS_for_AnimateDiff:
         result_mask = (result_mask/255.0).to(torch.float32)
         result_mask = utils.to_binary_mask(result_mask, 0.1)[0]
 
-        return MaskToSEGS().doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
+        return MaskToSEGS.doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
 
 
 class IPAdapterApplySEGS:
@@ -1211,7 +1218,8 @@ class IPAdapterApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image, combine_embeds="concat", neg_image=None):
+    @staticmethod
+    def doit(segs, ipadapter_pipe, weight, noise, weight_type, start_at, end_at, unfold_batch, faceid_v2, weight_v2, context_crop_factor, reference_image, combine_embeds="concat", neg_image=None):
 
         if len(ipadapter_pipe) == 4:
             print(f"[Impact Pack] IPAdapterApplySEGS: Installed Inspire Pack is outdated.")
@@ -1255,7 +1263,8 @@ class ControlNetApplySEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, segs_preprocessor=None, control_image=None):
+    @staticmethod
+    def doit(segs, control_net, strength, segs_preprocessor=None, control_image=None):
         new_segs = []
 
         for seg in segs[1]:
@@ -1288,7 +1297,8 @@ class ControlNetApplyAdvancedSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None):
+    @staticmethod
+    def doit(segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None):
         new_segs = []
 
         for seg in segs[1]:
@@ -1311,7 +1321,8 @@ class ControlNetClearSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs):
+    @staticmethod
+    def doit(segs):
         new_segs = []
 
         for seg in segs[1]:
@@ -1369,7 +1380,8 @@ class SEGSPicker:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, picks, segs, fallback_image_opt=None, unique_id=None):
+    @staticmethod
+    def doit(picks, segs, fallback_image_opt=None, unique_id=None):
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
@@ -1424,7 +1436,8 @@ class DefaultImageForSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, image, override):
+    @staticmethod
+    def doit(segs, image, override):
         results = []
 
         segs = core.segs_scale_match(segs, image.shape)
@@ -1468,7 +1481,8 @@ class RemoveImageFromSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs):
+    @staticmethod
+    def doit(segs):
         results = []
 
         if len(segs[1]) > 0:
@@ -1505,7 +1519,8 @@ class MakeTileSEGS:
 
     CATEGORY = "ImpactPack/__for_testing"
 
-    def doit(self, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
+    @staticmethod
+    def doit(images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
             new_min_overlap = bbox_size / 2
             print(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")

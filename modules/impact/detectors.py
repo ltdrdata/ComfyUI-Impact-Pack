@@ -410,7 +410,7 @@ class SimpleDetectorForAnimateDiff:
                 return segs_by_frames[0][1]
             else:
                 merged_mask = get_whole_merged_mask()
-                return segs_nodes.MaskToSEGS().doit(merged_mask, False, crop_factor, False, drop_size, contour_fill=True)[0]
+                return segs_nodes.MaskToSEGS.doit(merged_mask, False, crop_factor, False, drop_size, contour_fill=True)[0]
 
         def get_merged_neighboring_segs():
             pivot_segs = get_pivot_segs()

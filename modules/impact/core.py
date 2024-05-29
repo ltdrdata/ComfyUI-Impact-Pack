@@ -1013,6 +1013,21 @@ class ONNXDetector:
         pass
 
 
+def batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None):
+    combined_mask = mask.max(dim=0).values
+
+    segs = mask_to_segs(combined_mask, combined, crop_factor, bbox_fill, drop_size, label, crop_min_size, detailer_hook)
+
+    new_segs = []
+    for seg in segs[1]:
+        x1, y1, x2, y2 = seg.crop_region
+        cropped_mask = mask[:, y1:y2, x1:x2]
+        item = SEG(None, cropped_mask, 1.0, seg.crop_region, seg.bbox, label, None)
+        new_segs.append(item)
+
+    return segs[0], new_segs
+
+
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
     drop_size = max(drop_size, 1)
     if mask is None:
