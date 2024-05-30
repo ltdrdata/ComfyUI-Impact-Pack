@@ -15,8 +15,6 @@ comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
 subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
 modules_path = os.path.join(os.path.dirname(__file__), "modules")
-wildcards_path = os.path.join(os.path.dirname(__file__), "wildcards")
-custom_wildcards_path = os.path.join(os.path.dirname(__file__), "custom_wildcards")
 
 sys.path.append(modules_path)
 
@@ -88,22 +86,8 @@ from .modules.impact.segs_upscaler import *
 
 import threading
 
-wildcard_path = impact.config.get_config()['custom_wildcards']
 
-
-def wildcard_load():
-    with wildcards.wildcard_lock:
-        impact.wildcards.read_wildcard_dict(wildcards_path)
-
-        try:
-            impact.wildcards.read_wildcard_dict(impact.config.get_config()['custom_wildcards'])
-        except Exception as e:
-            print(f"[Impact Pack] Failed to load custom wildcards directory.")
-
-        print(f"[Impact Pack] Wildcards loading done.")
-
-
-threading.Thread(target=wildcard_load).start()
+threading.Thread(target=impact.wildcards.wildcard_load).start()
 
 
 NODE_CLASS_MAPPINGS = {

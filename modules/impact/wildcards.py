@@ -7,6 +7,10 @@ import yaml
 import numpy as np
 import threading
 from impact import utils
+from impact import config
+
+
+wildcards_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "wildcards"))
 
 RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+)__", re.IGNORECASE)
 wildcard_lock = threading.Lock()
@@ -499,3 +503,18 @@ def process_wildcard_for_segs(wildcard):
 
     else:
         return None, WildcardChooser([(None, wildcard)], False)
+
+
+def wildcard_load():
+    global wildcard_dict
+    wildcard_dict = {}
+
+    with wildcard_lock:
+        read_wildcard_dict(wildcards_path)
+
+        try:
+            read_wildcard_dict(config.get_config()['custom_wildcards'])
+        except Exception as e:
+            print(f"[Impact Pack] Failed to load custom wildcards directory.")
+
+        print(f"[Impact Pack] Wildcards loading done.")
