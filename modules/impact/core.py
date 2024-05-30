@@ -766,7 +766,8 @@ def segs_scale_match(segs, target_shape):
         new_w = crop_region[2] - crop_region[0]
         new_h = crop_region[3] - crop_region[1]
 
-        cropped_mask = torch.from_numpy(cropped_mask)
+        if isinstance(cropped_mask, np.ndarray):
+            cropped_mask = torch.from_numpy(cropped_mask)
         cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
         cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
