@@ -305,10 +305,13 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None, control_net_wrapper=None, inpaint_model=False, noise_mask_feather=0):
+                                   refiner_negative=None, control_net_wrapper=None, noise_mask_feather=0):
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
+
+    if noise_mask_feather > 0:
+        model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)

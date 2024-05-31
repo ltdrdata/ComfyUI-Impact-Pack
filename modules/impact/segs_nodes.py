@@ -10,6 +10,7 @@ from .core import SEG
 import impact.utils as utils
 from . import defs
 from . import segs_upscaler
+from comfy.cli_args import args
 import math
 
 
@@ -196,9 +197,8 @@ class SEGSPaste:
                     x, y, *_ = seg.crop_region
 
                     # ensure same device
-                    mask.cpu()
-                    image_i.cpu()
-                    ref_image.cpu()
+                    mask = mask.to(image_i.device)
+                    ref_image = ref_image.to(image_i.device)
 
                     tensor_paste(image_i, ref_image, (x, y), mask)
 
@@ -206,6 +206,9 @@ class SEGSPaste:
                 result = image_i
             else:
                 result = torch.concat((result, image_i), dim=0)
+
+        if not args.highvram and not args.gpu_only:
+            result = result.cpu()
 
         return (result, )
 

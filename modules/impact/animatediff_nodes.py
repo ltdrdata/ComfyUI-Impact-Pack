@@ -21,12 +21,11 @@ class SEGSDetailerForAnimateDiff:
                      "scheduler": (core.SCHEDULERS,),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "basic_pipe": ("BASIC_PIPE",),
-                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0})
+                     "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
                      },
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                     # TODO: "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     # TODO: "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                     "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
                      }
                 }
 
@@ -40,7 +39,7 @@ class SEGSDetailerForAnimateDiff:
 
     @staticmethod
     def do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, noise_mask_feather=0):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -90,7 +89,7 @@ class SEGSDetailerForAnimateDiff:
                                                                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                                                      refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
-                                                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                                                     noise_mask_feather=noise_mask_feather)
             if cnet_images is not None:
                 cnet_image_list.extend(cnet_images)
 
@@ -109,7 +108,7 @@ class SEGSDetailerForAnimateDiff:
 
         segs, cnet_images = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                                  scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt,
-                                                                 inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                                 noise_mask_feather=noise_mask_feather)
 
         if len(cnet_images) == 0:
             cnet_images = [empty_pil_tensor()]
@@ -135,13 +134,12 @@ class DetailerForEachPipeForAnimateDiff:
                       "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                       "basic_pipe": ("BASIC_PIPE", ),
                       "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
-                     },
+                      },
                 "optional": {
-                     "detailer_hook": ("DETAILER_HOOK",),
-                     "refiner_basic_pipe_opt": ("BASIC_PIPE",),
-                     # "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                     # "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
-                    }
+                      "detailer_hook": ("DETAILER_HOOK",),
+                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
+                      "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                      }
                 }
 
     RETURN_TYPES = ("IMAGE", "SEGS", "BASIC_PIPE", "IMAGE")
@@ -154,7 +152,7 @@ class DetailerForEachPipeForAnimateDiff:
     @staticmethod
     def doit(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, basic_pipe, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
-             inpaint_model=False, noise_mask_feather=0):
+             noise_mask_feather=0):
 
         enhanced_segs = []
         cnet_image_list = []
@@ -162,7 +160,7 @@ class DetailerForEachPipeForAnimateDiff:
         for sub_seg in segs[1]:
             single_seg = segs[0], [sub_seg]
             enhanced_seg, cnet_images = SEGSDetailerForAnimateDiff().do_detail(image_frames, single_seg, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                                                                               denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, inpaint_model, noise_mask_feather)
+                                                                               denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, noise_mask_feather)
 
             image_frames = SEGSPaste.doit(image_frames, enhanced_seg, feather, alpha=255)[0]
 
