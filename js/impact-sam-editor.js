@@ -435,7 +435,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			ctx.arc(scaledX, scaledY, 3, 0, 3 * Math.PI);
 			ctx.fill();
 		}
-	}줘
+	}
 
 	invalidateMaskCanvas(self) {
 		if(self.mask_image) {
