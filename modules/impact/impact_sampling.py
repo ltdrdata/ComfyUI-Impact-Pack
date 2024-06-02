@@ -240,7 +240,7 @@ class KSamplerAdvancedWrapper:
         return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt)
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
-                        recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0):
+                        recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0, noise=None):
 
         model, cfg, sampler_name, scheduler, positive, negative, sigma_factor = self.params
         # steps, start_at_step, end_at_step = self.compensate_denoise(steps, start_at_step, end_at_step)
@@ -264,7 +264,7 @@ class KSamplerAdvancedWrapper:
             if sigma_ratio > 0:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler,
                                                 positive, negative, latent_image, start_at_step, end_at_step,
-                                                return_with_leftover_noise, sigma_ratio=sigma_ratio * sigma_factor, sampler_opt=self.sampler_opt)
+                                                return_with_leftover_noise, sigma_ratio=sigma_ratio * sigma_factor, sampler_opt=self.sampler_opt, noise=noise)
         except ValueError as e:
             if str(e) == 'sigma_min and sigma_max must not be 0':
                 print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")

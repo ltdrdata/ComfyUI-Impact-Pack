@@ -6,6 +6,7 @@ import numpy
 import torch
 from segment_anything import SamPredictor
 
+from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from impact.utils import *
 from collections import namedtuple
 import numpy as np
@@ -80,19 +81,60 @@ def erosion_mask(mask, grow_mask_by):
     return mask_erosion[:, :, :w, :h].round().cpu()
 
 
+# CREDIT: https://github.com/BlenderNeko/ComfyUI_Noise/blob/afb14757216257b12268c91845eac248727a55e2/nodes.py#L68
+#         https://discuss.pytorch.org/t/help-regarding-slerp-function-for-generative-model-sampling/32475/3
+def slerp(val, low, high):
+    dims = low.shape
+
+    low = low.reshape(dims[0], -1)
+    high = high.reshape(dims[0], -1)
+
+    low_norm = low/torch.norm(low, dim=1, keepdim=True)
+    high_norm = high/torch.norm(high, dim=1, keepdim=True)
+
+    low_norm[low_norm != low_norm] = 0.0
+    high_norm[high_norm != high_norm] = 0.0
+
+    omega = torch.acos((low_norm*high_norm).sum(1))
+    so = torch.sin(omega)
+    res = (torch.sin((1.0-val)*omega)/so).unsqueeze(1)*low + (torch.sin(val*omega)/so).unsqueeze(1) * high
+
+    return res.reshape(dims)
+
+
+def mix_noise(from_noise, to_noise, strength, variation_method):
+    if variation_method == 'slerp':
+        mixed_noise = slerp(strength, from_noise, to_noise)
+    else:
+        # linear
+        mixed_noise = (1 - strength) * from_noise + strength * to_noise
+
+        # NOTE: Since the variance of the Gaussian noise in mixed_noise has changed, it must be corrected through scaling.
+        scale_factor = math.sqrt((1 - strength) ** 2 + strength ** 2)
+        mixed_noise /= scale_factor
+
+    return mixed_noise
+
+
 class REGIONAL_PROMPT:
-    def __init__(self, mask, sampler):
+    def __init__(self, mask, sampler, variation_seed=0, variation_strength=0.0, variation_method='linear'):
         mask = make_2d_mask(mask)
 
         self.mask = mask
         self.sampler = sampler
         self.mask_erosion = None
         self.erosion_factor = None
+        self.variation_seed = variation_seed
+        self.variation_strength = variation_strength
+        self.variation_method = variation_method
 
     def clone_with_sampler(self, sampler):
         rp = REGIONAL_PROMPT(self.mask, sampler)
         rp.mask_erosion = self.mask_erosion
         rp.erosion_factor = self.erosion_factor
+        rp.variation_seed = self.variation_seed
+        rp.variation_strength = self.variation_strength
+        rp.variation_method = self.variation_method
         return rp
 
     def get_mask_erosion(self, factor):
@@ -101,6 +143,18 @@ class REGIONAL_PROMPT:
             self.erosion_factor = factor
 
         return self.mask_erosion
+
+    def touch_noise(self, noise):
+        if self.variation_strength > 0.0:
+            mask = utils.make_3d_mask(self.mask)
+            mask = utils.resize_mask(mask, (noise.shape[2], noise.shape[3])).unsqueeze(0)
+
+            regional_noise = Noise_RandomNoise(self.variation_seed).generate_noise({'samples': noise})
+            mixed_noise = mix_noise(noise, regional_noise, self.variation_strength, variation_method=self.variation_method)
+
+            return (mask == 1).float() * mixed_noise + (mask == 0).float() * noise
+
+        return noise
 
 
 class NO_BBOX_DETECTOR:

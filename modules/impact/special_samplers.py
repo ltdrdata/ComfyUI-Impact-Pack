@@ -1,5 +1,6 @@
 import math
 import impact.core as core
+from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from impact.utils import *
 from nodes import MAX_RESOLUTION
 import nodes
@@ -27,7 +28,8 @@ class TiledKSamplerProvider:
 
     CATEGORY = "ImpactPack/Sampler"
 
-    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise,
+    @staticmethod
+    def doit(seed, steps, cfg, sampler_name, scheduler, denoise,
              tile_width, tile_height, tiling_strategy, basic_pipe):
         model, _, _, positive, negative = basic_pipe
         sampler = core.TiledKSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
@@ -54,7 +56,8 @@ class KSamplerProvider:
 
     CATEGORY = "ImpactPack/Sampler"
 
-    def doit(self, seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe):
+    @staticmethod
+    def doit(seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe):
         model, _, _, positive, negative = basic_pipe
         sampler = KSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
         return (sampler, )
@@ -80,7 +83,8 @@ class KSamplerAdvancedProvider:
 
     CATEGORY = "ImpactPack/Sampler"
 
-    def doit(self, cfg, sampler_name, scheduler, basic_pipe, sigma_factor=1.0, sampler_opt=None):
+    @staticmethod
+    def doit(cfg, sampler_name, scheduler, basic_pipe, sigma_factor=1.0, sampler_opt=None):
         model, _, _, positive, negative = basic_pipe
         sampler = KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=sampler_opt, sigma_factor=sigma_factor)
         return (sampler, )
@@ -102,7 +106,8 @@ class TwoSamplersForMask:
 
     CATEGORY = "ImpactPack/Sampler"
 
-    def doit(self, latent_image, base_sampler, mask_sampler, mask):
+    @staticmethod
+    def doit(latent_image, base_sampler, mask_sampler, mask):
         inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
 
         latent_image['noise_mask'] = inv_mask
@@ -154,7 +159,8 @@ class TwoAdvancedSamplersForMask:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, steps, denoise, samples, base_sampler, mask_sampler, mask, overlap_factor):
+    @staticmethod
+    def doit(seed, steps, denoise, samples, base_sampler, mask_sampler, mask, overlap_factor):
 
         inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
 
@@ -184,9 +190,14 @@ class RegionalPrompt:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                     "mask": ("MASK", ),
-                     "advanced_sampler": ("KSAMPLER_ADVANCED", ),
-                     },
+                    "mask": ("MASK", ),
+                    "advanced_sampler": ("KSAMPLER_ADVANCED", ),
+                    },
+                "optional": {
+                    "variation_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                    "variation_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    "variation_method": (["linear", "slerp"],),
+                    }
                 }
 
     RETURN_TYPES = ("REGIONAL_PROMPTS", )
@@ -194,8 +205,9 @@ class RegionalPrompt:
 
     CATEGORY = "ImpactPack/Regional"
 
-    def doit(self, mask, advanced_sampler):
-        regional_prompt = core.REGIONAL_PROMPT(mask, advanced_sampler)
+    @staticmethod
+    def doit(mask, advanced_sampler, variation_seed=0, variation_strength=0.0, variation_method="linear"):
+        regional_prompt = core.REGIONAL_PROMPT(mask, advanced_sampler, variation_seed=variation_seed, variation_strength=variation_strength, variation_method=variation_method)
         return ([regional_prompt], )
 
 
@@ -212,7 +224,8 @@ class CombineRegionalPrompts:
 
     CATEGORY = "ImpactPack/Regional"
 
-    def doit(self, **kwargs):
+    @staticmethod
+    def doit(**kwargs):
         res = []
         for k, v in kwargs.items():
             res += v
@@ -233,7 +246,8 @@ class CombineConditionings:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, **kwargs):
+    @staticmethod
+    def doit(**kwargs):
         res = []
         for k, v in kwargs.items():
             res += v
@@ -254,7 +268,8 @@ class ConcatConditionings:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, **kwargs):
+    @staticmethod
+    def doit(**kwargs):
         conditioning_to = list(kwargs.values())[0]
 
         for k, conditioning_from in list(kwargs.items())[1:]:
@@ -324,7 +339,8 @@ class RegionalSampler:
 
         return mask_erosion[:, :, :w, :h].round()
 
-    def doit(self, seed, seed_2nd, seed_2nd_mode, steps, base_only_steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent,
+    @staticmethod
+    def doit(seed, seed_2nd, seed_2nd_mode, steps, base_only_steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent,
              additional_mode, additional_sampler, additional_sigma_ratio, unique_id=None):
         if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
@@ -348,7 +364,12 @@ class RegionalSampler:
             if seed_2nd_mode == 'ignore':
                 leftover_noise = True
 
-            samples = base_sampler.sample_advanced(True, seed, adv_steps, samples, start_at_step, start_at_step + base_only_steps, leftover_noise, recovery_mode="DISABLE")
+            noise = Noise_RandomNoise(seed).generate_noise(samples)
+
+            for rp in regional_prompts:
+                noise = rp.touch_noise(noise)
+
+            samples = base_sampler.sample_advanced(True, seed, adv_steps, samples, start_at_step, start_at_step + base_only_steps, leftover_noise, recovery_mode="DISABLE", noise=noise)
 
         if seed_2nd_mode == "seed+seed_2nd":
             seed += seed_2nd
@@ -366,15 +387,20 @@ class RegionalSampler:
 
         if not leftover_noise:
             add_noise = True
+            noise = Noise_RandomNoise(seed).generate_noise(samples)
+
+            for rp in regional_prompts:
+                noise = rp.touch_noise(noise)
         else:
             add_noise = False
+            noise = None
 
         for i in range(start_at_step+base_only_steps, adv_steps):
             core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             new_latent_image['noise_mask'] = inv_mask
             new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, True,
-                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio)
+                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio, noise=noise)
 
             if restore_latent:
                 if 'noise_mask' in new_latent_image:
@@ -453,7 +479,8 @@ class RegionalSamplerAdvanced:
 
     CATEGORY = "ImpactPack/Regional"
 
-    def doit(self, add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, restore_latent, return_with_leftover_noise, latent_image, base_sampler, regional_prompts,
+    @staticmethod
+    def doit(add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, restore_latent, return_with_leftover_noise, latent_image, base_sampler, regional_prompts,
              additional_mode, additional_sampler, additional_sigma_ratio, unique_id):
 
         if restore_latent:
@@ -480,9 +507,16 @@ class RegionalSamplerAdvanced:
 
             cur_add_noise = True if i == start_at_step and add_noise else False
 
+            if cur_add_noise:
+                noise = Noise_RandomNoise(noise_seed).generate_noise(new_latent_image)
+                for rp in regional_prompts:
+                    noise = rp.touch_noise(noise)
+            else:
+                noise = None
+
             new_latent_image['noise_mask'] = inv_mask
             new_latent_image = base_sampler.sample_advanced(cur_add_noise, noise_seed, steps, new_latent_image, i, i + 1, True,
-                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio)
+                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio, noise=noise)
 
             if restore_latent:
                 del new_latent_image['noise_mask']
@@ -555,7 +589,8 @@ class KSamplerBasicPipe:
 
     CATEGORY = "sampling"
 
-    def sample(self, basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
+    @staticmethod
+    def sample(basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
         latent = impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
         return basic_pipe, latent, vae
@@ -584,7 +619,8 @@ class KSamplerAdvancedBasicPipe:
 
     CATEGORY = "sampling"
 
-    def sample(self, basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
+    @staticmethod
+    def sample(basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
         model, clip, vae, positive, negative = basic_pipe
 
         latent = separated_sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise)
