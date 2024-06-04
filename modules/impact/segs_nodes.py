@@ -485,7 +485,7 @@ class SEGSOrderedFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence"],),
                         "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
                         "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -519,8 +519,12 @@ class SEGSOrderedFilter:
                 value = x2
             elif target == "y1":
                 value = y1
-            else:
+            elif target == "y2":
                 value = y2
+            elif target == "confidence":
+                value = seg.confidence
+            else:
+                raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
 
             segs_with_order.append((value, seg))
 
@@ -538,7 +542,7 @@ class SEGSOrderedFilter:
             else:
                 remained_list.append(item[1])
 
-        return ((segs[0], result_list), (segs[0], remained_list), )
+        return (segs[0], result_list), (segs[0], remained_list),
 
 
 class SEGSRangeFilter:
@@ -546,7 +550,7 @@ class SEGSRangeFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent", "confidence(0-100)"],),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
                         "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -586,8 +590,12 @@ class SEGSRangeFilter:
                 value = x2
             elif target == "y1":
                 value = y1
-            else:
+            elif target == "y2":
                 value = y2
+            elif target == "confidence(0-100)":
+                value = seg.confidence*100
+            else:
+                raise Exception(f"[Impact Pack] SEGSRangeFilter - Unexpected target '{target}'")
 
             if mode and min_value <= value <= max_value:
                 print(f"[in] value={value} / {mode}, {min_value}, {max_value}")
@@ -599,7 +607,7 @@ class SEGSRangeFilter:
                 remained_segs.append(seg)
                 print(f"[filter] value={value} / {mode}, {min_value}, {max_value}")
 
-        return ((segs[0], new_segs), (segs[0], remained_segs), )
+        return (segs[0], new_segs), (segs[0], remained_segs),
 
 
 class SEGSToImageList:
