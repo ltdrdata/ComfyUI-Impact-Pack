@@ -337,7 +337,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         refined_latent = detailer_hook.pre_decode(refined_latent)
 
     # non-latent downscale - latent downscale cause bad quality
-    refined_image = vae.decode(refined_latent['samples'])
+    try:
+        # try to decode image normally
+        refined_image = vae.decode(refined_latent['samples'])
+    except Exception as e:
+        #usually an out-of-memory exception from the decode, so try a tiled approach
+        refined_image = vae.decode_tiled(refined_latent["samples"], tile_x=64, tile_y=64, )
 
     if detailer_hook is not None:
         refined_image = detailer_hook.post_decode(refined_image)
