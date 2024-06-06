@@ -53,14 +53,14 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `IPAdapterApply (SEGS)` - To apply IPAdapter in SEGS, you need to use the Preprocessor Provider node from the Inspire Pack to utilize this node.
 
 ### Mask operation
-  * `Bitwise(SEGS & SEGS)` - Performs a 'bitwise and' operation between two SEGS.
-  * `Bitwise(SEGS - SEGS)` - Subtracts one SEGS from another.
-  * `Bitwise(SEGS & MASK)` - Performs a bitwise AND operation between SEGS and MASK.
-  * `Bitwise(SEGS & MASKS ForEach)` - Performs a bitwise AND operation between SEGS and MASKS.
+  * `Pixelwise(SEGS & SEGS)` - Performs a 'pixelwise and' operation between two SEGS.
+  * `Pixelwise(SEGS - SEGS)` - Subtracts one SEGS from another.
+  * `Pixelwise(SEGS & MASK)` - Performs a pixelwise AND operation between SEGS and MASK.
+  * `Pixelwise(SEGS & MASKS ForEach)` - Performs a pixelwise AND operation between SEGS and MASKS.
     * Please note that this operation is performed with batches of MASKS, not just a single MASK.
-  * `Bitwise(MASK & MASK)` - Performs a 'bitwise and' operation between two masks.
-  * `Bitwise(MASK - MASK)` - Subtracts one mask from another.
-  * `Bitwise(MASK + MASK)` - Combine two masks.
+  * `Pixelwise(MASK & MASK)` - Performs a 'pixelwise and' operation between two masks.
+  * `Pixelwise(MASK - MASK)` - Subtracts one mask from another.
+  * `Pixelwise(MASK + MASK)` - Combine two masks.
   * `SEGM Detector (SEGS)` - Detects segmentation and returns SEGS from the input image.
   * `BBOX Detector (SEGS)` - Detects bounding boxes and returns SEGS from the input image.
   * `Dilate Mask` - Dilate Mask.
@@ -220,7 +220,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     > NOTE: The `sde` sampler and `uni_pc` sampler introduce additional noise during each step of the sampling process. To mitigate this, when sampling each region, the `uni_pc` sampler applies additional `dpmpp_fast`, and the sde sampler applies the `dpmpp_2m` sampler as an additional measure.
 
 ### Impact KSampler
-  * These samplers supports basic_pipe and AYS scheduler
+  * These samplers support basic_pipe and AYS scheduler
   * `KSampler (pipe)` - pipe version of KSampler
   * `KSampler (advanced/pipe)` - pipe version of KSamplerAdvacned
   * When converting the scheduler widget to input, refer to the `Impact Scheduler Adapter` node to resolve compatibility issues.
