@@ -830,8 +830,13 @@ def segs_scale_match(segs, target_shape):
 
         if isinstance(cropped_mask, np.ndarray):
             cropped_mask = torch.from_numpy(cropped_mask)
-        cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
-        cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
+
+        if isinstance(cropped_mask, torch.Tensor) and len(cropped_mask.shape) == 3:
+            cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
+            cropped_mask = cropped_mask.squeeze(0)
+        else:
+            cropped_mask = torch.nn.functional.interpolate(cropped_mask.unsqueeze(0).unsqueeze(0), size=(new_h, new_w), mode='bilinear', align_corners=False)
+            cropped_mask = cropped_mask.squeeze(0).squeeze(0).numpy()
 
         if cropped_image is not None:
             cropped_image = tensor_resize(cropped_image if isinstance(cropped_image, torch.Tensor) else torch.from_numpy(cropped_image), new_w, new_h)
