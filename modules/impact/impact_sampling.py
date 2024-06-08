@@ -111,6 +111,9 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
     latent = latent_image
     latent_image = latent["samples"]
 
+    if hasattr(comfy.sample, 'fix_empty_latent_channels'):
+        latent_image = comfy.sample.fix_empty_latent_channels(model, latent_image)
+
     if noise is None:
         if not add_noise:
             noise = Noise_EmptyNoise().generate_noise(latent)
@@ -166,7 +169,7 @@ def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler
             if latent_image is not None:
                 return latent_image
             else:
-                return torch.zeros_like(noise)
+                return {'samples': torch.zeros_like(noise)}
 
     if sampler_opt is None:
         impact_sampler = ksampler(sampler_name, total_sigmas)
