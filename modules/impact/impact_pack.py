@@ -15,7 +15,8 @@ import impact.wildcards
 from impact.utils import *
 import impact.core as core
 from impact.core import SEG
-from impact.config import MAX_RESOLUTION, latent_letter_path
+from impact.config import latent_letter_path
+from nodes import MAX_RESOLUTION
 from PIL import Image, ImageOps
 import numpy as np
 import hashlib

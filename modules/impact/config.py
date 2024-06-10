@@ -1,18 +1,15 @@
 import configparser
 import os
 
-
-version_code = [5, 11, 4]
+version_code = [5, 11, 5]
 version = f"V{version_code[0]}.{version_code[1]}" + (f'.{version_code[2]}' if len(version_code) > 2 else '')
 
-dependency_version = 20
+dependency_version = 21
 
 my_path = os.path.dirname(__file__)
 old_config_path = os.path.join(my_path, "impact-pack.ini")
 config_path = os.path.join(my_path, "..", "..", "impact-pack.ini")
 latent_letter_path = os.path.join(my_path, "..", "..", "latent.png")
-
-MAX_RESOLUTION = 8192
 
 
 def write_config():

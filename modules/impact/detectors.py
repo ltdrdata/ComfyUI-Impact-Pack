@@ -1,5 +1,5 @@
 import impact.core as core
-from impact.config import MAX_RESOLUTION
+from nodes import MAX_RESOLUTION
 import impact.segs_nodes as segs_nodes
 import impact.utils as utils
 import torch
