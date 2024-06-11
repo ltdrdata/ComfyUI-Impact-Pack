@@ -730,6 +730,23 @@ class SEGSConcat:
             return ((dim, res), )
 
 
+class Count_Elts_in_SEGS:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                }
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, segs):
+        return (len(segs[1]), )
+
+
 class DecomposeSEGS:
     @classmethod
     def INPUT_TYPES(s):

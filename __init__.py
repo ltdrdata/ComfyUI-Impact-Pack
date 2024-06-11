@@ -195,6 +195,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
     "ImpactFrom_SEG_ELT_bbox": From_SEG_ELT_bbox,
     "ImpactFrom_SEG_ELT_crop_region": From_SEG_ELT_crop_region,
+    "ImpactCount_Elts_in_SEGS": Count_Elts_in_SEGS,
 
     "BboxDetectorCombined_v2": BboxDetectorCombined,
     "SegmDetectorCombined_v2": SegmDetectorCombined,
@@ -380,6 +381,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactFrom_SEG_ELT_crop_region": "From SEG_ELT crop_region",
     "ImpactDilate_Mask_SEG_ELT": "Dilate Mask (SEG_ELT)",
     "ImpactScaleBy_BBOX_SEG_ELT": "ScaleBy BBOX (SEG_ELT)",
+    "ImpactCount_Elts_in_SEGS": "Count Elts in SEGS",
     "ImpactDilateMask": "Dilate Mask",
     "ImpactGaussianBlurMask": "Gaussian Blur Mask",
     "ImpactDilateMaskInSEGS": "Dilate Mask (SEGS)",

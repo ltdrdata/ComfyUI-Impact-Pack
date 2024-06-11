@@ -119,6 +119,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * `Dilate SEG_ELT` - Dilate the mask of SEG_ELT.
     * `From SEG_ELT` bbox - Extract coordinate from bbox in SEG_ELT
     * `From SEG_ELT` crop_region - Extract coordinate from crop_region in SEG_ELT
+  * `Count Elt in SEGS` - Number of Elts ins SEGS
  
 ### Pipe nodes
    * `ToDetailerPipe`, `FromDetailerPipe` - These nodes are used to bundle multiple inputs used in the detailer, such as models and vae, ..., into a single DETAILER_PIPE or extract the elements that are bundled in the DETAILER_PIPE.
