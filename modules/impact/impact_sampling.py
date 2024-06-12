@@ -116,9 +116,9 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
 
     if noise is None:
         if not add_noise:
-            noise = Noise_EmptyNoise().generate_noise(latent)
+            noise = Noise_EmptyNoise().generate_noise({'samples': latent_image})
         else:
-            noise = Noise_RandomNoise(noise_seed).generate_noise(latent)
+            noise = Noise_RandomNoise(noise_seed).generate_noise({'samples': latent_image})
 
     noise_mask = None
     if "noise_mask" in latent:
