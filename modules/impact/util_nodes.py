@@ -325,7 +325,7 @@ class ImageListToImageBatch:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, images):
-        if len(images) <= 1:
+        if len(images) < 1:
             return (images,)
         else:
             image1 = images[0]
@@ -549,9 +549,8 @@ class WildcardPromptFromString:
         # some sanity checks and normalization for later processing
         if prefix_all is None: prefix_all = ""
         if postfix_all is None: postfix_all = ""
-        if restrict_to_tags is None: restrict_to_tags = ""
         if exclude_tags is None: exclude_tags = ""
-        if not isinstance(restrict_to_tags, list):
+        if restrict_to_tags is not None and restrict_to_tags != "" and not isinstance(restrict_to_tags, list):
             restrict_to_tags = restrict_to_tags.split(", ")
         if not isinstance(exclude_tags, list):
             exclude_tags = exclude_tags.split(", ")
@@ -564,7 +563,7 @@ class WildcardPromptFromString:
             labels.append(label)
             x = x.split(", ")
             # restrict to tags
-            if restrict_to_tags != "":
+            if isinstance(restrict_to_tags, list):
                 x = list(set(x) & set(restrict_to_tags))
             # remove tags
             if exclude_tags != "":
