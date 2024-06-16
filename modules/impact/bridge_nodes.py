@@ -155,7 +155,7 @@ def decode_latent(latent, preview_method, vae_opt=None):
 
     pil_image = previewer.decode_latent_to_preview(samples)
     pixels_size = pil_image.size[0]*8, pil_image.size[1]*8
-    resized_image = pil_image.resize(pixels_size, Image.NONE)
+    resized_image = pil_image.resize(pixels_size, resample=LANCZOS)
 
     return to_tensor(resized_image).unsqueeze(0)
 
