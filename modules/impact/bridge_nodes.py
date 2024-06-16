@@ -230,7 +230,7 @@ class PreviewBridgeLatent:
         latent_channels = latent['samples'].shape[1]
         preview_method_channels = 16 if 'SD3' in preview_method or 'SC-Prior' in preview_method else 4
 
-        if latent_channels != preview_method_channels:
+        if vae_opt is None and latent_channels != preview_method_channels:
             print(f"[PreviewBridgeLatent] The version of latent is not compatible with preview_method.\nSD3, SD1/SD2, SDXL, SC-Prior, and SC-B are not compatible with each other.")
             raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, and SC-B are not compatible with each other.")
 
