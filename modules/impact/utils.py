@@ -126,7 +126,7 @@ def to_pil(image):
 
 def to_tensor(image):
     if isinstance(image, Image.Image):
-        return torch.from_numpy(np.array(image))
+        return torch.from_numpy(np.array(image)) / 255.0
     if isinstance(image, torch.Tensor):
         return image
     if isinstance(image, np.ndarray):

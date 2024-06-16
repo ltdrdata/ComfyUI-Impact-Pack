@@ -2111,7 +2111,10 @@ try:
 
         if method != LatentPreviewMethod.NoPreviews or force:
             # TODO previewer methods
-            taesd_decoder_path = folder_paths.get_full_path("vae_approx", latent_format.taesd_decoder_name)
+            taesd_decoder_path = None
+
+            if hasattr(latent_format, "taesd_decoder_path"):
+                taesd_decoder_path = folder_paths.get_full_path("vae_approx", latent_format.taesd_decoder_name)
 
             if method == LatentPreviewMethod.Auto:
                 method = LatentPreviewMethod.Latent2RGB
@@ -2120,7 +2123,7 @@ try:
 
             if method == LatentPreviewMethod.TAESD:
                 if taesd_decoder_path:
-                    taesd = TAESD(None, taesd_decoder_path).to(device)
+                    taesd = TAESD(None, taesd_decoder_path, latent_channels=latent_format.latent_channels).to(device)
                     previewer = TAESDPreviewerImpl(taesd)
                 else:
                     print("Warning: TAESD previews enabled, but could not find models/vae_approx/{}".format(
