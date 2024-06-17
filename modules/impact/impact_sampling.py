@@ -114,11 +114,14 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
     if hasattr(comfy.sample, 'fix_empty_latent_channels'):
         latent_image = comfy.sample.fix_empty_latent_channels(model, latent_image)
 
+    out = latent.copy()
+    out['samples'] = latent_image
+
     if noise is None:
         if not add_noise:
-            noise = Noise_EmptyNoise().generate_noise({'samples': latent_image})
+            noise = Noise_EmptyNoise().generate_noise(out)
         else:
-            noise = Noise_RandomNoise(noise_seed).generate_noise({'samples': latent_image})
+            noise = Noise_RandomNoise(noise_seed).generate_noise(out)
 
     noise_mask = None
     if "noise_mask" in latent:
@@ -137,7 +140,6 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
     disable_pbar = not comfy.utils.PROGRESS_BAR_ENABLED
     samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, noise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
 
-    out = latent.copy()
     out["samples"] = samples
     if "x0" in x0_output:
         out_denoised = latent.copy()
