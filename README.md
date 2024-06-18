@@ -257,6 +257,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 ### HuggingFace nodes
   * These nodes provide functionalities based on HuggingFace repository models.
+  * The path where the HuggingFace model cache is stored can be changed through the `TRANSFORMERS_CACHE` environment variable.
   * `HF Transformers Classifier Provider` - This is a node that provides a classifier based on HuggingFace's transformers models.
     * The 'repo id' parameter should contain HuggingFace's repo id. When `preset_repo_id` is set to `Manual repo id`, use the manually entered repo id in `manual_repo_id`.
     * e.g. 'rizvandwiki/gender-classification-2' is a repository that provides a model for gender classification.
