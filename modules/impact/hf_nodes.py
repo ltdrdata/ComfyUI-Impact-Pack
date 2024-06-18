@@ -42,7 +42,7 @@ class HF_TransformersClassifierProvider:
         else:
             device = "cpu"
 
-        classifier = pipeline(model=url, device=device)
+        classifier = pipeline('image-classification', model=url, device=device)
 
         return (classifier,)
 
