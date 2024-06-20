@@ -41,6 +41,7 @@ class SEGSDetailer:
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                      "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                      }
                 }
 
@@ -55,7 +56,7 @@ class SEGSDetailer:
     @staticmethod
     def do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
                   denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-                  refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+                  refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -108,7 +109,7 @@ class SEGSDetailer:
                                                                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                                                 control_net_wrapper=seg.control_net_wrapper, cycle=cycle,
-                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
                 if cnet_pils is not None:
                     cnet_pil_list.extend(cnet_pils)
@@ -125,7 +126,7 @@ class SEGSDetailer:
 
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio=None, batch_size=1, cycle=1,
-             refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+             refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: SEGSDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -133,13 +134,13 @@ class SEGSDetailer:
         segs, cnet_pil_list = SEGSDetailer.do_detail(image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                      scheduler, denoise, noise_mask, force_inpaint, basic_pipe, refiner_ratio, batch_size, cycle=cycle,
                                                      refiner_basic_pipe_opt=refiner_basic_pipe_opt,
-                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                     inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return (segs, cnet_pil_list)
+        return segs, cnet_pil_list
 
 
 class SEGSPaste:
@@ -1743,6 +1744,7 @@ class SEGSUpscaler:
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
                     "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     }
                 }
 
@@ -1754,7 +1756,7 @@ class SEGSUpscaler:
     @staticmethod
     def doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
              seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
-             upscale_model_opt=None, upscaler_hook_opt=None):
+             upscale_model_opt=None, upscaler_hook_opt=None, scheduler_func_opt=None):
 
         new_image = segs_upscaler.upscaler(image, upscale_model_opt, rescale_factor, resampling_method, supersample, rounding_modulus)
 
@@ -1780,7 +1782,7 @@ class SEGSUpscaler:
             enhanced_image = segs_upscaler.img2img_segs(cropped_image, model, clip, vae, seg_seed, steps, cfg, sampler_name, scheduler,
                                                         positive, negative, denoise,
                                                         noise_mask=cropped_mask, control_net_wrapper=seg.control_net_wrapper,
-                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather)
+                                                        inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
             if not (enhanced_image is None):
                 new_image = new_image.cpu()
                 enhanced_image = enhanced_image.cpu()
@@ -1822,6 +1824,7 @@ class SEGSUpscalerPipe:
                 "optional": {
                     "upscale_model_opt": ("UPSCALE_MODEL",),
                     "upscaler_hook_opt": ("UPSCALER_HOOK",),
+                    "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     }
                 }
 
@@ -1833,10 +1836,10 @@ class SEGSUpscalerPipe:
     @staticmethod
     def doit(image, segs, basic_pipe, rescale_factor, resampling_method, supersample, rounding_modulus,
              seed, steps, cfg, sampler_name, scheduler, denoise, feather, inpaint_model, noise_mask_feather,
-             upscale_model_opt=None, upscaler_hook_opt=None):
+             upscale_model_opt=None, upscaler_hook_opt=None, scheduler_func_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
 
         return SEGSUpscaler.doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
                                  seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
-                                 upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt)
+                                 upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt, scheduler_func_opt=scheduler_func_opt)

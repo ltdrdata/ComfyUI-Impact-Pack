@@ -298,7 +298,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
     "ImpactSEGSClassify": SEGS_Classify,
 
-    "ImpactSchedulerAdapter": ImpactSchedulerAdapter
+    "ImpactSchedulerAdapter": ImpactSchedulerAdapter,
+    "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider
 }
 
 
@@ -431,6 +432,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SEGSPreviewCNet": "SEGSPreview (CNET Image)",
 
     "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
+    "GITSSchedulerFuncProvider": "GITSScheduler Func Provider",
 }
 
 if not impact.config.get_config()['mmdet_skip']:

@@ -225,6 +225,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `KSampler (pipe)` - pipe version of KSampler
   * `KSampler (advanced/pipe)` - pipe version of KSamplerAdvacned
   * When converting the scheduler widget to input, refer to the `Impact Scheduler Adapter` node to resolve compatibility issues.
+  * `GITSScheduler Func Provider` - provider scheduler function for GITSScheduler
   
 
 ### Batch/List Util

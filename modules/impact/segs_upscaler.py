@@ -83,7 +83,7 @@ def upscaler(image, upscale_model, rescale_factor, resampling_method, supersampl
 
 def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, scheduler,
                  positive, negative, denoise, noise_mask, control_net_wrapper=None,
-                 inpaint_model=False, noise_mask_feather=0):
+                 inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
     original_image_size = image.shape[1:3]
 
@@ -115,7 +115,7 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
     refined_latent = latent_image
 
     # ksampler
-    refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, refined_latent, denoise)
+    refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, refined_latent, denoise, scheduler_func=scheduler_func_opt)
 
     # non-latent downscale - latent downscale cause bad quality
     refined_image = vae.decode(refined_latent['samples'])

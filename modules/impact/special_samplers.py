@@ -49,6 +49,9 @@ class KSamplerProvider:
                                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
+                "optional": {
+                    "scheduler_func_opt": ("SCHEDULER_FUNC",),
+                    }
                 }
 
     RETURN_TYPES = ("KSAMPLER",)
@@ -57,9 +60,9 @@ class KSamplerProvider:
     CATEGORY = "ImpactPack/Sampler"
 
     @staticmethod
-    def doit(seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe):
+    def doit(seed, steps, cfg, sampler_name, scheduler, denoise, basic_pipe, scheduler_func_opt=None):
         model, _, _, positive, negative = basic_pipe
-        sampler = KSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise)
+        sampler = KSamplerWrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, scheduler_func=scheduler_func_opt)
         return (sampler, )
 
 
@@ -74,7 +77,8 @@ class KSamplerAdvancedProvider:
                                 "basic_pipe": ("BASIC_PIPE", )
                              },
                 "optional": {
-                                "sampler_opt": ("SAMPLER", )
+                                "sampler_opt": ("SAMPLER", ),
+                                "scheduler_func_opt": ("SCHEDULER_FUNC",),
                             }
                 }
 
@@ -84,9 +88,9 @@ class KSamplerAdvancedProvider:
     CATEGORY = "ImpactPack/Sampler"
 
     @staticmethod
-    def doit(cfg, sampler_name, scheduler, basic_pipe, sigma_factor=1.0, sampler_opt=None):
+    def doit(cfg, sampler_name, scheduler, basic_pipe, sigma_factor=1.0, sampler_opt=None, scheduler_func_opt=None):
         model, _, _, positive, negative = basic_pipe
-        sampler = KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=sampler_opt, sigma_factor=sigma_factor)
+        sampler = KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, sampler_opt=sampler_opt, sigma_factor=sigma_factor, scheduler_func=scheduler_func_opt)
         return (sampler, )
 
 
@@ -581,18 +585,22 @@ class KSamplerBasicPipe:
                      "scheduler": (core.SCHEDULERS, ),
                      "latent_image": ("LATENT", ),
                      "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     }
+                     },
+                "optional":
+                    {
+                        "scheduler_func_opt": ("SCHEDULER_FUNC", ),
+                    }
                 }
 
     RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
     FUNCTION = "sample"
 
-    CATEGORY = "sampling"
+    CATEGORY = "ImpactPack/sampling"
 
     @staticmethod
-    def sample(basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0):
+    def sample(basic_pipe, seed, steps, cfg, sampler_name, scheduler, latent_image, denoise=1.0, scheduler_func_opt=None):
         model, clip, vae, positive, negative = basic_pipe
-        latent = impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise)
+        latent = impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise, scheduler_func=scheduler_func_opt)
         return basic_pipe, latent, vae
 
 
@@ -611,18 +619,47 @@ class KSamplerAdvancedBasicPipe:
                      "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000}),
                      "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000}),
                      "return_with_leftover_noise": ("BOOLEAN", {"default": False, "label_on": "enable", "label_off": "disable"}),
-                     }
+                     },
+                "optional":
+                    {
+                        "scheduler_func_opt": ("SCHEDULER_FUNC", ),
+                    }
                 }
 
     RETURN_TYPES = ("BASIC_PIPE", "LATENT", "VAE")
     FUNCTION = "sample"
 
-    CATEGORY = "sampling"
+    CATEGORY = "ImpactPack/sampling"
 
     @staticmethod
-    def sample(basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0):
+    def sample(basic_pipe, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, latent_image, start_at_step, end_at_step, return_with_leftover_noise, denoise=1.0, scheduler_func_opt=None):
         model, clip, vae, positive, negative = basic_pipe
 
-        latent = separated_sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise)
+        latent = separated_sample(model, add_noise, noise_seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, return_with_leftover_noise, scheduler_func=scheduler_func_opt)
         return basic_pipe, latent, vae
 
+
+class GITSSchedulerFuncProvider:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "coeff": ("FLOAT", {"default": 1.20, "min": 0.80, "max": 1.50, "step": 0.05}),
+                        "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                    }
+                }
+
+    RETURN_TYPES = ("SCHEDULER_FUNC",)
+    CATEGORY = "ImpactPack/sampling"
+
+    FUNCTION = "doit"
+
+    def doit(self, coeff, denoise):
+        try:
+            import comfy_extras.nodes_gits as node_gits
+        except Exception:
+            raise Exception("[Impact Pack] ComfyUI is an outdated version.")
+
+        def f(model, sampler, steps):
+            return node_gits.GITSScheduler().get_sigmas(coeff, steps, denoise)[0]
+
+        return (f, )

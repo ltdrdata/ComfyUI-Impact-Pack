@@ -223,7 +223,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    detailer_hook=None,
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None, cycle=1,
-                   inpaint_model=False, noise_mask_feather=0):
+                   inpaint_model=False, noise_mask_feather=0, scheduler_func=None):
 
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
@@ -331,7 +331,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             noise = None
 
         refined_latent = impact_sampling.ksampler_wrapper(model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2,
-                                                          refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative, noise=noise)
+                                                          refined_latent, denoise2, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative,
+                                                          noise=noise, scheduler_func=scheduler_func)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -364,7 +365,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
                                    wildcard_opt=None, wildcard_opt_concat_mode=None,
                                    detailer_hook=None,
                                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
-                                   refiner_negative=None, control_net_wrapper=None, noise_mask_feather=0):
+                                   refiner_negative=None, control_net_wrapper=None, noise_mask_feather=0, scheduler_func=None):
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
@@ -478,7 +479,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         latent = detailer_hook.post_encode(latent)
 
     refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
-                                                      latent, denoise, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative)
+                                                      latent, denoise, refiner_ratio, refiner_model, refiner_clip, refiner_positive, refiner_negative, scheduler_func=scheduler_func)
 
     if detailer_hook is not None:
         refined_latent = detailer_hook.pre_decode(refined_latent)
@@ -1602,7 +1603,7 @@ class TwoSamplersForMaskUpscaler:
 
 class PixelKSampleUpscaler:
     def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                 use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512):
+                 use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512, scheduler_func=None):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
         self.upscale_model = upscale_model_opt
         self.hook = hook_opt
@@ -1610,6 +1611,7 @@ class PixelKSampleUpscaler:
         self.tile_size = tile_size
         self.is_tiled = False
         self.vae = vae
+        self.scheduler_func = scheduler_func
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1635,7 +1637,7 @@ class PixelKSampleUpscaler:
                                       upscaled_latent, denoise)
 
         refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                       positive, negative, upscaled_latent, denoise)
+                                                       positive, negative, upscaled_latent, denoise, scheduler_func_opt=self.scheduler_func)
         return refined_latent
 
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
@@ -1663,7 +1665,7 @@ class PixelKSampleUpscaler:
                                       upscaled_latent, denoise)
 
         refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                       positive, negative, upscaled_latent, denoise)
+                                                       positive, negative, upscaled_latent, denoise, scheduler_func_opt=self.scheduler_func)
         return refined_latent
 
 

@@ -26,6 +26,7 @@ class SEGSDetailerForAnimateDiff:
                 "optional": {
                      "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                      "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                      }
                 }
 
@@ -39,7 +40,7 @@ class SEGSDetailerForAnimateDiff:
 
     @staticmethod
     def do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, noise_mask_feather=0):
+                  denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, noise_mask_feather=0, scheduler_func_opt=None):
 
         model, clip, vae, positive, negative = basic_pipe
         if refiner_basic_pipe_opt is None:
@@ -89,7 +90,7 @@ class SEGSDetailerForAnimateDiff:
                                                                                      refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                                      refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                                                                      refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
-                                                                                     noise_mask_feather=noise_mask_feather)
+                                                                                     noise_mask_feather=noise_mask_feather, scheduler_func=scheduler_func_opt)
             if cnet_images is not None:
                 cnet_image_list.extend(cnet_images)
 
@@ -104,11 +105,11 @@ class SEGSDetailerForAnimateDiff:
         return (segs[0], new_segs), cnet_image_list
 
     def doit(self, image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-             denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0):
+             denoise, basic_pipe, refiner_ratio=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
 
         segs, cnet_images = SEGSDetailerForAnimateDiff.do_detail(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
                                                                  scheduler, denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt,
-                                                                 noise_mask_feather=noise_mask_feather)
+                                                                 noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
         if len(cnet_images) == 0:
             cnet_images = [empty_pil_tensor()]
@@ -139,6 +140,7 @@ class DetailerForEachPipeForAnimateDiff:
                       "detailer_hook": ("DETAILER_HOOK",),
                       "refiner_basic_pipe_opt": ("BASIC_PIPE",),
                       "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                      "scheduler_func_opt": ("SCHEDULER_FUNC",),
                       }
                 }
 
@@ -152,7 +154,7 @@ class DetailerForEachPipeForAnimateDiff:
     @staticmethod
     def doit(image_frames, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, basic_pipe, refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
-             noise_mask_feather=0):
+             noise_mask_feather=0, scheduler_func_opt=None):
 
         enhanced_segs = []
         cnet_image_list = []
@@ -160,7 +162,7 @@ class DetailerForEachPipeForAnimateDiff:
         for sub_seg in segs[1]:
             single_seg = segs[0], [sub_seg]
             enhanced_seg, cnet_images = SEGSDetailerForAnimateDiff().do_detail(image_frames, single_seg, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
-                                                                               denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, noise_mask_feather)
+                                                                               denoise, basic_pipe, refiner_ratio, refiner_basic_pipe_opt, noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
             image_frames = SEGSPaste.doit(image_frames, enhanced_seg, feather, alpha=255)[0]
 
