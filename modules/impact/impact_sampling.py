@@ -197,7 +197,8 @@ def impact_sample(model, seed, steps, cfg, sampler_name, scheduler, positive, ne
     advanced_steps = math.floor(steps / denoise)
     start_at_step = advanced_steps - steps
     end_at_step = start_at_step + steps
-    return separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image, start_at_step, end_at_step, False, scheduler_func=scheduler_func)
+    return separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
+                            start_at_step, end_at_step, False, scheduler_func=scheduler_func)
 
 
 def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise,

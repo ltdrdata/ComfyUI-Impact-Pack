@@ -109,7 +109,7 @@ class SEGSDetailer:
                                                                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                                                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                                                 control_net_wrapper=seg.control_net_wrapper, cycle=cycle,
-                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
+                                                                inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func=scheduler_func_opt)
 
                 if cnet_pils is not None:
                     cnet_pil_list.extend(cnet_pils)
