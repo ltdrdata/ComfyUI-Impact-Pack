@@ -654,12 +654,11 @@ class GITSSchedulerFuncProvider:
     FUNCTION = "doit"
 
     def doit(self, coeff, denoise):
-        try:
-            import comfy_extras.nodes_gits as node_gits
-        except Exception:
-            raise Exception("[Impact Pack] ComfyUI is an outdated version.")
-
         def f(model, sampler, steps):
-            return node_gits.GITSScheduler().get_sigmas(coeff, steps, denoise)[0]
+            if 'GITSScheduler' not in nodes.NODE_CLASS_MAPPINGS:
+                raise Exception("[Impact Pack] ComfyUI is an outdated version. Cannot use GITSScheduler.")
+
+            scheduler = nodes.NODE_CLASS_MAPPINGS['GITSScheduler']()
+            return scheduler.get_sigmas(coeff, steps, denoise)[0]
 
         return (f, )

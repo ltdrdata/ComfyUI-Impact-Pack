@@ -2142,8 +2142,8 @@ class ImpactSchedulerAdapter:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"defaultInput": True,}),
-            "ays_scheduler": (['None', 'AYS SDXL', 'AYS SD1', 'AYS SVD'],),
+            "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"defaultInput": True, }),
+            "extra_scheduler": (['None', 'AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]'],),
         }}
 
     CATEGORY = "ImpactPack/Util"
@@ -2153,9 +2153,9 @@ class ImpactSchedulerAdapter:
 
     FUNCTION = "doit"
 
-    def doit(self, scheduler, ays_scheduler):
-        if ays_scheduler != 'None':
-            return (ays_scheduler,)
+    def doit(self, scheduler, extra_scheduler):
+        if extra_scheduler != 'None':
+            return (extra_scheduler,)
 
         return (scheduler,)
 

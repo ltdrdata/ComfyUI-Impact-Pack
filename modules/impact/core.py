@@ -42,7 +42,7 @@ preview_bridge_image_name_map = {}
 preview_bridge_cache = {}
 
 
-SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD']
+SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]']
 
 
 def set_previewbridge_image(node_id, file, item):
