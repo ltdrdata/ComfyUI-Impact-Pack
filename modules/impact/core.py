@@ -1603,7 +1603,8 @@ class TwoSamplersForMaskUpscaler:
 
 class PixelKSampleUpscaler:
     def __init__(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                 use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512, scheduler_func=None):
+                 use_tiled_vae, upscale_model_opt=None, hook_opt=None, tile_size=512, scheduler_func=None,
+                 tile_cnet_opt=None, tile_cnet_strength=1.0):
         self.params = scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise
         self.upscale_model = upscale_model_opt
         self.hook = hook_opt
@@ -1612,6 +1613,27 @@ class PixelKSampleUpscaler:
         self.is_tiled = False
         self.vae = vae
         self.scheduler_func = scheduler_func
+        self.tile_cnet = tile_cnet_opt
+        self.tile_cnet_strength = tile_cnet_strength
+
+    def sample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise, images):
+        if self.tile_cnet is not None:
+            image_batch, image_w, image_h, _ = images.shape
+            if image_batch > 1:
+                warnings.warn('Multiple latents in batch, Tile ControlNet being ignored')
+            else:
+                if 'TilePreprocessor' not in nodes.NODE_CLASS_MAPPINGS:
+                    raise RuntimeError("'TilePreprocessor' node (from comfyui_controlnet_aux) isn't installed.")
+                preprocessor = nodes.NODE_CLASS_MAPPINGS['TilePreprocessor']()
+                # might add capacity to set pyrUp_iters later, not needed for now though
+                preprocessed = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))[0]
+                apply_cnet = getattr(nodes.ControlNetApply(), nodes.ControlNetApply.FUNCTION)
+                positive = apply_cnet(positive, self.tile_cnet, preprocessed, strength=self.tile_cnet_strength)[0]
+
+        refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
+                                                       positive, negative, upscaled_latent, denoise, scheduler_func=self.scheduler_func)
+
+        return refined_latent
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -1620,24 +1642,25 @@ class PixelKSampleUpscaler:
             self.hook.set_steps(step_info)
 
         if self.upscale_model is None:
-            upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
-                                                            use_tile=self.use_tiled_vae,
-                                                            save_temp_prefix=save_temp_prefix, hook=self.hook)
+            upscaled_latent, upscaled_images = \
+                latent_upscale_on_pixel_space2(samples, scale_method, upscale_factor, vae,
+                                               use_tile=self.use_tiled_vae,
+                                               save_temp_prefix=save_temp_prefix, hook=self.hook, tile_size=512)
         else:
-            upscaled_latent = latent_upscale_on_pixel_space_with_model(samples, scale_method, self.upscale_model,
-                                                                       upscale_factor, vae,
-                                                                       use_tile=self.use_tiled_vae,
-                                                                       save_temp_prefix=save_temp_prefix,
-                                                                       hook=self.hook,
-                                                                       tile_size=self.tile_size)
+            upscaled_latent, upscaled_images = \
+                latent_upscale_on_pixel_space_with_model2(samples, scale_method, self.upscale_model,
+                                                          upscale_factor, vae,
+                                                          use_tile=self.use_tiled_vae,
+                                                          save_temp_prefix=save_temp_prefix,
+                                                          hook=self.hook,
+                                                          tile_size=self.tile_size)
 
         if self.hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
 
-        refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                       positive, negative, upscaled_latent, denoise, scheduler_func=self.scheduler_func)
+        refined_latent = self.sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise, upscaled_images)
         return refined_latent
 
     def upscale_shape(self, step_info, samples, w, h, save_temp_prefix=None):
@@ -1647,25 +1670,26 @@ class PixelKSampleUpscaler:
             self.hook.set_steps(step_info)
 
         if self.upscale_model is None:
-            upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
-                                                                  use_tile=self.use_tiled_vae,
-                                                                  save_temp_prefix=save_temp_prefix, hook=self.hook,
-                                                                  tile_size=self.tile_size)
+            upscaled_latent, upscaled_images = \
+                latent_upscale_on_pixel_space_shape2(samples, scale_method, w, h, vae,
+                                                     use_tile=self.use_tiled_vae,
+                                                     save_temp_prefix=save_temp_prefix, hook=self.hook,
+                                                     tile_size=self.tile_size)
         else:
-            upscaled_latent = latent_upscale_on_pixel_space_with_model_shape(samples, scale_method, self.upscale_model,
-                                                                             w, h, vae,
-                                                                             use_tile=self.use_tiled_vae,
-                                                                             save_temp_prefix=save_temp_prefix,
-                                                                             hook=self.hook,
-                                                                             tile_size=self.tile_size)
+            upscaled_latent, upscaled_images = \
+                latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, self.upscale_model,
+                                                                w, h, vae,
+                                                                use_tile=self.use_tiled_vae,
+                                                                save_temp_prefix=save_temp_prefix,
+                                                                hook=self.hook,
+                                                                tile_size=self.tile_size)
 
         if self.hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
 
-        refined_latent = impact_sampling.impact_sample(model, seed, steps, cfg, sampler_name, scheduler,
-                                                       positive, negative, upscaled_latent, denoise, scheduler_func=self.scheduler_func)
+        refined_latent = self.sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise, upscaled_images)
         return refined_latent
 
 

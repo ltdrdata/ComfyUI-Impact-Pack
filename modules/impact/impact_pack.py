@@ -1071,6 +1071,8 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
                         "upscale_model_opt": ("UPSCALE_MODEL", ),
                         "pk_hook_opt": ("PK_HOOK", ),
                         "scheduler_func_opt": ("SCHEDULER_FUNC",),
+                        "tile_cnet_opt": ("CONTROL_NET", ),
+                        "tile_cnet_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                     }
                 }
 
@@ -1080,11 +1082,13 @@ class PixelKSampleUpscalerProviderPipe(PixelKSampleUpscalerProvider):
     CATEGORY = "ImpactPack/Upscale"
 
     def doit_pipe(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise,
-                  use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None, tile_size=512, scheduler_func_opt=None):
+                  use_tiled_vae, basic_pipe, upscale_model_opt=None, pk_hook_opt=None,
+                  tile_size=512, scheduler_func_opt=None, tile_cnet_opt=None, tile_cnet_strength=1.0):
         model, _, vae, positive, negative = basic_pipe
         upscaler = core.PixelKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler,
                                              positive, negative, denoise, use_tiled_vae, upscale_model_opt, pk_hook_opt,
-                                             tile_size=tile_size, scheduler_func=scheduler_func_opt)
+                                             tile_size=tile_size, scheduler_func=scheduler_func_opt,
+                                             tile_cnet_opt=tile_cnet_opt, tile_cnet_strength=tile_cnet_strength)
         return (upscaler, )
 
 
