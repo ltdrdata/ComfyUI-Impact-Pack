@@ -1414,6 +1414,8 @@ class MaskDetailerPipe:
                     "detailer_hook": ("DETAILER_HOOK",),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "noise_mask_feather": ("INT", {"default": 20, "min": 0, "max": 100, "step": 1}),
+                    "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "contour_fill": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                    }
                 }
@@ -1428,7 +1430,8 @@ class MaskDetailerPipe:
     def doit(self, image, mask, basic_pipe, guide_size, guide_size_for, max_size, mask_mode,
              seed, steps, cfg, sampler_name, scheduler, denoise,
              feather, crop_factor, drop_size, refiner_ratio, batch_size, cycle=1,
-             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None):
+             refiner_basic_pipe_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
+             bbox_fill=False, contour_fill=True, scheduler_func_opt=None):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: MaskDetailer does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1443,7 +1446,7 @@ class MaskDetailerPipe:
         # create segs
         if mask is not None:
             mask = make_2d_mask(mask)
-            segs = core.mask_to_segs(mask, False, crop_factor, False, drop_size)
+            segs = core.mask_to_segs(mask, False, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
         else:
             segs = ((image.shape[1], image.shape[2]), [])
 
