@@ -598,7 +598,7 @@ app.registerExtension({
 			node.onDrawForeground = function (ctx) {
 				const r = orig_draw?.apply?.(this, arguments);
 
-				let is_seg = model_name_widget.value.startsWith('segm/') || model_name_widget.value.includes('-seg');
+				let is_seg = model_name_widget.value?.startsWith('segm/') || model_name_widget.value?.includes('-seg');
 				if(!is_seg) {
 					var slot_pos = new Float32Array(2);
 					var pos = node.getConnectionPos(false, 1, slot_pos);
