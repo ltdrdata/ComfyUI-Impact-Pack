@@ -547,14 +547,17 @@ class WildcardPromptFromString:
             delimiter = "\n"
 
         # some sanity checks and normalization for later processing
-        if prefix_all is None: prefix_all = ""
-        if postfix_all is None: postfix_all = ""
-        if restrict_to_tags is None: restrict_to_tags = ""
-        if exclude_tags is None: exclude_tags = ""
-        if not isinstance(restrict_to_tags, list):
-            restrict_to_tags = restrict_to_tags.split(", ")
-        if not isinstance(exclude_tags, list):
-            exclude_tags = exclude_tags.split(", ")
+        if prefix_all is None:
+            prefix_all = ""
+        if postfix_all is None:
+            postfix_all = ""
+        if restrict_to_tags is None:
+            restrict_to_tags = ""
+        if exclude_tags is None:
+            exclude_tags = ""
+
+        restrict_to_tags = restrict_to_tags.split(", ")
+        exclude_tags = exclude_tags.split(", ")
 
         # build the wildcard prompt per list entry
         output = ["[LAB]"]
@@ -580,4 +583,4 @@ class WildcardPromptFromString:
         output = re.sub(r',,+', ',', output)
         output = re.sub(r'\n, ', '\n', output)
 
-        return (output, ", ".join(labels),)
+        return output, ", ".join(labels)
