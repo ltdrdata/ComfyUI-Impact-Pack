@@ -564,10 +564,10 @@ class WildcardPromptFromString:
             labels.append(label)
             x = x.split(", ")
             # restrict to tags
-            if restrict_to_tags != "":
+            if restrict_to_tags != [""]:
                 x = list(set(x) & set(restrict_to_tags))
             # remove tags
-            if exclude_tags != "":
+            if exclude_tags != [""]:
                 x = list(set(x) - set(exclude_tags))
             # next row: <LABEL> <PREFIX> <TAGS> <POSTFIX>
             prompt_for_seg = f'[{label}] {prefix_all} {", ".join(x)} {postfix_all}'.strip()
