@@ -554,6 +554,7 @@ def onprompt(json_data):
         gc_preview_bridge_cache(json_data)
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)
+        core.current_prompt = json_data
     except Exception as e:
         print(f"[WARN] ComfyUI-Impact-Pack: Error on prompt - several features will not work.\n{e}")
 

@@ -8,6 +8,8 @@ from impact.utils import any_typ
 import impact.core as core
 import re
 import nodes
+import traceback
+
 
 class ImpactCompare:
     @classmethod
@@ -631,16 +633,23 @@ class ImpactControlBridge:
 
     @classmethod
     def IS_CHANGED(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
-        nodes, links = workflow_to_map(extra_pnginfo['workflow'])
+        # NOTE: extra_pnginfo is not populated for IS_CHANGED.
+        #       so extra_pnginfo is useless in here
+        try:
+            workflow = core.current_prompt['extra_data']['extra_pnginfo']['workflow']
+        except:
+            print(f"[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
+            return 0
 
+        nodes, links = workflow_to_map(workflow)
         next_nodes = []
 
         for link in nodes[unique_id]['outputs'][0]['links']:
             node_id = str(links[link][2])
             impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
 
+        print(f"next_nodes: {next_nodes}")
         return next_nodes
-
 
     def doit(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
         global error_skip_flag
