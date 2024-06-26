@@ -1530,7 +1530,7 @@ class MakeTileSEGS:
         return {"required": {
                      "images": ("IMAGE", ),
                      "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
-                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.1}),
+                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.01}),
                      "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
                      "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
                      "mask_irregularity": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
