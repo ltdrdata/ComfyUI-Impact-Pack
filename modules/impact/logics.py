@@ -648,7 +648,6 @@ class ImpactControlBridge:
             node_id = str(links[link][2])
             impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
 
-        print(f"next_nodes: {next_nodes}")
         return next_nodes
 
     def doit(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):

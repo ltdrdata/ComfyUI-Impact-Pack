@@ -16,7 +16,24 @@ impact_path = os.path.join(os.path.dirname(__file__), "modules")
 old_subpack_path = os.path.join(os.path.dirname(__file__), "subpack")
 subpack_path = os.path.join(os.path.dirname(__file__), "impact_subpack")
 subpack_repo = "https://github.com/ltdrdata/ComfyUI-Impact-Subpack"
-comfy_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+
+comfy_path = os.environ.get('COMFYUI_PATH')
+if comfy_path is None:
+    print(f"\n[bold yellow]WARN: The `COMFYUI_PATH` environment variable is not set. Assuming `{os.path.dirname(__file__)}/../../` as the ComfyUI path.[/bold yellow]", file=sys.stderr)
+    comfy_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+model_path = os.environ.get('COMFYUI_MODEL_PATH')
+if model_path is None:
+    try:
+        import folder_paths
+        model_path = folder_paths.models_dir
+    except:
+        pass
+
+    if model_path is None:
+        model_path = os.path.abspath(os.path.join(comfy_path, 'models'))
+    print(f"\n[bold yellow]WARN: The `COMFYUI_MODEL_PATH` environment variable is not set. Assuming `{model_path}` as the ComfyUI path.[/bold yellow]", file=sys.stderr)
 
 
 sys.path.append(impact_path)
@@ -34,9 +51,9 @@ def handle_stream(stream, is_stdout):
             print(msg, end="", file=sys.stderr)
             
 
-def process_wrap(cmd_str, cwd=None, handler=None):
+def process_wrap(cmd_str, cwd=None, handler=None, env=None):
     print(f"[Impact Pack] EXECUTE: {cmd_str} in '{cwd}'")
-    process = subprocess.Popen(cmd_str, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+    process = subprocess.Popen(cmd_str, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, text=True, bufsize=1)
 
     if handler is None:
         handler = handle_stream
@@ -135,6 +152,7 @@ try:
 
     def remove_olds():
         global comfy_path
+        global model_path
 
         comfy_path = os.path.dirname(folder_paths.__file__)
         custom_nodes_path = os.path.join(comfy_path, "custom_nodes")
@@ -254,8 +272,12 @@ try:
 
         ensure_subpack()  # The installation of the subpack must take place before ensure_pip. cv2 triggers a permission error.
 
+        new_env = os.environ.copy()
+        new_env["COMFYUI_PATH"] = comfy_path
+        new_env["COMFYUI_MODEL_PATH"] = model_path
+
         if os.path.exists(subpack_install_script):
-            process_wrap([sys.executable, 'install.py'], cwd=subpack_path)
+            process_wrap([sys.executable, 'install.py'], cwd=subpack_path, env=new_env)
             if not is_requirements_installed(os.path.join(subpack_path, 'requirements.txt')):
                 process_wrap(pip_install + ['-r', 'requirements.txt'], cwd=subpack_path)
         else:
@@ -270,9 +292,6 @@ try:
 
         # Download model
         print("### ComfyUI-Impact-Pack: Check basic models")
-
-        model_path = folder_paths.models_dir
-
         bbox_path = os.path.join(model_path, "mmdets", "bbox")
         sam_path = os.path.join(model_path, "sams")
         onnx_path = os.path.join(model_path, "onnx")
