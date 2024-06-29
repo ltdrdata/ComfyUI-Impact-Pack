@@ -592,6 +592,9 @@ class ESAMWrapper:
 def make_sam_mask(sam, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
+    if not hasattr(sam, 'sam_wrapper'):
+        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
+
     sam_obj = sam.sam_wrapper
     sam_obj.prepare_device()
 
@@ -858,6 +861,10 @@ def every_three_pick_last(stacked_masks):
 
 def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+
+    if not hasattr(sam, 'sam_wrapper'):
+        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
+
     sam_obj = sam.sam_wrapper
     sam_obj.prepare_device()
 
