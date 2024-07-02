@@ -150,7 +150,7 @@ class ImpactIfNone:
             "optional": {"signal": (any_typ,), "any_input": (any_typ,), }
         }
 
-    RETURN_TYPES = (any_typ, "BOOLEAN", )
+    RETURN_TYPES = (any_typ, "BOOLEAN")
     RETURN_NAMES = ("signal_opt", "bool")
     FUNCTION = "doit"
 
