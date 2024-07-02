@@ -181,7 +181,7 @@ app.registerExtension({
 
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
-					if (!v[0].complete) {
+					if (v && !v[0].complete) {
 						let orig_onload = v[0].onload;
 						v[0].onload = function(v2) {
 							if(orig_onload)
