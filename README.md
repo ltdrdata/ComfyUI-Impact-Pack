@@ -326,7 +326,7 @@ mmdet_skip = False
 ## Installation
 
 1. `cd custom_nodes`
-1. `git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git`
+2. `git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git`
 3. `cd ComfyUI-Impact-Pack`
 4. (optional) `git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack impact_subpack`
    * Impact Pack will automatically download subpack during its initial launch.
@@ -339,6 +339,8 @@ mmdet_skip = False
 
 * NOTE: If an error occurs during the installation process, please refer to [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md) for assistance. 
 * You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
+
+* If you create an empty file named `skip_download_model` in the `ComfyUI/custom_nodes/` directory, it will skip the model download step during the installation of the impact pack.
 
 ## Package Dependencies (If you need to manual setup.)
 
