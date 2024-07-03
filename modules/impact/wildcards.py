@@ -102,6 +102,8 @@ def process(text, seed=None):
         random.seed(seed)
     random_gen = np.random.default_rng(seed)
 
+    local_wildcard_dict = get_wildcard_dict()
+
     def replace_options(string):
         replacements_found = False
 
@@ -114,6 +116,7 @@ def process(text, seed=None):
             select_sep = ' '
             range_pattern = r'(\d+)(-(\d+))?'
             range_pattern2 = r'-(\d+)'
+            wildcard_pattern = r"__([\w.\-+/*\\]+)__"
 
             if len(multi_select_pattern) > 1:
                 r = re.match(range_pattern, options[0])
@@ -139,7 +142,13 @@ def process(text, seed=None):
 
                     if select_range is not None and len(multi_select_pattern) == 2:
                         # PATTERN: count$$
-                        options[0] = multi_select_pattern[1]
+                        matches = re.findall(wildcard_pattern, multi_select_pattern[1])
+                        if len(options) == 1 and matches:
+                            # count$$<single wildcard>
+                            options = local_wildcard_dict.get(matches[0])
+                        else:
+                            # count$$opt1|opt2|...
+                            options[0] = multi_select_pattern[1]
                     elif select_range is not None and len(multi_select_pattern) == 3:
                         # PATTERN: count$$ sep $$
                         select_sep = multi_select_pattern[1]
@@ -186,7 +195,6 @@ def process(text, seed=None):
         return replaced_string, replacements_found
 
     def replace_wildcard(string):
-        local_wildcard_dict = get_wildcard_dict()
         pattern = r"__([\w.\-+/*\\]+)__"
         matches = re.findall(pattern, string)
 
