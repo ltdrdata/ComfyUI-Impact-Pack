@@ -1203,7 +1203,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         cropped_mask[by1:by2, bx1:bx2] = 1.0
 
                     if cropped_mask is not None:
-                        cropped_mask = utils.to_binary_mask(torch.from_numpy(cropped_mask), 0.1)[0]
+                        cropped_mask = torch.clip(torch.from_numpy(cropped_mask), 0, 1.0)
                         item = SEG(None, cropped_mask.numpy(), 1.0, crop_region, bbox, label, None)
                         result.append(item)
 
