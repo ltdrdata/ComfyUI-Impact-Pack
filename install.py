@@ -113,7 +113,6 @@ def is_requirements_installed(file_path):
 
 try:
     import platform
-    import folder_paths
     from torchvision.datasets.utils import download_url
     import impact.config
 
