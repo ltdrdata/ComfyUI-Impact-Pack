@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-impact-pack"
 description = "This extension offers various detector nodes and detailer nodes that allow you to configure a workflow that automatically enhances facial details. And provide iterative upscaler."
-version = "5.18.12"
+version = "5.18.13"
 license = "LICENSE"
 dependencies = ["segment-anything", "scikit-image", "piexif", "transformers", "opencv-python-headless", "GitPython", "scipy>=1.11.4"]
 
