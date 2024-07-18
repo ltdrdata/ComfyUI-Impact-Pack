@@ -196,7 +196,7 @@ class ImpactLogger:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "data": (any_typ, ""),
+                        "data": (any_typ,),
                         "text": ("STRING", {"multiline": True}),
                     },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"},
