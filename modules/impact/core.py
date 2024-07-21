@@ -239,6 +239,11 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             positive = nodes.ConditioningConcat().concat(positive, wildcard_positive)[0]
         else:
             positive = wildcard_positive
+            positive = [positive[0].copy()]
+            if 'pooled_output' in wildcard_positive[0][1]:
+                positive[0][1]['pooled_output'] = wildcard_positive[0][1]['pooled_output']
+            elif 'pooled_output' in positive[0][1]:
+                del positive[0][1]['pooled_output']
 
     h = image.shape[1]
     w = image.shape[2]
