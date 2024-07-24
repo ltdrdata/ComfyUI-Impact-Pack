@@ -32,6 +32,10 @@ def read_config():
         config.read(config_path)
         default_conf = config['default']
 
+        if not os.path.exists(default_conf['custom_wildcards']):
+            print(f"[WARN] ComfyUI-Impact-Pack: custom_wildcards path not found: {default_conf['custom_wildcards']}. Using default path.")
+            default_conf['custom_wildcards'] = os.path.join(my_path, "..", "..", "custom_wildcards")
+
         return {
                     'dependency_version': int(default_conf['dependency_version']),
                     'mmdet_skip': default_conf['mmdet_skip'].lower() == 'true' if 'mmdet_skip' in default_conf else True,
