@@ -59,17 +59,22 @@ def read_wildcard_dict(wildcard_path):
                     with open(file_path, 'r', encoding="ISO-8859-1") as f:
                         lines = f.read().splitlines()
                         wildcard_dict[key] = lines
-                except UnicodeDecodeError:
+                except yaml.reader.ReaderError:
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         lines = f.read().splitlines()
                         wildcard_dict[key] = lines
             elif file.endswith('.yaml'):
                 file_path = os.path.join(root, file)
-                with open(file_path, 'r') as f:
-                    yaml_data = yaml.load(f, Loader=yaml.FullLoader)
 
-                    for k, v in yaml_data.items():
-                        read_wildcard(k, v)
+                try:
+                    with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                        yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+                except yaml.reader.ReaderError as e:
+                    with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                        yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+
+                for k, v in yaml_data.items():
+                    read_wildcard(k, v)
 
     return wildcard_dict
 
