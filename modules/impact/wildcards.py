@@ -29,7 +29,7 @@ def get_wildcard_dict():
 
 
 def wildcard_normalize(x):
-    return x.replace("\\", "/").lower()
+    return x.replace("\\", "/").replace(' ', '-').lower()
 
 
 def read_wildcard(k, v):
@@ -53,7 +53,7 @@ def read_wildcard_dict(wildcard_path):
             if file.endswith('.txt'):
                 file_path = os.path.join(root, file)
                 rel_path = os.path.relpath(file_path, wildcard_path)
-                key = os.path.splitext(rel_path)[0].replace('\\', '/').lower()
+                key = wildcard_normalize(os.path.splitext(rel_path)[0])
 
                 try:
                     with open(file_path, 'r', encoding="ISO-8859-1") as f:
