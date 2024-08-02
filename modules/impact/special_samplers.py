@@ -213,48 +213,14 @@ class TwoAdvancedSamplersForMask:
     CATEGORY = "ImpactPack/Sampler"
 
     @staticmethod
-    def mask_erosion(samples, mask, grow_mask_by):
-        mask = mask.clone()
-
-        w = samples['samples'].shape[3]
-        h = samples['samples'].shape[2]
-
-        mask2 = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(w, h), mode="bilinear")
-        if grow_mask_by == 0:
-            mask_erosion = mask2
-        else:
-            kernel_tensor = torch.ones((1, 1, grow_mask_by, grow_mask_by))
-            padding = math.ceil((grow_mask_by - 1) / 2)
-
-            mask_erosion = torch.clamp(torch.nn.functional.conv2d(mask2.round(), kernel_tensor, padding=padding), 0, 1)
-
-        return mask_erosion[:, :, :w, :h].round()
-
-    @staticmethod
     def doit(seed, steps, denoise, samples, base_sampler, mask_sampler, mask, overlap_factor):
+        regional_prompts = RegionalPrompt().doit(mask=mask, advanced_sampler=mask_sampler)[0]
 
-        inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
-
-        adv_steps = int(steps / denoise)
-        start_at_step = adv_steps - steps
-
-        new_latent_image = samples.copy()
-
-        mask_erosion = TwoAdvancedSamplersForMask.mask_erosion(samples, mask, overlap_factor)
-
-        for i in range(start_at_step, adv_steps):
-            add_noise = "enable" if i == start_at_step else "disable"
-            return_with_leftover_noise = "enable" if i+1 != adv_steps else "disable"
-
-            new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, "enable", recovery_mode="ratio additional")
-
-            new_latent_image['noise_mask'] = mask_erosion
-            new_latent_image = mask_sampler.sample_advanced("disable", seed, adv_steps, new_latent_image, i, i + 1, return_with_leftover_noise, recovery_mode="ratio additional")
-
-        del new_latent_image['noise_mask']
-
-        return (new_latent_image, )
+        return RegionalSampler().doit(seed=seed, seed_2nd=0, seed_2nd_mode="ignore", steps=steps, base_only_steps=1,
+                                      denoise=denoise, samples=samples, base_sampler=base_sampler,
+                                      regional_prompts=regional_prompts, overlap_factor=overlap_factor,
+                                      restore_latent=True, additional_mode="ratio between",
+                                      additional_sampler="AUTO", additional_sigma_ratio=0.3)
 
 
 class RegionalPrompt:
@@ -409,7 +375,7 @@ class RegionalSampler:
                      "additional_sampler": (["AUTO", "euler", "heun", "heunpp2", "dpm_2", "dpm_fast", "dpmpp_2m", "ddpm"],),
                      "additional_sigma_ratio": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
                      },
-                 "hidden": {"unique_id": "UNIQUE_ID"},
+                "hidden": {"unique_id": "UNIQUE_ID"},
                 }
 
     TOOLTIPS = {
@@ -519,7 +485,8 @@ class RegionalSampler:
             core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image, i, i + 1, True,
+            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image,
+                                                            start_at_step=i, end_at_step=i + 1, return_with_leftover_noise=True,
                                                             recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio, noise=noise)
 
             if restore_latent:
