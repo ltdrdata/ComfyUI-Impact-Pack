@@ -798,7 +798,8 @@ class GITSSchedulerFuncProvider:
 
     FUNCTION = "doit"
 
-    def doit(self, coeff, denoise):
+    @staticmethod
+    def doit(coeff, denoise):
         def f(model, sampler, steps):
             if 'GITSScheduler' not in nodes.NODE_CLASS_MAPPINGS:
                 raise Exception("[Impact Pack] ComfyUI is an outdated version. Cannot use GITSScheduler.")
@@ -807,3 +808,22 @@ class GITSSchedulerFuncProvider:
             return scheduler.get_sigmas(coeff, steps, denoise)[0]
 
         return (f, )
+
+
+class NegativeConditioningPlaceholder:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {}}
+
+    TOOLTIPS = {
+        "output": ("This is a Placeholder for the FLUX model that does not use Negative Conditioning.",)
+    }
+
+    RETURN_TYPES = ("CONDITIONING",)
+    CATEGORY = "ImpactPack/sampling"
+
+    FUNCTION = "doit"
+
+    @staticmethod
+    def doit():
+        return ("NegativePlaceholder", )

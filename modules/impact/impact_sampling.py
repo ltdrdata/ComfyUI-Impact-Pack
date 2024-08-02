@@ -10,6 +10,7 @@ import math
 
 try:
     from comfy_extras.nodes_custom_sampler import Noise_EmptyNoise, Noise_RandomNoise
+    import node_helpers
 except:
     print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
@@ -140,7 +141,19 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
         touched_callback = preview_callback
 
     disable_pbar = not comfy.utils.PROGRESS_BAR_ENABLED
-    samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image, noise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
+    # samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image,
+    #                                      noise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
+
+    if negative != 'NegativePlaceholder':
+        guider = comfy.samplers.CFGGuider(model)
+        guider.set_conds(positive, negative)
+        guider.set_cfg(cfg)
+    else:
+        guider = nodes_custom_sampler.Guider_Basic(model)
+        positive = node_helpers.conditioning_set_values(positive, {"guidance": cfg})
+        guider.set_conds(positive)
+
+    samples = guider.sample(noise, latent_image, sampler, sigmas, denoise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
 
     out["samples"] = samples
     if "x0" in x0_output:

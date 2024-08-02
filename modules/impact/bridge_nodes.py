@@ -145,6 +145,9 @@ def decode_latent(latent, preview_method, vae_opt=None):
     elif preview_method == "Latent2RGB-SC-B":
         latent_format = latent_formats.SC_B()
         method = LatentPreviewMethod.Latent2RGB
+    elif preview_method == "Latent2RGB-FLUX.1":
+        latent_format = latent_formats.Flux()
+        method = LatentPreviewMethod.Latent2RGB
     else:
         print(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
         latent_format = latent_formats.SD15()
@@ -169,6 +172,7 @@ class PreviewBridgeLatent:
                     "preview_method": (["Latent2RGB-SD3", "Latent2RGB-SDXL", "Latent2RGB-SD15",
                                         "Latent2RGB-SD-X4", "Latent2RGB-Playground-2.5",
                                         "Latent2RGB-SC-Prior", "Latent2RGB-SC-B",
+                                        "Latent2RGB-FLUX.1",
                                         "TAESD3", "TAESDXL", "TAESD15"],),
                     },
                 "optional": {
@@ -228,11 +232,11 @@ class PreviewBridgeLatent:
 
     def doit(self, latent, image, preview_method, vae_opt=None, unique_id=None):
         latent_channels = latent['samples'].shape[1]
-        preview_method_channels = 16 if 'SD3' in preview_method or 'SC-Prior' in preview_method else 4
+        preview_method_channels = 16 if 'SD3' in preview_method or 'SC-Prior' in preview_method or 'FLUX.1' in preview_method else 4
 
         if vae_opt is None and latent_channels != preview_method_channels:
-            print(f"[PreviewBridgeLatent] The version of latent is not compatible with preview_method.\nSD3, SD1/SD2, SDXL, SC-Prior, and SC-B are not compatible with each other.")
-            raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, and SC-B are not compatible with each other.")
+            print(f"[PreviewBridgeLatent] The version of latent is not compatible with preview_method.\nSD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
+            raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
 
         need_refresh = False
 

@@ -278,13 +278,17 @@ class DetailerForEach:
                 for condition, details in positive
             ]
 
-            cropped_negative = [
-                [condition, {
-                    k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
-                    for k, v in details.items()
-                }]
-                for condition, details in negative
-            ]
+            if not isinstance(negative, str):
+                cropped_negative = [
+                    [condition, {
+                        k: core.crop_condition_mask(v, image, seg.crop_region) if k == "mask" else v
+                        for k, v in details.items()
+                    }]
+                    for condition, details in negative
+                ]
+            else:
+                # Negative Conditioning is placeholder such as FLUX.1
+                cropped_negative = negative
 
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                             seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,

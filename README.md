@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE 
+* V6.0: Supports FLUX.1 model in Impact KSampler, Detailers, PreviewBridgeLatent
 * V5.0: It is no longer compatible with versions of ComfyUI before 2024.04.08. 
 * V4.87.4: Update to a version of ComfyUI after 2024.04.08 for proper functionality.
 * V4.85: Incompatible with the outdated **ComfyUI IPAdapter Plus**. (A version dated March 24th or later is required.)
@@ -189,7 +190,6 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
     * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 
-
 ### Switch nodes
   * `Switch (image,mask)`, `Switch (latent)`, `Switch (SEGS)` - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
   * `Switch (Any)` - This is a Switch node that takes an arbitrary number of inputs and produces a single output. Its type is determined when connected to any node, and connecting inputs increases the available slots for connections.
@@ -219,6 +219,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     * restore_latent - When sampling each region, restore the areas outside the mask to the base latent, preventing additional noise from being introduced outside the mask during region sampling.
   * `RegionalSamplerAdvanced` - This is the Advanced version of the RegionalSampler. You can control it using `step` instead of `denoise`.
     > NOTE: The `sde` sampler and `uni_pc` sampler introduce additional noise during each step of the sampling process. To mitigate this, when sampling each region, the `uni_pc` sampler applies additional `dpmpp_fast`, and the sde sampler applies the `dpmpp_2m` sampler as an additional measure.
+
 
 ### Impact KSampler
   * These samplers support basic_pipe and AYS scheduler
@@ -278,6 +279,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `String Selector` - It selects and returns a portion of the string. When `multiline` mode is disabled, it simply returns the string of the line pointed to by the selector. When `multiline` mode is enabled, it divides the string based on lines that start with `#` and returns them. If the `select` value is larger than the number of items, it will start counting from the first line again and return accordingly.
   * `Combine Conditionings` - It takes multiple conditionings as input and combines them into a single conditioning.
   * `Concat Conditionings` - It takes multiple conditionings as input and concat them into a single conditioning.
+  * `Negative Cond Placeholder` - Models like FLUX.1 do not use Negative Conditioning. This is a placeholder node for them. You can use FLUX.1 by replacing the Negative Conditioning used in Impact KSampler, KSampler (Inspire), and Detailer with this node.
 
 
 ## MMDet nodes (DEPRECATED) - Don't use these nodes

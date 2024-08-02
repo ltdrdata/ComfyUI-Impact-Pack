@@ -208,6 +208,8 @@ NODE_CLASS_MAPPINGS = {
     "KSamplerAdvancedProvider": KSamplerAdvancedProvider,
     "TwoAdvancedSamplersForMask": TwoAdvancedSamplersForMask,
 
+    "ImpactNegativeConditioningPlaceholder": NegativeConditioningPlaceholder,
+
     "PreviewBridge": PreviewBridge,
     "PreviewBridgeLatent": PreviewBridgeLatent,
     "ImageSender": ImageSender,
@@ -433,6 +435,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
     "GITSSchedulerFuncProvider": "GITSScheduler Func Provider",
+    "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder"
 }
 
 if not impact.config.get_config()['mmdet_skip']:
