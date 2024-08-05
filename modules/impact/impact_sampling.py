@@ -6,6 +6,7 @@ import latent_preview
 import comfy
 import torch
 import math
+import comfy.model_management as mm
 
 
 try:
@@ -150,6 +151,13 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
         guider = nodes_custom_sampler.Guider_Basic(model)
         positive = node_helpers.conditioning_set_values(positive, {"guidance": cfg})
         guider.set_conds(positive)
+
+    device = mm.get_torch_device()
+
+    noise = noise.to(device)
+    latent_image = latent_image.to(device)
+    if noise_mask is not None:
+        noise_mask = noise_mask.to(device)
 
     samples = guider.sample(noise, latent_image, sampler, sigmas, denoise_mask=noise_mask, callback=touched_callback, disable_pbar=disable_pbar, seed=noise_seed)
     samples = samples.to(comfy.model_management.intermediate_device())
