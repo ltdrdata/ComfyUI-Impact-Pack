@@ -27,6 +27,7 @@ import comfy.model_management
 import base64
 import impact.wildcards as wildcards
 from . import hooks
+from . import utils
 
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
@@ -968,7 +969,10 @@ class PixelTiledKSampleUpscalerProvider:
                                                       tile_size=max(tile_width, tile_height), tile_cnet_strength=tile_cnet_strength)
             return (upscaler, )
         else:
-            print("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                                          "To use 'PixelTiledKSampleUpscalerProvider' node, 'BlenderNeko/ComfyUI_TiledKSampler' extension is required.")
+
+            raise Exception("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
