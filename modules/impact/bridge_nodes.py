@@ -3,6 +3,7 @@ from PIL import ImageOps
 from impact.utils import *
 import latent_preview
 
+
 # NOTE: this should not be `from . import core`.
 # I don't know why but... 'from .' and 'from impact' refer to different core modules.
 # This separates global variables of the core module and breaks the preview bridge.
@@ -18,7 +19,7 @@ class PreviewBridge:
                     "images": ("IMAGE",),
                     "image": ("STRING", {"default": ""}),
                     },
-                "hidden": {"unique_id": "UNIQUE_ID"},
+                "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
 
     RETURN_TYPES = ("IMAGE", "MASK", )
@@ -69,7 +70,7 @@ class PreviewBridge:
 
         return image, mask.unsqueeze(0), ui_item
 
-    def doit(self, images, image, unique_id):
+    def doit(self, images, image, unique_id, prompt=None, extra_pnginfo=None):
         need_refresh = False
 
         if unique_id not in core.preview_bridge_cache:
@@ -82,7 +83,7 @@ class PreviewBridge:
             pixels, mask, path_item = PreviewBridge.load_image(image)
             image = [path_item]
         else:
-            res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-")
+            res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
             image2 = res['ui']['images']
             pixels = images
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
@@ -178,7 +179,7 @@ class PreviewBridgeLatent:
                 "optional": {
                     "vae_opt": ("VAE", )
                 },
-                "hidden": {"unique_id": "UNIQUE_ID"},
+                "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
 
     RETURN_TYPES = ("LATENT", "MASK", )
@@ -230,7 +231,7 @@ class PreviewBridgeLatent:
 
         return image, mask, ui_item
 
-    def doit(self, latent, image, preview_method, vae_opt=None, unique_id=None):
+    def doit(self, latent, image, preview_method, vae_opt=None, unique_id=None, prompt=None, extra_pnginfo=None):
         latent_channels = latent['samples'].shape[1]
         preview_method_channels = 16 if 'SD3' in preview_method or 'SC-Prior' in preview_method or 'FLUX.1' in preview_method else 4
 
@@ -286,7 +287,7 @@ class PreviewBridgeLatent:
                             }]
             else:
                 mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
-                res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-")
+                res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
                 res_image = res['ui']['images']
 
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
