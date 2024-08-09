@@ -280,6 +280,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `Combine Conditionings` - It takes multiple conditionings as input and combines them into a single conditioning.
   * `Concat Conditionings` - It takes multiple conditionings as input and concat them into a single conditioning.
   * `Negative Cond Placeholder` - Models like FLUX.1 do not use Negative Conditioning. This is a placeholder node for them. You can use FLUX.1 by replacing the Negative Conditioning used in Impact KSampler, KSampler (Inspire), and Detailer with this node.
+  * `Execution Order Controller` - A helper node that can forcibly control the execution order of nodes.
+    * Connect the output of the node that should be executed first to the signal, and make the input of the node that should be executed later pass through this node.
 
 
 ## MMDet nodes (DEPRECATED) - Don't use these nodes
