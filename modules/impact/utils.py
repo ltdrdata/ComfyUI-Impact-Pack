@@ -537,6 +537,16 @@ def make_3d_mask(mask):
     return mask
 
 
+def make_4d_mask(mask):
+    if len(mask.shape) == 3:
+        return mask.unsqueeze(0)
+
+    elif len(mask.shape) == 2:
+        return mask.unsqueeze(0).unsqueeze(0)
+
+    return mask
+
+
 def is_same_device(a, b):
     a_device = torch.device(a) if isinstance(a, str) else a
     b_device = torch.device(b) if isinstance(b, str) else b
@@ -556,7 +566,8 @@ from torchvision.transforms.functional import to_pil_image
 
 
 def resize_mask(mask, size):
-    resized_mask = torch.nn.functional.interpolate(mask.unsqueeze(0), size=size, mode='bilinear', align_corners=False)
+    mask = make_4d_mask(mask)
+    resized_mask = torch.nn.functional.interpolate(mask, size=size, mode='bilinear', align_corners=False)
     return resized_mask.squeeze(0)
 
 
