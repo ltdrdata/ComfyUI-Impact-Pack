@@ -45,6 +45,14 @@ current_prompt = None
 SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]']
 
 
+def is_execution_model_version_supported():
+    try:
+        import comfy_execution
+        return True
+    except:
+        return False
+
+
 def set_previewbridge_image(node_id, file, item):
     global pb_id_cnt
 

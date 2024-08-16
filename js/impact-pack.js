@@ -507,7 +507,7 @@ app.registerExtension({
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
 						!stackTrace.includes('loadGraphData') &&
 						this.inputs[index].name != 'select') {
-						this.removeInput(index);
+						    this.removeInput(index);
 					}
 				}
 

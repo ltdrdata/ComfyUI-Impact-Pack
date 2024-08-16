@@ -86,11 +86,18 @@ class ImpactConditionalBranch:
 class ImpactConditionalBranchSelMode:
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
+        if not core.is_execution_model_version_supported():
+            required_inputs = {
                 "cond": ("BOOLEAN",),
                 "sel_mode": ("BOOLEAN", {"default": True, "label_on": "select_on_prompt", "label_off": "select_on_execution"}),
-            },
+                }
+        else:
+            required_inputs = {
+                "cond": ("BOOLEAN",),
+                }
+
+        return {
+            "required": required_inputs,
             "optional": {
                 "tt_value": (any_typ,),
                 "ff_value": (any_typ,),
@@ -102,7 +109,7 @@ class ImpactConditionalBranchSelMode:
 
     RETURN_TYPES = (any_typ, )
 
-    def doit(self, cond, sel_mode, tt_value=None, ff_value=None):
+    def doit(self, cond, tt_value=None, ff_value=None, **kwargs):
         print(f'tt={tt_value is None}\nff={ff_value is None}')
         if cond:
             return (tt_value,)

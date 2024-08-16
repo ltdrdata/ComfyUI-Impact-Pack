@@ -6,21 +6,30 @@ import comfy
 import sys
 import nodes
 import re
+import impact.core as core
 from server import PromptServer
+import inspect
 
 
 class GeneralSwitch:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {
+        dyn_inputs = {"input1": (any_typ, {"lazy": True}), }
+        if core.is_execution_model_version_supported():
+            stack = inspect.stack()
+            if stack[2].function == 'get_input_info' and stack[3].function == 'add_node':
+                for x in range(2, 200):
+                    dyn_inputs[f"input{x}"] = (any_typ, {"lazy": True})
+
+        inputs = {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
-                    "sel_mode": ("BOOLEAN", {"default": True, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
+                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
                     },
-                "optional": {
-                    "input1": (any_typ,),
-                    },
+                "optional": dyn_inputs,
                 "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"}
                 }
+
+        return inputs
 
     RETURN_TYPES = (any_typ, "STRING", "INT")
     RETURN_NAMES = ("selected_value", "selected_label", "selected_index")
@@ -28,7 +37,16 @@ class GeneralSwitch:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, *args, **kwargs):
+    def check_lazy_status(self, *args, **kwargs):
+        selected_index = int(kwargs['select'])
+        input_name = f"input{selected_index}"
+
+        print(f"SELECTED: {input_name}")
+
+        return [input_name]
+
+    @staticmethod
+    def doit(*args, **kwargs):
         selected_index = int(kwargs['select'])
         input_name = f"input{selected_index}"
 
@@ -50,11 +68,10 @@ class GeneralSwitch:
             print(f"[Impact-Pack] The switch node does not guarantee proper functioning in API mode.")
 
         if input_name in kwargs:
-            return (kwargs[input_name], selected_label, selected_index)
+            return kwargs[input_name], selected_label, selected_index
         else:
             print(f"ImpactSwitch: invalid select index (ignored)")
-            return (None, "", selected_index)
-
+            return None, "", selected_index
 
 class LatentSwitch:
     @classmethod
@@ -129,7 +146,9 @@ class GeneralInversedSwitch:
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
                     "input": (any_typ,),
                     },
-                "hidden": {"unique_id": "UNIQUE_ID"},
+                "optional": {
+                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
+                    },
                 }
 
     RETURN_TYPES = ByPassTypeTuple((any_typ, ))
@@ -137,7 +156,7 @@ class GeneralInversedSwitch:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, select, input, unique_id):
+    def doit(self, select, input, **kwargs):
         res = []
 
         for i in range(0, select):

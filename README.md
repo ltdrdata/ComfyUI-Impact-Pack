@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE 
+* V7.0: Supports Switch based on Execution Model Inversion.
 * V6.0: Supports FLUX.1 model in Impact KSampler, Detailers, PreviewBridgeLatent
 * V5.0: It is no longer compatible with versions of ComfyUI before 2024.04.08. 
 * V4.87.4: Update to a version of ComfyUI after 2024.04.08 for proper functionality.
@@ -193,11 +194,8 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 ### Switch nodes
   * `Switch (image,mask)`, `Switch (latent)`, `Switch (SEGS)` - Among multiple inputs, it selects the input designated by the selector and outputs it. The first input must be provided, while the others are optional. However, if the input specified by the selector is not connected, an error may occur.
   * `Switch (Any)` - This is a Switch node that takes an arbitrary number of inputs and produces a single output. Its type is determined when connected to any node, and connecting inputs increases the available slots for connections.
-  * `Inversed Switch (Any)` - In contrast to `Switch (Any)`, it takes a single input and outputs one of many. Due to ComfyUI's functional limitations, the value of `select` must be determined at the time of queuing a prompt, and while it can serve as a `Primitive Node` or `ImpactInt`, it cannot function properly when connected through other nodes. 
-  * Guide
-    * When the `Switch (Any)` and `Inversed Switch (Any)` selects are transformed into primitives, it's important to be cautious because the select range is not appropriately constrained, potentially leading to unintended behavior.   
-    * `Switch (image,mask)`, `Switch (latent)`, `Switch (SEGS)`, `Switch (Any)` supports `sel_mode` param. The `sel_mode` sets the moment at which the `select` parameter is determined. `select_on_prompt` determines the `select` at the time of queuing the prompt, while `select_on_execution` determines it during the execution of the workflow. While `select_on_execution` offers more flexibility, it can potentially trigger workflow execution errors due to running nodes that may be impossible to execute within the limitations of ComfyUI. `select_on_prompt` bypasses this constraint by treating any inputs not selected as if they were disconnected. However, please note that when using `select_on_prompt`, the `select` can only be used with widgets or `Primitive Nodes` determined at the queue prompt.
-    * There is an issue when connecting the built-in reroute node with the switch's input/output slots. it can lead to forced disconnections during workflow loading. Therefore, it is advisable not to use reroute for making connections in such cases. However, there are no issues when using the reroute node in Pythongossss.
+  * `Inversed Switch (Any)` - In contrast to `Switch (Any)`, it takes a single input and outputs one of many.
+  * NOTE: See this [tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/switch.md) 
 
 ### [Wildcards](http://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md) nodes
   * These are nodes that supports syntax in the form of `__wildcard-name__` and dynamic prompt syntax like `{a|b|c}`.
