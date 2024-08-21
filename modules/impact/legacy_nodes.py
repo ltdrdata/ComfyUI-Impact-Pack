@@ -25,6 +25,8 @@ class MMDetLoader:
 
     CATEGORY = "ImpactPack/Legacy"
 
+    DEPRECATED = True
+
     def load_mmdet(self, model_name):
         mmdet_path = folder_paths.get_full_path("mmdets", model_name)
         model = mmdet_nodes.load_mmdet(mmdet_path)
@@ -51,6 +53,8 @@ class BboxDetectorForEach:
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Legacy"
+
+    DEPRECATED = True
 
     @staticmethod
     def detect(bbox_model, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
@@ -102,6 +106,8 @@ class SegmDetectorCombined:
 
     CATEGORY = "ImpactPack/Legacy"
 
+    DEPRECATED = True
+
     def doit(self, segm_model, image, threshold, dilation):
         mmdet_results = mmdet_nodes.inference_segm(image, segm_model, threshold)
         segmasks = core.create_segmasks(mmdet_results)
@@ -150,6 +156,8 @@ class SegmDetectorForEach:
 
     CATEGORY = "ImpactPack/Legacy"
 
+    DEPRECATED = True
+
     def doit(self, segm_model, image, threshold, dilation, crop_factor):
         mmdet_results = mmdet_nodes.inference_segm(image, segm_model, threshold)
         segmasks = core.create_segmasks(mmdet_results)
@@ -190,6 +198,8 @@ class SegsMaskCombine:
 
     CATEGORY = "ImpactPack/Legacy"
 
+    DEPRECATED = True
+
     @staticmethod
     def combine(segs, image):
         h = image.shape[1]
@@ -225,6 +235,8 @@ class MaskPainter(nodes.PreviewImage):
     FUNCTION = "save_painted_images"
 
     CATEGORY = "ImpactPack/Legacy"
+
+    DEPRECATED = True
 
     def save_painted_images(self, images, filename_prefix="impact-mask",
                             prompt=None, extra_pnginfo=None, mask_image=None, image=None):
