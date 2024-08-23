@@ -66,8 +66,8 @@ class ImpactConditionalBranch:
         return {
             "required": {
                 "cond": ("BOOLEAN",),
-                "tt_value": (any_typ,),
-                "ff_value": (any_typ,),
+                "tt_value": (any_typ,{"lazy": True}),
+                "ff_value": (any_typ,{"lazy": True}),
             },
         }
 
@@ -76,7 +76,13 @@ class ImpactConditionalBranch:
 
     RETURN_TYPES = (any_typ, )
 
-    def doit(self, cond, tt_value, ff_value):
+    def check_lazy_status(self, cond, tt_value=None, ff_value=None):
+        if cond and tt_value is None:
+            return ["tt_value"]
+        if not cond and ff_value is None:
+            return ["ff_value"]
+
+    def doit(self, cond, tt_value=None, ff_value=None):
         if cond:
             return (tt_value,)
         else:
