@@ -15,7 +15,7 @@ import inspect
 class GeneralSwitch:
     @classmethod
     def INPUT_TYPES(s):
-        dyn_inputs = {"input1": (any_typ, {"lazy": True}), }
+        dyn_inputs = {"input1": (any_typ, {"lazy": True, "tooltip": "Any input. When connected, one more input slot is added."}), }
         if core.is_execution_model_version_supported():
             stack = inspect.stack()
             if stack[2].function == 'get_input_info' and stack[3].function == 'add_node':
@@ -23,8 +23,9 @@ class GeneralSwitch:
                     dyn_inputs[f"input{x}"] = (any_typ, {"lazy": True})
 
         inputs = {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
-                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
+                    "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1, "tooltip": "The input number you want to output among the inputs"}),
+                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False,
+                                             "tooltip": "In the case of 'select_on_execution', the selection is dynamically determined at the time of workflow execution. 'select_on_prompt' is an option that exists for older versions of ComfyUI, and it makes the decision before the workflow execution."}),
                     },
                 "optional": dyn_inputs,
                 "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"}
@@ -34,6 +35,7 @@ class GeneralSwitch:
 
     RETURN_TYPES = (any_typ, "STRING", "INT")
     RETURN_NAMES = ("selected_value", "selected_label", "selected_index")
+    OUTPUT_TOOLTIPS = ("Output is generated only from the input chosen by the 'select' value.", "Slot label of the selected input slot", "Outputs the select value as is")
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
@@ -144,17 +146,19 @@ class GeneralInversedSwitch:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
-                    "input": (any_typ,),
+                    "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1, "tooltip": "The output number you want to send from the input"}),
+                    "input": (any_typ, {"tooltip": "Any input. When connected, one more input slot is added."}),
 
                     },
                 "optional": {
-                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
+                    "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False,
+                                             "tooltip": "In the case of 'select_on_execution', the selection is dynamically determined at the time of workflow execution. 'select_on_prompt' is an option that exists for older versions of ComfyUI, and it makes the decision before the workflow execution."}),
                     },
                 "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
                 }
 
     RETURN_TYPES = ByPassTypeTuple((any_typ, ))
+    OUTPUT_TOOLTIPS = ("Output occurs only from the output selected by the 'select' value.\nWhen slots are connected, additional slots are created.", )
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
