@@ -1,5 +1,6 @@
 from impact.utils import any_typ, ByPassTypeTuple, make_3d_mask
 import comfy_extras.nodes_mask
+from comfy_execution.graph import ExecutionBlocker
 from nodes import MAX_RESOLUTION
 import torch
 import comfy
@@ -145,10 +146,12 @@ class GeneralInversedSwitch:
         return {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1}),
                     "input": (any_typ,),
+
                     },
                 "optional": {
                     "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False}),
                     },
+                "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
                 }
 
     RETURN_TYPES = ByPassTypeTuple((any_typ, ))
@@ -156,12 +159,25 @@ class GeneralInversedSwitch:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, select, input, **kwargs):
+    def doit(self, select, prompt, unique_id, input, **kwargs):
+        if core.is_execution_model_version_supported:
+            from comfy_execution.graph import ExecutionBlocker
+
         res = []
 
-        for i in range(0, select):
+        # search max output count in prompt
+        cnt = 0
+        for x in prompt.values():
+            for y in x.get('inputs', {}).values():
+                if isinstance(y, list) and len(y) == 2:
+                    if y[0] == unique_id:
+                        cnt = max(cnt, y[1])
+
+        for i in range(0, cnt + 1):
             if select == i+1:
                 res.append(input)
+            elif core.is_execution_model_version_supported:
+                res.append(ExecutionBlocker(None))
             else:
                 res.append(None)
 
