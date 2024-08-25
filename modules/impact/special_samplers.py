@@ -5,7 +5,7 @@ from impact.utils import *
 from nodes import MAX_RESOLUTION
 import nodes
 from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper, separated_sample, impact_sample
-
+import comfy
 
 class TiledKSamplerProvider:
     @classmethod
@@ -332,6 +332,10 @@ class RegionalSampler:
     @staticmethod
     def doit(seed, seed_2nd, seed_2nd_mode, steps, base_only_steps, denoise, samples, base_sampler, regional_prompts, overlap_factor, restore_latent,
              additional_mode, additional_sampler, additional_sigma_ratio, unique_id=None):
+
+        samples = samples.copy()
+        samples['samples'] = comfy.sample.fix_empty_latent_channels(base_sampler.params[0], samples['samples'])
+
         if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
         else:
@@ -476,6 +480,9 @@ class RegionalSamplerAdvanced:
     def doit(add_noise, noise_seed, steps, start_at_step, end_at_step, overlap_factor, restore_latent, return_with_leftover_noise, latent_image, base_sampler, regional_prompts,
              additional_mode, additional_sampler, additional_sigma_ratio, unique_id):
 
+        new_latent_image = latent_image.copy()
+        new_latent_image['samples'] = comfy.sample.fix_empty_latent_channels(base_sampler.params[0], new_latent_image['samples'])
+
         if restore_latent:
             latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
         else:
@@ -491,7 +498,6 @@ class RegionalSamplerAdvanced:
         end_at_step = min(steps, end_at_step)
         total = (end_at_step - start_at_step) * region_len
 
-        new_latent_image = latent_image.copy()
         base_latent_image = None
         region_masks = {}
 
