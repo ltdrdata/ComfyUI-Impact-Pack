@@ -1,6 +1,5 @@
 from impact.utils import any_typ, ByPassTypeTuple, make_3d_mask
 import comfy_extras.nodes_mask
-from comfy_execution.graph import ExecutionBlocker
 from nodes import MAX_RESOLUTION
 import torch
 import comfy
@@ -166,6 +165,8 @@ class GeneralInversedSwitch:
     def doit(self, select, prompt, unique_id, input, **kwargs):
         if core.is_execution_model_version_supported:
             from comfy_execution.graph import ExecutionBlocker
+        else:
+            print("[Impact Pack] InversedSwitch: ComfyUI is outdated. The 'select_on_execution' mode cannot function properly.")
 
         res = []
 

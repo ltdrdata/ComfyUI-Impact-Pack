@@ -9,7 +9,6 @@ import impact.core as core
 import re
 import nodes
 import traceback
-from comfy_execution.graph import ExecutionBlocker
 
 class ImpactCompare:
     @classmethod
@@ -673,6 +672,11 @@ class ImpactControlBridge:
 
     def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None):
         global error_skip_flag
+
+        if core.is_execution_model_version_supported:
+            from comfy_execution.graph import ExecutionBlocker
+        else:
+            print("[Impact Pack] ImpactControlBridge: ComfyUI is outdated. The 'Stop' behavior cannot function properly.")
 
         if behavior == "Stop":
             if mode:
