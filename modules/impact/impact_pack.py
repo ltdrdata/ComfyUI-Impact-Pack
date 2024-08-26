@@ -238,11 +238,16 @@ class DetailerForEach:
         else:
             wmode, wildcard_chooser = None, None
 
-        if wmode in ['ASC', 'DSC']:
+        if wmode in ['ASC', 'DSC', 'ASC-SIZE', 'DSC-SIZE']:
             if wmode == 'ASC':
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]))
-            else:
+            elif wmode == 'DSC':
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[0], x.bbox[1]), reverse=True)
+            elif wmode == 'ASC-SIZE':
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]))
+
+            else:   # wmode == 'DSC-SIZE'
+                ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]), reverse=True)
         else:
             ordered_segs = segs[1]
 
@@ -290,6 +295,12 @@ class DetailerForEach:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
+
+            if wildcard_item and wildcard_item.strip() == '[SKIP]':
+                continue
+
+            if wildcard_item and wildcard_item.strip() == '[STOP]':
+                break
 
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                             seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,

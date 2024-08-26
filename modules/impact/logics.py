@@ -9,7 +9,7 @@ import impact.core as core
 import re
 import nodes
 import traceback
-
+from comfy_execution.graph import ExecutionBlocker
 
 class ImpactCompare:
     @classmethod
@@ -631,85 +631,99 @@ class ImpactControlBridge:
     def INPUT_TYPES(cls):
         return {"required": {
                       "value": (any_typ,),
-                      "mode": ("BOOLEAN", {"default": True, "label_on": "Active", "label_off": "Mute/Bypass"}),
-                      "behavior": ("BOOLEAN", {"default": True, "label_on": "Mute", "label_off": "Bypass"}),
+                      "mode": ("BOOLEAN", {"default": True, "label_on": "Active", "label_off": "Stop/Mute/Bypass"}),
+                      "behavior": (["Stop", "Mute", "Bypass"], ),
                     },
                 "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"}
                 }
 
     FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Logic/_for_test"
+    CATEGORY = "ImpactPack/Logic"
     RETURN_TYPES = (any_typ,)
     RETURN_NAMES = ("value",)
     OUTPUT_NODE = True
 
+    DESCRIPTION = ("When behavior is Stop and mode is active, the input value is passed directly to the output.\n"
+                   "When behavior is Mute/Bypass and mode is active, the node connected to the output is changed to active state.\n"
+                   "When behavior is Stop and mode is Stop/Mute/Bypass, the workflow execution of the current node is halted.\n"
+                   "When behavior is Mute/Bypass and mode is Stop/Mute/Bypass, the node connected to the output is changed to Mute/Bypass state.")
+
     @classmethod
-    def IS_CHANGED(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
-        # NOTE: extra_pnginfo is not populated for IS_CHANGED.
-        #       so extra_pnginfo is useless in here
-        try:
-            workflow = core.current_prompt['extra_data']['extra_pnginfo']['workflow']
-        except:
-            print(f"[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
-            return 0
+    def IS_CHANGED(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None):
+        if behavior == "Stop":
+            return value, mode, behavior
+        else:
+            # NOTE: extra_pnginfo is not populated for IS_CHANGED.
+            #       so extra_pnginfo is useless in here
+            try:
+                workflow = core.current_prompt['extra_data']['extra_pnginfo']['workflow']
+            except:
+                print(f"[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
+                return 0
 
-        nodes, links = workflow_to_map(workflow)
-        next_nodes = []
+            nodes, links = workflow_to_map(workflow)
+            next_nodes = []
 
-        for link in nodes[unique_id]['outputs'][0]['links']:
-            node_id = str(links[link][2])
-            impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
+            for link in nodes[unique_id]['outputs'][0]['links']:
+                node_id = str(links[link][2])
+                impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
 
         return next_nodes
 
-    def doit(self, value, mode, behavior=True, unique_id=None, prompt=None, extra_pnginfo=None):
+    def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None):
         global error_skip_flag
 
-        workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])
-
-        active_nodes = []
-        mute_nodes = []
-        bypass_nodes = []
-
-        for link in workflow_nodes[unique_id]['outputs'][0]['links']:
-            node_id = str(links[link][2])
-
-            next_nodes = []
-            impact.utils.collect_non_reroute_nodes(workflow_nodes, links, next_nodes, node_id)
-
-            for next_node_id in next_nodes:
-                node_mode = workflow_nodes[next_node_id]['mode']
-
-                if node_mode == 0:
-                    active_nodes.append(next_node_id)
-                elif node_mode == 2:
-                    mute_nodes.append(next_node_id)
-                elif node_mode == 4:
-                    bypass_nodes.append(next_node_id)
-
-        if mode:
-            # active
-            should_be_active_nodes = mute_nodes + bypass_nodes
-            if len(should_be_active_nodes) > 0:
-                PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
-                nodes.interrupt_processing()
-
-        elif behavior:
-            # mute
-            should_be_mute_nodes = active_nodes + bypass_nodes
-            if len(should_be_mute_nodes) > 0:
-                PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_be_mute_nodes)})
-                nodes.interrupt_processing()
-
+        if behavior == "Stop":
+            if mode:
+                return (value, )
+            else:
+                return (ExecutionBlocker(None), )
         else:
-            # bypass
-            should_be_bypass_nodes = active_nodes + mute_nodes
-            if len(should_be_bypass_nodes) > 0:
-                PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'bypasses': list(should_be_bypass_nodes)})
-                nodes.interrupt_processing()
+            workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])
 
-        return (value, )
+            active_nodes = []
+            mute_nodes = []
+            bypass_nodes = []
+
+            for link in workflow_nodes[unique_id]['outputs'][0]['links']:
+                node_id = str(links[link][2])
+
+                next_nodes = []
+                impact.utils.collect_non_reroute_nodes(workflow_nodes, links, next_nodes, node_id)
+
+                for next_node_id in next_nodes:
+                    node_mode = workflow_nodes[next_node_id]['mode']
+
+                    if node_mode == 0:
+                        active_nodes.append(next_node_id)
+                    elif node_mode == 2:
+                        mute_nodes.append(next_node_id)
+                    elif node_mode == 4:
+                        bypass_nodes.append(next_node_id)
+
+            if mode:
+                # active
+                should_be_active_nodes = mute_nodes + bypass_nodes
+                if len(should_be_active_nodes) > 0:
+                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
+                    nodes.interrupt_processing()
+
+            elif behavior == "Mute" or behavior == True:
+                # mute
+                should_be_mute_nodes = active_nodes + bypass_nodes
+                if len(should_be_mute_nodes) > 0:
+                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_be_mute_nodes)})
+                    nodes.interrupt_processing()
+
+            else:
+                # bypass
+                should_be_bypass_nodes = active_nodes + mute_nodes
+                if len(should_be_bypass_nodes) > 0:
+                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'bypasses': list(should_be_bypass_nodes)})
+                    nodes.interrupt_processing()
+
+            return (value, )
 
 
 class ImpactExecutionOrderController:

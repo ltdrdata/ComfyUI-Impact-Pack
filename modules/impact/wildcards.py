@@ -425,7 +425,7 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, 
 
 def starts_with_regex(pattern, text):
     regex = re.compile(pattern)
-    return bool(regex.match(text))
+    return regex.match(text)
 
 
 def split_to_dict(text):
@@ -507,18 +507,21 @@ def process_wildcard_for_segs(wildcard):
 
         return 'LAB', WildcardChooserDict(items)
 
-    elif starts_with_regex(r"\[(ASC|DSC|RND)\]", wildcard):
-        mode = wildcard[1:4]
-        items = split_string_with_sep(wildcard[5:])
-
-        if mode == 'RND':
-            random.shuffle(items)
-            return mode, WildcardChooser(items, True)
-        else:
-            return mode, WildcardChooser(items, False)
-
     else:
-        return None, WildcardChooser([(None, wildcard)], False)
+        match = starts_with_regex(r"\[(ASC-SIZE|DSC-SIZE|ASC|DSC|RND)\]", wildcard)
+
+        if match:
+            mode = match[1]
+            items = split_string_with_sep(wildcard[len(match[0]):])
+
+            if mode == 'RND':
+                random.shuffle(items)
+                return mode, WildcardChooser(items, True)
+            else:
+                return mode, WildcardChooser(items, False)
+
+        else:
+            return None, WildcardChooser([(None, wildcard)], False)
 
 
 def wildcard_load():
