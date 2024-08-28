@@ -78,6 +78,8 @@ class PreviewDetailerHookProvider:
 
     CATEGORY = "ImpactPack/Util"
 
+    NOT_IDEMPOTENT = True
+
     def doit(self, quality, unique_id):
         hook = hooks.PreviewDetailerHook(unique_id, quality)
-        return (hook, hook)
+        return hook, hook
