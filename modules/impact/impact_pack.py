@@ -62,10 +62,10 @@ class CLIPSegDetectorProvider:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "text": ("STRING", {"multiline": False}),
-                        "blur": ("FLOAT", {"min": 0, "max": 15, "step": 0.1, "default": 7}),
-                        "threshold": ("FLOAT", {"min": 0, "max": 1, "step": 0.05, "default": 0.4}),
-                        "dilation_factor": ("INT", {"min": 0, "max": 10, "step": 1, "default": 4}),
+                        "text": ("STRING", {"multiline": False, "tooltip": "Enter the targets to be detected, separated by commas"}),
+                        "blur": ("FLOAT", {"min": 0, "max": 15, "step": 0.1, "default": 7, "tooltip": "Blurs the detected mask"}),
+                        "threshold": ("FLOAT", {"min": 0, "max": 1, "step": 0.05, "default": 0.4, "tooltip": "Detects only areas that are certain above the threshold."}),
+                        "dilation_factor": ("INT", {"min": 0, "max": 10, "step": 1, "default": 4, "tooltip": "Dilates the detected mask."}),
                     }
                 }
 
@@ -73,6 +73,8 @@ class CLIPSegDetectorProvider:
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
+
+    DESCRIPTION = "Provides a detection function using CLIPSeg, which generates masks based on text prompts.\nTo use this node, the CLIPSeg custom node must be installed."
 
     def doit(self, text, blur, threshold, dilation_factor):
         if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
@@ -87,8 +89,10 @@ class SAMLoader:
         models = [x for x in folder_paths.get_filename_list("sams") if 'hq' not in x]
         return {
             "required": {
-                "model_name": (models + ['ESAM'], ),
-                "device_mode": (["AUTO", "Prefer GPU", "CPU"],),
+                "model_name": (models + ['ESAM'], {"tooltip": "The detection accuracy varies depending on the SAM model. ESAM can only be used if ComfyUI-YoloWorld-EfficientSAM is installed."}),
+                "device_mode": (["AUTO", "Prefer GPU", "CPU"], {"tooltip": "AUTO: Only applicable when a GPU is available. It temporarily loads the SAM_MODEL into VRAM only when the detection function is used.\n"
+                                                                           "Prefer GPU: Tries to keep the SAM_MODEL on the GPU whenever possible. This can be used when there is sufficient VRAM available.\n"
+                                                                           "CPU: Always loads only on the CPU."}),
             }
         }
 
@@ -96,6 +100,8 @@ class SAMLoader:
     FUNCTION = "load_model"
 
     CATEGORY = "ImpactPack"
+
+    DESCRIPTION = "Load the SAM (Segment Anything) model. This can be used in places that utilize SAM detection functionality, such as SAMDetector or SimpleDetector.\nThe SAM detection functionality in Impact Pack must use the SAM_MODEL loaded through this node."
 
     def load_model(self, model_name, device_mode="auto"):
         if model_name == 'ESAM':
@@ -1640,6 +1646,8 @@ class BitwiseAndMaskForEach:
 
     CATEGORY = "ImpactPack/Operation"
 
+    DESCRIPTION = "Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs. SEGS with no overlapping mask areas are filtered out."
+
     def doit(self, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
         mask = make_3d_mask(mask)
@@ -1660,6 +1668,8 @@ class SubtractMaskForEach:
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Operation"
+
+    DESCRIPTION = "Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs. SEGS with no overlapping mask areas are filtered out."
 
     def doit(self, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
