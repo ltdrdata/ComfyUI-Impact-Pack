@@ -237,7 +237,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
 
-        if noise_mask_feather > 0:
+        if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
             model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
@@ -383,7 +383,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
 
-    if noise_mask_feather > 0:
+    if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
         model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
