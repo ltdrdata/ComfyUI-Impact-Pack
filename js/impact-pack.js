@@ -237,7 +237,7 @@ app.registerExtension({
 		if(nodeData.name == "ImpactControlBridge") {
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(!link_info || this.inputs[0].type != '*')
+				if(index != 0 || !link_info || this.inputs[0].type != '*')
 					return;
 
 				// assign type
