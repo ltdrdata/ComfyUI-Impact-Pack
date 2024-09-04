@@ -6,11 +6,11 @@ let refresh_btn2 = document.querySelector('button[title="Refresh widgets in node
 
 let orig = refresh_btn.onclick;
 
-refresh_btn.onclick = function() {
+refresh_btn?.onclick = function() {
 	orig();
 	api.fetchApi('/impact/wildcards/refresh');
 };
 
-refresh_btn2.addEventListener('click', function() {
+refresh_btn2?.addEventListener('click', function() {
 	api.fetchApi('/impact/wildcards/refresh');
 });
