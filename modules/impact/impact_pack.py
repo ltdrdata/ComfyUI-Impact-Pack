@@ -1696,6 +1696,25 @@ class ToBinaryMask:
         return (mask,)
 
 
+class FlattenMask:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "masks": ("MASK",),
+                    }
+                }
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Operation"
+
+    def doit(self, masks):
+        masks = utils.make_3d_mask(masks)
+        masks = utils.flatten_mask(masks)
+        return (masks,)
+
+
 class BitwiseAndMask:
     @classmethod
     def INPUT_TYPES(s):

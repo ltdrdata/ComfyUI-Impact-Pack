@@ -228,11 +228,14 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   
 
 ### Batch/List Util
-  * `Image batch To Image List` - Convert Image batch to Image List
+  * `Image Batch to Image List` - Convert Image batch to Image List
     - You can use images generated in a multi batch to handle them
+  * `Image List to Image Batch` - Convert Image List to Image Batch 
   * `Make Image List` - Convert multiple images into a single image list
   * `Make Image Batch` - Convert multiple images into a single image batch
     - The input of images can be scaled up as needed
+  * `Masks to Mask List`, `Mask List to Masks`, `Make Mask List`, `Make Mask Batch` - It has the same functionality as the nodes above, but uses mask as input instead of image.
+  * `Flatten Mask Batch` - Flattens a Mask Batch into a single Mask. Normal operation is not guaranteed for non-binary masks. 
 
 
 ### Logics (experimental) 

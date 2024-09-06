@@ -161,6 +161,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSegsAndMask": SegsBitwiseAndMask,
     "ImpactSegsAndMaskForEach": SegsBitwiseAndMaskForEach,
     "EmptySegs": EmptySEGS,
+    "ImpactFlattenMask": FlattenMask,
 
     "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS,
     "MaskToSEGS": MaskToSEGS,
@@ -249,6 +250,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactImageBatchToImageList": ImageBatchToImageList,
     "ImpactMakeImageList": MakeImageList,
     "ImpactMakeImageBatch": MakeImageBatch,
+    "ImpactMakeMaskList": MakeMaskList,
+    "ImpactMakeMaskBatch": MakeMaskBatch,
 
     "RegionalSampler": RegionalSampler,
     "RegionalSamplerAdvanced": RegionalSamplerAdvanced,
@@ -332,6 +335,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BitwiseAndMask": "Pixelwise(MASK & MASK)",
     "SubtractMask": "Pixelwise(MASK - MASK)",
     "AddMask": "Pixelwise(MASK + MASK)",
+    "ImpactFlattenMask": "Flatten Mask Batch",
     "DetailerForEach": "Detailer (SEGS)",
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
@@ -400,12 +404,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactInversedSwitch": "Inversed Switch (Any)",
     "ImpactExecutionOrderController": "Execution Order Controller",
 
-    "MasksToMaskList": "Masks to Mask List",
-    "MaskListToMaskBatch": "Mask List to Masks",
-    "ImpactImageBatchToImageList": "Image batch to Image List",
+    "MasksToMaskList": "Mask Batch to Mask List",
+    "MaskListToMaskBatch": "Mask List to Mask Batch",
+    "ImpactImageBatchToImageList": "Image Batch to Image List",
     "ImageListToImageBatch": "Image List to Image Batch",
+
     "ImpactMakeImageList": "Make Image List",
     "ImpactMakeImageBatch": "Make Image Batch",
+    "ImpactMakeMaskList": "Make Mask List",
+    "ImpactMakeMaskBatch": "Make Mask Batch",
+
     "ImpactStringSelector": "String Selector",
     "StringListToString": "String List to String",
     "WildcardPromptFromString": "Wildcard Prompt from String",

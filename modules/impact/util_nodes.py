@@ -392,6 +392,26 @@ class ImageBatchToImageList:
         return (images, )
 
 
+class MakeMaskList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"mask1": ("MASK",), }}
+
+    RETURN_TYPES = ("MASK",)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        masks = []
+
+        for k, v in kwargs.items():
+            masks.append(v)
+
+        return (masks, )
+
+
 class MakeImageList:
     @classmethod
     def INPUT_TYPES(s):
@@ -435,6 +455,31 @@ class MakeImageBatch:
                     image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
             return (image1,)
+
+
+class MakeMaskBatch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"mask1": ("MASK",), }}
+
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        mask1 = kwargs['mask1']
+        del kwargs['mask1']
+        masks = [utils.make_3d_mask(value) for value in kwargs.values()]
+
+        if len(masks) == 0:
+            return (mask1,)
+        else:
+            for mask2 in masks:
+                if mask1.shape[1:] != mask2.shape[1:]:
+                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
+                mask1 = torch.cat((mask1, mask2), dim=0)
+            return (mask1,)
 
 
 class ReencodeLatent:

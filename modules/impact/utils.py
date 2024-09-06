@@ -5,8 +5,7 @@ import numpy as np
 import folder_paths
 import nodes
 from . import config
-from PIL import Image, ImageFilter
-from scipy.ndimage import zoom
+from PIL import Image
 import comfy
 
 
@@ -577,6 +576,14 @@ def apply_mask_alpha_to_pil(decoded_pil, mask):
     decoded_rgba.putalpha(mask_pil)
 
     return decoded_rgba
+
+
+def flatten_mask(all_masks):
+    merged_mask = (all_masks[0] * 255).to(torch.uint8)
+    for mask in all_masks[1:]:
+        merged_mask |= (mask * 255).to(torch.uint8)
+
+    return merged_mask
 
 
 def try_install_custom_node(custom_node_url, msg):
