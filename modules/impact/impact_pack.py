@@ -29,6 +29,14 @@ import impact.wildcards as wildcards
 from . import hooks
 from . import utils
 
+
+try:
+    from comfy_extras import nodes_differential_diffusion
+except Exception:
+    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    raise Exception("[Impact Pack] ComfyUI is an outdated version.")
+
+
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
 model_path = folder_paths.models_dir
@@ -256,6 +264,9 @@ class DetailerForEach:
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]), reverse=True)
         else:
             ordered_segs = segs[1]
+
+        if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
         for i, seg in enumerate(ordered_segs):
             cropped_image = crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area

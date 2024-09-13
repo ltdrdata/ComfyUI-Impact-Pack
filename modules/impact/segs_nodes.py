@@ -14,6 +14,13 @@ from comfy.cli_args import args
 import math
 
 
+try:
+    from comfy_extras import nodes_differential_diffusion
+except Exception:
+    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    raise Exception("[Impact Pack] ComfyUI is an outdated version.")
+
+
 class SEGSDetailer:
     @classmethod
     def INPUT_TYPES(s):
@@ -68,6 +75,9 @@ class SEGSDetailer:
 
         new_segs = []
         cnet_pil_list = []
+
+        if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
         for i in range(batch_size):
             seed += 1
