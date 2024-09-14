@@ -1413,8 +1413,6 @@ class SEGSPicker:
 
     RETURN_TYPES = ("SEGS", )
 
-    OUTPUT_NODE = True
-
     FUNCTION = "doit"
 
     CATEGORY = "ImpactPack/Util"
