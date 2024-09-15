@@ -12,7 +12,7 @@ from impact import config
 
 wildcards_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "wildcards"))
 
-RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+)__", re.IGNORECASE)
+RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+?)__", re.IGNORECASE)
 wildcard_lock = threading.Lock()
 wildcard_dict = {}
 
@@ -121,7 +121,7 @@ def process(text, seed=None):
             select_sep = ' '
             range_pattern = r'(\d+)(-(\d+))?'
             range_pattern2 = r'-(\d+)'
-            wildcard_pattern = r"__([\w.\-+/*\\]+)__"
+            wildcard_pattern = r"__([\w.\-+/*\\]+?)__"
 
             if len(multi_select_pattern) > 1:
                 r = re.match(range_pattern, options[0])
@@ -200,7 +200,7 @@ def process(text, seed=None):
         return replaced_string, replacements_found
 
     def replace_wildcard(string):
-        pattern = r"__([\w.\-+/*\\]+)__"
+        pattern = r"__([\w.\-+/*\\]+?)__"
         matches = re.findall(pattern, string)
 
         replacements_found = False
