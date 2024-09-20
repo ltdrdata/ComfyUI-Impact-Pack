@@ -1680,6 +1680,9 @@ class PixelKSampleUpscaler:
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
 
+        if 'noise_mask' in samples:
+            upscaled_latent['noise_mask'] = samples['noise_mask']
+
         refined_latent = self.sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise, upscaled_images)
         return refined_latent
 
@@ -1708,6 +1711,9 @@ class PixelKSampleUpscaler:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise = \
                 self.hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                                       upscaled_latent, denoise)
+
+        if 'noise_mask' in samples:
+            upscaled_latent['noise_mask'] = samples['noise_mask']
 
         refined_latent = self.sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent, denoise, upscaled_images)
         return refined_latent

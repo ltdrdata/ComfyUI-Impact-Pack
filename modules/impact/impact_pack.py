@@ -1249,6 +1249,7 @@ class IterativeLatentUpscale:
             upscale_factor_unit = max(0, (upscale_factor - 1.0) / steps)
 
         current_latent = samples
+        noise_mask = current_latent.get('noise_mask')
         scale = 1
 
         for i in range(steps-1):
@@ -1263,6 +1264,8 @@ class IterativeLatentUpscale:
             print(f"IterativeLatentUpscale[{i+1}/{steps}]: {new_w:.1f}x{new_h:.1f} (scale:{scale:.2f}) ")
             step_info = i, steps
             current_latent = upscaler.upscale_shape(step_info, current_latent, new_w, new_h, temp_prefix)
+            if noise_mask is not None:
+                current_latent['noise_mask'] = noise_mask
 
         if scale < upscale_factor:
             new_w = w*upscale_factor
@@ -1274,7 +1277,7 @@ class IterativeLatentUpscale:
 
         core.update_node_status(unique_id, "", None)
 
-        return (current_latent, upscaler.vae)
+        return current_latent, upscaler.vae
 
 
 class IterativeImageUpscale:
