@@ -319,6 +319,7 @@ class DetailerForEach:
             if wildcard_item and wildcard_item.strip() == '[STOP]':
                 break
 
+            orig_cropped_image = cropped_image.clone()
             enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                             seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                             cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -338,7 +339,7 @@ class DetailerForEach:
                 # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
-                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)
+                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -356,7 +357,7 @@ class DetailerForEach:
             else:
                 new_seg_image = None
 
-            cropped_list.append(cropped_image)
+            cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
 
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
