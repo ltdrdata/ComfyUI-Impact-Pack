@@ -7,6 +7,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 
 ## NOTICE 
+* V7.6: Automatic installation is no longer supported. Please install using ComfyUI-Manager, or manually install requirements.txt and run install.py to complete the installation.
 * V7.0: Supports Switch based on Execution Model Inversion.
 * V6.0: Supports FLUX.1 model in Impact KSampler, Detailers, PreviewBridgeLatent
 * V5.0: It is no longer compatible with versions of ComfyUI before 2024.04.08. 
@@ -331,6 +332,10 @@ mmdet_skip = False
 
 ## Installation
 
+### Install via ComfyUI-Manager (Recommended)
+* Search `ComfyUI Impact Pack` in ComfyUI-Manager and click `Install` button.
+
+### Manual Install (Not Recommended)
 1. `cd custom_nodes`
 2. `git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git`
 3. `cd ComfyUI-Impact-Pack`
@@ -339,24 +344,29 @@ mmdet_skip = False
 5. (optional) `python install.py`
    * Impact Pack will automatically install its dependencies during its initial launch.
    * For the portable version, you should execute the command `..\..\..\python_embeded\python.exe install.py` to run the installation script.
-
-
 6. Restart ComfyUI
 
 * NOTE1: If an error occurs during the installation process, please refer to [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md) for assistance. 
 * NOTE2: You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 * NOTE3: If you create an empty file named `skip_download_model` in the `ComfyUI/custom_nodes/` directory, it will skip the model download step during the installation of the impact pack.
 
+
 ## Package Dependencies (If you need to manual setup.)
 
 * pip install
-   * openmim
    * segment-anything
    * ultralytics
    * scikit-image
-   * piexif
-   * (optional) pycocotools
+   * piexif 
+   * opencv-python
+   * GitPython
+   * scipy
+   * numpy<2
+   * dill
+   * matplotlib
    * (optional) onnxruntime
+   * (deprecated) openmim      # for mim
+   * (deprecated) pycocotools  # for mim
    
 * mim install (deprecated)
    * mmcv==2.0.0, mmdet==3.0.0, mmengine==0.7.2

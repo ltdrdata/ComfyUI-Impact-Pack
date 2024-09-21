@@ -23,22 +23,6 @@ import impact.sample_error_enhancer
 print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
 
 
-def do_install():
-    import importlib
-    spec = importlib.util.spec_from_file_location('impact_install', os.path.join(os.path.dirname(__file__), 'install.py'))
-    impact_install = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(impact_install)
-
-
-# ensure dependency
-if not os.path.exists(os.path.join(subpack_path, ".git")) and os.path.exists(subpack_path):
-    print(f"### CompfyUI-Impact-Pack: corrupted subpack detected.")
-    shutil.rmtree(subpack_path)
-
-if impact.config.get_config()['dependency_version'] < impact.config.dependency_version or not os.path.exists(subpack_path):
-    print(f"### ComfyUI-Impact-Pack: Updating dependencies [{impact.config.get_config()['dependency_version']} -> {impact.config.dependency_version}]")
-    do_install()
-
 sys.path.append(subpack_path)
 
 # Core
@@ -63,10 +47,10 @@ try:
         import mmcv
         from mmdet.apis import (inference_detector, init_detector)
         from mmdet.evaluation import get_classes
-except:
-    import importlib
-    print("### ComfyUI-Impact-Pack: Reinstall dependencies (several dependencies are missing.)")
-    do_install()
+except Exception as e:
+    import logging
+    logging.error("[Impact Pack] Failed to import due to several dependencies are missing!!!!")
+    raise e
 
 
 import impact.impact_server  # to load server api
