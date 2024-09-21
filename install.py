@@ -71,6 +71,8 @@ def process_wrap(cmd_str, cwd=None, handler=None, env=None):
 
 try:
     import platform
+    import folder_paths
+    from torchvision.datasets.utils import download_url
     import impact.config
 
     print("### ComfyUI-Impact-Pack: Check dependencies")
@@ -111,8 +113,20 @@ try:
         sam_path = os.path.join(model_path, "sams")
         onnx_path = os.path.join(model_path, "onnx")
 
-        if not os.path.exists(sam_path):
-            os.makedirs(sam_path)
+        if not os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'skip_download_model')):
+            if not impact.config.get_config()['mmdet_skip']:
+                bbox_path = os.path.join(model_path, "mmdets", "bbox")
+                if not os.path.exists(bbox_path):
+                    os.makedirs(bbox_path)
+
+                if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
+                    download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
+
+                if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
+                    download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
+
+            if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
+                download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
 
         if not os.path.exists(onnx_path):
             print(f"### ComfyUI-Impact-Pack: onnx model directory created ({onnx_path})")
