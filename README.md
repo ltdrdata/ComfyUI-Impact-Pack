@@ -90,6 +90,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `MaskDetailer (pipe)` - This is a simple inpaint node that applies the Detailer to the mask area.
 
   * `FromDetailer (SDXL/pipe)`, `BasicPipe -> DetailerPipe (SDXL)`, `Edit DetailerPipe (SDXL)` - These are pipe functions used in Detailer for utilizing the refiner model of SDXL.
+  * `Any PIPE -> BasicPipe` - Convert the PIPE Value of other custom nodes that are not BASIC_PIPE but internally have the same structure as BASIC_PIPE to BASIC_PIPE. If an incompatible type is applied, it may cause runtime errors.
 
 ### SEGS Manipulation nodes
   * `SEGSDetailer` - Performs detailed work on SEGS without pasting it back onto the original image.
@@ -237,7 +238,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
     - The input of images can be scaled up as needed
   * `Masks to Mask List`, `Mask List to Masks`, `Make Mask List`, `Make Mask Batch` - It has the same functionality as the nodes above, but uses mask as input instead of image.
   * `Flatten Mask Batch` - Flattens a Mask Batch into a single Mask. Normal operation is not guaranteed for non-binary masks. 
-
+  * `Make List (Any)` - Create a list with arbitrary values.
 
 ### Logics (experimental) 
   * These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.

@@ -344,6 +344,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DetailerPipeToBasicPipe": "DetailerPipe -> BasicPipe",
     "EditBasicPipe": "Edit BasicPipe",
     "EditDetailerPipe": "Edit DetailerPipe",
+    "AnyPipeToBasic": "Any PIPE -> BasicPipe",
 
     "LatentPixelScale": "Latent Scale (on Pixel Space)",
     "IterativeLatentUpscale": "Iterative Upscale (Latent/on Pixel Space)",
@@ -399,6 +400,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactMakeImageBatch": "Make Image Batch",
     "ImpactMakeMaskList": "Make Mask List",
     "ImpactMakeMaskBatch": "Make Mask Batch",
+    "ImpactMakeAnyList": "Make List (Any)",
 
     "ImpactStringSelector": "String Selector",
     "StringListToString": "String List to String",
