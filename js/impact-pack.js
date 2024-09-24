@@ -394,7 +394,7 @@ app.registerExtension({
 
 		if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
 		    nodeData.name === 'ImpactMakeMaskList' || nodeData.name === 'ImpactMakeMaskBatch' ||
-			nodeData.name === 'CombineRegionalPrompts' ||
+			nodeData.name === 'ImpactMakeAnyList' || nodeData.name === 'CombineRegionalPrompts' ||
 			nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
 			nodeData.name === 'ImpactSEGSConcat' ||
 			nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
@@ -409,6 +409,10 @@ app.registerExtension({
 			case 'ImpactMakeMaskList':
 			case 'ImpactMakeMaskBatch':
 				input_name = "mask";
+				break;
+
+			case 'ImpactMakeAnyList':
+				input_name = "value";
 				break;
 
 			case 'ImpactSEGSConcat':

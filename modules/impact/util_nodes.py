@@ -392,6 +392,30 @@ class ImageBatchToImageList:
         return (images, )
 
 
+class MakeAnyList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {},
+            "optional": {"value1": (any_typ,), }
+        }
+
+    RETURN_TYPES = (any_typ,)
+    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def doit(self, **kwargs):
+        values = []
+
+        for k, v in kwargs.items():
+            if v is not None:
+                values.append(v)
+
+        return (values, )
+
+
 class MakeMaskList:
     @classmethod
     def INPUT_TYPES(s):

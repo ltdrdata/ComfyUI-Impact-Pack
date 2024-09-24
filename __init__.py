@@ -100,6 +100,7 @@ NODE_CLASS_MAPPINGS = {
     "FromDetailerPipe": FromDetailerPipe,
     "FromDetailerPipe_v2": FromDetailerPipe_v2,
     "FromDetailerPipeSDXL": FromDetailerPipe_SDXL,
+    "AnyPipeToBasic": AnyPipeToBasic,
     "ToBasicPipe": ToBasicPipe,
     "FromBasicPipe": FromBasicPipe,
     "FromBasicPipe_v2": FromBasicPipe_v2,
@@ -234,6 +235,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactImageBatchToImageList": ImageBatchToImageList,
     "ImpactMakeImageList": MakeImageList,
     "ImpactMakeImageBatch": MakeImageBatch,
+    "ImpactMakeAnyList": MakeAnyList,
     "ImpactMakeMaskList": MakeMaskList,
     "ImpactMakeMaskBatch": MakeMaskBatch,
 
