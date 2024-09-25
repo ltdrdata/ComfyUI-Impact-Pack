@@ -383,7 +383,7 @@ app.registerExtension({
 				}
 
 				let select_slot = this.inputs.find(x => x.name == "select");
-				if(this.widgets) {
+				if(this.widgets?.length) {
 					this.widgets[0].options.max = select_slot?this.outputs.length-1:this.outputs.length;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
@@ -537,7 +537,7 @@ app.registerExtension({
 						this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
 				}
 
-				if(this.widgets) {
+				if(this.widgets?.length) {
 					this.widgets[0].options.max = select_slot?this.inputs.length-1:this.inputs.length;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
