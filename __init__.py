@@ -260,6 +260,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactLogicalOperators": ImpactLogicalOperators,
     "ImpactInt": ImpactInt,
     "ImpactFloat": ImpactFloat,
+    "ImpactBoolean": ImpactBoolean,
     "ImpactValueSender": ImpactValueSender,
     "ImpactValueReceiver": ImpactValueReceiver,
     "ImpactImageInfo": ImpactImageInfo,
