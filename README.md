@@ -108,6 +108,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
   * `SEGS Filter (range)` - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
   * `SEGS Assign (label)` - Assign labels sequentially to SEGS. This node is useful when used with `[LAB]` of FaceDetailer.
   * `SEGSConcat` - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different from segs2 will be ignored.
+  * `SEGS Merge` - SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed.
   * `Picker (SEGS)` - Among the input SEGS, you can select a specific SEG through a dialog. If no SEG is selected, it outputs an empty SEGS. Increasing the batch_size of SEGSDetailer can be used for the purpose of selecting from the candidates.
   * `Set Default Image For SEGS` - Set a default image for SEGS. SEGS with images set this way do not need to have a fallback image set. When override is set to false, the original image is preserved.
   * `Remove Image from SEGS` - Remove the image set for the SEGS that has been configured by "Set Default Image for SEGS" or SEGSDetailer. When the image for the SEGS is removed, the Detailer node will operate based on the currently processed image instead of the SEGS. 
@@ -242,7 +243,7 @@ This custom node helps to conveniently enhance images through Detector, Detailer
 
 ### Logics (experimental) 
   * These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
-  * `ImpactCompare`, `ImpactConditionalBranch`, `ImpactConditionalBranchSelMode`, `ImpactInt`, `ImpactValueSender`, `ImpactValueReceiver`, `ImpactImageInfo`, `ImpactMinMax`, `ImpactNeg`, `ImpactConditionalStopIteration`
+  * `ImpactCompare`, `ImpactConditionalBranch`, `ImpactConditionalBranchSelMode`, `ImpactInt`, `ImpactBoolean`, `ImpactValueSender`, `ImpactValueReceiver`, `ImpactImageInfo`, `ImpactMinMax`, `ImpactNeg`, `ImpactConditionalStopIteration`
   * `ImpactIsNotEmptySEGS` - This node returns `true` only if the input SEGS is not empty. 
   * `ImpactIfNone` - Returns `true` if any_input is None, and returns `false` if it is not None.
   * `Queue Trigger` - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.

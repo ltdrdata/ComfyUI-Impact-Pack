@@ -704,6 +704,68 @@ class SEGSToMaskBatch:
         return (mask_batch,)
 
 
+class SEGSMerge:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    DESCRIPTION = "SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed."
+
+    def doit(self, segs):
+        crop_left = sys.maxsize
+        crop_right = 0
+        crop_top = sys.maxsize
+        crop_bottom = 0
+
+        bbox_left = sys.maxsize
+        bbox_right = 0
+        bbox_top = sys.maxsize
+        bbox_bottom = 0
+
+        min_confidence = 1.0
+
+        for seg in segs[1]:
+            cx1 = seg.crop_region[0]
+            cy1 = seg.crop_region[1]
+            cx2 = seg.crop_region[2]
+            cy2 = seg.crop_region[3]
+
+            bx1 = seg.bbox[0]
+            by1 = seg.bbox[1]
+            bx2 = seg.bbox[2]
+            by2 = seg.bbox[3]
+
+            crop_left = min(crop_left, cx1)
+            crop_top = min(crop_top, cy1)
+            crop_right = max(crop_right, cx2)
+            crop_bottom = max(crop_bottom, cy2)
+
+            bbox_left = min(bbox_left, bx1)
+            bbox_top = min(bbox_top, by1)
+            bbox_right = max(bbox_right, bx2)
+            bbox_bottom = max(bbox_bottom, by2)
+
+            min_confidence = min(min_confidence, seg.confidence)
+        
+        combined_mask = core.segs_to_combined_mask(segs)
+        cropped_mask = combined_mask[crop_top:crop_bottom, crop_left:crop_right]
+        cropped_mask = cropped_mask.unsqueeze(0)
+
+        crop_region = [crop_left, crop_top, crop_right, crop_bottom]
+        bbox = [bbox_left, bbox_top, bbox_right, bbox_bottom]
+
+        seg = SEG(None, cropped_mask, min_confidence, crop_region, bbox, 'merged', None)
+        return ((segs[0], [seg]),)
+        
+
 class SEGSConcat:
     @classmethod
     def INPUT_TYPES(s):

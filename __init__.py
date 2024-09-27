@@ -223,6 +223,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSConcat": SEGSConcat,
     "ImpactSEGSPicker": SEGSPicker,
     "ImpactMakeTileSEGS": MakeTileSEGS,
+    "ImpactSEGSMerge": SEGSMerge,
 
     "SEGSDetailerForAnimateDiff": SEGSDetailerForAnimateDiff,
 
@@ -368,6 +369,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
     "ImpactSEGSPicker": "Picker (SEGS)",
     "ImpactMakeTileSEGS": "Make Tile SEGS",
+    "ImpactSEGSMerge": "SEGS Merge",
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",
