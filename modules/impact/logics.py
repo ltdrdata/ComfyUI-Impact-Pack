@@ -272,6 +272,24 @@ class ImpactFloat:
         return (value, )
 
 
+class ImpactBoolean:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": ("BOOLEAN", {"default": False}),
+            },
+        }
+
+    FUNCTION = "doit"
+    CATEGORY = "ImpactPack/Logic"
+
+    RETURN_TYPES = ("BOOLEAN", )
+
+    def doit(self, value):
+        return (value, )
+
+
 class ImpactValueSender:
     @classmethod
     def INPUT_TYPES(cls):
