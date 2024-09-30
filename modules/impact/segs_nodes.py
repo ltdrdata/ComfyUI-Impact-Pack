@@ -1370,7 +1370,7 @@ class ControlNetApplySEGS:
 
         for seg in segs[1]:
             control_net_wrapper = core.ControlNetWrapper(control_net, strength, segs_preprocessor, seg.control_net_wrapper,
-                                                         original_size=segs[0], crop_region=seg.crop_region, control_image=control_image)
+                                                         original_size=segs[0], crop_region=seg.crop_region, control_image=control_image, control_mask=seg.cropped_mask)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
             new_segs.append(new_seg)
 
@@ -1405,7 +1405,7 @@ class ControlNetApplyAdvancedSEGS:
         for seg in segs[1]:
             control_net_wrapper = core.ControlNetAdvancedWrapper(control_net, strength, start_percent, end_percent, segs_preprocessor,
                                                                  seg.control_net_wrapper, original_size=segs[0], crop_region=seg.crop_region,
-                                                                 control_image=control_image)
+                                                                 control_image=control_image, control_mask=seg.cropped_mask)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
             new_segs.append(new_seg)
 

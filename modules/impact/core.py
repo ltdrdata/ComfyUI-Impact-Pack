@@ -1773,7 +1773,8 @@ class IPAdapterWrapper:
 
 
 class ControlNetWrapper:
-    def __init__(self, control_net, strength, preprocessor, prev_control_net=None, original_size=None, crop_region=None, control_image=None):
+    def __init__(self, control_net, strength, preprocessor, prev_control_net=None, 
+                 original_size=None, crop_region=None, control_image=None, control_mask=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
@@ -1785,6 +1786,9 @@ class ControlNetWrapper:
         else:
             self.control_image = None
 
+        if control_mask is not None:
+            self.control_mask = torch.from_numpy(control_mask)
+
     def apply(self, positive, negative, image, mask=None, use_acn=False):
         cnet_image_list = []
         prev_cnet_images = []
@@ -1795,7 +1799,7 @@ class ControlNetWrapper:
         if self.control_image is not None:
             cnet_image = self.control_image
         elif self.preprocessor is not None:
-            cnet_image = self.preprocessor.apply(image, mask)
+            cnet_image = self.preprocessor.apply(image, self.control_mask)
         else:
             cnet_image = image
 
@@ -1825,7 +1829,7 @@ class ControlNetWrapper:
 
 class ControlNetAdvancedWrapper:
     def __init__(self, control_net, strength, start_percent, end_percent, preprocessor, prev_control_net=None,
-                 original_size=None, crop_region=None, control_image=None):
+                 original_size=None, crop_region=None, control_image=None, control_mask=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
@@ -1838,6 +1842,9 @@ class ControlNetAdvancedWrapper:
             self.control_image = torch.tensor(utils.tensor_crop(self.control_image, crop_region))
         else:
             self.control_image = None
+        
+        if control_mask is not None:
+            self.control_mask = torch.from_numpy(control_mask)
 
     def doit_ipadapter(self, model):
         if self.prev_control_net is not None:
@@ -1855,7 +1862,7 @@ class ControlNetAdvancedWrapper:
         if self.control_image is not None:
             cnet_image = self.control_image
         elif self.preprocessor is not None:
-            cnet_image = self.preprocessor.apply(image, mask)
+            cnet_image = self.preprocessor.apply(image, self.control_mask)
         else:
             cnet_image = image
 
