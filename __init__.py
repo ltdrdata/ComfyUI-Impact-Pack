@@ -306,8 +306,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSimpleDetectorSEGS_for_AD": "Simple Detector for AnimateDiff (SEGS)",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
-    "ImpactControlNetApplySEGS": "ControlNetApply (SEGS)",
-    "ImpactControlNetApplyAdvancedSEGS": "ControlNetApplyAdvanced (SEGS)",
+    "ImpactControlNetApplySEGS": "ControlNetApply (SEGS) - DEPRECATED",
+    "ImpactControlNetApplyAdvancedSEGS": "ControlNetApply (SEGS)",
     "ImpactIPAdapterApplySEGS": "IPAdapterApply (SEGS)",
 
     "BboxDetectorCombined_v2": "BBOX Detector (combined)",

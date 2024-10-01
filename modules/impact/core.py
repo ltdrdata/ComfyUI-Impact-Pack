@@ -24,6 +24,8 @@ from comfy import model_management
 from impact import utils
 from impact import impact_sampling
 from concurrent.futures import ThreadPoolExecutor
+import inspect
+
 
 try:
     from comfy_extras import nodes_differential_diffusion
@@ -1825,13 +1827,14 @@ class ControlNetWrapper:
 
 class ControlNetAdvancedWrapper:
     def __init__(self, control_net, strength, start_percent, end_percent, preprocessor, prev_control_net=None,
-                 original_size=None, crop_region=None, control_image=None):
+                 original_size=None, crop_region=None, control_image=None, vae=None):
         self.control_net = control_net
         self.strength = strength
         self.preprocessor = preprocessor
         self.prev_control_net = prev_control_net
         self.start_percent = start_percent
         self.end_percent = end_percent
+        self.vae = vae
 
         if original_size is not None and crop_region is not None and control_image is not None:
             self.control_image = utils.tensor_resize(control_image, original_size[1], original_size[0])
@@ -1872,7 +1875,17 @@ class ControlNetAdvancedWrapper:
                                               "To use 'ControlNetAdvancedWrapper' for AnimateDiff, 'ComfyUI-Advanced-ControlNet' extension is required.")
                 raise Exception("'ACN_AdvancedControlNetApply' node isn't installed.")
         else:
-            positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent)
+            if self.vae is not None:
+                apply_controlnet = nodes.ControlNetApplyAdvanced().apply_controlnet
+                signature = inspect.signature(apply_controlnet)
+
+                if 'vae' in signature.parameters:
+                    positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent, vae=self.vae)
+                else:
+                    print(f"[Impact Pack] ERROR: The ComfyUI version is outdated. VAE cannot be used in ApplyControlNet.")
+                    raise Exception("[Impact Pack] ERROR: The ComfyUI version is outdated. VAE cannot be used in ApplyControlNet.")
+            else:
+                positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent)
 
         return positive, negative, cnet_image_list
 

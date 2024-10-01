@@ -1362,6 +1362,8 @@ class ControlNetApplySEGS:
     RETURN_TYPES = ("SEGS",)
     FUNCTION = "doit"
 
+    DEPRECATED = True
+
     CATEGORY = "ImpactPack/Util"
 
     @staticmethod
@@ -1389,7 +1391,8 @@ class ControlNetApplyAdvancedSEGS:
                     },
                 "optional": {
                     "segs_preprocessor": ("SEGS_PREPROCESSOR",),
-                    "control_image": ("IMAGE",)
+                    "control_image": ("IMAGE",),
+                    "vae": ("VAE",)
                     }
                 }
 
@@ -1399,13 +1402,13 @@ class ControlNetApplyAdvancedSEGS:
     CATEGORY = "ImpactPack/Util"
 
     @staticmethod
-    def doit(segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None):
+    def doit(segs, control_net, strength, start_percent, end_percent, segs_preprocessor=None, control_image=None, vae=None):
         new_segs = []
 
         for seg in segs[1]:
             control_net_wrapper = core.ControlNetAdvancedWrapper(control_net, strength, start_percent, end_percent, segs_preprocessor,
                                                                  seg.control_net_wrapper, original_size=segs[0], crop_region=seg.crop_region,
-                                                                 control_image=control_image)
+                                                                 control_image=control_image, vae=vae)
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, control_net_wrapper)
             new_segs.append(new_seg)
 
