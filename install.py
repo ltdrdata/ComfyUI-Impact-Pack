@@ -104,6 +104,7 @@ try:
         new_env["COMFYUI_MODEL_PATH"] = model_path
 
         if os.path.exists(subpack_install_script):
+            process_wrap([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], cwd=subpack_path)
             process_wrap([sys.executable, 'install.py'], cwd=subpack_path, env=new_env)
         else:
             print(f"### ComfyUI-Impact-Pack: (Install Failed) Subpack\nFile not found: `{subpack_install_script}`")
