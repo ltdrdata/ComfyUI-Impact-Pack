@@ -344,9 +344,9 @@ mmdet_skip = False
 3. `cd ComfyUI-Impact-Pack`
 4. (optional) `git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack impact_subpack`
    * Impact Pack will automatically download subpack during its initial launch.
-5. (optional) `python install.py`
+5. (optional) `python install-manual.py`
    * Impact Pack will automatically install its dependencies during its initial launch.
-   * For the portable version, you should execute the command `..\..\..\python_embeded\python.exe install.py` to run the installation script.
+   * For the portable version, you should execute the command `..\..\..\python_embeded\python.exe install-manual.py` to run the installation script.
 6. Restart ComfyUI
 
 * NOTE1: If an error occurs during the installation process, please refer to [Troubleshooting Page](troubleshooting/TROUBLESHOOTING.md) for assistance. 
