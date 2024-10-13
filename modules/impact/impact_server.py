@@ -409,8 +409,13 @@ def gc_preview_bridge_cache(json_data):
 
     for key in list(core.preview_bridge_cache.keys()):
         if key not in prompt_keys:
-            print(f"key deleted: {key}")
+            # print(f"key deleted [PB]: {key}")
             del core.preview_bridge_cache[key]
+
+    for key in list(core.preview_bridge_last_mask_cache.keys()):
+        if key not in prompt_keys:
+            # print(f"key deleted [PB_last_mask]: {key}")
+            del core.preview_bridge_last_mask_cache[key]
 
 
 def workflow_imagereceiver_update(json_data):

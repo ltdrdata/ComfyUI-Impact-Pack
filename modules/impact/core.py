@@ -41,7 +41,10 @@ SEG = namedtuple("SEG",
 pb_id_cnt = time.time()
 preview_bridge_image_id_map = {}
 preview_bridge_image_name_map = {}
+
 preview_bridge_cache = {}
+preview_bridge_last_mask_cache = {}
+
 current_prompt = None
 
 SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]']
