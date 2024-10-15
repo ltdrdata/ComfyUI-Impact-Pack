@@ -163,7 +163,7 @@ class GeneralInversedSwitch:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, select, prompt, unique_id, input, **kwargs):
-        if core.is_execution_model_version_supported:
+        if core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
         else:
             print("[Impact Pack] InversedSwitch: ComfyUI is outdated. The 'select_on_execution' mode cannot function properly.")
@@ -181,7 +181,7 @@ class GeneralInversedSwitch:
         for i in range(0, cnt + 1):
             if select == i+1:
                 res.append(input)
-            elif core.is_execution_model_version_supported:
+            elif core.is_execution_model_version_supported():
                 res.append(ExecutionBlocker(None))
             else:
                 res.append(None)

@@ -119,7 +119,7 @@ class PreviewBridge:
 
         is_empty_mask = torch.all(mask == 0)
 
-        if block and is_empty_mask and core.is_execution_model_version_supported:
+        if block and is_empty_mask and core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None)
         elif block and is_empty_mask:
@@ -362,7 +362,7 @@ class PreviewBridgeLatent:
 
             res_latent = latent
 
-        if block and is_empty_mask and core.is_execution_model_version_supported:
+        if block and is_empty_mask and core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None)
         elif block and is_empty_mask:
