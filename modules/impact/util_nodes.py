@@ -17,9 +17,16 @@ class GeneralSwitch:
         dyn_inputs = {"input1": (any_typ, {"lazy": True, "tooltip": "Any input. When connected, one more input slot is added."}), }
         if core.is_execution_model_version_supported():
             stack = inspect.stack()
-            if stack[2].function == 'get_input_info' and stack[3].function == 'add_node':
-                for x in range(2, 200):
-                    dyn_inputs[f"input{x}"] = (any_typ, {"lazy": True})
+            if stack[2].function == 'get_input_info':
+                # bypass validation
+                class AllContainer:
+                    def __contains__(self, item):
+                        return True
+
+                    def __getitem__(self, key):
+                        return any_typ, {"lazy": True}
+
+                dyn_inputs = AllContainer()
 
         inputs = {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1, "tooltip": "The input number you want to output among the inputs"}),
