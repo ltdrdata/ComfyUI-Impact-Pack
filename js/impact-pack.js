@@ -353,7 +353,7 @@ app.registerExtension({
 						}
 
 						this.outputs[0].type = origin_type;
-						this.outputs[0].name = origin_type;
+						this.outputs[0].name = 'output1';
 					}
 
 					return;
@@ -483,8 +483,12 @@ app.registerExtension({
 
 					if(this.inputs[0].type == '*'){
 						const node = app.graph.getNodeById(link_info.origin_id);
-						let origin_type = node.outputs[link_info.origin_slot].type;
-
+						let origin_type = node.outputs[link_info.origin_slot]?.type;
+						if(link_info.target_slot == 0 && this.inputs.length > 1) {
+								origin_type = this.inputs[1].type;
+								node.connect(link_info.origin_slot, node.id, 'input1');
+						}
+						
 						if(origin_type == '*') {
 							this.disconnectInput(link_info.target_slot);
 							return;
