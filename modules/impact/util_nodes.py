@@ -361,6 +361,7 @@ class ImageListToImageBatch:
     def INPUT_TYPES(s):
         return {"required": {
                         "images": ("IMAGE", ),
+                        "resize": ("BOOLEAN", {"default": True, "label_on": "when needed", "label_off": "never (faster)"}),
                       }
                 }
 
@@ -371,9 +372,11 @@ class ImageListToImageBatch:
 
     CATEGORY = "ImpactPack/Operation"
 
-    def doit(self, images):
+    def doit(self, images, resize):
         if len(images) <= 1:
             return (images,)
+        elif not resize[0]:
+            return (torch.cat(images, dim=0),)
         else:
             image1 = images[0]
             for image2 in images[1:]:
