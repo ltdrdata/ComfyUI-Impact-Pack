@@ -259,7 +259,7 @@ def process(text, seed=None):
 
 
 def is_numeric_string(input_str):
-    return re.match(r'^-?\d?+(\.\d+)?$', input_str) is not None
+    return re.match(r'^-?(\d*\.?\d+|\d+\.?\d*)$', input_str) is not None
 
 
 def safe_float(x):
