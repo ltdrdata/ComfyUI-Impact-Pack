@@ -58,11 +58,11 @@ def read_wildcard_dict(wildcard_path):
                 try:
                     with open(file_path, 'r', encoding="ISO-8859-1") as f:
                         lines = f.read().splitlines()
-                        wildcard_dict[key] = lines
+                        wildcard_dict[key] = [x for x in lines if not x.strip().startswith('#')]
                 except yaml.reader.ReaderError:
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         lines = f.read().splitlines()
-                        wildcard_dict[key] = lines
+                        wildcard_dict[key] = [x for x in lines if not x.strip().startswith('#')]
             elif file.endswith('.yaml'):
                 file_path = os.path.join(root, file)
 
@@ -150,7 +150,7 @@ def process(text, seed=None):
                         matches = re.findall(wildcard_pattern, multi_select_pattern[1])
                         if len(options) == 1 and matches:
                             # count$$<single wildcard>
-                            options = local_wildcard_dict.get(matches[0])
+                            options = get_wildcard_options(multi_select_pattern[1])
                         else:
                             # count$$opt1|opt2|...
                             options[0] = multi_select_pattern[1]
@@ -198,6 +198,34 @@ def process(text, seed=None):
         replaced_string = re.sub(pattern, replace_option, string)
 
         return replaced_string, replacements_found
+
+    def get_wildcard_options(string):
+        pattern = r"__([\w.\-+/*\\]+?)__"
+        matches = re.findall(pattern, string)
+
+        options = []
+
+        for match in matches:
+            keyword = match.lower()
+            keyword = wildcard_normalize(keyword)
+            if keyword in local_wildcard_dict:
+                options.extend(local_wildcard_dict[keyword])
+            elif '*' in keyword:
+                subpattern = keyword.replace('*', '.*').replace('+', '\\+')
+                total_patterns = []
+                found = False
+                for k, v in local_wildcard_dict.items():
+                    if re.match(subpattern, k) is not None or re.match(subpattern, k+'/') is not None:
+                        total_patterns += v
+                        found = True
+
+                if found:
+                    options.extend(total_patterns)
+            elif '/' not in keyword:
+                string_fallback = string.replace(f"__{match}__", f"__*/{match}__", 1)
+                options.extend(get_wildcard_options(string_fallback))
+
+        return options
 
     def replace_wildcard(string):
         pattern = r"__([\w.\-+/*\\]+?)__"
