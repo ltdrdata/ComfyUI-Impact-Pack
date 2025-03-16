@@ -318,11 +318,11 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale
-    upscaled_unrefined_image = tensor_resize(image, new_w, new_h)
+    unrefined_upscaled_image = tensor_resize(image, new_w, new_h)
 
     cnet_pils = None
     if control_net_wrapper is not None:
-        positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, upscaled_unrefined_image, noise_mask)
+        positive, negative, cnet_pils = control_net_wrapper.apply(positive, negative, unrefined_upscaled_image, noise_mask)
         model, cnet_pils2 = control_net_wrapper.doit_ipadapter(model)
         cnet_pils.extend(cnet_pils2)
 
@@ -330,12 +330,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if noise_mask is not None and inpaint_model:
         imc_encode = nodes.InpaintModelConditioning().encode
         if 'noise_mask' in inspect.signature(imc_encode).parameters:
-            positive, negative, unrefined_upscaled_latent = imc_encode(positive, negative, upscaled_unrefined_image, vae, mask=noise_mask, noise_mask=True)
+            positive, negative, unrefined_upscaled_latent = imc_encode(positive, negative, unrefined_upscaled_image, vae, mask=noise_mask, noise_mask=True)
         else:
             print(f"[Impact Pack] ComfyUI is an outdated version.")
-            positive, negative, unrefined_upscaled_latent = imc_encode(positive, negative, upscaled_unrefined_image, vae, noise_mask)
+            positive, negative, unrefined_upscaled_latent = imc_encode(positive, negative, unrefined_upscaled_image, vae, noise_mask)
     else:
-        unrefined_upscaled_latent = to_latent_image(upscaled_unrefined_image, vae, vae_tiled_encode=vae_tiled_encode)
+        unrefined_upscaled_latent = to_latent_image(unrefined_upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
         if noise_mask is not None:
             unrefined_upscaled_latent['noise_mask'] = noise_mask
 
@@ -394,7 +394,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # don't convert to latent - latent break image
     # preserving pil is much better
-    return refined_image, cnet_pils, refined_upscaled_image
+    return refined_image, cnet_pils, refined_upscaled_image, unrefined_upscaled_image
 
 
 def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, guide_size_for_bbox, max_size, bbox, seed, steps, cfg,

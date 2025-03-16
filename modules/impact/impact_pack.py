@@ -251,6 +251,7 @@ class DetailerForEach:
         enhanced_alpha_list = []
         enhanced_list = []
         enhanced_upscaled_list = []
+        unenhanced_upscaled_list = []
         cropped_list = []
         cnet_pil_list = []
 
@@ -338,7 +339,7 @@ class DetailerForEach:
 
             orig_cropped_image = cropped_image.clone()
             if not (isinstance(model, str) and model == "DUMMY"):
-                enhanced_image, cnet_pils, enhanced_upscaled_image = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
+                enhanced_image, cnet_pils, enhanced_upscaled_image, unenhanced_upscaled_image = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                 seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                                 cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
                                                                 wildcard_opt=wildcard_item, wildcard_opt_concat_mode=wildcard_concat_mode,
@@ -358,6 +359,9 @@ class DetailerForEach:
 
             if enhanced_upscaled_image is not None:
                 enhanced_upscaled_list.append(enhanced_upscaled_image)
+
+            if unenhanced_upscaled_image is not None:
+                unenhanced_upscaled_list.append(unenhanced_upscaled_image)
 
             if not (enhanced_image is None):
                 # don't latent composite-> converting to latent caused poor quality
@@ -393,8 +397,9 @@ class DetailerForEach:
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_upscaled_list.sort(key=lambda x: x.shape, reverse=True)
+        unenhanced_upscaled_list.sort(key=lambda x: x.shape, reverse=True)
 
-        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs), enhanced_upscaled_list
+        return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs), enhanced_upscaled_list, unenhanced_upscaled_list
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
@@ -1580,7 +1585,7 @@ class MaskDetailerPipe:
 
 class DetailerForEachTest(DetailerForEach):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE")
-    RETURN_NAMES = ("image", "cropped", "cropped_refined", "cropped_refined_alpha", "cnet_images", "upscaled_refined")
+    RETURN_NAMES = ("image", "cropped", "cropped_refined", "cropped_refined_alpha", "upscaled", "upscaled_refined", "cnet_images")
     OUTPUT_IS_LIST = (False, True, True, True, True, True)
 
     FUNCTION = "doit"
@@ -1594,7 +1599,7 @@ class DetailerForEachTest(DetailerForEach):
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs, upscaled_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs, upscaled_enhanced, upscaled_unenhanced = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
@@ -1617,13 +1622,16 @@ class DetailerForEachTest(DetailerForEach):
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, upscaled_enhanced
+        if len(upscaled_unenhanced) == 0:
+            upscaled_unenhanced = [empty_pil_tensor()]
+
+        return enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, upscaled_unenhanced, upscaled_enhanced, cnet_pil_list
 
 
 class DetailerForEachTestPipe(DetailerForEachPipe):
-    RETURN_TYPES = ("IMAGE", "SEGS", "BASIC_PIPE", "IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE")
-    RETURN_NAMES = ("image", "segs", "basic_pipe", "cropped", "cropped_refined", "cropped_refined_alpha", 'cnet_images', 'upscaled_refined')
-    OUTPUT_IS_LIST = (False, False, False, True, True, True, True, True)
+    RETURN_TYPES = ("IMAGE", "SEGS", "BASIC_PIPE", "IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE", "IMAGE")
+    RETURN_NAMES = ("image", "segs", "basic_pipe", "cropped", "cropped_refined", "cropped_refined_alpha", 'upscaled', 'upscaled_refined','cnet_images', )
+    OUTPUT_IS_LIST = (False, False, False, True, True, True, True, True, True, True)
 
     FUNCTION = "doit"
 
@@ -1646,7 +1654,7 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs, upscaled_enhanced = \
+        enhanced_img, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs, upscaled_enhanced, upscaled_unenhanced = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg,
                                       sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
@@ -1669,10 +1677,13 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [empty_pil_tensor()]
 
-        if len(upscaled_refined) == 0:
-            upscaled_refined = [empty_pil_tensor()]
+        if len(upscaled_enhanced) == 0:
+            upscaled_enhanced = [empty_pil_tensor()]
 
-        return enhanced_img, new_segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, upscaled_enhanced
+        if len(upscaled_unenhanced) == 0:   
+            upscaled_unenhanced = [empty_pil_tensor()]
+
+        return enhanced_img, new_segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, upscaled_unenhanced, upscaled_enhanced, cnet_pil_list, 
 
 
 class SegsBitwiseAndMask:
