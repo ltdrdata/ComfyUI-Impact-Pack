@@ -629,6 +629,111 @@ class SEGSRangeFilter:
         return (segs[0], new_segs), (segs[0], remained_segs),
 
 
+class SEGSIntersectionFilter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                        "segs1": ("SEGS", ),
+                        "segs2": ("SEGS", ),
+                        "ioa_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                     },
+                }
+
+    RETURN_TYPES = ("SEGS",)
+    RETURN_NAMES = ("filtered_SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def compute_ioa(self, mask1, mask2):
+        """Compute Intersection over Area (IoA) between two boxes."""
+        inter_mask = utils.bitwise_and_masks(mask1, mask2)
+        
+        inter_area = (inter_mask > 0).sum()
+        area1 = (mask1 > 0).sum()
+
+        return inter_area / area1 if area1 > 0 else 0
+
+    def doit(self, segs1, segs2, ioa_threshold):
+        """Remove segments from segs1 if their IoA with any segment in segs2 exceeds the threshold."""
+        # Extract bounding boxes for all segments in segs1 and segs2
+        keep = []
+
+        # Iterate over all segments in segs1
+        for idx1, seg1 in enumerate(segs1[1]):
+            keep_segment = True  # Assume the segment should be kept
+            mask1 = core.segs_to_combined_mask((segs1[0], [seg1]))
+
+            # Compare with every segment in segs2
+            for seg2 in segs2[1]:
+                mask2 = core.segs_to_combined_mask((segs2[0], [seg2]))
+                ioa = self.compute_ioa(mask1, mask2)  # IoA between segment 1 and segment 2
+                
+                if ioa > ioa_threshold:  # If IoA exceeds the threshold, mark the segment for removal
+                    keep_segment = False
+                    break  # If one overlap exceeds threshold, break early and mark for removal
+
+            # Keep the segment if it did not exceed the threshold with any other segment
+            if keep_segment:
+                keep.append(segs1[1][idx1])
+
+        return (segs1[0], keep),  # Return the updated SEGS
+
+
+class SEGSNMSFilter:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "segs": ("SEGS",),
+                "iou_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            },
+        }
+
+    RETURN_TYPES = ("SEGS",)
+    RETURN_NAMES = ("filtered_SEGS",)
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    def compute_iou(self, mask1, mask2):
+        """Compute IoU between two bounding boxes (x1, y1, x2, y2)."""
+        inter_mask = utils.bitwise_and_masks(mask1, mask2)
+        union_mask = utils.add_masks(mask1, mask2)
+        
+        inter_area = (inter_mask > 0).sum()
+        union_area = (union_mask > 0).sum()
+
+        return inter_area / union_area if union_area > 0 else 0
+
+    def doit(self, segs, iou_threshold):
+        """Perform NMS to filter overlapping segments."""
+        confidences = np.ndarray.flatten(np.array([seg.confidence for seg in segs[1]]))
+
+        # Sort boxes by confidence (high to low)
+        sorted_indices = np.argsort(confidences)[::-1].tolist()
+        keep = []
+
+        while len(sorted_indices) > 0:
+            idx = sorted_indices[0]
+            mask1 = core.segs_to_combined_mask((segs[0], [segs[1][idx]]))
+            keep.append(idx)
+            sorted_indices = sorted_indices[1:]
+
+            # Filter indices only contain the indices where the bbox does not intersect
+            filtered_indices = []
+            for i in sorted_indices:
+                mask2 = core.segs_to_combined_mask((segs[0], [segs[1][i]]))
+                iou = self.compute_iou(mask1, mask2)
+                if iou < iou_threshold:
+                    filtered_indices.append(i)
+
+            sorted_indices = np.array(filtered_indices)
+
+        filtered_segs = [segs[1][i] for i in keep]
+        return (segs[0], filtered_segs),
+
+
 class SEGSToImageList:
     @classmethod
     def INPUT_TYPES(s):
