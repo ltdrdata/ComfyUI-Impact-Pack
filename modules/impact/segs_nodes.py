@@ -1639,6 +1639,25 @@ class SEGSPicker:
         return ((segs[0], new_segs),)
 
 
+class SEGSPickFirstN:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "segs": ("SEGS",),
+                    "n": ("INT", {"default": 1, "min": 0}),
+                }}
+
+    RETURN_TYPES = ("SEGS", )
+    FUNCTION = "doit"
+    DESCRIPTION = "This node provides a function to select the first n SEGs from the input SEGS."
+
+    CATEGORY = "ImpactPack/Util"
+
+    @staticmethod
+    def doit(segs, n):
+        return ((segs[0], segs[1][:n]),)
+
+
 class DefaultImageForSEGS:
     @classmethod
     def INPUT_TYPES(s):
