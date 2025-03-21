@@ -518,13 +518,14 @@ class SEGSOrderedFilter:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, segs, target, order, take_start, take_count):
-        # field getters function
+        # field getter functions
         def x1(seg): return seg.crop_region[0]
         def y1(seg): return seg.crop_region[1]
         def x2(seg): return seg.crop_region[2]
         def y2(seg): return seg.crop_region[3]
 
         try:
+            # select key function which will be used for comparison
             sort_key_fn = {
                 "area(=w*h)": lambda seg: (y2(seg)-y1(seg)) * (x2(seg)-x1(seg)),
                 "width": lambda seg: x2(seg)-x1(seg),
