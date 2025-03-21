@@ -136,7 +136,6 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `SEGSConcat` - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different from segs2 will be ignored.
   * `SEGS Merge` - SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed.
   * `Picker (SEGS)` - Among the input SEGS, you can select a specific SEG through a dialog. If no SEG is selected, it outputs an empty SEGS. Increasing the batch_size of SEGSDetailer can be used for the purpose of selecting from the candidates.
-  * `Pick First N (SEGS)` - This node provides a function to select the first n SEGs from the input SEGS.
   * `Set Default Image For SEGS` - Set a default image for SEGS. SEGS with images set this way do not need to have a fallback image set. When override is set to false, the original image is preserved.
   * `Remove Image from SEGS` - Remove the image set for the SEGS that has been configured by "Set Default Image for SEGS" or SEGSDetailer. When the image for the SEGS is removed, the Detailer node will operate based on the currently processed image instead of the SEGS. 
   * `Make Tile SEGS` - [experimental] Create SEGS in the form of tiles from an image to facilitate experiments for Tiled Upscale using the Detailer.

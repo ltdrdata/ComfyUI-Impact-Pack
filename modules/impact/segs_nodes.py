@@ -504,7 +504,7 @@ class SEGSOrderedFilter:
     def INPUT_TYPES(s):
         return {"required": {
                         "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence"],),
+                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence", "none"],),
                         "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
                         "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
                         "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
@@ -518,50 +518,35 @@ class SEGSOrderedFilter:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, segs, target, order, take_start, take_count):
-        segs_with_order = []
+        # field getters function
+        def x1(seg): return seg.crop_region[0]
+        def y1(seg): return seg.crop_region[1]
+        def x2(seg): return seg.crop_region[2]
+        def y2(seg): return seg.crop_region[3]
 
-        for seg in segs[1]:
-            x1 = seg.crop_region[0]
-            y1 = seg.crop_region[1]
-            x2 = seg.crop_region[2]
-            y2 = seg.crop_region[3]
+        try:
+            sort_key_fn = {
+                "area(=w*h)": lambda seg: (y2(seg)-y1(seg)) * (x2(seg)-x1(seg)),
+                "width": lambda seg: x2(seg)-x1(seg),
+                "height": lambda seg: y2(seg)-y1(seg),
+                "x1": x1,
+                "y1": y1,
+                "x2": x2,
+                "y2": y2,
+                "confidence": lambda seg: seg.confidence,
+                "none": None,
+            }[target]
+        except KeyError:
+            raise Exception(
+                f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
 
-            if target == "area(=w*h)":
-                value = (y2 - y1) * (x2 - x1)
-            elif target == "width":
-                value = x2 - x1
-            elif target == "height":
-                value = y2 - y1
-            elif target == "x1":
-                value = x1
-            elif target == "x2":
-                value = x2
-            elif target == "y1":
-                value = y1
-            elif target == "y2":
-                value = y2
-            elif target == "confidence":
-                value = seg.confidence
-            else:
-                raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
+        sorted_list = list(segs[1]) # make a shallow copy, so it does not mutate the original list when sort
+        if sort_key_fn is not None:
+            sorted_list.sort(key=sort_key_fn, reverse=order)
 
-            segs_with_order.append((value, seg))
-
-        if order:
-            sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=True)
-        else:
-            sorted_list = sorted(segs_with_order, key=lambda x: x[0], reverse=False)
-
-        result_list = []
-        remained_list = []
-
-        for i, item in enumerate(sorted_list):
-            if take_start <= i < take_start + take_count:
-                result_list.append(item[1])
-            else:
-                remained_list.append(item[1])
-
-        return (segs[0], result_list), (segs[0], remained_list),
+        take_stop = take_start + take_count
+        return (segs[0], sorted_list[take_start:take_stop]), \
+            (segs[0], sorted_list[:take_start] + sorted_list[take_stop:]),
 
 
 class SEGSRangeFilter:
@@ -1637,25 +1622,6 @@ class SEGSPicker:
                 new_segs.append(segs[1][i])
 
         return ((segs[0], new_segs),)
-
-
-class SEGSPickFirstN:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "segs": ("SEGS",),
-                    "n": ("INT", {"default": 1, "min": 0}),
-                }}
-
-    RETURN_TYPES = ("SEGS", )
-    FUNCTION = "doit"
-    DESCRIPTION = "This node provides a function to select the first n SEGs from the input SEGS."
-
-    CATEGORY = "ImpactPack/Util"
-
-    @staticmethod
-    def doit(segs, n):
-        return ((segs[0], segs[1][:n]),)
 
 
 class DefaultImageForSEGS:
