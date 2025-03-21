@@ -132,6 +132,8 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `SEGS Filter (label)` - This node filters SEGS based on the label of the detected areas. 
   * `SEGS Filter (ordered)` - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
   * `SEGS Filter (range)` - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
+  * `SEGS Filter (non max suppression)` - This node filters SEGS by removing those with high overlap based on the Intersection over Union (IoU) threshold, keeping only the most confident detections.
+  * `SEGS Filter (intersection)` - This node filters segs1, keeping only the SEGS that do not significantly overlap with any SEGS in segs2, based on the Intersection over Area (IoA) threshold.
   * `SEGS Assign (label)` - Assign labels sequentially to SEGS. This node is useful when used with `[LAB]` of FaceDetailer.
   * `SEGSConcat` - Concatenate segs1 and segs2. If source shape of segs1 and segs2 are different from segs2 will be ignored.
   * `SEGS Merge` - SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed.
