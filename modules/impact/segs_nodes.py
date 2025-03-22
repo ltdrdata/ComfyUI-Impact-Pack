@@ -13,6 +13,7 @@ from . import segs_upscaler
 from comfy.cli_args import args
 import math
 
+from typing import Callable, Union
 
 try:
     from comfy_extras import nodes_differential_diffusion
@@ -517,29 +518,37 @@ class SEGSOrderedFilter:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, segs, target, order, take_start, take_count):
-        # field getter functions
-        def x1(seg): return seg.crop_region[0]
-        def y1(seg): return seg.crop_region[1]
-        def x2(seg): return seg.crop_region[2]
-        def y2(seg): return seg.crop_region[3]
+    @staticmethod
+    def get_sort_key_fn(target: str) -> Union[Callable, None]:
+        if target == "none":
+            return None
+                
+        def sort_key_fn(seg):
+            x1, y1, x2, y2 = seg.crop_region
+            match target:
+                case "confidence":
+                    return seg.confidence
+                case "area(=w*h)":
+                    return (x2 - x1) * (y2 - y1)
+                case "width":
+                    return x2 - x1
+                case "height":
+                    return y2 - y1
+                case "x1":
+                    return x1
+                case "y1":
+                    return y1
+                case "x2":
+                    return x2
+                case "y2":
+                    return y2
+                case _:
+                    raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
+                
+        return sort_key_fn
 
-        try:
-            # select key function which will be used for comparison
-            sort_key_fn = {
-                "area(=w*h)": lambda seg: (y2(seg)-y1(seg)) * (x2(seg)-x1(seg)),
-                "width": lambda seg: x2(seg)-x1(seg),
-                "height": lambda seg: y2(seg)-y1(seg),
-                "x1": x1,
-                "y1": y1,
-                "x2": x2,
-                "y2": y2,
-                "confidence": lambda seg: seg.confidence,
-                "none": None,
-            }[target]
-        except KeyError:
-            raise Exception(
-                f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
+    def doit(self, segs, target, order, take_start, take_count):
+        sort_key_fn = SEGSOrderedFilter.get_sort_key_fn(target)
 
         sorted_list = list(segs[1]) # make a shallow copy, so it does not mutate the original list when sort
         if sort_key_fn is not None:
