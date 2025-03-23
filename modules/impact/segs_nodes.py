@@ -525,17 +525,15 @@ class SEGSOrderedFilter:
                 
         def sort_key_fn(seg):
             x1, y1, x2, y2 = seg.crop_region
-            match target:
-                case "confidence": return seg.confidence
-                case "area(=w*h)": return (x2 - x1) * (y2 - y1)
-                case "width": return x2 - x1
-                case "height": return y2 - y1
-                case "x1": return x1
-                case "y1": return y1
-                case "x2": return x2
-                case "y2": return y2
-                case _:
-                    raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
+            if target == "confidence": return seg.confidence
+            if target == "area(=w*h)": return (x2 - x1) * (y2 - y1)
+            if target == "width": return x2 - x1
+            if target == "height": return y2 - y1
+            if target == "x1": return x1
+            if target == "y1": return y1
+            if target == "x2": return x2
+            if target == "y2": return y2
+            raise Exception(f"[Impact Pack] SEGSOrderedFilter - Unexpected target '{target}'")
                 
         return sort_key_fn
 
