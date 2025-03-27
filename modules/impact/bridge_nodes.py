@@ -137,62 +137,57 @@ class PreviewBridge:
         }
 
 
-def decode_latent(latent, preview_method, vae_opt=None):
-    if vae_opt is not None:
-        image = nodes.VAEDecode().decode(vae_opt, latent)[0]
+def decode_latent(latent, preview_method, vae_opt=None, tiled=False):
+    vae = vae_opt
+
+    if preview_method.startswith("TAE") and vae is None:
+        TAE_PREVIEW_METHOD_TO_DECODER_NAME = {
+            "TAESD15": "taesd",
+            "TAESDXL": "taesdxl",
+            "TAESD3": "taesd3",
+            "TAEF1": "taef1"
+        }
+
+        decoder_name = TAE_PREVIEW_METHOD_TO_DECODER_NAME.get(preview_method)
+
+        if decoder_name is not None:
+            vae = nodes.VAELoader().load_vae(decoder_name)[0]
+        
+    if vae is not None:
+        if tiled:
+            image = nodes.VAEDecodeTiled().decode(vae, latent, 64, 16)[0]
+        else:
+            image = nodes.VAEDecode().decode(vae, latent)[0]
         return image
 
     from comfy.cli_args import LatentPreviewMethod
     import comfy.latent_formats as latent_formats
 
-    if preview_method.startswith("TAE"):
-        decoder_name = None
+    method_name, latent_format_name = preview_method.split("-", 1)
 
-        if preview_method == "TAESD15":
-            decoder_name = "taesd"
-        elif preview_method == 'TAESDXL':
-            decoder_name = "taesdxl"
-        elif preview_method == 'TAESD3':
-            decoder_name = "taesd3"
-        elif preview_method == 'TAEF1':
-            decoder_name = "taef1"
+    METHOD_NAME_TO_METHOD = {
+        "Latent2RGB": LatentPreviewMethod.Latent2RGB,
+    }
 
-        if decoder_name:
-            vae = nodes.VAELoader().load_vae(decoder_name)[0]
-            image = nodes.VAEDecode().decode(vae, latent)[0]
-            return image
+    LATENT_FORMAT_NAME_TO_LATENT_FORMAT = {
+        "SD15": latent_formats.SD15(),
+        "SDXL": latent_formats.SDXL(),
+        "SD3": latent_formats.SD3(),
+        "SD-X4": latent_formats.SD_X4(),
+        "Playground-2.5": latent_formats.SDXL_Playground_2_5(),
+        "SC-Prior": latent_formats.SC_Prior(),
+        "SC-B": latent_formats.SC_B(),
+        "FLUX.1": latent_formats.Flux(),
+        "LTXV": latent_formats.LTXV(),
+    }
 
-    if preview_method == "Latent2RGB-SD15":
-        latent_format = latent_formats.SD15()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-SDXL":
-        latent_format = latent_formats.SDXL()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-SD3":
-        latent_format = latent_formats.SD3()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-SD-X4":
-        latent_format = latent_formats.SD_X4()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-Playground-2.5":
-        latent_format = latent_formats.SDXL_Playground_2_5()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-SC-Prior":
-        latent_format = latent_formats.SC_Prior()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-SC-B":
-        latent_format = latent_formats.SC_B()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-FLUX.1":
-        latent_format = latent_formats.Flux()
-        method = LatentPreviewMethod.Latent2RGB
-    elif preview_method == "Latent2RGB-LTXV":
-        latent_format = latent_formats.LTXV()
-        method = LatentPreviewMethod.Latent2RGB
-    else:
+    method = METHOD_NAME_TO_METHOD.get(method_name)
+    latent_format = LATENT_FORMAT_NAME_TO_LATENT_FORMAT.get(latent_format_name)
+
+    if method is None or latent_format is None:
         print(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
-        latent_format = latent_formats.SD15()
         method = LatentPreviewMethod.Latent2RGB
+        latent_format = latent_formats.SD15()
 
     previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
     samples = latent_format.process_in(latent['samples'])
@@ -220,6 +215,7 @@ class PreviewBridgeLatent:
                 "optional": {
                     "vae_opt": ("VAE", ),
                     "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "is_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped. Instead, it returns a white mask."}),
+                    "tiled": ("BOOLEAN", {"default": False, "tooltip": "Use tiled decoding (if using tae or vae_opt)."}),
                     "restore_mask": (["never", "always", "if_same_size"], {"tooltip": "if_same_size: If the changed input latent is the same size as the previous latent, restore using the last saved mask\nalways: Whenever the input latent changes, always restore using the last saved mask\nnever: Do not restore the mask.\n`restore_mask` has higher priority than `block`\nIf the input latent already has a mask, do not restore mask."}),
                 },
                 "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
@@ -276,7 +272,7 @@ class PreviewBridgeLatent:
 
         return image, mask, ui_item
 
-    def doit(self, latent, image, preview_method, vae_opt=None, block=False, unique_id=None, restore_mask='never', prompt=None, extra_pnginfo=None):
+    def doit(self, latent, image, preview_method, tiled=False, vae_opt=None, block=False, unique_id=None, restore_mask='never', prompt=None, extra_pnginfo=None):
         latent_channels = latent['samples'].shape[1]
 
         if 'SD3' in preview_method or 'SC-Prior' in preview_method or 'FLUX.1' in preview_method or 'TAEF1' == preview_method:
@@ -321,7 +317,7 @@ class PreviewBridgeLatent:
 
             res_image = [path_item]
         else:
-            decoded_image = decode_latent(latent, preview_method, vae_opt)
+            decoded_image = decode_latent(latent, preview_method, vae_opt, tiled)
 
             if 'noise_mask' in latent:
                 mask = latent['noise_mask'].squeeze(0)  # 4D mask -> 3D mask
