@@ -522,6 +522,7 @@ class FaceDetailer:
                      "wildcard": ("STRING", {"multiline": True, "dynamicPrompts": False}),
 
                      "cycle": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
+                     "max_faces": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1, "tooltip": "Limits the number of faces detailed. Selects largest faces by area. 0 means no limit."}),
                      },
                 "optional": {
                     "sam_model_opt": ("SAM_MODEL", ),
@@ -551,12 +552,18 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                     max_faces=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         bbox_detector.setAux(None)
+
+        # detail only `max_faces` number of largest faces by area
+        if max_faces > 0:
+            sorted_faces = sorted(segs[1], key=lambda seg: (seg.bbox[2] - seg.bbox[0]) * (seg.bbox[3] - seg.bbox[1]), reverse=True)[:max_faces]
+            segs = (segs[0], sorted_faces)
 
         # bbox + sam combination
         if sam_model_opt is not None:
@@ -611,7 +618,7 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, max_faces=0):
 
         result_img = None
         result_mask = None
@@ -630,7 +637,7 @@ class FaceDetailer:
                 sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                tiled_encode=tiled_encode, tiled_decode=tiled_decode, max_faces=max_faces)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -2450,4 +2457,3 @@ class ImpactSchedulerAdapter:
             return (extra_scheduler,)
 
         return (scheduler,)
-
