@@ -170,24 +170,27 @@ def decode_latent(latent, preview_method, vae_opt=None, tiled=False):
     }
 
     LATENT_FORMAT_NAME_TO_LATENT_FORMAT = {
-        "SD15": latent_formats.SD15(),
-        "SDXL": latent_formats.SDXL(),
-        "SD3": latent_formats.SD3(),
-        "SD-X4": latent_formats.SD_X4(),
-        "Playground-2.5": latent_formats.SDXL_Playground_2_5(),
-        "SC-Prior": latent_formats.SC_Prior(),
-        "SC-B": latent_formats.SC_B(),
-        "FLUX.1": latent_formats.Flux(),
-        "LTXV": latent_formats.LTXV(),
+        "SD15": latent_formats.SD15,
+        "SDXL": latent_formats.SDXL,
+        "SD3": latent_formats.SD3,
+        "SD-X4": latent_formats.SD_X4,
+        "Playground-2.5": latent_formats.SDXL_Playground_2_5,
+        "SC-Prior": latent_formats.SC_Prior,
+        "SC-B": latent_formats.SC_B,
+        "FLUX.1": latent_formats.Flux,
+        "LTXV": latent_formats.LTXV,
     }
 
     method = METHOD_NAME_TO_METHOD.get(method_name)
-    latent_format = LATENT_FORMAT_NAME_TO_LATENT_FORMAT.get(latent_format_name)
+    latent_format = LATENT_FORMAT_NAME_TO_LATENT_FORMAT.get(latent_format_name)        
 
     if method is None or latent_format is None:
         print(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
         method = LatentPreviewMethod.Latent2RGB
         latent_format = latent_formats.SD15()
+    else:
+        # init latent format class
+        latent_format = latent_format()
 
     previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
     samples = latent_format.process_in(latent['samples'])
