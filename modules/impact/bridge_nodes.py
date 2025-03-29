@@ -187,10 +187,10 @@ def decode_latent(latent, preview_method, vae_opt=None, tiled=False):
     if method is None or latent_format is None:
         print(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
         method = LatentPreviewMethod.Latent2RGB
-        latent_format = latent_formats.SD15()
-    else:
-        # init latent format class
-        latent_format = latent_format()
+        latent_format = latent_formats.SD15
+    
+    # init latent format class
+    latent_format = latent_format()
 
     previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
     samples = latent_format.process_in(latent['samples'])
