@@ -403,6 +403,9 @@ app.registerExtension({
 				let slot_i = 1;
 				for (let i = 0; i < this.outputs.length; i++) {
 					this.outputs[i].name = `output${slot_i}`
+					if (this.outputs[i].slot_index === undefined) {
+						this.outputs[i].slot_index = i;
+					}
 					slot_i++;
 				}
 
