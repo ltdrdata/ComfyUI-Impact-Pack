@@ -17,7 +17,6 @@ import numpy as np
 import nodes
 from PIL import Image
 import io
-import impact.wildcards as wildcards
 import comfy
 from io import BytesIO
 import random
@@ -183,7 +182,7 @@ async def wildcards_list(request):
 @PromptServer.instance.routes.post("/impact/wildcards")
 async def populate_wildcards(request):
     data = await request.json()
-    populated = wildcards.process(data['text'], data.get('seed', None))
+    populated = impact.wildcards.process(data['text'], data.get('seed', None))
     return web.json_response({"text": populated})
 
 
@@ -512,7 +511,7 @@ def onprompt_populate_wildcards(json_data):
                 else:
                     input_seed = int(inputs['seed'])
 
-                inputs['populated_text'] = wildcards.process(inputs['wildcard_text'], input_seed)
+                inputs['populated_text'] = impact.wildcards.process(inputs['wildcard_text'], input_seed)
                 inputs['mode'] = 'reproduce'
 
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
