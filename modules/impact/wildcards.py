@@ -65,7 +65,7 @@ def read_wildcard_dict(wildcard_path):
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         lines = f.read().splitlines()
                         wildcard_dict[key] = [x for x in lines if not x.strip().startswith('#')]
-            elif file.endswith('.yaml'):
+            elif file.endswith('.yaml') or file.endswith('.yml'):
                 file_path = os.path.join(root, file)
 
                 try:
