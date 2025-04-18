@@ -219,7 +219,7 @@ def process(text, seed=None):
             replacements_found = True
             return replacement
 
-        pattern = r'{([^{}]*?)}'
+        pattern = r'(?<!\\)\{((?:[^{}]|(?<=\\)[{}])*?)(?<!\\)\}'
         replaced_string = re.sub(pattern, replace_option, string)
 
         return replaced_string, replacements_found
