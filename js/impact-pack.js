@@ -509,7 +509,7 @@ app.registerExtension({
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				const stackTrace = new Error().stack;
 				if(stackTrace.includes('loadGraphData')) {
-					if(this.widgets) {
+					if(this.widgets?.[0]) {
 						this.widgets[0].options.max = this.inputs.length-3;
 						this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 					}
@@ -606,7 +606,7 @@ app.registerExtension({
 					this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
 				}
 
-				if(this.widgets) {
+				if(this.widgets?.[0]) {
 					this.widgets[0].options.max = this.inputs.length-3;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 				}
