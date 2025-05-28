@@ -212,7 +212,7 @@ def process(text, seed=None):
                 selected_items = random_gen.choice(options, p=normalized_probabilities, size=select_count, replace=False)
 
             # x may be numpy.int32, convert to string
-            selected_items2 = [re.sub(r'^\s*[0-9.]+::', '', str(x), 1) for x in selected_items]
+            selected_items2 = [re.sub(r'^\s*[0-9.]+::', '', str(x), count=1) for x in selected_items]
             replacement = select_sep.join(selected_items2)
             if '::' in replacement:
                 pass
@@ -279,7 +279,7 @@ def process(text, seed=None):
 
                 normalized_probabilities = [prob / total_prob for prob in adjusted_probabilities]
                 selected_item = random_gen.choice(options, p=normalized_probabilities, replace=False)
-                replacement = re.sub(r'^\s*[0-9.]+::', '', selected_item, 1)
+                replacement = re.sub(r'^\s*[0-9.]+::', '', selected_item, count=1)
                 replacements_found = True
                 string = string.replace(f"__{match}__", replacement, 1)
             elif '*' in keyword:
