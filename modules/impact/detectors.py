@@ -163,7 +163,7 @@ class SegmDetectorCombined:
         mask = segm_detector.detect_combined(image, threshold, dilation)
 
         if mask is None:
-            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+            mask = torch.zeros((image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
 
         return (mask.unsqueeze(0),)
 
@@ -183,7 +183,7 @@ class BboxDetectorCombined(SegmDetectorCombined):
         mask = bbox_detector.detect_combined(image, threshold, dilation)
 
         if mask is None:
-            mask = torch.zeros((image.shape[2], image.shape[1]), dtype=torch.float32, device="cpu")
+            mask = torch.zeros((image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
 
         return (mask.unsqueeze(0),)
 
