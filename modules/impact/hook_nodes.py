@@ -1,8 +1,6 @@
 import sys
 from . import hooks
 from . import defs
-from . import utils
-import nodes
 
 
 class SEGSOrderedFilterDetailerHookProvider:

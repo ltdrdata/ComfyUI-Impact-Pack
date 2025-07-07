@@ -1,14 +1,17 @@
 from nodes import MAX_RESOLUTION
-from impact.utils import *
 import impact.core as core
 from impact.core import SEG
 from impact.segs_nodes import SEGSPaste
-
+import comfy
+from impact import utils
+import torch
+import nodes
+import logging
 
 try:
     from comfy_extras import nodes_differential_diffusion
 except Exception:
-    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    logging.warning("\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
@@ -70,8 +73,8 @@ class SEGSDetailerForAnimateDiff:
 
             for image in image_frames:
                 image = image.unsqueeze(0)
-                cropped_image = seg.cropped_image if seg.cropped_image is not None else crop_tensor4(image, seg.crop_region)
-                cropped_image = to_tensor(cropped_image)
+                cropped_image = seg.cropped_image if seg.cropped_image is not None else utils.crop_tensor4(image, seg.crop_region)
+                cropped_image = utils.to_tensor(cropped_image)
                 if cropped_image_frames is None:
                     cropped_image_frames = cropped_image
                 else:
@@ -129,7 +132,7 @@ class SEGSDetailerForAnimateDiff:
                                                                  noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
         if len(cnet_images) == 0:
-            cnet_images = [empty_pil_tensor()]
+            cnet_images = [utils.empty_pil_tensor()]
 
         return (segs, cnet_images)
 

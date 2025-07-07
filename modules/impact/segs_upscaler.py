@@ -1,13 +1,17 @@
-from impact.utils import *
 from impact import impact_sampling
 from comfy import model_management
-from comfy.cli_args import args
+from impact import utils
+from PIL import Image
 import nodes
+import torch
+import inspect
+import logging
+import comfy
 
 try:
     from comfy_extras import nodes_differential_diffusion
 except Exception:
-    print(f"[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
+    logging.info("[Impact Pack] ComfyUI is an outdated version. The DifferentialDiffusion feature will be disabled.")
 
 
 # Implementation based on `https://github.com/lingondricka2/Upscaler-Detailer`
@@ -19,7 +23,6 @@ def upscale_with_model(upscale_model, image):
     device = model_management.get_torch_device()
     upscale_model.to(device)
     in_img = image.movedim(-1, -3).to(device)
-    free_memory = model_management.get_free_memory(device)
 
     tile = 512
     overlap = 32
@@ -72,9 +75,9 @@ def upscaler(image, upscale_model, rescale_factor, resampling_method, supersampl
     else:
         up_image = image
 
-    pil_img = tensor2pil(image)
+    pil_img = utils.tensor2pil(image)
     original_width, original_height = pil_img.size
-    scaled_image = pil2tensor(apply_resize_image(tensor2pil(up_image), original_width, original_height, rounding_modulus, 'rescale',
+    scaled_image = utils.pil2tensor(apply_resize_image(utils.tensor2pil(up_image), original_width, original_height, rounding_modulus, 'rescale',
                                                  supersample, rescale_factor, 1024, resampling_method))
     return scaled_image
 
@@ -92,10 +95,10 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
         scale = 8/min(original_image_size[0], original_image_size[1]) + 1
         w = int(original_image_size[1] * scale)
         h = int(original_image_size[0] * scale)
-        image = tensor_resize(image, w, h)
+        image = utils.tensor_resize(image, w, h)
 
     if noise_mask is not None:
-        noise_mask = tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
@@ -110,10 +113,10 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
         if 'noise_mask' in inspect.signature(imc_encode).parameters:
             positive, negative, latent_image = imc_encode(positive, negative, image, vae, mask=noise_mask, noise_mask=True)
         else:
-            print(f"[Impact Pack] ComfyUI is an outdated version.")
+            logging.info("[Impact Pack] ComfyUI is an outdated version.")
             positive, negative, latent_image = imc_encode(positive, negative, image, vae, noise_mask)
     else:
-        latent_image = to_latent_image(image, vae)
+        latent_image = utils.to_latent_image(image, vae)
         if noise_mask is not None:
             latent_image['noise_mask'] = noise_mask
 
@@ -130,7 +133,7 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
 
     # Match to original image size
     if refined_image.shape[1:3] != original_image_size:
-        refined_image = tensor_resize(refined_image, original_image_size[1], original_image_size[0])
+        refined_image = utils.tensor_resize(refined_image, original_image_size[1], original_image_size[0])
 
     # don't convert to latent - latent break image
     # preserving pil is much better

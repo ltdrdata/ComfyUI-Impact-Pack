@@ -1,6 +1,7 @@
 import comfy
 import re
-from impact.utils import *
+from impact import utils
+
 
 hf_transformer_model_urls = [
     "rizvandwiki/gender-classification-2",
@@ -138,10 +139,10 @@ class SEGS_Classify:
                 cropped_image = seg.cropped_image
             elif ref_image_opt is not None:
                 # take from original image
-                cropped_image = crop_image(ref_image_opt, seg.crop_region)
+                cropped_image = utils.crop_image(ref_image_opt, seg.crop_region)
 
             if cropped_image is not None:
-                cropped_image = to_pil(cropped_image)
+                cropped_image = utils.to_pil(cropped_image)
                 res = classifier(cropped_image)
                 classified.append((seg, res))
 

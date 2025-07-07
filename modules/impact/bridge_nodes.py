@@ -1,8 +1,12 @@
 import os
 from PIL import ImageOps
-from impact.utils import *
-import latent_preview
-
+import logging
+import folder_paths
+import torch
+import nodes
+from PIL import Image
+import numpy as np
+from impact import utils
 
 # NOTE: this should not be `from . import core`.
 # I don't know why but... 'from .' and 'from impact' refer to different core modules.
@@ -66,7 +70,7 @@ class PreviewBridge:
             else:
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
         else:
-            image = empty_pil_tensor()
+            image = utils.empty_pil_tensor()
             mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
             ui_item = {
                 "filename": 'empty.png',
@@ -100,10 +104,10 @@ class PreviewBridge:
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
                 res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
             else:
-                masked_images = tensor_convert_rgba(images)
-                resized_mask = resize_mask(mask, (images.shape[1], images.shape[2])).unsqueeze(3)
+                masked_images = utils.tensor_convert_rgba(images)
+                resized_mask = utils.resize_mask(mask, (images.shape[1], images.shape[2])).unsqueeze(3)
                 resized_mask = 1 - resized_mask
-                tensor_putalpha(masked_images, resized_mask)
+                utils.tensor_putalpha(masked_images, resized_mask)
                 res = nodes.PreviewImage().save_images(masked_images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
 
             image2 = res['ui']['images']
@@ -123,7 +127,7 @@ class PreviewBridge:
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None)
         elif block and is_empty_mask:
-            print(f"[Impact Pack] PreviewBridge: ComfyUI is outdated - blocking feature is disabled.")
+            logging.warning("[Impact Pack] PreviewBridge: ComfyUI is outdated - blocking feature is disabled.")
             result = pixels, mask
         else:
             result = pixels, mask
@@ -190,7 +194,7 @@ def decode_latent(latent, preview_method, vae_opt=None):
         latent_format = latent_formats.LTXV()
         method = LatentPreviewMethod.Latent2RGB
     else:
-        print(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
+        logging.warning(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
         latent_format = latent_formats.SD15()
         method = LatentPreviewMethod.Latent2RGB
 
@@ -199,9 +203,9 @@ def decode_latent(latent, preview_method, vae_opt=None):
 
     pil_image = previewer.decode_latent_to_preview(samples)
     pixels_size = pil_image.size[0]*8, pil_image.size[1]*8
-    resized_image = pil_image.resize(pixels_size, resample=LANCZOS)
+    resized_image = pil_image.resize(pixels_size, resample=utils.LANCZOS)
 
-    return to_tensor(resized_image).unsqueeze(0)
+    return utils.to_tensor(resized_image).unsqueeze(0)
 
 
 class PreviewBridgeLatent:
@@ -266,7 +270,7 @@ class PreviewBridgeLatent:
             else:
                 mask = None
         else:
-            image = empty_pil_tensor()
+            image = utils.empty_pil_tensor()
             mask = None
             ui_item = {
                 "filename": 'empty.png',
@@ -287,7 +291,7 @@ class PreviewBridgeLatent:
             preview_method_channels = 4
 
         if vae_opt is None and latent_channels != preview_method_channels:
-            print(f"[PreviewBridgeLatent] The version of latent is not compatible with preview_method.\nSD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
+            logging.warning("[PreviewBridgeLatent] The version of latent is not compatible with preview_method.\nSD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
             raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
 
         need_refresh = False
@@ -326,11 +330,11 @@ class PreviewBridgeLatent:
             if 'noise_mask' in latent:
                 mask = latent['noise_mask'].squeeze(0)  # 4D mask -> 3D mask
 
-                decoded_pil = to_pil(decoded_image)
+                decoded_pil = utils.to_pil(decoded_image)
 
                 inverted_mask = 1 - mask  # invert
-                resized_mask = resize_mask(inverted_mask, (decoded_image.shape[1], decoded_image.shape[2]))
-                result_pil = apply_mask_alpha_to_pil(decoded_pil, resized_mask)
+                resized_mask = utils.resize_mask(inverted_mask, (decoded_image.shape[1], decoded_image.shape[2]))
+                result_pil = utils.apply_mask_alpha_to_pil(decoded_pil, resized_mask)
 
                 full_output_folder, filename, counter, _, _ = folder_paths.get_save_image_path("PreviewBridge/PBL-"+self.prefix_append, folder_paths.get_temp_directory(), result_pil.size[0], result_pil.size[1])
                 file = f"{filename}_{counter}.png"
@@ -354,10 +358,10 @@ class PreviewBridgeLatent:
                     mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
                     res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
                 else:
-                    masked_images = tensor_convert_rgba(decoded_image)
-                    resized_mask = resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
+                    masked_images = utils.tensor_convert_rgba(decoded_image)
+                    resized_mask = utils.resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
                     resized_mask = 1 - resized_mask
-                    tensor_putalpha(masked_images, resized_mask)
+                    utils.tensor_putalpha(masked_images, resized_mask)
                     res = nodes.PreviewImage().save_images(masked_images, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
 
                 res_image = res['ui']['images']
@@ -376,7 +380,7 @@ class PreviewBridgeLatent:
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None)
         elif block and is_empty_mask:
-            print(f"[Impact Pack] PreviewBridgeLatent: ComfyUI is outdated - blocking feature is disabled.")
+            logging.warning("[Impact Pack] PreviewBridgeLatent: ComfyUI is outdated - blocking feature is disabled.")
             result = res_latent, mask
         else:
             result = res_latent, mask

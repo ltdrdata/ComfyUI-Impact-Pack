@@ -1,5 +1,7 @@
 import impact.additional_dependencies
-from impact.utils import *
+import numpy as np
+from impact import utils
+import logging
 
 impact.additional_dependencies.ensure_onnx_package()
 
@@ -8,7 +10,7 @@ try:
 
     def onnx_inference(image, onnx_model):
         # prepare image
-        pil = tensor2pil(image)
+        pil = utils.tensor2pil(image)
         image = np.ascontiguousarray(pil)
         image = image[:, :, ::-1]  # to BGR image
         image = image.astype(np.float32)
@@ -33,6 +35,5 @@ try:
         boxes = boxes[0][:idx].astype(np.uint32)
 
         return labels, scores, boxes
-except Exception as e:
-    print("[ERROR] ComfyUI-Impact-Pack: 'onnxruntime' package doesn't support 'python 3.11', yet.")
-    print(f"\t{e}")
+except Exception:
+    logging.error("[Impact Pack] ComfyUI-Impact-Pack: 'onnxruntime' package doesn't support 'python 3.11', yet.\t{e}")

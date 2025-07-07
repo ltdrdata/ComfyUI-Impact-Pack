@@ -1,5 +1,4 @@
 import folder_paths
-import impact.wildcards
 from impact.utils import any_typ
 
 

@@ -108,7 +108,8 @@ async def release_sam(request):
     global sam_predictor
 
     with sam_lock:
-        del sam_predictor
+        temp = sam_predictor
+        del temp
         sam_predictor = None
 
     logging.info("[Impact Pack]: unloading SAM model")
@@ -238,7 +239,7 @@ async def view_validate(request):
 
 
 @PromptServer.instance.routes.get("/impact/validate/pb_id_image")
-async def view_validate(request):
+async def view_pb_id_image(request):
     if "id" in request.rel_url.query:
         pb_id = request.rel_url.query["id"]
 
@@ -308,7 +309,7 @@ async def view_previewbridge_image(request):
         if pb_id in core.preview_bridge_image_id_map:
             file = core.preview_bridge_image_id_map[pb_id]
 
-            with Image.open(file) as img:
+            with Image.open(file):
                 filename = os.path.basename(file)
                 return web.FileResponse(file, headers={"Content-Disposition": f"filename=\"{filename}\""})
 
@@ -516,7 +517,7 @@ def onprompt_populate_wildcards(json_data):
 
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
                 updated_widget_values[k] = inputs['populated_text']
-            
+
             if inputs['mode'] == 'reproduce':
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "mode", "type": "STRING", "value": 'populate'})
 

@@ -84,17 +84,6 @@ try:
 
         if not os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'skip_download_model')):
             try:
-                if not impact.config.get_config()['mmdet_skip']:
-                    bbox_path = os.path.join(model_path, "mmdets", "bbox")
-                    if not os.path.exists(bbox_path):
-                        os.makedirs(bbox_path)
-
-                    if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.pth")):
-                        download_url("https://huggingface.co/dustysys/ddetailer/resolve/main/mmdet/bbox/mmdet_anime-face_yolov3.pth", bbox_path)
-
-                    if not os.path.exists(os.path.join(bbox_path, "mmdet_anime-face_yolov3.py")):
-                        download_url("https://raw.githubusercontent.com/Bing-su/dddetailer/master/config/mmdet_anime-face_yolov3.py", bbox_path)
-
                 if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
                     download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
             except:

@@ -2,11 +2,9 @@ import os
 import warnings
 
 import torch
-from sam2.sam2_image_predictor import SAM2ImagePredictor
 from segment_anything import SamPredictor
 
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
-from impact.utils import *
 from collections import namedtuple
 import numpy as np
 from PIL import ImageOps, Image
@@ -25,14 +23,24 @@ from impact import impact_sampling
 from concurrent.futures import ThreadPoolExecutor
 import inspect
 from collections import OrderedDict
-from sam2.build_sam import build_sam2, build_sam2_video_predictor
 import torch.nn.functional as F
+import logging
+import sys
+import importlib
 
+
+is_sam2_available = importlib.util.find_spec("sam2")
+sam2_unavailable_message = f"\n----------------------------------------------------------------------------\n[Impact Pack] The SAM2 functionality is unavailable because the `facebook/sam2` dependency is not installed.\n\nInstallation command:\n{sys.executable} -m pip install git+https://github.com/facebookresearch/sam2\n----------------------------------------------------------------------------\n"
+if is_sam2_available:
+    from sam2.sam2_image_predictor import SAM2ImagePredictor
+    from sam2.build_sam import build_sam2, build_sam2_video_predictor
+else:
+    logging.warning(sam2_unavailable_message)
 
 try:
     from comfy_extras import nodes_differential_diffusion
 except Exception:
-    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    logging.warning("\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
@@ -54,7 +62,7 @@ SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS S
 
 def is_execution_model_version_supported():
     try:
-        import comfy_execution
+        import comfy_execution  # noqa: F401
         return True
     except:
         return False
@@ -276,7 +284,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     # Skip processing if the detected bbox is already larger than the guide_size
     if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
-        print(f"Detailer: segment skip (enough big)")
+        logging.info("Detailer: segment skip (enough big)")
         return None, None
 
     if guide_size_for_bbox:  # == "bbox"
@@ -300,15 +308,15 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     if not force_inpaint:
         if upscale <= 1.0:
-            print(f"Detailer: segment skip [determined upscale factor={upscale}]")
+            logging.info(f"Detailer: segment skip [determined upscale factor={upscale}]")
             return None, None
 
         if new_w == 0 or new_h == 0:
-            print(f"Detailer: segment skip [zero size={new_w, new_h}]")
+            logging.info(f"Detailer: segment skip [zero size={new_w, new_h}]")
             return None, None
     else:
         if upscale <= 1.0 or new_w == 0 or new_h == 0:
-            print(f"Detailer: force inpaint")
+            logging.info("Detailer: force inpaint")
             upscale = 1.0
             new_w = w
             new_h = h
@@ -316,7 +324,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
 
-    print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
+    logging.info(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale
     upscaled_image = utils.tensor_resize(image, new_w, new_h)
@@ -337,7 +345,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             if 'noise_mask' in inspect.signature(imc_encode).parameters:
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, mask=noise_mask, noise_mask=True)
             else:
-                print(f"[Impact Pack] ComfyUI is an outdated version.")
+                logging.warning("[Impact Pack] ComfyUI is an outdated version.")
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, noise_mask)
         else:
             latent_image = utils.to_latent_image(upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
@@ -367,7 +375,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                 if not is_touched:
                     noise = None
             else:
-                model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, upscaled_latent2, denoise2 = \
+                model2, seed2, steps2, cfg2, sampler_name2, scheduler2, positive2, negative2, _, denoise2 = \
                     model, seed + i, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise
                 noise = None
 
@@ -382,15 +390,15 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         start = time.time()
         if vae_tiled_decode:
             (refined_image,) = nodes.VAEDecodeTiled().decode(vae, refined_latent, 512) # using default settings
-            print(f"[Impact Pack] vae decoded (tiled) in {time.time() - start:.1f}s")
+            logging.info(f"[Impact Pack] vae decoded (tiled) in {time.time() - start:.1f}s")
         else:
             try:
                 refined_image = vae.decode(refined_latent['samples'])
-            except Exception as e:
+            except Exception:
                 # usually an out-of-memory exception from the decode, so try a tiled approach
-                print(f"[Impact Pack] failed after {time.time() - start:.1f}s, doing vae.decode_tiled 64...")
+                logging.warning(f"[Impact Pack] failed after {time.time() - start:.1f}s, doing vae.decode_tiled 64...")
                 refined_image = vae.decode_tiled(refined_latent["samples"], tile_x=64, tile_y=64, )
-            print(f"[Impact Pack] vae decoded in {time.time() - start:.1f}s")
+            logging.info(f"[Impact Pack] vae decoded in {time.time() - start:.1f}s")
     else:
         # skipped
         refined_image = upscaled_image
@@ -458,7 +466,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         new_h = int(h * upscale)
 
     if upscale <= 1.0 or new_w == 0 or new_h == 0:
-        print(f"Detailer: force inpaint")
+        logging.info("Detailer: force inpaint")
         upscale = 1.0
         new_w = w
         new_h = h
@@ -466,7 +474,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
 
-    print(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
+    logging.info(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale the mask tensor by a factor of 2 using bilinear interpolation
     if isinstance(noise_mask, np.ndarray):
@@ -509,7 +517,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         positive, negative, cnet_images = control_net_wrapper.apply(positive, negative, torch.from_numpy(image_frames), noise_mask, use_acn=True)
 
     if len(upscaled_mask) != len(image_frames) and len(upscaled_mask) > 1:
-        print(f"[Impact Pack] WARN: DetailerForAnimateDiff - The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
+        logging.warning(f"[Impact Pack] DetailerForAnimateDiff: The number of the mask frames({len(upscaled_mask)}) and the image frames({len(image_frames)}) are different. Combine the mask frames and apply.")
         combined_mask = upscaled_mask[0].to(torch.uint8)
 
         for frame_mask in upscaled_mask[1:]:
@@ -653,6 +661,9 @@ class SAM2Wrapper:
                 self.video_predictor.to(device="cpu")
 
     def predict(self, image, points, plabs, bbox, threshold):
+        if not is_sam2_available:
+            raise Exception(sam2_unavailable_message)
+
         if self.image_predictor is None:
             self.image_predictor = SAM2ImagePredictor(build_sam2(self.config, self.modelname))
 
@@ -663,6 +674,9 @@ class SAM2Wrapper:
         return sam_predict(self.image_predictor, points, plabs, bbox, threshold)
 
     def predict_video_segs(self, image_frames, segs):
+        if not is_sam2_available:
+            raise Exception(sam2_unavailable_message)
+
         if self.video_predictor is None:
             self.video_predictor = build_sam2_video_predictor(self.config, self.modelname)
 
@@ -712,8 +726,6 @@ class SAM2Wrapper:
                 (self.video_predictor.image_size, self.video_predictor.image_size),
                 padding
             )
-
-            print(f"bbox={bbox} / adjusted_bbox={adjusted_bbox}")
 
             points = [utils.center_of_bbox(adjusted_bbox)]
             plabs = [1]
@@ -1116,7 +1128,7 @@ def segs_bitwise_and_mask(segs, mask):
     mask = utils.make_2d_mask(mask)
 
     if mask is None:
-        print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
+        logging.warning("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
         return ([],)
 
     items = []
@@ -1142,7 +1154,7 @@ def segs_bitwise_subtract_mask(segs, mask):
     mask = utils.make_2d_mask(mask)
 
     if mask is None:
-        print("[SegsBitwiseSubtractMask] Cannot operate: MASK is empty.")
+        logging.warning("[SegsBitwiseSubtractMask] Cannot operate: MASK is empty.")
         return ([],)
 
     items = []
@@ -1166,7 +1178,7 @@ def segs_bitwise_subtract_mask(segs, mask):
 
 def apply_mask_to_each_seg(segs, masks):
     if masks is None:
-        print("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
+        logging.warning("[SegsBitwiseAndMask] Cannot operate: MASK is empty.")
         return (segs[0], [],)
 
     items = []
@@ -1251,8 +1263,7 @@ class ONNXDetector:
 
             return segs
         except Exception as e:
-            print(f"ONNXDetector: unable to execute.\n{e}")
-            pass
+            logging.error(f"ONNXDetector: unable to execute.\n{e}")
 
     def detect_combined(self, image, threshold, dilation):
         return segs_to_combined_mask(self.detect(image, threshold, dilation, 1))
@@ -1279,7 +1290,7 @@ def batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, labe
 def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None, is_contour=True):
     drop_size = max(drop_size, 1)
     if mask is None:
-        print("[mask_to_segs] Cannot operate: MASK is empty.")
+        logging.info("[mask_to_segs] Cannot operate: MASK is empty.")
         return ([],)
 
     if isinstance(mask, np.ndarray):
@@ -1288,11 +1299,11 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
         try:
             mask = mask.numpy()
         except AttributeError:
-            print("[mask_to_segs] Cannot operate: MASK is not a NumPy array or Tensor.")
+            logging.info("[mask_to_segs] Cannot operate: MASK is not a NumPy array or Tensor.")
             return ([],)
 
     if mask is None:
-        print("[mask_to_segs] Cannot operate: MASK is empty.")
+        logging.info("[mask_to_segs] Cannot operate: MASK is empty.")
         return ([],)
 
     result = []
@@ -1380,9 +1391,9 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         result.append(item)
 
     if not result:
-        print(f"[mask_to_segs] Empty mask.")
+        logging.info("[mask_to_segs] Empty mask.")
 
-    print(f"# of Detected SEGS: {len(result)}")
+    logging.info(f"# of Detected SEGS: {len(result)}")
     # for r in result:
     #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
 
@@ -1514,7 +1525,7 @@ def vae_decode(vae, samples, use_tile, hook, tile_size=512, overlap=64):
         if 'overlap' in inspect.signature(decoder.decode).parameters:
             pixels = decoder.decode(vae, samples, tile_size, overlap=overlap)[0]
         else:
-            print(f"[Impact Pack] Your ComfyUI is outdated.")
+            logging.warning("[Impact Pack] Your ComfyUI is outdated.")
             pixels = decoder.decode(vae, samples, tile_size)[0]
     else:
         pixels = nodes.VAEDecode().decode(vae, samples)[0]
@@ -1531,7 +1542,7 @@ def vae_encode(vae, pixels, use_tile, hook, tile_size=512, overlap=64):
         if 'overlap' in inspect.signature(encoder.encode).parameters:
             samples = encoder.encode(vae, pixels, tile_size, overlap=overlap)[0]
         else:
-            print(f"[Impact Pack] Your ComfyUI is outdated.")
+            logging.warning("[Impact Pack] Your ComfyUI is outdated.")
             samples = encoder.encode(vae, pixels, tile_size)[0]
     else:
         samples = nodes.VAEEncode().encode(vae, pixels)[0]
@@ -1600,7 +1611,7 @@ def latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upsca
         pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
         current_w = pixels.shape[2]
         if current_w == w:
-            print(f"[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
+            logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
             break
 
     # downscale to target scale
@@ -1636,7 +1647,7 @@ def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_mod
         pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
         current_w = pixels.shape[2]
         if current_w == w:
-            print(f"[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
+            logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
             break
 
     # downscale to target scale
@@ -1762,14 +1773,14 @@ class TwoSamplersForMaskUpscaler:
         mask = utils.make_2d_mask(mask)
 
         if self.is_full_sample_time(step_info, sample_schedule):
-            print(f"step_info={step_info} / full time")
+            logging.info(f"step_info={step_info} / full time")
 
             upscaled_latent = base_sampler.sample(upscaled_latent, self.hook_base)
             sampler = self.full_sampler if self.full_sampler is not None else base_sampler
             return sampler.sample(upscaled_latent, self.hook_full)
 
         else:
-            print(f"step_info={step_info} / non-full time")
+            logging.info(f"step_info={step_info} / non-full time")
             # upscale mask
             if mask.ndim == 2:
                 mask = mask[None, :, :, None]
@@ -1917,11 +1928,11 @@ class IPAdapterWrapper:
 
         if 'IPAdapterAdvanced' not in nodes.NODE_CLASS_MAPPINGS:
             if 'IPAdapterApply' in nodes.NODE_CLASS_MAPPINGS:
-                raise Exception(f"[ERROR] 'ComfyUI IPAdapter Plus' is outdated.")
+                raise Exception("[ERROR] 'ComfyUI IPAdapter Plus' is outdated.")
 
             utils.try_install_custom_node('https://github.com/cubiq/ComfyUI_IPAdapter_plus',
                                           "To use 'IPAdapterApplySEGS' node, 'ComfyUI IPAdapter Plus' extension is required.")
-            raise Exception(f"[ERROR] To use IPAdapterApplySEGS, you need to install 'ComfyUI IPAdapter Plus'")
+            raise Exception("[ERROR] To use IPAdapterApplySEGS, you need to install 'ComfyUI IPAdapter Plus'")
 
         obj = nodes.NODE_CLASS_MAPPINGS['IPAdapterAdvanced']
 
@@ -2055,7 +2066,7 @@ class ControlNetAdvancedWrapper:
                 if 'vae' in signature.parameters:
                     positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent, vae=self.vae)
                 else:
-                    print(f"[Impact Pack] ERROR: The ComfyUI version is outdated. VAE cannot be used in ApplyControlNet.")
+                    logging.error("[Impact Pack] ERROR: The ComfyUI version is outdated. VAE cannot be used in ApplyControlNet.")
                     raise Exception("[Impact Pack] ERROR: The ComfyUI version is outdated. VAE cannot be used in ApplyControlNet.")
             else:
                 positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive, negative, self.control_net, cnet_image, self.strength, self.start_percent, self.end_percent)
@@ -2319,7 +2330,7 @@ def adaptive_mask_paste(dest_mask, src_mask, bbox):
 def crop_condition_mask(mask, image, crop_region):
     cond_scale = (mask.shape[1] / image.shape[1], mask.shape[2] / image.shape[2])
     mask_region = [round(v * cond_scale[i % 2]) for i, v in enumerate(crop_region)]
-    return crop_ndarray3(mask, mask_region)
+    return utils.crop_ndarray3(mask, mask_region)
 
 
 class SafeToGPU:
@@ -2336,9 +2347,14 @@ class SafeToGPU:
                     try:
                         obj.to(device)
                     except:
-                        print(f"WARN: The model is not moved to the '{device}' due to insufficient memory. [1]")
+                        logging.warning(f"[Impact Pack] The model is not moved to the '{device}' due to insufficient memory. [1]")
                 else:
-                    print(f"WARN: The model is not moved to the '{device}' due to insufficient memory. [2]")
+                    logging.warning(f"[Impact Pack] The model is not moved to the '{device}' due to insufficient memory. [2]")
+
+
+class SafeToGPU_stub():
+    def to_device(self, obj, device):
+        pass
 
 
 from comfy.cli_args import args, LatentPreviewMethod
@@ -2372,7 +2388,7 @@ try:
                     taesd = TAESD(None, taesd_decoder_path, latent_channels=latent_format.latent_channels).to(device)
                     previewer = TAESDPreviewerImpl(taesd)
                 else:
-                    print("Warning: TAESD previews enabled, but could not find models/vae_approx/{}".format(
+                    logging.warning("[Impact Pack] TAESD previews enabled, but could not find models/vae_approx/{}".format(
                         latent_format.taesd_decoder_name))
 
             if previewer is None:
@@ -2380,6 +2396,6 @@ try:
         return previewer
 
 except:
-    print(f"#########################################################################")
-    print(f"[ERROR] ComfyUI-Impact-Pack: Please update ComfyUI to the latest version.")
-    print(f"#########################################################################")
+    logging.error("#########################################################################")
+    logging.error("[ERROR] ComfyUI-Impact-Pack: Please update ComfyUI to the latest version.")
+    logging.error("#########################################################################")

@@ -5,9 +5,6 @@
 import comfy
 import torch
 
-from comfy import sampler_helpers
-
-
 class Unsampler:
     @classmethod
     def INPUT_TYPES(s):

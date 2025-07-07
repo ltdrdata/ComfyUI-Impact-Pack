@@ -8,6 +8,7 @@ from impact.utils import any_typ
 import impact.core as core
 import re
 import nodes
+import logging
 
 
 class ImpactCompare:
@@ -115,7 +116,6 @@ class ImpactConditionalBranchSelMode:
     RETURN_TYPES = (any_typ, )
 
     def doit(self, cond, tt_value=None, ff_value=None, **kwargs):
-        print(f'tt={tt_value is None}\nff={ff_value is None}')
         if cond:
             return (tt_value,)
         else:
@@ -655,7 +655,7 @@ class ImpactControlBridge:
             try:
                 workflow = core.current_prompt['extra_data']['extra_pnginfo']['workflow']
             except:
-                print(f"[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
+                logging.info("[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
                 return 0
 
             nodes, links = workflow_to_map(workflow)
@@ -673,7 +673,7 @@ class ImpactControlBridge:
         if core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
         else:
-            print("[Impact Pack] ImpactControlBridge: ComfyUI is outdated. The 'Stop' behavior cannot function properly.")
+            logging.info("[Impact Pack] ImpactControlBridge: ComfyUI is outdated. The 'Stop' behavior cannot function properly.")
 
         if behavior == "Stop":
             if mode:
@@ -681,7 +681,7 @@ class ImpactControlBridge:
             else:
                 return (ExecutionBlocker(None), )
         elif extra_pnginfo is None:
-            logging.warn(f"[Impact Pack] limitation: '{behavior}' behavior cannot be used in API execution.")
+            logging.warning(f"[Impact Pack] limitation: '{behavior}' behavior cannot be used in API execution.")
             return (value,)
         else:
             workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])

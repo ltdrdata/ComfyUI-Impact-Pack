@@ -340,13 +340,10 @@ class SAM2VideoDetectorSEGS:
             merged_mask = utils.to_binary_mask(merged_mask, 0.1)[0]
             return merged_mask
 
-        test_mask1 = None
-        test_mask2 = None
         new_segs = []
         for k, v in segs_masks.items():
             v = v.squeeze(3)
             m = get_whole_merged_mask(v)
-            test_mask2 = v
             seg = segs_nodes.MaskToSEGS.doit(m, False, crop_factor, False, drop_size, contour_fill=True)[0][1]
 
             if len(seg) == 0:

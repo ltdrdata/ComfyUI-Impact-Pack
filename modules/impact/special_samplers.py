@@ -1,11 +1,14 @@
 import math
 import impact.core as core
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
-from impact.utils import *
 from nodes import MAX_RESOLUTION
 import nodes
 from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper, separated_sample, impact_sample
 import comfy
+import torch
+import numpy as np
+import logging
+
 
 class TiledKSamplerProvider:
     @classmethod
@@ -239,7 +242,7 @@ class CombineConditionings:
             res += v
 
         return (res, )
-    
+
 
 class ConcatConditionings:
     @classmethod
@@ -263,7 +266,7 @@ class ConcatConditionings:
         for k, conditioning_from in list(kwargs.items())[1:]:
             out = []
             if len(conditioning_from) > 1:
-                print("Warning: ConcatConditionings {k} contains more than 1 cond, only the first one will actually be applied to conditioning1.")
+                logging.warning("Warning: ConcatConditionings {k} contains more than 1 cond, only the first one will actually be applied to conditioning1.")
 
             cond_from = conditioning_from[0][0]
 
@@ -276,8 +279,8 @@ class ConcatConditionings:
             conditioning_to = out
 
         return (out, )
-    
-    
+
+
 class RegionalSampler:
     @classmethod
     def INPUT_TYPES(s):
@@ -425,7 +428,7 @@ class RegionalSampler:
             add_noise = False
 
         # finalize
-        core.update_node_status(unique_id, f"finalize")
+        core.update_node_status(unique_id, "finalize")
         if base_latent_image is not None:
             new_latent_image = base_latent_image
         else:
@@ -546,7 +549,7 @@ class RegionalSamplerAdvanced:
                 j += 1
 
         # finalize
-        core.update_node_status(unique_id, f"finalize")
+        core.update_node_status(unique_id, "finalize")
         if base_latent_image is not None:
             new_latent_image = base_latent_image
         else:

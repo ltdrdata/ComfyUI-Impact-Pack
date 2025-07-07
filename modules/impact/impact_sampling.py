@@ -1,3 +1,5 @@
+import logging
+
 import nodes
 from comfy.k_diffusion import sampling as k_diffusion_sampling
 from comfy import samplers
@@ -13,7 +15,7 @@ try:
     from comfy_extras.nodes_custom_sampler import Noise_EmptyNoise, Noise_RandomNoise
     import node_helpers
 except:
-    print(f"\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
+    logging.warning("\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
@@ -176,7 +178,7 @@ def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler
 
     if len(sigmas) == 0 or (len(sigmas) == 1 and sigmas[0] == 0):
         return latent_image
-    
+
     res = sample_with_custom_noise(model, add_noise, seed, cfg, positive, negative, impact_sampler, sigmas, latent_image, noise=noise, callback=callback)
 
     if return_with_leftover_noise:
@@ -275,7 +277,7 @@ class KSamplerAdvancedWrapper:
                                                 sampler_opt=self.sampler_opt, noise=noise, scheduler_func=self.scheduler_func)
         except ValueError as e:
             if str(e) == 'sigma_min and sigma_max must not be 0':
-                print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
+                logging.warning("\nWARN: sampling skipped - sigma_min and sigma_max are 0")
                 return latent_image
 
         if (recovery_sigma_ratio > 0 and recovery_mode != 'DISABLE' and
@@ -299,7 +301,7 @@ class KSamplerAdvancedWrapper:
                                                 sigma_ratio=recovery_sigma_ratio * sigma_factor, sampler_opt=self.sampler_opt, scheduler_func=self.scheduler_func)
             except ValueError as e:
                 if str(e) == 'sigma_min and sigma_max must not be 0':
-                    print(f"\nWARN: sampling skipped - sigma_min and sigma_max are 0")
+                    logging.warning("\nWARN: sampling skipped - sigma_min and sigma_max are 0")
 
         return latent_image
 

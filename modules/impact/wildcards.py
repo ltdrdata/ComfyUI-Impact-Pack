@@ -72,7 +72,7 @@ def read_wildcard_dict(wildcard_path):
                 try:
                     with open(file_path, 'r', encoding="ISO-8859-1") as f:
                         yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-                except yaml.reader.ReaderError as e:
+                except yaml.reader.ReaderError:
                     with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
                         yaml_data = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -140,7 +140,7 @@ def process(text, seed=None):
                         b = b.strip()
                     else:
                         b = "-1"
-                        
+
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):
                         # PATTERN: num1-num2
@@ -305,7 +305,7 @@ def process(text, seed=None):
     stop_unwrap = False
     while not stop_unwrap and replace_depth > 1:
         replace_depth -= 1  # prevent infinite loop
-        
+
         option_quantifier = [e.groupdict() for e in RE_WildCardQuantifier.finditer(text)]
         for match in option_quantifier:
             keyword = match['keyword'].lower()
@@ -452,7 +452,7 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, 
             if loader is not None:
                 if loader == 'nunchaku':
                     if 'NunchakuFluxLoraLoader' not in nodes.NODE_CLASS_MAPPINGS:
-                        logging.warning(f"To use `LOADER=nunchaku`, 'ComfyUI-nunchaku' is required. The LOADER= attribute is being ignored.")
+                        logging.warning("To use `LOADER=nunchaku`, 'ComfyUI-nunchaku' is required. The LOADER= attribute is being ignored.")
                     cls = nodes.NODE_CLASS_MAPPINGS['NunchakuFluxLoraLoader']
                     model = cls().load_lora(model, lora_name, model_weight)[0]
                 else:
@@ -467,7 +467,7 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, 
                             'https://github.com/ltdrdata/ComfyUI-Inspire-Pack',
                             "To use 'LBW=' syntax in wildcards, 'Inspire Pack' extension is required.")
 
-                        logging.warning(f"'LBW(Lora Block Weight)' is given, but the 'Inspire Pack' is not installed. The LBW= attribute is being ignored.")
+                        logging.warning("'LBW(Lora Block Weight)' is given, but the 'Inspire Pack' is not installed. The LBW= attribute is being ignored.")
                         model, clip = default_lora()
                     else:
                         cls = nodes.NODE_CLASS_MAPPINGS['LoraLoaderBlockWeight //Inspire']
@@ -618,7 +618,7 @@ def wildcard_load():
 
         try:
             read_wildcard_dict(config.get_config()['custom_wildcards'])
-        except Exception as e:
-            print(f"[Impact Pack] Failed to load custom wildcards directory.")
+        except Exception:
+            logging.info("[Impact Pack] Failed to load custom wildcards directory.")
 
-        print(f"[Impact Pack] Wildcards loading done.")
+        logging.info("[Impact Pack] Wildcards loading done.")

@@ -5,11 +5,10 @@
 @description: This extension offers various detector nodes and detailer nodes that allow you to configure a workflow that automatically enhances facial details. And provide iterative upscaler.
 """
 
-import shutil
 import folder_paths
 import os
 import sys
-import traceback
+import logging
 
 comfy_path = os.path.dirname(folder_paths.__file__)
 impact_path = os.path.join(os.path.dirname(__file__))
@@ -18,28 +17,23 @@ modules_path = os.path.join(os.path.dirname(__file__), "modules")
 sys.path.append(modules_path)
 
 import impact.config
-print(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
+logging.info(f"### Loading: ComfyUI-Impact-Pack ({impact.config.version})")
 
 # Core
 # recheck dependencies for colab
 try:
     import folder_paths
-    import torch
-    import cv2
-    from cv2 import setNumThreads
-    import numpy as np
+    import torch                  # noqa: F401
+    import cv2                    # noqa: F401
+    from cv2 import setNumThreads # noqa: F401
+    import numpy as np            # noqa: F401
     import comfy.samplers
-    import comfy.sd
-    import warnings
-    from PIL import Image, ImageFilter
-    from skimage.measure import label, regionprops
-    from collections import namedtuple
-    import piexif
-
-    if not impact.config.get_config()['mmdet_skip']:
-        import mmcv
-        from mmdet.apis import (inference_detector, init_detector)
-        from mmdet.evaluation import get_classes
+    import comfy.sd               # noqa: F401
+    from PIL import Image, ImageFilter             # noqa: F401
+    from skimage.measure import label, regionprops # noqa: F401
+    from collections import namedtuple             # noqa: F401
+    import piexif                                  # noqa: F401
+    import nodes
 except Exception as e:
     import logging
     logging.error("[Impact Pack] Failed to import due to several dependencies are missing!!!!")
@@ -48,18 +42,18 @@ except Exception as e:
 
 import impact.impact_server  # to load server api
 
-from .modules.impact.impact_pack import *
-from .modules.impact.detectors import *
-from .modules.impact.pipe import *
-from .modules.impact.logics import *
-from .modules.impact.util_nodes import *
-from .modules.impact.segs_nodes import *
-from .modules.impact.special_samplers import *
-from .modules.impact.hf_nodes import *
-from .modules.impact.bridge_nodes import *
-from .modules.impact.hook_nodes import *
-from .modules.impact.animatediff_nodes import *
-from .modules.impact.segs_upscaler import *
+from .modules.impact.impact_pack import *       # noqa: F403
+from .modules.impact.detectors import *         # noqa: F403
+from .modules.impact.pipe import *              # noqa: F403
+from .modules.impact.logics import *            # noqa: F403
+from .modules.impact.util_nodes import *        # noqa: F403
+from .modules.impact.segs_nodes import *        # noqa: F403
+from .modules.impact.special_samplers import *  # noqa: F403
+from .modules.impact.hf_nodes import *          # noqa: F403
+from .modules.impact.bridge_nodes import *      # noqa: F403
+from .modules.impact.hook_nodes import *        # noqa: F403
+from .modules.impact.animatediff_nodes import * # noqa: F403
+from .modules.impact.segs_upscaler import *     # noqa: F403
 
 import threading
 
@@ -68,235 +62,235 @@ threading.Thread(target=impact.wildcards.wildcard_load).start()
 
 
 NODE_CLASS_MAPPINGS = {
-    "SAMLoader": SAMLoader,
-    "CLIPSegDetectorProvider": CLIPSegDetectorProvider,
-    "ONNXDetectorProvider": ONNXDetectorProvider,
+    "SAMLoader": SAMLoader, # noqa: F405
+    "CLIPSegDetectorProvider": CLIPSegDetectorProvider, # noqa: F405
+    "ONNXDetectorProvider": ONNXDetectorProvider, # noqa: F405
 
-    "BitwiseAndMaskForEach": BitwiseAndMaskForEach,
-    "SubtractMaskForEach": SubtractMaskForEach,
+    "BitwiseAndMaskForEach": BitwiseAndMaskForEach, # noqa: F405
+    "SubtractMaskForEach": SubtractMaskForEach, # noqa: F405
 
-    "DetailerForEach": DetailerForEach,
-    "DetailerForEachAutoRetry": DetailerForEachAutoRetry,
-    "DetailerForEachDebug": DetailerForEachTest,
-    "DetailerForEachPipe": DetailerForEachPipe,
-    "DetailerForEachDebugPipe": DetailerForEachTestPipe,
-    "DetailerForEachPipeForAnimateDiff": DetailerForEachPipeForAnimateDiff,
+    "DetailerForEach": DetailerForEach, # noqa: F405
+    "DetailerForEachAutoRetry": DetailerForEachAutoRetry, # noqa: F405
+    "DetailerForEachDebug": DetailerForEachTest, # noqa: F405
+    "DetailerForEachPipe": DetailerForEachPipe, # noqa: F405
+    "DetailerForEachDebugPipe": DetailerForEachTestPipe, # noqa: F405
+    "DetailerForEachPipeForAnimateDiff": DetailerForEachPipeForAnimateDiff, # noqa: F405
 
-    "SAMDetectorCombined": SAMDetectorCombined,
-    "SAMDetectorSegmented": SAMDetectorSegmented,
+    "SAMDetectorCombined": SAMDetectorCombined, # noqa: F405
+    "SAMDetectorSegmented": SAMDetectorSegmented, # noqa: F405
 
-    "FaceDetailer": FaceDetailer,
-    "FaceDetailerPipe": FaceDetailerPipe,
-    "MaskDetailerPipe": MaskDetailerPipe,
+    "FaceDetailer": FaceDetailer, # noqa: F405
+    "FaceDetailerPipe": FaceDetailerPipe, # noqa: F405
+    "MaskDetailerPipe": MaskDetailerPipe, # noqa: F405
 
-    "ToDetailerPipe": ToDetailerPipe,
-    "ToDetailerPipeSDXL": ToDetailerPipeSDXL,
-    "FromDetailerPipe": FromDetailerPipe,
-    "FromDetailerPipe_v2": FromDetailerPipe_v2,
-    "FromDetailerPipeSDXL": FromDetailerPipe_SDXL,
-    "AnyPipeToBasic": AnyPipeToBasic,
-    "ToBasicPipe": ToBasicPipe,
-    "FromBasicPipe": FromBasicPipe,
-    "FromBasicPipe_v2": FromBasicPipe_v2,
-    "BasicPipeToDetailerPipe": BasicPipeToDetailerPipe,
-    "BasicPipeToDetailerPipeSDXL": BasicPipeToDetailerPipeSDXL,
-    "DetailerPipeToBasicPipe": DetailerPipeToBasicPipe,
-    "EditBasicPipe": EditBasicPipe,
-    "EditDetailerPipe": EditDetailerPipe,
-    "EditDetailerPipeSDXL": EditDetailerPipeSDXL,
+    "ToDetailerPipe": ToDetailerPipe, # noqa: F405
+    "ToDetailerPipeSDXL": ToDetailerPipeSDXL, # noqa: F405
+    "FromDetailerPipe": FromDetailerPipe, # noqa: F405
+    "FromDetailerPipe_v2": FromDetailerPipe_v2, # noqa: F405
+    "FromDetailerPipeSDXL": FromDetailerPipe_SDXL, # noqa: F405
+    "AnyPipeToBasic": AnyPipeToBasic, # noqa: F405
+    "ToBasicPipe": ToBasicPipe, # noqa: F405
+    "FromBasicPipe": FromBasicPipe, # noqa: F405
+    "FromBasicPipe_v2": FromBasicPipe_v2, # noqa: F405
+    "BasicPipeToDetailerPipe": BasicPipeToDetailerPipe, # noqa: F405
+    "BasicPipeToDetailerPipeSDXL": BasicPipeToDetailerPipeSDXL, # noqa: F405
+    "DetailerPipeToBasicPipe": DetailerPipeToBasicPipe, # noqa: F405
+    "EditBasicPipe": EditBasicPipe, # noqa: F405
+    "EditDetailerPipe": EditDetailerPipe, # noqa: F405
+    "EditDetailerPipeSDXL": EditDetailerPipeSDXL, # noqa: F405
 
-    "LatentPixelScale": LatentPixelScale,
-    "PixelKSampleUpscalerProvider": PixelKSampleUpscalerProvider,
-    "PixelKSampleUpscalerProviderPipe": PixelKSampleUpscalerProviderPipe,
-    "IterativeLatentUpscale": IterativeLatentUpscale,
-    "IterativeImageUpscale": IterativeImageUpscale,
-    "PixelTiledKSampleUpscalerProvider": PixelTiledKSampleUpscalerProvider,
-    "PixelTiledKSampleUpscalerProviderPipe": PixelTiledKSampleUpscalerProviderPipe,
-    "TwoSamplersForMaskUpscalerProvider": TwoSamplersForMaskUpscalerProvider,
-    "TwoSamplersForMaskUpscalerProviderPipe": TwoSamplersForMaskUpscalerProviderPipe,
+    "LatentPixelScale": LatentPixelScale, # noqa: F405
+    "PixelKSampleUpscalerProvider": PixelKSampleUpscalerProvider, # noqa: F405
+    "PixelKSampleUpscalerProviderPipe": PixelKSampleUpscalerProviderPipe, # noqa: F405
+    "IterativeLatentUpscale": IterativeLatentUpscale, # noqa: F405
+    "IterativeImageUpscale": IterativeImageUpscale, # noqa: F405
+    "PixelTiledKSampleUpscalerProvider": PixelTiledKSampleUpscalerProvider, # noqa: F405
+    "PixelTiledKSampleUpscalerProviderPipe": PixelTiledKSampleUpscalerProviderPipe, # noqa: F405
+    "TwoSamplersForMaskUpscalerProvider": TwoSamplersForMaskUpscalerProvider, # noqa: F405
+    "TwoSamplersForMaskUpscalerProviderPipe": TwoSamplersForMaskUpscalerProviderPipe, # noqa: F405
 
-    "PixelKSampleHookCombine": PixelKSampleHookCombine,
-    "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider,
-    "StepsScheduleHookProvider": StepsScheduleHookProvider,
-    "CfgScheduleHookProvider": CfgScheduleHookProvider,
-    "NoiseInjectionHookProvider": NoiseInjectionHookProvider,
-    "UnsamplerHookProvider": UnsamplerHookProvider,
-    "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
-    "PreviewDetailerHookProvider": PreviewDetailerHookProvider,
-    "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider,
-    "LamaRemoverDetailerHookProvider": LamaRemoverDetailerHookProvider,
+    "PixelKSampleHookCombine": PixelKSampleHookCombine, # noqa: F405
+    "DenoiseScheduleHookProvider": DenoiseScheduleHookProvider, # noqa: F405
+    "StepsScheduleHookProvider": StepsScheduleHookProvider, # noqa: F405
+    "CfgScheduleHookProvider": CfgScheduleHookProvider, # noqa: F405
+    "NoiseInjectionHookProvider": NoiseInjectionHookProvider, # noqa: F405
+    "UnsamplerHookProvider": UnsamplerHookProvider, # noqa: F405
+    "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider, # noqa: F405
+    "PreviewDetailerHookProvider": PreviewDetailerHookProvider, # noqa: F405
+    "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider, # noqa: F405
+    "LamaRemoverDetailerHookProvider": LamaRemoverDetailerHookProvider, # noqa: F405
 
-    "DetailerHookCombine": DetailerHookCombine,
-    "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider,
-    "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider,
-    "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider,
-    "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider,
-    "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider,
-    "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider,
-    "VariationNoiseDetailerHookProvider": VariationNoiseDetailerHookProvider,
+    "DetailerHookCombine": DetailerHookCombine, # noqa: F405
+    "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider, # noqa: F405
+    "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider, # noqa: F405
+    "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider, # noqa: F405
+    "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider, # noqa: F405
+    "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider, # noqa: F405
+    "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider, # noqa: F405
+    "VariationNoiseDetailerHookProvider": VariationNoiseDetailerHookProvider, # noqa: F405
     # "CustomNoiseDetailerHookProvider": CustomNoiseDetailerHookProvider,
 
-    "BitwiseAndMask": BitwiseAndMask,
-    "SubtractMask": SubtractMask,
-    "AddMask": AddMask,
-    "MaskRectArea": MaskRectArea,
-    "MaskRectAreaAdvanced": MaskRectAreaAdvanced,
-    "ImpactSegsAndMask": SegsBitwiseAndMask,
-    "ImpactSegsAndMaskForEach": SegsBitwiseAndMaskForEach,
-    "EmptySegs": EmptySEGS,
-    "ImpactFlattenMask": FlattenMask,
+    "BitwiseAndMask": BitwiseAndMask, # noqa: F405
+    "SubtractMask": SubtractMask, # noqa: F405
+    "AddMask": AddMask, # noqa: F405
+    "MaskRectArea": MaskRectArea, # noqa: F405
+    "MaskRectAreaAdvanced": MaskRectAreaAdvanced, # noqa: F405
+    "ImpactSegsAndMask": SegsBitwiseAndMask, # noqa: F405
+    "ImpactSegsAndMaskForEach": SegsBitwiseAndMaskForEach, # noqa: F405
+    "EmptySegs": EmptySEGS, # noqa: F405
+    "ImpactFlattenMask": FlattenMask, # noqa: F405
 
-    "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS,
-    "MaskToSEGS": MaskToSEGS,
-    "MaskToSEGS_for_AnimateDiff": MaskToSEGS_for_AnimateDiff,
-    "ToBinaryMask": ToBinaryMask,
-    "MasksToMaskList": MasksToMaskList,
-    "MaskListToMaskBatch": MaskListToMaskBatch,
-    "ImageListToImageBatch": ImageListToImageBatch,
-    "SetDefaultImageForSEGS": DefaultImageForSEGS,
-    "RemoveImageFromSEGS": RemoveImageFromSEGS,
+    "MediaPipeFaceMeshToSEGS": MediaPipeFaceMeshToSEGS, # noqa: F405
+    "MaskToSEGS": MaskToSEGS, # noqa: F405
+    "MaskToSEGS_for_AnimateDiff": MaskToSEGS_for_AnimateDiff, # noqa: F405
+    "ToBinaryMask": ToBinaryMask, # noqa: F405
+    "MasksToMaskList": MasksToMaskList, # noqa: F405
+    "MaskListToMaskBatch": MaskListToMaskBatch, # noqa: F405
+    "ImageListToImageBatch": ImageListToImageBatch, # noqa: F405
+    "SetDefaultImageForSEGS": DefaultImageForSEGS, # noqa: F405
+    "RemoveImageFromSEGS": RemoveImageFromSEGS, # noqa: F405
 
-    "BboxDetectorSEGS": BboxDetectorForEach,
-    "SegmDetectorSEGS": SegmDetectorForEach,
-    "ONNXDetectorSEGS": BboxDetectorForEach,
-    "ImpactSimpleDetectorSEGS_for_AD": SimpleDetectorForAnimateDiff,
-    "ImpactSAM2VideoDetectorSEGS": SAM2VideoDetectorSEGS,
-    "ImpactSimpleDetectorSEGS": SimpleDetectorForEach,
-    "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe,
-    "ImpactControlNetApplySEGS": ControlNetApplySEGS,
-    "ImpactControlNetApplyAdvancedSEGS": ControlNetApplyAdvancedSEGS,
-    "ImpactControlNetClearSEGS": ControlNetClearSEGS,
-    "ImpactIPAdapterApplySEGS": IPAdapterApplySEGS,
+    "BboxDetectorSEGS": BboxDetectorForEach, # noqa: F405
+    "SegmDetectorSEGS": SegmDetectorForEach, # noqa: F405
+    "ONNXDetectorSEGS": BboxDetectorForEach, # noqa: F405
+    "ImpactSimpleDetectorSEGS_for_AD": SimpleDetectorForAnimateDiff, # noqa: F405
+    "ImpactSAM2VideoDetectorSEGS": SAM2VideoDetectorSEGS, # noqa: F405
+    "ImpactSimpleDetectorSEGS": SimpleDetectorForEach, # noqa: F405
+    "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe, # noqa: F405
+    "ImpactControlNetApplySEGS": ControlNetApplySEGS, # noqa: F405
+    "ImpactControlNetApplyAdvancedSEGS": ControlNetApplyAdvancedSEGS, # noqa: F405
+    "ImpactControlNetClearSEGS": ControlNetClearSEGS, # noqa: F405
+    "ImpactIPAdapterApplySEGS": IPAdapterApplySEGS, # noqa: F405
 
-    "ImpactDecomposeSEGS": DecomposeSEGS,
-    "ImpactAssembleSEGS": AssembleSEGS,
-    "ImpactFrom_SEG_ELT": From_SEG_ELT,
-    "ImpactEdit_SEG_ELT": Edit_SEG_ELT,
-    "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT,
-    "ImpactDilateMask": DilateMask,
-    "ImpactGaussianBlurMask": GaussianBlurMask,
-    "ImpactDilateMaskInSEGS": DilateMaskInSEGS,
-    "ImpactGaussianBlurMaskInSEGS": GaussianBlurMaskInSEGS,
-    "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy,
-    "ImpactFrom_SEG_ELT_bbox": From_SEG_ELT_bbox,
-    "ImpactFrom_SEG_ELT_crop_region": From_SEG_ELT_crop_region,
-    "ImpactCount_Elts_in_SEGS": Count_Elts_in_SEGS,
+    "ImpactDecomposeSEGS": DecomposeSEGS, # noqa: F405
+    "ImpactAssembleSEGS": AssembleSEGS, # noqa: F405
+    "ImpactFrom_SEG_ELT": From_SEG_ELT, # noqa: F405
+    "ImpactEdit_SEG_ELT": Edit_SEG_ELT, # noqa: F405
+    "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT, # noqa: F405
+    "ImpactDilateMask": DilateMask, # noqa: F405
+    "ImpactGaussianBlurMask": GaussianBlurMask, # noqa: F405
+    "ImpactDilateMaskInSEGS": DilateMaskInSEGS, # noqa: F405
+    "ImpactGaussianBlurMaskInSEGS": GaussianBlurMaskInSEGS, # noqa: F405
+    "ImpactScaleBy_BBOX_SEG_ELT": SEG_ELT_BBOX_ScaleBy, # noqa: F405
+    "ImpactFrom_SEG_ELT_bbox": From_SEG_ELT_bbox, # noqa: F405
+    "ImpactFrom_SEG_ELT_crop_region": From_SEG_ELT_crop_region, # noqa: F405
+    "ImpactCount_Elts_in_SEGS": Count_Elts_in_SEGS, # noqa: F405
 
-    "BboxDetectorCombined_v2": BboxDetectorCombined,
-    "SegmDetectorCombined_v2": SegmDetectorCombined,
-    "SegsToCombinedMask": SegsToCombinedMask,
+    "BboxDetectorCombined_v2": BboxDetectorCombined, # noqa: F405
+    "SegmDetectorCombined_v2": SegmDetectorCombined, # noqa: F405
+    "SegsToCombinedMask": SegsToCombinedMask, # noqa: F405
 
-    "KSamplerProvider": KSamplerProvider,
-    "TwoSamplersForMask": TwoSamplersForMask,
-    "TiledKSamplerProvider": TiledKSamplerProvider,
+    "KSamplerProvider": KSamplerProvider, # noqa: F405
+    "TwoSamplersForMask": TwoSamplersForMask, # noqa: F405
+    "TiledKSamplerProvider": TiledKSamplerProvider, # noqa: F405
 
-    "KSamplerAdvancedProvider": KSamplerAdvancedProvider,
-    "TwoAdvancedSamplersForMask": TwoAdvancedSamplersForMask,
+    "KSamplerAdvancedProvider": KSamplerAdvancedProvider, # noqa: F405
+    "TwoAdvancedSamplersForMask": TwoAdvancedSamplersForMask, # noqa: F405
 
-    "ImpactNegativeConditioningPlaceholder": NegativeConditioningPlaceholder,
+    "ImpactNegativeConditioningPlaceholder": NegativeConditioningPlaceholder, # noqa: F405
 
-    "PreviewBridge": PreviewBridge,
-    "PreviewBridgeLatent": PreviewBridgeLatent,
-    "ImageSender": ImageSender,
-    "ImageReceiver": ImageReceiver,
-    "LatentSender": LatentSender,
-    "LatentReceiver": LatentReceiver,
-    "ImageMaskSwitch": ImageMaskSwitch,
-    "LatentSwitch": GeneralSwitch,
-    "SEGSSwitch": GeneralSwitch,
-    "ImpactSwitch": GeneralSwitch,
-    "ImpactInversedSwitch": GeneralInversedSwitch,
+    "PreviewBridge": PreviewBridge, # noqa: F405
+    "PreviewBridgeLatent": PreviewBridgeLatent, # noqa: F405
+    "ImageSender": ImageSender, # noqa: F405
+    "ImageReceiver": ImageReceiver, # noqa: F405
+    "LatentSender": LatentSender, # noqa: F405
+    "LatentReceiver": LatentReceiver, # noqa: F405
+    "ImageMaskSwitch": ImageMaskSwitch, # noqa: F405
+    "LatentSwitch": GeneralSwitch, # noqa: F405
+    "SEGSSwitch": GeneralSwitch, # noqa: F405
+    "ImpactSwitch": GeneralSwitch, # noqa: F405
+    "ImpactInversedSwitch": GeneralInversedSwitch, # noqa: F405
 
-    "ImpactWildcardProcessor": ImpactWildcardProcessor,
-    "ImpactWildcardEncode": ImpactWildcardEncode,
+    "ImpactWildcardProcessor": ImpactWildcardProcessor, # noqa: F405
+    "ImpactWildcardEncode": ImpactWildcardEncode, # noqa: F405
 
-    "SEGSUpscaler": SEGSUpscaler,
-    "SEGSUpscalerPipe": SEGSUpscalerPipe,
-    "SEGSDetailer": SEGSDetailer,
-    "SEGSPaste": SEGSPaste,
-    "SEGSPreview": SEGSPreview,
-    "SEGSPreviewCNet": SEGSPreviewCNet,
-    "SEGSToImageList": SEGSToImageList,
-    "ImpactSEGSToMaskList": SEGSToMaskList,
-    "ImpactSEGSToMaskBatch": SEGSToMaskBatch,
-    "ImpactSEGSConcat": SEGSConcat,
-    "ImpactSEGSPicker": SEGSPicker,
-    "ImpactMakeTileSEGS": MakeTileSEGS,
-    "ImpactSEGSMerge": SEGSMerge,
+    "SEGSUpscaler": SEGSUpscaler, # noqa: F405
+    "SEGSUpscalerPipe": SEGSUpscalerPipe, # noqa: F405
+    "SEGSDetailer": SEGSDetailer, # noqa: F405
+    "SEGSPaste": SEGSPaste, # noqa: F405
+    "SEGSPreview": SEGSPreview, # noqa: F405
+    "SEGSPreviewCNet": SEGSPreviewCNet, # noqa: F405
+    "SEGSToImageList": SEGSToImageList, # noqa: F405
+    "ImpactSEGSToMaskList": SEGSToMaskList, # noqa: F405
+    "ImpactSEGSToMaskBatch": SEGSToMaskBatch, # noqa: F405
+    "ImpactSEGSConcat": SEGSConcat, # noqa: F405
+    "ImpactSEGSPicker": SEGSPicker, # noqa: F405
+    "ImpactMakeTileSEGS": MakeTileSEGS, # noqa: F405
+    "ImpactSEGSMerge": SEGSMerge, # noqa: F405
 
-    "SEGSDetailerForAnimateDiff": SEGSDetailerForAnimateDiff,
+    "SEGSDetailerForAnimateDiff": SEGSDetailerForAnimateDiff, # noqa: F405
 
-    "ImpactKSamplerBasicPipe": KSamplerBasicPipe,
-    "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe,
+    "ImpactKSamplerBasicPipe": KSamplerBasicPipe, # noqa: F405
+    "ImpactKSamplerAdvancedBasicPipe": KSamplerAdvancedBasicPipe, # noqa: F405
 
-    "ReencodeLatent": ReencodeLatent,
-    "ReencodeLatentPipe": ReencodeLatentPipe,
+    "ReencodeLatent": ReencodeLatent, # noqa: F405
+    "ReencodeLatentPipe": ReencodeLatentPipe, # noqa: F405
 
-    "ImpactImageBatchToImageList": ImageBatchToImageList,
-    "ImpactMakeImageList": MakeImageList,
-    "ImpactMakeImageBatch": MakeImageBatch,
-    "ImpactMakeAnyList": MakeAnyList,
-    "ImpactMakeMaskList": MakeMaskList,
-    "ImpactMakeMaskBatch": MakeMaskBatch,
-    "ImpactSelectNthItemOfAnyList": NthItemOfAnyList,
+    "ImpactImageBatchToImageList": ImageBatchToImageList, # noqa: F405
+    "ImpactMakeImageList": MakeImageList, # noqa: F405
+    "ImpactMakeImageBatch": MakeImageBatch, # noqa: F405
+    "ImpactMakeAnyList": MakeAnyList, # noqa: F405
+    "ImpactMakeMaskList": MakeMaskList, # noqa: F405
+    "ImpactMakeMaskBatch": MakeMaskBatch, # noqa: F405
+    "ImpactSelectNthItemOfAnyList": NthItemOfAnyList, # noqa: F405
 
-    "RegionalSampler": RegionalSampler,
-    "RegionalSamplerAdvanced": RegionalSamplerAdvanced,
-    "CombineRegionalPrompts": CombineRegionalPrompts,
-    "RegionalPrompt": RegionalPrompt,
+    "RegionalSampler": RegionalSampler, # noqa: F405
+    "RegionalSamplerAdvanced": RegionalSamplerAdvanced, # noqa: F405
+    "CombineRegionalPrompts": CombineRegionalPrompts, # noqa: F405
+    "RegionalPrompt": RegionalPrompt, # noqa: F405
 
-    "ImpactCombineConditionings": CombineConditionings,
-    "ImpactConcatConditionings": ConcatConditionings,
+    "ImpactCombineConditionings": CombineConditionings, # noqa: F405
+    "ImpactConcatConditionings": ConcatConditionings, # noqa: F405
 
-    "ImpactSEGSLabelAssign": SEGSLabelAssign,
-    "ImpactSEGSLabelFilter": SEGSLabelFilter,
-    "ImpactSEGSRangeFilter": SEGSRangeFilter,
-    "ImpactSEGSOrderedFilter": SEGSOrderedFilter,
-    "ImpactSEGSIntersectionFilter": SEGSIntersectionFilter,
-    "ImpactSEGSNMSFilter": SEGSNMSFilter,
+    "ImpactSEGSLabelAssign": SEGSLabelAssign, # noqa: F405
+    "ImpactSEGSLabelFilter": SEGSLabelFilter, # noqa: F405
+    "ImpactSEGSRangeFilter": SEGSRangeFilter, # noqa: F405
+    "ImpactSEGSOrderedFilter": SEGSOrderedFilter, # noqa: F405
+    "ImpactSEGSIntersectionFilter": SEGSIntersectionFilter, # noqa: F405
+    "ImpactSEGSNMSFilter": SEGSNMSFilter, # noqa: F405
 
-    "ImpactCompare": ImpactCompare,
-    "ImpactConditionalBranch": ImpactConditionalBranch,
-    "ImpactConditionalBranchSelMode": ImpactConditionalBranchSelMode,
-    "ImpactIfNone": ImpactIfNone,
-    "ImpactConvertDataType": ImpactConvertDataType,
-    "ImpactLogicalOperators": ImpactLogicalOperators,
-    "ImpactInt": ImpactInt,
-    "ImpactFloat": ImpactFloat,
-    "ImpactBoolean": ImpactBoolean,
-    "ImpactValueSender": ImpactValueSender,
-    "ImpactValueReceiver": ImpactValueReceiver,
-    "ImpactImageInfo": ImpactImageInfo,
-    "ImpactLatentInfo": ImpactLatentInfo,
-    "ImpactMinMax": ImpactMinMax,
-    "ImpactNeg": ImpactNeg,
-    "ImpactConditionalStopIteration": ImpactConditionalStopIteration,
-    "ImpactStringSelector": StringSelector,
-    "StringListToString": StringListToString,
-    "WildcardPromptFromString": WildcardPromptFromString,
-    "ImpactExecutionOrderController": ImpactExecutionOrderController,
-    "ImpactListBridge": ImpactListBridge,
+    "ImpactCompare": ImpactCompare, # noqa: F405
+    "ImpactConditionalBranch": ImpactConditionalBranch, # noqa: F405
+    "ImpactConditionalBranchSelMode": ImpactConditionalBranchSelMode, # noqa: F405
+    "ImpactIfNone": ImpactIfNone, # noqa: F405
+    "ImpactConvertDataType": ImpactConvertDataType, # noqa: F405
+    "ImpactLogicalOperators": ImpactLogicalOperators, # noqa: F405
+    "ImpactInt": ImpactInt, # noqa: F405
+    "ImpactFloat": ImpactFloat, # noqa: F405
+    "ImpactBoolean": ImpactBoolean, # noqa: F405
+    "ImpactValueSender": ImpactValueSender, # noqa: F405
+    "ImpactValueReceiver": ImpactValueReceiver, # noqa: F405
+    "ImpactImageInfo": ImpactImageInfo, # noqa: F405
+    "ImpactLatentInfo": ImpactLatentInfo, # noqa: F405
+    "ImpactMinMax": ImpactMinMax, # noqa: F405
+    "ImpactNeg": ImpactNeg, # noqa: F405
+    "ImpactConditionalStopIteration": ImpactConditionalStopIteration, # noqa: F405
+    "ImpactStringSelector": StringSelector, # noqa: F405
+    "StringListToString": StringListToString, # noqa: F405
+    "WildcardPromptFromString": WildcardPromptFromString, # noqa: F405
+    "ImpactExecutionOrderController": ImpactExecutionOrderController, # noqa: F405
+    "ImpactListBridge": ImpactListBridge, # noqa: F405
 
-    "RemoveNoiseMask": RemoveNoiseMask,
+    "RemoveNoiseMask": RemoveNoiseMask, # noqa: F405
 
-    "ImpactLogger": ImpactLogger,
-    "ImpactDummyInput": ImpactDummyInput,
+    "ImpactLogger": ImpactLogger, # noqa: F405
+    "ImpactDummyInput": ImpactDummyInput, # noqa: F405
 
-    "ImpactQueueTrigger": ImpactQueueTrigger,
-    "ImpactQueueTriggerCountdown": ImpactQueueTriggerCountdown,
-    "ImpactSetWidgetValue": ImpactSetWidgetValue,
-    "ImpactNodeSetMuteState": ImpactNodeSetMuteState,
-    "ImpactControlBridge": ImpactControlBridge,
-    "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS,
-    "ImpactSleep": ImpactSleep,
-    "ImpactRemoteBoolean": ImpactRemoteBoolean,
-    "ImpactRemoteInt": ImpactRemoteInt,
+    "ImpactQueueTrigger": ImpactQueueTrigger, # noqa: F405
+    "ImpactQueueTriggerCountdown": ImpactQueueTriggerCountdown, # noqa: F405
+    "ImpactSetWidgetValue": ImpactSetWidgetValue, # noqa: F405
+    "ImpactNodeSetMuteState": ImpactNodeSetMuteState, # noqa: F405
+    "ImpactControlBridge": ImpactControlBridge, # noqa: F405
+    "ImpactIsNotEmptySEGS": ImpactNotEmptySEGS, # noqa: F405
+    "ImpactSleep": ImpactSleep, # noqa: F405
+    "ImpactRemoteBoolean": ImpactRemoteBoolean, # noqa: F405
+    "ImpactRemoteInt": ImpactRemoteInt, # noqa: F405
 
-    "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider,
-    "ImpactSEGSClassify": SEGS_Classify,
+    "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider, # noqa: F405
+    "ImpactSEGSClassify": SEGS_Classify, # noqa: F405
 
-    "ImpactSchedulerAdapter": ImpactSchedulerAdapter,
-    "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider
+    "ImpactSchedulerAdapter": ImpactSchedulerAdapter, # noqa: F405
+    "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider # noqa: F405
 }
 
 
@@ -450,30 +444,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder"
 }
 
-if not impact.config.get_config()['mmdet_skip']:
-    from impact.mmdet_nodes import *
-    import impact.legacy_nodes
-    NODE_CLASS_MAPPINGS.update({
-        "MMDetDetectorProvider": MMDetDetectorProvider,
-        "MMDetLoader": impact.legacy_nodes.MMDetLoader,
-        "MaskPainter": impact.legacy_nodes.MaskPainter,
-        "SegsMaskCombine": impact.legacy_nodes.SegsMaskCombine,
-        "BboxDetectorForEach": impact.legacy_nodes.BboxDetectorForEach,
-        "SegmDetectorForEach": impact.legacy_nodes.SegmDetectorForEach,
-        "BboxDetectorCombined": impact.legacy_nodes.BboxDetectorCombined,
-        "SegmDetectorCombined": impact.legacy_nodes.SegmDetectorCombined,
-    })
-
-    NODE_DISPLAY_NAME_MAPPINGS.update({
-        "MaskPainter": "MaskPainter (Deprecated)",
-        "MMDetLoader": "MMDetLoader (Legacy)",
-        "SegsMaskCombine": "SegsMaskCombine (Legacy)",
-        "BboxDetectorForEach": "BboxDetectorForEach (Legacy)",
-        "SegmDetectorForEach": "SegmDetectorForEach (Legacy)",
-        "BboxDetectorCombined": "BboxDetectorCombined (Legacy)",
-        "SegmDetectorCombined": "SegmDetectorCombined (Legacy)",
-    })
-
 
 # NOTE:  Inject directly into EXTENSION_WEB_DIRS instead of WEB_DIRECTORY
 #        Provide the js path fixed as ComfyUI-Impact-Pack instead of the path name, making it available for external use
@@ -483,14 +453,3 @@ nodes.EXTENSION_WEB_DIRS["ComfyUI-Impact-Pack"] = os.path.join(os.path.dirname(o
 
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
-
-
-try:
-    import cm_global
-    cm_global.register_extension('ComfyUI-Impact-Pack',
-                                 {'version': config.version_code,
-                                  'name': 'Impact Pack',
-                                  'nodes': set(NODE_CLASS_MAPPINGS.keys()),
-                                  'description': 'This extension provides inpainting functionality based on the detector and detailer, along with convenient workflow features like wildcards and logics.', })
-except:
-    pass
