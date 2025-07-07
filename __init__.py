@@ -76,6 +76,7 @@ NODE_CLASS_MAPPINGS = {
     "SubtractMaskForEach": SubtractMaskForEach,
 
     "DetailerForEach": DetailerForEach,
+    "DetailerForEachAutoRetry": DetailerForEachAutoRetry,
     "DetailerForEachDebug": DetailerForEachTest,
     "DetailerForEachPipe": DetailerForEachPipe,
     "DetailerForEachDebugPipe": DetailerForEachTestPipe,
@@ -330,6 +331,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MaskRectAreaAdvanced": "Mask Rect Area (Advanced)",
     "ImpactFlattenMask": "Flatten Mask Batch",
     "DetailerForEach": "Detailer (SEGS)",
+    "DetailerForEachAutoRetry": "Detailer (SEGS) with auto retry",
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",

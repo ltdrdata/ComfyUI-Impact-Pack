@@ -102,6 +102,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 
 ### [Detailer nodes](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/detailers.md)
   * `Detailer (SEGS)` - Refines the image based on SEGS.
+  * `Detailer (SEGS) with auto retry` - Refines the image based on SEGS and will automatically retry if the patch is all black.
   * `DetailerDebug (SEGS)` - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
     * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
   * `MASK to SEGS` - Generates SEGS based on the mask.
