@@ -377,7 +377,7 @@ class DetailerForEach:
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
 
-            if not (enhanced_image is None):
+            if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image = image.cpu()
@@ -388,7 +388,7 @@ class DetailerForEach:
                 if detailer_hook is not None:
                     image = detailer_hook.post_paste(image)
 
-            if not (enhanced_image is None):
+            if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image

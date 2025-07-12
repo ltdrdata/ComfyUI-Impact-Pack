@@ -572,7 +572,7 @@ def split_string_with_sep(input_string):
             else:
                 try:
                     seed = int(matches[i][5:-1])
-                except:
+                except Exception:
                     seed = None
                 result_list.append(seed)
 

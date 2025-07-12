@@ -373,7 +373,7 @@ def onprompt_for_switch(json_data):
                         if 'BOOLEAN' == input_node['inputs']['typ']:
                             try:
                                 onprompt_cond_branch_info[k] = input_node['inputs']['value'].lower() == "true"
-                            except:
+                            except Exception:
                                 pass
                 else:
                     onprompt_cond_branch_info[k] = cond_input
@@ -507,7 +507,7 @@ def onprompt_populate_wildcards(json_data):
                         else:
                             logging.info(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
                             continue
-                    except:
+                    except Exception:
                         continue
                 else:
                     input_seed = int(inputs['seed'])

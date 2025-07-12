@@ -14,7 +14,7 @@ import comfy.model_management as mm
 try:
     from comfy_extras.nodes_custom_sampler import Noise_EmptyNoise, Noise_RandomNoise
     import node_helpers
-except:
+except Exception:
     logging.warning("\n#############################################\n[Impact Pack] ComfyUI is an outdated version.\n#############################################\n")
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 

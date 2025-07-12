@@ -654,7 +654,7 @@ class ImpactControlBridge:
             #       so extra_pnginfo is useless in here
             try:
                 workflow = core.current_prompt['extra_data']['extra_pnginfo']['workflow']
-            except:
+            except Exception:
                 logging.info("[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
                 return 0
 
@@ -713,7 +713,7 @@ class ImpactControlBridge:
                     PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
                     nodes.interrupt_processing()
 
-            elif behavior == "Mute" or behavior == True:
+            elif behavior == "Mute" or behavior == True:  # noqa: E712
                 # mute
                 should_be_mute_nodes = active_nodes + bypass_nodes
                 if len(should_be_mute_nodes) > 0:

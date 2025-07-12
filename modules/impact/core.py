@@ -64,7 +64,7 @@ def is_execution_model_version_supported():
     try:
         import comfy_execution  # noqa: F401
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -2346,7 +2346,7 @@ class SafeToGPU:
                 if model_management.get_free_memory(device) > self.size * 1.3:
                     try:
                         obj.to(device)
-                    except:
+                    except Exception:
                         logging.warning(f"[Impact Pack] The model is not moved to the '{device}' due to insufficient memory. [1]")
                 else:
                     logging.warning(f"[Impact Pack] The model is not moved to the '{device}' due to insufficient memory. [2]")
@@ -2395,7 +2395,7 @@ try:
                 previewer = Latent2RGBPreviewer(latent_format.latent_rgb_factors)
         return previewer
 
-except:
+except Exception:
     logging.error("#########################################################################")
     logging.error("[ERROR] ComfyUI-Impact-Pack: Please update ComfyUI to the latest version.")
     logging.error("#########################################################################")

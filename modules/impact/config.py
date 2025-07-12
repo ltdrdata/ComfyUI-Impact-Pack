@@ -3,7 +3,7 @@ import os
 import logging
 
 
-version_code = [8, 19]
+version_code = [8, 19, 1]
 version = f"V{version_code[0]}.{version_code[1]}" + (f'.{version_code[2]}' if len(version_code) > 2 else '')
 
 my_path = os.path.dirname(__file__)

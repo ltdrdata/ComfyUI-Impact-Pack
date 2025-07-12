@@ -1130,7 +1130,7 @@ class DilateMaskInSEGS:
     def doit(self, segs, dilation):
         new_segs = []
         for seg in segs[1]:
-            mask = core.dilate_mask(seg.cropped_mask, dilation)
+            mask = utils.dilate_mask(seg.cropped_mask, dilation)
             seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(seg)
 
@@ -1178,7 +1178,7 @@ class Dilate_SEG_ELT:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, seg, dilation):
-        mask = core.dilate_mask(seg.cropped_mask, dilation)
+        mask = utils.dilate_mask(seg.cropped_mask, dilation)
         seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
         return (seg,)
 
@@ -1963,7 +1963,7 @@ class SEGSUpscaler:
                                                         positive, negative, denoise,
                                                         noise_mask=cropped_mask, control_net_wrapper=seg.control_net_wrapper,
                                                         inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
-            if not (enhanced_image is None):
+            if enhanced_image is not None:
                 new_image = new_image.cpu()
                 enhanced_image = enhanced_image.cpu()
                 left = seg.crop_region[0]
