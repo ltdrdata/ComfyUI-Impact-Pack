@@ -672,7 +672,7 @@ class LatentPixelScale:
         return {"required": {
                      "samples": ("LATENT", ),
                      "scale_method": (s.upscale_methods,),
-                     "scale_factor": ("FLOAT", {"default": 1.5, "min": 0.1, "max": 10000, "step": 0.1}),
+                     "scale_factor": ("FLOAT", {"default": 1.5, "min": 0.1, "max": 10000, "step": 0.05}),
                      "vae": ("VAE", ),
                      "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     },
