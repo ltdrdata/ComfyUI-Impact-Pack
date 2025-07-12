@@ -118,6 +118,9 @@ class DetailerHookCombine(PixelKSampleHookCombine):
 
     def get_skip_sampling(self):
         return self.hook1.get_skip_sampling() and self.hook2.get_skip_sampling()
+    
+    def should_retry_patch(self, patch):
+        return self.hook1.should_retry_patch(patch) or self.hook2.should_retry_patch(patch)
 
 
 class SimpleCfgScheduleHook(PixelKSampleHook):
@@ -187,6 +190,9 @@ class DetailerHook(PixelKSampleHook):
         return None
 
     def get_skip_sampling(self):
+        return False
+    
+    def should_retry_patch(self, patch):
         return False
 
 
@@ -562,3 +568,27 @@ class PreviewDetailerHook(DetailerHook):
     def post_paste(self, image):
         asyncio.run(self.send(image))
         return image
+
+
+class BlackPatchRetryHook(DetailerHook):
+    def __init__(self, mean_thresh, var_thresh):
+        super().__init__()
+        assert 0 <= mean_thresh <= 255 and 0 <= var_thresh <= 255
+        self.mean_thresh = mean_thresh
+        self.var_thresh = var_thresh
+
+    def should_retry_patch(self, cropped_region):
+        # remove the first dimension (batch_size)
+        if cropped_region.ndim == 4:
+            assert cropped_region.shape[0] == 1
+            cropped_region = cropped_region.squeeze(0)
+        
+        # turn image to grayscape
+        if cropped_region.ndim == 3:
+            assert cropped_region.shape[-1] in [1, 3]
+            cropped_region = cropped_region.mean(axis=-1)  # simple average grayscale
+
+        mean = cropped_region.mean()
+        var = cropped_region.var()
+
+        return (mean <= self.mean_thresh/255) and (var <= self.var_thresh/255)

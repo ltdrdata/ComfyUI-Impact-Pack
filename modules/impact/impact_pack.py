@@ -478,23 +478,6 @@ class DetailerForEachAutoRetry:
         return core
 
     @staticmethod
-    def is_region_blank(cropped_region, mean_thresh=10/255, var_thresh=5/255):
-        # remove the first dimension (batch_size)
-        if cropped_region.ndim == 4:
-            assert cropped_region.shape[0] == 1
-            cropped_region = cropped_region.squeeze(0)
-        
-        # turn image to grayscape
-        if cropped_region.ndim == 3:
-            assert cropped_region.shape[-1] in [1, 3]
-            cropped_region = cropped_region.mean(axis=-1)  # simple average grayscale
-
-        mean = cropped_region.mean()
-        var = cropped_region.var()
-
-        return (mean <= mean_thresh) and (var <= var_thresh)
-
-    @staticmethod
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
@@ -606,13 +589,13 @@ class DetailerForEachAutoRetry:
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                     vae_tiled_decode=tiled_decode)
                 
-                    if not DetailerForEachAutoRetry.is_region_blank(enhanced_image):
+                    if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
 
                     if retry + 1 == max_retries:
-                        raise Exception("Detect blank patch, max retries reached")
+                        raise Exception("Max retries reached")
                     else:
-                        print("Detect blank patch, retrying...")
+                        print("Detect bad patch, retrying...")
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
