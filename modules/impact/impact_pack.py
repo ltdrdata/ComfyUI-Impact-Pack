@@ -554,6 +554,7 @@ class FaceDetailer:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "mask": ("MASK", {"tooltip": "Optional mask to limit face detection to specific areas. Only areas not masked (white areas) will be processed."}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -573,12 +574,16 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, mask=None):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         bbox_detector.setAux(None)
+
+        # Apply mask filter if provided
+        if mask is not None:
+            segs = core.segs_bitwise_and_mask(segs, mask)
 
         # bbox + sam combination
         if sam_model_opt is not None:
@@ -633,7 +638,7 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, mask=None):
 
         result_img = None
         result_mask = None
@@ -645,17 +650,17 @@ class FaceDetailer:
             logging.warning("[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
 
         for i, single_image in enumerate(image):
-            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask_result, cnet_pil_list = FaceDetailer.enhance_face(
                 single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
                 positive, negative, denoise, feather, noise_mask, force_inpaint,
                 bbox_threshold, bbox_dilation, bbox_crop_factor,
                 sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                tiled_encode=tiled_encode, tiled_decode=tiled_decode, mask=mask)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
-            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_mask = torch.cat((result_mask, mask_result), dim=0) if result_mask is not None else mask_result
             result_cropped_enhanced.extend(cropped_enhanced)
             result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
             result_cnet_images.extend(cnet_pil_list)
@@ -1443,6 +1448,7 @@ class FaceDetailerPipe:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "mask": ("MASK", {"tooltip": "Optional mask to limit face detection to specific areas. Only areas not masked (white areas) will be processed."}),
                    }
                 }
 
@@ -1460,7 +1466,7 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, mask=None):
 
         result_img = None
         result_mask = None
@@ -1475,7 +1481,7 @@ class FaceDetailerPipe:
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         for i, single_image in enumerate(image):
-            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask_result, cnet_pil_list = FaceDetailer.enhance_face(
                 single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
                 positive, negative, denoise, feather, noise_mask, force_inpaint,
                 bbox_threshold, bbox_dilation, bbox_crop_factor,
@@ -1484,10 +1490,10 @@ class FaceDetailerPipe:
                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                tiled_encode=tiled_encode, tiled_decode=tiled_decode, mask=mask)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
-            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
+            result_mask = torch.cat((result_mask, mask_result), dim=0) if result_mask is not None else mask_result
             result_cropped_enhanced.extend(cropped_enhanced)
             result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
             result_cnet_images.extend(cnet_pil_list)
