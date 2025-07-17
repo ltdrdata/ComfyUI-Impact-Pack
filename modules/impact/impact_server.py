@@ -12,6 +12,7 @@ import torchvision
 import impact.core as core
 import impact.impact_pack as impact_pack
 from impact.utils import to_tensor
+import impact.utils as utils
 from segment_anything import SamPredictor, sam_model_registry
 import numpy as np
 import nodes
@@ -145,7 +146,7 @@ async def sam_detect(request):
                     plabs.append(0)
 
                 detected_masks = core.sam_predict(sam_predictor, points, plabs, None, threshold)
-                mask = core.combine_masks2(detected_masks)
+                mask = utils.combine_masks2(detected_masks)
 
                 if mask is None:
                     return web.Response(status=400)
