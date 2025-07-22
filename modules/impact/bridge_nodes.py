@@ -132,7 +132,8 @@ class PreviewBridge:
 
         # If images changed, clear the mask cache to ensure fresh start behavior
         # This restores the original behavior where new images start with empty masks
-        if images_changed and unique_id in core.preview_bridge_last_mask_cache:
+        # unless restore_mask is set to "always" or "if_same_size"
+        if images_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
             del core.preview_bridge_last_mask_cache[unique_id]
 
         # Handle clipspace files that aren't registered in the preview bridge system
@@ -152,10 +153,16 @@ class PreviewBridge:
         else:
             # For new images (images_changed=True), we want to start fresh regardless of restore_mask
             # For same image with refresh needed, respect the restore_mask setting
-            if restore_mask != "never" and not images_changed:
+            # Exception: when restore_mask is "always", restore even with new images
+            # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
+            if restore_mask != "never" and (not images_changed or restore_mask in ["always", "if_same_size"]):
                 mask = core.preview_bridge_last_mask_cache.get(unique_id)
-                if mask is None or (restore_mask != "always" and mask.shape[1:] != images.shape[1:3]):
+                if mask is None:
                     mask = None
+                elif restore_mask == "if_same_size" and mask.shape[1:] != images.shape[1:3]:
+                    # For if_same_size, clear mask if dimensions don't match
+                    mask = None
+                # For "always", keep the mask regardless of size
             else:
                 mask = None
 
@@ -368,7 +375,8 @@ class PreviewBridgeLatent:
             latent_changed = True
 
         # If latent changed, clear the mask cache to ensure fresh start behavior
-        if latent_changed and unique_id in core.preview_bridge_last_mask_cache:
+        # unless restore_mask is set to "always" or "if_same_size"
+        if latent_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
             del core.preview_bridge_last_mask_cache[unique_id]
 
         # Handle clipspace files that aren't registered in the preview bridge system
@@ -425,10 +433,16 @@ class PreviewBridgeLatent:
             else:
                 # For new latents (latent_changed=True), start fresh regardless of restore_mask
                 # For same latent with refresh needed, respect the restore_mask setting
-                if restore_mask != "never" and not latent_changed:
+                # Exception: when restore_mask is "always", restore even with new latents
+                # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
+                if restore_mask != "never" and (not latent_changed or restore_mask in ["always", "if_same_size"]):
                     mask = core.preview_bridge_last_mask_cache.get(unique_id)
-                    if mask is None or (restore_mask != "always" and mask.shape[1:] != decoded_image.shape[1:3]):
+                    if mask is None:
                         mask = None
+                    elif restore_mask == "if_same_size" and mask.shape[1:] != decoded_image.shape[1:3]:
+                        # For if_same_size, clear mask if dimensions don't match
+                        mask = None
+                    # For "always", keep the mask regardless of size
                 else:
                     mask = None
 
