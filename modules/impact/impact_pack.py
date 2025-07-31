@@ -521,10 +521,10 @@ class DetailerForEachAutoRetry:
             model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
-            cropped_image = to_tensor(cropped_image)
-            mask = to_tensor(seg.cropped_mask)
-            mask = tensor_gaussian_blur_mask(mask, feather)
+            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            cropped_image = utils.to_tensor(cropped_image)
+            mask = utils.to_tensor(seg.cropped_mask)
+            mask = utils.tensor_gaussian_blur_mask(mask, feather)
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -608,7 +608,7 @@ class DetailerForEachAutoRetry:
                 # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
-                tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
+                utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -616,12 +616,12 @@ class DetailerForEachAutoRetry:
 
             if not (enhanced_image is None):
                 # Convert enhanced_pil_alpha to RGBA mode
-                enhanced_image_alpha = tensor_convert_rgba(enhanced_image)
+                enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask = tensor_resize(mask, *tensor_get_size(enhanced_image))
-                tensor_putalpha(enhanced_image_alpha, mask)
+                mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
+                utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
             else:
                 new_seg_image = None
@@ -631,7 +631,7 @@ class DetailerForEachAutoRetry:
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-        image_tensor = tensor_convert_rgb(image)
+        image_tensor = utils.tensor_convert_rgb(image)
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
