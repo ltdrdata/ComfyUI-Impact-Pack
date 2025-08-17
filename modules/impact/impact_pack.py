@@ -2709,4 +2709,3 @@ class ImpactSchedulerAdapter:
             return (extra_scheduler,)
 
         return (scheduler,)
-
