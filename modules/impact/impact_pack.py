@@ -1536,9 +1536,10 @@ class IterativeLatentUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None):
-        w = samples['samples'].shape[3]*8  # image width
-        h = samples['samples'].shape[2]*8  # image height
+    # dim_reduction_factor=8 for SD1/SDXL, used to calculate actual dims from latents based on VAE
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None, vae_compression=8):
+        h, w = samples['samples'].shape[-2:]
+        w, h = w * vae_compression, h * vae_compression
 
         if temp_prefix == "":
             temp_prefix = None
@@ -2709,3 +2710,4 @@ class ImpactSchedulerAdapter:
             return (extra_scheduler,)
 
         return (scheduler,)
+
