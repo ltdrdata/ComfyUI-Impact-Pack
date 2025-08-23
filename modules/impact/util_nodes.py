@@ -340,22 +340,20 @@ class MaskListToMaskBatch:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask):
-        if len(mask) == 1:
-            mask = make_3d_mask(mask[0])
-            return (mask,)
-        elif len(mask) > 1:
-            mask1 = make_3d_mask(mask[0])
-
-            for mask2 in mask[1:]:
-                mask2 = make_3d_mask(mask2)
-                if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
-                mask1 = torch.cat((mask1, mask2), dim=0)
-
-            return (mask1,)
-        else:
+        if len(mask) == 0:
             empty_mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
             return (empty_mask,)
+
+        masks_3d = [make_3d_mask(m) for m in mask]
+        target_shape = masks_3d[0].shape[1:]
+        upscaled_masks = []
+        for m in masks_3d:
+            if m.shape[1:] != target_shape:
+                m = comfy.utils.common_upscale(m.movedim(-1, 1), target_shape[1], target_shape[0], "lanczos", "center").movedim(1, -1)
+            upscaled_masks.append(m)
+        # Concatenate all at once
+        result = torch.cat(upscaled_masks, dim=0)
+        return (result,)
 
 
 class ImageListToImageBatch:
