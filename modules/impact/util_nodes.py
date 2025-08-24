@@ -450,7 +450,7 @@ class NthItemOfAnyList:
     def INPUT_TYPES(s):
         return {"required":  {
                     "any_list": (any_typ,),
-                    "index": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1, "tooltip": "The index of the item you want to select from the list."}),
+                    "index": ("INT", {"default": 0, "min": -sys.maxsize, "max": sys.maxsize, "step": 1, "tooltip": "The index of the item you want to select from the list. Use negative values to select from the end (e.g., -1 for last item, -2 for second to last)."}),
                     }
         }
 
@@ -464,7 +464,8 @@ class NthItemOfAnyList:
 
     def doit(self, any_list, index):
         i = index[0]
-        if i >= len(any_list):
+        list_len = len(any_list)
+        if i >= list_len or i < -list_len:
             return (any_list[-1],)
         else:
             return (any_list[i],)
