@@ -588,7 +588,7 @@ class DetailerForEachAutoRetry:
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                     vae_tiled_decode=tiled_decode)
-                
+
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
 
@@ -648,7 +648,7 @@ class DetailerForEachAutoRetry:
             DetailerForEachAutoRetry.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
-                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, 
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                       scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode, max_retries=max_retries)
 
         return (enhanced_img, )
@@ -1525,7 +1525,8 @@ class IterativeLatentUpscale:
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
-                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                     "step_mode": (["simple", "geometric"], {"default": "simple"}),
+                     "vae_compression": ("INT", {"default": 8, "min": 0, "max": 256, "step": 8})
                     },
                 "hidden": {"unique_id": "UNIQUE_ID"},
                 }
@@ -1537,7 +1538,7 @@ class IterativeLatentUpscale:
     CATEGORY = "ImpactPack/Upscale"
 
     # dim_reduction_factor=8 for SD1/SDXL, used to calculate actual dims from latents based on VAE
-    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None, vae_compression=8):
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", vae_compression=8, unique_id=None):
         h, w = samples['samples'].shape[-2:]
         w, h = w * vae_compression, h * vae_compression
 
@@ -1591,7 +1592,8 @@ class IterativeImageUpscale:
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
                      "vae": ("VAE",),
-                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                     "step_mode": (["simple", "geometric"], {"default": "simple"}),
+                     "vae_compression": ("INT", {"default": 8, "min": 0, "max": 256, "step": 8})
                     },
                 "hidden": {"unique_id": "UNIQUE_ID"}
                 }
@@ -1602,7 +1604,7 @@ class IterativeImageUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", unique_id=None):
+    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", vae_compression=8, unique_id=None):
         if temp_prefix == "":
             temp_prefix = None
 
@@ -1616,7 +1618,7 @@ class IterativeImageUpscale:
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, unique_id)
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, vae_compression, unique_id)
 
         core.update_node_status(unique_id, "VAEDecode (final)", 1.0)
         if upscaler.is_tiled:
@@ -2710,4 +2712,3 @@ class ImpactSchedulerAdapter:
             return (extra_scheduler,)
 
         return (scheduler,)
-
