@@ -117,7 +117,7 @@ NODE_CLASS_MAPPINGS = {
     "UnsamplerHookProvider": UnsamplerHookProvider, # noqa: F405
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider, # noqa: F405
     "PreviewDetailerHookProvider": PreviewDetailerHookProvider, # noqa: F405
-    "BlackPatchRetryHookProvider": BlackPatchRetryHookProvider,
+    "BlackPatchRetryHookProvider": BlackPatchRetryHookProvider, # noqa: F405
     "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider, # noqa: F405
     "LamaRemoverDetailerHookProvider": LamaRemoverDetailerHookProvider, # noqa: F405
 

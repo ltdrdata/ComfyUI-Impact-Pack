@@ -528,7 +528,7 @@ class DetailerForEachAutoRetry:
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
-                print(f"Detailer: segment skip [empty mask]")
+                print("Detailer: segment skip [empty mask]")
                 continue
 
             if noise_mask:
@@ -575,6 +575,11 @@ class DetailerForEachAutoRetry:
                 break
 
             orig_cropped_image = cropped_image.clone()
+
+            # initialize
+            enhanced_image = cropped_image
+            cnet_pils = None
+
             if not (isinstance(model, str) and model == "DUMMY"):
                 for retry in range(max_retries):
                     enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
@@ -596,14 +601,11 @@ class DetailerForEachAutoRetry:
                         raise Exception("Max retries reached")
                     else:
                         print("Detect bad patch, retrying...")
-            else:
-                enhanced_image = cropped_image
-                cnet_pils = None
 
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
 
-            if not (enhanced_image is None):
+            if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image = image.cpu()
@@ -614,7 +616,7 @@ class DetailerForEachAutoRetry:
                 if detailer_hook is not None:
                     image = detailer_hook.post_paste(image)
 
-            if not (enhanced_image is None):
+            if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
