@@ -165,7 +165,7 @@ class SEGSDetailer:
 
         return segs, cnet_pil_list
 
-
+"""
 class SEGSPaste:
     @classmethod
     def INPUT_TYPES(s):
@@ -237,6 +237,81 @@ class SEGSPaste:
             result = result.cpu()
 
         return (result, )
+"""
+
+class SEGSPaste:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "image": ("IMAGE", ),
+                     "segs": ("SEGS", ),
+                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
+                     "alpha": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+                     },
+                "optional": {"ref_image_opt": ("IMAGE", ), }
+                }
+
+    RETURN_TYPES = ("IMAGE", )
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Detailer"
+
+    DESCRIPTION = "Optimized SEGS paste node: preallocates result and avoids repeated concat."
+
+    @staticmethod
+    def doit(image, segs, feather, alpha=255, ref_image_opt=None):
+        segs = core.segs_scale_match(segs, image.shape)
+
+        batch_size, _, _, _ = image.shape
+        result = torch.empty_like(image)
+
+        with torch.no_grad():
+            for i in range(batch_size):
+                # avoid extra clone/unsqueeze
+                image_i = image[i].unsqueeze(0).clone()
+
+                for seg in segs[1]:
+                    ref_image = None
+
+                    # ref_image handling
+                    if ref_image_opt is None and seg.cropped_image is not None:
+                        cropped_image = seg.cropped_image
+                        if isinstance(cropped_image, np.ndarray):
+                            cropped_image = torch.from_numpy(cropped_image)
+                        ref_image = cropped_image[i].unsqueeze(0)
+                    elif ref_image_opt is not None:
+                        ref_tensor = ref_image_opt[i].unsqueeze(0)
+                        ref_image = utils.crop_image(ref_tensor, seg.crop_region)
+
+                    if ref_image is None:
+                        continue
+
+                    # mask handling
+                    cmask = seg.cropped_mask
+                    if cmask.ndim == 3 and len(cmask) == batch_size:
+                        mask = cmask[i]
+                    elif cmask.ndim == 3 and len(cmask) > 1:
+                        # statt OR-Schleife → vektorisiert
+                        mask = torch.any(cmask > 0.1, dim=0).float()
+                    else:  # ndim == 2
+                        mask = cmask
+
+                    # blur + alpha
+                    mask = utils.tensor_gaussian_blur_mask(mask, feather) * (alpha / 255.0)
+
+                    # ensure same device
+                    mask = mask.to(image_i.device)
+                    ref_image = ref_image.to(image_i.device)
+
+                    x, y, *_ = seg.crop_region
+                    utils.tensor_paste(image_i, ref_image, (x, y), mask)
+
+                result[i] = image_i[0]
+
+        if not args.highvram and not args.gpu_only:
+            result = result.cpu()
+
+        return (result,)
 
 
 class SEGSPreviewCNet:
