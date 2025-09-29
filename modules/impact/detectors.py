@@ -332,10 +332,18 @@ class SAM2VideoDetectorSEGS:
         # ---- Detect bboxes ----
         segs = bbox_detector.detect(image_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
 
-        # ---- If no detections, return empty SEGS with image size ----
+          # ---- If no detections, try reversed frames before giving up ----
         if len(segs[1]) == 0:
-            h, w = image_frames.shape[1:3]
-            return (((h, w), []), )
+            reversed_frames = torch.flip(image_frames, dims=[0])
+            segs_rev = bbox_detector.detect(reversed_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
+
+            if len(segs_rev[1]) == 0:
+                # No Bboxes when reversed -> Give up
+                h, w = image_frames.shape[1:3]
+                return (((h, w), []), )
+
+            # segs_rev wieder umdrehen, damit sie mit Originalframes matchen
+            segs = (segs_rev[0], list(reversed(segs_rev[1])))
 
         # ---- Predict masks ----
         segs_masks = sam2_model.predict_video_segs(image_frames, segs)
