@@ -341,12 +341,16 @@ class SAM2VideoDetectorSEGS:
                 # No Bboxes when reversed -> Give up
                 h, w = image_frames.shape[1:3]
                 return (((h, w), []), )
+                
+            # ---- Predict masks in reversed mode ----
+            segs_masks = sam2_model.predict_video_segs(reversed_frames, segs_rev)
 
-            # segs_rev wieder umdrehen, damit sie mit Originalframes matchen
-            segs = (segs_rev[0], list(reversed(segs_rev[1])))
-
-        # ---- Predict masks ----
-        segs_masks = sam2_model.predict_video_segs(image_frames, segs)
+            # segs_masks wieder umdrehen, damit sie mit Originalframes matchen
+            for k in segs_masks.keys():
+                segs_masks[k] = torch.flip(segs_masks[k], dims=[0])
+        else:
+            # ---- Predict masks if BBOXES were found in forward pass----
+            segs_masks = sam2_model.predict_video_segs(image_frames, segs)
 
         def get_whole_merged_mask(all_masks):
             merged_mask = (all_masks[0] * 255).to(torch.uint8)
