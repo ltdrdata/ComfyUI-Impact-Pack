@@ -301,7 +301,7 @@ class DetailerForEach:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
         for i, seg in enumerate(ordered_segs):
             cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
@@ -518,7 +518,7 @@ class DetailerForEachAutoRetry:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
         for i, seg in enumerate(ordered_segs):
             cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
@@ -593,7 +593,7 @@ class DetailerForEachAutoRetry:
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                     vae_tiled_decode=tiled_decode)
-                
+
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
 
@@ -650,7 +650,7 @@ class DetailerForEachAutoRetry:
             DetailerForEachAutoRetry.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
-                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, 
+                                      cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                       scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode, max_retries=max_retries)
 
         return (enhanced_img, )

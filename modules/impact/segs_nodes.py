@@ -86,7 +86,7 @@ class SEGSDetailer:
         cnet_pil_list = []
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
         for i in range(batch_size):
             seed += 1
