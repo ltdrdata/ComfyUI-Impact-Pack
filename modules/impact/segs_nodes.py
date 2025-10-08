@@ -184,10 +184,11 @@ class SEGSPaste:
 
     CATEGORY = "ImpactPack/Detailer"
 
-    DESCRIPTION = "Optimized SEGS paste node: preallocates result and avoids repeated concat."
+    DESCRIPTION = "This node provides a function to paste the enhanced SEGS, improved through the SEGS detailer, back onto the original image."
 
     @staticmethod
     def doit(image, segs, feather, alpha=255, ref_image_opt=None):
+        # Optimized SEGS paste node: preallocates result and avoids repeated concat.
         segs = core.segs_scale_match(segs, image.shape)
 
         batch_size, _, _, _ = image.shape
