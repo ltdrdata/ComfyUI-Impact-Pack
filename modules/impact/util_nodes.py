@@ -349,7 +349,10 @@ class MaskListToMaskBatch:
         upscaled_masks = []
         for m in masks_3d:
             if m.shape[1:] != target_shape:
-                m = comfy.utils.common_upscale(m.movedim(-1, 1), target_shape[1], target_shape[0], "lanczos", "center").movedim(1, -1)
+                m = m.unsqueeze(1).repeat(1, 3, 1, 1)
+                m = comfy.utils.common_upscale(m, target_shape[1], target_shape[0], "lanczos", "center")
+                m = m[:, 0, :, :]
+            
             upscaled_masks.append(m)
         # Concatenate all at once
         result = torch.cat(upscaled_masks, dim=0)
