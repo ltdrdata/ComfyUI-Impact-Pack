@@ -476,6 +476,25 @@ def regional_sampler_seed_update(json_data):
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "seed_2nd", "type": "INT", "value": new_seed})
 
 
+def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
+    input_val = None
+
+    try:
+        for n in input_keys:
+            input_val = input_node['inputs'].get(n, None)
+            if isinstance(input_val, input_type):
+                break
+            elif isinstance(input_val, list) and len(input_val):
+                input_val = find_input_value(prompt[input_val[0]], prompt=prompt, input_type=input_type, input_keys=input_keys)
+                if input_val is not None:
+                    break
+        
+    except Exception as e :
+        logging.warning(f"[Impact Pack] Error encountered on find {input_type} value - {e}")
+    
+    return input_val
+
+
 def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
 
@@ -501,13 +520,15 @@ def onprompt_populate_wildcards(json_data):
                             input_seed = int(input_node['inputs']['value'])
                             if not isinstance(input_seed, int):
                                 continue
-                        if input_node['class_type'] == 'Seed (rgthree)':
+                        elif input_node['class_type'] == 'Seed (rgthree)':
                             input_seed = int(input_node['inputs']['seed'])
                             if not isinstance(input_seed, int):
                                 continue
                         else:
-                            logging.info(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
-                            continue
+                            input_seed = find_input_value(input_node, prompt=prompt, input_type=int, input_keys=('int', 'seed', 'value'))
+                            if input_seed is None:
+                                logging.info(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
+                                continue
                     except Exception:
                         continue
                 else:

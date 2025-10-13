@@ -50,7 +50,7 @@ class KSamplerProvider:
                                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000, "tooltip": "total sampling steps"}),
                                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "tooltip": "classifier free guidance value"}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"tooltip": "sampler"}),
-                                "scheduler": (core.SCHEDULERS, {"tooltip": "noise schedule"}),
+                                "scheduler": (core.get_schedulers(), {"tooltip": "noise schedule"}),
                                 "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The amount of noise to remove. This amount is the noise added at the start, and the higher it is, the more the input latent will be modified before being returned."}),
                                 "basic_pipe": ("BASIC_PIPE", {"tooltip": "basic_pipe input for sampling"})
                              },
@@ -79,7 +79,7 @@ class KSamplerAdvancedProvider:
         return {"required": {
                                 "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "toolip": "classifier free guidance value"}),
                                 "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"toolip": "sampler"}),
-                                "scheduler": (core.SCHEDULERS, {"toolip": "noise schedule"}),
+                                "scheduler": (core.get_schedulers(), {"toolip": "noise schedule"}),
                                 "sigma_factor": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01, "toolip": "Multiplier of noise schedule"}),
                                 "basic_pipe": ("BASIC_PIPE", {"toolip": "basic_pipe input for sampling"})
                              },
@@ -580,7 +580,7 @@ class KSamplerBasicPipe:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000, "tooltip": "total sampling steps"}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "tooltip": "classifier free guidance value"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"tooltip": "sampler"}),
-                     "scheduler": (core.SCHEDULERS, {"tooltip": "noise schedule"}),
+                     "scheduler": (core.get_schedulers(), {"tooltip": "noise schedule"}),
                      "latent_image": ("LATENT", {"tooltip": "input latent image"}),
                      "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The amount of noise to remove. This amount is the noise added at the start, and the higher it is, the more the input latent will be modified before being returned."}),
                      },
@@ -614,7 +614,7 @@ class KSamplerAdvancedBasicPipe:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000, "tooltip": "total sampling steps"}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0, "tooltip": "classifier free guidance value"}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"tooltip": "sampler"}),
-                     "scheduler": (core.SCHEDULERS, {"tooltip": "noise schedule"}),
+                     "scheduler": (core.get_schedulers(), {"tooltip": "noise schedule"}),
                      "latent_image": ("LATENT", {"tooltip": "input latent image"}),
                      "start_at_step": ("INT", {"default": 0, "min": 0, "max": 10000, "tooltip": "The starting step of the sampling to be applied at this node within the range of 'steps'."}),
                      "end_at_step": ("INT", {"default": 10000, "min": 0, "max": 10000, "tooltip": "The step at which sampling applied at this node will stop within the range of steps (if greater than steps, sampling will continue only up to steps)."}),

@@ -298,7 +298,7 @@ class ImpactDummyInput:
 class MasksToMaskList:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {
+        return {"optional": {
                         "masks": ("MASK", ),
                       }
                 }
@@ -340,22 +340,23 @@ class MaskListToMaskBatch:
     CATEGORY = "ImpactPack/Operation"
 
     def doit(self, mask):
-        if len(mask) == 1:
-            mask = make_3d_mask(mask[0])
-            return (mask,)
-        elif len(mask) > 1:
-            mask1 = make_3d_mask(mask[0])
-
-            for mask2 in mask[1:]:
-                mask2 = make_3d_mask(mask2)
-                if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
-                mask1 = torch.cat((mask1, mask2), dim=0)
-
-            return (mask1,)
-        else:
+        if len(mask) == 0:
             empty_mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu").unsqueeze(0)
             return (empty_mask,)
+
+        masks_3d = [make_3d_mask(m) for m in mask]
+        target_shape = masks_3d[0].shape[1:]
+        upscaled_masks = []
+        for m in masks_3d:
+            if m.shape[1:] != target_shape:
+                m = m.unsqueeze(1).repeat(1, 3, 1, 1)
+                m = comfy.utils.common_upscale(m, target_shape[1], target_shape[0], "lanczos", "center")
+                m = m[:, 0, :, :]
+            
+            upscaled_masks.append(m)
+        # Concatenate all at once
+        result = torch.cat(upscaled_masks, dim=0)
+        return (result,)
 
 
 class ImageListToImageBatch:
@@ -450,7 +451,7 @@ class NthItemOfAnyList:
     def INPUT_TYPES(s):
         return {"required":  {
                     "any_list": (any_typ,),
-                    "index": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1, "tooltip": "The index of the item you want to select from the list."}),
+                    "index": ("INT", {"default": 0, "min": -sys.maxsize, "max": sys.maxsize, "step": 1, "tooltip": "The index of the item you want to select from the list. Use negative values to select from the end (e.g., -1 for last item, -2 for second to last)."}),
                     }
         }
 
@@ -464,7 +465,8 @@ class NthItemOfAnyList:
 
     def doit(self, any_list, index):
         i = index[0]
-        if i >= len(any_list):
+        list_len = len(any_list)
+        if i >= list_len or i < -list_len:
             return (any_list[-1],)
         else:
             return (any_list[i],)
@@ -473,7 +475,7 @@ class NthItemOfAnyList:
 class MakeImageList:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"image1": ("IMAGE",), }}
+        return {"optional": {"image1": ("IMAGE",), }}
 
     RETURN_TYPES = ("IMAGE",)
     OUTPUT_IS_LIST = (True,)
@@ -493,7 +495,7 @@ class MakeImageList:
 class MakeImageBatch:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"image1": ("IMAGE",), }}
+        return {"optional": {"image1": ("IMAGE",), }}
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "doit"
@@ -501,14 +503,13 @@ class MakeImageBatch:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, **kwargs):
-        image1 = kwargs['image1']
-        del kwargs['image1']
         images = [value for value in kwargs.values()]
 
-        if len(images) == 0:
-            return (image1,)
+        if len(images) == 1:
+            return (images[0],)
         else:
-            for image2 in images:
+            image1 = images[0]
+            for image2 in images[1:]:
                 if image1.shape[1:] != image2.shape[1:]:
                     image2 = comfy.utils.common_upscale(image2.movedim(-1, 1), image1.shape[2], image1.shape[1], "lanczos", "center").movedim(1, -1)
                 image1 = torch.cat((image1, image2), dim=0)
@@ -518,7 +519,7 @@ class MakeImageBatch:
 class MakeMaskBatch:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"mask1": ("MASK",), }}
+        return {"optional": {"mask1": ("MASK",), }}
 
     RETURN_TYPES = ("MASK",)
     FUNCTION = "doit"
@@ -526,14 +527,13 @@ class MakeMaskBatch:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, **kwargs):
-        mask1 = kwargs['mask1']
-        del kwargs['mask1']
         masks = [make_3d_mask(value) for value in kwargs.values()]
 
-        if len(masks) == 0:
-            return (mask1,)
+        if len(masks) == 1:
+            return (masks[0],)
         else:
-            for mask2 in masks:
+            mask1 = masks[0]
+            for mask2 in masks[1:]:
                 if mask1.shape[1:] != mask2.shape[1:]:
                     mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
                 mask1 = torch.cat((mask1, mask2), dim=0)

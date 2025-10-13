@@ -41,7 +41,7 @@ class SEGSDetailer:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (core.SCHEDULERS,),
+                     "scheduler": (core.get_schedulers(),),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "noise_mask": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
                      "force_inpaint": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled"}),
@@ -86,7 +86,7 @@ class SEGSDetailer:
         cnet_pil_list = []
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
         for i in range(batch_size):
             seed += 1
@@ -166,6 +166,7 @@ class SEGSDetailer:
         return segs, cnet_pil_list
 
 
+
 class SEGSPaste:
     @classmethod
     def INPUT_TYPES(s):
@@ -187,56 +188,59 @@ class SEGSPaste:
 
     @staticmethod
     def doit(image, segs, feather, alpha=255, ref_image_opt=None):
-
+        # Optimized SEGS paste node: preallocates result and avoids repeated concat.
         segs = core.segs_scale_match(segs, image.shape)
 
-        result = None
-        for i, single_image in enumerate(image):
-            image_i = single_image.unsqueeze(0).clone()
+        batch_size, _, _, _ = image.shape
+        result = torch.empty_like(image)
 
-            for seg in segs[1]:
-                ref_image = None
-                if ref_image_opt is None and seg.cropped_image is not None:
-                    cropped_image = seg.cropped_image
-                    if isinstance(cropped_image, np.ndarray):
-                        cropped_image = torch.from_numpy(cropped_image)
-                    ref_image = cropped_image[i].unsqueeze(0)
-                elif ref_image_opt is not None:
-                    ref_tensor = ref_image_opt[i].unsqueeze(0)
-                    ref_image = utils.crop_image(ref_tensor, seg.crop_region)
-                if ref_image is not None:
-                    if seg.cropped_mask.ndim == 3 and len(seg.cropped_mask) == len(image):
-                        mask = seg.cropped_mask[i]
-                    elif seg.cropped_mask.ndim == 3 and len(seg.cropped_mask) > 1:
-                        logging.warning(f"[Impact Pack] SEGSPaste: The number of the mask batch({len(seg.cropped_mask)}) and the image batch({len(image)}) are different. Combine the mask frames and apply.")
-                        combined_mask = (seg.cropped_mask[0] * 255).to(torch.uint8)
+        with torch.no_grad():
+            for i in range(batch_size):
+                # avoid extra clone/unsqueeze
+                image_i = image[i].unsqueeze(0).clone()
 
-                        for frame_mask in seg.cropped_mask[1:]:
-                            combined_mask |= (frame_mask * 255).to(torch.uint8)
+                for seg in segs[1]:
+                    ref_image = None
 
-                        combined_mask = (combined_mask/255.0).to(torch.float32)
-                        mask = utils.to_binary_mask(combined_mask, 0.1)
+                    # ref_image handling
+                    if ref_image_opt is None and seg.cropped_image is not None:
+                        cropped_image = seg.cropped_image
+                        if isinstance(cropped_image, np.ndarray):
+                            cropped_image = torch.from_numpy(cropped_image)
+                        ref_image = cropped_image[i].unsqueeze(0)
+                    elif ref_image_opt is not None:
+                        ref_tensor = ref_image_opt[i].unsqueeze(0)
+                        ref_image = utils.crop_image(ref_tensor, seg.crop_region)
+
+                    if ref_image is None:
+                        continue
+
+                    # mask handling
+                    cmask = seg.cropped_mask
+                    if cmask.ndim == 3 and len(cmask) == batch_size:
+                        mask = cmask[i]
+                    elif cmask.ndim == 3 and len(cmask) > 1:
+                        # statt OR-Schleife → vektorisiert
+                        mask = torch.any(cmask > 0.1, dim=0).float()
                     else:  # ndim == 2
-                        mask = seg.cropped_mask
+                        mask = cmask
 
-                    mask = utils.tensor_gaussian_blur_mask(mask, feather) * (alpha/255)
-                    x, y, *_ = seg.crop_region
+                    # blur + alpha
+                    mask = utils.tensor_gaussian_blur_mask(mask, feather) * (alpha / 255.0)
 
                     # ensure same device
                     mask = mask.to(image_i.device)
                     ref_image = ref_image.to(image_i.device)
 
+                    x, y, *_ = seg.crop_region
                     utils.tensor_paste(image_i, ref_image, (x, y), mask)
 
-            if result is None:
-                result = image_i
-            else:
-                result = torch.concat((result, image_i), dim=0)
+                result[i] = image_i[0]
 
         if not args.highvram and not args.gpu_only:
             result = result.cpu()
 
-        return (result, )
+        return (result,)
 
 
 class SEGSPreviewCNet:
@@ -1913,7 +1917,7 @@ class SEGSUpscaler:
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                    "scheduler": (core.SCHEDULERS,),
+                    "scheduler": (core.get_schedulers(),),
                     "positive": ("CONDITIONING",),
                     "negative": ("CONDITIONING",),
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
@@ -1995,7 +1999,7 @@ class SEGSUpscalerPipe:
                     "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                     "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                     "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                    "scheduler": (core.SCHEDULERS,),
+                    "scheduler": (core.get_schedulers(),),
                     "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                     "inpaint_model": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),

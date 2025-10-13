@@ -70,6 +70,7 @@ NODE_CLASS_MAPPINGS = {
     "SubtractMaskForEach": SubtractMaskForEach, # noqa: F405
 
     "DetailerForEach": DetailerForEach, # noqa: F405
+    "DetailerForEachAutoRetry": DetailerForEachAutoRetry, # noqa: F405
     "DetailerForEachDebug": DetailerForEachTest, # noqa: F405
     "DetailerForEachPipe": DetailerForEachPipe, # noqa: F405
     "DetailerForEachDebugPipe": DetailerForEachTestPipe, # noqa: F405
@@ -116,6 +117,7 @@ NODE_CLASS_MAPPINGS = {
     "UnsamplerHookProvider": UnsamplerHookProvider, # noqa: F405
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider, # noqa: F405
     "PreviewDetailerHookProvider": PreviewDetailerHookProvider, # noqa: F405
+    "BlackPatchRetryHookProvider": BlackPatchRetryHookProvider, # noqa: F405
     "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider, # noqa: F405
     "LamaRemoverDetailerHookProvider": LamaRemoverDetailerHookProvider, # noqa: F405
 
@@ -324,6 +326,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MaskRectAreaAdvanced": "Mask Rect Area (Advanced)",
     "ImpactFlattenMask": "Flatten Mask Batch",
     "DetailerForEach": "Detailer (SEGS)",
+    "DetailerForEachAutoRetry": "Detailer (SEGS) with auto retry",
     "DetailerForEachPipe": "Detailer (SEGS/pipe)",
     "DetailerForEachDebug": "DetailerDebug (SEGS)",
     "DetailerForEachDebugPipe": "DetailerDebug (SEGS/pipe)",

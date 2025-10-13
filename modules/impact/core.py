@@ -10,7 +10,6 @@ import numpy as np
 from PIL import ImageOps, Image
 
 import nodes
-import comfy_extras.nodes_upscale_model as model_upscale
 from server import PromptServer
 import comfy
 import impact.wildcards as wildcards
@@ -57,8 +56,10 @@ preview_bridge_last_mask_cache = {}
 
 current_prompt = None
 
-SCHEDULERS = comfy.samplers.KSampler.SCHEDULERS + ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
+ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
+def get_schedulers():
+    return list(comfy.samplers.SCHEDULER_HANDLERS) + ADDITIONAL_SCHEDULERS
 
 def is_execution_model_version_supported():
     try:
@@ -261,7 +262,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
@@ -407,6 +408,11 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         refined_image = detailer_hook.post_decode(refined_image)
 
     # downscale
+
+    # workaround: support WAN as an i2i model
+    if len(refined_image.shape) == 5:
+        refined_image = refined_image.squeeze(0)
+
     refined_image = utils.tensor_resize(refined_image, w, h)
 
     # prevent mixing of device
@@ -429,7 +435,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         noise_mask = noise_mask.squeeze(3)
 
     if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-        model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+        model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
@@ -1608,7 +1614,12 @@ def latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upsca
     # upscale by model upscaler
     current_w = w
     while current_w < new_w:
-        pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
+        model_upscaler = nodes.NODE_CLASS_MAPPINGS['ImageUpscaleWithModel']()
+        if hasattr(model_upscaler, 'execute'):
+            pixels = model_upscaler.execute(upscale_model, pixels)[0]
+        else:
+            pixels = model_upscaler.upscale(upscale_model, pixels)[0]
+
         current_w = pixels.shape[2]
         if current_w == w:
             logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
@@ -1644,7 +1655,12 @@ def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_mod
     # upscale by model upscaler
     current_w = w
     while current_w < new_w:
-        pixels = model_upscale.ImageUpscaleWithModel().upscale(upscale_model, pixels)[0]
+        model_upscaler = nodes.NODE_CLASS_MAPPINGS['ImageUpscaleWithModel']()
+        if hasattr(model_upscaler, 'execute'):
+            pixels = model_upscaler.execute(upscale_model, pixels)[0]
+        else:
+            pixels = model_upscaler.upscale(upscale_model, pixels)[0]
+
         current_w = pixels.shape[2]
         if current_w == w:
             logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")

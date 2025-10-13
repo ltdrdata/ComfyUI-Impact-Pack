@@ -324,12 +324,33 @@ class SAM2VideoDetectorSEGS:
 
     @staticmethod
     def doit(bbox_detector, sam2_model, image_frames, bbox_threshold, sam2_threshold, crop_factor, drop_size):
+        # ---- Check SAM2 model ----
         if not isinstance(sam2_model, core.SAM2Wrapper):
-            logging.error("[Impact Pack] To use the SAM2VideoDetectorSEGS node, a SAM2 model must be provided as input to `sam2_model`.")
+            logging.error("[Impact Pack] To use the SAM2VideoDetectorSEGS node, a valid SAM2 model must be provided as input to `sam2_model`.")
             raise Exception("To use the SAM2VideoDetectorSEGS node, a SAM2 model must be provided as input to `sam2_model`.")
 
+        # ---- Detect bboxes ----
         segs = bbox_detector.detect(image_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
-        segs_masks = sam2_model.predict_video_segs(image_frames, segs)
+
+          # ---- If no detections, try reversed frames before giving up ----
+        if len(segs[1]) == 0:
+            reversed_frames = torch.flip(image_frames, dims=[0])
+            segs_rev = bbox_detector.detect(reversed_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
+
+            if len(segs_rev[1]) == 0:
+                # No Bboxes when reversed -> Give up
+                h, w = image_frames.shape[1:3]
+                return (((h, w), []), )
+                
+            # ---- Predict masks in reversed mode ----
+            segs_masks = sam2_model.predict_video_segs(reversed_frames, segs_rev)
+
+            # segs_masks wieder umdrehen, damit sie mit Originalframes matchen
+            for k in segs_masks.keys():
+                segs_masks[k] = torch.flip(segs_masks[k], dims=[0])
+        else:
+            # ---- Predict masks if BBOXES were found in forward pass----
+            segs_masks = sam2_model.predict_video_segs(image_frames, segs)
 
         def get_whole_merged_mask(all_masks):
             merged_mask = (all_masks[0] * 255).to(torch.uint8)
@@ -356,11 +377,21 @@ class SAM2VideoDetectorSEGS:
             for mask in v:
                 masks.append(mask[y1:y2, x1:x2])
             cropped_mask = torch.stack(masks)
-            cropped_mask = (cropped_mask >= (sam2_threshold*100-50)).to(torch.uint8).cpu()
-            new_seg = SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            cropped_mask = (cropped_mask >= (sam2_threshold * 100 - 50)).to(torch.uint8).cpu()
+
+            new_seg = SEG(
+                seg.cropped_image,
+                cropped_mask,
+                seg.confidence,
+                seg.crop_region,
+                seg.bbox,
+                seg.label,
+                seg.control_net_wrapper
+            )
             new_segs.append(new_seg)
 
         return ((segs[0], new_segs), )
+
 
 
 class SimpleDetectorForAnimateDiff:

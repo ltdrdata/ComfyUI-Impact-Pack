@@ -102,7 +102,7 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
     if control_net_wrapper is not None:
         positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)

@@ -139,7 +139,7 @@ def process(text, seed=None):
                     if b is not None:
                         b = b.strip()
                     else:
-                        b = "-1"
+                        b = a
 
                 if r is not None:
                     if b is not None and is_numeric_string(a) and is_numeric_string(b):

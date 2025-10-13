@@ -8,6 +8,7 @@ This node pack helps to conveniently enhance images through Detector, Detailer, 
 NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pack. To use the UltralyticsDetectorProvider node, please install the ComfyUI-Impact-Subpack separately.
 
 ## NOTICE 
+* V8.24: This compatibility patch requires ComfyUI version 0.3.63 or higher due to structural changes in DifferentialDiffusion.
 * V8.19: legacy nodes (mmdet and etc.) are removed
 * V8.18: Support [facebookresearch/sam2](https://github.com/facebookresearch/sam2) models
 * V8.0: The `Impact Subpack` is no longer installed automatically. To use `UltralyticsDetectorProvider` nodes, please install the `Impact Subpack` separately.
@@ -107,6 +108,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 
 ### [Detailer nodes](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/detailers.md)
   * `Detailer (SEGS)` - Refines the image based on SEGS.
+  * `Detailer (SEGS) with auto retry` - Refines the image based on SEGS and will automatically retry if the patch is all black.
   * `DetailerDebug (SEGS)` - Refines the image based on SEGS. Additionally, it provides the ability to monitor the cropped image and the refined image of the cropped image.
     * To prevent regeneration caused by the seed that does not change every time when using 'external_seed', please disable the 'seed random generate' option in the 'Detailer...' node.
   * `MASK to SEGS` - Generates SEGS based on the mask.
@@ -314,6 +316,10 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `Remote Boolean (on prompt)`, `Remote Int (on prompt)` - At the start of the prompt, this node forcibly sets the `widget_value` of `node_id`. It is disregarded if the target widget type is different.
   * You can find the `node_id` by checking through [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) using the format `Badge: #ID Nickname`.
   * Experimental set of nodes for implementing loop functionality (tutorial to be prepared later / [example workflow](test/loop-test.json)).
+
+
+### Limitation
+* Many nodes in the `Impact Pack` use a wildcard type to allow arbitrary input/output connections. This approach will be replaced once ComfyUI officially supports **dynamic types**. Until then, while it functions without issues, type validation may still produce error messages.
 
 
 ### HuggingFace nodes

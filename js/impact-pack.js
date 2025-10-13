@@ -280,7 +280,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node.outputs[link_info.origin_slot]?.type;
+					slot_type = node?.outputs[link_info.origin_slot]?.type;
 				}
 
 				this.inputs[0].type = slot_type;
@@ -306,7 +306,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot].type;
 				}
 
 				this.inputs[0].type = slot_type;
@@ -324,7 +324,7 @@ app.registerExtension({
 
 				// assign type
 				const node = app.graph.getNodeById(link_info.origin_id);
-				let slot_type = node.outputs[link_info.origin_slot].type;
+				let slot_type = node?.outputs[link_info.origin_slot].type;
 
 				this.inputs[0].type = slot_type;
 				this.inputs[1].type = slot_type;
@@ -348,7 +348,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot].type;
 				}
 
 				this.inputs[0].type = slot_type;
@@ -366,6 +366,13 @@ app.registerExtension({
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				if(!link_info)
 					return;
+
+				// HOTFIX: subgraph
+				const stackTrace = new Error().stack;
+
+				if(stackTrace.includes('convertToSubgraph') || stackTrace.includes('Subgraph.configure')) {
+					return;
+				}
 
 				if(type == 2) {
 					// connect output
@@ -398,7 +405,7 @@ app.registerExtension({
 					// connect input
 					if(this.inputs[0].type == '*'){
 						const node = app.graph.getNodeById(link_info.origin_id);
-						let origin_type = node.outputs[link_info.origin_slot]?.type;
+						let origin_type = node?.outputs[link_info.origin_slot]?.type;
 
 						if(origin_type==undefined) {
 							return; // fallback
@@ -512,6 +519,12 @@ app.registerExtension({
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				const stackTrace = new Error().stack;
+
+				// HOTFIX: subgraph
+				if(stackTrace.includes('convertToSubgraph') || stackTrace.includes('Subgraph.configure')) {
+					return;
+				}
+
 				if(stackTrace.includes('loadGraphData')) {
 					if(this.widgets?.[0]) {
 						this.widgets[0].options.max = this.inputs.length-3;
@@ -560,7 +573,7 @@ app.registerExtension({
 					return;
 				}
 				else {
-					if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+					if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id]?.type == 'Reroute')
 						this.disconnectInput(link_info.target_slot);
 
 					// connect input
@@ -569,32 +582,39 @@ app.registerExtension({
 
 					if(this.inputs[0].type == '*'){
 						const node = app.graph.getNodeById(link_info.origin_id);
-						let origin_type = node.outputs[link_info.origin_slot]?.type;
-						if(link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
-								origin_type = this.inputs[1].type;
-								node.connect(link_info.origin_slot, node.id, 'input1');
-						}
-						
-						if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
-							this.disconnectInput(link_info.target_slot);
-							return;
-						}
 
-						for(let i in this.inputs) {
-							let input_i = this.inputs[i];
-							if(input_i.name != 'select' && input_i.name != 'sel_mode')
-								input_i.type = origin_type;
-						}
+						// NOTE: node is undefined when subgraph editing mode
+						if(node) {
+							let origin_type = node.outputs[link_info.origin_slot]?.type;
+							if(link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
+									origin_type = this.inputs[1].type;
+									node.connect(link_info.origin_slot, node.id, 'input1');
+							}
 
-						this.outputs[0].type = origin_type;
-						this.outputs[0].label = origin_type;
-						this.outputs[0].name = origin_type;
+							if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
+								this.disconnectInput(link_info.target_slot);
+								return;
+							}
+
+							for(let i in this.inputs) {
+								let input_i = this.inputs[i];
+								if(input_i.name != 'select' && input_i.name != 'sel_mode')
+									input_i.type = origin_type;
+							}
+
+							this.outputs[0].type = origin_type;
+							this.outputs[0].label = origin_type;
+							this.outputs[0].name = origin_type;
+						}
 					}
 				}
 
-				let select_slot = this.inputs.find(x => x.name == "select");
+				let widget_count = 0;
+				if(nodeData.name == 'ImpactSwitch' || nodeData.name == 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
+					widget_count += 1;
+				}
 
-				if (!connected && (this.inputs.length > 3)) {
+				if (!connected && (this.inputs.length > widget_count+1)) {
 					if(
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
@@ -603,7 +623,6 @@ app.registerExtension({
 						    this.removeInput(index);
 					}
 				}
-
 
 				let slot_i = 1;
 				for (let i = 0; i < this.inputs.length; i++) {

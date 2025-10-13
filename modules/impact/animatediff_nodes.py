@@ -28,7 +28,7 @@ class SEGSDetailerForAnimateDiff:
                      "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                      "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                      "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                     "scheduler": (core.SCHEDULERS,),
+                     "scheduler": (core.get_schedulers(),),
                      "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                      "basic_pipe": ("BASIC_PIPE", {"tooltip": "If the `ImpactDummyInput` is connected to the model in the basic_pipe, the inference stage is skipped."}),
                      "refiner_ratio": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
@@ -66,7 +66,7 @@ class SEGSDetailerForAnimateDiff:
         cnet_image_list = []
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().apply(model)[0]
+            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
 
         for seg in segs[1]:
             cropped_image_frames = None
@@ -150,7 +150,7 @@ class DetailerForEachPipeForAnimateDiff:
                       "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                       "cfg": ("FLOAT", {"default": 8.0, "min": 0.0, "max": 100.0}),
                       "sampler_name": (comfy.samplers.KSampler.SAMPLERS,),
-                      "scheduler": (core.SCHEDULERS,),
+                      "scheduler": (core.get_schedulers(),),
                       "denoise": ("FLOAT", {"default": 0.5, "min": 0.0001, "max": 1.0, "step": 0.01}),
                       "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
                       "basic_pipe": ("BASIC_PIPE", {"tooltip": "If the `ImpactDummyInput` is connected to the model in the basic_pipe, the inference stage is skipped."}),
