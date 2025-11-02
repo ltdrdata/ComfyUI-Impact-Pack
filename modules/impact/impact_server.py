@@ -545,12 +545,15 @@ def onprompt_populate_wildcards(json_data):
 
 
 
-    if 'extra_data' in json_data and 'extra_pnginfo' in json_data['extra_data']:
-        for node in json_data['extra_data']['extra_pnginfo']['workflow']['nodes']:
-            key = str(node['id'])
-            if key in updated_widget_values:
-                node['widgets_values'][1] = updated_widget_values[key]
-                node['widgets_values'][2] = 'reproduce'
+    match json_data:
+        case {"extra_data": {"extra_pnginfo": {"workflow": {"nodes": nodes}}}}:
+            for node in nodes:
+                match node:
+                    case {"id": id, "widgets_values": widgets_values}:
+                        key = str(id)
+                        if key in updated_widget_values:
+                            widgets_values[1] = updated_widget_values[key]
+                            widgets_values[2] = "reproduce"
 
 
 def onprompt_for_remote(json_data):
@@ -594,8 +597,8 @@ def onprompt(json_data):
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)
         core.current_prompt = json_data
-    except Exception as e:
-        logging.warning(f"[Impact Pack] ComfyUI-Impact-Pack: Error on prompt - several features will not work.\n{e}")
+    except Exception:
+        logging.exception("[Impact Pack] ComfyUI-Impact-Pack: Error on prompt - several features will not work.")
 
     return json_data
 
