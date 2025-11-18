@@ -277,9 +277,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             elif 'pooled_output' in positive[0][1]:
                 del positive[0][1]['pooled_output']
 
-    if return_by_cycle_step: 
-        refined_latents_by_step = []
-        refined_images_by_step  = []
+    refined_latents_by_step:list[torch.Tensor] = []
+    refined_images_by_step:list[torch.Tensor]  = []
 
     h = image.shape[1]
     w = image.shape[2]
@@ -414,7 +413,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     else:
         # skipped
         refined_image = upscaled_image
-        refined_images_by_step = [upscaled_image,]
+        if return_by_cycle_step: refined_images_by_step = [upscaled_image,]
 
     if detailer_hook is not None:
         refined_image = detailer_hook.post_decode(refined_image)
@@ -425,14 +424,14 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     # workaround: support WAN as an i2i model
     if len(refined_image.shape) == 5:
         refined_image = refined_image.squeeze(0)
-        refined_images_by_step = [ i.squeeze(0) for i in refined_images_by_step ]
+        if return_by_cycle_step: refined_images_by_step = [ i.squeeze(0) for i in refined_images_by_step ]
 
     refined_image = utils.tensor_resize(refined_image, w, h)
-    refined_images_by_step = [ utils.tensor_resize(i,w,h) for i in refined_images_by_step ]
+    if return_by_cycle_step: refined_images_by_step = [ utils.tensor_resize(i,w,h) for i in refined_images_by_step ]
 
     # prevent mixing of device
     refined_image = refined_image.cpu()
-    refined_images_by_step = [ i.cpu() for i in refined_images_by_step ]
+    if return_by_cycle_step: refined_images_by_step = [ i.cpu() for i in refined_images_by_step ]
 
     # don't convert to latent - latent break image
     # preserving pil is much better
