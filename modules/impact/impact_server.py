@@ -19,6 +19,8 @@ from aiohttp import web
 from impact.utils import to_tensor
 from PIL import Image
 from segment_anything import SamPredictor, sam_model_registry
+from sam2.build_sam import build_sam2, build_sam2_video_predictor
+from sam2.sam2_image_predictor import SAM2ImagePredictor
 from server import PromptServer
 
 sam_predictor = None
@@ -31,29 +33,48 @@ last_prepare_data = None
 
 def async_prepare_sam(image_dir, model_name, filename):
     with sam_lock:
-        global sam_predictor
-
-        if 'vit_h' in model_name:
-            model_kind = 'vit_h'
-        elif 'vit_l' in model_name:
-            model_kind = 'vit_l'
-        else:
-            model_kind = 'vit_b'
-
-        sam_model = sam_model_registry[model_kind](checkpoint=model_name)
-        sam_predictor = SamPredictor(sam_model)
-
         image_path = os.path.join(image_dir, filename)
         image = nodes.LoadImage().load_image(image_path)[0]
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-
+        
         if impact.config.get_config()['sam_editor_cpu']:
             device = 'cpu'
         else:
             device = comfy.model_management.get_torch_device()
+        
+        global sam_predictor
+        model_filename = os.path.basename(model_name)
+        
+        if 'sam2' in model_filename:
+            model_kind = 'sam2'
+            sam2_config_table = {
+                'sam2.1_hiera_base_plus.pt': 'configs/sam2.1/sam2.1_hiera_b+.yaml',
+                'sam2.1_hiera_large.pt': 'configs/sam2.1/sam2.1_hiera_l.yaml',
+                'sam2.1_hiera_small.pt': 'configs/sam2.1/sam2.1_hiera_s.yaml',
+                'sam2.1_hiera_tiny.pt': 'configs/sam2.1/sam2.1_hiera_t.yaml',
+                'sam2_hiera_tiny.pt': 'configs/sam2/sam2_hiera_t.yaml',
+                'sam2_hiera_small.pt': 'configs/sam2/sam2_hiera_s.yaml',
+                'sam2_hiera_base_plus.pt': 'configs/sam2/sam2_hiera_b+.yaml',
+                'sam2_hiera_large.pt': 'configs/sam2/sam2_hiera_l.yaml'
+            }
+            config = sam2_config_table[model_filename]
+            sam_predictor = SAM2ImagePredictor(build_sam2(config, model_name))
+            sam_predictor.model.to(device=device)
+            sam_predictor.set_image(image)
+        else:
+            if 'vit_h' in model_name:
+                model_kind = 'vit_h'
+            elif 'vit_l' in model_name:
+                model_kind = 'vit_l'
+            else:
+                model_kind = 'vit_b'
 
-        sam_predictor.model.to(device=device)
-        sam_predictor.set_image(image, "RGB")
+            sam_model = sam_model_registry[model_kind](checkpoint=model_name)
+        
+            sam_predictor = SamPredictor(sam_model)
+            sam_predictor.model.to(device=device)
+            sam_predictor.set_image(image, "RGB")
+
         sam_predictor.model.cpu()
 
 
