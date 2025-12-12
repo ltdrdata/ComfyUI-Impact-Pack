@@ -1532,7 +1532,8 @@ class IterativeLatentUpscale:
                      "steps": ("INT", {"default": 3, "min": 1, "max": 10000, "step": 1}),
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
-                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                     "step_mode": (["simple", "geometric"], {"default": "simple"}),
+                     "vae_compression": ("INT", {"default": 8, "min": 0, "max": 256, "step": 8})
                     },
                 "hidden": {"unique_id": "UNIQUE_ID"},
                 }
@@ -1543,9 +1544,10 @@ class IterativeLatentUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", unique_id=None):
-        w = samples['samples'].shape[3]*8  # image width
-        h = samples['samples'].shape[2]*8  # image height
+    # dim_reduction_factor=8 for SD1/SDXL, used to calculate actual dims from latents based on VAE
+    def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", vae_compression=8, unique_id=None):
+        h, w = samples['samples'].shape[-2:]
+        w, h = w * vae_compression, h * vae_compression
 
         if temp_prefix == "":
             temp_prefix = None
@@ -1597,7 +1599,8 @@ class IterativeImageUpscale:
                      "temp_prefix": ("STRING", {"default": ""}),
                      "upscaler": ("UPSCALER",),
                      "vae": ("VAE",),
-                     "step_mode": (["simple", "geometric"], {"default": "simple"})
+                     "step_mode": (["simple", "geometric"], {"default": "simple"}),
+                     "vae_compression": ("INT", {"default": 8, "min": 0, "max": 256, "step": 8})
                     },
                 "hidden": {"unique_id": "UNIQUE_ID"}
                 }
@@ -1608,7 +1611,7 @@ class IterativeImageUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", unique_id=None):
+    def doit(self, pixels, upscale_factor, steps, temp_prefix, upscaler, vae, step_mode="simple", vae_compression=8, unique_id=None):
         if temp_prefix == "":
             temp_prefix = None
 
@@ -1622,7 +1625,7 @@ class IterativeImageUpscale:
         else:
             latent = nodes.VAEEncode().encode(vae, pixels)[0]
 
-        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, unique_id)
+        refined_latent = IterativeLatentUpscale().doit(latent, upscale_factor, steps, temp_prefix, upscaler, step_mode, vae_compression, unique_id)
 
         core.update_node_status(unique_id, "VAEDecode (final)", 1.0)
         if upscaler.is_tiled:
@@ -2717,4 +2720,3 @@ class ImpactSchedulerAdapter:
             return (extra_scheduler,)
 
         return (scheduler,)
-

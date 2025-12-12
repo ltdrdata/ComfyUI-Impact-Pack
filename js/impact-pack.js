@@ -10,17 +10,56 @@ if(is_legacy_front()) {
 }
 
 let wildcards_list = [];
+let wildcard_status = {
+	on_demand_mode: false,
+	total_available: 0,
+	loaded_count: 0,
+	last_update: null
+};
+
 async function load_wildcards() {
 	let res = await api.fetchApi('/impact/wildcards/list');
 	let data = await res.json();
 	wildcards_list = data.data;
 }
 
-load_wildcards();
+async function load_wildcard_status() {
+	try {
+		let res = await api.fetchApi('/impact/wildcards/list/loaded');
+		let data = await res.json();
+		wildcard_status = {
+			on_demand_mode: data.on_demand_mode || false,
+			total_available: data.total_available || 0,
+			loaded_count: data.data ? data.data.length : 0,
+			last_update: new Date()
+		};
+	} catch (error) {
+		console.error('Failed to load wildcard status:', error);
+	}
+}
+
+export function get_wildcard_label() {
+	if (wildcard_status.on_demand_mode) {
+		return `Select Wildcard 🔵 On-Demand: ${wildcard_status.loaded_count} loaded`;
+	} else {
+		return `Select Wildcard 🟢 Full Cache`;
+	}
+}
+
+export function is_wildcard_label(value) {
+	// Check if value is a label (not an actual wildcard selection)
+	return value === "Select the Wildcard to add to the text" ||
+	       value.startsWith("Select Wildcard 🔵 On-Demand:") ||
+	       value === "Select Wildcard 🟢 Full Cache";
+}
+
+Promise.all([load_wildcards(), load_wildcard_status()]);
 
 export function get_wildcards_list() {
 	return wildcards_list;
 }
+
+export { load_wildcard_status };
 
 // temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
 // I think this should be included into master!!
@@ -227,6 +266,15 @@ api.addEventListener("img-send", imgSendHandler);
 api.addEventListener("latent-send", latentSendHandler);
 api.addEventListener("executed", progressExecuteHandler);
 
+// Update wildcard status after workflow execution (on-demand mode)
+api.addEventListener("executed", async (event) => {
+	if (wildcard_status.on_demand_mode) {
+		await load_wildcard_status();
+		await load_wildcards();
+		app.canvas.setDirty(true);
+	}
+});
+
 app.registerExtension({
 	name: "Comfy.Impack",
 
@@ -236,7 +284,7 @@ app.registerExtension({
 			label: 'Impact: Refresh Wildcard',
 			function: async () => {
 				await api.fetchApi('/impact/wildcards/refresh');
-				await load_wildcards();
+				await Promise.all([load_wildcards(), load_wildcard_status()]);
 				app.extensionManager.toast.add({
 					severity: 'info',
 					summary: 'Refreshed!',
@@ -763,21 +811,28 @@ app.registerExtension({
 					break;
 			}
 
-			node.widgets[combo_id+1].callback = (value, canvas, node, pos, e) => {
+			node.widgets[combo_id+1].callback = async (value, canvas, node, pos, e) => {
 					if(node) {
 						if(node.widgets[tbox_id].value != '')
 							node.widgets[tbox_id].value += ', '
 
 						node.widgets[tbox_id].value += node._wildcard_value;
+
+						// Reload wildcard status to update loaded count
+						if (wildcard_status.on_demand_mode) {
+							await load_wildcard_status();
+							await load_wildcards();
+							app.canvas.setDirty(true);
+						}
 					}
 			}
 
 			Object.defineProperty(node.widgets[combo_id+1], "value", {
 				set: (value) => {
-					if (value !== "Select the Wildcard to add to the text")
-						node._wildcard_value = value;
+				if (!is_wildcard_label(value))
+					node._wildcard_value = value;
 				},
-				get: () => { return "Select the Wildcard to add to the text"; }
+				get: () => { return get_wildcard_label(); }
 			});
 
 			Object.defineProperty(node.widgets[combo_id+1].options, "values", {

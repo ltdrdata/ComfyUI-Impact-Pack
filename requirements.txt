@@ -3,7 +3,7 @@ scikit-image
 piexif
 transformers
 opencv-python-headless
-scipy>=1.11.4
+scipy
 numpy
 dill
 matplotlib

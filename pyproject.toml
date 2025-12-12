@@ -1,9 +1,20 @@
 [project]
 name = "comfyui-impact-pack"
 description = "This node pack offers various detector nodes and detailer nodes that allow you to configure a workflow that automatically enhances facial details. And provide iterative upscaler."
-version = "8.25.1"
+version = "8.28"
 license = { file = "LICENSE.txt" }
-dependencies = ["segment-anything", "scikit-image", "piexif", "transformers", "opencv-python-headless", "GitPython", "scipy>=1.11.4"]
+dependencies = [
+    "segment-anything",
+    "scikit-image",
+    "piexif",
+    "transformers",
+    "opencv-python-headless",
+    "scipy",
+    "numpy",
+    "dill",
+    "matplotlib",
+    "sam2 @ git+https://github.com/facebookresearch/sam2"
+]
 
 [project.urls]
 Repository = "https://github.com/ltdrdata/ComfyUI-Impact-Pack"

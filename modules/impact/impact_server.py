@@ -1,29 +1,25 @@
+import io
+import logging
 import os
+import random
 import threading
 import traceback
+from io import BytesIO
 
-from aiohttp import web
-
-import impact
+import comfy
 import folder_paths
-
-import torchvision
-
+import impact
 import impact.core as core
 import impact.impact_pack as impact_pack
-from impact.utils import to_tensor
 import impact.utils as utils
-from segment_anything import SamPredictor, sam_model_registry
-import numpy as np
 import nodes
+import numpy as np
+import torchvision
+from aiohttp import web
+from impact.utils import to_tensor
 from PIL import Image
-import io
-import comfy
-from io import BytesIO
-import random
+from segment_anything import SamPredictor, sam_model_registry
 from server import PromptServer
-import logging
-
 
 sam_predictor = None
 default_sam_model_name = os.path.join(impact_pack.model_path, "sams", "sam_vit_b_01ec64.pth")
@@ -178,6 +174,23 @@ async def wildcards_refresh(request):
 @PromptServer.instance.routes.get("/impact/wildcards/list")
 async def wildcards_list(request):
     data = {'data': impact.wildcards.get_wildcard_list()}
+    return web.json_response(data)
+
+
+@PromptServer.instance.routes.get("/impact/wildcards/list/loaded")
+async def wildcards_list_loaded(request):
+    """
+    Get list of actually loaded wildcards (progressive loading in on-demand mode).
+
+    Returns:
+        - In on-demand mode: only wildcards that have been loaded into memory
+        - In full cache mode: same as /wildcards/list (all wildcards)
+    """
+    data = {
+        'data': impact.wildcards.get_loaded_wildcard_list(),
+        'on_demand_mode': impact.wildcards.is_on_demand_mode(),
+        'total_available': len(impact.wildcards.available_wildcards) if impact.wildcards.is_on_demand_mode() else len(impact.wildcards.wildcard_dict)
+    }
     return web.json_response(data)
 
 
@@ -545,12 +558,15 @@ def onprompt_populate_wildcards(json_data):
 
 
 
-    if 'extra_data' in json_data and 'extra_pnginfo' in json_data['extra_data']:
-        for node in json_data['extra_data']['extra_pnginfo']['workflow']['nodes']:
-            key = str(node['id'])
-            if key in updated_widget_values:
-                node['widgets_values'][1] = updated_widget_values[key]
-                node['widgets_values'][2] = 'reproduce'
+    match json_data:
+        case {"extra_data": {"extra_pnginfo": {"workflow": {"nodes": nodes}}}}:
+            for node in nodes:
+                match node:
+                    case {"id": id, "widgets_values": widgets_values}:
+                        key = str(id)
+                        if key in updated_widget_values:
+                            widgets_values[1] = updated_widget_values[key]
+                            widgets_values[2] = "reproduce"
 
 
 def onprompt_for_remote(json_data):
@@ -594,8 +610,8 @@ def onprompt(json_data):
         workflow_imagereceiver_update(json_data)
         regional_sampler_seed_update(json_data)
         core.current_prompt = json_data
-    except Exception as e:
-        logging.warning(f"[Impact Pack] ComfyUI-Impact-Pack: Error on prompt - several features will not work.\n{e}")
+    except Exception:
+        logging.exception("[Impact Pack] ComfyUI-Impact-Pack: Error on prompt - several features will not work.")
 
     return json_data
 
