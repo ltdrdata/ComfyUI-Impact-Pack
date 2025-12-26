@@ -2157,6 +2157,12 @@ class MaskRectArea:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                # Added typed INT inputs so this node can be driven by other INT nodes.
+                "x": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                "y": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
+                "width": ("INT", {"default": 50, "min": 0, "max": 100, "step": 1}),
+                "height": ("INT", {"default": 50, "min": 0, "max": 100, "step": 1}),
+                "blur_radius": ("INT", {"default": 0, "min": 0, "step": 1})
             },
             "hidden": {"extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"}
         }
@@ -2166,34 +2172,68 @@ class MaskRectArea:
     CATEGORY = "ImpactPack/Operation"
     FUNCTION = "create_mask"
 
-    def create_mask(self, extra_pnginfo, unique_id, **kwargs):
-        # search for node
-        node_found = False
-        for node in extra_pnginfo["workflow"]["nodes"]:
-            if str(node["id"]) == unique_id:
-                min_x = node["properties"].get("x", 0) / 100
-                min_y = node["properties"].get("y", 0) / 100
-                width = node["properties"].get("w", 0) / 100
-                height = node["properties"].get("h", 0) / 100
-                blur_radius = node["properties"].get("blur_radius", 0)
-                node_found = True
-                break
+    def create_mask(self, x, y, width, height, blur_radius, extra_pnginfo, unique_id):
+        # Backward-compat: if node properties exist in workflow, prefer them.
+        try:
+            for node in extra_pnginfo["workflow"]["nodes"]:
+                if str(node["id"]) == str(unique_id):
+                    props = node.get("properties", {})
+                    x = int(props.get("x", x))
+                    y = int(props.get("y", y))
+                    width = int(props.get("w", width))
+                    height = int(props.get("h", height))
+                    blur_radius = int(props.get("blur_radius", blur_radius))
+                    break
+        except Exception:
+            pass
 
-        if not node_found:
-            raise ValueError(f"No node found with unique_id {unique_id}.")
+        # Clamp percent inputs
+        if x < 0:
+            x = 0
+        if y < 0:
+            y = 0
+        if width < 0:
+            width = 0
+        if height < 0:
+            height = 0
+        if x > 100:
+            x = 100
+        if y > 100:
+            y = 100
+        if width > 100:
+            width = 100
+        if height > 100:
+            height = 100
+
+        # Convert percent to ratio
+        min_x = x / 100.0
+        min_y = y / 100.0
+        w_ratio = width / 100.0
+        h_ratio = height / 100.0
 
         # Create a mask with standard resolution (e.g., 512x512)
         resolution = 512
-        mask = torch.zeros((resolution, resolution))
+        mask = torch.zeros((resolution, resolution), dtype=torch.float32)
 
         # Calculate pixel coordinates
         min_x_px = int(min_x * resolution)
         min_y_px = int(min_y * resolution)
-        max_x_px = int((min_x + width) * resolution)
-        max_y_px = int((min_y + height) * resolution)
+        max_x_px = int((min_x + w_ratio) * resolution)
+        max_y_px = int((min_y + h_ratio) * resolution)
+
+        # Clamp pixel bounds
+        if min_x_px < 0:
+            min_x_px = 0
+        if min_y_px < 0:
+            min_y_px = 0
+        if max_x_px > resolution:
+            max_x_px = resolution
+        if max_y_px > resolution:
+            max_y_px = resolution
 
         # Draw the rectangle on the mask
-        mask[min_y_px:max_y_px, min_x_px:max_x_px] = 1
+        if max_x_px > min_x_px and max_y_px > min_y_px:
+            mask[min_y_px:max_y_px, min_x_px:max_x_px] = 1.0
 
         # Apply blur if the radii are greater than 0
         if blur_radius > 0:
@@ -2222,6 +2262,13 @@ class MaskRectAreaAdvanced:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                "x": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "y": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "width": ("INT", {"default": 256, "min": 0, "step": 1}),
+                "height": ("INT", {"default": 320, "min": 0, "step": 1}),
+                "image_width": ("INT", {"default": 512, "min": 1, "step": 1}),
+                "image_height": ("INT", {"default": 320, "min": 1, "step": 1}),
+                "blur_radius": ("INT", {"default": 0, "min": 0, "step": 1})
             },
             "hidden": {"extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"}
         }
@@ -2231,46 +2278,50 @@ class MaskRectAreaAdvanced:
     CATEGORY = "ImpactPack/Operation"
     FUNCTION = "create_mask_advanced"
 
-    def create_mask_advanced(self, extra_pnginfo, unique_id, **kwargs):
-        # search for node
-        node_found = False
-        for node in extra_pnginfo["workflow"]["nodes"]:
-            if node["id"] == int(unique_id):
-                min_x = node["properties"]["x"]
-                min_y = node["properties"]["y"]
-                width = node["properties"]["w"]
-                height = node["properties"]["h"]
-                image_width = node["properties"]["width"]
-                image_height = node["properties"]["height"]
-                blur_radius = node["properties"]["blur_radius"]
-                node_found = True
-                break
+    def create_mask_advanced(self, x, y, width, height, image_width, image_height, blur_radius, extra_pnginfo, unique_id):
+        # Backward-compat fallback: if node properties exist in workflow, prefer them
+        try:
+            for node in extra_pnginfo["workflow"]["nodes"]:
+                if node["id"] == int(unique_id):
+                    props = node.get("properties", {})
+                    x = int(props.get("x", x))
+                    y = int(props.get("y", y))
+                    width = int(props.get("w", width))
+                    height = int(props.get("h", height))
+                    image_width = int(props.get("width", image_width))
+                    image_height = int(props.get("height", image_height))
+                    blur_radius = int(props.get("blur_radius", blur_radius))
+                    break
+        except Exception:
+            pass
 
-        if not node_found:
-            raise ValueError(f"No node found with unique_id {unique_id}.")
+        # Clamp to safe bounds
+        if image_width < 1:
+            image_width = 1
+        if image_height < 1:
+            image_height = 1
+        if width < 0:
+            width = 0
+        if height < 0:
+            height = 0
+        if x < 0:
+            x = 0
+        if y < 0:
+            y = 0
 
-        # Calculate maximum coordinates
-        max_x = min_x + width
-        max_y = min_y + height
+        max_x = min(x + width, image_width)
+        max_y = min(y + height, image_height)
 
-        # Create a mask with the image dimensions
-        mask = torch.zeros((image_height, image_width))
+        mask = torch.zeros((image_height, image_width), dtype=torch.float32)
 
-        # Draw the rectangle on the mask
-        mask[int(min_y):int(max_y), int(min_x):int(max_x)] = 1
+        if max_x > x and max_y > y:
+            mask[y:max_y, x:max_x] = 1.0
 
         # Apply blur if the radii are greater than 0
         if blur_radius > 0:
-            dx = blur_radius * 2 + 1
-            dy = blur_radius * 2 + 1
-
-            # Convert the mask to a format compatible with OpenCV (numpy array)
+            k = blur_radius * 2 + 1
             mask_np = mask.cpu().numpy().astype("float32")
-
-            # Apply Gaussian Blur
-            blurred_mask = cv2.GaussianBlur(mask_np, (dx, dy), 0)
-
-            # Convert back to tensor
+            blurred_mask = cv2.GaussianBlur(mask_np, (k, k), 0)
             mask = torch.from_numpy(blurred_mask)
 
         # Return the mask as a tensor with an additional channel

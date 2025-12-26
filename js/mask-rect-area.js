@@ -64,6 +64,10 @@ function showPreviewCanvas(node, app) {
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR;
             ctx.fillRect(widgetX, widgetY, backgroundWidth, backgroundHeight);
 
+            // Keep preview in sync when inputs are driven by links.
+            const DEBUG_PREVIEW_SYNC = false;
+            syncLinkedInputsToProperties(node, DEBUG_PREVIEW_SYNC);
+
             // Draw the conditioning zone
             let [x, y, w, h] = getDrawArea(node, backgroundWidth, backgroundHeight);
 
@@ -100,7 +104,6 @@ function showPreviewCanvas(node, app) {
             ctx.strokeStyle = globalThis.LiteGraph.NODE_SELECTED_TITLE_COLOR;
             ctx.lineWidth = 2;
             ctx.strokeRect(widgetX + sx, widgetY + sy, sw, sh);
-            //ctx.strokeRect(finalSX, finalSY, finalSW, finalSH);
 
             // Display
             ctx.beginPath();
@@ -202,25 +205,82 @@ function showPreviewCanvas(node, app) {
 app.registerExtension({
     name: 'drltdata.MaskRectArea',
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name === "MaskRectArea") {
-            const onNodeCreated = nodeType.prototype.onNodeCreated;
-            nodeType.prototype.onNodeCreated = function () {
-                const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
+        if (nodeData.name !== "MaskRectArea") {
+            return;
+        }
 
-                this.setProperty("width", 512);
-                this.setProperty("height", 512);
-                this.setProperty("x", 0);
-                this.setProperty("y", 0);
-                this.setProperty("w", 50);
-                this.setProperty("h", 50);
-                this.setProperty("blur_radius", 0);
+        const onNodeCreated = nodeType.prototype.onNodeCreated;
+        nodeType.prototype.onNodeCreated = function () {
+            const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
 
-                this.selected = false;
-                this.index = 3;
-                this.serialize_widgets = true;
+            this.setProperty("width", 512);
+            this.setProperty("height", 512);
+            this.setProperty("x", 0);
+            this.setProperty("y", 0);
+            this.setProperty("w", 50);
+            this.setProperty("h", 50);
+            this.setProperty("blur_radius", 0);
 
+            this.selected = false;
+            this.index = 3;
+            this.serialize_widgets = true;
+
+            // If Python/ComfyUI already created typed widgets, do not recreate them (avoid duplicates).
+            const hasExisting = Array.isArray(this.widgets) && this.widgets.some(w => w && w.name === "x");
+
+            // Hook existing widgets to keep node.properties in sync (canvas uses properties).
+            const hookWidget = (node, widgetName, propName, opts) => {
+                if (!Array.isArray(node.widgets)) {
+                    return;
+                }
+                const w = node.widgets.find(ww => ww && ww.name === widgetName);
+                if (!w) {
+                    return;
+                }
+
+                const min = (opts && typeof opts.min === "number") ? opts.min : undefined;
+                const max = (opts && typeof opts.max === "number") ? opts.max : undefined;
+
+                if (node.properties && Object.prototype.hasOwnProperty.call(node.properties, propName)) {
+                    w.value = node.properties[propName];
+                } else {
+                    node.properties[propName] = w.value;
+                }
+
+                const prevCb = w.callback;
+                w.callback = function (v, ...args) {
+                    let val = v;
+
+                    if (typeof val === "number") {
+                        val = Math.round(val);
+
+                        if (typeof min === "number") {
+                            val = Math.max(min, val);
+                        }
+                        if (typeof max === "number") {
+                            val = Math.min(max, val);
+                        }
+                    }
+
+                    this.value = val;
+                    node.properties[propName] = val;
+
+                    if (prevCb) {
+                        return prevCb.call(this, val, ...args);
+                    }
+                };
+            };
+
+            if (hasExisting) {
+                // Note: "width"/"height" widgets map to "w"/"h" properties (percent-based).
+                hookWidget(this, "x", "x", {"min": 0, "max": 100});
+                hookWidget(this, "y", "y", {"min": 0, "max": 100});
+                hookWidget(this, "width", "w", {"min": 0, "max": 100});
+                hookWidget(this, "height", "h", {"min": 0, "max": 100});
+                hookWidget(this, "blur_radius", "blur_radius", {"min": 0, "max": 255});
+            } else {
                 CUSTOM_INT(this, "x", 0, function (v, _, node) {
-                    this.value = Math.max(0, Math.min(100, Math.round(v))); // Limitar entre 0 y 100
+                    this.value = Math.max(0, Math.min(100, Math.round(v)));
                     node.properties["x"] = this.value;
                 });
                 CUSTOM_INT(this, "y", 0, function (v, _, node) {
@@ -238,24 +298,103 @@ app.registerExtension({
                 CUSTOM_INT(this, "blur_radius", 0, function (v, _, node) {
                     this.value = Math.round(v) || 0;
                     node.properties["blur_radius"] = this.value;
-                },
-                        {"min": 0, "max": 255, "step": 10}
-                );
+                }, {"min": 0, "max": 255, "step": 10});
 
-                showPreviewCanvas(this, app);
+                // If Python widgets exist, they will be used instead; this is back-compat only.
+            }
 
-                this.onSelected = function () {
-                    this.selected = true;
+            showPreviewCanvas(this, app);
+
+            // Sync linked input values -> node.properties so the preview updates when driven by connections.
+            const prevOnExecute = this.onExecute;
+            this.onExecute = function () {
+                const rr = prevOnExecute ? prevOnExecute.apply(this, arguments) : undefined;
+
+                const readLinkedInt = (inputName) => {
+                    if (!Array.isArray(this.inputs)) {
+                        return null;
+                    }
+                    const inp = this.inputs.find(i => i && i.name === inputName);
+                    if (!inp || !inp.link) {
+                        return null;
+                    }
+                    try {
+                        const v = this.getInputData(inputName);
+                        return (typeof v === "number") ? v : null;
+                    } catch (e) {
+                        return null;
+                    }
                 };
-                this.onDeselected = function () {
-                    this.selected = false;
-                };
 
-                return r;
+                let changed = false;
+
+                const vx = readLinkedInt("x");
+                if (vx != null) {
+                    const nv = Math.max(0, Math.min(100, Math.round(vx)));
+                    if (this.properties["x"] !== nv) {
+                        this.properties["x"] = nv;
+                        changed = true;
+                    }
+                }
+
+                const vy = readLinkedInt("y");
+                if (vy != null) {
+                    const nv = Math.max(0, Math.min(100, Math.round(vy)));
+                    if (this.properties["y"] !== nv) {
+                        this.properties["y"] = nv;
+                        changed = true;
+                    }
+                }
+
+                const vw = readLinkedInt("width");
+                if (vw != null) {
+                    const nv = Math.max(0, Math.min(100, Math.round(vw)));
+                    if (this.properties["w"] !== nv) {
+                        this.properties["w"] = nv;
+                        changed = true;
+                    }
+                }
+
+                const vh = readLinkedInt("height");
+                if (vh != null) {
+                    const nv = Math.max(0, Math.min(100, Math.round(vh)));
+                    if (this.properties["h"] !== nv) {
+                        this.properties["h"] = nv;
+                        changed = true;
+                    }
+                }
+
+                const vbr = readLinkedInt("blur_radius");
+                if (vbr != null) {
+                    const nv = Math.max(0, Math.min(255, Math.round(vbr)));
+                    if (this.properties["blur_radius"] !== nv) {
+                        this.properties["blur_radius"] = nv;
+                        changed = true;
+                    }
+                }
+
+                if (changed) {
+                    this.setDirtyCanvas(true, true);
+                    if (this.graph) {
+                        this.graph.setDirtyCanvas(true, true);
+                    }
+                }
+
+                return rr;
             };
-        }
+
+            this.onSelected = function () {
+                this.selected = true;
+            };
+            this.onDeselected = function () {
+                this.selected = false;
+            };
+
+            return r;
+        };
     }
 });
+
 
 // Calculate the drawing area using percentage-based properties.
 function getDrawArea(node, backgroundWidth, backgroundHeight) {
@@ -305,7 +444,7 @@ function getDrawColor(percent, alpha) {
     const f = n => {
         const k = (n + h / 30) % 12;
         const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-        return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+        return Math.round(255 * color).toString(16).padStart(2, '0');
     };
     return `#${f(0)}${f(8)}${f(4)}${alpha}`;
 }
@@ -318,7 +457,8 @@ function computeCanvasSize(node, size) {
     const MIN_HEIGHT = 200;
     const MIN_WIDTH = 200;
 
-    let y = LiteGraph.NODE_WIDGET_HEIGHT * Math.max(node.inputs.length, node.outputs.length) + 5;
+    // Use last_y from LiteGraph layout (fixes excessive node height)
+    let y = node.widgets[0].last_y + 5;
     let freeSpace = size[1] - y;
 
     // Compute the height of all non-customCanvas widgets
@@ -337,10 +477,15 @@ function computeCanvasSize(node, size) {
     // Ensure there is enough vertical space
     freeSpace -= widgetHeight;
 
-    // Adjust the height of the node if needed
+    // Clamp minimum canvas height
     if (freeSpace < MIN_HEIGHT) {
         freeSpace = MIN_HEIGHT;
-        node.size[1] = y + widgetHeight + freeSpace;
+    }
+
+    // Allow both grow and shrink to fit content
+    const targetHeight = y + widgetHeight + freeSpace;
+    if (node.size[1] !== targetHeight) {
+        node.size[1] = targetHeight;
         node.graph.setDirtyCanvas(true);
     }
 
@@ -363,4 +508,97 @@ function computeCanvasSize(node, size) {
     }
 
     node.canvasHeight = freeSpace;
+}
+
+// Reads a numeric value from a connected link by inspecting the origin node widget.
+// This is more reliable than getInputData() in ComfyUI's frontend execution model.
+function readLinkedNumber(node, inputName) {
+    try {
+        if (!node || !node.graph || !Array.isArray(node.inputs)) {
+            return null;
+        }
+        const inp = node.inputs.find(i => i && i.name === inputName);
+        if (!inp || inp.link == null) {
+            return null;
+        }
+
+        const link = node.graph.links && node.graph.links[inp.link];
+        if (!link) {
+            return null;
+        }
+
+        const originNode = node.graph.getNodeById ? node.graph.getNodeById(link.origin_id) : null;
+        if (!originNode || !Array.isArray(originNode.widgets) || originNode.widgets.length === 0) {
+            return null;
+        }
+
+        // Most "Int" nodes expose the value in the first widget named "value".
+        const w = originNode.widgets.find(ww => ww && ww.name === "value") || originNode.widgets[0];
+        const v = w ? w.value : null;
+
+        return (typeof v === "number") ? v : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function syncLinkedInputsToProperties(node, debug) {
+    let changed = false;
+
+    const vx = readLinkedNumber(node, "x");
+    if (vx != null) {
+        const nv = Math.max(0, Math.min(100, Math.round(vx)));
+        if (node.properties["x"] !== nv) {
+            node.properties["x"] = nv;
+            changed = true;
+        }
+    }
+
+    const vy = readLinkedNumber(node, "y");
+    if (vy != null) {
+        const nv = Math.max(0, Math.min(100, Math.round(vy)));
+        if (node.properties["y"] !== nv) {
+            node.properties["y"] = nv;
+            changed = true;
+        }
+    }
+
+    const vw = readLinkedNumber(node, "width");
+    if (vw != null) {
+        const nv = Math.max(0, Math.min(100, Math.round(vw)));
+        if (node.properties["w"] !== nv) {
+            node.properties["w"] = nv;
+            changed = true;
+        }
+    }
+
+    const vh = readLinkedNumber(node, "height");
+    if (vh != null) {
+        const nv = Math.max(0, Math.min(100, Math.round(vh)));
+        if (node.properties["h"] !== nv) {
+            node.properties["h"] = nv;
+            changed = true;
+        }
+    }
+
+    const vbr = readLinkedNumber(node, "blur_radius");
+    if (vbr != null) {
+        const nv = Math.max(0, Math.min(255, Math.round(vbr)));
+        if (node.properties["blur_radius"] !== nv) {
+            node.properties["blur_radius"] = nv;
+            changed = true;
+        }
+    }
+
+    if (debug && changed) {
+        console.log("[MaskRectArea] preview sync from links", {
+            x: node.properties["x"],
+            y: node.properties["y"],
+            w: node.properties["w"],
+            h: node.properties["h"],
+            blur_radius: node.properties["blur_radius"]
+        });
+    }
+
+    return changed;
 }
