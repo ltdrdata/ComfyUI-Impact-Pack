@@ -75,47 +75,36 @@ app.registerExtension({
 
 	nodeCreated(node, app) {
 		if(node.comfyClass == "PreviewBridge" || node.comfyClass == "PreviewBridgeLatent") {
+			if (!node.widgets) {
+				return;
+			}
+
 			let w = node.widgets.find(obj => obj.name === 'image');
+			if (!w) {
+				return;
+			}
+
 			node._imgs = [new Image()];
 			node.imageIndex = 0;
 
-			Object.defineProperty(w, 'value', {
-				async set(v) {
-					if(w._lock)
-						return;
-
-					const stackTrace = new Error().stack;
-					if(stackTrace.includes('presetText.js'))
-						return;
-
-					var image = new Image();
-					if(v && v.constructor == String && v.startsWith('$')) {
-						// from node feedback
-						let need_to_load = node._imgs[0].src == '';
-						if(await loadImageFromId(image, v, need_to_load)) {
-							w._value = v;
-							if(node._imgs[0].src == '') {
-								node._imgs = [image];
-							}
-						}
-						else {
-							w._value = `$${node.id}-0`;
-						}
-					}
-					else {
-						// from clipspace
-						w._lock = true;
-						w._value = await loadImageFromUrl(image, node.id, v, false);
-						w._lock = false;
-					}
-				},
-				get() {
-					if(w._value == undefined) {
-						w._value = `$${node.id}-0`;
-					}
-					return w._value;
+			// Hook into onExecuted to reset widget value after each execution
+			// This replaces the Object.defineProperty approach which fails on
+			// ComfyUI v1.34+ where widget.value is non-configurable
+			const origOnExecuted = node.onExecuted;
+			node.onExecuted = async function(output) {
+				// Get the actual preview image path from execution output
+				// and register it to get the proper preview bridge ID
+				if (output && output.images && output.images.length > 0) {
+					const img = output.images[0];
+					const path = `PreviewBridge/${img.filename} [temp]`;
+					const pb_id = await loadImageFromUrl(new Image(), node.id, path, false);
+					w.value = pb_id;
 				}
-			});
+
+				if (origOnExecuted) {
+					origOnExecuted.call(this, output);
+				}
+			};
 
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
@@ -145,6 +134,17 @@ app.registerExtension({
 			let path_widget = node.widgets.find(obj => obj.name === 'image');
 			let w = node.widgets.find(obj => obj.name === 'image_data');
 			let stw_widget = node.widgets.find(obj => obj.name === 'save_to_workflow');
+
+			if (!w) {
+				return;
+			}
+
+			// Check if widget.value is configurable before trying to redefine it
+			const descriptor = Object.getOwnPropertyDescriptor(w, 'value');
+			if (descriptor && !descriptor.configurable) {
+				return;
+			}
+
 			w._value = "";
 
 			Object.defineProperty(w, 'value', {
