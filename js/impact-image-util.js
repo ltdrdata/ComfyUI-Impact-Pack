@@ -92,13 +92,22 @@ app.registerExtension({
 			// ComfyUI v1.34+ where widget.value is non-configurable
 			const origOnExecuted = node.onExecuted;
 			node.onExecuted = async function(output) {
-				// Get the actual preview image path from execution output
-				// and register it to get the proper preview bridge ID
-				if (output && output.images && output.images.length > 0) {
-					const img = output.images[0];
-					const path = `PreviewBridge/${img.filename} [temp]`;
-					const pb_id = await loadImageFromUrl(new Image(), node.id, path, false);
-					w.value = pb_id;
+				// Check if we should preserve clipspace path (user-drawn mask)
+				const outputImage = output?.images?.[0];
+				const isNewTempFile = outputImage &&
+				                      outputImage.subfolder === 'PreviewBridge' &&
+				                      outputImage.type === 'temp';
+				const isClipspacePath = w.value &&
+				                        (w.value.includes('clipspace') || w.value.includes('[input]'));
+
+				// Only update widget if image changed OR not a clipspace path
+				if (!(isClipspacePath && !isNewTempFile)) {
+					if (output && output.images && output.images.length > 0) {
+						const img = output.images[0];
+						const path = `PreviewBridge/${img.filename} [temp]`;
+						const pb_id = await loadImageFromUrl(new Image(), node.id, path, false);
+						w.value = pb_id;
+					}
 				}
 
 				if (origOnExecuted) {
