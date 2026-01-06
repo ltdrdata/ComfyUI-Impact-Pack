@@ -266,7 +266,8 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
             labels = np.array(final_labels)
         else:
             logger.warn("NOTICE: 0 detections found.")
-            labels = np.array([], dtype=np.int32) # Should technically be string now, but empty is fine
+            # *** FIX APPLIED HERE: dtype changed from np.int32 to str ***
+            labels = np.array([], dtype=str) 
             scores = np.array([], dtype=np.float32)
             boxes = np.zeros((0, 4), dtype=np.int32)
 
