@@ -1,39 +1,279 @@
-import impact.additional_dependencies
+import os
+import sys
+import importlib
+import pkgutil
+
+# --- Path Injection (Must be before local imports) ---
+# Add current directory to sys.path to ensure adapter discovery works
+# regardless of how ComfyUI loads the custom node.
+current_dir = os.path.dirname(__file__)
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
+# --- Third Party Imports ---
 import numpy as np
-from impact import utils
-import logging
+import onnxruntime as ort
 
-impact.additional_dependencies.ensure_onnx_package()
+# --- Local Application Imports ---
+from impact import logger, utils
+import onnx_adapters
+from onnx_adapters.base import AdapterContractViolation, BaseAdapter
 
-try:
-    import onnxruntime
+# --- Constants ---
+# Default IoU threshold used for Non-Maximum Suppression (NMS).
+DEFAULT_NMS_IOU_THRESHOLD = 0.3
 
-    def onnx_inference(image, onnx_model):
-        # prepare image
-        pil = utils.tensor2pil(image)
-        image = np.ascontiguousarray(pil)
-        image = image[:, :, ::-1]  # to BGR image
-        image = image.astype(np.float32)
-        image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
 
-        # do detection
-        onnx_model = onnxruntime.InferenceSession(onnx_model, providers=["CPUExecutionProvider"])
-        outputs = onnx_model.run(
-            [s_i.name for s_i in onnx_model.get_outputs()],
-            {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
+# ============================================================
+# 1. REFINED ADAPTER DISCOVERY
+# ============================================================
+def get_best_adapter(model_metadata):
+    """
+    Scans the onnx_adapters package to find the most suitable
+    implementation based on model metadata scoring.
+    """
+    best_adapter = None
+    max_score = -1
+
+    pkg_path = os.path.dirname(onnx_adapters.__file__)
+    
+    # Iterate over all modules in the adapters directory
+    for _, module_name, _ in pkgutil.iter_modules([pkg_path]):
+        if module_name == "base":
+            continue
+
+        try:
+            module = importlib.import_module(f"onnx_adapters.{module_name}")
+        except ImportError as e:
+            logger.warn(f"Failed to import adapter {module_name}: {e}")
+            continue
+
+        if hasattr(module, "Adapter"):
+            adapter_class = getattr(module, "Adapter")
+            
+            # Instantiate to check contract
+            try:
+                adapter_instance = adapter_class()
+            except Exception:
+                continue
+
+            # CONTRACTUAL VALIDATION: Ensure adapter inherits from BaseAdapter
+            if not isinstance(adapter_instance, BaseAdapter):
+                continue
+
+            score = adapter_instance.get_score(model_metadata)
+            if score > max_score:
+                max_score = score
+                best_adapter = adapter_instance
+
+    return best_adapter, max_score
+
+
+# ============================================================
+# 2. ROBUST NMS IMPLEMENTATION (FALLBACK)
+# ============================================================
+def local_nms(boxes, scores, iou_threshold):
+    """
+    Standard CPU NMS fallback to ensure the pipeline remains
+    functional if optimized libraries (torchvision) are missing or fail.
+    """
+    if len(boxes) == 0:
+        return []
+
+    x1, y1, x2, y2 = boxes[:, 0], boxes[:, 1], boxes[:, 2], boxes[:, 3]
+    areas = (x2 - x1) * (y2 - y1)
+    order = scores.argsort()[::-1]
+
+    keep = []
+    while order.size > 0:
+        i = order[0]
+        keep.append(i)
+
+        xx1 = np.maximum(x1[i], x1[order[1:]])
+        yy1 = np.maximum(y1[i], y1[order[1:]])
+        xx2 = np.minimum(x2[i], x2[order[1:]])
+        yy2 = np.minimum(y2[i], y2[order[1:]])
+
+        w = np.maximum(0.0, xx2 - xx1)
+        h = np.maximum(0.0, yy2 - yy1)
+        inter = w * h
+        ovr = inter / (areas[i] + areas[order[1:]] - inter)
+
+        inds = np.where(ovr <= iou_threshold)[0]
+        order = order[inds + 1]
+
+    return keep
+
+
+# ============================================================
+# 3. PURE ORCHESTRATION PIPELINE
+# ============================================================
+def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
+    try:
+        model_filename = os.path.basename(onnx_model)
+        logger.info("-" * 50)
+        logger.info(f"ORCHESTRATOR: Processing {model_filename}")
+
+        # --- A. Session Initialization ---
+        sess_options = ort.SessionOptions()
+        sess_options.log_severity_level = 3
+        
+        # Prioritize CUDA if available, fallback to CPU
+        providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
+        
+        session = ort.InferenceSession(
+            onnx_model,
+            sess_options=sess_options,
+            providers=providers,
         )
 
-        labels = [op for op in outputs if op.dtype == "int32"][0]
-        scores = [op for op in outputs if isinstance(op[0][0], np.float32)][0]
-        boxes = [op for op in outputs if isinstance(op[0][0], np.ndarray)][0]
+        inputs = session.get_inputs()
+        input_meta = inputs[0]
 
-        # filter-out useless item
-        idx = np.where(labels[0] == -1)[0][0]
+        # --- B. Metadata Extraction & Adapter Selection ---
+        model_metadata = {
+            "name": model_filename.lower(),
+            "input_shape": input_meta.shape,
+            "output_count": len(session.get_outputs()),
+            "output_names": [o.name for o in session.get_outputs()],
+            "output_shapes": [o.shape for o in session.get_outputs()],
+            "input_names": [i.name for i in inputs],
+            "input_shapes": [i.shape for i in inputs],
+            "input_name": input_meta.name,
+            "input_dtype": input_meta.type,
+        }
 
-        labels = labels[0][:idx]
-        scores = scores[0][:idx]
-        boxes = boxes[0][:idx].astype(np.uint32)
+        adapter, score = get_best_adapter(model_metadata)
+        
+        # Adapter Confidence Checks
+        if score < 0.5:
+            # Critical Failure: No compatible adapter
+            raise AdapterContractViolation(
+                f"Low confidence ({score*100:.0f}%) for model: {model_filename}. "
+                "Fix: No compatible ONNX adapter found. The model might be unsupported."
+            )
+        elif score < 0.8:
+            # Warning: Might use a generic adapter that isn't perfect
+            logger.warn(
+                f"YELLOW ALERT: Selection confidence is low ({score*100:.0f}%). Accuracy may be compromised."
+            )
 
-        return labels, scores, boxes
-except Exception:
-    logging.error("[Impact Pack] ComfyUI-Impact-Pack: 'onnxruntime' package doesn't support 'python 3.11', yet.\t{e}")
+        logger.info(f"ADAPTER: {adapter.FAMILY} (Confidence: {score*100:.0f}%)")
+
+        # --- C. Preprocessing & Inference ---
+        pil_img = utils.tensor2pil(image)
+        image_rgb = np.asarray(pil_img).copy()
+        orig_shape = image_rgb.shape[:2]  # [H, W]
+
+        processed_input, run_params = adapter.preprocess(image_rgb, model_metadata)
+
+        # Handle both Dictionary inputs (complex) and direct arrays (simple)
+        if isinstance(processed_input, dict):
+            raw_outputs = session.run(None, processed_input)
+        else:
+            raw_outputs = session.run(None, {input_meta.name: processed_input})
+
+        # --- D. Post-processing ---
+        labels, scores, boxes = adapter.postprocess(
+            raw_outputs, orig_shape, threshold, run_params
+        )
+
+        # Check for adapter-reported critical errors
+        if isinstance(run_params, dict) and "error" in run_params:
+            raise AdapterContractViolation(run_params["error"])
+
+        # --- E. Iron Contract Validation Suite ---
+        # 1. Base Type Check
+        if not all(isinstance(x, np.ndarray) for x in [labels, scores, boxes]):
+            raise AdapterContractViolation(
+                f"[{adapter.FAMILY}] output type error. Must return numpy arrays."
+            )
+
+        # 2. Length Consistency
+        if not (len(labels) == len(scores) == len(boxes)):
+            raise AdapterContractViolation(
+                f"[{adapter.FAMILY}] length mismatch: L({len(labels)}) S({len(scores)}) B({len(boxes)})."
+            )
+
+        if len(boxes) > 0:
+            # 3. Finite Check
+            if not np.isfinite(scores).all() or not np.isfinite(boxes).all():
+                raise AdapterContractViolation(f"[{adapter.FAMILY}] returned non-finite values (NaN/Inf).")
+
+            # 4. Score Range
+            if (scores < 0).any() or (scores > 1.001).any():
+                scores = np.clip(scores, 0, 1)
+
+            # 5. Box Shape
+            if boxes.ndim != 2 or boxes.shape[1] != 4:
+                raise AdapterContractViolation(f"[{adapter.FAMILY}] invalid boxes shape. Expected (N, 4).")
+
+            # 6. Dtype Check
+            if scores.dtype != np.float32:
+                 raise AdapterContractViolation(f"[{adapter.FAMILY}] scores must be float32.")
+            if labels.dtype != np.int32:
+                 raise AdapterContractViolation(f"[{adapter.FAMILY}] labels must be int32.")
+
+        # --- F. Non-Maximum Suppression (NMS) ---
+        if len(boxes) > 0:
+            try:
+                import torch
+                import torchvision
+                
+                # Use standard ComfyUI/Torch NMS if available (Faster)
+                t_boxes = torch.from_numpy(boxes).float()
+                t_scores = torch.from_numpy(scores).float()
+                indices = torchvision.ops.nms(
+                    t_boxes, t_scores, iou_threshold=DEFAULT_NMS_IOU_THRESHOLD
+                ).numpy()
+            except ImportError:
+                # Fallback to local pure-numpy implementation
+                logger.warn("Torchvision NMS unavailable. Using local fallback.")
+                indices = local_nms(boxes, scores, iou_threshold=DEFAULT_NMS_IOU_THRESHOLD)
+            except Exception as e:
+                logger.warn(f"NMS Error ({e}). Using local fallback.")
+                indices = local_nms(boxes, scores, iou_threshold=DEFAULT_NMS_IOU_THRESHOLD)
+
+            # Filter results
+            labels, scores, boxes = labels[indices], scores[indices], boxes[indices]
+
+            # Clip boxes to image boundaries
+            boxes = np.clip(
+                boxes,
+                0,
+                [orig_shape[1]-1, orig_shape[0]-1, orig_shape[1]-1, orig_shape[0]-1],
+            ).astype(np.int32)
+
+            logger.info(f"SUCCESS: Found {len(boxes)} valid detections after NMS.")
+            
+            # --- G. Label Mapping (ID -> Name) ---
+            # Replaces the old 'get_label_name' method with direct list access
+            final_labels = []
+            has_classes = hasattr(adapter, 'classes') and isinstance(adapter.classes, list)
+
+            for i in range(len(boxes)):
+                box = boxes[i]
+                label_id = int(labels[i])
+                
+                if has_classes and 0 <= label_id < len(adapter.classes):
+                    label_name = adapter.classes[label_id]
+                else:
+                    label_name = str(label_id)
+                    
+                final_labels.append(label_name)
+                logger.info(f"  [+] {label_name}: {scores[i]:.2f} | BBox {box}")
+
+            labels = np.array(final_labels)
+        else:
+            logger.warn("NOTICE: 0 detections found.")
+            labels = np.array([], dtype=np.int32) # Should technically be string now, but empty is fine
+            scores = np.array([], dtype=np.float32)
+            boxes = np.zeros((0, 4), dtype=np.int32)
+
+        # Return: labels (str array), scores, boxes, error_msg (None)
+        return labels, scores.astype(np.float32), boxes, None
+
+    except Exception as e:
+        logger.error(f"FATAL ORCHESTRATOR ERROR: {str(e)}")
+        # Return error message for UI handling
+        return None, None, None, str(e)

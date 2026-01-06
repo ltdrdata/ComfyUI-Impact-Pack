@@ -1228,54 +1228,80 @@ class ONNXDetector:
 
     def detect(self, image, threshold, dilation, crop_factor, drop_size=1, detailer_hook=None):
         drop_size = max(drop_size, 1)
-        try:
-            import impact.impact_onnx as onnx
 
-            h = image.shape[1]
-            w = image.shape[2]
+        import impact.impact_onnx as onnx
 
-            labels, scores, boxes = onnx.onnx_inference(image, self.onnx_model)
+        h = image.shape[1]
+        w = image.shape[2]
 
-            # collect feasible item
-            result = []
+        # Run ONNX inference and allow the backend/adapter to report structured errors
+        labels, scores, boxes, error_msg = onnx.onnx_inference(
+            image,
+            self.onnx_model,
+            threshold,
+            drop_size
+        )
 
-            for i in range(len(labels)):
-                if scores[i] > threshold:
-                    item_bbox = boxes[i]
-                    x1, y1, x2, y2 = item_bbox
+        # If inference failed, propagate a clear error so it can be surfaced by the UI
+        if error_msg is not None:
+            raise RuntimeError(error_msg)
 
-                    if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
-                        crop_region = utils.make_crop_region(w, h, item_bbox, crop_factor)
+        # Defensive check: ensure inference returned valid detection data
+        if labels is None or scores is None or boxes is None:
+            raise RuntimeError("ONNXDetector error: inference returned invalid data")
 
-                        if detailer_hook is not None:
-                            crop_region = item_bbox.post_crop_region(w, h, item_bbox, crop_region)
+        # Collect valid detection results
+        result = []
 
-                        crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
+        for i in range(len(labels)):
+            if scores[i] > threshold:
+                item_bbox = boxes[i]
+                x1, y1, x2, y2 = item_bbox
 
-                        # prepare cropped mask
-                        cropped_mask = np.zeros((crop_y2 - crop_y1, crop_x2 - crop_x1))
-                        cropped_mask[y1 - crop_y1:y2 - crop_y1, x1 - crop_x1:x2 - crop_x1] = 1
-                        cropped_mask = utils.dilate_mask(cropped_mask, dilation)
+                if x2 - x1 > drop_size and y2 - y1 > drop_size:
+                    crop_region = utils.make_crop_region(w, h, item_bbox, crop_factor)
 
-                        # make items. just convert the integer label to a string
-                        item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, str(labels[i]), None)
-                        result.append(item)
+                    if detailer_hook is not None:
+                        crop_region = item_bbox.post_crop_region(w, h, item_bbox, crop_region)
 
-            shape = h, w
-            segs = shape, result
+                    crop_x1, crop_y1, crop_x2, crop_y2 = crop_region
 
-            if detailer_hook is not None and hasattr(detailer_hook, "post_detection"):
-                segs = detailer_hook.post_detection(segs)
+                    # prepare cropped mask
+                    cropped_mask = np.zeros((crop_y2 - crop_y1, crop_x2 - crop_x1))
+                    cropped_mask[
+                        y1 - crop_y1:y2 - crop_y1,
+                        x1 - crop_x1:x2 - crop_x1
+                    ] = 1
 
-            return segs
-        except Exception as e:
-            logging.error(f"ONNXDetector: unable to execute.\n{e}")
+                    cropped_mask = utils.dilate_mask(cropped_mask, dilation)
+
+                    item = SEG(
+                        None,
+                        cropped_mask,
+                        scores[i],
+                        crop_region,
+                        item_bbox,
+                        str(labels[i]),
+                        None
+                    )
+                    result.append(item)
+
+        shape = (h, w)
+        segs = (shape, result)
+
+        if detailer_hook is not None and hasattr(detailer_hook, "post_detection"):
+            segs = detailer_hook.post_detection(segs)
+
+        return segs
 
     def detect_combined(self, image, threshold, dilation):
-        return segs_to_combined_mask(self.detect(image, threshold, dilation, 1))
+        return segs_to_combined_mask(
+            self.detect(image, threshold, dilation, 1)
+        )
 
     def setAux(self, x):
         pass
+
 
 
 def batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A', crop_min_size=None, detailer_hook=None):

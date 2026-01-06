@@ -289,6 +289,7 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactHFTransformersClassifierProvider": HF_TransformersClassifierProvider, # noqa: F405
     "ImpactSEGSClassify": SEGS_Classify, # noqa: F405
+    "ImpactSEGSLabelOverlay": ImpactSEGSLabelOverlay, # noqa: F405
 
     "ImpactSchedulerAdapter": ImpactSchedulerAdapter, # noqa: F405
     "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider # noqa: F405
@@ -434,6 +435,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactHFTransformersClassifierProvider": "HF Transformers Classifier Provider",
     "ImpactSEGSClassify": "SEGS Classify",
+    "ImpactSEGSLabelOverlay": "SEGS Overlay (Label)",
 
     "LatentSwitch": "Switch (latent/legacy)",
     "SEGSSwitch": "Switch (SEGS/legacy)",
