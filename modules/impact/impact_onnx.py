@@ -182,12 +182,21 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
         if isinstance(run_params, dict) and "error" in run_params:
             raise AdapterContractViolation(run_params["error"])
 
-        # --- E. Iron Contract Validation Suite ---
+        # --- E. Sanitization & Type Enforcement (Prevent 'Input type double' Error) ---
+        # Instead of raising errors for wrong types, we aggressively cast them here.
+        # This prevents numpy's default float64 from leaking into PyTorch.
+        
         # 1. Base Type Check
         if not all(isinstance(x, np.ndarray) for x in [labels, scores, boxes]):
-            raise AdapterContractViolation(
-                f"[{adapter.FAMILY}] output type error. Must return numpy arrays."
-            )
+            # Attempt to convert list to array if possible, otherwise fail
+            try:
+                labels = np.array(labels)
+                scores = np.array(scores)
+                boxes = np.array(boxes)
+            except Exception:
+                raise AdapterContractViolation(
+                    f"[{adapter.FAMILY}] output type error. Must be convertible to numpy arrays."
+                )
 
         # 2. Length Consistency
         if not (len(labels) == len(scores) == len(boxes)):
@@ -195,24 +204,26 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
                 f"[{adapter.FAMILY}] length mismatch: L({len(labels)}) S({len(scores)}) B({len(boxes)})."
             )
 
+        # 3. Aggressive Type Casting (Fixes RuntimeError in TAESD/Sampler)
+        # Force boxes to float32 initially for math safety, will be int at end.
+        boxes = boxes.astype(np.float32)
+        # Force scores to float32 (Critical: prevents float64 tensors)
+        scores = scores.astype(np.float32)
+        # Force labels to int32
+        labels = labels.astype(np.int32)
+
         if len(boxes) > 0:
-            # 3. Finite Check
+            # 4. Finite Check
             if not np.isfinite(scores).all() or not np.isfinite(boxes).all():
                 raise AdapterContractViolation(f"[{adapter.FAMILY}] returned non-finite values (NaN/Inf).")
 
-            # 4. Score Range
+            # 5. Score Range
             if (scores < 0).any() or (scores > 1.001).any():
                 scores = np.clip(scores, 0, 1)
 
-            # 5. Box Shape
+            # 6. Box Shape
             if boxes.ndim != 2 or boxes.shape[1] != 4:
                 raise AdapterContractViolation(f"[{adapter.FAMILY}] invalid boxes shape. Expected (N, 4).")
-
-            # 6. Dtype Check
-            if scores.dtype != np.float32:
-                 raise AdapterContractViolation(f"[{adapter.FAMILY}] scores must be float32.")
-            if labels.dtype != np.int32:
-                 raise AdapterContractViolation(f"[{adapter.FAMILY}] labels must be int32.")
 
         # --- F. Non-Maximum Suppression (NMS) ---
         if len(boxes) > 0:
@@ -220,9 +231,10 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
                 import torch
                 import torchvision
                 
-                # Use standard ComfyUI/Torch NMS if available (Faster)
+                # Convert to Float32 Tensors (Explicit .float() is redundant if astype was used, but keeps it safe)
                 t_boxes = torch.from_numpy(boxes).float()
                 t_scores = torch.from_numpy(scores).float()
+                
                 indices = torchvision.ops.nms(
                     t_boxes, t_scores, iou_threshold=DEFAULT_NMS_IOU_THRESHOLD
                 ).numpy()
@@ -237,7 +249,7 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
             # Filter results
             labels, scores, boxes = labels[indices], scores[indices], boxes[indices]
 
-            # Clip boxes to image boundaries
+            # Clip boxes to image boundaries and Final Cast to Int
             boxes = np.clip(
                 boxes,
                 0,
@@ -247,7 +259,6 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
             logger.info(f"SUCCESS: Found {len(boxes)} valid detections after NMS.")
             
             # --- G. Label Mapping (ID -> Name) ---
-            # Replaces the old 'get_label_name' method with direct list access
             final_labels = []
             has_classes = hasattr(adapter, 'classes') and isinstance(adapter.classes, list)
 
@@ -266,12 +277,12 @@ def onnx_inference(image, onnx_model, threshold=0.3, drop_size=1):
             labels = np.array(final_labels)
         else:
             logger.warn("NOTICE: 0 detections found.")
-            # *** FIX APPLIED HERE: dtype changed from np.int32 to str ***
             labels = np.array([], dtype=str) 
             scores = np.array([], dtype=np.float32)
             boxes = np.zeros((0, 4), dtype=np.int32)
 
-        # Return: labels (str array), scores, boxes, error_msg (None)
+        # Return: labels (str array), scores (float32), boxes (int32), error_msg
+        # Redundant cast on scores ensures safety even if logic above changed
         return labels, scores.astype(np.float32), boxes, None
 
     except Exception as e:
