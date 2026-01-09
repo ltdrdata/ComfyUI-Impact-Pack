@@ -48,13 +48,13 @@ from .modules.impact.pipe import *              # noqa: F403
 from .modules.impact.logics import *            # noqa: F403
 from .modules.impact.util_nodes import *        # noqa: F403
 from .modules.impact.segs_nodes import *        # noqa: F403
+from .modules.impact.lora_nodes import *        # noqa: F403
 from .modules.impact.special_samplers import *  # noqa: F403
 from .modules.impact.hf_nodes import *          # noqa: F403
 from .modules.impact.bridge_nodes import *      # noqa: F403
 from .modules.impact.hook_nodes import *        # noqa: F403
 from .modules.impact.animatediff_nodes import * # noqa: F403
 from .modules.impact.segs_upscaler import *     # noqa: F403
-
 import threading
 
 
@@ -291,7 +291,8 @@ NODE_CLASS_MAPPINGS = {
     "ImpactSEGSClassify": SEGS_Classify, # noqa: F405
 
     "ImpactSchedulerAdapter": ImpactSchedulerAdapter, # noqa: F405
-    "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider # noqa: F405
+    "GITSSchedulerFuncProvider": GITSSchedulerFuncProvider, # noqa: F405
+    "ScheduledLoRALoader": ScheduledLoRALoader # noqa: F405
 }
 
 
@@ -442,7 +443,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
     "GITSSchedulerFuncProvider": "GITSScheduler Func Provider",
-    "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder"
+    "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder",
+    "ScheduledLoRALoader": "Scheduled LoRA Loader"
 }
 
 
