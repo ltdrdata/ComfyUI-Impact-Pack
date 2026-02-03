@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+import re
 import random
 import threading
 import traceback
@@ -28,6 +29,9 @@ sam_lock = threading.Condition()
 
 last_prepare_data = None
 
+IMPACT_SYNTAX_RE = re.compile(
+    r"(__[^\r\n]+?__)|(?<!\\)\{[^{}\r\n]*(\||\$\$|::)[^{}\r\n]*\}"
+)
 
 def async_prepare_sam(image_dir, model_name, filename):
     with sam_lock:
@@ -507,6 +511,32 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
     
     return input_val
 
+def _is_seed_dependent_text(text: str) -> bool:
+    return isinstance(text, str) and (IMPACT_SYNTAX_RE.search(text) is not None)
+
+
+def _resolve_string_input(value, prompt):
+    if isinstance(value, str):
+        return value
+
+    if isinstance(value, list) and value:
+        node_id = value[0]
+        node = prompt.get(node_id)
+        if not node:
+            return None
+
+        node_inputs = node.get("inputs", {})
+
+        for key in ("text", "string", "value", "prompt", "populated_text", "wildcard_text"):
+            v = node_inputs.get(key)
+            if isinstance(v, str):
+                return v
+
+        for v in node_inputs.values():
+            if isinstance(v, str):
+                return v
+
+    return None
 
 def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
@@ -524,6 +554,16 @@ def onprompt_populate_wildcards(json_data):
                     new_mode = 'fixed'
 
                 inputs['mode'] = new_mode
+                
+            try:
+                text_to_check = _resolve_string_input(inputs.get("populated_text"), prompt)
+                if not isinstance(text_to_check, str):
+                    text_to_check = _resolve_string_input(inputs.get("wildcard_text"), prompt)
+
+                if isinstance(text_to_check, str) and not _is_seed_dependent_text(text_to_check):
+                    inputs["seed"] = 0
+            except Exception:
+                pass
 
             if inputs['mode'] == 'populate' and isinstance(inputs['populated_text'], str):
                 if isinstance(inputs['seed'], list):
