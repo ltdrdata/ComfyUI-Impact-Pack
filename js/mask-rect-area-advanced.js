@@ -183,6 +183,13 @@ function showPreviewCanvas(node, app) {
     widget.canvas.className = "mask-rect-area-canvas";
     widget.parent = node;
 
+    widget.computeLayoutSize = function (node) {
+        return {
+            minHeight: 200,
+            maxHeight: 300
+        };
+    };
+
     document.body.appendChild(widget.canvas);
     node.addCustomWidget(widget);
 
