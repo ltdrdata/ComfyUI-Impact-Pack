@@ -935,6 +935,7 @@ class FaceDetailer:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
+        mask_segs = segs
         if len(segs[1]) > 0:
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
@@ -945,7 +946,8 @@ class FaceDetailer:
                                           refiner_negative=refiner_negative,
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                           scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
-                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+                                          post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+            mask_segs = new_segs
         else:
             enhanced_img = image
             cropped_enhanced = []
@@ -953,7 +955,7 @@ class FaceDetailer:
             cnet_pil_list = []
 
         # Mask Generator
-        mask = core.segs_to_combined_mask(segs)
+        mask = core.segs_to_combined_mask(mask_segs)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [utils.empty_pil_tensor()]
