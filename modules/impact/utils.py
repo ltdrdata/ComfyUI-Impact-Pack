@@ -94,6 +94,55 @@ def remove_padding(image, padding):
     return image[:, pad_top:image.shape[1] - pad_bottom, pad_left:image.shape[2] - pad_right, :]
 
 
+def shift_within_canvas(data, shift_x, shift_y, canvas_w=None, canvas_h=None, fill_value=0.0):
+    is_torch = isinstance(data, torch.Tensor)
+    data_device = data.device if is_torch else None
+    data_dtype = data.dtype if is_torch else None
+    np_data = data.detach().cpu().numpy() if is_torch else np.asarray(data)
+
+    if np_data.ndim not in (2, 3, 4):
+        raise ValueError(f"Unsupported ndim for shift_within_canvas: {np_data.ndim}")
+
+    if np_data.ndim == 4:
+        _, src_h, src_w, _ = np_data.shape
+    elif np_data.ndim == 3:
+        _, src_h, src_w = np_data.shape
+    else:
+        src_h, src_w = np_data.shape
+
+    canvas_w = src_w if canvas_w is None else int(canvas_w)
+    canvas_h = src_h if canvas_h is None else int(canvas_h)
+
+    if np_data.ndim == 4:
+        out_shape = (np_data.shape[0], canvas_h, canvas_w, np_data.shape[3])
+    elif np_data.ndim == 3:
+        out_shape = (np_data.shape[0], canvas_h, canvas_w)
+    else:
+        out_shape = (canvas_h, canvas_w)
+    result = np.full(out_shape, fill_value, dtype=np_data.dtype)
+
+    dst_x1 = max(0, int(shift_x))
+    dst_y1 = max(0, int(shift_y))
+    src_x1 = max(0, -int(shift_x))
+    src_y1 = max(0, -int(shift_y))
+
+    copy_w = min(src_w - src_x1, canvas_w - dst_x1)
+    copy_h = min(src_h - src_y1, canvas_h - dst_y1)
+
+    if copy_w > 0 and copy_h > 0:
+        if np_data.ndim == 4:
+            result[:, dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w, :] = np_data[:, src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w, :]
+        elif np_data.ndim == 3:
+            result[:, dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w] = np_data[:, src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w]
+        else:
+            result[dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w] = np_data[src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w]
+
+    if is_torch:
+        result = torch.from_numpy(result).to(device=data_device, dtype=data_dtype)
+
+    return result
+
+
 def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
     """
     bbox: (x1, y1, x2, y2) in original image
