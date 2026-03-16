@@ -2,6 +2,7 @@ __pycache__
 *.ini
 wildcards/**
 .vscode/
+.vs/
 .idea/
 subpack
 impact_subpack

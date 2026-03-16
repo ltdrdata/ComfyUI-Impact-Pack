@@ -413,7 +413,10 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if len(refined_image.shape) == 5:
         refined_image = refined_image.squeeze(0)
 
-    refined_image = utils.tensor_resize(refined_image, w, h)
+    target_w = int(w)
+    target_h = int(h)
+    if utils.tensor_get_size(refined_image) != (target_w, target_h):
+        refined_image = utils.tensor_resize(refined_image, target_w, target_h)
 
     # prevent mixing of device
     refined_image = refined_image.cpu()

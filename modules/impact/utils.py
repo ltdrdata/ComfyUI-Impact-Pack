@@ -128,6 +128,15 @@ def general_tensor_resize(image, w: int, h: int):
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 def tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
     if image.shape[3] >= 3:
         scaled_images = TensorBatchBuilder()
         for single_image in image:
