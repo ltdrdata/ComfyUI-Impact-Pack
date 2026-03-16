@@ -52,6 +52,80 @@ utils.add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")],
 utils.add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
 
 
+def _apply_post_detail_shrink(cropped_image, enhanced_image, paste_mask, cropped_mask_base,
+                              paste_crop_region, bbox, enabled=False, scale=0.995):
+    if enhanced_image is None or not enabled:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    scale = float(scale)
+    if scale >= 0.999999:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    scale = max(0.01, min(1.0, scale))
+
+    crop_w, crop_h = utils.tensor_get_size(enhanced_image)
+    scaled_w = max(1, int(round(crop_w * scale)))
+    scaled_h = max(1, int(round(crop_h * scale)))
+
+    if scaled_w == crop_w and scaled_h == crop_h:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    bbox_cx = (bbox[0] + bbox[2]) * 0.5 - paste_crop_region[0]
+    bbox_cy = (bbox[1] + bbox[3]) * 0.5 - paste_crop_region[1]
+    bbox_cx = min(max(float(bbox_cx), 0.0), max(crop_w - 1, 0))
+    bbox_cy = min(max(float(bbox_cy), 0.0), max(crop_h - 1, 0))
+
+    offset_x = int(round(bbox_cx - bbox_cx * scale))
+    offset_y = int(round(bbox_cy - bbox_cy * scale))
+    offset_x = min(max(offset_x, 0), max(crop_w - scaled_w, 0))
+    offset_y = min(max(offset_y, 0), max(crop_h - scaled_h, 0))
+
+    resized_image = utils.tensor_resize(enhanced_image, scaled_w, scaled_h)
+    resized_paste_mask = torch.clamp(utils.tensor_resize(paste_mask, scaled_w, scaled_h), 0.0, 1.0)
+
+    cropped_mask_base_is_numpy = isinstance(cropped_mask_base, np.ndarray)
+    cropped_mask_base_src = utils.to_tensor(cropped_mask_base) if cropped_mask_base_is_numpy else cropped_mask_base
+
+    resized_cropped_mask_base = torch.clamp(
+        utils.resize_mask(cropped_mask_base_src, (scaled_h, scaled_w)),
+        0.0,
+        1.0,
+    )
+
+    if getattr(cropped_mask_base, "ndim", None) == 2 and resized_cropped_mask_base.ndim == 3:
+        resized_cropped_mask_base = resized_cropped_mask_base.squeeze(0)
+
+    if cropped_mask_base_is_numpy:
+        resized_cropped_mask_base = resized_cropped_mask_base.cpu().numpy()
+
+    shrunken_image = cropped_image.clone()
+    utils.tensor_paste(shrunken_image, resized_image, (offset_x, offset_y), resized_paste_mask)
+
+    shrunken_paste_mask = utils.shift_within_canvas(
+        resized_paste_mask,
+        offset_x,
+        offset_y,
+        canvas_w=crop_w,
+        canvas_h=crop_h,
+        fill_value=0.0,
+    )
+    shrunken_cropped_mask_base = utils.shift_within_canvas(
+        resized_cropped_mask_base,
+        offset_x,
+        offset_y,
+        canvas_w=crop_w,
+        canvas_h=crop_h,
+        fill_value=0.0,
+    )
+
+    logging.info(
+        f"Detailer: post-detail shrink scale={scale:.4f} offset=({offset_x}, {offset_y}) "
+        f"size=({crop_w}, {crop_h})->({scaled_w}, {scaled_h})"
+    )
+
+    return cropped_image, shrunken_image, shrunken_paste_mask, shrunken_cropped_mask_base
+
+
 # Nodes
 class ONNXDetectorProvider:
     @classmethod
@@ -246,6 +320,8 @@ class DetailerForEach:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                    }
                 }
 
@@ -264,7 +340,8 @@ class DetailerForEach:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -374,6 +451,17 @@ class DetailerForEach:
                 enhanced_image = cropped_image
                 cnet_pils = None
 
+            orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
+                    orig_cropped_image,
+                    enhanced_image,
+                    mask,
+                    seg.cropped_mask,
+                    seg.crop_region,
+                    seg.bbox,
+                    enabled=post_detail_shrink,
+                    scale=post_detail_shrink_scale,
+                )
+
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
 
@@ -402,7 +490,7 @@ class DetailerForEach:
 
             cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
 
-            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
         image_tensor = utils.tensor_convert_rgb(image)
@@ -416,14 +504,15 @@ class DetailerForEach:
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
              detailer_hook=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         return (enhanced_img, )
 
@@ -463,6 +552,8 @@ class DetailerForEachAutoRetry:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                    }
                 }
 
@@ -481,7 +572,8 @@ class DetailerForEachAutoRetry:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, max_retries=1):
+                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -602,6 +694,17 @@ class DetailerForEachAutoRetry:
                     else:
                         print("Detect bad patch, retrying...")
 
+            orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
+                    orig_cropped_image,
+                    enhanced_image,
+                    mask,
+                    seg.cropped_mask,
+                    seg.crop_region,
+                    seg.bbox,
+                    enabled=post_detail_shrink,
+                    scale=post_detail_shrink_scale,
+                )
+
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
 
@@ -630,7 +733,7 @@ class DetailerForEachAutoRetry:
 
             cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
 
-            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
         image_tensor = utils.tensor_convert_rgb(image)
@@ -644,14 +747,15 @@ class DetailerForEachAutoRetry:
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
              detailer_hook=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False, max_retries=1):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1):
 
         enhanced_img, *_ = \
             DetailerForEachAutoRetry.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode, max_retries=max_retries)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale, max_retries=max_retries)
 
         return (enhanced_img, )
 
@@ -688,6 +792,8 @@ class DetailerForEachPipe:
                       "scheduler_func_opt": ("SCHEDULER_FUNC",),
                       "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                       "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                      "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                      "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                      }
                 }
 
@@ -704,7 +810,7 @@ class DetailerForEachPipe:
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
              refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -723,7 +829,8 @@ class DetailerForEachPipe:
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                                      tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -782,6 +889,8 @@ class FaceDetailer:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -801,7 +910,8 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                     post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -825,6 +935,7 @@ class FaceDetailer:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
 
+        mask_segs = segs
         if len(segs[1]) > 0:
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
@@ -834,7 +945,9 @@ class FaceDetailer:
                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                           refiner_negative=refiner_negative,
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                          scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                          scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                          post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+            mask_segs = new_segs
         else:
             enhanced_img = image
             cropped_enhanced = []
@@ -842,7 +955,7 @@ class FaceDetailer:
             cnet_pil_list = []
 
         # Mask Generator
-        mask = core.segs_to_combined_mask(segs)
+        mask = core.segs_to_combined_mask(mask_segs)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [utils.empty_pil_tensor()]
@@ -861,7 +974,7 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         result_img = None
         result_mask = None
@@ -880,7 +993,8 @@ class FaceDetailer:
                 sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1674,6 +1788,8 @@ class FaceDetailerPipe:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                    }
                 }
 
@@ -1691,7 +1807,7 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         result_img = None
         result_mask = None
@@ -1715,7 +1831,8 @@ class FaceDetailerPipe:
                 refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1851,7 +1968,8 @@ class DetailerForEachTest(DetailerForEach):
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
-             cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1861,7 +1979,8 @@ class DetailerForEachTest(DetailerForEach):
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1893,7 +2012,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
              refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+             post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1913,7 +2033,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                       refiner_negative=refiner_negative,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cropped) == 0:
