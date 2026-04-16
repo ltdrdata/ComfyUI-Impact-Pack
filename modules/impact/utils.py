@@ -654,14 +654,35 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False):
         pixels = pixels[:, :x, :y, :]
 
     start = time.time()
-    if vae_tiled_encode:
-        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, 512, overlap=64)[0] # using default settings
-        logging.info(f"[Impact Pack] vae encoded (tiled) in {time.time() - start:.1f}s")
+    tile_size, overlap = get_vae_tiled_encode_settings(pixels)
+    force_low_memory_tiling = tile_size < 512
+
+    if vae_tiled_encode or force_low_memory_tiling:
+        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, tile_size, overlap=overlap)[0]
+        logging.info(f"[Impact Pack] vae encoded (tiled {tile_size}/{overlap}) in {time.time() - start:.1f}s")
     else:
         encoded = nodes.VAEEncode().encode(vae, pixels)[0]
         logging.info(f"[Impact Pack] vae encoded in {time.time() - start:.1f}s")
 
     return encoded
+
+
+def get_vae_tiled_encode_settings(pixels):
+    h = int(pixels.shape[1])
+    w = int(pixels.shape[2])
+    megapixels = (h * w) / 1_000_000.0
+
+    # FaceDetailer crops at/above ~1.5MP have shown sustained VAE encode pressure
+    # with 512px tiles; step down further past ~3MP to protect VRAM headroom.
+    if megapixels >= 3.0:
+        tile_size = 128
+    elif megapixels >= 1.5:
+        tile_size = 256
+    else:
+        tile_size = 512
+
+    overlap = max(16, tile_size // 8)
+    return tile_size, overlap
 
 
 def empty_pil_tensor(w=64, h=64):
