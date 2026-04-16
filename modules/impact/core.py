@@ -58,6 +58,19 @@ current_prompt = None
 
 ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
+
+class _ImpactTiledEncodeProxyVAE:
+    def __init__(self, vae, tile_size=512, overlap=64):
+        self._vae = vae
+        self._tile_size = tile_size
+        self._overlap = overlap
+
+    def encode(self, pixels):
+        return self._vae.encode_tiled(pixels, tile_x=self._tile_size, tile_y=self._tile_size, overlap=self._overlap)
+
+    def __getattr__(self, name):
+        return getattr(self._vae, name)
+
 def get_schedulers():
     return list(comfy.samplers.SCHEDULER_HANDLERS) + ADDITIONAL_SCHEDULERS
 
@@ -343,11 +356,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is None or not detailer_hook.get_skip_sampling():
         if noise_mask is not None and inpaint_model:
             imc_encode = nodes.InpaintModelConditioning().encode
+            imc_vae = _ImpactTiledEncodeProxyVAE(vae) if vae_tiled_encode else vae
             if 'noise_mask' in inspect.signature(imc_encode).parameters:
-                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, mask=noise_mask, noise_mask=True)
+                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, mask=noise_mask, noise_mask=True)
             else:
                 logging.warning("[Impact Pack] ComfyUI is an outdated version.")
-                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, noise_mask)
+                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, noise_mask)
         else:
             latent_image = utils.to_latent_image(upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
             if noise_mask is not None:
