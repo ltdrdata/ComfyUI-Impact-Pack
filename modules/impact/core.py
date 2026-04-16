@@ -362,7 +362,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                 logging.warning("[Impact Pack] ComfyUI is an outdated version.")
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, noise_mask)
         else:
-            latent_image = utils.to_latent_image(upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
+            latent_image = utils.to_latent_image(
+                upscaled_image,
+                vae,
+                vae_tiled_encode=vae_tiled_encode,
+                auto_vae_tiled_encode=True,
+            )
             if noise_mask is not None:
                 latent_image['noise_mask'] = noise_mask
 
