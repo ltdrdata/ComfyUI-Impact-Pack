@@ -686,13 +686,6 @@ def get_vae_tiled_encode_settings(pixels, tile_size=0, overlap=0):
 
     # FaceDetailer encode should stay on the tiled path once selected; the tile
     # geometry adapts by crop size, but 512/64 is still the tiled path.
-    if megapixels >= 3.0:
-        tile_size = 128
-    elif megapixels >= 1.5:
-        tile_size = 256
-    else:
-        tile_size = 512
-
     resolved_tile_size = int(tile_size) if tile_size is not None else 0
     if resolved_tile_size <= 0:
         if megapixels >= 3.0:

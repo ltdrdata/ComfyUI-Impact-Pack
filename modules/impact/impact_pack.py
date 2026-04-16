@@ -341,7 +341,7 @@ class DetailerForEach:
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
                   cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                  post_detail_shrink=False, post_detail_shrink_scale=0.995, auto_vae_tiled_encode=False):
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, auto_vae_tiled_encode=False, vae_tile_size=None, vae_tile_overlap=None):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -446,7 +446,8 @@ class DetailerForEach:
                                                                 refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode)
+                                                                vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
+                                                                vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None

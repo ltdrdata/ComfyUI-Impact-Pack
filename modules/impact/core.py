@@ -358,7 +358,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is None or not detailer_hook.get_skip_sampling():
         if noise_mask is not None and inpaint_model:
             imc_encode = nodes.InpaintModelConditioning().encode
-            imc_vae = _ImpactTiledEncodeProxyVAE(vae, tile_size=vae_tile_size, overlap=vae_tile_overlap) if vae_tiled_encode else vae
+            use_tiled_vae = vae_tiled_encode or auto_vae_tiled_encode or (vae_tile_size is not None and vae_tile_size > 0)
+            imc_vae = _ImpactTiledEncodeProxyVAE(vae, tile_size=vae_tile_size, overlap=vae_tile_overlap) if use_tiled_vae else vae
             if 'noise_mask' in inspect.signature(imc_encode).parameters:
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, mask=noise_mask, noise_mask=True)
             else:
