@@ -60,13 +60,12 @@ ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'L
 
 
 class _ImpactTiledEncodeProxyVAE:
-    def __init__(self, vae, tile_size=512, overlap=64):
+    def __init__(self, vae):
         self._vae = vae
-        self._tile_size = tile_size
-        self._overlap = overlap
 
     def encode(self, pixels):
-        return self._vae.encode_tiled(pixels, tile_x=self._tile_size, tile_y=self._tile_size, overlap=self._overlap)
+        tile_size, overlap = utils.get_vae_tiled_encode_settings(pixels)
+        return self._vae.encode_tiled(pixels, tile_x=tile_size, tile_y=tile_size, overlap=overlap)
 
     def __getattr__(self, name):
         return getattr(self._vae, name)
