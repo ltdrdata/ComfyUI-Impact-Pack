@@ -573,7 +573,8 @@ class DetailerForEachAutoRetry:
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
                   cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1, auto_vae_tiled_encode=False):
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1, auto_vae_tiled_encode=False,
+                  vae_tile_size=0, vae_tile_overlap=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -684,7 +685,8 @@ class DetailerForEachAutoRetry:
                                                                     refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                    vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode)
+                                                                    vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
+                                                                    vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
 
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
@@ -892,6 +894,8 @@ class FaceDetailer:
                     "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
                     "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                     "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
+                    "tile_size": ("INT", {"default": 0, "min": 0, "max": 4096, "step": 16, "tooltip": "FaceDetailer VAE tiled encode/decode tile size. 0 = automatic size based on crop resolution."}),
+                    "tile_overlap": ("INT", {"default": 0, "min": 0, "max": 1024, "step": 8, "tooltip": "FaceDetailer VAE tiled encode/decode overlap. 0 = automatic overlap based on the resolved tile size."}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -912,7 +916,8 @@ class FaceDetailer:
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
                      inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                     post_detail_shrink=False, post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True):
+                     post_detail_shrink=False, post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True,
+                     tile_size=0, tile_overlap=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -948,7 +953,8 @@ class FaceDetailer:
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                           scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
                                           post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
-                                          auto_vae_tiled_encode=force_adaptive_tiled_encode)
+                                          auto_vae_tiled_encode=force_adaptive_tiled_encode,
+                                          vae_tile_size=tile_size, vae_tile_overlap=tile_overlap)
             mask_segs = new_segs
         else:
             enhanced_img = image
@@ -977,7 +983,7 @@ class FaceDetailer:
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
              scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False,
-             post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True):
+             post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
         result_img = None
         result_mask = None
@@ -998,7 +1004,7 @@ class FaceDetailer:
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
                 tiled_encode=tiled_encode, tiled_decode=tiled_decode,
                 post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
-                force_adaptive_tiled_encode=force_adaptive_tiled_encode)
+                force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1795,6 +1801,8 @@ class FaceDetailerPipe:
                     "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
                     "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                     "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
+                    "tile_size": ("INT", {"default": 0, "min": 0, "max": 4096, "step": 16, "tooltip": "FaceDetailer VAE tiled encode/decode tile size. 0 = automatic size based on crop resolution."}),
+                    "tile_overlap": ("INT", {"default": 0, "min": 0, "max": 1024, "step": 8, "tooltip": "FaceDetailer VAE tiled encode/decode overlap. 0 = automatic overlap based on the resolved tile size."}),
                    }
                 }
 
@@ -1813,7 +1821,7 @@ class FaceDetailerPipe:
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
              tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995,
-             force_adaptive_tiled_encode=True):
+             force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
         result_img = None
         result_mask = None
@@ -1839,7 +1847,7 @@ class FaceDetailerPipe:
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
                 tiled_encode=tiled_encode, tiled_decode=tiled_decode,
                 post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
-                force_adaptive_tiled_encode=force_adaptive_tiled_encode)
+                force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask

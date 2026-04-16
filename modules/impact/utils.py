@@ -648,14 +648,14 @@ def crop_image(image, crop_region):
     return crop_tensor4(image, crop_region)
 
 
-def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=False):
+def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=False, tile_size=0, overlap=0):
     x = pixels.shape[1]
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
         pixels = pixels[:, :x, :y, :]
 
     start = time.time()
-    tile_size, overlap = get_vae_tiled_encode_settings(pixels)
+    tile_size, overlap = get_vae_tiled_encode_settings(pixels, tile_size=tile_size, overlap=overlap)
     force_low_memory_tiling = tile_size < 512
     should_tile = vae_tiled_encode or auto_vae_tiled_encode or force_low_memory_tiling
 
@@ -679,7 +679,7 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=F
     return encoded
 
 
-def get_vae_tiled_encode_settings(pixels):
+def get_vae_tiled_encode_settings(pixels, tile_size=0, overlap=0):
     h = int(pixels.shape[1])
     w = int(pixels.shape[2])
     megapixels = (h * w) / 1_000_000.0
@@ -693,8 +693,21 @@ def get_vae_tiled_encode_settings(pixels):
     else:
         tile_size = 512
 
-    overlap = max(16, tile_size // 8)
-    return tile_size, overlap
+    resolved_tile_size = int(tile_size) if tile_size is not None else 0
+    if resolved_tile_size <= 0:
+        if megapixels >= 3.0:
+            resolved_tile_size = 128
+        elif megapixels >= 1.5:
+            resolved_tile_size = 256
+        else:
+            resolved_tile_size = 512
+
+    resolved_overlap = int(overlap) if overlap is not None else 0
+    if resolved_overlap <= 0:
+        resolved_overlap = max(16, resolved_tile_size // 8)
+
+    resolved_overlap = min(max(0, resolved_overlap), max(0, resolved_tile_size - 1))
+    return resolved_tile_size, resolved_overlap
 
 
 def empty_pil_tensor(w=64, h=64):

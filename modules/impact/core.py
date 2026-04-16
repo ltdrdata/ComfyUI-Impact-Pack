@@ -60,11 +60,13 @@ ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'L
 
 
 class _ImpactTiledEncodeProxyVAE:
-    def __init__(self, vae):
+    def __init__(self, vae, tile_size=0, overlap=0):
         self._vae = vae
+        self._tile_size = tile_size
+        self._overlap = overlap
 
     def encode(self, pixels):
-        tile_size, overlap = utils.get_vae_tiled_encode_settings(pixels)
+        tile_size, overlap = utils.get_vae_tiled_encode_settings(pixels, tile_size=self._tile_size, overlap=self._overlap)
         return self._vae.encode_tiled(pixels, tile_x=tile_size, tile_y=tile_size, overlap=overlap)
 
     def __getattr__(self, name):
@@ -267,7 +269,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None, cycle=1,
                    inpaint_model=False, noise_mask_feather=0, scheduler_func=None,
-                   vae_tiled_encode=False, vae_tiled_decode=False, auto_vae_tiled_encode=False):
+                   vae_tiled_encode=False, vae_tiled_decode=False, auto_vae_tiled_encode=False,
+                   vae_tile_size=0, vae_tile_overlap=0):
 
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
@@ -355,7 +358,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is None or not detailer_hook.get_skip_sampling():
         if noise_mask is not None and inpaint_model:
             imc_encode = nodes.InpaintModelConditioning().encode
-            imc_vae = _ImpactTiledEncodeProxyVAE(vae) if vae_tiled_encode else vae
+            imc_vae = _ImpactTiledEncodeProxyVAE(vae, tile_size=vae_tile_size, overlap=vae_tile_overlap) if vae_tiled_encode else vae
             if 'noise_mask' in inspect.signature(imc_encode).parameters:
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, mask=noise_mask, noise_mask=True)
             else:
@@ -367,6 +370,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                 vae,
                 vae_tiled_encode=vae_tiled_encode,
                 auto_vae_tiled_encode=auto_vae_tiled_encode,
+                tile_size=vae_tile_size,
+                overlap=vae_tile_overlap,
             )
             if noise_mask is not None:
                 latent_image['noise_mask'] = noise_mask
@@ -408,8 +413,18 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         # non-latent downscale - latent downscale cause bad quality
         start = time.time()
         if vae_tiled_decode:
-            (refined_image,) = nodes.VAEDecodeTiled().decode(vae, refined_latent, 512) # using default settings
-            logging.info(f"[Impact Pack] vae decoded (tiled) in {time.time() - start:.1f}s")
+            decode_tile_size, decode_overlap = utils.get_vae_tiled_encode_settings(
+                upscaled_image,
+                tile_size=vae_tile_size,
+                overlap=vae_tile_overlap,
+            )
+            decoder = nodes.VAEDecodeTiled()
+            if 'overlap' in inspect.signature(decoder.decode).parameters:
+                (refined_image,) = decoder.decode(vae, refined_latent, decode_tile_size, overlap=decode_overlap)
+            else:
+                logging.warning("[Impact Pack] Your ComfyUI is outdated.")
+                (refined_image,) = decoder.decode(vae, refined_latent, decode_tile_size)
+            logging.info(f"[Impact Pack] vae decoded (tiled {decode_tile_size}/{decode_overlap}) in {time.time() - start:.1f}s")
         else:
             try:
                 refined_image = vae.decode(refined_latent['samples'])
