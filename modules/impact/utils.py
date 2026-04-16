@@ -648,7 +648,7 @@ def crop_image(image, crop_region):
     return crop_tensor4(image, crop_region)
 
 
-def to_latent_image(pixels, vae, vae_tiled_encode=False):
+def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=False):
     x = pixels.shape[1]
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
@@ -657,8 +657,9 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False):
     start = time.time()
     tile_size, overlap = get_vae_tiled_encode_settings(pixels)
     force_low_memory_tiling = tile_size < 512
+    should_tile = vae_tiled_encode or auto_vae_tiled_encode or force_low_memory_tiling
 
-    if vae_tiled_encode or force_low_memory_tiling:
+    if should_tile:
         encoder = nodes.VAEEncodeTiled()
         try:
             supports_overlap = 'overlap' in inspect.signature(encoder.encode).parameters
@@ -683,8 +684,8 @@ def get_vae_tiled_encode_settings(pixels):
     w = int(pixels.shape[2])
     megapixels = (h * w) / 1_000_000.0
 
-    # FaceDetailer crops at/above ~1.5MP have shown sustained VAE encode pressure
-    # with 512px tiles; step down further past ~3MP to protect VRAM headroom.
+    # FaceDetailer encode should stay on the tiled path once selected; the tile
+    # geometry adapts by crop size, but 512/64 is still the tiled path.
     if megapixels >= 3.0:
         tile_size = 128
     elif megapixels >= 1.5:

@@ -267,7 +267,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None, cycle=1,
                    inpaint_model=False, noise_mask_feather=0, scheduler_func=None,
-                   vae_tiled_encode=False, vae_tiled_decode=False):
+                   vae_tiled_encode=False, vae_tiled_decode=False, auto_vae_tiled_encode=False):
 
     if noise_mask is not None:
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
@@ -362,7 +362,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                 logging.warning("[Impact Pack] ComfyUI is an outdated version.")
                 positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, noise_mask)
         else:
-            latent_image = utils.to_latent_image(upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
+            latent_image = utils.to_latent_image(
+                upscaled_image,
+                vae,
+                vae_tiled_encode=vae_tiled_encode,
+                auto_vae_tiled_encode=auto_vae_tiled_encode,
+            )
             if noise_mask is not None:
                 latent_image['noise_mask'] = noise_mask
 

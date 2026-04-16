@@ -341,7 +341,7 @@ class DetailerForEach:
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
                   cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                  post_detail_shrink=False, post_detail_shrink_scale=0.995):
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, auto_vae_tiled_encode=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -446,7 +446,7 @@ class DetailerForEach:
                                                                 refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                vae_tiled_decode=tiled_decode)
+                                                                vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode)
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
@@ -573,7 +573,7 @@ class DetailerForEachAutoRetry:
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
                   cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1):
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1, auto_vae_tiled_encode=False):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -684,7 +684,7 @@ class DetailerForEachAutoRetry:
                                                                     refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                    vae_tiled_decode=tiled_decode)
+                                                                    vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode)
 
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
@@ -891,6 +891,7 @@ class FaceDetailer:
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
                     "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
+                    "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -911,7 +912,7 @@ class FaceDetailer:
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
                      inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
-                     post_detail_shrink=False, post_detail_shrink_scale=0.995):
+                     post_detail_shrink=False, post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
@@ -946,7 +947,8 @@ class FaceDetailer:
                                           refiner_negative=refiner_negative,
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                           scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
-                                          post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+                                          post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                                          auto_vae_tiled_encode=force_adaptive_tiled_encode)
             mask_segs = new_segs
         else:
             enhanced_img = image
@@ -974,7 +976,8 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False,
+             post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True):
 
         result_img = None
         result_mask = None
@@ -994,7 +997,8 @@ class FaceDetailer:
                 sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
                 tiled_encode=tiled_encode, tiled_decode=tiled_decode,
-                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                force_adaptive_tiled_encode=force_adaptive_tiled_encode)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
@@ -1790,6 +1794,7 @@ class FaceDetailerPipe:
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
                     "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
+                    "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
                    }
                 }
 
@@ -1807,7 +1812,8 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995,
+             force_adaptive_tiled_encode=True):
 
         result_img = None
         result_mask = None
@@ -1832,7 +1838,8 @@ class FaceDetailerPipe:
                 refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
                 tiled_encode=tiled_encode, tiled_decode=tiled_decode,
-                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                force_adaptive_tiled_encode=force_adaptive_tiled_encode)
 
             result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
             result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
