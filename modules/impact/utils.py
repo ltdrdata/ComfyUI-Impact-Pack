@@ -9,6 +9,7 @@ from PIL import Image
 import comfy
 import time
 import logging
+import inspect
 
 
 class TensorBatchBuilder:
@@ -658,7 +659,17 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False):
     force_low_memory_tiling = tile_size < 512
 
     if vae_tiled_encode or force_low_memory_tiling:
-        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, tile_size, overlap=overlap)[0]
+        encoder = nodes.VAEEncodeTiled()
+        try:
+            supports_overlap = 'overlap' in inspect.signature(encoder.encode).parameters
+        except (TypeError, ValueError):
+            supports_overlap = False
+
+        if supports_overlap:
+            encoded = encoder.encode(vae, pixels, tile_size, overlap=overlap)[0]
+        else:
+            logging.warning("[Impact Pack] Your ComfyUI is outdated.")
+            encoded = encoder.encode(vae, pixels, tile_size)[0]
         logging.info(f"[Impact Pack] vae encoded (tiled {tile_size}/{overlap}) in {time.time() - start:.1f}s")
     else:
         encoded = nodes.VAEEncode().encode(vae, pixels)[0]
