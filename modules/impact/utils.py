@@ -657,7 +657,7 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=F
     start = time.time()
     tile_size, overlap = get_vae_tiled_encode_settings(pixels, tile_size=tile_size, overlap=overlap)
     force_low_memory_tiling = tile_size < 512
-    should_tile = vae_tiled_encode or auto_vae_tiled_encode or force_low_memory_tiling
+    should_tile = vae_tiled_encode or auto_vae_tiled_encode or force_low_memory_tiling or tile_size > 0 or overlap > 0
 
     if should_tile:
         encoder = nodes.VAEEncodeTiled()
