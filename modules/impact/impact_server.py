@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+import re
 import random
 import threading
 import traceback
@@ -28,6 +29,9 @@ sam_lock = threading.Condition()
 
 last_prepare_data = None
 
+IMPACT_SYNTAX_RE = re.compile(
+    r"(__[^\r\n]+?__)|(?<!\\)\{[^{}\r\n]*(\||\$\$|::)[^{}\r\n]*\}"
+)
 
 def async_prepare_sam(image_dir, model_name, filename):
     with sam_lock:
@@ -507,6 +511,46 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
     
     return input_val
 
+def _is_seed_dependent_text(text: str) -> bool:
+    """True if this *string* contains Impact wildcard/dynamic syntax."""
+    return isinstance(text, str) and bool(text) and (IMPACT_SYNTAX_RE.search(text) is not None)
+
+def _value_might_be_seed_dependent(value, prompt, visited=None, depth: int = 0, max_depth: int = 30) -> bool:
+    """
+    Recursively scan an input value (literal string or link [node_id, output_idx]) and its
+    upstream inputs to determine whether Impact syntax might be present.
+
+    Returns True if seed might affect output.
+    Returns False only when we can be reasonably sure there is no syntax anywhere upstream.
+    """
+    if visited is None:
+        visited = set()
+
+    if depth > max_depth:
+        return True
+
+    if isinstance(value, str):
+        return _is_seed_dependent_text(value)
+
+    if isinstance(value, list) and value:
+        node_id = value[0]
+        if node_id in visited:
+            return True
+        visited.add(node_id)
+
+        node = prompt.get(node_id)
+        if not node:
+            return True
+
+        node_inputs = node.get("inputs", {})
+
+        for vv in node_inputs.values():
+            if _value_might_be_seed_dependent(vv, prompt, visited, depth + 1, max_depth):
+                return True
+
+        return False
+
+    return True
 
 def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
@@ -516,7 +560,6 @@ def onprompt_populate_wildcards(json_data):
         if 'class_type' in v and (v['class_type'] == 'ImpactWildcardEncode' or v['class_type'] == 'ImpactWildcardProcessor'):
             inputs = v['inputs']
 
-            # legacy adapter
             if isinstance(inputs['mode'], bool):
                 if inputs['mode']:
                     new_mode = 'populate'
@@ -524,6 +567,16 @@ def onprompt_populate_wildcards(json_data):
                     new_mode = 'fixed'
 
                 inputs['mode'] = new_mode
+
+            try:
+                value_to_check = inputs.get("populated_text", None)
+                if value_to_check is None:
+                    value_to_check = inputs.get("wildcard_text", None)
+
+                if isinstance(inputs.get("seed", None), int) and value_to_check is not None and not _value_might_be_seed_dependent(value_to_check, prompt):
+                    inputs["seed"] = 0
+            except Exception:
+                pass
 
             if inputs['mode'] == 'populate' and isinstance(inputs['populated_text'], str):
                 if isinstance(inputs['seed'], list):
