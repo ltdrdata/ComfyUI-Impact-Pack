@@ -17,7 +17,7 @@ import numpy as np
 import torch
 import folder_paths
 import logging
-
+import cv2
 
 from typing import Callable, Union
 
@@ -2027,3 +2027,193 @@ class SEGSUpscalerPipe:
         return SEGSUpscaler.doit(image, segs, model, clip, vae, rescale_factor, resampling_method, supersample, rounding_modulus,
                                  seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, feather, inpaint_model, noise_mask_feather,
                                  upscale_model_opt=upscale_model_opt, upscaler_hook_opt=upscaler_hook_opt, scheduler_func_opt=scheduler_func_opt)
+
+class ImpactSEGSLabelOverlay:
+    """
+    Visualizes SEGS (Bounding Boxes + Labels) directly onto the image tensor.
+    Useful for debugging detection pipelines without using external previewers.
+    Features: Pixel-perfect alignment, alpha blending, unique colors (User Priority), 
+    auto-footer info, and dynamic font scaling for high-res images.
+    """
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "segs": ("SEGS",),
+            },
+            "optional": {
+                "box_thickness": ("INT", {"default": 2, "min": 1, "max": 10}),
+                "font_scale": ("FLOAT", {"default": 0.4, "min": 0.1, "max": 2.0, "step": 0.1}),
+                "box_alpha": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.05}),
+                "text_color": ("STRING", {"default": "#000000"}), 
+                "box_color": ("STRING", {"default": "#00FF00"}),                
+                "draw_labels": ("BOOLEAN", {"default": True}),
+                "draw_score": ("BOOLEAN", {"default": True}),
+                "unique_colors": ("BOOLEAN", {"default": True}),
+                "draw_footer": ("BOOLEAN", {"default": True}),                
+                "bbox_detector_opt": ("BBOX_DETECTOR",),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "overlay_segs"
+    CATEGORY = "ImpactPack/Util"
+
+    def overlay_segs(self, image, segs, box_thickness=2, font_scale=0.4, box_alpha=0.7, 
+                     text_color="#000000", box_color="#00FF00", 
+                     draw_labels=True, draw_score=True, unique_colors=True, 
+                     draw_footer=True, bbox_detector_opt=None):
+        
+        # Helper: Hex to BGR
+        def hex_to_bgr(hex_color):
+            hex_color = hex_color.lstrip('#')
+            try:
+                return tuple(int(hex_color[i:i+2], 16) for i in (4, 2, 0)) # RGB -> BGR
+            except:
+                return (0, 0, 0)
+
+        # Helper: Shift Hue for unique colors relative to User Base Color
+        def shift_color(base_bgr, index, step=35):
+            if index == 0: return base_bgr # First class ALWAYS gets the user defined color
+            
+            pixel = np.array([[base_bgr]], dtype=np.uint8)
+            hsv = cv2.cvtColor(pixel, cv2.COLOR_BGR2HSV)
+            h, s, v = hsv[0, 0]
+            new_h = (int(h) + (index * step)) % 180
+            hsv[0, 0] = [new_h, s, v]
+            bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+            return tuple(int(x) for x in bgr[0, 0])
+
+        base_color_box = hex_to_bgr(box_color)
+        color_text = hex_to_bgr(text_color)
+        
+        # Mapping to ensure consistent colors per execution
+        label_to_id = {}
+        next_id = 0
+
+        # --- Resolve Model Name (Deep Inspection) ---
+        model_name = "Unknown Detector"
+        
+        if bbox_detector_opt is not None:
+            found_path = None
+            possible_attrs = ["onnx_model_path", "model_path", "onnx_model", "ckpt_path", "name"]
+            for attr in possible_attrs:
+                if hasattr(bbox_detector_opt, attr):
+                    val = getattr(bbox_detector_opt, attr)
+                    if isinstance(val, str) and (val.endswith(".onnx") or val.endswith(".pt") or val.endswith(".pth")):
+                        found_path = val
+                        break
+            
+            if found_path is None and hasattr(bbox_detector_opt, "__dict__"):
+                for k, v in bbox_detector_opt.__dict__.items():
+                    if isinstance(v, str) and v.lower().endswith(".onnx"):
+                        found_path = v
+                        break
+            
+            if found_path:
+                model_name = os.path.basename(found_path)
+
+        result_images = []
+        img_batch_np = image.cpu().numpy()
+        
+        _, segs_list = segs
+
+        for i in range(len(img_batch_np)):
+            img_np = (img_batch_np[i] * 255.0).clip(0, 255).astype(np.uint8)
+            img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
+            h_orig, w_orig = img_bgr.shape[:2]
+            
+            # --- Dynamic Font Scaling ---
+            min_legible_scale = w_orig / 2500.0
+            effective_font_scale = max(font_scale, min_legible_scale)
+            
+            overlay = img_bgr.copy()
+            labels_to_draw = []
+            
+            valid_segs = [s for s in segs_list if hasattr(s, 'bbox')]
+            
+            for seg in valid_segs:
+                x1, y1, x2, y2 = map(int, seg.bbox)
+                
+                # Determine Color (User Priority Logic)
+                current_box_color = base_color_box
+                if unique_colors:
+                    lbl = str(seg.label)
+                    if lbl not in label_to_id:
+                        label_to_id[lbl] = next_id
+                        next_id += 1
+                    # Uses the user base color as starting point (index 0)
+                    current_box_color = shift_color(base_color_box, label_to_id[lbl])
+
+                cv2.rectangle(overlay, (x1, y1), (x2, y2), current_box_color, box_thickness)
+                
+                label_parts = []
+                if draw_labels and seg.label is not None:
+                    label_parts.append(str(seg.label))
+                if draw_score and hasattr(seg, 'confidence'):
+                    label_parts.append(f"{int(seg.confidence * 100)}%")
+                
+                if not label_parts: 
+                    continue
+                    
+                label_text = ": ".join(label_parts)
+                
+                font_face = cv2.FONT_HERSHEY_SIMPLEX
+                font_thickness = max(1, int(effective_font_scale * 2))
+                (text_w, text_h), baseline = cv2.getTextSize(label_text, font_face, effective_font_scale, font_thickness)
+                
+                pad_y = int(4 * (effective_font_scale / 0.4))
+                pad_x = int(4 * (effective_font_scale / 0.4))
+                
+                bg_x1 = x1
+                bg_y2 = y1
+                bg_y1 = y1 - text_h - (pad_y * 2)
+                bg_x2 = x1 + text_w + (pad_x * 2)
+                
+                if bg_y1 < 0: 
+                    bg_y1 = 0
+                    bg_y2 = text_h + (pad_y * 2)
+
+                labels_to_draw.append({
+                    "text": label_text,
+                    "origin": (bg_x1 + pad_x, bg_y2 - pad_y),
+                    "color": color_text
+                })
+
+                cv2.rectangle(overlay, (bg_x1, bg_y1), (bg_x2, bg_y2), current_box_color, -1)
+
+            cv2.addWeighted(overlay, box_alpha, img_bgr, 1 - box_alpha, 0, img_bgr)
+
+            for label_info in labels_to_draw:
+                font_thickness = max(1, int(effective_font_scale * 2))
+                cv2.putText(img_bgr, label_info["text"], label_info["origin"], 
+                            cv2.FONT_HERSHEY_SIMPLEX, effective_font_scale, label_info["color"], font_thickness, cv2.LINE_AA)
+
+            if draw_footer:
+                footer_height = 35
+                footer = np.zeros((footer_height, w_orig, 3), dtype=np.uint8)
+                
+                count = len(valid_segs)
+                conf_text = "N/A"
+                if count > 0:
+                    confidences = [s.confidence for s in valid_segs if hasattr(s, 'confidence')]
+                    if confidences:
+                        min_c, max_c = min(confidences)*100, max(confidences)*100
+                        conf_text = f"{int(min_c)}%-{int(max_c)}%"
+                
+                info_parts = [model_name, f"{w_orig}x{h_orig}", f"Count: {count}", f"Conf: {conf_text}"]
+                full_text = " | ".join(info_parts)
+                
+                f_scale = 0.5
+                cv2.putText(footer, full_text, (10, 23), 
+                            cv2.FONT_HERSHEY_SIMPLEX, f_scale, (200, 200, 200), 1, cv2.LINE_AA)
+                
+                img_bgr = cv2.vconcat([img_bgr, footer])
+
+            img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            img_out = img_rgb.astype(np.float32) / 255.0
+            result_images.append(img_out)
+
+        return (torch.from_numpy(np.array(result_images)),)

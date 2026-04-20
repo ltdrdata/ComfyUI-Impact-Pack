@@ -113,10 +113,11 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
 
     device = mm.get_torch_device()
 
-    noise = noise.to(device)
-    latent_image = latent_image.to(device)
+    noise = noise.to(device).float()
+    latent_image = latent_image.to(device).float()
     if noise_mask is not None:
-        noise_mask = noise_mask.to(device)
+        noise_mask = noise_mask.to(device).float()
+
 
     if negative != 'NegativePlaceholder':
         # This way is incompatible with Advanced ControlNet, yet.
