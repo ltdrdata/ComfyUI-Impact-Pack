@@ -1,8 +1,21 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
-import { ComfyDialog, $el } from "../../scripts/ui.js";
-import { ComfyApp } from "../../scripts/app.js";
-import { ClipspaceDialog } from "../../extensions/core/clipspace.js";
+// === SHIM FOR NEW COMFYUI (removes ui.js + clipspace.js warnings) ===
+let ComfyDialog, $el, ComfyApp, ClipspaceDialog;
+
+if (window?.comfyAPI?.ui) {
+    ({ ComfyDialog, $el } = window.comfyAPI.ui);
+    ComfyApp = window.comfyAPI.app?.ComfyApp || window.ComfyApp;
+} else {
+    ({ ComfyDialog, $el } = await import("../../scripts/ui.js"));
+    ComfyApp = (await import("../../scripts/app.js")).ComfyApp;
+}
+
+if (window?.comfyAPI?.clipspace?.ClipspaceDialog) {
+    ({ ClipspaceDialog } = window.comfyAPI.clipspace);
+} else {
+    ({ ClipspaceDialog } = await import("../../extensions/core/clipspace.js"));
+}
 
 function addMenuHandler(nodeType, cb) {
 	const getOpts = nodeType.prototype.getExtraMenuOptions;

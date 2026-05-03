@@ -1,6 +1,12 @@
 import { ComfyApp, app } from "../../scripts/app.js";
-import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { api } from "../../scripts/api.js";
+// === SHIM FOR NEW COMFYUI (removes ui.js warning) ===
+let ComfyDialog, $el;
+if (window?.comfyAPI?.ui) {
+    ({ ComfyDialog, $el } = window.comfyAPI.ui);
+} else {
+    ({ ComfyDialog, $el } = await import("../../scripts/ui.js"));
+}
 
 async function open_picker(node) {
     const resp = await api.fetchApi(`/impact/segs/picker/count?id=${node.id}`);
