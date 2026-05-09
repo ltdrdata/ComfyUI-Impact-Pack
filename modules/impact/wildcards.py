@@ -42,22 +42,30 @@ class LazyWildcardLoader:
     def _load_txt(self):
         """Load .txt wildcard file"""
         try:
-            with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
-                lines = f.read().splitlines()
-                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
-        except (yaml.reader.ReaderError, UnicodeDecodeError):
-            with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                lines = f.read().splitlines()
-                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+            try:
+                with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
+                    lines = f.read().splitlines()
+                    return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+            except (yaml.reader.ReaderError, UnicodeDecodeError):
+                with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                    lines = f.read().splitlines()
+                    return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+        except Exception as e:
+            logging.warning(f"[Impact Pack] Failed to load wildcard file {self.base_dir / self.filename}: {type(e).__name__}: {e}")
+            return []
 
     def _load_yaml(self):
         """Load .yaml/.yml wildcard file"""
         try:
-            with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
-                return yaml.load(f, Loader=yaml.FullLoader)
-        except (yaml.reader.ReaderError, UnicodeDecodeError):
-            with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                return yaml.load(f, Loader=yaml.FullLoader)
+            try:
+                with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
+                    return yaml.load(f, Loader=yaml.FullLoader)
+            except (yaml.reader.ReaderError, UnicodeDecodeError):
+                with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                    return yaml.load(f, Loader=yaml.FullLoader)
+        except Exception as e:
+            logging.warning(f"[Impact Pack] Failed to load wildcard file {self.base_dir / self.filename}: {type(e).__name__}: {e}")
+            return None
 
     def get_data(self):
         """Get wildcard data, loading if necessary"""
@@ -360,25 +368,33 @@ def get_wildcard_value(key):
 def load_txt_wildcard(file_path):
     """Load a .txt wildcard file"""
     try:
-        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-            lines = f.read().splitlines()
-            return [x for x in lines if x.strip() and not x.strip().startswith('#')]
-    except (yaml.reader.ReaderError, UnicodeDecodeError):
-        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-            lines = f.read().splitlines()
-            return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+        try:
+            with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                lines = f.read().splitlines()
+                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+        except (yaml.reader.ReaderError, UnicodeDecodeError):
+            with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                lines = f.read().splitlines()
+                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+    except Exception as e:
+        logging.warning(f"[Impact Pack] Failed to load wildcard file {file_path}: {type(e).__name__}: {e}")
+        return []
 
 
 def load_yaml_wildcard(file_path, key_prefix=''):
     """Load a .yaml/.yml wildcard file and expand nested structures"""
     global loaded_wildcards
-
     try:
-        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-    except (yaml.reader.ReaderError, UnicodeDecodeError):
-        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+        yaml_data = None
+        try:
+            with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+        except (yaml.reader.ReaderError, UnicodeDecodeError):
+            with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+    except Exception as e:
+        logging.warning(f"[Impact Pack] Failed to load wildcard file {file_path}: {type(e).__name__}: {e}")
+        return []
 
     if not yaml_data:
         return []
@@ -480,13 +496,16 @@ def read_wildcard_dict(wildcard_path, on_demand=False):
                 else:
                     # Load data immediately (original behavior)
                     try:
-                        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-                            lines = f.read().splitlines()
-                            wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
-                    except yaml.reader.ReaderError:
-                        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                            lines = f.read().splitlines()
-                            wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
+                        try:
+                            with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                                lines = f.read().splitlines()
+                                wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
+                        except yaml.reader.ReaderError:
+                            with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                                lines = f.read().splitlines()
+                                wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
+                    except Exception as e:
+                        logging.warning(f"[Impact Pack] Failed to load wildcard file {file_path}: {type(e).__name__}: {e}")
             elif file.endswith('.yaml') or file.endswith('.yml'):
                 file_path = os.path.join(root, file)
 
@@ -501,14 +520,18 @@ def read_wildcard_dict(wildcard_path, on_demand=False):
                 else:
                     # Load data immediately (original behavior)
                     try:
-                        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-                            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-                    except yaml.reader.ReaderError:
-                        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+                        try:
+                            with open(file_path, 'r', encoding="ISO-8859-1") as f:
+                                yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+                        except yaml.reader.ReaderError:
+                            with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
+                                yaml_data = yaml.load(f, Loader=yaml.FullLoader)
 
-                    for k, v in yaml_data.items():
-                        read_wildcard(k, v, on_demand)
+                        if yaml_data:
+                            for k, v in yaml_data.items():
+                                read_wildcard(k, v, on_demand)
+                    except Exception as e:
+                        logging.warning(f"[Impact Pack] Failed to load wildcard file {file_path}: {type(e).__name__}: {e}")
 
     return wildcard_dict
 
@@ -1245,7 +1268,7 @@ def wildcard_load():
             try:
                 if custom_wildcards_path:
                     read_wildcard_dict(custom_wildcards_path, on_demand=False)
-            except Exception:
-                logging.info("[Impact Pack] Failed to load custom wildcards directory.")
+            except Exception as e:
+                logging.warning(f"[Impact Pack] Failed to load custom wildcards from {custom_wildcards_path}: {type(e).__name__}: {e}")
 
         logging.info("[Impact Pack] Wildcards loading done.")
