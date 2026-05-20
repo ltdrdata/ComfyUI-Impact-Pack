@@ -441,7 +441,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         refined_image = detailer_hook.post_decode(refined_image)
 
-    # downscale
+    # Final geometry fix before paste-back.
+    #
+    # This boundary is hit immediately after VAE decode, where prior failures were
+    # observed in native resize paths. Keep the returned crop on CPU, avoid bicubic
+    # for post-decode paste-back resize, and crop/pad tiny VAE multiple differences
+    # instead of interpolating them.
 
     # workaround: support WAN as an i2i model
     if len(refined_image.shape) == 5:
@@ -449,11 +454,19 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     target_w = int(w)
     target_h = int(h)
-    if utils.tensor_get_size(refined_image) != (target_w, target_h):
-        refined_image = utils.tensor_resize(refined_image, target_w, target_h)
 
-    # prevent mixing of device
-    refined_image = refined_image.cpu()
+    if torch.is_tensor(refined_image) and refined_image.is_cuda:
+        logging.info(f"Detailer: synchronizing decoded crop before CPU paste-back {tuple(refined_image.shape)}")
+        torch.cuda.synchronize(refined_image.device)
+
+    # prevent mixing of device and keep the fragile post-decode geometry path on CPU
+    refined_image = refined_image.detach().cpu()
+
+    cur_w, cur_h = utils.tensor_get_size(refined_image)
+    if (cur_w, cur_h) != (target_w, target_h):
+        logging.info(f"Detailer: final crop geometry fix {(cur_w, cur_h)} -> {(target_w, target_h)}")
+        refined_image = utils.tensor_resize_for_detailer_output(refined_image, target_w, target_h)
+        logging.info(f"Detailer: final crop geometry fix complete {tuple(refined_image.shape)}")
 
     # don't convert to latent - latent break image
     # preserving pil is much better

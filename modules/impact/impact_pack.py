@@ -473,6 +473,7 @@ class DetailerForEach:
 
             orig_cropped_image = cropped_image.clone()
             if not (isinstance(model, str) and model == "DUMMY"):
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} enhance_detail start crop={tuple(cropped_image.shape)}")
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                 seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                                 cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -485,10 +486,12 @@ class DetailerForEach:
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                 vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
                                                                 vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} enhance_detail returned shape={None if enhanced_image is None else tuple(enhanced_image.shape)}")
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
 
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} post_detail_shrink start")
             orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
                     orig_cropped_image,
                     enhanced_image,
@@ -506,9 +509,12 @@ class DetailerForEach:
             if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image = image.cpu()
-                enhanced_image = enhanced_image.cpu()
+                image = image.detach().cpu()
+                enhanced_image = enhanced_image.detach().cpu()
+                mask = mask.detach().cpu()
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste start region={seg.crop_region} enhanced={tuple(enhanced_image.shape)} mask={tuple(mask.shape)}")
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste complete")
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -516,13 +522,15 @@ class DetailerForEach:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output start")
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
+                mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output complete")
             else:
                 new_seg_image = None
 
@@ -719,6 +727,7 @@ class DetailerForEachAutoRetry:
 
             if not (isinstance(model, str) and model == "DUMMY"):
                 for retry in range(max_retries):
+                    logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} retry {retry + 1}/{max_retries} enhance_detail start crop={tuple(cropped_image.shape)}")
                     enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                     seg.bbox, seg_seed + retry, steps, cfg, sampler_name, scheduler,
                                                                     cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -731,6 +740,7 @@ class DetailerForEachAutoRetry:
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                     vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
                                                                     vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
+                    logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} retry {retry + 1}/{max_retries} enhance_detail returned shape={None if enhanced_image is None else tuple(enhanced_image.shape)}")
 
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
@@ -757,9 +767,12 @@ class DetailerForEachAutoRetry:
             if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image = image.cpu()
-                enhanced_image = enhanced_image.cpu()
+                image = image.detach().cpu()
+                enhanced_image = enhanced_image.detach().cpu()
+                mask = mask.detach().cpu()
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste start region={seg.crop_region} enhanced={tuple(enhanced_image.shape)} mask={tuple(mask.shape)}")
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste complete")
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -767,13 +780,15 @@ class DetailerForEachAutoRetry:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output start")
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
+                mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
+                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output complete")
             else:
                 new_seg_image = None
 
