@@ -390,12 +390,12 @@ def tensor_paste(image1, image2, left_top, mask):
             image1[:, dst_y0:dst_y1, x:x+w, :] = (1 - mask_chunk) * region1 + mask_chunk * region2
 
         elif c1 == 4 and c2 == 4:
-            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
-                (1 - mask_chunk) * region1[:, :, :, :3] +
-                mask_chunk * region2[:, :, :, :3]
-            )
             a1 = region1[:, :, :, 3:4]
             a2 = region2[:, :, :, 3:4] * mask_chunk
+            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
+                (1 - a2) * region1[:, :, :, :3] +
+                a2 * region2[:, :, :, :3]
+            )
             image1[:, dst_y0:dst_y1, x:x+w, 3:4] = a1 + a2 * (1 - a1)
 
         elif c1 == 4 and c2 == 3:
