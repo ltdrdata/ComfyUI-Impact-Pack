@@ -100,15 +100,6 @@ def _apply_post_detail_shrink(cropped_image, enhanced_image, paste_mask, cropped
 
     scale = max(0.01, min(1.0, scale))
 
-    # The default shrink value is 0.995. On large/detailer crops this causes an
-    # almost invisible resample of the finished patch, but it can lower apparent
-    # detail and has been observed to wedge right after "post_detail_shrink start".
-    # Treat near-identity shrink as a no-op. Users that need an actual shrink can
-    # still set a visibly smaller scale, e.g. <= 0.98.
-    if scale >= 0.99:
-        logging.info(f"Detailer: post-detail shrink skipped near-identity scale={scale:.4f}")
-        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
-
     crop_w, crop_h = utils.tensor_get_size(enhanced_image)
     scaled_w = max(1, int(round(crop_w * scale)))
     scaled_h = max(1, int(round(crop_h * scale)))
