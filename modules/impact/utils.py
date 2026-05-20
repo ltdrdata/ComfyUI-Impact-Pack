@@ -166,17 +166,7 @@ def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
     return x1, y1, x2, y2
 
 
-def general_tensor_resize(image, w: int, h: int):
-    _tensor_check_image(image)
-    image = image.permute(0, 3, 1, 2)
-    image = torch.nn.functional.interpolate(image, size=(h, w), mode="bilinear")
-    image = image.permute(0, 2, 3, 1)
-    return image
-
-
-# TODO: Sadly, we need LANCZOS
-LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
-def tensor_resize(image, w: int, h: int):
+def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
     _tensor_check_image(image)
     w = int(w)
     h = int(h)
@@ -187,19 +177,38 @@ def tensor_resize(image, w: int, h: int):
     if cur_w == w and cur_h == h:
         return image
 
-    if image.shape[3] >= 3:
-        scaled_images = TensorBatchBuilder()
-        for single_image in image:
-            single_image = single_image.unsqueeze(0)
-            single_pil = tensor2pil(single_image)
-            scaled_pil = single_pil.resize((w, h), resample=LANCZOS)
+    original_device = image.device
+    original_dtype = image.dtype
 
-            single_image = pil2tensor(scaled_pil)
-            scaled_images.concat(single_image)
+    # Resize directly with torch instead of round-tripping through PIL.
+    #
+    # PIL.Image.resize can terminate the interpreter with SIGFPE/SIGSEGV in native
+    # code for some resize inputs. That cannot be recovered with try/except, so the
+    # detailer path must avoid PIL for tensor resizing entirely.
+    nchw = image.movedim(-1, 1).contiguous().to(dtype=torch.float32)
 
-        return scaled_images.tensor
+    if mode in ("bilinear", "bicubic"):
+        resized = torch.nn.functional.interpolate(nchw, size=(h, w), mode=mode, align_corners=False)
+    elif mode in ("nearest", "area"):
+        resized = torch.nn.functional.interpolate(nchw, size=(h, w), mode=mode)
     else:
-        return general_tensor_resize(image, w, h)
+        raise ValueError(f"Unsupported resize mode: {mode}")
+
+    resized = resized.movedim(1, -1).contiguous()
+
+    if image.shape[-1] >= 3:
+        resized = resized.clamp(0.0, 1.0)
+
+    return resized.to(device=original_device, dtype=original_dtype)
+
+
+# Kept for compatibility with callers/imports, but tensor_resize no longer uses
+# PIL because a native PIL resize crash cannot be handled safely from Python.
+LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
+def tensor_resize(image, w: int, h: int):
+    _tensor_check_image(image)
+    mode = "bicubic" if image.shape[3] >= 3 else "bilinear"
+    return general_tensor_resize(image, w, h, mode=mode)
 
 
 def tensor_get_size(image):
