@@ -787,6 +787,22 @@ def try_install_custom_node(custom_node_url, msg):
         logging.info("[Impact Pack] ComfyUI-Manager is outdated. The custom node installation feature is not available.")
 
 
+def apply_differential_diffusion(model):
+    # ComfyUI ≥0.3.63 exposes V3 schema (classmethod `execute`); older versions use instance method `apply`.
+    # Import is deferred so callers with guarded imports (e.g. segs_upscaler.py) still work when the
+    # comfy_extras module is absent on very old ComfyUI — the ImportError propagates as before.
+    from comfy_extras import nodes_differential_diffusion
+    dd = nodes_differential_diffusion.DifferentialDiffusion()
+    if hasattr(dd, 'execute'):
+        return dd.execute(model)[0]
+    if hasattr(dd, 'apply'):
+        return dd.apply(model)[0]
+    raise AttributeError(
+        "DifferentialDiffusion has neither 'execute' nor 'apply'. "
+        "Update ComfyUI (≥0.3.63 for V3) or reinstall Impact Pack."
+    )
+
+
 # author: Trung0246 --->
 class TautologyStr(str):
     def __ne__(self, other):

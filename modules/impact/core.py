@@ -277,7 +277,7 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         noise_mask = noise_mask.squeeze(3)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-            model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
+            model = utils.apply_differential_diffusion(model)
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
@@ -472,7 +472,7 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         noise_mask = noise_mask.squeeze(3)
 
     if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
-        model = nodes_differential_diffusion.DifferentialDiffusion().execute(model)[0]
+        model = utils.apply_differential_diffusion(model)
 
     if wildcard_opt is not None and wildcard_opt != "":
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
