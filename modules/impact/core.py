@@ -331,11 +331,35 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             logging.info(f"Detailer: segment skip [zero size={new_w, new_h}]")
             return None, None
     else:
-        if upscale <= 1.0 or new_w == 0 or new_h == 0:
-            logging.info("Detailer: force inpaint")
+        if new_w == 0 or new_h == 0:
+            logging.info("Detailer: force inpaint [zero computed size; using original crop size]")
             upscale = 1.0
             new_w = w
             new_h = h
+        elif upscale <= 1.0:
+            # Force-inpaint means "do not skip this segment"; it should not silently
+            # bypass the existing guide_size/max_size working-resolution controls.
+            #
+            # The old behavior reset upscale to 1.0 whenever the crop was already
+            # larger than guide_size. For large person/full-frame detections this
+            # pushed FaceDetailer into full-frame VAE encode/decode, e.g. a
+            # 1900x2732 crop, which is both unnecessary for a detailer pass and a
+            # WSL/CUDA/model-loading wedge trigger.
+            logging.info(
+                "Detailer: force inpaint [keeping capped working size] "
+                f"crop={(w, h)} -> working={(new_w, new_h)} upscale={upscale}"
+            )
+
+    if max_size > 0 and (new_w > max_size or new_h > max_size):
+        old_new_w, old_new_h = new_w, new_h
+        cap_scale = max_size / max(new_w, new_h)
+        upscale *= cap_scale
+        new_w = max(1, int(w * upscale))
+        new_h = max(1, int(h * upscale))
+        logging.info(
+            "Detailer: max_size cap "
+            f"{(old_new_w, old_new_h)} -> {(new_w, new_h)} max_size={max_size}"
+        )
 
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
