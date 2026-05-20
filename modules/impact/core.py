@@ -331,15 +331,24 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             logging.info(f"Detailer: segment skip [zero size={new_w, new_h}]")
             return None, None
     else:
-        if new_w == 0 or new_h == 0 or upscale <= 1.0:
-            # Preserve Impact Pack's original force-inpaint quality behavior:
-            # force-inpaint keeps the detected crop at its native crop size instead
-            # of downscaling to guide_size/max_size and later upscaling it back for
-            # paste. The earlier cap reduced detailed-area quality.
-            logging.info("Detailer: force inpaint")
+        if new_w == 0 or new_h == 0:
+            logging.info("Detailer: force inpaint [zero computed size; using original crop size]")
             upscale = 1.0
             new_w = w
             new_h = h
+        elif upscale <= 1.0:
+            # Force-inpaint means "do not skip this segment"; it should not silently
+            # bypass the existing guide_size/max_size working-resolution controls.
+            #
+            # The old behavior reset upscale to 1.0 whenever the crop was already
+            # larger than guide_size. For large person/full-frame detections this
+            # pushed FaceDetailer into full-frame VAE encode/decode, e.g. a
+            # 1900x2732 crop, which is both unnecessary for a detailer pass and a
+            # WSL/CUDA/model-loading wedge trigger.
+            logging.info(
+                "Detailer: force inpaint [keeping capped working size] "
+                f"crop={(w, h)} -> working={(new_w, new_h)} upscale={upscale}"
+            )
 
     if max_size > 0 and (new_w > max_size or new_h > max_size):
         old_new_w, old_new_h = new_w, new_h
