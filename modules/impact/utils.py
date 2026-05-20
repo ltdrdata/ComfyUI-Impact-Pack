@@ -185,7 +185,26 @@ def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
     # PIL.Image.resize can terminate the interpreter with SIGFPE/SIGSEGV in native
     # code for some resize inputs. That cannot be recovered with try/except, so the
     # detailer path must avoid PIL for tensor resizing entirely.
-    nchw = image.movedim(-1, 1).contiguous().to(dtype=torch.float32)
+    #
+    # Large CPU bicubic/linear resizes can still wedge in WSL/PyTorch builds. For
+    # RGB/RGBA image tensors, run large resizes on CUDA when available and then
+    # return to the caller's original device/dtype. Masks and tiny tensors stay on
+    # their original device to avoid unnecessary CUDA churn.
+    work_device = original_device
+    max_pixels = max(int(cur_w) * int(cur_h), int(w) * int(h))
+    if (
+        original_device.type == "cpu"
+        and image.shape[-1] >= 3
+        and max_pixels >= 512 * 512
+        and torch.cuda.is_available()
+    ):
+        work_device = torch.device("cuda")
+        logging.info(
+            f"Detailer: tensor_resize using CUDA for large {mode} resize "
+            f"{(cur_w, cur_h)} -> {(w, h)}"
+        )
+
+    nchw = image.to(device=work_device, dtype=torch.float32, non_blocking=False).movedim(-1, 1).contiguous()
 
     if mode in ("bilinear", "bicubic"):
         resized = torch.nn.functional.interpolate(nchw, size=(h, w), mode=mode, align_corners=False)
@@ -194,12 +213,15 @@ def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
     else:
         raise ValueError(f"Unsupported resize mode: {mode}")
 
+    if resized.is_cuda:
+        torch.cuda.synchronize(resized.device)
+
     resized = resized.movedim(1, -1).contiguous()
 
     if image.shape[-1] >= 3:
         resized = resized.clamp(0.0, 1.0)
 
-    return resized.to(device=original_device, dtype=original_dtype)
+    return resized.to(device=original_device, dtype=original_dtype, non_blocking=False)
 
 
 # Kept for compatibility with callers/imports, but tensor_resize no longer uses
@@ -253,10 +275,10 @@ def tensor_resize_for_detailer_output(image, w: int, h: int):
         logging.info(f"Detailer: correcting post-decode padding by crop/pad {(cur_w, cur_h)} -> {(w, h)}")
         return tensor_center_crop_or_pad(image, w, h)
 
-    # For final paste-back geometry, prefer area for downscale and bilinear for
-    # upscale. Avoid bicubic here: this path has already been observed to crash
-    # or wedge in native resize code after VAE decode.
-    mode = "area" if w <= cur_w and h <= cur_h else "bilinear"
+    # Use area only for true downscale. For upscaling the decoded detailer crop
+    # back to paste geometry, use bicubic to avoid the visible softness introduced
+    # by the previous bilinear safety path. PIL is still avoided; this is torch.
+    mode = "area" if w <= cur_w and h <= cur_h else "bicubic"
     logging.info(f"Detailer: post-decode resize {(cur_w, cur_h)} -> {(w, h)} using torch {mode} on {image.device}")
     return general_tensor_resize(image, w, h, mode=mode)
 
