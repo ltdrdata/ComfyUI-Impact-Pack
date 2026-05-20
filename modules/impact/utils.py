@@ -31,7 +31,7 @@ def tensor_convert_rgba(image, prefer_copy=True):
         return image
 
     if n_channel == 3:
-        alpha = torch.ones((*image.shape[:-1], 1))
+        alpha = torch.ones((*image.shape[:-1], 1), device=image.device, dtype=image.dtype)
         return torch.cat((image, alpha), axis=-1)
 
     if n_channel == 1:
@@ -211,6 +211,56 @@ def tensor_resize(image, w: int, h: int):
     return general_tensor_resize(image, w, h, mode=mode)
 
 
+def tensor_center_crop_or_pad(image, w: int, h: int):
+    _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid crop/pad target: {(w, h)}")
+
+    _, cur_h, cur_w, channels = image.shape
+    if cur_w == w and cur_h == h:
+        return image
+
+    src_x0 = max((cur_w - w) // 2, 0)
+    src_y0 = max((cur_h - h) // 2, 0)
+    dst_x0 = max((w - cur_w) // 2, 0)
+    dst_y0 = max((h - cur_h) // 2, 0)
+    copy_w = min(cur_w, w)
+    copy_h = min(cur_h, h)
+
+    out = torch.zeros((image.shape[0], h, w, channels), device=image.device, dtype=image.dtype)
+    out[:, dst_y0:dst_y0 + copy_h, dst_x0:dst_x0 + copy_w, :] = image[:, src_y0:src_y0 + copy_h, src_x0:src_x0 + copy_w, :]
+    return out
+
+
+def tensor_resize_for_detailer_output(image, w: int, h: int):
+    _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid detailer resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
+    # VAEs often produce dimensions rounded to latent/tile multiples. When the
+    # difference is only a small padding margin, do not run interpolation at all:
+    # crop/pad the tensor directly. This avoids a native/PyTorch resize path at
+    # the most fragile post-decode boundary.
+    if abs(cur_w - w) <= 16 and abs(cur_h - h) <= 16:
+        logging.info(f"Detailer: correcting post-decode padding by crop/pad {(cur_w, cur_h)} -> {(w, h)}")
+        return tensor_center_crop_or_pad(image, w, h)
+
+    # For final paste-back geometry, prefer area for downscale and bilinear for
+    # upscale. Avoid bicubic here: this path has already been observed to crash
+    # or wedge in native resize code after VAE decode.
+    mode = "area" if w <= cur_w and h <= cur_h else "bilinear"
+    logging.info(f"Detailer: post-decode resize {(cur_w, cur_h)} -> {(w, h)} using torch {mode} on {image.device}")
+    return general_tensor_resize(image, w, h, mode=mode)
+
+
 def tensor_get_size(image):
     """Mimicking `PIL.Image.size`"""
     _tensor_check_image(image)
@@ -296,6 +346,10 @@ def tensor_paste(image1, image2, left_top, mask):
     """
     Pastes image2 onto image1 at position left_top using mask.
     Supports both RGB and RGBA images.
+
+    Large paste regions are processed in horizontal chunks to avoid allocating
+    full-frame blend temporaries for FaceDetailer crops that cover most of the
+    image.
     """
     _tensor_check_image(image1)
     _tensor_check_image(image2)
@@ -308,58 +362,57 @@ def tensor_paste(image1, image2, left_top, mask):
     _, h1, w1, c1 = image1.shape
     _, h2, w2, c2 = image2.shape
 
-    # Calculate image patch size
     w = min(w1, x + w2) - x
     h = min(h1, y + h2) - y
 
-    # If the patch is out of bound, nothing to do!
     if w <= 0 or h <= 0:
         return
 
     mask = mask[:, :h, :w, :]
 
-    # Get the region to be modified
-    region1 = image1[:, y:y+h, x:x+w, :]
-    region2 = image2[:, :h, :w, :]
+    pixels = int(w) * int(h)
+    if pixels >= 4_000_000:
+        rows_per_chunk = max(64, min(512, 8_000_000 // max(int(w), 1)))
+        logging.info(f"Detailer: tensor_paste chunked region {(w, h)} rows_per_chunk={rows_per_chunk}")
+    else:
+        rows_per_chunk = h
 
-    # Handle RGB and RGBA cases
-    if c1 == 3 and c2 == 3:
-        # Both RGB - simple case
-        image1[:, y:y+h, x:x+w, :] = (1 - mask) * region1 + mask * region2
+    for y0 in range(0, h, rows_per_chunk):
+        y1 = min(y0 + rows_per_chunk, h)
+        dst_y0 = y + y0
+        dst_y1 = y + y1
 
-    elif c1 == 4 and c2 == 4:
-        # Both RGBA - need to handle alpha channel separately
-        # RGB channels
-        image1[:, y:y+h, x:x+w, :3] = (
-            (1 - mask) * region1[:, :, :, :3] +
-            mask * region2[:, :, :, :3]
-        )
+        mask_chunk = mask[:, y0:y1, :, :]
+        region1 = image1[:, dst_y0:dst_y1, x:x+w, :]
+        region2 = image2[:, y0:y1, :w, :]
 
-        # Alpha channel - use "over" composition
-        a1 = region1[:, :, :, 3:4]
-        a2 = region2[:, :, :, 3:4] * mask
-        new_alpha = a1 + a2 * (1 - a1)
-        image1[:, y:y+h, x:x+w, 3:4] = new_alpha
+        if c1 == 3 and c2 == 3:
+            image1[:, dst_y0:dst_y1, x:x+w, :] = (1 - mask_chunk) * region1 + mask_chunk * region2
 
-    elif c1 == 4 and c2 == 3:
-        # Target is RGBA, source is RGB - assume source is fully opaque
-        image1[:, y:y+h, x:x+w, :3] = (
-            (1 - mask) * region1[:, :, :, :3] +
-            mask * region2
-        )
-        # Alpha channel - reduce alpha where mask is applied
-        image1[:, y:y+h, x:x+w, 3:4] = region1[:, :, :, 3:4] * (1 - mask) + mask
+        elif c1 == 4 and c2 == 4:
+            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
+                (1 - mask_chunk) * region1[:, :, :, :3] +
+                mask_chunk * region2[:, :, :, :3]
+            )
+            a1 = region1[:, :, :, 3:4]
+            a2 = region2[:, :, :, 3:4] * mask_chunk
+            image1[:, dst_y0:dst_y1, x:x+w, 3:4] = a1 + a2 * (1 - a1)
 
-    elif c1 == 3 and c2 == 4:
-        # Target is RGB, source is RGBA - apply source alpha to mask
-        effective_mask = mask * region2[:, :, :, 3:4]
-        image1[:, y:y+h, x:x+w, :] = (
-            (1 - effective_mask) * region1 +
-            effective_mask * region2[:, :, :, :3]
-        )
+        elif c1 == 4 and c2 == 3:
+            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
+                (1 - mask_chunk) * region1[:, :, :, :3] +
+                mask_chunk * region2
+            )
+            image1[:, dst_y0:dst_y1, x:x+w, 3:4] = region1[:, :, :, 3:4] * (1 - mask_chunk) + mask_chunk
+
+        elif c1 == 3 and c2 == 4:
+            effective_mask = mask_chunk * region2[:, :, :, 3:4]
+            image1[:, dst_y0:dst_y1, x:x+w, :] = (
+                (1 - effective_mask) * region1 +
+                effective_mask * region2[:, :, :, :3]
+            )
 
     return
-
 
 def center_of_bbox(bbox):
     w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
