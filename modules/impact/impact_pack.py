@@ -48,13 +48,13 @@ warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is
 model_path = folder_paths.models_dir
 
 
-def _impact_detailer_cleanup(label=None, clear_cuda_cache=True, collect_python=True, synchronize=True):
+def _impact_detailer_cleanup(label=None, clear_cuda_cache=False, collect_python=False, synchronize=False):
     """Best-effort cleanup between FaceDetailer regions/frames.
 
-    This deliberately avoids unloading models. It only releases Python garbage,
-    synchronizes pending CUDA work, and clears allocator cache when requested.
-    Frame-level callers can use a lighter synchronization-only boundary because
-    DetailerForEach already performs deep cleanup after each processed segment.
+    This deliberately avoids unloading models. By default it is only an
+    instrumentation boundary; explicit CUDA sync/cache clearing from the
+    FaceDetailer hot path can itself become a WSL/CUDA wedge point across
+    queued generations. Callers may opt into heavier cleanup for diagnostics.
     """
     if collect_python:
         gc.collect()
@@ -609,11 +609,8 @@ class DetailerForEach:
             new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-            # Release transient CUDA allocator state before the next detected region.
-            # FaceDetailer can process multiple large crop regions for one image;
-            # without an explicit boundary, the next detector/detail pass can inherit
-            # stale pending CUDA work and allocator fragmentation.
-            _impact_detailer_cleanup(f"segment {i}")
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} cleanup boundary")
+            _impact_detailer_cleanup(f"segment {i + 1}")
 
         image_tensor = utils.tensor_convert_rgb(image).detach().cpu()
 
@@ -1148,11 +1145,7 @@ class FaceDetailer:
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
                 logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} cleanup start")
-                _impact_detailer_cleanup(
-                    f"FaceDetailer frame {i + 1}",
-                    clear_cuda_cache=False,
-                    collect_python=False,
-                )
+                _impact_detailer_cleanup(f"FaceDetailer frame {i + 1}")
                 logging.info(
                     f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} "
                     f"{'complete' if frame_ok else 'failed'}"
@@ -2011,11 +2004,7 @@ class FaceDetailerPipe:
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
                 logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} cleanup start")
-                _impact_detailer_cleanup(
-                    f"FaceDetailerPipe frame {i + 1}",
-                    clear_cuda_cache=False,
-                    collect_python=False,
-                )
+                _impact_detailer_cleanup(f"FaceDetailerPipe frame {i + 1}")
                 logging.info(
                     f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} "
                     f"{'complete' if frame_ok else 'failed'}"
