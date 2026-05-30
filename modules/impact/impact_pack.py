@@ -84,6 +84,52 @@ def _impact_cpu_detached(tensor):
     return tensor
 
 
+def _impact_inset_mask_region(data, offset_x, offset_y, inner_w, inner_h):
+    """Zero mask values outside the requested inner rectangle."""
+    if data is None:
+        return None
+
+    x0 = max(0, int(offset_x))
+    y0 = max(0, int(offset_y))
+    x1 = x0 + max(0, int(inner_w))
+    y1 = y0 + max(0, int(inner_h))
+
+    if torch.is_tensor(data):
+        out = torch.zeros_like(data)
+        if data.ndim == 4:
+            x1 = min(x1, data.shape[2])
+            y1 = min(y1, data.shape[1])
+            out[:, y0:y1, x0:x1, :] = data[:, y0:y1, x0:x1, :]
+        elif data.ndim == 3:
+            x1 = min(x1, data.shape[2])
+            y1 = min(y1, data.shape[1])
+            out[:, y0:y1, x0:x1] = data[:, y0:y1, x0:x1]
+        elif data.ndim == 2:
+            x1 = min(x1, data.shape[1])
+            y1 = min(y1, data.shape[0])
+            out[y0:y1, x0:x1] = data[y0:y1, x0:x1]
+        else:
+            raise ValueError(f"Unsupported mask ndim for inset: {data.ndim}")
+        return out
+
+    arr = np.asarray(data)
+    out = np.zeros_like(arr)
+    if arr.ndim == 4:
+        x1 = min(x1, arr.shape[2])
+        y1 = min(y1, arr.shape[1])
+        out[:, y0:y1, x0:x1, :] = arr[:, y0:y1, x0:x1, :]
+    elif arr.ndim == 3:
+        x1 = min(x1, arr.shape[2])
+        y1 = min(y1, arr.shape[1])
+        out[:, y0:y1, x0:x1] = arr[:, y0:y1, x0:x1]
+    elif arr.ndim == 2:
+        x1 = min(x1, arr.shape[1])
+        y1 = min(y1, arr.shape[0])
+        out[y0:y1, x0:x1] = arr[y0:y1, x0:x1]
+    else:
+        raise ValueError(f"Unsupported mask ndim for inset: {arr.ndim}")
+    return out
+
 # folder_paths.supported_pt_extensions
 utils.add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
 utils.add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
@@ -116,6 +162,28 @@ def _apply_post_detail_shrink(cropped_image, enhanced_image, paste_mask, cropped
     offset_y = int(round(bbox_cy - bbox_cy * scale))
     offset_x = min(max(offset_x, 0), max(crop_w - scaled_w, 0))
     offset_y = min(max(offset_y, 0), max(crop_h - scaled_h, 0))
+
+    shrink_delta_w = crop_w - scaled_w
+    shrink_delta_h = crop_h - scaled_h
+
+    if shrink_delta_w <= 16 and shrink_delta_h <= 16:
+        logging.info(
+            "Detailer: post-detail shrink using mask-only inset "
+            f"scale={scale:.4f} offset=({offset_x}, {offset_y}) "
+            f"size=({crop_w}, {crop_h})->({scaled_w}, {scaled_h})"
+        )
+        shrunken_paste_mask = _impact_inset_mask_region(
+            paste_mask, offset_x, offset_y, scaled_w, scaled_h
+        )
+        if torch.is_tensor(shrunken_paste_mask):
+            shrunken_paste_mask = torch.clamp(shrunken_paste_mask, 0.0, 1.0)
+        elif shrunken_paste_mask is not None:
+            shrunken_paste_mask = np.clip(shrunken_paste_mask, 0.0, 1.0)
+
+        shrunken_cropped_mask_base = _impact_inset_mask_region(
+            cropped_mask_base, offset_x, offset_y, scaled_w, scaled_h
+        )
+        return cropped_image, enhanced_image, shrunken_paste_mask, shrunken_cropped_mask_base
 
     resized_image = utils.tensor_resize(enhanced_image, scaled_w, scaled_h)
     resized_paste_mask = torch.clamp(utils.tensor_resize(paste_mask, scaled_w, scaled_h), 0.0, 1.0)
