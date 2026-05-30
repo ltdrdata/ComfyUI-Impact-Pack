@@ -48,23 +48,25 @@ warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is
 model_path = folder_paths.models_dir
 
 
-def _impact_detailer_cleanup(label=None, clear_cuda_cache=True):
+def _impact_detailer_cleanup(label=None, clear_cuda_cache=True, collect_python=True, synchronize=True):
     """Best-effort cleanup between FaceDetailer regions/frames.
 
     This deliberately avoids unloading models. It only releases Python garbage,
-    synchronizes pending CUDA work, and clears allocator cache when available.
-    That makes failures surface at the detailer boundary instead of later nodes
-    and reduces allocator churn for large batched/detailer workflows.
+    synchronizes pending CUDA work, and clears allocator cache when requested.
+    Frame-level callers can use a lighter synchronization-only boundary because
+    DetailerForEach already performs deep cleanup after each processed segment.
     """
-    gc.collect()
+    if collect_python:
+        gc.collect()
 
     if not torch.cuda.is_available():
         return
 
-    try:
-        torch.cuda.synchronize()
-    except Exception as e:
-        logging.warning(f"[Impact Pack] CUDA synchronize during FaceDetailer cleanup failed{f' ({label})' if label else ''}: {e}")
+    if synchronize:
+        try:
+            torch.cuda.synchronize()
+        except Exception as e:
+            logging.warning(f"[Impact Pack] CUDA synchronize during FaceDetailer cleanup failed{f' ({label})' if label else ''}: {e}")
 
     if not clear_cuda_cache:
         return
@@ -1122,6 +1124,7 @@ class FaceDetailer:
             logging.warning("[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
 
         for i, single_image in enumerate(image):
+            frame_ok = False
             logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} start")
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
             try:
@@ -1141,10 +1144,19 @@ class FaceDetailer:
                 result_cropped_enhanced.extend(cropped_enhanced)
                 result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
                 result_cnet_images.extend(cnet_pil_list)
+                frame_ok = True
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
-                _impact_detailer_cleanup(f"FaceDetailer frame {i + 1}")
-                logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} complete")
+                logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} cleanup start")
+                _impact_detailer_cleanup(
+                    f"FaceDetailer frame {i + 1}",
+                    clear_cuda_cache=False,
+                    collect_python=False,
+                )
+                logging.info(
+                    f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} "
+                    f"{'complete' if frame_ok else 'failed'}"
+                )
 
         result_img = torch.cat(result_imgs, dim=0) if len(result_imgs) > 0 else image
         result_mask = torch.cat(result_masks, dim=0) if len(result_masks) > 0 else torch.zeros((len(image), image.shape[1], image.shape[2]), dtype=torch.float32)
@@ -1973,6 +1985,7 @@ class FaceDetailerPipe:
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         for i, single_image in enumerate(image):
+            frame_ok = False
             logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} start")
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
             try:
@@ -1994,10 +2007,19 @@ class FaceDetailerPipe:
                 result_cropped_enhanced.extend(cropped_enhanced)
                 result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
                 result_cnet_images.extend(cnet_pil_list)
+                frame_ok = True
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
-                _impact_detailer_cleanup(f"FaceDetailerPipe frame {i + 1}")
-                logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} complete")
+                logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} cleanup start")
+                _impact_detailer_cleanup(
+                    f"FaceDetailerPipe frame {i + 1}",
+                    clear_cuda_cache=False,
+                    collect_python=False,
+                )
+                logging.info(
+                    f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} "
+                    f"{'complete' if frame_ok else 'failed'}"
+                )
 
         result_img = torch.cat(result_imgs, dim=0) if len(result_imgs) > 0 else image
         result_mask = torch.cat(result_masks, dim=0) if len(result_masks) > 0 else torch.zeros((len(image), image.shape[1], image.shape[2]), dtype=torch.float32)
