@@ -59,6 +59,39 @@ current_prompt = None
 ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
 
+def _move_latent_samples_to_cpu_for_decode(latent, label="detailer"):
+    """Release sampler-side CUDA temporaries before VAE decode/model load.
+
+    FaceDetailer runs sampler -> VAE decode repeatedly for each detected region.
+    On large Flux crops, the sampler can leave cached CUDA allocations around
+    until the next model load boundary.  Moving the refined latent samples to
+    CPU before decode preserves ComfyUI's normal VAE input contract while giving
+    the allocator a clean boundary before AutoencoderKL is requested.
+    """
+    if not isinstance(latent, dict) or "samples" not in latent:
+        return latent
+
+    samples = latent["samples"]
+    if not torch.is_tensor(samples):
+        return latent
+
+    if samples.is_cuda:
+        logging.info(f"[Impact Pack] moving refined latent to CPU before VAE decode ({label}) shape={tuple(samples.shape)}")
+        latent = latent.copy()
+        latent["samples"] = samples.detach().cpu()
+        del samples
+
+        if torch.cuda.is_available():
+            try:
+                if hasattr(model_management, "soft_empty_cache"):
+                    model_management.soft_empty_cache()
+                else:
+                    torch.cuda.empty_cache()
+            except Exception as e:
+                logging.warning(f"[Impact Pack] CUDA cache cleanup before VAE decode failed ({label}): {e}")
+    return latent
+
+
 class _ImpactTiledEncodeProxyVAE:
     def __init__(self, vae, tile_size=0, overlap=0):
         self._vae = vae
@@ -410,6 +443,8 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
         if detailer_hook is not None:
             refined_latent = detailer_hook.pre_decode(refined_latent)
+
+        refined_latent = _move_latent_samples_to_cpu_for_decode(refined_latent, label="FaceDetailer")
 
         # non-latent downscale - latent downscale cause bad quality
         start = time.time()
