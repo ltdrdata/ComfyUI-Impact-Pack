@@ -166,6 +166,63 @@ def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
     return x1, y1, x2, y2
 
 
+def _cv2_interpolation_for_mode(mode):
+    if mode == "nearest":
+        return cv2.INTER_NEAREST
+    if mode == "area":
+        return cv2.INTER_AREA
+    if mode == "bicubic":
+        return cv2.INTER_CUBIC
+    if mode == "bilinear":
+        return cv2.INTER_LINEAR
+    raise ValueError(f"Unsupported resize mode: {mode}")
+
+
+def _tensor_resize_cpu_opencv(image, w: int, h: int, mode="bilinear"):
+    """Resize BHWC CPU tensors through OpenCV instead of torch interpolate.
+
+    The detailer path can hit this with medium/large CPU IMAGE tensors after a
+    long CUDA-heavy workflow. Avoiding torch's CPU interpolate/threadpool here
+    removes another native wedge point while preserving the BHWC tensor contract.
+    """
+    _tensor_check_image(image)
+
+    if image.device.type != "cpu":
+        raise ValueError("_tensor_resize_cpu_opencv expects a CPU tensor")
+
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
+    interpolation = _cv2_interpolation_for_mode(mode)
+    original_dtype = image.dtype
+
+    np_image = image.detach().contiguous().cpu().numpy()
+    if np_image.dtype != np.float32:
+        np_work = np_image.astype(np.float32, copy=False)
+    else:
+        np_work = np_image
+
+    batch, _, _, channels = np_work.shape
+    resized_np = np.empty((batch, h, w, channels), dtype=np.float32)
+
+    for i in range(batch):
+        resized_frame = cv2.resize(np_work[i], (w, h), interpolation=interpolation)
+        if channels == 1 and resized_frame.ndim == 2:
+            resized_frame = resized_frame[..., None]
+        resized_np[i] = resized_frame
+
+    if channels in (3, 4):
+        np.clip(resized_np, 0.0, 1.0, out=resized_np)
+
+    return torch.from_numpy(resized_np).to(dtype=original_dtype)
+
+
 def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
     _tensor_check_image(image)
     w = int(w)
@@ -180,11 +237,12 @@ def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
     original_device = image.device
     original_dtype = image.dtype
 
-    # Resize directly with torch instead of round-tripping through PIL.
-    #
-    # PIL.Image.resize can terminate the interpreter with SIGFPE/SIGSEGV in native
-    # code for some resize inputs. That cannot be recovered with try/except, so the
-    # detailer path must avoid PIL for tensor resizing entirely.
+    if original_device.type == "cpu":
+        return _tensor_resize_cpu_opencv(image, w, h, mode=mode)
+
+    # CUDA/non-CPU tensors stay on the existing torch path. This preserves the
+    # current behavior for model/device-resident callers while removing torch CPU
+    # interpolate from the FaceDetailer CPU image path.
     nchw = image.movedim(-1, 1).contiguous().to(dtype=torch.float32)
 
     if mode in ("bilinear", "bicubic"):
@@ -257,7 +315,7 @@ def tensor_resize_for_detailer_output(image, w: int, h: int):
     # upscale. Avoid bicubic here: this path has already been observed to crash
     # or wedge in native resize code after VAE decode.
     mode = "area" if w <= cur_w and h <= cur_h else "bilinear"
-    logging.info(f"Detailer: post-decode resize {(cur_w, cur_h)} -> {(w, h)} using torch {mode} on {image.device}")
+    logging.info(f"Detailer: post-decode resize {(cur_w, cur_h)} -> {(w, h)} using {mode} on {image.device}")
     return general_tensor_resize(image, w, h, mode=mode)
 
 
