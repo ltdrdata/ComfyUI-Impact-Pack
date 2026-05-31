@@ -202,11 +202,7 @@ def _tensor_resize_cpu_opencv(image, w: int, h: int, mode="bilinear"):
     interpolation = _cv2_interpolation_for_mode(mode)
     original_dtype = image.dtype
 
-    np_image = image.detach().contiguous().cpu().numpy()
-    if np_image.dtype != np.float32:
-        np_work = np_image.astype(np.float32, copy=False)
-    else:
-        np_work = np_image
+    np_work = image.detach().to(dtype=torch.float32).contiguous().cpu().numpy()
 
     batch, _, _, channels = np_work.shape
     resized_np = np.empty((batch, h, w, channels), dtype=np.float32)
