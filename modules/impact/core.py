@@ -61,8 +61,9 @@ ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'L
 
 def _impact_is_wsl():
     try:
-        return "microsoft" in os.uname().release.lower() or "wsl" in os.uname().release.lower()
-    except Exception:
+        release = os.uname().release.lower()
+        return "microsoft" in release or "wsl" in release
+    except (AttributeError, OSError):
         return False
 
 
@@ -905,15 +906,15 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
     else:
         sam_obj = sam.sam_wrapper
 
-    logging.info(f"[Impact Pack] SAM mask start: segs={len(segs[1])} hint={detection_hint} dilation={dilation} bbox_expansion={bbox_expansion}")
+    logging.info("[Impact Pack] SAM mask start: segs=%d hint=%s dilation=%s bbox_expansion=%s", len(segs[1]), detection_hint, dilation, bbox_expansion)
     logging.info("[Impact Pack] SAM prepare_device start")
     sam_obj.prepare_device()
     logging.info("[Impact Pack] SAM prepare_device complete")
 
     try:
-        logging.info(f"[Impact Pack] SAM image conversion start shape={tuple(image.shape)} device={image.device}")
+        logging.info("[Impact Pack] SAM image conversion start shape=%s device=%s", tuple(image.shape), image.device)
         image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-        logging.info(f"[Impact Pack] SAM image conversion complete shape={image.shape}")
+        logging.info("[Impact Pack] SAM image conversion complete shape=%s", image.shape)
 
         total_masks = []
 
@@ -936,9 +937,9 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
-            logging.info(f"[Impact Pack] SAM predict mask-points start points={len(points)}")
+            logging.info("[Impact Pack] SAM predict mask-points start points=%d", len(points))
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
-            logging.info(f"[Impact Pack] SAM predict mask-points complete masks={len(detected_masks)}")
+            logging.info("[Impact Pack] SAM predict mask-points complete masks=%d", len(detected_masks))
             total_masks += detected_masks
 
         else:
@@ -1007,18 +1008,15 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                     points += npoints
                     plabs += nplabs
 
-                logging.info(
-                    f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} start "
-                    f"points={len(points)} bbox={dilated_bbox}"
-                )
+                logging.info("[Impact Pack] SAM predict segment %d/%d start points=%d bbox=%s", i + 1, len(segs), len(points), dilated_bbox)
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
-                logging.info(f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} complete masks={len(detected_masks)}")
+                logging.info("[Impact Pack] SAM predict segment %d/%d complete masks=%d", i + 1, len(segs), len(detected_masks))
                 total_masks += detected_masks
 
         # merge every collected masks
-        logging.info(f"[Impact Pack] SAM combine masks start count={len(total_masks)}")
+        logging.info("[Impact Pack] SAM combine masks start count=%d", len(total_masks))
         mask = utils.combine_masks2(total_masks)
-        logging.info(f"[Impact Pack] SAM combine masks complete shape={None if mask is None else tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM combine masks complete shape=%s", None if mask is None else tuple(mask.shape))
 
     finally:
         logging.info("[Impact Pack] SAM release_device start")
@@ -1026,11 +1024,11 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
         logging.info("[Impact Pack] SAM release_device complete")
 
     if mask is not None:
-        logging.info(f"[Impact Pack] SAM postprocess start shape={tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM postprocess start shape=%s", tuple(mask.shape))
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
-        logging.info(f"[Impact Pack] SAM postprocess complete shape={tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM postprocess complete shape=%s", tuple(mask.shape))
     else:
         size = image.shape[0], image.shape[1]
         mask = torch.zeros(size, dtype=torch.float32, device="cpu")  # empty mask
@@ -1193,15 +1191,15 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
         raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
 
     sam_obj = sam.sam_wrapper
-    logging.info(f"[Impact Pack] SAM mask start: segs={len(segs[1])} hint={detection_hint} dilation={dilation} bbox_expansion={bbox_expansion}")
-    logging.info("[Impact Pack] SAM prepare_device start")
+    logging.info("[Impact Pack] SAM segmented mask start: segs=%d hint=%s dilation=%s bbox_expansion=%s", len(segs[1]), detection_hint, dilation, bbox_expansion)
+    logging.info("[Impact Pack] SAM segmented prepare_device start")
     sam_obj.prepare_device()
-    logging.info("[Impact Pack] SAM prepare_device complete")
+    logging.info("[Impact Pack] SAM segmented prepare_device complete")
 
     try:
-        logging.info(f"[Impact Pack] SAM image conversion start shape={tuple(image.shape)} device={image.device}")
+        logging.info("[Impact Pack] SAM segmented image conversion start shape=%s device=%s", tuple(image.shape), image.device)
         image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
-        logging.info(f"[Impact Pack] SAM image conversion complete shape={image.shape}")
+        logging.info("[Impact Pack] SAM segmented image conversion complete shape=%s", image.shape)
 
         total_masks = []
 
@@ -1224,9 +1222,9 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
-            logging.info(f"[Impact Pack] SAM predict mask-points start points={len(points)}")
+            logging.info("[Impact Pack] SAM segmented predict mask-points start points=%d", len(points))
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
-            logging.info(f"[Impact Pack] SAM predict mask-points complete masks={len(detected_masks)}")
+            logging.info("[Impact Pack] SAM segmented predict mask-points complete masks=%d", len(detected_masks))
             total_masks += detected_masks
 
         else:
@@ -1244,33 +1242,30 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                                                          mask_hint_threshold, use_small_negative,
                                                          mask_hint_use_negative)
 
-                logging.info(
-                    f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} start "
-                    f"points={len(points)} bbox={dilated_bbox}"
-                )
+                logging.info("[Impact Pack] SAM segmented predict segment %d/%d start points=%d bbox=%s", i + 1, len(segs), len(points), dilated_bbox)
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
-                logging.info(f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} complete masks={len(detected_masks)}")
+                logging.info("[Impact Pack] SAM segmented predict segment %d/%d complete masks=%d", i + 1, len(segs), len(detected_masks))
 
                 total_masks += detected_masks
 
         # merge every collected masks
-        logging.info(f"[Impact Pack] SAM combine masks start count={len(total_masks)}")
+        logging.info("[Impact Pack] SAM segmented combine masks start count=%d", len(total_masks))
         mask = utils.combine_masks2(total_masks)
-        logging.info(f"[Impact Pack] SAM combine masks complete shape={None if mask is None else tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM segmented combine masks complete shape=%s", None if mask is None else tuple(mask.shape))
 
     finally:
-        logging.info("[Impact Pack] SAM release_device start")
+        logging.info("[Impact Pack] SAM segmented release_device start")
         sam_obj.release_device()
-        logging.info("[Impact Pack] SAM release_device complete")
+        logging.info("[Impact Pack] SAM segmented release_device complete")
 
     mask_working_device = torch.device("cpu")
 
     if mask is not None:
-        logging.info(f"[Impact Pack] SAM postprocess start shape={tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM segmented postprocess start shape=%s", tuple(mask.shape))
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
-        logging.info(f"[Impact Pack] SAM postprocess complete shape={tuple(mask.shape)}")
+        logging.info("[Impact Pack] SAM segmented postprocess complete shape=%s", tuple(mask.shape))
         mask = mask.to(device=mask_working_device)
     else:
         # Extracting batch, height and width

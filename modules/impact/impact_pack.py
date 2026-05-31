@@ -453,7 +453,7 @@ class DetailerForEach:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        logging.info(f"[Impact Pack] DetailerForEach enter image={tuple(image.shape)} segs={len(segs[1])}")
+        logging.info("[Impact Pack] DetailerForEach enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
@@ -462,7 +462,7 @@ class DetailerForEach:
 
         logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
-        logging.info(f"[Impact Pack] DetailerForEach segs_scale_match complete segs={len(segs[1])}")
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match complete segs=%d", len(segs[1]))
         new_segs = []
 
         wildcard_concat_mode = None
@@ -492,15 +492,14 @@ class DetailerForEach:
             model = utils.apply_differential_diffusion(model)
             logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
-        image_np = image.detach().cpu().numpy()
         for i, seg in enumerate(ordered_segs):
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre crop start region={seg.crop_region} bbox={seg.bbox} label={seg.label}")
-            cropped_image = utils.crop_ndarray4(image_np, seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info("[Impact Pack] Detailer segment %d/%d pre crop start region=%s bbox=%s label=%s", i + 1, len(ordered_segs), seg.crop_region, seg.bbox, seg.label)
+            cropped_image = utils.crop_ndarray4(image.detach().cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask start crop={tuple(cropped_image.shape)}")
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask complete mask={tuple(mask.shape)}")
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask complete mask=%s", i + 1, len(ordered_segs), tuple(mask.shape))
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -521,7 +520,7 @@ class DetailerForEach:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop start")
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop start", i + 1, len(ordered_segs))
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -544,7 +543,7 @@ class DetailerForEach:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop complete")
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop complete", i + 1, len(ordered_segs))
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -554,7 +553,7 @@ class DetailerForEach:
 
             orig_cropped_image = cropped_image.clone()
             if not (isinstance(model, str) and model == "DUMMY"):
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} enhance_detail start crop={tuple(cropped_image.shape)}")
+                logging.info("[Impact Pack] Detailer segment %d/%d enhance_detail start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                 seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                                 cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -567,12 +566,12 @@ class DetailerForEach:
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                 vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
                                                                 vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} enhance_detail returned shape={None if enhanced_image is None else tuple(enhanced_image.shape)}")
+                logging.info("[Impact Pack] Detailer segment %d/%d enhance_detail returned shape=%s", i + 1, len(ordered_segs), None if enhanced_image is None else tuple(enhanced_image.shape))
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
 
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} post_detail_shrink start")
+            logging.info("[Impact Pack] Detailer segment %d/%d post_detail_shrink start", i + 1, len(ordered_segs))
             orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
                     orig_cropped_image,
                     enhanced_image,
@@ -593,9 +592,9 @@ class DetailerForEach:
                 image = image.detach().cpu()
                 enhanced_image = enhanced_image.detach().cpu()
                 mask = mask.detach().cpu()
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste start region={seg.crop_region} enhanced={tuple(enhanced_image.shape)} mask={tuple(mask.shape)}")
+                logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste complete")
+                logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -603,7 +602,7 @@ class DetailerForEach:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output start")
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output start", i + 1, len(ordered_segs))
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
@@ -611,7 +610,7 @@ class DetailerForEach:
                 mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output complete")
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output complete", i + 1, len(ordered_segs))
             else:
                 new_seg_image = None
 
@@ -620,7 +619,7 @@ class DetailerForEach:
             new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} cleanup boundary")
+            logging.info("[Impact Pack] Detailer segment %d/%d cleanup boundary", i + 1, len(ordered_segs))
             _impact_detailer_cleanup(f"segment {i + 1}")
 
         image_tensor = utils.tensor_convert_rgb(image).detach().cpu()
@@ -709,7 +708,7 @@ class DetailerForEachAutoRetry:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        logging.info(f"[Impact Pack] DetailerForEach enter image={tuple(image.shape)} segs={len(segs[1])}")
+        logging.info("[Impact Pack] DetailerForEach enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
@@ -718,7 +717,7 @@ class DetailerForEachAutoRetry:
 
         logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
-        logging.info(f"[Impact Pack] DetailerForEach segs_scale_match complete segs={len(segs[1])}")
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match complete segs=%d", len(segs[1]))
         new_segs = []
 
         wildcard_concat_mode = None
@@ -748,15 +747,14 @@ class DetailerForEachAutoRetry:
             model = utils.apply_differential_diffusion(model)
             logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
-        image_np = image.detach().cpu().numpy()
         for i, seg in enumerate(ordered_segs):
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre crop start region={seg.crop_region} bbox={seg.bbox} label={seg.label}")
-            cropped_image = utils.crop_ndarray4(image_np, seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info("[Impact Pack] Detailer segment %d/%d pre crop start region=%s bbox=%s label=%s", i + 1, len(ordered_segs), seg.crop_region, seg.bbox, seg.label)
+            cropped_image = utils.crop_ndarray4(image.detach().cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask start crop={tuple(cropped_image.shape)}")
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask complete mask={tuple(mask.shape)}")
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask complete mask=%s", i + 1, len(ordered_segs), tuple(mask.shape))
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -777,7 +775,7 @@ class DetailerForEachAutoRetry:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop start")
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop start", i + 1, len(ordered_segs))
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -800,7 +798,7 @@ class DetailerForEachAutoRetry:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
-            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop complete")
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop complete", i + 1, len(ordered_segs))
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -816,7 +814,7 @@ class DetailerForEachAutoRetry:
 
             if not (isinstance(model, str) and model == "DUMMY"):
                 for retry in range(max_retries):
-                    logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} retry {retry + 1}/{max_retries} enhance_detail start crop={tuple(cropped_image.shape)}")
+                    logging.info("[Impact Pack] Detailer segment %d/%d retry %d/%d enhance_detail start crop=%s", i + 1, len(ordered_segs), retry + 1, max_retries, tuple(cropped_image.shape))
                     enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                     seg.bbox, seg_seed + retry, steps, cfg, sampler_name, scheduler,
                                                                     cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -829,7 +827,7 @@ class DetailerForEachAutoRetry:
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
                                                                     vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
                                                                     vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
-                    logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} retry {retry + 1}/{max_retries} enhance_detail returned shape={None if enhanced_image is None else tuple(enhanced_image.shape)}")
+                    logging.info("[Impact Pack] Detailer segment %d/%d retry %d/%d enhance_detail returned shape=%s", i + 1, len(ordered_segs), retry + 1, max_retries, None if enhanced_image is None else tuple(enhanced_image.shape))
 
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
@@ -859,9 +857,9 @@ class DetailerForEachAutoRetry:
                 image = image.detach().cpu()
                 enhanced_image = enhanced_image.detach().cpu()
                 mask = mask.detach().cpu()
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste start region={seg.crop_region} enhanced={tuple(enhanced_image.shape)} mask={tuple(mask.shape)}")
+                logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} paste complete")
+                logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -869,7 +867,7 @@ class DetailerForEachAutoRetry:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output start")
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output start", i + 1, len(ordered_segs))
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
@@ -877,7 +875,7 @@ class DetailerForEachAutoRetry:
                 mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
-                logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} alpha output complete")
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output complete", i + 1, len(ordered_segs))
             else:
                 new_seg_image = None
 
@@ -1068,28 +1066,28 @@ class FaceDetailer:
                      tile_size=0, tile_overlap=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
-        logging.info(f"[Impact Pack] FaceDetailer bbox detect start image={tuple(image.shape)} threshold={bbox_threshold} dilation={bbox_dilation} crop_factor={bbox_crop_factor}")
+        logging.info("[Impact Pack] FaceDetailer bbox detect start image=%s threshold=%s dilation=%s crop_factor=%s", tuple(image.shape), bbox_threshold, bbox_dilation, bbox_crop_factor)
         bbox_detector.setAux('face')
         try:
             segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         finally:
             bbox_detector.setAux(None)
-        logging.info(f"[Impact Pack] FaceDetailer bbox detect complete segs={len(segs[1])}")
+        logging.info("[Impact Pack] FaceDetailer bbox detect complete segs=%d", len(segs[1]))
 
         # bbox + sam combination
         if sam_model_opt is not None:
-            logging.info(f"[Impact Pack] FaceDetailer SAM refinement start segs={len(segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer SAM refinement start segs=%d", len(segs[1]))
             sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
                                           sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                                           sam_mask_hint_use_negative, )
-            logging.info(f"[Impact Pack] FaceDetailer SAM refinement mask complete shape={tuple(sam_mask.shape)}")
+            logging.info("[Impact Pack] FaceDetailer SAM refinement mask complete shape=%s", tuple(sam_mask.shape))
             segs = core.segs_bitwise_and_mask(segs, sam_mask)
-            logging.info(f"[Impact Pack] FaceDetailer SAM refinement complete segs={len(segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer SAM refinement complete segs=%d", len(segs[1]))
 
         elif segm_detector is not None:
-            logging.info(f"[Impact Pack] FaceDetailer segm refinement start segs={len(segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer segm refinement start segs=%d", len(segs[1]))
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
-            logging.info(f"[Impact Pack] FaceDetailer segm detector complete segs={len(segm_segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer segm detector complete segs=%d", len(segm_segs[1]))
 
             if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
                     not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
@@ -1097,11 +1095,11 @@ class FaceDetailer:
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
-            logging.info(f"[Impact Pack] FaceDetailer segm refinement complete segs={len(segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer segm refinement complete segs=%d", len(segs[1]))
 
         mask_segs = segs
         if len(segs[1]) > 0:
-            logging.info(f"[Impact Pack] FaceDetailer detail pass start segs={len(segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer detail pass start segs=%d", len(segs[1]))
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                           sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
@@ -1115,7 +1113,7 @@ class FaceDetailer:
                                           auto_vae_tiled_encode=force_adaptive_tiled_encode,
                                           vae_tile_size=tile_size, vae_tile_overlap=tile_overlap)
             mask_segs = new_segs
-            logging.info(f"[Impact Pack] FaceDetailer detail pass complete new_segs={len(new_segs[1])}")
+            logging.info("[Impact Pack] FaceDetailer detail pass complete new_segs=%d", len(new_segs[1]))
         else:
             logging.info("[Impact Pack] FaceDetailer detail pass skipped: no segs")
             enhanced_img = image
@@ -1157,7 +1155,7 @@ class FaceDetailer:
 
         for i, single_image in enumerate(image):
             frame_ok = False
-            logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} start")
+            logging.info("[Impact Pack] FaceDetailer frame %d/%d start", i + 1, len(image))
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
             try:
                 enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
@@ -1179,7 +1177,7 @@ class FaceDetailer:
                 frame_ok = True
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
-                logging.info(f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} cleanup start")
+                logging.info("[Impact Pack] FaceDetailer frame %d/%d cleanup start", i + 1, len(image))
                 _impact_detailer_cleanup(f"FaceDetailer frame {i + 1}")
                 logging.info(
                     f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} "
@@ -2014,7 +2012,7 @@ class FaceDetailerPipe:
 
         for i, single_image in enumerate(image):
             frame_ok = False
-            logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} start")
+            logging.info("[Impact Pack] FaceDetailerPipe frame %d/%d start", i + 1, len(image))
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
             try:
                 enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
@@ -2038,7 +2036,7 @@ class FaceDetailerPipe:
                 frame_ok = True
             finally:
                 del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
-                logging.info(f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} cleanup start")
+                logging.info("[Impact Pack] FaceDetailerPipe frame %d/%d cleanup start", i + 1, len(image))
                 _impact_detailer_cleanup(f"FaceDetailerPipe frame {i + 1}")
                 logging.info(
                     f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} "
