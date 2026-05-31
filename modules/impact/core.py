@@ -330,15 +330,44 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    vae_tiled_encode=False, vae_tiled_decode=False, auto_vae_tiled_encode=False,
                    vae_tile_size=0, vae_tile_overlap=0):
 
+    detailer_trace = format(id(image) & 0xfffffff, "x")
+    detailer_start = time.perf_counter()
+    logging.info(
+        "[Impact Pack] enhance_detail[%s] enter "
+        f"image={tuple(image.shape)} noise_mask={None if noise_mask is None else tuple(noise_mask.shape)} "
+        f"noise_mask_feather={noise_mask_feather} wildcard={bool(wildcard_opt)} force_inpaint={force_inpaint}",
+        detailer_trace
+    )
+
     if noise_mask is not None:
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask blur start", detailer_trace)
+        operation_start = time.perf_counter()
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask blur complete shape=%s device=%s op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, tuple(noise_mask.shape), noise_mask.device,
+                     operation_end - operation_start, operation_end - detailer_start)
+        operation_start = time.perf_counter()
         noise_mask = noise_mask.squeeze(3)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask squeeze complete shape=%s op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, tuple(noise_mask.shape), operation_end - operation_start, operation_end - detailer_start)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] enhance_detail[%s] differential diffusion apply start", detailer_trace)
+            operation_start = time.perf_counter()
             model = utils.apply_differential_diffusion(model)
+            operation_end = time.perf_counter()
+            logging.info("[Impact Pack] enhance_detail[%s] differential diffusion apply complete op_elapsed=%.3fs total_elapsed=%.3fs",
+                         detailer_trace, operation_end - operation_start, operation_end - detailer_start)
 
     if wildcard_opt is not None and wildcard_opt != "":
+        logging.info("[Impact Pack] enhance_detail[%s] wildcard/LoRA processing start", detailer_trace)
+        operation_start = time.perf_counter()
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] wildcard/LoRA processing complete op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, operation_end - operation_start, operation_end - detailer_start)
 
         if wildcard_opt_concat_mode == "concat":
             positive = nodes.ConditioningConcat().concat(positive, wildcard_positive)[0]
@@ -350,11 +379,16 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             elif 'pooled_output' in positive[0][1]:
                 del positive[0][1]['pooled_output']
 
+    logging.info("[Impact Pack] enhance_detail[%s] geometry start", detailer_trace)
+    operation_start = time.perf_counter()
     h = image.shape[1]
     w = image.shape[2]
 
     bbox_h = bbox[3] - bbox[1]
     bbox_w = bbox[2] - bbox[0]
+    operation_end = time.perf_counter()
+    logging.info("[Impact Pack] enhance_detail[%s] geometry complete crop=(%s, %s) bbox=(%s, %s) op_elapsed=%.3fs total_elapsed=%.3fs",
+                 detailer_trace, w, h, bbox_w, bbox_h, operation_end - operation_start, operation_end - detailer_start)
 
     # Skip processing if the detected bbox is already larger than the guide_size
     if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
