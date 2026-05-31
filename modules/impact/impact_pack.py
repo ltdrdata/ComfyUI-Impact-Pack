@@ -708,16 +708,16 @@ class DetailerForEachAutoRetry:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
-        logging.info("[Impact Pack] DetailerForEach enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
+        logging.info("[Impact Pack] DetailerForEachAutoRetry enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
-        logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
+        logging.info("[Impact Pack] DetailerForEachAutoRetry segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
-        logging.info("[Impact Pack] DetailerForEach segs_scale_match complete segs=%d", len(segs[1]))
+        logging.info("[Impact Pack] DetailerForEachAutoRetry segs_scale_match complete segs=%d", len(segs[1]))
         new_segs = []
 
         wildcard_concat_mode = None
