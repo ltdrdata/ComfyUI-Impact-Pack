@@ -563,6 +563,8 @@ def _gaussian_kernel(kernel_size, sigma):
 def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     """Return NHWC torch.Tensor from ndim == 2/3/4 mask data.
 
+    ``kernel_size`` is the caller-facing feather radius kept for compatibility
+    with existing nodes and is converted to the odd full kernel size internally.
     Blur on the mask's current device. The old code called
     ``mask.to(comfy.model_management.get_torch_device())`` without using the
     returned tensor, which could still create a transient CUDA copy before the
@@ -581,14 +583,15 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     if kernel_size <= 0:
         return mask
 
-    kernel_size = kernel_size * 2 + 1
+    feather_radius = kernel_size
+    full_kernel_size = feather_radius * 2 + 1
 
     shortest = min(mask.shape[1], mask.shape[2])
-    if shortest <= kernel_size:
-        kernel_size = int(shortest / 2)
-        if kernel_size % 2 == 0:
-            kernel_size += 1
-        if kernel_size < 3:
+    if shortest <= full_kernel_size:
+        full_kernel_size = int(shortest / 2)
+        if full_kernel_size % 2 == 0:
+            full_kernel_size += 1
+        if full_kernel_size < 3:
             return mask  # skip feathering
 
     prev_device = mask.device
@@ -599,7 +602,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
 
     logging.info(
         "[Impact Pack] tensor_gaussian_blur_mask[%s] start "
-        f"shape={tuple(mask.shape)} kernel={kernel_size} sigma={sigma} "
+        f"shape={tuple(mask.shape)} feather_radius={feather_radius} kernel={full_kernel_size} sigma={sigma} "
         f"device={prev_device} work_device={work_device}",
         blur_trace
     )
@@ -610,7 +613,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     # previous unassigned .to(...) calls. Keep the output shape NHWC.
     mask_nchw = mask_work[:, None, ..., 0]
     try:
-        blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask_nchw)
+        blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=full_kernel_size, sigma=sigma)(mask_nchw)
     except Exception:
         if mask_nchw.device.type == "cpu":
             raise
@@ -618,7 +621,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
             "[Impact Pack] tensor_gaussian_blur_mask[%s] failed on device=%s; retrying on cpu",
             blur_trace, mask_nchw.device, exc_info=True
         )
-        blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask_nchw.cpu())
+        blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=full_kernel_size, sigma=sigma)(mask_nchw.cpu())
     blurred_mask = blurred_mask[:, 0, ..., None]
 
     if blurred_mask.device != prev_device or blurred_mask.dtype != prev_dtype:
