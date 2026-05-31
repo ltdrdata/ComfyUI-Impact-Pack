@@ -59,6 +59,30 @@ current_prompt = None
 ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
 
+def _impact_is_wsl():
+    try:
+        return "microsoft" in os.uname().release.lower() or "wsl" in os.uname().release.lower()
+    except Exception:
+        return False
+
+
+def _impact_env_enabled(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _impact_should_release_sam_device():
+    # Moving SAM/SAM2 back to CPU after every FaceDetailer frame is a heavy
+    # CPU/GPU model-transfer boundary. On WSL this has repeatedly become a
+    # full-driver wedge point after detector output and before detailer segments.
+    # Keep the old behavior available for low-VRAM diagnostics.
+    if _impact_is_wsl() and not _impact_env_enabled("IMPACT_WSL_RELEASE_SAM_DEVICE", False):
+        return False
+    return True
+
+
 def _move_latent_samples_to_cpu_for_decode(latent, label="detailer"):
     """Release sampler-side CUDA temporaries before VAE decode/model load.
 
@@ -712,7 +736,12 @@ class SAMWrapper:
 
     def release_device(self):
         if self.is_auto_mode:
+            if not _impact_should_release_sam_device():
+                logging.info("[Impact Pack] keeping SAM model on current device after prediction on WSL; set IMPACT_WSL_RELEASE_SAM_DEVICE=1 to release it to CPU after each prediction")
+                return
+            logging.info("[Impact Pack] releasing SAM model to CPU")
             self.model.to(device="cpu")
+            logging.info("[Impact Pack] released SAM model to CPU")
 
     def predict(self, image, points, plabs, bbox, threshold):
         predictor = SamPredictor(self.model)
@@ -746,10 +775,15 @@ class SAM2Wrapper:
 
     def release_device(self):
         if self.is_auto_mode:
+            if not _impact_should_release_sam_device():
+                logging.info("[Impact Pack] keeping SAM2 model on current device after prediction on WSL; set IMPACT_WSL_RELEASE_SAM_DEVICE=1 to release it to CPU after each prediction")
+                return
+            logging.info("[Impact Pack] releasing SAM2 model to CPU")
             if self.image_predictor:
                 self.image_predictor.model.to(device="cpu")
             if self.video_predictor:
                 self.video_predictor.to(device="cpu")
+            logging.info("[Impact Pack] released SAM2 model to CPU")
 
     def predict(self, image, points, plabs, bbox, threshold):
         if not is_sam2_available:
@@ -871,10 +905,15 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
     else:
         sam_obj = sam.sam_wrapper
 
+    logging.info(f"[Impact Pack] SAM mask start: segs={len(segs[1])} hint={detection_hint} dilation={dilation} bbox_expansion={bbox_expansion}")
+    logging.info("[Impact Pack] SAM prepare_device start")
     sam_obj.prepare_device()
+    logging.info("[Impact Pack] SAM prepare_device complete")
 
     try:
-        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info(f"[Impact Pack] SAM image conversion start shape={tuple(image.shape)} device={image.device}")
+        image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info(f"[Impact Pack] SAM image conversion complete shape={image.shape}")
 
         total_masks = []
 
@@ -897,7 +936,9 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
+            logging.info(f"[Impact Pack] SAM predict mask-points start points={len(points)}")
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
+            logging.info(f"[Impact Pack] SAM predict mask-points complete masks={len(detected_masks)}")
             total_masks += detected_masks
 
         else:
@@ -966,19 +1007,30 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                     points += npoints
                     plabs += nplabs
 
+                logging.info(
+                    f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} start "
+                    f"points={len(points)} bbox={dilated_bbox}"
+                )
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
+                logging.info(f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} complete masks={len(detected_masks)}")
                 total_masks += detected_masks
 
         # merge every collected masks
+        logging.info(f"[Impact Pack] SAM combine masks start count={len(total_masks)}")
         mask = utils.combine_masks2(total_masks)
+        logging.info(f"[Impact Pack] SAM combine masks complete shape={None if mask is None else tuple(mask.shape)}")
 
     finally:
+        logging.info("[Impact Pack] SAM release_device start")
         sam_obj.release_device()
+        logging.info("[Impact Pack] SAM release_device complete")
 
     if mask is not None:
+        logging.info(f"[Impact Pack] SAM postprocess start shape={tuple(mask.shape)}")
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
+        logging.info(f"[Impact Pack] SAM postprocess complete shape={tuple(mask.shape)}")
     else:
         size = image.shape[0], image.shape[1]
         mask = torch.zeros(size, dtype=torch.float32, device="cpu")  # empty mask
@@ -1141,10 +1193,15 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
         raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
 
     sam_obj = sam.sam_wrapper
+    logging.info(f"[Impact Pack] SAM mask start: segs={len(segs[1])} hint={detection_hint} dilation={dilation} bbox_expansion={bbox_expansion}")
+    logging.info("[Impact Pack] SAM prepare_device start")
     sam_obj.prepare_device()
+    logging.info("[Impact Pack] SAM prepare_device complete")
 
     try:
-        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info(f"[Impact Pack] SAM image conversion start shape={tuple(image.shape)} device={image.device}")
+        image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info(f"[Impact Pack] SAM image conversion complete shape={image.shape}")
 
         total_masks = []
 
@@ -1167,7 +1224,9 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
+            logging.info(f"[Impact Pack] SAM predict mask-points start points={len(points)}")
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
+            logging.info(f"[Impact Pack] SAM predict mask-points complete masks={len(detected_masks)}")
             total_masks += detected_masks
 
         else:
@@ -1185,22 +1244,33 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                                                          mask_hint_threshold, use_small_negative,
                                                          mask_hint_use_negative)
 
+                logging.info(
+                    f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} start "
+                    f"points={len(points)} bbox={dilated_bbox}"
+                )
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
+                logging.info(f"[Impact Pack] SAM predict segment {i + 1}/{len(segs)} complete masks={len(detected_masks)}")
 
                 total_masks += detected_masks
 
         # merge every collected masks
+        logging.info(f"[Impact Pack] SAM combine masks start count={len(total_masks)}")
         mask = utils.combine_masks2(total_masks)
+        logging.info(f"[Impact Pack] SAM combine masks complete shape={None if mask is None else tuple(mask.shape)}")
 
     finally:
+        logging.info("[Impact Pack] SAM release_device start")
         sam_obj.release_device()
+        logging.info("[Impact Pack] SAM release_device complete")
 
     mask_working_device = torch.device("cpu")
 
     if mask is not None:
+        logging.info(f"[Impact Pack] SAM postprocess start shape={tuple(mask.shape)}")
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
+        logging.info(f"[Impact Pack] SAM postprocess complete shape={tuple(mask.shape)}")
         mask = mask.to(device=mask_working_device)
     else:
         # Extracting batch, height and width

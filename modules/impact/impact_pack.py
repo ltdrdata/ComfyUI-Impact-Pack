@@ -453,13 +453,16 @@ class DetailerForEach:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        logging.info(f"[Impact Pack] DetailerForEach enter image={tuple(image.shape)} segs={len(segs[1])}")
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
+        logging.info(f"[Impact Pack] DetailerForEach segs_scale_match complete segs={len(segs[1])}")
         new_segs = []
 
         wildcard_concat_mode = None
@@ -485,13 +488,19 @@ class DetailerForEach:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion start")
             model = utils.apply_differential_diffusion(model)
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
+        image_np = image.detach().cpu().numpy()
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre crop start region={seg.crop_region} bbox={seg.bbox} label={seg.label}")
+            cropped_image = utils.crop_ndarray4(image_np, seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask start crop={tuple(cropped_image.shape)}")
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask complete mask={tuple(mask.shape)}")
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -512,6 +521,7 @@ class DetailerForEach:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop start")
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -534,6 +544,7 @@ class DetailerForEach:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop complete")
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -698,13 +709,16 @@ class DetailerForEachAutoRetry:
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        logging.info(f"[Impact Pack] DetailerForEach enter image={tuple(image.shape)} segs={len(segs[1])}")
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
+        logging.info(f"[Impact Pack] DetailerForEach segs_scale_match complete segs={len(segs[1])}")
         new_segs = []
 
         wildcard_concat_mode = None
@@ -730,13 +744,19 @@ class DetailerForEachAutoRetry:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion start")
             model = utils.apply_differential_diffusion(model)
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
+        image_np = image.detach().cpu().numpy()
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre crop start region={seg.crop_region} bbox={seg.bbox} label={seg.label}")
+            cropped_image = utils.crop_ndarray4(image_np, seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask start crop={tuple(cropped_image.shape)}")
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} pre mask complete mask={tuple(mask.shape)}")
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -757,6 +777,7 @@ class DetailerForEachAutoRetry:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop start")
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -779,6 +800,7 @@ class DetailerForEachAutoRetry:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
+            logging.info(f"[Impact Pack] Detailer segment {i + 1}/{len(ordered_segs)} conditioning crop complete")
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -1046,19 +1068,28 @@ class FaceDetailer:
                      tile_size=0, tile_overlap=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
+        logging.info(f"[Impact Pack] FaceDetailer bbox detect start image={tuple(image.shape)} threshold={bbox_threshold} dilation={bbox_dilation} crop_factor={bbox_crop_factor}")
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
-        bbox_detector.setAux(None)
+        try:
+            segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
+        finally:
+            bbox_detector.setAux(None)
+        logging.info(f"[Impact Pack] FaceDetailer bbox detect complete segs={len(segs[1])}")
 
         # bbox + sam combination
         if sam_model_opt is not None:
+            logging.info(f"[Impact Pack] FaceDetailer SAM refinement start segs={len(segs[1])}")
             sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
                                           sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
                                           sam_mask_hint_use_negative, )
+            logging.info(f"[Impact Pack] FaceDetailer SAM refinement mask complete shape={tuple(sam_mask.shape)}")
             segs = core.segs_bitwise_and_mask(segs, sam_mask)
+            logging.info(f"[Impact Pack] FaceDetailer SAM refinement complete segs={len(segs[1])}")
 
         elif segm_detector is not None:
+            logging.info(f"[Impact Pack] FaceDetailer segm refinement start segs={len(segs[1])}")
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+            logging.info(f"[Impact Pack] FaceDetailer segm detector complete segs={len(segm_segs[1])}")
 
             if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
                     not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
@@ -1066,9 +1097,11 @@ class FaceDetailer:
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
+            logging.info(f"[Impact Pack] FaceDetailer segm refinement complete segs={len(segs[1])}")
 
         mask_segs = segs
         if len(segs[1]) > 0:
+            logging.info(f"[Impact Pack] FaceDetailer detail pass start segs={len(segs[1])}")
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                           sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
@@ -1082,7 +1115,9 @@ class FaceDetailer:
                                           auto_vae_tiled_encode=force_adaptive_tiled_encode,
                                           vae_tile_size=tile_size, vae_tile_overlap=tile_overlap)
             mask_segs = new_segs
+            logging.info(f"[Impact Pack] FaceDetailer detail pass complete new_segs={len(new_segs[1])}")
         else:
+            logging.info("[Impact Pack] FaceDetailer detail pass skipped: no segs")
             enhanced_img = image
             cropped_enhanced = []
             cropped_enhanced_alpha = []
