@@ -86,6 +86,91 @@ def _impact_cpu_detached(tensor):
     return tensor
 
 
+def _impact_repair_detailer_tensor(tensor, *, fallback=None, label="tensor", clamp_image=False):
+    """Return a finite CPU tensor for detailer paste/alpha boundaries.
+
+    Detailer samplers/VAEs can occasionally return NaN/Inf pixels. PyTorch
+    blend arithmetic propagates those values even where a mask is zero, which
+    can poison the whole downstream IMAGE tensor. Non-finite enhanced pixels are
+    replaced from the original crop when available; remaining invalid values are
+    clamped into the IMAGE range.
+    """
+    if tensor is None or not torch.is_tensor(tensor):
+        return tensor
+
+    repaired = tensor.detach().cpu()
+    finite = torch.isfinite(repaired)
+    needs_repair = not bool(finite.all().item())
+
+    if needs_repair:
+        bad = int((~finite).sum().item())
+        total = int(repaired.numel())
+        logging.warning(
+            "[Impact Pack] %s contained non-finite values; repairing %d/%d components before paste",
+            label,
+            bad,
+            total,
+        )
+
+        if fallback is not None and torch.is_tensor(fallback):
+            fallback_tensor = fallback.detach().cpu()
+            if fallback_tensor.shape != repaired.shape:
+                try:
+                    fallback_tensor = utils.tensor_resize_for_detailer_output(
+                        fallback_tensor, *utils.tensor_get_size(repaired)
+                    )
+                except Exception:
+                    logging.warning(
+                        "[Impact Pack] %s fallback resize failed during non-finite repair",
+                        label,
+                        exc_info=True,
+                    )
+                    fallback_tensor = None
+        else:
+            fallback_tensor = None
+
+        if fallback_tensor is not None and fallback_tensor.shape == repaired.shape:
+            fallback_tensor = fallback_tensor.to(dtype=repaired.dtype)
+            fallback_tensor = torch.nan_to_num(
+                fallback_tensor, nan=0.0, posinf=1.0, neginf=0.0
+            )
+            if clamp_image:
+                fallback_tensor = fallback_tensor.clamp(0.0, 1.0)
+
+            repaired = torch.where(
+                finite,
+                torch.nan_to_num(repaired, nan=0.0, posinf=1.0, neginf=0.0),
+                fallback_tensor,
+            )
+        else:
+            repaired = torch.nan_to_num(repaired, nan=0.0, posinf=1.0, neginf=0.0)
+
+    if clamp_image:
+        repaired = repaired.clamp(0.0, 1.0)
+
+    return repaired
+
+
+def _impact_repair_detailer_mask(mask, *, label="mask"):
+    if mask is None or not torch.is_tensor(mask):
+        return mask
+
+    repaired = mask.detach().cpu()
+    finite = torch.isfinite(repaired)
+    if not bool(finite.all().item()):
+        bad = int((~finite).sum().item())
+        total = int(repaired.numel())
+        logging.warning(
+            "[Impact Pack] %s contained non-finite values; clearing %d/%d mask components before paste",
+            label,
+            bad,
+            total,
+        )
+        repaired = torch.nan_to_num(repaired, nan=0.0, posinf=0.0, neginf=0.0)
+
+    return repaired
+
+
 def _impact_inset_mask_region(data, offset_x, offset_y, inner_w, inner_h):
     """Zero mask values outside the requested inner rectangle."""
     if data is None:
@@ -590,8 +675,16 @@ class DetailerForEach:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image = image.detach().cpu()
-                enhanced_image = enhanced_image.detach().cpu()
-                mask = mask.detach().cpu()
+                enhanced_image = _impact_repair_detailer_tensor(
+                    enhanced_image,
+                    fallback=orig_cropped_image,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} enhanced image",
+                    clamp_image=True,
+                )
+                mask = _impact_repair_detailer_mask(
+                    mask,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} paste mask",
+                )
                 logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
                 logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
@@ -855,8 +948,16 @@ class DetailerForEachAutoRetry:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
                 image = image.detach().cpu()
-                enhanced_image = enhanced_image.detach().cpu()
-                mask = mask.detach().cpu()
+                enhanced_image = _impact_repair_detailer_tensor(
+                    enhanced_image,
+                    fallback=orig_cropped_image,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} enhanced image",
+                    clamp_image=True,
+                )
+                mask = _impact_repair_detailer_mask(
+                    mask,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} paste mask",
+                )
                 logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
                 logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
