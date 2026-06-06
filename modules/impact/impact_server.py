@@ -508,6 +508,36 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
     return input_val
 
 
+def resolve_wildcard_text_input(value, prompt):
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list) and len(value):
+        try:
+            input_node = prompt[value[0]]
+            return find_input_value(
+                input_node,
+                prompt=prompt,
+                input_type=str,
+                input_keys=(
+                    'text',
+                    'wildcard_text',
+                    'populated_text',
+                    'positive',
+                    'positive_prompt',
+                    'positive_prompt_template',
+                    'negative',
+                    'negative_prompt',
+                    'negative_prompt_template',
+                    'string',
+                    'value',
+                    'prompt',
+                ),
+            )
+        except (KeyError, AttributeError, TypeError, IndexError) as e:
+            logging.warning(f"[Impact Pack] Error resolving wildcard text input - {e}")
+    return None
+
+
 def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
 
@@ -547,7 +577,17 @@ def onprompt_populate_wildcards(json_data):
                 else:
                     input_seed = int(inputs['seed'])
 
-                inputs['populated_text'] = impact.wildcards.process(inputs['wildcard_text'], input_seed)
+                raw_wildcard_text = inputs.get('wildcard_text')
+                wildcard_text = resolve_wildcard_text_input(raw_wildcard_text, prompt)
+                if wildcard_text is None and raw_wildcard_text is not None and not isinstance(raw_wildcard_text, str):
+                    logging.warning(f"[Impact Pack] Could not resolve linked wildcard_text for '{v['class_type']}' node {k}; falling back to populated_text.")
+                if wildcard_text is None and isinstance(inputs.get('populated_text'), str):
+                    wildcard_text = inputs['populated_text']
+                if wildcard_text is None:
+                    logging.info(f"[Impact Pack] Could not resolve wildcard_text for '{v['class_type']}'. It will be ignored.")
+                    continue
+
+                inputs['populated_text'] = impact.wildcards.process(wildcard_text, input_seed)
                 inputs['mode'] = 'reproduce'
 
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
