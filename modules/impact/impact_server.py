@@ -533,7 +533,7 @@ def resolve_wildcard_text_input(value, prompt):
                     'prompt',
                 ),
             )
-        except Exception as e:
+        except (KeyError, AttributeError, TypeError, IndexError) as e:
             logging.warning(f"[Impact Pack] Error resolving wildcard text input - {e}")
     return None
 
@@ -577,7 +577,10 @@ def onprompt_populate_wildcards(json_data):
                 else:
                     input_seed = int(inputs['seed'])
 
-                wildcard_text = resolve_wildcard_text_input(inputs.get('wildcard_text'), prompt)
+                raw_wildcard_text = inputs.get('wildcard_text')
+                wildcard_text = resolve_wildcard_text_input(raw_wildcard_text, prompt)
+                if wildcard_text is None and raw_wildcard_text is not None and not isinstance(raw_wildcard_text, str):
+                    logging.warning(f"[Impact Pack] Could not resolve linked wildcard_text for '{v['class_type']}' node {k}; falling back to populated_text.")
                 if wildcard_text is None and isinstance(inputs.get('populated_text'), str):
                     wildcard_text = inputs['populated_text']
                 if wildcard_text is None:
