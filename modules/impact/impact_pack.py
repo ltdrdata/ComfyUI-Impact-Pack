@@ -1,5 +1,6 @@
 import os
 import sys
+import gc
 
 import comfy.samplers
 import comfy.sd
@@ -47,9 +48,310 @@ warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is
 model_path = folder_paths.models_dir
 
 
+def _impact_detailer_cleanup(label=None, clear_cuda_cache=False, collect_python=False, synchronize=False):
+    """Best-effort cleanup between FaceDetailer regions/frames.
+
+    This deliberately avoids unloading models. By default it is only an
+    instrumentation boundary; explicit CUDA sync/cache clearing from the
+    FaceDetailer hot path can itself become a WSL/CUDA wedge point across
+    queued generations. Callers may opt into heavier cleanup for diagnostics.
+    """
+    if collect_python:
+        gc.collect()
+
+    if not torch.cuda.is_available():
+        return
+
+    if synchronize:
+        try:
+            torch.cuda.synchronize()
+        except Exception as e:
+            logging.warning(f"[Impact Pack] CUDA synchronize during FaceDetailer cleanup failed{f' ({label})' if label else ''}: {e}")
+
+    if not clear_cuda_cache:
+        return
+
+    try:
+        if hasattr(comfy.model_management, 'soft_empty_cache'):
+            comfy.model_management.soft_empty_cache()
+        else:
+            torch.cuda.empty_cache()
+    except Exception as e:
+        logging.warning(f"[Impact Pack] CUDA cache cleanup during FaceDetailer cleanup failed{f' ({label})' if label else ''}: {e}")
+
+
+def _impact_cpu_detached(tensor):
+    if torch.is_tensor(tensor):
+        return tensor.detach().cpu()
+    return tensor
+
+
+def _impact_copy_frame_image(dst, frame_index, image_tensor, *, label):
+    if not torch.is_tensor(image_tensor):
+        raise TypeError(f"[Impact Pack] {label} expected tensor image, got {type(image_tensor).__name__}")
+
+    image_tensor = image_tensor.detach().cpu()
+    if image_tensor.ndim == 3:
+        image_tensor = image_tensor.unsqueeze(0)
+
+    expected = dst[frame_index:frame_index + 1].shape
+    if tuple(image_tensor.shape) != tuple(expected):
+        raise ValueError(f"[Impact Pack] {label} returned image shape {tuple(image_tensor.shape)}, expected {tuple(expected)}")
+
+    dst[frame_index:frame_index + 1].copy_(image_tensor.to(dtype=dst.dtype, copy=False))
+
+
+def _impact_copy_frame_mask(dst, frame_index, mask_tensor, *, label):
+    if mask_tensor is None:
+        dst[frame_index].zero_()
+        return
+    if not torch.is_tensor(mask_tensor):
+        raise TypeError(f"[Impact Pack] {label} expected tensor mask, got {type(mask_tensor).__name__}")
+
+    mask_tensor = mask_tensor.detach().cpu()
+    if mask_tensor.ndim == 3:
+        if mask_tensor.shape[0] == 1:
+            mask_tensor = mask_tensor[0]
+        elif mask_tensor.shape[-1] == 1:
+            mask_tensor = mask_tensor[..., 0]
+
+    expected = dst[frame_index].shape
+    if tuple(mask_tensor.shape) != tuple(expected):
+        raise ValueError(f"[Impact Pack] {label} returned mask shape {tuple(mask_tensor.shape)}, expected {tuple(expected)}")
+
+    dst[frame_index].copy_(mask_tensor.to(dtype=dst.dtype, copy=False))
+
+
+def _impact_repair_detailer_tensor(tensor, *, fallback=None, label="tensor", clamp_image=False):
+    """Return a finite CPU tensor for detailer paste/alpha boundaries.
+
+    Detailer samplers/VAEs can occasionally return NaN/Inf pixels. PyTorch
+    blend arithmetic propagates those values even where a mask is zero, which
+    can poison the whole downstream IMAGE tensor. Non-finite enhanced pixels are
+    replaced from the original crop when available; remaining invalid values are
+    clamped into the IMAGE range.
+    """
+    if tensor is None or not torch.is_tensor(tensor):
+        return tensor
+
+    repaired = tensor.detach().cpu()
+    finite = torch.isfinite(repaired)
+    needs_repair = not bool(finite.all().item())
+
+    if needs_repair:
+        bad = int((~finite).sum().item())
+        total = int(repaired.numel())
+        logging.warning(
+            "[Impact Pack] %s contained non-finite values; repairing %d/%d components before paste",
+            label,
+            bad,
+            total,
+        )
+
+        if fallback is not None and torch.is_tensor(fallback):
+            fallback_tensor = fallback.detach().cpu()
+            if fallback_tensor.shape != repaired.shape:
+                try:
+                    fallback_tensor = utils.tensor_resize_for_detailer_output(
+                        fallback_tensor, *utils.tensor_get_size(repaired)
+                    )
+                except Exception:
+                    logging.warning(
+                        "[Impact Pack] %s fallback resize failed during non-finite repair",
+                        label,
+                        exc_info=True,
+                    )
+                    fallback_tensor = None
+        else:
+            fallback_tensor = None
+
+        if fallback_tensor is not None and fallback_tensor.shape == repaired.shape:
+            fallback_tensor = fallback_tensor.to(dtype=repaired.dtype)
+            fallback_tensor = torch.nan_to_num(
+                fallback_tensor, nan=0.0, posinf=1.0, neginf=0.0
+            )
+            if clamp_image:
+                fallback_tensor = fallback_tensor.clamp(0.0, 1.0)
+
+            repaired = torch.where(
+                finite,
+                torch.nan_to_num(repaired, nan=0.0, posinf=1.0, neginf=0.0),
+                fallback_tensor,
+            )
+        else:
+            repaired = torch.nan_to_num(repaired, nan=0.0, posinf=1.0, neginf=0.0)
+
+    if clamp_image:
+        repaired = repaired.clamp(0.0, 1.0)
+
+    return repaired
+
+
+def _impact_repair_detailer_mask(mask, *, label="mask"):
+    if mask is None or not torch.is_tensor(mask):
+        return mask
+
+    repaired = mask.detach().cpu()
+    finite = torch.isfinite(repaired)
+    if not bool(finite.all().item()):
+        bad = int((~finite).sum().item())
+        total = int(repaired.numel())
+        logging.warning(
+            "[Impact Pack] %s contained non-finite values; clearing %d/%d mask components before paste",
+            label,
+            bad,
+            total,
+        )
+        repaired = torch.nan_to_num(repaired, nan=0.0, posinf=0.0, neginf=0.0)
+
+    return repaired
+
+
+def _impact_inset_mask_region(data, offset_x, offset_y, inner_w, inner_h):
+    """Zero mask values outside the requested inner rectangle."""
+    if data is None:
+        return None
+
+    x0 = max(0, int(offset_x))
+    y0 = max(0, int(offset_y))
+    x1 = x0 + max(0, int(inner_w))
+    y1 = y0 + max(0, int(inner_h))
+
+    if torch.is_tensor(data):
+        out = torch.zeros_like(data)
+        if data.ndim == 4:
+            x1 = min(x1, data.shape[2])
+            y1 = min(y1, data.shape[1])
+            out[:, y0:y1, x0:x1, :] = data[:, y0:y1, x0:x1, :]
+        elif data.ndim == 3:
+            x1 = min(x1, data.shape[2])
+            y1 = min(y1, data.shape[1])
+            out[:, y0:y1, x0:x1] = data[:, y0:y1, x0:x1]
+        elif data.ndim == 2:
+            x1 = min(x1, data.shape[1])
+            y1 = min(y1, data.shape[0])
+            out[y0:y1, x0:x1] = data[y0:y1, x0:x1]
+        else:
+            raise ValueError(f"Unsupported mask ndim for inset: {data.ndim}")
+        return out
+
+    arr = np.asarray(data)
+    out = np.zeros_like(arr)
+    if arr.ndim == 4:
+        x1 = min(x1, arr.shape[2])
+        y1 = min(y1, arr.shape[1])
+        out[:, y0:y1, x0:x1, :] = arr[:, y0:y1, x0:x1, :]
+    elif arr.ndim == 3:
+        x1 = min(x1, arr.shape[2])
+        y1 = min(y1, arr.shape[1])
+        out[:, y0:y1, x0:x1] = arr[:, y0:y1, x0:x1]
+    elif arr.ndim == 2:
+        x1 = min(x1, arr.shape[1])
+        y1 = min(y1, arr.shape[0])
+        out[y0:y1, x0:x1] = arr[y0:y1, x0:x1]
+    else:
+        raise ValueError(f"Unsupported mask ndim for inset: {arr.ndim}")
+    return out
+
 # folder_paths.supported_pt_extensions
 utils.add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
 utils.add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
+
+
+def _apply_post_detail_shrink(cropped_image, enhanced_image, paste_mask, cropped_mask_base,
+                              paste_crop_region, bbox, enabled=False, scale=0.995):
+    if enhanced_image is None or not enabled:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    scale = float(scale)
+    if scale >= 0.999999:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    scale = max(0.01, min(1.0, scale))
+
+    crop_w, crop_h = utils.tensor_get_size(enhanced_image)
+    scaled_w = max(1, int(round(crop_w * scale)))
+    scaled_h = max(1, int(round(crop_h * scale)))
+
+    if scaled_w == crop_w and scaled_h == crop_h:
+        return cropped_image, enhanced_image, paste_mask, cropped_mask_base
+
+    bbox_cx = (bbox[0] + bbox[2]) * 0.5 - paste_crop_region[0]
+    bbox_cy = (bbox[1] + bbox[3]) * 0.5 - paste_crop_region[1]
+    bbox_cx = min(max(float(bbox_cx), 0.0), max(crop_w - 1, 0))
+    bbox_cy = min(max(float(bbox_cy), 0.0), max(crop_h - 1, 0))
+
+    offset_x = int(round(bbox_cx - bbox_cx * scale))
+    offset_y = int(round(bbox_cy - bbox_cy * scale))
+    offset_x = min(max(offset_x, 0), max(crop_w - scaled_w, 0))
+    offset_y = min(max(offset_y, 0), max(crop_h - scaled_h, 0))
+
+    shrink_delta_w = crop_w - scaled_w
+    shrink_delta_h = crop_h - scaled_h
+
+    if shrink_delta_w <= 16 and shrink_delta_h <= 16:
+        logging.info(
+            "Detailer: post-detail shrink using mask-only inset "
+            f"scale={scale:.4f} offset=({offset_x}, {offset_y}) "
+            f"size=({crop_w}, {crop_h})->({scaled_w}, {scaled_h})"
+        )
+        shrunken_paste_mask = _impact_inset_mask_region(
+            paste_mask, offset_x, offset_y, scaled_w, scaled_h
+        )
+        if torch.is_tensor(shrunken_paste_mask):
+            shrunken_paste_mask = torch.clamp(shrunken_paste_mask, 0.0, 1.0)
+        elif shrunken_paste_mask is not None:
+            shrunken_paste_mask = np.clip(shrunken_paste_mask, 0.0, 1.0)
+
+        shrunken_cropped_mask_base = _impact_inset_mask_region(
+            cropped_mask_base, offset_x, offset_y, scaled_w, scaled_h
+        )
+        return cropped_image, enhanced_image, shrunken_paste_mask, shrunken_cropped_mask_base
+
+    resized_image = utils.tensor_resize(enhanced_image, scaled_w, scaled_h)
+    resized_paste_mask = torch.clamp(utils.tensor_resize(paste_mask, scaled_w, scaled_h), 0.0, 1.0)
+
+    cropped_mask_base_is_numpy = isinstance(cropped_mask_base, np.ndarray)
+    cropped_mask_base_src = utils.to_tensor(cropped_mask_base) if cropped_mask_base_is_numpy else cropped_mask_base
+
+    resized_cropped_mask_base = torch.clamp(
+        utils.resize_mask(cropped_mask_base_src, (scaled_h, scaled_w)),
+        0.0,
+        1.0,
+    )
+
+    if getattr(cropped_mask_base, "ndim", None) == 2 and resized_cropped_mask_base.ndim == 3:
+        resized_cropped_mask_base = resized_cropped_mask_base.squeeze(0)
+
+    if cropped_mask_base_is_numpy:
+        resized_cropped_mask_base = resized_cropped_mask_base.cpu().numpy()
+
+    shrunken_image = cropped_image.clone()
+    utils.tensor_paste(shrunken_image, resized_image, (offset_x, offset_y), resized_paste_mask)
+
+    shrunken_paste_mask = utils.shift_within_canvas(
+        resized_paste_mask,
+        offset_x,
+        offset_y,
+        canvas_w=crop_w,
+        canvas_h=crop_h,
+        fill_value=0.0,
+    )
+    shrunken_cropped_mask_base = utils.shift_within_canvas(
+        resized_cropped_mask_base,
+        offset_x,
+        offset_y,
+        canvas_w=crop_w,
+        canvas_h=crop_h,
+        fill_value=0.0,
+    )
+
+    logging.info(
+        f"Detailer: post-detail shrink scale={scale:.4f} offset=({offset_x}, {offset_y}) "
+        f"size=({crop_w}, {crop_h})->({scaled_w}, {scaled_h})"
+    )
+
+    return cropped_image, shrunken_image, shrunken_paste_mask, shrunken_cropped_mask_base
 
 
 # Nodes
@@ -246,6 +548,8 @@ class DetailerForEach:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                    }
                 }
 
@@ -264,18 +568,22 @@ class DetailerForEach:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, auto_vae_tiled_encode=False, vae_tile_size=None, vae_tile_overlap=None):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        logging.info("[Impact Pack] DetailerForEach enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
+        logging.info("[Impact Pack] DetailerForEach segs_scale_match complete segs=%d", len(segs[1]))
         new_segs = []
 
         wildcard_concat_mode = None
@@ -301,13 +609,18 @@ class DetailerForEach:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion start")
             model = utils.apply_differential_diffusion(model)
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info("[Impact Pack] Detailer segment %d/%d pre crop start region=%s bbox=%s label=%s", i + 1, len(ordered_segs), seg.crop_region, seg.bbox, seg.label)
+            cropped_image = utils.crop_ndarray4(image.detach().cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask complete mask=%s", i + 1, len(ordered_segs), tuple(mask.shape))
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -328,6 +641,7 @@ class DetailerForEach:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop start", i + 1, len(ordered_segs))
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -350,6 +664,7 @@ class DetailerForEach:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop complete", i + 1, len(ordered_segs))
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -359,6 +674,7 @@ class DetailerForEach:
 
             orig_cropped_image = cropped_image.clone()
             if not (isinstance(model, str) and model == "DUMMY"):
+                logging.info("[Impact Pack] Detailer segment %d/%d enhance_detail start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                 seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
                                                                 cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -369,10 +685,24 @@ class DetailerForEach:
                                                                 refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                vae_tiled_decode=tiled_decode)
+                                                                vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
+                                                                vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
+                logging.info("[Impact Pack] Detailer segment %d/%d enhance_detail returned shape=%s", i + 1, len(ordered_segs), None if enhanced_image is None else tuple(enhanced_image.shape))
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
+
+            logging.info("[Impact Pack] Detailer segment %d/%d post_detail_shrink start", i + 1, len(ordered_segs))
+            orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
+                    orig_cropped_image,
+                    enhanced_image,
+                    mask,
+                    seg.cropped_mask,
+                    seg.crop_region,
+                    seg.bbox,
+                    enabled=post_detail_shrink,
+                    scale=post_detail_shrink_scale,
+                )
 
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
@@ -380,9 +710,20 @@ class DetailerForEach:
             if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image = image.cpu()
-                enhanced_image = enhanced_image.cpu()
+                image = image.detach().cpu()
+                enhanced_image = _impact_repair_detailer_tensor(
+                    enhanced_image,
+                    fallback=orig_cropped_image,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} enhanced image",
+                    clamp_image=True,
+                )
+                mask = _impact_repair_detailer_mask(
+                    mask,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} paste mask",
+                )
+                logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
+                logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -390,22 +731,27 @@ class DetailerForEach:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output start", i + 1, len(ordered_segs))
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
+                mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output complete", i + 1, len(ordered_segs))
             else:
                 new_seg_image = None
 
             cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
 
-            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-        image_tensor = utils.tensor_convert_rgb(image)
+            logging.info("[Impact Pack] Detailer segment %d/%d cleanup boundary", i + 1, len(ordered_segs))
+            _impact_detailer_cleanup(f"segment {i + 1}")
+
+        image_tensor = utils.tensor_convert_rgb(image).detach().cpu()
 
         cropped_list.sort(key=lambda x: x.shape, reverse=True)
         enhanced_list.sort(key=lambda x: x.shape, reverse=True)
@@ -416,14 +762,15 @@ class DetailerForEach:
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
              detailer_hook=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         enhanced_img, *_ = \
             DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         return (enhanced_img, )
 
@@ -463,6 +810,8 @@ class DetailerForEachAutoRetry:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                    }
                 }
 
@@ -481,18 +830,23 @@ class DetailerForEachAutoRetry:
     def do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg, sampler_name, scheduler,
                   positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard_opt=None, detailer_hook=None,
                   refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None,
-                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, max_retries=1):
+                  cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                  post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1, auto_vae_tiled_encode=False,
+                  vae_tile_size=0, vae_tile_overlap=0):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
+        logging.info("[Impact Pack] DetailerForEachAutoRetry enter image=%s segs=%d", tuple(image.shape), len(segs[1]))
         image = image.clone()
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
         cnet_pil_list = []
 
+        logging.info("[Impact Pack] DetailerForEachAutoRetry segs_scale_match start")
         segs = core.segs_scale_match(segs, image.shape)
+        logging.info("[Impact Pack] DetailerForEachAutoRetry segs_scale_match complete segs=%d", len(segs[1]))
         new_segs = []
 
         wildcard_concat_mode = None
@@ -518,13 +872,18 @@ class DetailerForEachAutoRetry:
             ordered_segs = segs[1]
 
         if not (isinstance(model, str) and model == "DUMMY") and noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion start")
             model = utils.apply_differential_diffusion(model)
+            logging.info("[Impact Pack] DetailerForEach apply_differential_diffusion complete")
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            logging.info("[Impact Pack] Detailer segment %d/%d pre crop start region=%s bbox=%s label=%s", i + 1, len(ordered_segs), seg.crop_region, seg.bbox, seg.label)
+            cropped_image = utils.crop_ndarray4(image.detach().cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
             cropped_image = utils.to_tensor(cropped_image)
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask start crop=%s", i + 1, len(ordered_segs), tuple(cropped_image.shape))
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
+            logging.info("[Impact Pack] Detailer segment %d/%d pre mask complete mask=%s", i + 1, len(ordered_segs), tuple(mask.shape))
 
             is_mask_all_zeros = (seg.cropped_mask == 0).all().item()
             if is_mask_all_zeros:
@@ -545,6 +904,7 @@ class DetailerForEachAutoRetry:
 
             seg_seed = seed + i if seg_seed is None else seg_seed
 
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop start", i + 1, len(ordered_segs))
             if not isinstance(positive, str):
                 cropped_positive = [
                     [condition, {
@@ -567,6 +927,7 @@ class DetailerForEachAutoRetry:
             else:
                 # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
+            logging.info("[Impact Pack] Detailer segment %d/%d conditioning crop complete", i + 1, len(ordered_segs))
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
                 continue
@@ -582,6 +943,7 @@ class DetailerForEachAutoRetry:
 
             if not (isinstance(model, str) and model == "DUMMY"):
                 for retry in range(max_retries):
+                    logging.info("[Impact Pack] Detailer segment %d/%d retry %d/%d enhance_detail start crop=%s", i + 1, len(ordered_segs), retry + 1, max_retries, tuple(cropped_image.shape))
                     enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                     seg.bbox, seg_seed + retry, steps, cfg, sampler_name, scheduler,
                                                                     cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -592,7 +954,9 @@ class DetailerForEachAutoRetry:
                                                                     refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                    vae_tiled_decode=tiled_decode)
+                                                                    vae_tiled_decode=tiled_decode, auto_vae_tiled_encode=auto_vae_tiled_encode,
+                                                                    vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
+                    logging.info("[Impact Pack] Detailer segment %d/%d retry %d/%d enhance_detail returned shape=%s", i + 1, len(ordered_segs), retry + 1, max_retries, None if enhanced_image is None else tuple(enhanced_image.shape))
 
                     if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
@@ -602,15 +966,37 @@ class DetailerForEachAutoRetry:
                     else:
                         print("Detect bad patch, retrying...")
 
+            orig_cropped_image, enhanced_image, mask, cropped_mask_for_output = _apply_post_detail_shrink(
+                    orig_cropped_image,
+                    enhanced_image,
+                    mask,
+                    seg.cropped_mask,
+                    seg.crop_region,
+                    seg.bbox,
+                    enabled=post_detail_shrink,
+                    scale=post_detail_shrink_scale,
+                )
+
             if cnet_pils is not None:
                 cnet_pil_list.extend(cnet_pils)
 
             if enhanced_image is not None:
                 # don't latent composite-> converting to latent caused poor quality
                 # use image paste
-                image = image.cpu()
-                enhanced_image = enhanced_image.cpu()
+                image = image.detach().cpu()
+                enhanced_image = _impact_repair_detailer_tensor(
+                    enhanced_image,
+                    fallback=orig_cropped_image,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} enhanced image",
+                    clamp_image=True,
+                )
+                mask = _impact_repair_detailer_mask(
+                    mask,
+                    label=f"Detailer segment {i + 1}/{len(ordered_segs)} paste mask",
+                )
+                logging.info("[Impact Pack] Detailer segment %d/%d paste start region=%s enhanced=%s mask=%s", i + 1, len(ordered_segs), seg.crop_region, tuple(enhanced_image.shape), tuple(mask.shape))
                 utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
+                logging.info("[Impact Pack] Detailer segment %d/%d paste complete", i + 1, len(ordered_segs))
                 enhanced_list.append(enhanced_image)
 
                 if detailer_hook is not None:
@@ -618,19 +1004,21 @@ class DetailerForEachAutoRetry:
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output start", i + 1, len(ordered_segs))
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
                 new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
 
                 # Apply the mask
-                mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
+                mask = utils.tensor_resize_for_detailer_output(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
+                logging.info("[Impact Pack] Detailer segment %d/%d alpha output complete", i + 1, len(ordered_segs))
             else:
                 new_seg_image = None
 
             cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
 
-            new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
+            new_seg = SEG(new_seg_image, cropped_mask_for_output, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
         image_tensor = utils.tensor_convert_rgb(image)
@@ -644,14 +1032,15 @@ class DetailerForEachAutoRetry:
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, cycle=1,
              detailer_hook=None, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False, max_retries=1):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995, max_retries=1):
 
         enhanced_img, *_ = \
             DetailerForEachAutoRetry.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps,
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode, max_retries=max_retries)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale, max_retries=max_retries)
 
         return (enhanced_img, )
 
@@ -688,6 +1077,8 @@ class DetailerForEachPipe:
                       "scheduler_func_opt": ("SCHEDULER_FUNC",),
                       "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                       "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                      "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                      "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
                      }
                 }
 
@@ -704,7 +1095,7 @@ class DetailerForEachPipe:
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard,
              refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -723,7 +1114,8 @@ class DetailerForEachPipe:
                                       refiner_ratio=refiner_ratio, refiner_model=refiner_model,
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                                      tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cnet_pil_list) == 0:
@@ -782,6 +1174,11 @@ class FaceDetailer:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
+                    "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
+                    "tile_size": ("INT", {"default": 0, "min": 0, "max": 4096, "step": 16, "tooltip": "FaceDetailer VAE tiled encode/decode tile size. 0 = automatic size based on crop resolution."}),
+                    "tile_overlap": ("INT", {"default": 0, "min": 0, "max": 1024, "step": 8, "tooltip": "FaceDetailer VAE tiled encode/decode overlap. 0 = automatic overlap based on the resolved tile size."}),
                 }}
 
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "MASK", "DETAILER_PIPE", "IMAGE")
@@ -801,22 +1198,36 @@ class FaceDetailer:
                      sam_mask_hint_use_negative, drop_size,
                      bbox_detector, segm_detector=None, sam_model_opt=None, wildcard_opt=None, detailer_hook=None,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
-                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+                     inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+                     post_detail_shrink=False, post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True,
+                     tile_size=0, tile_overlap=0):
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
+        logging.info("[Impact Pack] FaceDetailer bbox detect start image=%s threshold=%s dilation=%s crop_factor=%s", tuple(image.shape), bbox_threshold, bbox_dilation, bbox_crop_factor)
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
-        bbox_detector.setAux(None)
+        try:
+            segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
+        finally:
+            bbox_detector.setAux(None)
+        logging.info("[Impact Pack] FaceDetailer bbox detect complete segs=%d", len(segs[1]))
 
         # bbox + sam combination
         if sam_model_opt is not None:
-            sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
-                                          sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                                          sam_mask_hint_use_negative, )
-            segs = core.segs_bitwise_and_mask(segs, sam_mask)
+            if len(segs[1]) > 0:
+                logging.info("[Impact Pack] FaceDetailer SAM refinement start segs=%d", len(segs[1]))
+                sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
+                                              sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                                              sam_mask_hint_use_negative, )
+                logging.info("[Impact Pack] FaceDetailer SAM refinement mask complete shape=%s", tuple(sam_mask.shape))
+                segs = core.segs_bitwise_and_mask(segs, sam_mask)
+                logging.info("[Impact Pack] FaceDetailer SAM refinement complete segs=%d", len(segs[1]))
+            else:
+                logging.info("[Impact Pack] FaceDetailer SAM refinement skipped: no bbox segs")
 
         elif segm_detector is not None:
+            logging.info("[Impact Pack] FaceDetailer segm refinement start segs=%d", len(segs[1]))
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+            logging.info("[Impact Pack] FaceDetailer segm detector complete segs=%d", len(segm_segs[1]))
 
             if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
                     not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
@@ -824,8 +1235,12 @@ class FaceDetailer:
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
                 segs = core.segs_bitwise_and_mask(segs, segm_mask)
+            logging.info("[Impact Pack] FaceDetailer segm refinement complete segs=%d", len(segs[1]))
 
+        mask_segs = segs
+        detail_applied = False
         if len(segs[1]) > 0:
+            logging.info("[Impact Pack] FaceDetailer detail pass start segs=%d", len(segs[1]))
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
                 DetailerForEach.do_detail(image, segs, model, clip, vae, guide_size, guide_size_for_bbox, max_size, seed, steps, cfg,
                                           sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
@@ -834,15 +1249,22 @@ class FaceDetailer:
                                           refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                           refiner_negative=refiner_negative,
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                          scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                          scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                          post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                                          auto_vae_tiled_encode=force_adaptive_tiled_encode,
+                                          vae_tile_size=tile_size, vae_tile_overlap=tile_overlap)
+            mask_segs = new_segs
+            detail_applied = True
+            logging.info("[Impact Pack] FaceDetailer detail pass complete new_segs=%d", len(new_segs[1]))
         else:
+            logging.info("[Impact Pack] FaceDetailer detail pass skipped: no segs")
             enhanced_img = image
             cropped_enhanced = []
             cropped_enhanced_alpha = []
             cnet_pil_list = []
 
         # Mask Generator
-        mask = core.segs_to_combined_mask(segs)
+        mask = core.segs_to_combined_mask(mask_segs)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [utils.empty_pil_tensor()]
@@ -853,7 +1275,7 @@ class FaceDetailer:
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [utils.empty_pil_tensor()]
 
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
+        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied
 
     def doit(self, image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint,
@@ -861,10 +1283,12 @@ class FaceDetailer:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
              sam_mask_hint_use_negative, drop_size, bbox_detector, wildcard, cycle=1,
              sam_model_opt=None, segm_detector_opt=None, detailer_hook=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False,
+             post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
         result_img = None
-        result_mask = None
+        result_mask = torch.empty((len(image), image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
+        any_detail_applied = False
         result_cropped_enhanced = []
         result_cropped_enhanced_alpha = []
         result_cnet_images = []
@@ -873,20 +1297,47 @@ class FaceDetailer:
             logging.warning("[Impact Pack] WARN: FaceDetailer is not a node designed for video detailing. If you intend to perform video detailing, please use Detailer For AnimateDiff.")
 
         for i, single_image in enumerate(image):
-            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
-                positive, negative, denoise, feather, noise_mask, force_inpaint,
-                bbox_threshold, bbox_dilation, bbox_crop_factor,
-                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
-                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+            frame_ok = False
+            logging.info("[Impact Pack] FaceDetailer frame %d/%d start", i + 1, len(image))
+            enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
+            detail_applied = False
+            try:
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied = FaceDetailer.enhance_face(
+                    single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                    positive, negative, denoise, feather, noise_mask, force_inpaint,
+                    bbox_threshold, bbox_dilation, bbox_crop_factor,
+                    sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                    sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector_opt, sam_model_opt, wildcard, detailer_hook,
+                    cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
+                    tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                    post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                    force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
-            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
-            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
-            result_cropped_enhanced.extend(cropped_enhanced)
-            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
-            result_cnet_images.extend(cnet_pil_list)
+                if detail_applied and result_img is None:
+                    logging.info("[Impact Pack] FaceDetailer output clone start shape=%s", tuple(image.shape))
+                    result_img = image.detach().cpu().clone()
+                    logging.info("[Impact Pack] FaceDetailer output clone complete shape=%s", tuple(result_img.shape))
+                if result_img is not None:
+                    _impact_copy_frame_image(result_img, i, enhanced_img, label=f"FaceDetailer frame {i + 1}")
+                _impact_copy_frame_mask(result_mask, i, mask, label=f"FaceDetailer frame {i + 1}")
+                any_detail_applied = any_detail_applied or detail_applied
+                result_cropped_enhanced.extend(cropped_enhanced)
+                result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+                result_cnet_images.extend(cnet_pil_list)
+                frame_ok = True
+            finally:
+                del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
+                logging.info("[Impact Pack] FaceDetailer frame %d/%d cleanup start", i + 1, len(image))
+                _impact_detailer_cleanup(f"FaceDetailer frame {i + 1}")
+                logging.info(
+                    f"[Impact Pack] FaceDetailer frame {i + 1}/{len(image)} "
+                    f"{'complete' if frame_ok else 'failed'}"
+                )
+
+        logging.info("[Impact Pack] FaceDetailer aggregate start any_detail_applied=%s", any_detail_applied)
+        if result_img is None:
+            result_img = image.detach().cpu()
+        logging.info("[Impact Pack] FaceDetailer aggregate complete image=%s mask=%s", tuple(result_img.shape), tuple(result_mask.shape))
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
         return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
@@ -1674,6 +2125,11 @@ class FaceDetailerPipe:
                     "scheduler_func_opt": ("SCHEDULER_FUNC",),
                     "tiled_encode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
                     "tiled_decode": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
+                    "post_detail_shrink": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "Shrink the refined patch back down before pasting it into the source image."}),
+                    "post_detail_shrink_scale": ("FLOAT", {"default": 0.995, "min": 0.10, "max": 1.0, "step": 0.001, "tooltip": "Only used when post_detail_shrink is enabled. 1.0 disables the shrink. Values below 1.0 shrink the detailed patch around the detected face center."}),
+                    "force_adaptive_tiled_encode": ("BOOLEAN", {"default": True, "label_on": "enabled", "label_off": "disabled", "tooltip": "Keeps FaceDetailer on the adaptive tiled VAE encode path (including 512/64). Disable to allow fallback to the legacy non-tiled path when applicable."}),
+                    "tile_size": ("INT", {"default": 0, "min": 0, "max": 4096, "step": 16, "tooltip": "FaceDetailer VAE tiled encode/decode tile size. 0 = automatic size based on crop resolution."}),
+                    "tile_overlap": ("INT", {"default": 0, "min": 0, "max": 1024, "step": 8, "tooltip": "FaceDetailer VAE tiled encode/decode overlap. 0 = automatic overlap based on the resolved tile size."}),
                    }
                 }
 
@@ -1691,10 +2147,12 @@ class FaceDetailerPipe:
              sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion,
              sam_mask_hint_threshold, sam_mask_hint_use_negative, drop_size, refiner_ratio=None,
              cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
-             tiled_encode=False, tiled_decode=False):
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995,
+             force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
         result_img = None
-        result_mask = None
+        result_mask = torch.empty((len(image), image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
+        any_detail_applied = False
         result_cropped_enhanced = []
         result_cropped_enhanced_alpha = []
         result_cnet_images = []
@@ -1706,22 +2164,49 @@ class FaceDetailerPipe:
             refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
 
         for i, single_image in enumerate(image):
-            enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
-                single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
-                positive, negative, denoise, feather, noise_mask, force_inpaint,
-                bbox_threshold, bbox_dilation, bbox_crop_factor,
-                sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
-                refiner_ratio=refiner_ratio, refiner_model=refiner_model,
-                refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
-                cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
-                tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+            frame_ok = False
+            logging.info("[Impact Pack] FaceDetailerPipe frame %d/%d start", i + 1, len(image))
+            enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
+            detail_applied = False
+            try:
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied = FaceDetailer.enhance_face(
+                    single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
+                    positive, negative, denoise, feather, noise_mask, force_inpaint,
+                    bbox_threshold, bbox_dilation, bbox_crop_factor,
+                    sam_detection_hint, sam_dilation, sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                    sam_mask_hint_use_negative, drop_size, bbox_detector, segm_detector, sam_model_opt, wildcard, detailer_hook,
+                    refiner_ratio=refiner_ratio, refiner_model=refiner_model,
+                    refiner_clip=refiner_clip, refiner_positive=refiner_positive, refiner_negative=refiner_negative,
+                    cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
+                    tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                    post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
+                    force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
-            result_img = torch.cat((result_img, enhanced_img), dim=0) if result_img is not None else enhanced_img
-            result_mask = torch.cat((result_mask, mask), dim=0) if result_mask is not None else mask
-            result_cropped_enhanced.extend(cropped_enhanced)
-            result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
-            result_cnet_images.extend(cnet_pil_list)
+                if detail_applied and result_img is None:
+                    logging.info("[Impact Pack] FaceDetailerPipe output clone start shape=%s", tuple(image.shape))
+                    result_img = image.detach().cpu().clone()
+                    logging.info("[Impact Pack] FaceDetailerPipe output clone complete shape=%s", tuple(result_img.shape))
+                if result_img is not None:
+                    _impact_copy_frame_image(result_img, i, enhanced_img, label=f"FaceDetailerPipe frame {i + 1}")
+                _impact_copy_frame_mask(result_mask, i, mask, label=f"FaceDetailerPipe frame {i + 1}")
+                any_detail_applied = any_detail_applied or detail_applied
+                result_cropped_enhanced.extend(cropped_enhanced)
+                result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
+                result_cnet_images.extend(cnet_pil_list)
+                frame_ok = True
+            finally:
+                del enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
+                logging.info("[Impact Pack] FaceDetailerPipe frame %d/%d cleanup start", i + 1, len(image))
+                _impact_detailer_cleanup(f"FaceDetailerPipe frame {i + 1}")
+                logging.info(
+                    f"[Impact Pack] FaceDetailerPipe frame {i + 1}/{len(image)} "
+                    f"{'complete' if frame_ok else 'failed'}"
+                )
+
+        logging.info("[Impact Pack] FaceDetailerPipe aggregate start any_detail_applied=%s", any_detail_applied)
+        if result_img is None:
+            result_img = image.detach().cpu()
+        logging.info("[Impact Pack] FaceDetailerPipe aggregate complete image=%s mask=%s", tuple(result_img.shape), tuple(result_mask.shape))
 
         if len(result_cropped_enhanced) == 0:
             result_cropped_enhanced = [utils.empty_pil_tensor()]
@@ -1851,7 +2336,8 @@ class DetailerForEachTest(DetailerForEach):
 
     def doit(self, image, segs, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name,
              scheduler, positive, negative, denoise, feather, noise_mask, force_inpaint, wildcard, detailer_hook=None,
-             cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             cycle=1, inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None,
+             tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1861,7 +2347,8 @@ class DetailerForEachTest(DetailerForEach):
                                       cfg, sampler_name, scheduler, positive, negative, denoise, feather, noise_mask,
                                       force_inpaint, wildcard, detailer_hook,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cropped) == 0:
@@ -1893,7 +2380,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
     def doit(self, image, segs, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              denoise, feather, noise_mask, force_inpaint, basic_pipe, wildcard, cycle=1,
              refiner_ratio=None, detailer_hook=None, refiner_basic_pipe_opt=None, inpaint_model=False, noise_mask_feather=0,
-             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
+             scheduler_func_opt=None, tiled_encode=False, tiled_decode=False,
+             post_detail_shrink=False, post_detail_shrink_scale=0.995):
 
         if len(image) > 1:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
@@ -1913,7 +2401,8 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       refiner_clip=refiner_clip, refiner_positive=refiner_positive,
                                       refiner_negative=refiner_negative,
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
-                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
+                                      scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode,
+                                      post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale)
 
         # set fallback image
         if len(cropped) == 0:

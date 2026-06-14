@@ -1,3 +1,4 @@
+import os
 import torch
 import torchvision
 import cv2
@@ -9,6 +10,7 @@ from PIL import Image
 import comfy
 import time
 import logging
+import inspect
 
 
 class TensorBatchBuilder:
@@ -30,7 +32,7 @@ def tensor_convert_rgba(image, prefer_copy=True):
         return image
 
     if n_channel == 3:
-        alpha = torch.ones((*image.shape[:-1], 1))
+        alpha = torch.ones((*image.shape[:-1], 1), device=image.device, dtype=image.dtype)
         return torch.cat((image, alpha), axis=-1)
 
     if n_channel == 1:
@@ -94,6 +96,55 @@ def remove_padding(image, padding):
     return image[:, pad_top:image.shape[1] - pad_bottom, pad_left:image.shape[2] - pad_right, :]
 
 
+def shift_within_canvas(data, shift_x, shift_y, canvas_w=None, canvas_h=None, fill_value=0.0):
+    is_torch = isinstance(data, torch.Tensor)
+    data_device = data.device if is_torch else None
+    data_dtype = data.dtype if is_torch else None
+    np_data = data.detach().cpu().numpy() if is_torch else np.asarray(data)
+
+    if np_data.ndim not in (2, 3, 4):
+        raise ValueError(f"Unsupported ndim for shift_within_canvas: {np_data.ndim}")
+
+    if np_data.ndim == 4:
+        _, src_h, src_w, _ = np_data.shape
+    elif np_data.ndim == 3:
+        _, src_h, src_w = np_data.shape
+    else:
+        src_h, src_w = np_data.shape
+
+    canvas_w = src_w if canvas_w is None else int(canvas_w)
+    canvas_h = src_h if canvas_h is None else int(canvas_h)
+
+    if np_data.ndim == 4:
+        out_shape = (np_data.shape[0], canvas_h, canvas_w, np_data.shape[3])
+    elif np_data.ndim == 3:
+        out_shape = (np_data.shape[0], canvas_h, canvas_w)
+    else:
+        out_shape = (canvas_h, canvas_w)
+    result = np.full(out_shape, fill_value, dtype=np_data.dtype)
+
+    dst_x1 = max(0, int(shift_x))
+    dst_y1 = max(0, int(shift_y))
+    src_x1 = max(0, -int(shift_x))
+    src_y1 = max(0, -int(shift_y))
+
+    copy_w = min(src_w - src_x1, canvas_w - dst_x1)
+    copy_h = min(src_h - src_y1, canvas_h - dst_y1)
+
+    if copy_w > 0 and copy_h > 0:
+        if np_data.ndim == 4:
+            result[:, dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w, :] = np_data[:, src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w, :]
+        elif np_data.ndim == 3:
+            result[:, dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w] = np_data[:, src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w]
+        else:
+            result[dst_y1:dst_y1 + copy_h, dst_x1:dst_x1 + copy_w] = np_data[src_y1:src_y1 + copy_h, src_x1:src_x1 + copy_w]
+
+    if is_torch:
+        result = torch.from_numpy(result).to(device=data_device, dtype=data_dtype)
+
+    return result
+
+
 def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
     """
     bbox: (x1, y1, x2, y2) in original image
@@ -116,31 +167,153 @@ def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
     return x1, y1, x2, y2
 
 
-def general_tensor_resize(image, w: int, h: int):
+def _cv2_interpolation_for_mode(mode):
+    if mode == "nearest":
+        return cv2.INTER_NEAREST
+    if mode == "area":
+        return cv2.INTER_AREA
+    if mode == "bicubic":
+        return cv2.INTER_CUBIC
+    if mode == "bilinear":
+        return cv2.INTER_LINEAR
+    raise ValueError(f"Unsupported resize mode: {mode}")
+
+
+def _tensor_resize_cpu_opencv(image, w: int, h: int, mode="bilinear"):
+    """Resize BHWC CPU tensors through OpenCV instead of torch interpolate.
+
+    The detailer path can hit this with medium/large CPU IMAGE tensors after a
+    long CUDA-heavy workflow. Avoiding torch's CPU interpolate/threadpool here
+    removes another native wedge point while preserving the BHWC tensor contract.
+    """
     _tensor_check_image(image)
-    image = image.permute(0, 3, 1, 2)
-    image = torch.nn.functional.interpolate(image, size=(h, w), mode="bilinear")
-    image = image.permute(0, 2, 3, 1)
-    return image
+
+    if image.device.type != "cpu":
+        raise ValueError("_tensor_resize_cpu_opencv expects a CPU tensor")
+
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
+    interpolation = _cv2_interpolation_for_mode(mode)
+    original_dtype = image.dtype
+
+    np_work = image.detach().to(dtype=torch.float32).contiguous().cpu().numpy()
+
+    batch, _, _, channels = np_work.shape
+    resized_np = np.empty((batch, h, w, channels), dtype=np.float32)
+
+    for i in range(batch):
+        resized_frame = cv2.resize(np_work[i], (w, h), interpolation=interpolation)
+        if channels == 1 and resized_frame.ndim == 2:
+            resized_frame = resized_frame[..., None]
+        resized_np[i] = resized_frame
+
+    if channels in (3, 4):
+        np.clip(resized_np, 0.0, 1.0, out=resized_np)
+
+    return torch.from_numpy(resized_np).to(dtype=original_dtype)
 
 
-# TODO: Sadly, we need LANCZOS
+def general_tensor_resize(image, w: int, h: int, mode="bilinear"):
+    _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
+    original_device = image.device
+    original_dtype = image.dtype
+
+    if original_device.type == "cpu":
+        return _tensor_resize_cpu_opencv(image, w, h, mode=mode)
+
+    # CUDA/non-CPU tensors stay on the existing torch path. This preserves the
+    # current behavior for model/device-resident callers while removing torch CPU
+    # interpolate from the FaceDetailer CPU image path.
+    nchw = image.movedim(-1, 1).contiguous().to(dtype=torch.float32)
+
+    if mode in ("bilinear", "bicubic"):
+        resized = torch.nn.functional.interpolate(nchw, size=(h, w), mode=mode, align_corners=False)
+    elif mode in ("nearest", "area"):
+        resized = torch.nn.functional.interpolate(nchw, size=(h, w), mode=mode)
+    else:
+        raise ValueError(f"Unsupported resize mode: {mode}")
+
+    resized = resized.movedim(1, -1).contiguous()
+
+    if image.shape[-1] >= 3:
+        resized = resized.clamp(0.0, 1.0)
+
+    return resized.to(device=original_device, dtype=original_dtype)
+
+
+# Kept for compatibility with callers/imports, but tensor_resize no longer uses
+# PIL because a native PIL resize crash cannot be handled safely from Python.
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 def tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
-    if image.shape[3] >= 3:
-        scaled_images = TensorBatchBuilder()
-        for single_image in image:
-            single_image = single_image.unsqueeze(0)
-            single_pil = tensor2pil(single_image)
-            scaled_pil = single_pil.resize((w, h), resample=LANCZOS)
+    mode = "bicubic" if image.shape[3] >= 3 else "bilinear"
+    return general_tensor_resize(image, w, h, mode=mode)
 
-            single_image = pil2tensor(scaled_pil)
-            scaled_images.concat(single_image)
 
-        return scaled_images.tensor
-    else:
-        return general_tensor_resize(image, w, h)
+def tensor_center_crop_or_pad(image, w: int, h: int):
+    _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid crop/pad target: {(w, h)}")
+
+    _, cur_h, cur_w, channels = image.shape
+    if cur_w == w and cur_h == h:
+        return image
+
+    src_x0 = max((cur_w - w) // 2, 0)
+    src_y0 = max((cur_h - h) // 2, 0)
+    dst_x0 = max((w - cur_w) // 2, 0)
+    dst_y0 = max((h - cur_h) // 2, 0)
+    copy_w = min(cur_w, w)
+    copy_h = min(cur_h, h)
+
+    out = torch.zeros((image.shape[0], h, w, channels), device=image.device, dtype=image.dtype)
+    out[:, dst_y0:dst_y0 + copy_h, dst_x0:dst_x0 + copy_w, :] = image[:, src_y0:src_y0 + copy_h, src_x0:src_x0 + copy_w, :]
+    return out
+
+
+def tensor_resize_for_detailer_output(image, w: int, h: int):
+    _tensor_check_image(image)
+    w = int(w)
+    h = int(h)
+    if w <= 0 or h <= 0:
+        raise ValueError(f"Invalid detailer resize target: {(w, h)}")
+
+    cur_w, cur_h = tensor_get_size(image)
+    if cur_w == w and cur_h == h:
+        return image
+
+    # VAEs often produce dimensions rounded to latent/tile multiples. When the
+    # difference is only a small padding margin, do not run interpolation at all:
+    # crop/pad the tensor directly. This avoids a native/PyTorch resize path at
+    # the most fragile post-decode boundary.
+    if abs(cur_w - w) <= 16 and abs(cur_h - h) <= 16:
+        logging.info(f"Detailer: correcting post-decode padding by crop/pad {(cur_w, cur_h)} -> {(w, h)}")
+        return tensor_center_crop_or_pad(image, w, h)
+
+    # For final paste-back geometry, prefer area for downscale and bilinear for
+    # upscale. Avoid bicubic here: this path has already been observed to crash
+    # or wedge in native resize code after VAE decode.
+    mode = "area" if w <= cur_w and h <= cur_h else "bilinear"
+    logging.info(f"Detailer: post-decode resize {(cur_w, cur_h)} -> {(w, h)} using {mode} on {image.device}")
+    return general_tensor_resize(image, w, h, mode=mode)
 
 
 def tensor_get_size(image):
@@ -228,6 +401,10 @@ def tensor_paste(image1, image2, left_top, mask):
     """
     Pastes image2 onto image1 at position left_top using mask.
     Supports both RGB and RGBA images.
+
+    Large paste regions are processed in horizontal chunks to avoid allocating
+    full-frame blend temporaries for FaceDetailer crops that cover most of the
+    image.
     """
     _tensor_check_image(image1)
     _tensor_check_image(image2)
@@ -240,58 +417,57 @@ def tensor_paste(image1, image2, left_top, mask):
     _, h1, w1, c1 = image1.shape
     _, h2, w2, c2 = image2.shape
 
-    # Calculate image patch size
     w = min(w1, x + w2) - x
     h = min(h1, y + h2) - y
 
-    # If the patch is out of bound, nothing to do!
     if w <= 0 or h <= 0:
         return
 
     mask = mask[:, :h, :w, :]
 
-    # Get the region to be modified
-    region1 = image1[:, y:y+h, x:x+w, :]
-    region2 = image2[:, :h, :w, :]
+    pixels = int(w) * int(h)
+    if pixels >= 4_000_000:
+        rows_per_chunk = max(64, min(512, 8_000_000 // max(int(w), 1)))
+        logging.info(f"Detailer: tensor_paste chunked region {(w, h)} rows_per_chunk={rows_per_chunk}")
+    else:
+        rows_per_chunk = h
 
-    # Handle RGB and RGBA cases
-    if c1 == 3 and c2 == 3:
-        # Both RGB - simple case
-        image1[:, y:y+h, x:x+w, :] = (1 - mask) * region1 + mask * region2
+    for y0 in range(0, h, rows_per_chunk):
+        y1 = min(y0 + rows_per_chunk, h)
+        dst_y0 = y + y0
+        dst_y1 = y + y1
 
-    elif c1 == 4 and c2 == 4:
-        # Both RGBA - need to handle alpha channel separately
-        # RGB channels
-        image1[:, y:y+h, x:x+w, :3] = (
-            (1 - mask) * region1[:, :, :, :3] +
-            mask * region2[:, :, :, :3]
-        )
+        mask_chunk = mask[:, y0:y1, :, :]
+        region1 = image1[:, dst_y0:dst_y1, x:x+w, :]
+        region2 = image2[:, y0:y1, :w, :]
 
-        # Alpha channel - use "over" composition
-        a1 = region1[:, :, :, 3:4]
-        a2 = region2[:, :, :, 3:4] * mask
-        new_alpha = a1 + a2 * (1 - a1)
-        image1[:, y:y+h, x:x+w, 3:4] = new_alpha
+        if c1 == 3 and c2 == 3:
+            image1[:, dst_y0:dst_y1, x:x+w, :] = (1 - mask_chunk) * region1 + mask_chunk * region2
 
-    elif c1 == 4 and c2 == 3:
-        # Target is RGBA, source is RGB - assume source is fully opaque
-        image1[:, y:y+h, x:x+w, :3] = (
-            (1 - mask) * region1[:, :, :, :3] +
-            mask * region2
-        )
-        # Alpha channel - reduce alpha where mask is applied
-        image1[:, y:y+h, x:x+w, 3:4] = region1[:, :, :, 3:4] * (1 - mask) + mask
+        elif c1 == 4 and c2 == 4:
+            a1 = region1[:, :, :, 3:4]
+            a2 = region2[:, :, :, 3:4] * mask_chunk
+            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
+                (1 - a2) * region1[:, :, :, :3] +
+                a2 * region2[:, :, :, :3]
+            )
+            image1[:, dst_y0:dst_y1, x:x+w, 3:4] = a1 + a2 * (1 - a1)
 
-    elif c1 == 3 and c2 == 4:
-        # Target is RGB, source is RGBA - apply source alpha to mask
-        effective_mask = mask * region2[:, :, :, 3:4]
-        image1[:, y:y+h, x:x+w, :] = (
-            (1 - effective_mask) * region1 +
-            effective_mask * region2[:, :, :, :3]
-        )
+        elif c1 == 4 and c2 == 3:
+            image1[:, dst_y0:dst_y1, x:x+w, :3] = (
+                (1 - mask_chunk) * region1[:, :, :, :3] +
+                mask_chunk * region2
+            )
+            image1[:, dst_y0:dst_y1, x:x+w, 3:4] = region1[:, :, :, 3:4] * (1 - mask_chunk) + mask_chunk
+
+        elif c1 == 3 and c2 == 4:
+            effective_mask = mask_chunk * region2[:, :, :, 3:4]
+            image1[:, dst_y0:dst_y1, x:x+w, :] = (
+                (1 - effective_mask) * region1 +
+                effective_mask * region2[:, :, :, :3]
+            )
 
     return
-
 
 def center_of_bbox(bbox):
     w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -439,8 +615,50 @@ def _gaussian_kernel(kernel_size, sigma):
     return kernel / kernel.sum()
 
 
+def _impact_is_wsl():
+    try:
+        release = os.uname().release.lower()
+        return "microsoft" in release or "wsl" in release
+    except (AttributeError, OSError):
+        return False
+
+
+def _impact_env_enabled(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _impact_cv2_gaussian_blur_mask_cpu(mask, kernel_size, sigma):
+    """Blur an NHWC mask on CPU without torch/torchvision convolution."""
+    prev_dtype = mask.dtype
+    arr = mask.detach().cpu().to(dtype=torch.float32).numpy()
+    if arr.ndim != 4 or arr.shape[-1] != 1:
+        raise ValueError(f"Expected NHWC single-channel mask, got {arr.shape}")
+
+    out = np.empty_like(arr, dtype=np.float32)
+    for i in range(arr.shape[0]):
+        plane = np.ascontiguousarray(arr[i, :, :, 0])
+        out[i, :, :, 0] = cv2.GaussianBlur(
+            plane,
+            (int(kernel_size), int(kernel_size)),
+            float(sigma),
+            borderType=cv2.BORDER_REFLECT_101,
+        )
+
+    return torch.from_numpy(out).to(dtype=prev_dtype)
+
+
 def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
-    """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
+    """Return NHWC torch.Tensor from ndim == 2/3/4 mask data.
+
+    ``kernel_size`` is the caller-facing feather radius kept for compatibility
+    with existing nodes and is converted to the odd full kernel size internally.
+    On WSL, CPU mask feathering deliberately uses OpenCV instead of torchvision
+    GaussianBlur. The torchvision CPU path can wedge inside PyTorch native CPU
+    convolution/threadpool after repeated CUDA-heavy FaceDetailer passes.
+    """
     if isinstance(mask, np.ndarray):
         mask = torch.from_numpy(mask)
 
@@ -454,26 +672,66 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
     if kernel_size <= 0:
         return mask
 
-    kernel_size = kernel_size*2+1
+    feather_radius = kernel_size
+    full_kernel_size = feather_radius * 2 + 1
 
     shortest = min(mask.shape[1], mask.shape[2])
-    if shortest <= kernel_size:
-        kernel_size = int(shortest/2)
-        if kernel_size % 2 == 0:
-            kernel_size += 1
-        if kernel_size < 3:
+    if shortest <= full_kernel_size:
+        full_kernel_size = int(shortest / 2)
+        if full_kernel_size % 2 == 0:
+            full_kernel_size += 1
+        if full_kernel_size < 3:
             return mask  # skip feathering
 
     prev_device = mask.device
-    device = comfy.model_management.get_torch_device()
-    mask.to(device)
+    prev_dtype = mask.dtype
+    work_device = prev_device
+    if _impact_is_wsl():
+        work_device = torch.device("cpu")
 
-    # apply gaussian blur
-    mask = mask[:, None, ..., 0]
-    blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask)
-    blurred_mask = blurred_mask[:, 0, ..., None]
+    blur_trace = format(id(mask) & 0xfffffff, "x")
+    blur_start = time.perf_counter()
 
-    blurred_mask.to(prev_device)
+    logging.info(
+        "[Impact Pack] tensor_gaussian_blur_mask[%s] start "
+        f"shape={tuple(mask.shape)} feather_radius={feather_radius} kernel={full_kernel_size} sigma={sigma} "
+        f"device={prev_device} work_device={work_device}",
+        blur_trace
+    )
+
+    use_cv2_cpu = (
+        work_device.type == "cpu"
+        and _impact_is_wsl()
+        and not _impact_env_enabled("IMPACT_WSL_USE_TORCHVISION_MASK_BLUR", False)
+    )
+    if use_cv2_cpu:
+        blurred_mask = _impact_cv2_gaussian_blur_mask_cpu(mask, full_kernel_size, sigma)
+    else:
+        mask_work = mask.to(device=work_device, dtype=torch.float32, copy=False)
+
+        # torchvision GaussianBlur handles NCHW tensors and avoids the broken
+        # previous unassigned .to(...) calls. Keep the output shape NHWC.
+        mask_nchw = mask_work[:, None, ..., 0]
+        try:
+            blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=full_kernel_size, sigma=sigma)(mask_nchw)
+        except Exception:
+            if mask_nchw.device.type == "cpu":
+                raise
+            logging.warning(
+                "[Impact Pack] tensor_gaussian_blur_mask[%s] failed on device=%s; retrying on cpu",
+                blur_trace, mask_nchw.device, exc_info=True
+            )
+            blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=full_kernel_size, sigma=sigma)(mask_nchw.cpu())
+        blurred_mask = blurred_mask[:, 0, ..., None]
+
+    if blurred_mask.device != prev_device or blurred_mask.dtype != prev_dtype:
+        blurred_mask = blurred_mask.to(device=prev_device, dtype=prev_dtype, copy=False)
+
+    logging.info(
+        "[Impact Pack] tensor_gaussian_blur_mask[%s] complete "
+        f"shape={tuple(blurred_mask.shape)} device={blurred_mask.device} elapsed={time.perf_counter() - blur_start:.3f}s",
+        blur_trace
+    )
 
     return blurred_mask
 
@@ -589,21 +847,59 @@ def crop_image(image, crop_region):
     return crop_tensor4(image, crop_region)
 
 
-def to_latent_image(pixels, vae, vae_tiled_encode=False):
+def to_latent_image(pixels, vae, vae_tiled_encode=False, auto_vae_tiled_encode=False, tile_size=0, overlap=0):
     x = pixels.shape[1]
     y = pixels.shape[2]
     if pixels.shape[1] != x or pixels.shape[2] != y:
         pixels = pixels[:, :x, :y, :]
 
     start = time.time()
-    if vae_tiled_encode:
-        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, 512, overlap=64)[0] # using default settings
-        logging.info(f"[Impact Pack] vae encoded (tiled) in {time.time() - start:.1f}s")
+    tile_size, overlap = get_vae_tiled_encode_settings(pixels, tile_size=tile_size, overlap=overlap)
+    force_low_memory_tiling = tile_size < 512
+    should_tile = vae_tiled_encode or auto_vae_tiled_encode or force_low_memory_tiling or tile_size > 0 or overlap > 0
+
+    if should_tile:
+        encoder = nodes.VAEEncodeTiled()
+        try:
+            supports_overlap = 'overlap' in inspect.signature(encoder.encode).parameters
+        except (TypeError, ValueError):
+            supports_overlap = False
+
+        if supports_overlap:
+            encoded = encoder.encode(vae, pixels, tile_size, overlap=overlap)[0]
+        else:
+            logging.warning("[Impact Pack] Your ComfyUI is outdated.")
+            encoded = encoder.encode(vae, pixels, tile_size)[0]
+        logging.info(f"[Impact Pack] vae encoded (tiled {tile_size}/{overlap}) in {time.time() - start:.1f}s")
     else:
         encoded = nodes.VAEEncode().encode(vae, pixels)[0]
         logging.info(f"[Impact Pack] vae encoded in {time.time() - start:.1f}s")
 
     return encoded
+
+
+def get_vae_tiled_encode_settings(pixels, tile_size=0, overlap=0):
+    h = int(pixels.shape[1])
+    w = int(pixels.shape[2])
+    megapixels = (h * w) / 1_000_000.0
+
+    # FaceDetailer encode should stay on the tiled path once selected; the tile
+    # geometry adapts by crop size, but 512/64 is still the tiled path.
+    resolved_tile_size = int(tile_size) if tile_size is not None else 0
+    if resolved_tile_size <= 0:
+        if megapixels >= 3.0:
+            resolved_tile_size = 128
+        elif megapixels >= 1.5:
+            resolved_tile_size = 256
+        else:
+            resolved_tile_size = 512
+
+    resolved_overlap = int(overlap) if overlap is not None else 0
+    if resolved_overlap <= 0:
+        resolved_overlap = max(16, resolved_tile_size // 8)
+
+    resolved_overlap = min(max(0, resolved_overlap), max(0, resolved_tile_size - 1))
+    return resolved_tile_size, resolved_overlap
 
 
 def empty_pil_tensor(w=64, h=64):

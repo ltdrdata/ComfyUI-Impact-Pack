@@ -58,6 +58,78 @@ current_prompt = None
 
 ADDITIONAL_SCHEDULERS = ['AYS SDXL', 'AYS SD1', 'AYS SVD', 'GITS[coeff=1.2]', 'LTXV[default]', 'OSS FLUX', 'OSS Wan', 'OSS Chroma']
 
+
+def _impact_is_wsl():
+    try:
+        release = os.uname().release.lower()
+        return "microsoft" in release or "wsl" in release
+    except (AttributeError, OSError):
+        return False
+
+
+def _impact_env_enabled(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _impact_should_release_sam_device():
+    # Moving SAM/SAM2 back to CPU after every FaceDetailer frame is a heavy
+    # CPU/GPU model-transfer boundary. On WSL this has repeatedly become a
+    # full-driver wedge point after detector output and before detailer segments.
+    # Keep the old behavior available for low-VRAM diagnostics.
+    if _impact_is_wsl() and not _impact_env_enabled("IMPACT_WSL_RELEASE_SAM_DEVICE", False):
+        return False
+    return True
+
+
+def _move_latent_samples_to_cpu_for_decode(latent, label="detailer"):
+    """Release sampler-side CUDA temporaries before VAE decode/model load.
+
+    FaceDetailer runs sampler -> VAE decode repeatedly for each detected region.
+    On large Flux crops, the sampler can leave cached CUDA allocations around
+    until the next model load boundary.  Moving the refined latent samples to
+    CPU before decode preserves ComfyUI's normal VAE input contract while giving
+    the allocator a clean boundary before AutoencoderKL is requested.
+    """
+    if not isinstance(latent, dict) or "samples" not in latent:
+        return latent
+
+    samples = latent["samples"]
+    if not torch.is_tensor(samples):
+        return latent
+
+    if samples.is_cuda:
+        logging.info(f"[Impact Pack] moving refined latent to CPU before VAE decode ({label}) shape={tuple(samples.shape)}")
+        latent = latent.copy()
+        latent["samples"] = samples.detach().cpu()
+        del samples
+
+        if torch.cuda.is_available():
+            try:
+                if hasattr(model_management, "soft_empty_cache"):
+                    model_management.soft_empty_cache()
+                else:
+                    torch.cuda.empty_cache()
+            except Exception as e:
+                logging.warning(f"[Impact Pack] CUDA cache cleanup before VAE decode failed ({label}): {e}")
+    return latent
+
+
+class _ImpactTiledEncodeProxyVAE:
+    def __init__(self, vae, tile_size=0, overlap=0):
+        self._vae = vae
+        self._tile_size = tile_size
+        self._overlap = overlap
+
+    def encode(self, pixels):
+        tile_size, overlap = utils.get_vae_tiled_encode_settings(pixels, tile_size=self._tile_size, overlap=self._overlap)
+        return self._vae.encode_tiled(pixels, tile_x=tile_size, tile_y=tile_size, overlap=overlap)
+
+    def __getattr__(self, name):
+        return getattr(self._vae, name)
+
 def get_schedulers():
     return list(comfy.samplers.SCHEDULER_HANDLERS) + ADDITIONAL_SCHEDULERS
 
@@ -255,17 +327,47 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                    refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None,
                    refiner_negative=None, control_net_wrapper=None, cycle=1,
                    inpaint_model=False, noise_mask_feather=0, scheduler_func=None,
-                   vae_tiled_encode=False, vae_tiled_decode=False):
+                   vae_tiled_encode=False, vae_tiled_decode=False, auto_vae_tiled_encode=False,
+                   vae_tile_size=0, vae_tile_overlap=0):
+
+    detailer_trace = format(id(image) & 0xfffffff, "x")
+    detailer_start = time.perf_counter()
+    logging.info(
+        "[Impact Pack] enhance_detail[%s] enter "
+        f"image={tuple(image.shape)} noise_mask={None if noise_mask is None else tuple(noise_mask.shape)} "
+        f"noise_mask_feather={noise_mask_feather} wildcard={bool(wildcard_opt)} force_inpaint={force_inpaint}",
+        detailer_trace
+    )
 
     if noise_mask is not None:
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask blur start", detailer_trace)
+        operation_start = time.perf_counter()
         noise_mask = utils.tensor_gaussian_blur_mask(noise_mask, noise_mask_feather)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask blur complete shape=%s device=%s op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, tuple(noise_mask.shape), noise_mask.device,
+                     operation_end - operation_start, operation_end - detailer_start)
+        operation_start = time.perf_counter()
         noise_mask = noise_mask.squeeze(3)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] noise mask squeeze complete shape=%s op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, tuple(noise_mask.shape), operation_end - operation_start, operation_end - detailer_start)
 
         if noise_mask_feather > 0 and 'denoise_mask_function' not in model.model_options:
+            logging.info("[Impact Pack] enhance_detail[%s] differential diffusion apply start", detailer_trace)
+            operation_start = time.perf_counter()
             model = utils.apply_differential_diffusion(model)
+            operation_end = time.perf_counter()
+            logging.info("[Impact Pack] enhance_detail[%s] differential diffusion apply complete op_elapsed=%.3fs total_elapsed=%.3fs",
+                         detailer_trace, operation_end - operation_start, operation_end - detailer_start)
 
     if wildcard_opt is not None and wildcard_opt != "":
+        logging.info("[Impact Pack] enhance_detail[%s] wildcard/LoRA processing start", detailer_trace)
+        operation_start = time.perf_counter()
         model, _, wildcard_positive = wildcards.process_with_loras(wildcard_opt, model, clip)
+        operation_end = time.perf_counter()
+        logging.info("[Impact Pack] enhance_detail[%s] wildcard/LoRA processing complete op_elapsed=%.3fs total_elapsed=%.3fs",
+                     detailer_trace, operation_end - operation_start, operation_end - detailer_start)
 
         if wildcard_opt_concat_mode == "concat":
             positive = nodes.ConditioningConcat().concat(positive, wildcard_positive)[0]
@@ -277,11 +379,16 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
             elif 'pooled_output' in positive[0][1]:
                 del positive[0][1]['pooled_output']
 
+    logging.info("[Impact Pack] enhance_detail[%s] geometry start", detailer_trace)
+    operation_start = time.perf_counter()
     h = image.shape[1]
     w = image.shape[2]
 
     bbox_h = bbox[3] - bbox[1]
     bbox_w = bbox[2] - bbox[0]
+    operation_end = time.perf_counter()
+    logging.info("[Impact Pack] enhance_detail[%s] geometry complete crop=(%s, %s) bbox=(%s, %s) op_elapsed=%.3fs total_elapsed=%.3fs",
+                 detailer_trace, w, h, bbox_w, bbox_h, operation_end - operation_start, operation_end - detailer_start)
 
     # Skip processing if the detected bbox is already larger than the guide_size
     if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
@@ -343,13 +450,22 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is None or not detailer_hook.get_skip_sampling():
         if noise_mask is not None and inpaint_model:
             imc_encode = nodes.InpaintModelConditioning().encode
+            use_tiled_vae = vae_tiled_encode or auto_vae_tiled_encode or (vae_tile_size is not None and vae_tile_size > 0) or (vae_tile_overlap is not None and vae_tile_overlap > 0)
+            imc_vae = _ImpactTiledEncodeProxyVAE(vae, tile_size=vae_tile_size, overlap=vae_tile_overlap) if use_tiled_vae else vae
             if 'noise_mask' in inspect.signature(imc_encode).parameters:
-                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, mask=noise_mask, noise_mask=True)
+                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, mask=noise_mask, noise_mask=True)
             else:
                 logging.warning("[Impact Pack] ComfyUI is an outdated version.")
-                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, vae, noise_mask)
+                positive, negative, latent_image = imc_encode(positive, negative, upscaled_image, imc_vae, noise_mask)
         else:
-            latent_image = utils.to_latent_image(upscaled_image, vae, vae_tiled_encode=vae_tiled_encode)
+            latent_image = utils.to_latent_image(
+                upscaled_image,
+                vae,
+                vae_tiled_encode=vae_tiled_encode,
+                auto_vae_tiled_encode=auto_vae_tiled_encode,
+                tile_size=vae_tile_size,
+                overlap=vae_tile_overlap,
+            )
             if noise_mask is not None:
                 latent_image['noise_mask'] = noise_mask
 
@@ -387,11 +503,23 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         if detailer_hook is not None:
             refined_latent = detailer_hook.pre_decode(refined_latent)
 
+        refined_latent = _move_latent_samples_to_cpu_for_decode(refined_latent, label="FaceDetailer")
+
         # non-latent downscale - latent downscale cause bad quality
         start = time.time()
         if vae_tiled_decode:
-            (refined_image,) = nodes.VAEDecodeTiled().decode(vae, refined_latent, 512) # using default settings
-            logging.info(f"[Impact Pack] vae decoded (tiled) in {time.time() - start:.1f}s")
+            decode_tile_size, decode_overlap = utils.get_vae_tiled_encode_settings(
+                upscaled_image,
+                tile_size=vae_tile_size,
+                overlap=vae_tile_overlap,
+            )
+            decoder = nodes.VAEDecodeTiled()
+            if 'overlap' in inspect.signature(decoder.decode).parameters:
+                (refined_image,) = decoder.decode(vae, refined_latent, decode_tile_size, overlap=decode_overlap)
+            else:
+                logging.warning("[Impact Pack] Your ComfyUI is outdated.")
+                (refined_image,) = decoder.decode(vae, refined_latent, decode_tile_size)
+            logging.info(f"[Impact Pack] vae decoded (tiled {decode_tile_size}/{decode_overlap}) in {time.time() - start:.1f}s")
         else:
             try:
                 refined_image = vae.decode(refined_latent['samples'])
@@ -407,16 +535,32 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         refined_image = detailer_hook.post_decode(refined_image)
 
-    # downscale
+    # Final geometry fix before paste-back.
+    #
+    # This boundary is hit immediately after VAE decode, where prior failures were
+    # observed in native resize paths. Keep the returned crop on CPU, avoid bicubic
+    # for post-decode paste-back resize, and crop/pad tiny VAE multiple differences
+    # instead of interpolating them.
 
     # workaround: support WAN as an i2i model
     if len(refined_image.shape) == 5:
         refined_image = refined_image.squeeze(0)
 
-    refined_image = utils.tensor_resize(refined_image, w, h)
+    target_w = int(w)
+    target_h = int(h)
 
-    # prevent mixing of device
-    refined_image = refined_image.cpu()
+    if torch.is_tensor(refined_image) and refined_image.is_cuda:
+        logging.info(f"Detailer: synchronizing decoded crop before CPU paste-back {tuple(refined_image.shape)}")
+        torch.cuda.synchronize(refined_image.device)
+
+    # prevent mixing of device and keep the fragile post-decode geometry path on CPU
+    refined_image = refined_image.detach().cpu()
+
+    cur_w, cur_h = utils.tensor_get_size(refined_image)
+    if (cur_w, cur_h) != (target_w, target_h):
+        logging.info(f"Detailer: final crop geometry fix {(cur_w, cur_h)} -> {(target_w, target_h)}")
+        refined_image = utils.tensor_resize_for_detailer_output(refined_image, target_w, target_h)
+        logging.info(f"Detailer: final crop geometry fix complete {tuple(refined_image.shape)}")
 
     # don't convert to latent - latent break image
     # preserving pil is much better
@@ -627,7 +771,12 @@ class SAMWrapper:
 
     def release_device(self):
         if self.is_auto_mode:
+            if not _impact_should_release_sam_device():
+                logging.info("[Impact Pack] keeping SAM model on current device after prediction on WSL; set IMPACT_WSL_RELEASE_SAM_DEVICE=1 to release it to CPU after each prediction")
+                return
+            logging.info("[Impact Pack] releasing SAM model to CPU")
             self.model.to(device="cpu")
+            logging.info("[Impact Pack] released SAM model to CPU")
 
     def predict(self, image, points, plabs, bbox, threshold):
         predictor = SamPredictor(self.model)
@@ -661,10 +810,15 @@ class SAM2Wrapper:
 
     def release_device(self):
         if self.is_auto_mode:
+            if not _impact_should_release_sam_device():
+                logging.info("[Impact Pack] keeping SAM2 model on current device after prediction on WSL; set IMPACT_WSL_RELEASE_SAM_DEVICE=1 to release it to CPU after each prediction")
+                return
+            logging.info("[Impact Pack] releasing SAM2 model to CPU")
             if self.image_predictor:
                 self.image_predictor.model.to(device="cpu")
             if self.video_predictor:
                 self.video_predictor.to(device="cpu")
+            logging.info("[Impact Pack] released SAM2 model to CPU")
 
     def predict(self, image, points, plabs, bbox, threshold):
         if not is_sam2_available:
@@ -786,10 +940,15 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
     else:
         sam_obj = sam.sam_wrapper
 
+    logging.info("[Impact Pack] SAM mask start: segs=%d hint=%s dilation=%s bbox_expansion=%s", len(segs[1]), detection_hint, dilation, bbox_expansion)
+    logging.info("[Impact Pack] SAM prepare_device start")
     sam_obj.prepare_device()
+    logging.info("[Impact Pack] SAM prepare_device complete")
 
     try:
-        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info("[Impact Pack] SAM image conversion start shape=%s device=%s", tuple(image.shape), image.device)
+        image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info("[Impact Pack] SAM image conversion complete shape=%s", image.shape)
 
         total_masks = []
 
@@ -812,7 +971,9 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
+            logging.info("[Impact Pack] SAM predict mask-points start points=%d", len(points))
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
+            logging.info("[Impact Pack] SAM predict mask-points complete masks=%d", len(detected_masks))
             total_masks += detected_masks
 
         else:
@@ -881,19 +1042,27 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                     points += npoints
                     plabs += nplabs
 
+                logging.info("[Impact Pack] SAM predict segment %d/%d start points=%d bbox=%s", i + 1, len(segs), len(points), dilated_bbox)
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
+                logging.info("[Impact Pack] SAM predict segment %d/%d complete masks=%d", i + 1, len(segs), len(detected_masks))
                 total_masks += detected_masks
 
         # merge every collected masks
+        logging.info("[Impact Pack] SAM combine masks start count=%d", len(total_masks))
         mask = utils.combine_masks2(total_masks)
+        logging.info("[Impact Pack] SAM combine masks complete shape=%s", None if mask is None else tuple(mask.shape))
 
     finally:
+        logging.info("[Impact Pack] SAM release_device start")
         sam_obj.release_device()
+        logging.info("[Impact Pack] SAM release_device complete")
 
     if mask is not None:
+        logging.info("[Impact Pack] SAM postprocess start shape=%s", tuple(mask.shape))
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
+        logging.info("[Impact Pack] SAM postprocess complete shape=%s", tuple(mask.shape))
     else:
         size = image.shape[0], image.shape[1]
         mask = torch.zeros(size, dtype=torch.float32, device="cpu")  # empty mask
@@ -1056,10 +1225,15 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
         raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
 
     sam_obj = sam.sam_wrapper
+    logging.info("[Impact Pack] SAM segmented mask start: segs=%d hint=%s dilation=%s bbox_expansion=%s", len(segs[1]), detection_hint, dilation, bbox_expansion)
+    logging.info("[Impact Pack] SAM segmented prepare_device start")
     sam_obj.prepare_device()
+    logging.info("[Impact Pack] SAM segmented prepare_device complete")
 
     try:
-        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info("[Impact Pack] SAM segmented image conversion start shape=%s device=%s", tuple(image.shape), image.device)
+        image = np.clip(255. * image.detach().cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        logging.info("[Impact Pack] SAM segmented image conversion complete shape=%s", image.shape)
 
         total_masks = []
 
@@ -1082,7 +1256,9 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                 else:
                     plabs.append(1)
 
+            logging.info("[Impact Pack] SAM segmented predict mask-points start points=%d", len(points))
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
+            logging.info("[Impact Pack] SAM segmented predict mask-points complete masks=%d", len(detected_masks))
             total_masks += detected_masks
 
         else:
@@ -1100,22 +1276,30 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                                                          mask_hint_threshold, use_small_negative,
                                                          mask_hint_use_negative)
 
+                logging.info("[Impact Pack] SAM segmented predict segment %d/%d start points=%d bbox=%s", i + 1, len(segs), len(points), dilated_bbox)
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
+                logging.info("[Impact Pack] SAM segmented predict segment %d/%d complete masks=%d", i + 1, len(segs), len(detected_masks))
 
                 total_masks += detected_masks
 
         # merge every collected masks
+        logging.info("[Impact Pack] SAM segmented combine masks start count=%d", len(total_masks))
         mask = utils.combine_masks2(total_masks)
+        logging.info("[Impact Pack] SAM segmented combine masks complete shape=%s", None if mask is None else tuple(mask.shape))
 
     finally:
+        logging.info("[Impact Pack] SAM segmented release_device start")
         sam_obj.release_device()
+        logging.info("[Impact Pack] SAM segmented release_device complete")
 
     mask_working_device = torch.device("cpu")
 
     if mask is not None:
+        logging.info("[Impact Pack] SAM segmented postprocess start shape=%s", tuple(mask.shape))
         mask = mask.float()
         mask = utils.dilate_mask(mask.cpu().numpy(), dilation)
         mask = torch.from_numpy(mask)
+        logging.info("[Impact Pack] SAM segmented postprocess complete shape=%s", tuple(mask.shape))
         mask = mask.to(device=mask_working_device)
     else:
         # Extracting batch, height and width
