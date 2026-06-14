@@ -86,6 +86,42 @@ def _impact_cpu_detached(tensor):
     return tensor
 
 
+def _impact_copy_frame_image(dst, frame_index, image_tensor, *, label):
+    if not torch.is_tensor(image_tensor):
+        raise TypeError(f"[Impact Pack] {label} expected tensor image, got {type(image_tensor).__name__}")
+
+    image_tensor = image_tensor.detach().cpu()
+    if image_tensor.ndim == 3:
+        image_tensor = image_tensor.unsqueeze(0)
+
+    expected = dst[frame_index:frame_index + 1].shape
+    if tuple(image_tensor.shape) != tuple(expected):
+        raise ValueError(f"[Impact Pack] {label} returned image shape {tuple(image_tensor.shape)}, expected {tuple(expected)}")
+
+    dst[frame_index:frame_index + 1].copy_(image_tensor.to(dtype=dst.dtype, copy=False))
+
+
+def _impact_copy_frame_mask(dst, frame_index, mask_tensor, *, label):
+    if mask_tensor is None:
+        dst[frame_index].zero_()
+        return
+    if not torch.is_tensor(mask_tensor):
+        raise TypeError(f"[Impact Pack] {label} expected tensor mask, got {type(mask_tensor).__name__}")
+
+    mask_tensor = mask_tensor.detach().cpu()
+    if mask_tensor.ndim == 3:
+        if mask_tensor.shape[0] == 1:
+            mask_tensor = mask_tensor[0]
+        elif mask_tensor.shape[-1] == 1:
+            mask_tensor = mask_tensor[..., 0]
+
+    expected = dst[frame_index].shape
+    if tuple(mask_tensor.shape) != tuple(expected):
+        raise ValueError(f"[Impact Pack] {label} returned mask shape {tuple(mask_tensor.shape)}, expected {tuple(expected)}")
+
+    dst[frame_index].copy_(mask_tensor.to(dtype=dst.dtype, copy=False))
+
+
 def _impact_repair_detailer_tensor(tensor, *, fallback=None, label="tensor", clamp_image=False):
     """Return a finite CPU tensor for detailer paste/alpha boundaries.
 
@@ -1177,13 +1213,16 @@ class FaceDetailer:
 
         # bbox + sam combination
         if sam_model_opt is not None:
-            logging.info("[Impact Pack] FaceDetailer SAM refinement start segs=%d", len(segs[1]))
-            sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
-                                          sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
-                                          sam_mask_hint_use_negative, )
-            logging.info("[Impact Pack] FaceDetailer SAM refinement mask complete shape=%s", tuple(sam_mask.shape))
-            segs = core.segs_bitwise_and_mask(segs, sam_mask)
-            logging.info("[Impact Pack] FaceDetailer SAM refinement complete segs=%d", len(segs[1]))
+            if len(segs[1]) > 0:
+                logging.info("[Impact Pack] FaceDetailer SAM refinement start segs=%d", len(segs[1]))
+                sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
+                                              sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
+                                              sam_mask_hint_use_negative, )
+                logging.info("[Impact Pack] FaceDetailer SAM refinement mask complete shape=%s", tuple(sam_mask.shape))
+                segs = core.segs_bitwise_and_mask(segs, sam_mask)
+                logging.info("[Impact Pack] FaceDetailer SAM refinement complete segs=%d", len(segs[1]))
+            else:
+                logging.info("[Impact Pack] FaceDetailer SAM refinement skipped: no bbox segs")
 
         elif segm_detector is not None:
             logging.info("[Impact Pack] FaceDetailer segm refinement start segs=%d", len(segs[1]))
@@ -1199,6 +1238,7 @@ class FaceDetailer:
             logging.info("[Impact Pack] FaceDetailer segm refinement complete segs=%d", len(segs[1]))
 
         mask_segs = segs
+        detail_applied = False
         if len(segs[1]) > 0:
             logging.info("[Impact Pack] FaceDetailer detail pass start segs=%d", len(segs[1]))
             enhanced_img, _, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list, new_segs = \
@@ -1214,6 +1254,7 @@ class FaceDetailer:
                                           auto_vae_tiled_encode=force_adaptive_tiled_encode,
                                           vae_tile_size=tile_size, vae_tile_overlap=tile_overlap)
             mask_segs = new_segs
+            detail_applied = True
             logging.info("[Impact Pack] FaceDetailer detail pass complete new_segs=%d", len(new_segs[1]))
         else:
             logging.info("[Impact Pack] FaceDetailer detail pass skipped: no segs")
@@ -1234,7 +1275,7 @@ class FaceDetailer:
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [utils.empty_pil_tensor()]
 
-        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list
+        return enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied
 
     def doit(self, image, model, clip, vae, guide_size, guide_size_for, max_size, seed, steps, cfg, sampler_name, scheduler,
              positive, negative, denoise, feather, noise_mask, force_inpaint,
@@ -1245,8 +1286,9 @@ class FaceDetailer:
              scheduler_func_opt=None, tiled_encode=False, tiled_decode=False, post_detail_shrink=False,
              post_detail_shrink_scale=0.995, force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
-        result_imgs = []
-        result_masks = []
+        result_img = None
+        result_mask = torch.empty((len(image), image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
+        any_detail_applied = False
         result_cropped_enhanced = []
         result_cropped_enhanced_alpha = []
         result_cnet_images = []
@@ -1258,8 +1300,9 @@ class FaceDetailer:
             frame_ok = False
             logging.info("[Impact Pack] FaceDetailer frame %d/%d start", i + 1, len(image))
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
+            detail_applied = False
             try:
-                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied = FaceDetailer.enhance_face(
                     single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
                     positive, negative, denoise, feather, noise_mask, force_inpaint,
                     bbox_threshold, bbox_dilation, bbox_crop_factor,
@@ -1270,8 +1313,14 @@ class FaceDetailer:
                     post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
                     force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
-                result_imgs.append(_impact_cpu_detached(enhanced_img))
-                result_masks.append(_impact_cpu_detached(mask))
+                if detail_applied and result_img is None:
+                    logging.info("[Impact Pack] FaceDetailer output clone start shape=%s", tuple(image.shape))
+                    result_img = image.detach().cpu().clone()
+                    logging.info("[Impact Pack] FaceDetailer output clone complete shape=%s", tuple(result_img.shape))
+                if result_img is not None:
+                    _impact_copy_frame_image(result_img, i, enhanced_img, label=f"FaceDetailer frame {i + 1}")
+                _impact_copy_frame_mask(result_mask, i, mask, label=f"FaceDetailer frame {i + 1}")
+                any_detail_applied = any_detail_applied or detail_applied
                 result_cropped_enhanced.extend(cropped_enhanced)
                 result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
                 result_cnet_images.extend(cnet_pil_list)
@@ -1285,8 +1334,10 @@ class FaceDetailer:
                     f"{'complete' if frame_ok else 'failed'}"
                 )
 
-        result_img = torch.cat(result_imgs, dim=0) if len(result_imgs) > 0 else image
-        result_mask = torch.cat(result_masks, dim=0) if len(result_masks) > 0 else torch.zeros((len(image), image.shape[1], image.shape[2]), dtype=torch.float32)
+        logging.info("[Impact Pack] FaceDetailer aggregate start any_detail_applied=%s", any_detail_applied)
+        if result_img is None:
+            result_img = image.detach().cpu()
+        logging.info("[Impact Pack] FaceDetailer aggregate complete image=%s mask=%s", tuple(result_img.shape), tuple(result_mask.shape))
 
         pipe = (model, clip, vae, positive, negative, wildcard, bbox_detector, segm_detector_opt, sam_model_opt, detailer_hook, None, None, None, None)
         return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
@@ -2099,8 +2150,9 @@ class FaceDetailerPipe:
              tiled_encode=False, tiled_decode=False, post_detail_shrink=False, post_detail_shrink_scale=0.995,
              force_adaptive_tiled_encode=True, tile_size=0, tile_overlap=0):
 
-        result_imgs = []
-        result_masks = []
+        result_img = None
+        result_mask = torch.empty((len(image), image.shape[1], image.shape[2]), dtype=torch.float32, device="cpu")
+        any_detail_applied = False
         result_cropped_enhanced = []
         result_cropped_enhanced_alpha = []
         result_cnet_images = []
@@ -2115,8 +2167,9 @@ class FaceDetailerPipe:
             frame_ok = False
             logging.info("[Impact Pack] FaceDetailerPipe frame %d/%d start", i + 1, len(image))
             enhanced_img = cropped_enhanced = cropped_enhanced_alpha = mask = cnet_pil_list = None
+            detail_applied = False
             try:
-                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list = FaceDetailer.enhance_face(
+                enhanced_img, cropped_enhanced, cropped_enhanced_alpha, mask, cnet_pil_list, detail_applied = FaceDetailer.enhance_face(
                     single_image.unsqueeze(0), model, clip, vae, guide_size, guide_size_for, max_size, seed + i, steps, cfg, sampler_name, scheduler,
                     positive, negative, denoise, feather, noise_mask, force_inpaint,
                     bbox_threshold, bbox_dilation, bbox_crop_factor,
@@ -2129,8 +2182,14 @@ class FaceDetailerPipe:
                     post_detail_shrink=post_detail_shrink, post_detail_shrink_scale=post_detail_shrink_scale,
                     force_adaptive_tiled_encode=force_adaptive_tiled_encode, tile_size=tile_size, tile_overlap=tile_overlap)
 
-                result_imgs.append(_impact_cpu_detached(enhanced_img))
-                result_masks.append(_impact_cpu_detached(mask))
+                if detail_applied and result_img is None:
+                    logging.info("[Impact Pack] FaceDetailerPipe output clone start shape=%s", tuple(image.shape))
+                    result_img = image.detach().cpu().clone()
+                    logging.info("[Impact Pack] FaceDetailerPipe output clone complete shape=%s", tuple(result_img.shape))
+                if result_img is not None:
+                    _impact_copy_frame_image(result_img, i, enhanced_img, label=f"FaceDetailerPipe frame {i + 1}")
+                _impact_copy_frame_mask(result_mask, i, mask, label=f"FaceDetailerPipe frame {i + 1}")
+                any_detail_applied = any_detail_applied or detail_applied
                 result_cropped_enhanced.extend(cropped_enhanced)
                 result_cropped_enhanced_alpha.extend(cropped_enhanced_alpha)
                 result_cnet_images.extend(cnet_pil_list)
@@ -2144,8 +2203,10 @@ class FaceDetailerPipe:
                     f"{'complete' if frame_ok else 'failed'}"
                 )
 
-        result_img = torch.cat(result_imgs, dim=0) if len(result_imgs) > 0 else image
-        result_mask = torch.cat(result_masks, dim=0) if len(result_masks) > 0 else torch.zeros((len(image), image.shape[1], image.shape[2]), dtype=torch.float32)
+        logging.info("[Impact Pack] FaceDetailerPipe aggregate start any_detail_applied=%s", any_detail_applied)
+        if result_img is None:
+            result_img = image.detach().cpu()
+        logging.info("[Impact Pack] FaceDetailerPipe aggregate complete image=%s mask=%s", tuple(result_img.shape), tuple(result_mask.shape))
 
         if len(result_cropped_enhanced) == 0:
             result_cropped_enhanced = [utils.empty_pil_tensor()]
