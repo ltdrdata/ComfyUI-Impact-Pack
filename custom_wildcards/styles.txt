@@ -1,0 +1,4 @@
+90s_melancholy, retro, <lora:90s Anime Melancholy [Illustrious - Style - 1738546]:0.8>
+D4rkL1nes, <lora:Velvet's Mythic Fantasy - Dark Lines [Illustrious - Style - 599757]:0.8>
+ghost_in_the_shell_style, <lora:Ghost in the Shell [Illustrious - Style - 1706389]:0.8>
+wstrn_lineart, greyscale, monochrome, <lora:Western Lineart [Illustrious - Style - 1636808]:0.8>

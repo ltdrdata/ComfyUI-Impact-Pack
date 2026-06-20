@@ -262,6 +262,8 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `ImpactWildcardEncode` - Similar to ImpactWildcardProcessor, this provides the loading functionality of LoRAs (e.g. `<lora:some_awesome_lora:0.7:1.2>`). Populated prompts are encoded using the clip after all the lora loading is done.
     * If the `Inspire Pack` is installed, you can use **Lora Block Weight** in the form of `LBW=lbw spec;`
     * `<lora:chunli:1.0:1.0:LBW=B11:0,0,0,0,0,0,0,0,0,0,A,0,0,0,0,0,0;A=0.;>`, `<lora:chunli:1.0:1.0:LBW=0,0,0,0,0,0,0,0,0,0,A,B,0,0,0,0,0;A=0.5;B=0.2;>`, `<lora:chunli:1.0:1.0:LBW=SD-MIDD;>`
+  * `LoraWildcardSource` - A generic dynamic wildcard node that scans files inside the `custom_wildcards` directory as dropdown categories. Select a category and choose a LoRA wildcard. It automatically applies the corresponding LoRA and encodes the prompt dynamically. Supports multiple modes: `fixed`, `random`, `sequential`, and `batch`. (See [Detailed Documentation](docs/LORA_WILDCARD_SOURCE.md))
+
 
 
 ### Regional Sampling

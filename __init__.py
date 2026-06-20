@@ -54,6 +54,7 @@ from .modules.impact.bridge_nodes import *      # noqa: F403
 from .modules.impact.hook_nodes import *        # noqa: F403
 from .modules.impact.animatediff_nodes import * # noqa: F403
 from .modules.impact.segs_upscaler import *     # noqa: F403
+from .modules.impact.wildcard_source import LoraWildcardSource
 
 import threading
 
@@ -204,6 +205,7 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactWildcardProcessor": ImpactWildcardProcessor, # noqa: F405
     "ImpactWildcardEncode": ImpactWildcardEncode, # noqa: F405
+    "LoraWildcardSource": LoraWildcardSource,
 
     "SEGSUpscaler": SEGSUpscaler, # noqa: F405
     "SEGSUpscalerPipe": SEGSUpscalerPipe, # noqa: F405
@@ -442,7 +444,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
     "GITSSchedulerFuncProvider": "GITSScheduler Func Provider",
-    "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder"
+    "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder",
+    "LoraWildcardSource": "Lora Wildcard Source / Modes"
 }
 
 
