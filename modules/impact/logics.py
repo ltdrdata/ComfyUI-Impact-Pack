@@ -585,6 +585,34 @@ def workflow_to_map(workflow):
     return nodes, links
 
 
+def _resolve_subgraph_node_id(unique_id):
+    """Extract a candidate flat node ID from a compound subgraph node ID.
+
+    ComfyUI's subgraph expansion (PR #2666, Aug 2024) produces compound
+    node IDs by prefixing the parent ID to child node IDs.  Two formats
+    are common in the ecosystem:
+
+        "639:642"    — colon-separated (workflow-template subgraphs,
+                       ``add_graph_prefix`` with colon prefix)
+        "639.0.0.1"  — dot-separated (core ``GraphBuilder``)
+
+    For colon-separated IDs the last segment is the inner node's flat
+    workflow ID and *may* exist in the flat workflow dict (depending on
+    how the template serialises its children).  For dot-separated IDs
+    the last segment is a synthetic local counter with no workflow
+    counterpart — the caller must degrade gracefully.
+
+    Returns the original *unique_id* unchanged when no compound pattern
+    is detected, so existing flat-ID workflows are completely unaffected.
+    """
+    unique_id = str(unique_id)
+    if ':' in unique_id:
+        return unique_id.rsplit(':', 1)[-1]
+    if '.' in unique_id:
+        return unique_id.rsplit('.', 1)[-1]
+    return unique_id
+
+
 class ImpactRemoteBoolean:
     @classmethod
     def INPUT_TYPES(cls):
@@ -661,7 +689,20 @@ class ImpactControlBridge:
             nodes, links = workflow_to_map(workflow)
             next_nodes = []
 
-            for link in nodes[unique_id]['outputs'][0]['links']:
+            # Resolve compound subgraph node ID (e.g. "639:642" → "642")
+            # so the ControlBridge can find itself in the flat workflow dict.
+            node_key = _resolve_subgraph_node_id(unique_id)
+            if node_key not in nodes:
+                logging.info(
+                    "[Impact Pack] ImpactControlBridge IS_CHANGED: node %s "
+                    "(resolved: %s) not found in workflow dict — "
+                    "likely inside a subgraph whose inner nodes are not "
+                    "flattened. Forcing re-evaluation.",
+                    unique_id, node_key,
+                )
+                return float("NaN")
+
+            for link in nodes[node_key]['outputs'][0]['links']:
                 node_id = str(links[link][2])
                 impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
 
@@ -686,11 +727,29 @@ class ImpactControlBridge:
         else:
             workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])
 
+            # Resolve compound subgraph node ID (e.g. "639:642" → "642")
+            # to find the ControlBridge in the flat workflow dict.
+            # When the node runs inside a subgraph whose inner nodes are
+            # not accessible from the static workflow JSON (workflow
+            # templates, dynamic expansions), the Mute/Bypass behaviour
+            # cannot traverse the downstream graph and gracefully falls
+            # back to a transparent passthrough.
+            node_key = _resolve_subgraph_node_id(unique_id)
+            if node_key not in workflow_nodes:
+                logging.warning(
+                    "[Impact Pack] ImpactControlBridge: '%s' behavior "
+                    "cannot traverse subgraph nodes (node %s resolved "
+                    "to %s — not found in workflow dict). "
+                    "Passing value through.",
+                    behavior, unique_id, node_key,
+                )
+                return (value,)
+
             active_nodes = []
             mute_nodes = []
             bypass_nodes = []
 
-            for link in workflow_nodes[unique_id]['outputs'][0]['links']:
+            for link in workflow_nodes[node_key]['outputs'][0]['links']:
                 node_id = str(links[link][2])
 
                 next_nodes = []
