@@ -127,6 +127,8 @@ def general_tensor_resize(image, w: int, h: int):
 # TODO: Sadly, we need LANCZOS
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 def tensor_resize(image, w: int, h: int):
+    if image.ndim == 5:  # video-VAE (Wan/Qwen/Krea) decode leaks a size-1 temporal axis
+        image = image.reshape(-1, *image.shape[-3:])
     _tensor_check_image(image)
     if image.shape[3] >= 3:
         scaled_images = TensorBatchBuilder()
