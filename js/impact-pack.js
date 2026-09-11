@@ -636,7 +636,7 @@ app.registerExtension({
 							let origin_type = node.outputs[link_info.origin_slot]?.type;
 							if(link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
 									origin_type = this.inputs[1].type;
-									node.connect(link_info.origin_slot, node.id, 'input1');
+									node.connect(link_info.origin_slot, node, 'input1');
 							}
 
 							if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
