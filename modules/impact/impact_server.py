@@ -12,12 +12,11 @@ import impact
 import impact.core as core
 import impact.impact_pack as impact_pack
 import impact.utils as utils
-import nodes
 import numpy as np
 import torchvision
 from aiohttp import web
 from impact.utils import to_tensor
-from PIL import Image
+from PIL import Image, ImageOps
 from segment_anything import SamPredictor, sam_model_registry
 from server import PromptServer
 
@@ -43,9 +42,12 @@ def async_prepare_sam(image_dir, model_name, filename):
         sam_model = sam_model_registry[model_kind](checkpoint=model_name)
         sam_predictor = SamPredictor(sam_model)
 
-        image_path = os.path.join(image_dir, filename)
-        image = nodes.LoadImage().load_image(image_path)[0]
-        image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+        image_dir = os.path.abspath(image_dir)
+        image_path = os.path.abspath(os.path.join(image_dir, filename))
+        if os.path.commonpath([image_dir, image_path]) != image_dir:
+            raise ValueError(f"Invalid file path: {filename!r}")
+
+        image = np.array(ImageOps.exif_transpose(Image.open(image_path)).convert("RGB"), dtype=np.uint8)
 
         if impact.config.get_config()['sam_editor_cpu']:
             device = 'cpu'
