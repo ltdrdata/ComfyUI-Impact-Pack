@@ -54,7 +54,8 @@ def tensor_convert_rgb(image, prefer_copy=True):
     if n_channel == 4:
         image = image[..., :3]
         if prefer_copy:
-            image = image.copy()
+            # torch tensors have clone(), not copy(); numpy arrays have copy().
+            image = image.clone() if torch.is_tensor(image) else image.copy()
         return image
 
     if n_channel == 1:
