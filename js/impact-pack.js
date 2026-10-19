@@ -482,7 +482,7 @@ app.registerExtension({
 					if(
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
-						!stackTrace.includes('loadGraphData')) {
+						!stackTrace.includes('loadGraphData') && !app.configuringGraph) {
 							if(this.outputs[link_info.origin_slot].links.length == 0) {
 								this.removeOutput(link_info.origin_slot);
 							}
@@ -573,7 +573,7 @@ app.registerExtension({
 					return;
 				}
 
-				if(stackTrace.includes('loadGraphData')) {
+				if(stackTrace.includes('loadGraphData') || app.configuringGraph) {
 					if(this.widgets?.[0]) {
 						this.widgets[0].options.max = this.inputs.length-3;
 						this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
@@ -666,7 +666,7 @@ app.registerExtension({
 					if(
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
-						!stackTrace.includes('loadGraphData') &&
+						!stackTrace.includes('loadGraphData') && !app.configuringGraph &&
 						this.inputs[index].name != 'select') {
 						    this.removeInput(index);
 					}
