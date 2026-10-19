@@ -18,7 +18,9 @@ class GeneralSwitch:
         dyn_inputs = {"input1": (any_typ, {"lazy": True, "tooltip": "Any input. When connected, one more input slot is added."}), }
         if core.is_execution_model_version_supported():
             stack = inspect.stack()
-            if stack[2].function == 'get_input_info':
+            # The topological sort asks for the input info to find the lazy inputs: through graph.get_input_info() up to
+            # ComfyUI v0.39 (stack[2]), and from TopologicalSort.get_input_info() directly since v0.40 (stack[1]).
+            if any(frame.function == 'get_input_info' for frame in stack[1:3]):
                 # bypass validation
                 class AllContainer:
                     def __contains__(self, item):
