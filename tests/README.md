@@ -32,6 +32,12 @@ See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
 With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
 also checks failure cleanup using intercepted browser requests, without a server.
+With a running test server, `IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 python3 -m pytest tests/test_e2e_switches.py`
+checks Switch/Combine import, browser reload, routing, and editing through Chrome,
+including non-default selection, legacy names, image/mask lists and batches, and
+SEGS concatenation. See the E2E guide for the known different-size mask batch failure.
+`python3 tests/e2e_conditionings.py` compares conditioning results with core
+ComfyUI and checks regional-prompt combination, using the Detailer checkpoint.
 
 ## Test Suites
 

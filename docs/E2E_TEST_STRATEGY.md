@@ -9,6 +9,8 @@ by clicking **Run**, then verify both backend results and frontend updates.
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
+| `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
+| `tests/e2e_conditionings.py` | Import conditioning and regional-prompt graphs, click Run, save and reimport through the file input | Combine/Concat results match core ComfyUI nodes; regional prompts retain both items in order; dynamic slots and links survive loading |
 
 Widget behavior requires direct interaction. Inference tests may load a
 prepared workflow because manually assembling that graph is not their subject.
@@ -35,6 +37,7 @@ server and samples without modifying its configuration or managing processes.
   `bbox/face_yolov8m.pt` in Ultralytics models, and the portrait
   `ComfyUI_00156_.png` in the input directory. Adjust `PROMPT` in the script
   for different local assets.
+- Conditioning tests use the same checkpoint and do not require Impact Subpack.
 
 Wildcard UI tests require no models. Configure the **test copy** of Impact
 Pack to use its tracked samples in `impact-pack.ini`:
@@ -73,7 +76,45 @@ From the Impact Pack root:
 ```bash
 python tests/e2e_wildcards.py --base-url http://127.0.0.1:18188
 python tests/e2e_dd_compat.py --base-url http://127.0.0.1:18188
+python tests/e2e_conditionings.py --base-url http://127.0.0.1:18188
 ```
+
+Switch regression tests use pytest and need no models:
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-switch-e2e \
+python -m pytest tests/test_e2e_switches.py -v
+```
+
+Each case receives a fresh Chrome context and saves its own screenshot and
+trace. `-k workflow_import` selects loading/reloading; `-k disconnect` selects
+disconnect-related cases. Node creation, link dragging, file input, browser reload,
+Delete, and Run use browser actions. JavaScript only reads graph state.
+The frontend may restore wildcard slots to their declared `*` type on load;
+the tests preserve link types and verify execution rather than transient labels.
+
+The Switch cases use a blank workflow before importing, and the loader
+waits for replacement nodes after configuration. Prepared workflows have three
+distinct inputs or outputs and `select=2`; assertions compare against the file,
+not just the graph observed before loading. Deleting an unselected connection
+must preserve selection and output. The Reroute case verifies that rejecting an
+old Reroute connection during loading does not shift the remaining output slots.
+Interactive reconnect cases change the source text to detect stale results.
+
+The suite also covers both selection modes, the legacy Switch names, SEGS
+concatenation, and image/mask list and batch nodes. Image checks compare count,
+order, dimensions, and pixel values before and after importing the saved graph.
+The different-size mask batch case currently exposes an existing error on
+ComfyUI 0.43.0: `MakeMaskBatch` passes a three-dimensional mask to
+`common_upscale`, which expects a channel dimension. This also fails on the
+unmodified Main baseline and remains a failing regression test, without a skip
+or expected-failure marker.
+
+Regression checks must fail when file importing is bypassed, selection is
+unconditionally reset to 1, or the Inversed Switch configuration guard is
+removed. Also check the original loading failure, obsolete self-connection,
+and missing `select=0` recovery against their corresponding cases.
 
 Headless Chrome is the default and still receives real mouse, keyboard, and
 file-input events. To watch the same interactions in a visible Chrome window,

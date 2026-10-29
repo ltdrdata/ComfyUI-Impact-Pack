@@ -661,7 +661,7 @@ app.registerExtension({
 					if(
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
-						!stackTrace.includes('loadGraphData') && !app.configuringGraph &&
+						!stackTrace.includes('loadGraphData') &&
 						this.inputs[index].name != 'select') {
 						    this.removeInput(index);
 					}
@@ -683,6 +683,8 @@ app.registerExtension({
 				if(this.widgets?.[0]) {
 					this.widgets[0].options.max = this.inputs.length-3;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
+					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
+						this.widgets[0].value = 1;
 				}
 			}
 		}

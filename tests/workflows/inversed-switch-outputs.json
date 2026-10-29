@@ -1,0 +1,291 @@
+{
+  "last_node_id": 22,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "ImpactWildcardProcessor",
+      "pos": [
+        50,
+        430
+      ],
+      "size": [
+        400,
+        260
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "wildcard_text",
+          "type": "STRING",
+          "widget": {
+            "name": "wildcard_text"
+          },
+          "link": null
+        },
+        {
+          "name": "populated_text",
+          "type": "STRING",
+          "widget": {
+            "name": "populated_text"
+          },
+          "link": null
+        },
+        {
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "name": "Select to add Wildcard",
+          "type": "COMBO",
+          "widget": {
+            "name": "Select to add Wildcard"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "routed",
+        "routed",
+        "fixed",
+        0,
+        "fixed",
+        "Select Wildcard 🟢 Full Cache"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "ImpactInversedSwitch",
+      "pos": [
+        650,
+        430
+      ],
+      "size": [
+        270,
+        200
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "*",
+          "link": 1
+        },
+        {
+          "name": "select",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "select"
+          }
+        },
+        {
+          "name": "sel_mode",
+          "type": "BOOLEAN",
+          "link": null,
+          "widget": {
+            "name": "sel_mode"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output1",
+          "type": "*",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "output2",
+          "type": "*",
+          "links": [
+            3
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "output3",
+          "type": "*",
+          "links": [
+            4
+          ],
+          "slot_index": 2
+        },
+        {
+          "name": "output4",
+          "type": "*",
+          "links": null,
+          "slot_index": 3
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        2,
+        false
+      ],
+      "widgets_values_named": {
+        "select": 2,
+        "sel_mode": false
+      }
+    },
+    {
+      "id": 20,
+      "type": "PreviewAny",
+      "pos": [
+        1100,
+        100
+      ],
+      "size": [
+        270,
+        200
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "PreviewAny",
+      "pos": [
+        1100,
+        430
+      ],
+      "size": [
+        270,
+        200
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "pos": [
+        1100,
+        760
+      ],
+      "size": [
+        270,
+        200
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      10,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      10,
+      0,
+      20,
+      0,
+      "STRING"
+    ],
+    [
+      3,
+      10,
+      1,
+      21,
+      0,
+      "STRING"
+    ],
+    [
+      4,
+      10,
+      2,
+      22,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

@@ -7,6 +7,7 @@ import argparse
 from contextlib import contextmanager
 import logging
 from pathlib import Path
+import re
 import sys
 import tempfile
 import time
@@ -42,7 +43,7 @@ class ComfyUI:
         self.page.mouse.dblclick(x, y, delay=100)
         search = self.page.get_by_placeholder("Add a node...", exact=True)
         search.fill(title)
-        self.page.get_by_test_id("result-item").filter(has_text=title).click()
+        self.page.get_by_role("option", name=re.compile(rf"^{re.escape(title)}(?:\s|$)")).click()
         expect(search).not_to_be_visible()
         self.page.get_by_role("dialog").wait_for(state="hidden")
         self.page.mouse.move(x, y)
@@ -67,21 +68,23 @@ class ComfyUI:
         self.page.mouse.click(*self.point(node_type, widget=widget))
         self.page.get_by_role("menuitem", name=value, exact=True).click()
 
-    def connect(self, source, target):
+    def connect(self, source, target, target_slot=0):
         self.page.mouse.move(*self.point(source))
         self.page.mouse.down()
-        self.page.mouse.move(*self.point(target, is_input=True), steps=12)
+        self.page.mouse.move(*self.point(target, slot=target_slot, is_input=True), steps=12)
         self.page.mouse.up()
-        self.page.wait_for_function("""({app, type}) => {
-            return app.graph._nodes.find(n => n.type === type).inputs[0].link != null;
-        }""", arg={"app": self.app, "type": target})
+        self.page.wait_for_function("""({app, type, slot}) => {
+            return app.graph._nodes.find(n => n.type === type).inputs[slot].link != null;
+        }""", arg={"app": self.app, "type": target, "slot": target_slot})
 
     def load_workflow(self, workflow, node_count):
+        previous_nodes = self.app.evaluate_handle("app => app.graph._nodes.slice()")
         self.page.locator("#comfy-file-input").set_input_files(workflow)
-        self.page.wait_for_function("""({app, count}) => {
-            return app.graph._nodes.length === count &&
-                app.graph._nodes.every(n => !n.has_errors);
-        }""", arg={"app": self.app, "count": node_count})
+        self.page.wait_for_function("""({app, count, previous}) => {
+            return !app.configuringGraph && app.graph._nodes.length === count &&
+                app.graph._nodes.every(n => !n.has_errors && !previous.includes(n));
+        }""", arg={"app": self.app, "count": node_count, "previous": previous_nodes})
+        previous_nodes.dispose()
         self.page.get_by_role("button", name="Fit View (.)", exact=True).click()
 
     def run(self):
