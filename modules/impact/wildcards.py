@@ -40,24 +40,10 @@ class LazyWildcardLoader:
         self._loaded = False
 
     def _load_txt(self):
-        """Load .txt wildcard file"""
-        try:
-            with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
-                lines = f.read().splitlines()
-                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
-        except (yaml.reader.ReaderError, UnicodeDecodeError):
-            with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                lines = f.read().splitlines()
-                return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+        return load_txt_wildcard(self.file_path)
 
     def _load_yaml(self):
-        """Load .yaml/.yml wildcard file"""
-        try:
-            with open(self.file_path, 'r', encoding="ISO-8859-1") as f:
-                return yaml.load(f, Loader=yaml.FullLoader)
-        except (yaml.reader.ReaderError, UnicodeDecodeError):
-            with open(self.file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                return yaml.load(f, Loader=yaml.FullLoader)
+        return yaml.load(_read_wildcard_text(self.file_path), Loader=yaml.FullLoader)
 
     def get_data(self):
         """Get wildcard data, loading if necessary"""
@@ -357,28 +343,27 @@ def get_wildcard_value(key):
     return value
 
 
+def _read_wildcard_text(file_path):
+    try:
+        with open(file_path, 'r', encoding="utf-8-sig") as f:
+            return f.read()
+    except UnicodeDecodeError:
+        logging.warning(f"[Impact Pack] wildcard file {file_path!r} is not valid UTF-8; decoded via ISO-8859-1 fallback. Re-save as UTF-8 if content appears garbled.")
+        with open(file_path, 'r', encoding="ISO-8859-1") as f:
+            return f.read()
+
+
 def load_txt_wildcard(file_path):
     """Load a .txt wildcard file"""
-    try:
-        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-            lines = f.read().splitlines()
-            return [x for x in lines if x.strip() and not x.strip().startswith('#')]
-    except (yaml.reader.ReaderError, UnicodeDecodeError):
-        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-            lines = f.read().splitlines()
-            return [x for x in lines if x.strip() and not x.strip().startswith('#')]
+    return [x for x in _read_wildcard_text(file_path).splitlines()
+            if x.strip() and not x.strip().startswith('#')]
 
 
 def load_yaml_wildcard(file_path, key_prefix=''):
     """Load a .yaml/.yml wildcard file and expand nested structures"""
     global loaded_wildcards
 
-    try:
-        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-    except (yaml.reader.ReaderError, UnicodeDecodeError):
-        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+    yaml_data = yaml.load(_read_wildcard_text(file_path), Loader=yaml.FullLoader)
 
     if not yaml_data:
         return []
@@ -479,14 +464,7 @@ def read_wildcard_dict(wildcard_path, on_demand=False):
                     wildcard_dict[key] = LazyWildcardLoader(file_path, 'txt')
                 else:
                     # Load data immediately (original behavior)
-                    try:
-                        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-                            lines = f.read().splitlines()
-                            wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
-                    except yaml.reader.ReaderError:
-                        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                            lines = f.read().splitlines()
-                            wildcard_dict[key] = [x for x in lines if x.strip() and not x.strip().startswith('#')]
+                    wildcard_dict[key] = load_txt_wildcard(file_path)
             elif file.endswith('.yaml') or file.endswith('.yml'):
                 file_path = os.path.join(root, file)
 
@@ -500,12 +478,7 @@ def read_wildcard_dict(wildcard_path, on_demand=False):
                             read_wildcard(k, v, on_demand)
                 else:
                     # Load data immediately (original behavior)
-                    try:
-                        with open(file_path, 'r', encoding="ISO-8859-1") as f:
-                            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
-                    except yaml.reader.ReaderError:
-                        with open(file_path, 'r', encoding="UTF-8", errors="ignore") as f:
-                            yaml_data = yaml.load(f, Loader=yaml.FullLoader)
+                    yaml_data = yaml.load(_read_wildcard_text(file_path), Loader=yaml.FullLoader)
 
                     for k, v in yaml_data.items():
                         read_wildcard(k, v, on_demand)
@@ -826,6 +799,9 @@ def process(text, seed=None):
         # pass2: replace wildcards
         text, is_replaced2 = replace_wildcard(pass1)
         stop_unwrap = not is_replaced1 and not is_replaced2
+
+    if not stop_unwrap:
+        logging.warning("[Impact Pack] Wildcard expansion limit reached; check for circular references.")
 
     return text
 

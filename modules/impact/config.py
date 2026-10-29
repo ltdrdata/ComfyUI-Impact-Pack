@@ -50,13 +50,14 @@ def read_config():
 
         return {
                     'sam_editor_cpu': default_conf['sam_editor_cpu'].lower() == 'true' if 'sam_editor_cpu' in default_conf else False,
-                    'sam_editor_model': default_conf['sam_editor_model'].lower() if 'sam_editor_model' else 'sam_vit_b_01ec64.pth',
+                    'sam_editor_model': default_conf['sam_editor_model'].lower() if 'sam_editor_model' in default_conf else 'sam_vit_b_01ec64.pth',
                     'custom_wildcards': default_conf['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
                     'disable_gpu_opencv': default_conf['disable_gpu_opencv'].lower() == 'true' if 'disable_gpu_opencv' in default_conf else True,
                     'wildcard_cache_limit_mb': cache_limit_mb
                }
 
-    except Exception:
+    except (FileNotFoundError, KeyError, configparser.Error, ValueError, UnicodeDecodeError, AttributeError):
+        logging.exception("[Impact Pack] Failed to read impact-pack.ini — using hardcoded defaults")
         return {
             'sam_editor_cpu': False,
             'sam_editor_model': 'sam_vit_b_01ec64.pth',

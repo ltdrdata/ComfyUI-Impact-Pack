@@ -1,4 +1,4 @@
-"""E2E test for the DifferentialDiffusion cross-version compat shim.
+"""Chrome UI E2E for the DifferentialDiffusion cross-version compat shim.
 
 Exercises the `utils.apply_differential_diffusion` helper end-to-end through
 a real SEGSDetailer inference with `noise_mask_feather > 0`. This is the
@@ -15,21 +15,23 @@ Prerequisites:
     models/checkpoints/SD1.5/realcartoonPixar_v8.safetensors
     models/ultralytics/bbox/face_yolov8m.pt
 - Input image with a visible face at input/ComfyUI_00156_.png
-- Python Playwright 1.58+ (`pip install playwright && playwright install chromium`)
+- Python Playwright and Google Chrome
 
 What it verifies:
 1. SEGSDetailer inference runs without AttributeError on DifferentialDiffusion.
 2. Output image differs slightly from input (detailer actually edited the face).
-3. Execution returns status=success.
+3. UI workflow import, Run, and image preview updates succeed.
+
+Use --base-url, --browser-channel, --headed, and --artifacts to configure the run.
 """
-from playwright.sync_api import sync_playwright
+import io
 import json
 import time
-import sys
-import urllib.parse
 
-BASE_URL = "http://127.0.0.1:18188"
-TIMEOUT_S = 600
+import numpy as np
+from PIL import Image
+
+from e2e_ui import browser_session, options
 
 _SEED = int(time.time()) & 0xFFFFFFFF
 
@@ -122,138 +124,45 @@ PROMPT = {
 }
 
 
-def fail(msg: str, code: int = 1) -> None:
-    print(f"FAIL: {msg}")
-    sys.exit(code)
+def main():
+    args = options(__doc__)
+    with browser_session(args) as ui:
+        # Import the prepared graph through the frontend's file input. The
+        # frontend performs node creation, widget callbacks, and connections.
+        ui.load_workflow({
+            "name": "dd-compat.json",
+            "mimeType": "application/json",
+            "buffer": json.dumps(PROMPT).encode("utf-8"),
+        }, len(PROMPT))
+        entry = ui.run()
+        outputs = entry["outputs"]
+        assert "preview_input" in outputs and "preview_paste" in outputs, outputs
 
+        # Require the frontend to receive and load the output image as well.
+        ui.page.wait_for_function("""(app) => {
+            const node = app.graph.getNodeById('preview_paste');
+            return node?.imgs?.some(img => img.complete && img.naturalWidth > 0);
+        }""", arg=ui.app)
 
-def main() -> None:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        ctx = browser.new_context(viewport={"width": 1280, "height": 800})
-        page = ctx.new_page()
-        page.goto(f"{BASE_URL}/", wait_until="domcontentloaded", timeout=30000)
+        def image_stats(meta):
+            response = ui.page.request.get(f"{ui.base_url}/view", params={
+                "filename": meta["filename"],
+                "subfolder": meta.get("subfolder", ""),
+                "type": meta.get("type", "output"),
+            })
+            assert response.ok, f"Preview image request failed: {response.status}"
+            with Image.open(io.BytesIO(response.body())) as image:
+                pixels = np.array(image)
+                return {"size": image.size, "mean": float(pixels.mean()), "std": float(pixels.std())}
 
-        submit = page.evaluate(
-            """async (prompt) => {
-                const client_id = (window.api && window.api.clientId) || crypto.randomUUID();
-                const resp = await fetch('/prompt', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, client_id })
-                });
-                const text = await resp.text();
-                let parsed = null; try { parsed = JSON.parse(text); } catch {}
-                return { status: resp.status, body: parsed || text };
-            }""",
-            PROMPT,
-        )
-        if submit.get("status") != 200 or not isinstance(submit.get("body"), dict):
-            fail(f"submission failed: {submit}", 2)
-        prompt_id = submit["body"].get("prompt_id")
-        if not prompt_id:
-            fail("no prompt_id returned", 2)
-        print(f"prompt_id: {prompt_id}")
-
-        deadline = time.time() + TIMEOUT_S
-        last_sig = None
-        history_entry = None
-        while time.time() < deadline:
-            state = page.evaluate(
-                f"""async () => {{
-                    const h = await fetch('/history/{prompt_id}').then(r => r.json());
-                    const q = await fetch('/queue').then(r => r.json());
-                    return {{ h, q }};
-                }}"""
-            )
-            q = state["q"]
-            sig = f"running={len(q.get('queue_running', []))} pending={len(q.get('queue_pending', []))}"
-            if sig != last_sig:
-                print(f"[{int(TIMEOUT_S - (deadline - time.time())):>3}s] {sig}")
-                last_sig = sig
-            if prompt_id in state["h"]:
-                history_entry = state["h"][prompt_id]
-                break
-            time.sleep(3)
-        if history_entry is None:
-            fail(f"prompt did not complete within {TIMEOUT_S}s", 2)
-
-        status = history_entry.get("status", {})
-        messages = status.get("messages", [])
-        status_str = status.get("status_str")
-        print(f"status_str: {status_str}")
-
-        exec_errors = [m[1] for m in messages if m[0] == "execution_error"]
-        for err in exec_errors:
-            print(f"[ERROR] node={err.get('node_id')} {err.get('exception_type')}: {err.get('exception_message')}")
-            for t in err.get("traceback", [])[-5:]:
-                print(f"    {t.strip()}")
-        if exec_errors:
-            fail("execution_error present (DD compat shim or unrelated)", 1)
-        if status_str != "success":
-            fail(f"status_str={status_str!r}")
-
-        outputs = history_entry.get("outputs", {})
-        if "preview_input" not in outputs or "preview_paste" not in outputs:
-            fail(f"expected previews missing from outputs: {list(outputs)}")
-
-        def fetch_png_stats(meta):
-            qs = urllib.parse.urlencode(
-                {
-                    "filename": meta.get("filename", ""),
-                    "subfolder": meta.get("subfolder", ""),
-                    "type": meta.get("type", "output"),
-                }
-            )
-            raw_list = page.evaluate(
-                f"""async () => {{
-                    const r = await fetch('/view?{qs}');
-                    if (!r.ok) return null;
-                    const ab = await r.arrayBuffer();
-                    return Array.from(new Uint8Array(ab));
-                }}"""
-            )
-            if not raw_list:
-                return None
-            import io as _io
-            import numpy as np
-            from PIL import Image as PILImage
-
-            pim = PILImage.open(_io.BytesIO(bytes(raw_list)))
-            arr = np.array(pim)
-            return {
-                "size": pim.size,
-                "mean": float(arr.mean()),
-                "std": float(arr.std()),
-            }
-
-        in_stats = fetch_png_stats(outputs["preview_input"]["images"][0])
-        out_stats = fetch_png_stats(outputs["preview_paste"]["images"][0])
-        if in_stats is None or out_stats is None:
-            fail("could not fetch one or both preview images")
-
-        print(f"input : {in_stats}")
-        print(f"paste : {out_stats}")
-
-        if out_stats["std"] < 1.0:
-            fail("paste output is degenerate (flat image)")
-
-        if in_stats["size"] != out_stats["size"]:
-            fail(f"size mismatch: {in_stats['size']} vs {out_stats['size']}")
-
-        # SEGSPaste with a detailed face should produce a slightly different mean/std
-        # vs the untouched input. Exact equality would indicate the detailer path
-        # (and thus the DD compat shim) was bypassed.
-        mean_delta = abs(out_stats["mean"] - in_stats["mean"])
-        std_delta = abs(out_stats["std"] - in_stats["std"])
-        if mean_delta < 0.005 and std_delta < 0.005:
-            fail(
-                f"output identical to input (mean_delta={mean_delta:.4f}, "
-                f"std_delta={std_delta:.4f}) — detailer likely didn't run"
-            )
-
-        print(f"PASS: detailer ran, mean_delta={mean_delta:.4f}, std_delta={std_delta:.4f}")
-        browser.close()
+        original = image_stats(outputs["preview_input"]["images"][0])
+        detailed = image_stats(outputs["preview_paste"]["images"][0])
+        assert detailed["std"] >= 1.0, f"Degenerate output: {detailed}"
+        assert original["size"] == detailed["size"], (original, detailed)
+        mean_delta = abs(detailed["mean"] - original["mean"])
+        std_delta = abs(detailed["std"] - original["std"])
+        assert mean_delta >= 0.005 or std_delta >= 0.005, "Detailer output is unchanged"
+        print(f"PASS: UI import/Run/preview, detailer mean_delta={mean_delta:.4f}, std_delta={std_delta:.4f}")
 
 
 if __name__ == "__main__":

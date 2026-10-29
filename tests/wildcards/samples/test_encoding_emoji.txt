@@ -1,0 +1,21 @@
+# Emoji test file - various emoji categories
+
+# Nature emojis
+🌸🌺🌼🌻🌷🌹🥀🏵️💐🌾
+🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂
+🌞🌝🌛🌜🌚🌕🌖🌗🌘🌑
+
+# Animal emojis
+🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯
+🦁🐮🐷🐸🐵🙈🙉🙊🐒🐔
+
+# Food emojis
+🍎🍊🍋🍌🍉🍇🍓🍈🍒🍑
+🍕🍔🍟🌭🍿🧂🥓🥚🍳🧇
+
+# Heart emojis
+❤️🧡💛💚💙💜🖤🤍🤎💔
+💕💞💓💗💖💘💝💟☮️✝️
+
+# Mixed emoji with text
+a 🌸 beautiful 🌺 garden 🌼 with 🌻 many 🌷 flowers 🌹

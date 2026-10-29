@@ -1,0 +1,26 @@
+# Special characters and punctuation
+
+# Mathematical symbols
+∀∂∃∅∆∇∈∉∋∏∑−∓∔∕∖∗∘∙√∛∜∝∞∟
+α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω
+
+# Currency symbols
+$ € £ ¥ ₹ ₽ ₩ ₪ ₫ ₱ ₦ ₡ ₨ ₤ ₵ ₲ ₴
+
+# Box drawing characters
+┌─┬─┐
+│ │ │
+├─┼─┤
+│ │ │
+└─┴─┘
+
+# Diacritics and accents
+Café résumé naïve Zürich
+àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ
+
+# Quotes and brackets
+"double quotes" 'single quotes' «guillemets» „German quotes"
+(parentheses) [brackets] {braces} ⟨angle brackets⟩
+
+# Special punctuation
+… — – • · ° † ‡ § ¶ © ® ™ ℠ № ℮

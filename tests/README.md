@@ -2,11 +2,44 @@
 
 Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 
+## Standalone regression tests
+
+From the `tests/` directory, run `python3 -m pytest`.
+Install dependencies with `python3 -m pip install -r tests/requirements.txt`
+from the repository root. This runs configuration, populate, and strict
+encoding checks without starting ComfyUI. The configuration keeps pytest from
+importing the extension's server-initializing `__init__.py`.
+Circular-reference tests use `pytest-timeout` to stop after five seconds.
+
+From the Impact Pack root, select the files explicitly:
+`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_wildcard_encoding_strict.py`.
+
+Both suites also run directly with `python3 tests/wildcards/test_populate_regression.py`
+and `python3 tests/wildcards/test_wildcard_encoding_strict.py`; both delegate
+to pytest with the same configuration.
+The three TXT encoding fixtures in `tests/wildcards/samples/` are included
+in the repository. The older server-dependent suites below are run separately.
+
+## Chrome UI E2E
+
+`python3 tests/e2e_wildcards.py` creates and connects nodes, edits widgets,
+clicks Run, and checks the displayed results. `python3 tests/e2e_dd_compat.py`
+imports a prepared Detailer workflow through the UI and clicks Run to verify
+inference and image previews. Both default to headless Google Chrome; add
+`--headed` to watch the browser on a machine with a display.
+
+See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
+a running test server and are separate from the curl-based API integration tests.
+With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
+also checks failure cleanup using intercepted browser requests, without a server.
+
 ## Test Suites
 
 ### test_encoding.sh (15 tests)
 **Purpose**: UTF-8 multi-language encoding validation
-**Port**: 8198
+**Server**: URL argument; defaults to `http://127.0.0.1:8198`.
+Configure an isolated server with `tests/wildcards/samples` before running.
+The script never changes configuration or starts/stops server processes.
 **Coverage**:
 - Korean Hangul characters
 - Emoji support
@@ -88,11 +121,10 @@ Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 ## Quick Start
 
 ```bash
-# Run individual test
-bash test_encoding.sh
+# Run against the isolated server described in docs/E2E_TEST_STRATEGY.md
+bash test_encoding.sh http://127.0.0.1:18188
 
-# Run all tests
-bash test_encoding.sh
+# Older scripts below require a disposable test copy
 bash test_error_handling.sh
 bash test_edge_cases.sh
 bash test_deep_nesting.sh
@@ -103,9 +135,8 @@ bash test_dynamic_prompts_full.sh
 
 ## Test Infrastructure
 
-- **Configuration**: Each test creates `impact-pack.ini` with test wildcard path
-- **Server Lifecycle**: Automatic server start/stop with dedicated ports
-- **Cleanup**: Automatic cleanup on test completion
+- **Encoding suite**: Uses an already-running isolated server; no configuration or process cleanup
+- **Other legacy API suites**: Manage configuration and server lifecycle themselves; use a disposable test copy
 - **Logging**: Detailed logs in `/tmp/*_test.log`
 
 ## Test Samples
@@ -117,17 +148,6 @@ Located in `wildcards/samples/`:
 - `test_error_*.txt` - Error handling test files
 - `test_nesting_*.txt` - Nesting test files (7 levels)
 - `patterns/` - Subdirectory for pattern matching tests
-
-## Status
-
-✅ **86 tests, 100% pass rate** (15+10+20+17+8+5+11)
-✅ **Production ready**
-✅ **Complete PRD coverage**
-✅ **On-demand loading validated**
-✅ **Config quotes handling validated**
-✅ **Dynamic prompts statistically validated**
-✅ **Weighted selection verified (correct {weight::option} syntax)**
-✅ **Pattern matching validated (depth-agnostic __*/name__)**
 
 ## Documentation
 
