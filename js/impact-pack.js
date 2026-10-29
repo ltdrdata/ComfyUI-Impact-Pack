@@ -634,11 +634,6 @@ app.registerExtension({
 						// NOTE: node is undefined when subgraph editing mode
 						if(node) {
 							let origin_type = node.outputs[link_info.origin_slot]?.type;
-							if(link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
-									origin_type = this.inputs[1].type;
-									node.connect(link_info.origin_slot, node.id, 'input1');
-							}
-
 							if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
 								this.disconnectInput(link_info.target_slot);
 								return;
