@@ -2,7 +2,17 @@ import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
-import { ClipspaceDialog } from "../../extensions/core/clipspace.js";
+// The frontend no longer serves extensions/core/clipspace.js (absent as of
+// comfyui-frontend-package 1.49.6 - ClipspaceDialog is module-local in the
+// bundle and is exposed on neither window nor comfyAPI). Statically importing
+// it 404s, which aborts this entire module and silently drops "Open in SAM
+// Detector" from the node context menu. Resolve it if a future frontend
+// exposes it again, otherwise degrade to no-ops: the context-menu entry
+// works, only the button inside the clipspace dialog is not added.
+const ClipspaceDialog = window.comfyAPI?.clipspace?.ClipspaceDialog ?? {
+	invalidatePreview() {},
+	registerButton() {},
+};
 
 function addMenuHandler(nodeType, cb) {
 	const getOpts = nodeType.prototype.getExtraMenuOptions;
