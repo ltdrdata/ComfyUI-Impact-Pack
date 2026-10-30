@@ -466,14 +466,14 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
 
     prev_device = mask.device
     device = comfy.model_management.get_torch_device()
-    mask.to(device)
+    mask = mask.to(device)
 
     # apply gaussian blur
     mask = mask[:, None, ..., 0]
     blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
 
-    blurred_mask.to(prev_device)
+    blurred_mask = blurred_mask.to(prev_device)
 
     return blurred_mask
 
