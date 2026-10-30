@@ -2,12 +2,13 @@ import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { ComfyApp } from "../../scripts/app.js";
-import { ClipspaceDialog } from "../../extensions/core/clipspace.js";
+// ClipspaceDialog was moved/removed from core extensions in newer frontend packages
+const ClipspaceDialog = window?.comfyAPI?.clipspace?.ClipspaceDialog;
 
 function addMenuHandler(nodeType, cb) {
 	const getOpts = nodeType.prototype.getExtraMenuOptions;
 	nodeType.prototype.getExtraMenuOptions = function () {
-		const r = getOpts.apply(this, arguments);
+		const r = getOpts?.apply(this, arguments);
 		cb.apply(this, arguments);
 		return r;
 	};
@@ -56,7 +57,16 @@ async function uploadMask(filepath, formData) {
 	if(ComfyApp.clipspace.images)
 		ComfyApp.clipspace.images[ComfyApp.clipspace['selectedIndex']] = filepath;
 
-	ClipspaceDialog.invalidatePreview();
+	if (ClipspaceDialog?.invalidatePreview) {
+		ClipspaceDialog.invalidatePreview();
+	} else if (ComfyApp.clipspace?.imgs?.length > 0) {
+		const img_preview = document.getElementById('clipspace_preview');
+		if (img_preview instanceof HTMLImageElement) {
+			img_preview.src = ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex'] || 0].src;
+			img_preview.style.maxHeight = '100%';
+			img_preview.style.maxWidth = '100%';
+		}
+	}
 }
 
 class ImpactSamEditorDialog extends ComfyDialog {
@@ -242,6 +252,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 	}
 
 	show() {
+		const self = this;
 		this.mask_image = null;
 		self.prompt_points = [];
 
@@ -617,8 +628,10 @@ app.registerExtension({
 				dlg.show();
 			};
 
-		const context_predicate = () => ComfyApp.clipspace && ComfyApp.clipspace.imgs && ComfyApp.clipspace.imgs.length > 0
-		ClipspaceDialog.registerButton("Impact SAM Detector", context_predicate, callback);
+		const context_predicate = () => ComfyApp.clipspace && ComfyApp.clipspace.imgs && ComfyApp.clipspace.imgs.length > 0;
+		if (ClipspaceDialog?.registerButton) {
+			ClipspaceDialog.registerButton("Impact SAM Detector", context_predicate, callback);
+		}
 	},
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
