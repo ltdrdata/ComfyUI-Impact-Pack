@@ -166,7 +166,8 @@ point controls, cancellation, stale results, failure/retry and API registration.
 isolated subprocesses, including concurrent requests and error recovery.
 `tests/test_preview_bridge_latent.py` checks restored mask propagation and input
 latent preservation. `tests/test_preview_bridge_result.py` checks submitted-image
-feedback from both bridge types on refresh and reuse.
+feedback from both bridge types on refresh and reuse, and distinct references
+for concurrently registered files.
 Run these with `tests/test_sam_editor.py` in the ComfyUI
 Python environment; the SAM tests also check model selection in misleadingly
 named parent directories. [SAM setup](../docs/SAM_MASK_EDITOR.md) has the command.

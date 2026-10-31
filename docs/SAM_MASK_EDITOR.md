@@ -48,6 +48,8 @@ Preview Bridge execution feedback includes the submitted image reference in
 registration and unchanged editor value. Older queued results cannot overwrite
 a newer saved edit, including one already submitted to the queue. Repeated
 executions of the same image can still advance to their latest output.
+Registrations use unique opaque references so concurrent image preparation and
+HTTP registration cannot assign the same reference to different files.
 
 ## Validation
 
@@ -70,7 +72,8 @@ They verify responsiveness during slow request bodies and concurrent inference,
 prepare and release requests, JSON errors and recovery, and repeated preparation.
 The latent tests verify restoration policy, incoming-mask priority, and unchanged
 sample tensors. Both bridge types report their submitted reference on refresh
-and reuse. Chrome delays real execution messages across two saved and queued
+and reuse; a concurrent-registration test verifies that each reference resolves
+to its own file. Chrome delays real execution messages across two saved and queued
 edits, then verifies the latest mask after native workflow reload.
 Chrome keeps the resized restoration and discard cases to verify
 propagation through a second bridge. Model inference itself is exercised by the
