@@ -70,9 +70,9 @@ def serve_sam(connection, directory):
 
     impact_server.sam_predictor = Predictor(Model())
     impact_server.SamPredictor = sam_editor.SamPredictor = Predictor
-    sam_editor.sam_model_registry["vit_b"] = load_model
+    impact_server.core.sam_model_registry["vit_b"] = load_model
     impact_server.impact.config.get_config = lambda: {"sam_editor_cpu": True, "sam_editor_model": "sam_vit_b.pth"}
-    impact_server.folder_paths.get_full_path = lambda kind, name: None if state["mode"] == "missing-model" else "sam_vit_b.pth"
+    impact_server.folder_paths.get_full_path = lambda kind, name: None if state["mode"] == "missing-model" else "/models/vit_h_archive/sam_vit_b.pth"
     impact_server.folder_paths.set_input_directory(str(directory))
     (Path(directory) / "source.png").write_bytes(image_bytes())
 

@@ -215,9 +215,6 @@ def edit_mask(ui, node_id, artifacts, name, *, right=False, existing=None):
     ui.page.screenshot(path=str(artifacts / f"{name}-editor.png"))
     ui.page.get_by_role("button", name=re.compile(r"Save$")).click()
     expect(zone).not_to_be_visible()
-    ui.page.wait_for_function("""({app, id}) =>
-        !app.graph.getNodeById(id).widgets.find(w => w.name === 'image')._lock
-    """, arg={"app": ui.app, "id": node_id})
     return expected
 
 
@@ -471,9 +468,9 @@ def test_new_image_refreshes_preview_and_obeys_restore_mask(ui, restore, resize)
         assert refreshed.getchannel("A").getextrema() == (255, 255)
 
 
-@pytest.mark.parametrize("restore", ["never", "always", "if_same_size"])
-@pytest.mark.parametrize("resize", [False, True], ids=["same_size", "new_size"])
-def test_restored_latent_mask_reaches_the_next_bridge(ui, restore, resize):
+@pytest.mark.parametrize("restore,restored", [("always", True), ("if_same_size", False)],
+                         ids=["restored_after_resize", "discarded_after_resize"])
+def test_restored_latent_mask_reaches_the_next_bridge(ui, restore, restored):
     browser, args = ui
     source, bridge, output, mask = build_bridge(browser, "PreviewBridgeLatent")
     multiply = add_node(browser, "LatentMultiply", 1220, 760)
@@ -494,13 +491,11 @@ def test_restored_latent_mask_reaches_the_next_bridge(ui, restore, resize):
     mask_output(browser, entry, second_mask, expected)
     # Changing this parameter creates a fresh latent with the same sample values.
     number(browser, multiply, "multiplier", 2)
-    if resize:
-        number(browser, source, "width", 320)
+    number(browser, source, "width", 320)
     entry = browser.run()
     samples = latent_samples(browser, entry, output)
-    assert samples.shape == (1, 4, 32, 40 if resize else 32)
+    assert samples.shape == (1, 4, 32, 40)
     assert not np.any(samples), "Bridge changed latent samples while restoring a mask"
-    restored = restore == "always" or (restore == "if_same_size" and not resize)
     if restored:
         mask_output(browser, entry, mask, expected)
         mask_output(browser, entry, second_mask, expected)

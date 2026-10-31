@@ -2,7 +2,7 @@
 
 This integration requires a frontend exposing
 `app.extensionManager.maskEditor.registerTool`. The frontend implementation is on
-`feat/mask-editor-extension-api` (validated with commit `40ecc3afd6`). Checking the API, rather
+`feat/mask-editor-extension-api` (validated with commit `d20e674820`). Checking the API, rather
 than a version number, determines which editor integration loads. Frontends
 without it retain the existing legacy SAM dialog.
 
@@ -28,7 +28,9 @@ the separate paint layer and point markers. Paint remains intact when applying
 the inferred mask. No input/output filename or global prepared image is used.
 
 The endpoint uses the existing `sam_editor_model` and `sam_editor_cpu` settings
-and the existing confidence-selection logic. Each request loads its model,
+and the existing confidence-selection logic. SAMLoader and both editor APIs share
+the model loader; the checkpoint filename determines the architecture, regardless
+of its parent directory. Each request loads its model,
 computes image embeddings and the mask, and releases the model afterward.
 Inference runs outside the server event loop; legacy and snapshot operations
 acquire their shared lock only in worker threads. Legacy prepare returns after
@@ -61,7 +63,9 @@ The HTTP tests run actual handlers in isolated subprocesses with a model double.
 They verify responsiveness during slow request bodies and concurrent inference,
 prepare and release requests, JSON errors and recovery, and repeated preparation.
 The latent tests verify restoration policy, incoming-mask priority, and unchanged
-sample tensors. Model inference itself is exercised by the Chrome tests below.
+sample tensors. Chrome keeps the resized restoration and discard cases to verify
+propagation through a second bridge. Model inference itself is exercised by the
+Chrome tests below.
 
 For Chrome E2E, serve a production build of the feature frontend from an
 isolated ComfyUI server with both this SAM integration and the Preview Bridge
