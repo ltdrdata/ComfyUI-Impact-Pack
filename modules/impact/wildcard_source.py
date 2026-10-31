@@ -17,14 +17,21 @@ _LEGACY_LORA_RE = re.compile(r"<lora:([^:>]+):([\d.]+)\s*>")
 def achar_arquivo_wildcard(nome_arquivo):
     if "/" in nome_arquivo or "\\" in nome_arquivo:
         return None
+    names = [nome_arquivo]
+    stem, _ = os.path.splitext(nome_arquivo)
+    if stem in ("style", "styles", "estilo", "estilos_arte"):
+        names.extend(["styles.txt", "estilos_arte.txt"])
+    elif stem in ("pose", "poses"):
+        names.extend(["poses.txt", "pose.txt"])
     root = os.path.realpath(config.get_config()["custom_wildcards"])
-    path = os.path.realpath(os.path.join(root, nome_arquivo))
-    try:
-        contained = os.path.commonpath((root, path)) == root
-    except ValueError:  # Windows links can resolve to a different drive/share.
-        return None
-    if contained and os.path.isfile(path):
-        return path
+    for name in dict.fromkeys(names):
+        path = os.path.realpath(os.path.join(root, name))
+        try:
+            contained = os.path.commonpath((root, path)) == root
+        except ValueError:  # Windows links can resolve to a different drive/share.
+            continue
+        if contained and os.path.isfile(path):
+            return path
     return None
 
 

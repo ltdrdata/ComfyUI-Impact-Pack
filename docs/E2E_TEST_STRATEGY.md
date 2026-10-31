@@ -132,6 +132,12 @@ resolution to another drive. It checks that the excluded file is never read
 and that valid categories still work through schema, route and execution; it
 is not a Windows filesystem E2E test.
 
+The inference suite also imports a prepared API workflow with legacy category
+`pose` while only `poses.txt` exists. It checks the real output, exports through
+the native UI, and reloads in both restoration modes with identical widget
+names/order/values. This covers a saved alias absent from the current dropdown
+options; the catalog fixtures are unchanged.
+
 ## Server setup
 
 Use an isolated checkout/copy and a separate ComfyUI user/output directory.

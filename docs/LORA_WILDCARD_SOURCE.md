@@ -4,6 +4,8 @@ The `LoraWildcardSource` is a generic, dynamic node designed to simplify and aut
 
 It scans the directory configured by `custom_wildcards` in `impact-pack.ini`, treating each top-level `.txt` file name as a category dropdown option. Selecting a category updates the second dropdown with the corresponding LoRA entries. Files and symlinks outside that directory cannot be read through the category input or HTTP route.
 
+Saved category aliases keep their original fallback: an exact filename wins first; otherwise `style`, `styles`, `estilo` and `estilos_arte` try `styles.txt` then `estilos_arte.txt`, while `pose` and `poses` try `poses.txt` then `pose.txt`. Every candidate must remain inside the configured directory. The dropdown and execution use the same resolution order.
+
 The optional sample is [example_workflows/wildcards/styles.txt](../example_workflows/wildcards/styles.txt). It is outside the automatically scanned directories so installing this node does not replace an existing `__styles__` wildcard. To use it, copy it into your configured directory under an unused filename, then select that category. Do not overwrite your own wildcard files.
 
 Entries recognized by the original node keep their labels and order. Newly supported entries are appended to the dropdown with unused labels and require an explicit `fixed` selection. The automatic modes keep the original candidate list, so saved seeds, sequential wraparound and batch counts are unchanged by syntax expansion. A saved `A` or `A (1)` still selects the same original row. For an empty category, an ordinary base prompt retains its original text and punctuation; LoRA tags in that prompt are still applied and removed before encoding.

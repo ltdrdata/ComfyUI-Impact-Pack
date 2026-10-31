@@ -275,6 +275,43 @@ def test_pose_category_uses_the_same_file_in_ui_and_execution(source, model_call
     assert "singular" in build(module, category="pose")[3][0]
 
 
+@pytest.mark.parametrize("category,target", [
+    ("pose", "poses"), ("poses", "pose"), ("style", "styles"),
+    ("styles", "estilos_arte"), ("estilo", "styles"), ("estilos_arte", "styles"),
+    ("style", "estilos_arte"), ("estilo", "estilos_arte"),
+])
+def test_saved_category_aliases_keep_their_fallback(source, model_calls, category, target):
+    module, custom = source
+    (custom / (target + ".txt")).write_text("legacy target, <lora:A:0.7>\n")
+    assert items(module, category) == ["A"]
+    result = build(module, category=category)
+    assert result[3] == ["base, legacy target"]
+    assert result[2] == [["base, legacy target"]]
+    assert model_calls == [("A.safetensors", 0.8, 0.8)]
+
+
+def test_category_alias_prefers_exact_file_then_original_fallback_order(source, model_calls):
+    module, custom = source
+    for category, name in [("estilo", "A"), ("styles", "B"), ("estilos_arte", "Base")]:
+        (custom / (category + ".txt")).write_text(f"{category}, <lora:{name}:0.7>\n")
+    assert items(module, "estilo") == ["A"]
+    assert build(module, category="estilo")[3] == ["base, estilo"]
+    (custom / "estilo.txt").unlink()
+    assert items(module, "estilo") == ["B"]
+    assert build(module, category="estilo", lora_wildcard="B")[3] == ["base, styles"]
+    assert model_calls == [("A.safetensors", 0.8, 0.8), ("B.safetensors", 0.8, 0.8)]
+
+
+def test_alias_fallback_cannot_escape_configured_directory(source, tmp_path, model_calls):
+    module, custom = source
+    outside = tmp_path / "outside.txt"
+    outside.write_text("private, <lora:A:0.7>\n")
+    (custom / "styles.txt").symlink_to(outside)
+    assert items(module, "style") == []
+    assert build(module, category="style")[3] == ["base"]
+    assert model_calls == []
+
+
 @pytest.mark.parametrize("kind", ["relative", "absolute", "symlink"])
 def test_category_cannot_read_outside_configured_directory(source, tmp_path, kind, model_calls):
     module, custom = source

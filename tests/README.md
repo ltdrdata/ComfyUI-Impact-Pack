@@ -77,8 +77,9 @@ browser previews must also match server images. A saved duplicate label must
 still select its original row after syntax expansion and native reload in both
 restoration modes. Mixed-syntax random/sequential/batch workflows also retain
 their original candidates, and leading punctuation is compared with core-node
-references. This is separate from the model-free catalog and delayed-response
-tests.
+references. A legacy `pose` category resolves `poses.txt` and survives native
+reload even when the alias is absent from current dropdown options. This is
+separate from the model-free catalog and delayed-response tests.
 Use the deterministic FP32 server options in the E2E guide for pixel equality.
 `python3 tests/integration_lora_wildcard_tensors.py --comfy-root /path/to/ComfyUI`
 separately compares every conditioning tensor and MODEL/CLIP LoRA patch tensor
