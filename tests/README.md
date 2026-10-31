@@ -31,13 +31,35 @@ inference and image previews. Both default to headless Google Chrome; add
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
 With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
-also checks failure cleanup using intercepted browser requests, without a server.
+also checks failure cleanup and JavaScript errors during artifact saving using
+intercepted browser requests, without a server.
 With a running test server, `IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 python3 -m pytest tests/test_e2e_switches.py`
 checks Switch/Combine import, browser reload, routing, and editing through Chrome,
 including non-default selection, legacy names, image/mask lists and batches, and
-SEGS concatenation. See the E2E guide for the known different-size mask batch failure.
+SEGS concatenation. Mask batch checks compare every output pixel with expected
+patterns, including resizing, center cropping, batch order, and one-pixel dimensions.
 `python3 tests/e2e_conditionings.py` compares conditioning results with core
 ComfyUI and checks regional-prompt combination, using the Detailer checkpoint.
+`python3 tests/e2e_tutorials.py` imports the original Switch tutorial PNGs,
+changes every selection, and compares final output pixels with direct core-node
+results. Set `IMPACT_TUTORIALS_DIR` to the tutorial checkout; see the E2E guide
+for its input images and OpenPose requirements.
+Image checks verify that browser previews contain the current server output,
+including rejecting blocked requests and stale pixels served at a new URL.
+`python3 tests/e2e_regional.py` checks exact color masks and the localized effect
+of all three regional prompts in the restored regional img2img tutorial.
+Set `IMPACT_REGIONAL_WORKFLOW` to that PNG or JSON; see the E2E guide for assets
+and dependencies. This checks regional processing, not artistic quality.
+
+`tests/test_e2e_widget_catalog.py` loads `workflows/all-impact-nodes.json` in
+Chrome and compares each node's live widget names, order, and values with
+`workflows/all-impact-nodes.widgets.json`. It checks both positional and named
+restoration, including nodes without widgets, aliases, and deprecated nodes.
+The catalog is created by UI node search and native Export; see the E2E guide
+for recording instructions. It tests loading, not execution of every node.
+For each new registered node, first verify the existing trusted catalog, then
+extend both fixtures through the recorder and rerun the E2E. Existing snapshot
+records must remain unchanged; see [the repository rules](../AGENTS.md).
 
 ## Test Suites
 

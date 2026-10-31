@@ -3,14 +3,13 @@
 Requires a running ComfyUI server with Impact Pack. No models are needed.
 """
 from argparse import Namespace
-import io
 import json
 import os
 from pathlib import Path
 
 import pytest
 from PIL import Image
-from playwright.sync_api import expect
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, expect
 
 from e2e_ui import ComfyUI, browser_session
 
@@ -147,6 +146,45 @@ def test_disconnect_and_reconnect_after_loading(ui, title, node_type):
     assert browser.run()["outputs"][preview]["text"] == ["reconnected-e2e"]
 
 
+@pytest.mark.parametrize("title,node_type", CASES, ids=[case[1] for case in CASES])
+@pytest.mark.parametrize("output_first", [False, True], ids=["input_first", "output_first"])
+def test_wildcard_output_connections_in_native_workflow(ui, title, node_type, output_first):
+    browser, _ = ui
+    browser.new_workflow()
+    source = browser.add_node("ImpactValueReceiver", "ImpactValueReceiver", 220, 230)
+    target = browser.add_node(title, node_type, 750, 230)
+    preview = browser.add_node("Preview as Text", "PreviewAny", 1200, 520)
+    browser.choose("ImpactValueReceiver", "typ", "BOOLEAN")
+    target_slot = browser.app.evaluate("""(app, id) => app.graph.getNodeById(id).inputs.findIndex(
+        slot => ['input', 'input1', 'value1'].includes(slot.name))""", target)
+    if output_first:
+        browser.connect(node_type, "PreviewAny")
+    browser.connect("ImpactValueReceiver", node_type, target_slot)
+    if not output_first:
+        browser.connect(node_type, "PreviewAny")
+    assert text_outputs(browser) == {preview: ["False"]}
+    before = slots(browser)
+    widget_names = {source: ["typ", "value", "link_id"], target: [] if node_type == "ImpactMakeAnyList" else ["select", "sel_mode"]}
+    widgets = browser.app.evaluate("""(app, ids) => Object.fromEntries(ids.map(id =>
+        [id, (app.graph.getNodeById(id).widgets ?? []).map(widget => widget.name)]))""", [source, target])
+    assert widgets == widget_names
+    saved = browser.app.evaluate("app => app.graph.serialize()")
+    browser.new_workflow()
+    browser.load_workflow({"name": "wildcard-output-native.json", "mimeType": "application/json",
+                           "buffer": json.dumps(saved).encode()}, 3)
+    assert slots(browser) == before
+    after = browser.app.evaluate("app => app.graph.serialize()")
+    for node_id in (source, target):
+        original = next(node for node in saved["nodes"] if str(node["id"]) == node_id)
+        restored = next(node for node in after["nodes"] if str(node["id"]) == node_id)
+        assert restored.get("widgets_values", []) == original.get("widgets_values", [])
+    assert browser.app.evaluate("""(app, ids) => Object.fromEntries(ids.map(id =>
+        [id, (app.graph.getNodeById(id).widgets ?? []).map(widget => widget.name)]))""", [source, target]) == widget_names
+    assert text_outputs(browser) == {preview: ["False"]}
+    browser.choose("ImpactValueReceiver", "typ", "STRING")
+    assert text_outputs(browser) == {preview: [""]}
+
+
 @pytest.mark.parametrize("node_type,removed,side", [
     ("ImpactSwitch", 3, "inputs"),
     ("ImpactInversedSwitch", 22, "outputs"),
@@ -203,6 +241,176 @@ def test_switch_selection_modes_and_legacy_names(ui, node_type, select_on_prompt
     assert text_outputs(browser) == expected
 
 
+@pytest.mark.parametrize("node_type", ["ImpactSwitch", "LatentSwitch", "SEGSSwitch"])
+@pytest.mark.parametrize("select_on_prompt", [False, True], ids=["on_execution", "on_prompt"])
+def test_inversed_switch_branches_rejoin(ui, node_type, select_on_prompt):
+    browser, _ = ui
+    prompt = {
+        "source": {"class_type": "EmptyImage", "inputs": {"width": 16, "height": 16, "batch_size": 1, "color": 0xFF0000}},
+        "select": {"class_type": "ImpactInt", "inputs": {"value": 2}},
+        "inverse": {"class_type": "ImpactInversedSwitch", "inputs": {
+            "input": ["source", 0], "select": ["select", 0], "sel_mode": select_on_prompt}},
+        "branch1": {"class_type": "ImageInvert", "inputs": {"image": ["inverse", 0]}},
+        "branch2": {"class_type": "ImageToMask", "inputs": {"image": ["inverse", 1], "channel": "red"}},
+        "branch3": {"class_type": "ImageToMask", "inputs": {"image": ["inverse", 2], "channel": "green"}},
+        "white": {"class_type": "MaskToImage", "inputs": {"mask": ["branch2", 0]}},
+        "black": {"class_type": "MaskToImage", "inputs": {"mask": ["branch3", 0]}},
+        "switch": {"class_type": node_type, "inputs": {
+            "input1": ["branch1", 0], "input2": ["white", 0], "input3": ["black", 0],
+            "select": ["select", 0], "sel_mode": select_on_prompt}},
+        "preview": {"class_type": "PreviewImage", "inputs": {"images": ["switch", 0]}},
+    }
+    if select_on_prompt:
+        for index in (1, 2, 3):
+            prompt[f"side{index}"] = {"class_type": "PreviewImage", "inputs": {"images": ["inverse", index - 1]}}
+    else:
+        # Execution mode accepts an INT computed by an upstream node, not just
+        # the static ImpactInt/Primitive selectors supported by prompt mode.
+        prompt["choice"] = prompt.pop("select")
+        prompt["selector_image"] = {"class_type": "EmptyImage", "inputs": {
+            "width": 16, "height": 16, "batch_size": ["choice", 0], "color": 0}}
+        prompt["select"] = {"class_type": "GetImageSize", "inputs": {"image": ["selector_image", 0]}}
+        for node in ("inverse", "switch"):
+            prompt[node]["inputs"]["select"] = ["select", 2]
+    browser.new_workflow()
+    browser.load_workflow({"name": "switch-branches-api.json", "mimeType": "application/json",
+                           "buffer": json.dumps(prompt).encode()}, len(prompt))
+    before = slots(browser)
+    for value in (2, 1, 3, 2, None):
+        if value is None:
+            saved = browser.app.evaluate("app => app.graph.serialize()")
+            browser.new_workflow()
+            browser.load_workflow({"name": "switch-branches.json", "mimeType": "application/json",
+                                   "buffer": json.dumps(saved).encode()}, len(prompt))
+            assert slots(browser) == before
+            value = 2
+        else:
+            browser.set_number("ImpactInt", "value", value)
+        entry = browser.run()
+        outputs = browser.images(entry)
+        expected = {"preview": {1: (0, 255, 255), 2: (255, 255, 255), 3: (0, 0, 0)}[value]}
+        if select_on_prompt:
+            expected[f"side{value}"] = (255, 0, 0)
+            executed_prompt = entry["prompt"][2]
+            for index in (1, 2, 3):
+                # Every consumer must retain only the selected output, regardless of node order.
+                link = ["inverse", index - 1] if index == value else None
+                assert executed_prompt[f"branch{index}"]["inputs"].get("image") == link
+                assert executed_prompt[f"side{index}"]["inputs"].get("images") == link
+            assert {name for name in executed_prompt["switch"]["inputs"] if name.startswith("input")} == {f"input{value}"}
+        assert outputs.keys() == expected.keys()
+        for node, color in expected.items():
+            assert len(outputs[node]) == 1
+            image = outputs[node][0]
+            assert image.size == (16, 16)
+            assert image.getextrema() == tuple((v, v) for v in color)
+
+
+@pytest.mark.parametrize("select_on_prompt", [False, True], ids=["on_execution", "on_prompt"])
+def test_switch_does_not_execute_unselected_input(ui, select_on_prompt):
+    browser, _ = ui
+    prompt = {
+        "select": {"class_type": "ImpactInt", "inputs": {"value": 1}},
+        "safe": {"class_type": "PrimitiveInt", "inputs": {"value": 7}},
+        "poison": {"class_type": "ImpactValueReceiver", "inputs": {"typ": "INT", "value": "not-an-integer", "link_id": 0}},
+        "poison_int": {"class_type": "ImpactConvertDataType", "inputs": {"value": ["poison", 0]}},
+        "switch": {"class_type": "ImpactSwitch", "inputs": {
+            "select": ["select", 0], "sel_mode": select_on_prompt, "input1": ["safe", 0], "input2": ["poison_int", 2]}},
+        "preview": {"class_type": "PreviewAny", "inputs": {"source": ["switch", 0]}},
+    }
+    browser.new_workflow()
+    browser.load_workflow({"name": "unselected-input.json", "mimeType": "application/json",
+                           "buffer": json.dumps(prompt).encode()}, len(prompt))
+    inputs = slots(browser)["nodes"]["switch"]["inputs"]
+    assert {slot["name"] for slot in inputs if slot["link"] is not None} == {"select", "input1", "input2"}
+    assert text_outputs(browser) == {"preview": ["7"]}
+    saved = browser.app.evaluate("app => app.graph.serialize()")
+    browser.new_workflow()
+    browser.load_workflow({"name": "unselected-input-saved.json", "mimeType": "application/json",
+                           "buffer": json.dumps(saved).encode()}, len(prompt))
+    assert text_outputs(browser) == {"preview": ["7"]}
+    # Prove the unselected branch really would fail if it were evaluated.
+    browser.set_number("ImpactInt", "value", 2)
+    with pytest.raises(AssertionError, match="invalid literal for int"):
+        browser.run()
+    browser.page.keyboard.press("Escape")
+    browser.set_number("ImpactInt", "value", 1)
+    assert text_outputs(browser) == {"preview": ["7"]}
+
+
+def test_inversed_switch_disconnected_chain_on_prompt(ui):
+    browser, _ = ui
+    prompt = {
+        "source": {"class_type": "EmptyImage", "inputs": {"width": 16, "height": 16, "batch_size": 1, "color": 0xFF0000}},
+        "select": {"class_type": "ImpactInt", "inputs": {"value": 1}},
+        "first": {"class_type": "ImpactInversedSwitch", "inputs": {
+            "input": ["source", 0], "select": ["select", 0], "sel_mode": True}},
+        "second": {"class_type": "ImpactInversedSwitch", "inputs": {
+            "input": ["first", 0], "select": ["select", 0], "sel_mode": True}},
+        "preview": {"class_type": "PreviewImage", "inputs": {"images": ["second", 0]}},
+        "control": {"class_type": "PreviewImage", "inputs": {"images": ["source", 0]}},
+    }
+    browser.new_workflow()
+    browser.load_workflow({"name": "inversed-switch-chain.json", "mimeType": "application/json",
+                           "buffer": json.dumps(prompt).encode()}, len(prompt))
+    for value in (1, 2, 1):
+        browser.set_number("ImpactInt", "value", value)
+        entry = browser.run()
+        outputs = set(browser.images(entry))
+        assert outputs == ({"control", "preview"} if value == 1 else {"control"})
+        executed_prompt = entry["prompt"][2]
+        assert ("input" in executed_prompt["first"]["inputs"]) == (value == 1)
+        assert ("input" in executed_prompt["second"]["inputs"]) == (value == 1)
+
+
+@pytest.mark.parametrize("failure", [None, "blocked", "stale"], ids=["updated", "blocked", "stale"])
+def test_image_previews_follow_current_execution(ui, failure):
+    browser, _ = ui
+    prompt = {
+        "color": {"class_type": "ImpactInt", "inputs": {"value": 0xFF0000}},
+        "source": {"class_type": "EmptyImage", "inputs": {
+            "width": 16, "height": 16, "batch_size": 1, "color": ["color", 0]}},
+        "preview": {"class_type": "PreviewImage", "inputs": {"images": ["source", 0]}},
+    }
+    browser.new_workflow()
+    browser.load_workflow({"name": "preview-update.json", "mimeType": "application/json",
+                           "buffer": json.dumps(prompt).encode()}, len(prompt))
+    entry = browser.run()
+    assert browser.images(entry)["preview"][0].getextrema() == ((255, 255), (0, 0), (0, 0))
+    if failure == "stale":
+        meta = entry["outputs"]["preview"]["images"][0]
+        old_image = browser.page.request.get(f"{browser.base_url}/view", params={
+            key: meta[key] for key in ("filename", "subfolder", "type")
+        }).body()
+    intercepted = []
+
+    def intercept(route):
+        if route.request.resource_type != "image":
+            route.continue_()
+        else:
+            intercepted.append(route.request.url)
+            if failure == "blocked":
+                route.abort()
+            else:
+                route.fulfill(content_type="image/png", body=old_image)
+
+    if failure:
+        browser.page.route("**/view?**", intercept)
+    browser.set_number("ImpactInt", "value", 0x0000FF)
+    entry = browser.run()
+    if failure == "blocked":
+        browser.page.set_default_timeout(1000)
+        with pytest.raises(PlaywrightTimeoutError, match="Page.wait_for_function"):
+            browser.images(entry)
+    elif failure == "stale":
+        with pytest.raises(AssertionError, match=r"Preview preview\[0\] pixels differ"):
+            browser.images(entry)
+    else:
+        assert browser.images(entry)["preview"][0].getextrema() == ((0, 0), (0, 0), (255, 255))
+    if failure:
+        assert intercepted
+
+
 @pytest.mark.parametrize("node_type,second_size", [
     ("ImpactMakeImageList", 32), ("ImpactMakeImageBatch", 32), ("ImpactMakeMaskList", 32),
     ("ImpactMakeMaskBatch", 16), ("ImpactMakeMaskBatch", 32),
@@ -237,14 +445,77 @@ def test_image_and_mask_combine_after_loading(ui, node_type, second_size):
             browser.load_workflow({"name": f"{node_type}.json", "mimeType": "application/json",
                                    "buffer": json.dumps(saved).encode("utf-8")}, len(prompt))
             assert slots(browser) == before
-        images = browser.run()["outputs"]["preview"]["images"]
+        images = browser.images(browser.run())["preview"]
         assert len(images) == 2
-        for meta, color, size in zip(images, colors, sizes):
-            response = browser.page.request.get(f"{browser.base_url}/view", params=meta)
-            assert response.ok
-            with Image.open(io.BytesIO(response.body())) as image:
-                assert image.size == size
-                assert image.convert("RGB").getextrema() == tuple((value, value) for value in color)
+        for image, color, size in zip(images, colors, sizes):
+            assert image.size == size
+            assert image.getextrema() == tuple((value, value) for value in color)
+
+
+@pytest.mark.parametrize("sizes,crops", [
+    ([(12, 8)], [None]),
+    ([(12, 8), (12, 8)], [None, None]),
+    ([(12, 8), (48, 16), (12, 8)], [None, (12, 0, 36, 16), None]),
+    ([(24, 16), (6, 8)], [None, (0, 2, 6, 6)]),
+    ([(8, 1), (16, 4)], [None, (0, 1, 16, 3)]),
+    ([(1, 8), (4, 16)], [None, (1, 0, 3, 16)]),
+], ids=["single", "same_size", "downscale_crop", "upscale_crop", "height_one", "width_one"])
+def test_mask_batch_preserves_patterns_and_order(ui, sizes, crops):
+    browser, _ = ui
+    prompt = {}
+    inputs = {}
+    expected = []
+    for index, ((width, height), crop) in enumerate(zip(sizes, crops), 1):
+        prefix = f"source{index}"
+        value = index / 4
+        x, y = width // 4, 0
+        patch_width, patch_height = max(1, width // 2), max(1, height // 2)
+        prompt.update({
+            f"{prefix}_base": {"class_type": "SolidMask", "inputs": {"value": 0.0, "width": width, "height": height}},
+            f"{prefix}_patch": {"class_type": "SolidMask", "inputs": {
+                "value": value, "width": patch_width, "height": patch_height}},
+            f"{prefix}_pattern": {"class_type": "MaskComposite", "inputs": {
+                "destination": [f"{prefix}_base", 0], "source": [f"{prefix}_patch", 0],
+                "x": x, "y": y, "operation": "add"}},
+            f"{prefix}_inverse": {"class_type": "InvertMask", "inputs": {"mask": [f"{prefix}_pattern", 0]}},
+            f"{prefix}_image": {"class_type": "MaskToImage", "inputs": {"mask": [f"{prefix}_pattern", 0]}},
+            f"{prefix}_inverse_image": {"class_type": "MaskToImage", "inputs": {"mask": [f"{prefix}_inverse", 0]}},
+            f"{prefix}_batch": {"class_type": "ImageBatch", "inputs": {
+                "image1": [f"{prefix}_image", 0], "image2": [f"{prefix}_inverse_image", 0]}},
+            prefix: {"class_type": "ImageToMask", "inputs": {"image": [f"{prefix}_batch", 0], "channel": "red"}},
+        })
+        inputs[f"mask{index}"] = [prefix, 0]
+        # Explicit crop boxes are independent of MakeMaskBatch's resizing code.
+        for background, foreground in ((0, value), (255, 1 - value)):
+            image = Image.new("L", (width, height), background)
+            image.paste(int(foreground * 255), (x, y, x + patch_width, y + patch_height))
+            if crop is not None:
+                image = image.crop(crop).resize(sizes[0], Image.Resampling.LANCZOS)
+            expected.append(image.convert("RGB"))
+    prompt.update({
+        "combine": {"class_type": "ImpactMakeMaskBatch", "inputs": inputs},
+        "to_image": {"class_type": "MaskToImage", "inputs": {"mask": ["combine", 0]}},
+        "preview": {"class_type": "PreviewImage", "inputs": {"images": ["to_image", 0]}},
+    })
+    browser.new_workflow()
+    browser.load_workflow({"name": "mask-batch-patterns-api.json", "mimeType": "application/json",
+                           "buffer": json.dumps(prompt).encode("utf-8")}, len(prompt))
+    before = slots(browser)
+    assert [slot["name"] for slot in before["nodes"]["combine"]["inputs"]] == [
+        f"mask{i}" for i in range(1, len(sizes) + 2)
+    ]
+    saved = browser.app.evaluate("app => app.graph.serialize()")
+    for reload_workflow in (False, True):
+        if reload_workflow:
+            browser.new_workflow()
+            browser.load_workflow({"name": "mask-batch-patterns.json", "mimeType": "application/json",
+                                   "buffer": json.dumps(saved).encode("utf-8")}, len(prompt))
+            assert slots(browser) == before
+        images = browser.images(browser.run())["preview"]
+        assert len(images) == len(expected)
+        for index, (image, expected_image) in enumerate(zip(images, expected)):
+            assert image.size == sizes[0]
+            assert image.tobytes() == expected_image.tobytes(), f"Mask {index} pixels differ"
 
 
 def test_segs_concat_after_loading(ui):

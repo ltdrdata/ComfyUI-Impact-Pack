@@ -392,6 +392,7 @@ def onprompt_for_switch(json_data):
                 else:
                     onprompt_cond_branch_info[k] = cond_input
 
+    unused_inversed_switches = set(inversed_switch_info)
     for k, v in json_data['prompt'].items():
         disable_targets = set()
 
@@ -401,7 +402,7 @@ def onprompt_for_switch(json_data):
                     if vv[1] + 1 != inversed_switch_info[vv[0]]:
                         disable_targets.add(kk)
                     else:
-                        del inversed_switch_info[k]
+                        unused_inversed_switches.discard(vv[0])
 
                 if vv[0] in disabled_switch:
                     disable_targets.add(kk)
@@ -422,8 +423,8 @@ def onprompt_for_switch(json_data):
             del v['inputs'][kk]
 
     # inversed_switch - select out of range
-    for target in inversed_switch_info.keys():
-        del json_data['prompt'][target]['inputs']['input']
+    for target in unused_inversed_switches:
+        json_data['prompt'][target]['inputs'].pop('input', None)
 
 
 def onprompt_for_pickers(json_data):

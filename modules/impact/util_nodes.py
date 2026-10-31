@@ -12,22 +12,20 @@ import inspect
 import logging
 
 
+class _SwitchInputs(dict):
+    """Expose one UI socket while marking every numbered input as lazy."""
+
+    def __contains__(self, key):
+        return re.fullmatch(r"input[1-9][0-9]*", key) is not None
+
+    def __getitem__(self, key):
+        return super().__getitem__("input1" if key in self else key)
+
+
 class GeneralSwitch:
     @classmethod
     def INPUT_TYPES(s):
-        dyn_inputs = {"input1": (any_typ, {"lazy": True, "tooltip": "Any input. When connected, one more input slot is added."}), }
-        if core.is_execution_model_version_supported():
-            stack = inspect.stack()
-            if stack[2].function == 'get_input_info':
-                # bypass validation
-                class AllContainer:
-                    def __contains__(self, item):
-                        return True
-
-                    def __getitem__(self, key):
-                        return any_typ, {"lazy": True}
-
-                dyn_inputs = AllContainer()
+        dyn_inputs = _SwitchInputs({"input1": (any_typ, {"lazy": True, "tooltip": "Any input. When connected, one more input slot is added."})})
 
         inputs = {"required": {
                     "select": ("INT", {"default": 1, "min": 1, "max": 999999, "step": 1, "tooltip": "The input number you want to output among the inputs"}),
@@ -50,8 +48,6 @@ class GeneralSwitch:
     def check_lazy_status(self, *args, **kwargs):
         selected_index = int(kwargs['select'])
         input_name = f"input{selected_index}"
-
-        logging.info(f"SELECTED: {input_name}")
 
         if input_name in kwargs:
             return [input_name]
@@ -570,7 +566,9 @@ class MakeMaskBatch:
             mask1 = masks[0]
             for mask2 in masks[1:]:
                 if mask1.shape[1:] != mask2.shape[1:]:
-                    mask2 = comfy.utils.common_upscale(mask2.movedim(-1, 1), mask1.shape[2], mask1.shape[1], "lanczos", "center").movedim(1, -1)
+                    # Lanczos can return (B, H, W); reshape preserves H=1 instead of squeezing it away.
+                    mask2 = comfy.utils.common_upscale(mask2.unsqueeze(1), mask1.shape[2], mask1.shape[1], "lanczos", "center").reshape(
+                        mask2.shape[0], mask1.shape[1], mask1.shape[2])
                 mask1 = torch.cat((mask1, mask2), dim=0)
             return (mask1,)
 

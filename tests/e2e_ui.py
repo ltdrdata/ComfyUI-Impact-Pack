@@ -4,7 +4,9 @@ Graph inspection is read-only. Nodes, widgets, links, workflow loading, and
 execution are changed through browser input events, never app/graph API calls.
 """
 import argparse
+import base64
 from contextlib import contextmanager
+import io
 import logging
 from pathlib import Path
 import re
@@ -13,6 +15,7 @@ import tempfile
 import time
 from urllib.parse import urlsplit
 
+from PIL import Image
 from playwright.sync_api import Error as PlaywrightError, expect, sync_playwright
 
 
@@ -42,8 +45,9 @@ class ComfyUI:
     def add_node(self, title, node_type, x, y):
         self.page.mouse.dblclick(x, y, delay=100)
         search = self.page.get_by_placeholder("Add a node...", exact=True)
-        search.fill(title)
-        self.page.get_by_role("option", name=re.compile(rf"^{re.escape(title)}(?:\s|$)")).click()
+        search.fill(node_type)
+        label = self.page.locator("span.truncate").filter(has_text=re.compile(rf"^\s*{re.escape(title)}\s*$"))
+        self.page.get_by_role("option").filter(has=label).click()
         expect(search).not_to_be_visible()
         self.page.get_by_role("dialog").wait_for(state="hidden")
         self.page.mouse.move(x, y)
@@ -68,6 +72,15 @@ class ComfyUI:
         self.page.mouse.click(*self.point(node_type, widget=widget))
         self.page.get_by_role("menuitem", name=value, exact=True).click()
 
+    def set_number(self, node_type, widget, value):
+        self.page.mouse.dblclick(*self.point(node_type, widget=widget), delay=100)
+        editor = self.page.locator("input.value:visible")
+        editor.fill(str(value))
+        editor.press("Enter")
+        self.page.wait_for_function("""({app, type, widget, value}) =>
+            app.graph._nodes.find(n => n.type === type).widgets.find(w => w.name === widget).value === value
+        """, arg={"app": self.app, "type": node_type, "widget": widget, "value": value})
+
     def connect(self, source, target, target_slot=0):
         self.page.mouse.move(*self.point(source))
         self.page.mouse.down()
@@ -77,15 +90,25 @@ class ComfyUI:
             return app.graph._nodes.find(n => n.type === type).inputs[slot].link != null;
         }""", arg={"app": self.app, "type": target, "slot": target_slot})
 
-    def load_workflow(self, workflow, node_count):
+    def load_workflow(self, workflow, node_count, *, check_node_errors=True):
         previous_nodes = self.app.evaluate_handle("app => app.graph._nodes.slice()")
         self.page.locator("#comfy-file-input").set_input_files(workflow)
-        self.page.wait_for_function("""({app, count, previous}) => {
+        self.page.wait_for_function("""({app, count, previous, checkErrors}) => {
             return !app.configuringGraph && app.graph._nodes.length === count &&
-                app.graph._nodes.every(n => !n.has_errors && !previous.includes(n));
-        }""", arg={"app": self.app, "count": node_count, "previous": previous_nodes})
+                app.graph._nodes.every(n => (!checkErrors || !n.has_errors) && !previous.includes(n));
+        }""", arg={"app": self.app, "count": node_count, "previous": previous_nodes, "checkErrors": check_node_errors})
         previous_nodes.dispose()
         self.page.get_by_role("button", name="Fit View (.)", exact=True).click()
+        self.page.evaluate("""async app => {
+            let previous;
+            for (let frame = 0; frame < 120; frame++) {
+                await new Promise(requestAnimationFrame);
+                const current = [app.canvas.ds.scale, ...app.canvas.ds.offset].join();
+                if (current === previous) return;
+                previous = current;
+            }
+            throw new Error('Canvas did not settle after Fit View');
+        }""", self.app)
 
     def run(self):
         with self.page.expect_response(
@@ -107,6 +130,41 @@ class ComfyUI:
             time.sleep(0.25)
         raise TimeoutError(f"UI execution did not finish within {self.timeout}s: {prompt_id}")
 
+    def images(self, entry):
+        outputs = {node: output["images"] for node, output in entry["outputs"].items() if output.get("images")}
+        self.page.wait_for_function("""({app, outputs}) => Object.entries(outputs).every(([id, expected]) => {
+            const images = app.graph.getNodeById(id)?.imgs;
+            return images?.length === expected.length && images.every((image, index) => {
+                const params = new URL(image.src).searchParams;
+                return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0 &&
+                    ['filename', 'subfolder', 'type'].every(key =>
+                        (params.get(key) ?? '') === (expected[index][key] ?? ''));
+            });
+        })""", arg={"app": self.app, "outputs": outputs})
+        result = {}
+        for node, metadata in outputs.items():
+            result[node] = []
+            for index, meta in enumerate(metadata):
+                response = self.page.request.get(f"{self.base_url}/view", params={
+                    key: meta[key] for key in ("filename", "subfolder", "type") if key in meta
+                })
+                assert response.ok
+                with Image.open(io.BytesIO(response.body())) as image:
+                    expected = image.convert("RGB")
+                displayed = self.app.evaluate("""(app, {node, index}) => {
+                    const image = app.graph.getNodeById(node).imgs[index];
+                    const canvas = document.createElement('canvas');
+                    canvas.width = image.naturalWidth;
+                    canvas.height = image.naturalHeight;
+                    canvas.getContext('2d').drawImage(image, 0, 0);
+                    return canvas.toDataURL('image/png').split(',')[1];
+                }""", {"node": node, "index": index})
+                with Image.open(io.BytesIO(base64.b64decode(displayed))) as image:
+                    assert image.size == expected.size, f"Preview {node}[{index}] dimensions differ"
+                    assert image.convert("RGB").tobytes() == expected.tobytes(), f"Preview {node}[{index}] pixels differ"
+                result[node].append(expected)
+        return result
+
 
 @contextmanager
 def browser_session(args):
@@ -125,7 +183,6 @@ def browser_session(args):
             page.goto(args.base_url, wait_until="domcontentloaded")
             expect(page.get_by_test_id("queue-button")).to_be_visible(timeout=60000)
             yield ComfyUI(page, args)
-            assert not errors, f"Uncaught browser JavaScript errors: {errors}"
         finally:
             already_failed = sys.exc_info()[0] is not None
             cleanup_error = None
@@ -140,5 +197,7 @@ def browser_session(args):
                     logging.warning("[Impact Pack E2E] %s failed: %s", name, error)
                     if cleanup_error is None:
                         cleanup_error = error
-            if cleanup_error is not None and not already_failed:
-                raise cleanup_error
+            if not already_failed:
+                assert not errors, f"Uncaught browser JavaScript errors: {errors}"
+                if cleanup_error is not None:
+                    raise cleanup_error
