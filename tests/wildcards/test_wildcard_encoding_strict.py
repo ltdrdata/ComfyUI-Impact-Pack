@@ -203,6 +203,25 @@ def test_decoding_across_loaders(tmp_path, monkeypatch, caplog, encoding, file_t
         assert not caplog.records
 
 
+@pytest.mark.parametrize("on_demand", [False, True])
+def test_bad_file_is_skipped_and_named(tmp_path, monkeypatch, caplog, on_demand):
+    (tmp_path / "a_good.txt").write_text("red\nblue\n", encoding="utf-8")
+    bad = tmp_path / "b_broken.yaml"
+    bad.write_text("colors: [unclosed\n", encoding="utf-8")
+    (tmp_path / "c_empty.yaml").write_text("", encoding="utf-8")
+    (tmp_path / "d_good.yaml").write_text("shapes:\n  - circle\n", encoding="utf-8")
+    monkeypatch.setattr(wc, "wildcard_dict", {})
+    monkeypatch.setattr(wc, "loaded_wildcards", {})
+
+    with caplog.at_level(logging.WARNING):
+        wc.read_wildcard_dict(tmp_path, on_demand=on_demand)
+
+    assert list(wc.wildcard_dict["a_good"]) == ["red", "blue"]
+    assert list(wc.wildcard_dict["shapes"]) == ["circle"]
+    assert len(caplog.records) == 1
+    assert str(bad) in caplog.text
+
+
 def test_invalid_yaml_is_not_redecoded_as_latin1(tmp_path, caplog):
     path = tmp_path / "invalid.yaml"
     path.write_text("colors: [\ufffe]\n", encoding="utf-8")

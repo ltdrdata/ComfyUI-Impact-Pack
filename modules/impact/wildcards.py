@@ -454,36 +454,40 @@ def read_wildcard_dict(wildcard_path, on_demand=False):
     global wildcard_dict
     for root, directories, files in os.walk(wildcard_path, followlinks=True):
         for file in files:
-            if file.endswith('.txt'):
-                file_path = os.path.join(root, file)
-                rel_path = os.path.relpath(file_path, wildcard_path)
-                key = wildcard_normalize(os.path.splitext(rel_path)[0])
-
-                if on_demand:
-                    # Store lazy loader instead of actual data
-                    wildcard_dict[key] = LazyWildcardLoader(file_path, 'txt')
-                else:
-                    # Load data immediately (original behavior)
-                    wildcard_dict[key] = load_txt_wildcard(file_path)
-            elif file.endswith('.yaml') or file.endswith('.yml'):
-                file_path = os.path.join(root, file)
-
-                if on_demand:
-                    # For YAML files in on-demand mode, we need to load and parse them
-                    # since they may contain nested structures
-                    loader = LazyWildcardLoader(file_path, 'yaml')
-                    yaml_data = loader.get_data()
-                    if yaml_data:
-                        for k, v in yaml_data.items():
-                            read_wildcard(k, v, on_demand)
-                else:
-                    # Load data immediately (original behavior)
-                    yaml_data = yaml.load(_read_wildcard_text(file_path), Loader=yaml.FullLoader)
-
-                    for k, v in yaml_data.items():
-                        read_wildcard(k, v, on_demand)
+            file_path = os.path.join(root, file)
+            try:
+                _read_wildcard_file(wildcard_path, file, file_path, on_demand)
+            except Exception as e:
+                # One bad file must not abort the scan or hide which file is broken.
+                logging.warning(f"[Impact Pack] Skipped wildcard file {file_path}: {type(e).__name__}: {e}")
 
     return wildcard_dict
+
+
+def _read_wildcard_file(wildcard_path, file, file_path, on_demand):
+    if file.endswith('.txt'):
+        rel_path = os.path.relpath(file_path, wildcard_path)
+        key = wildcard_normalize(os.path.splitext(rel_path)[0])
+
+        if on_demand:
+            # Store lazy loader instead of actual data
+            wildcard_dict[key] = LazyWildcardLoader(file_path, 'txt')
+        else:
+            # Load data immediately (original behavior)
+            wildcard_dict[key] = load_txt_wildcard(file_path)
+    elif file.endswith('.yaml') or file.endswith('.yml'):
+        if on_demand:
+            # For YAML files in on-demand mode, we need to load and parse them
+            # since they may contain nested structures
+            loader = LazyWildcardLoader(file_path, 'yaml')
+            yaml_data = loader.get_data()
+        else:
+            # Load data immediately (original behavior)
+            yaml_data = yaml.load(_read_wildcard_text(file_path), Loader=yaml.FullLoader)
+
+        if yaml_data:
+            for k, v in yaml_data.items():
+                read_wildcard(k, v, on_demand)
 
 
 def process_comment_out(text):
