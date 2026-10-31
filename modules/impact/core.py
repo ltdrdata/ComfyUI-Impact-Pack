@@ -1,4 +1,5 @@
 import os
+import uuid
 import warnings
 
 import torch
@@ -47,7 +48,6 @@ SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
                  defaults=[None])
 
-pb_id_cnt = time.time()
 preview_bridge_image_id_map = {}
 preview_bridge_image_name_map = {}
 
@@ -70,14 +70,7 @@ def is_execution_model_version_supported():
 
 
 def set_previewbridge_image(node_id, file, item):
-    global pb_id_cnt
-
-    if file in preview_bridge_image_name_map:
-        pb_id = preview_bridge_image_name_map[node_id, file]
-        if pb_id.startswith(f"${node_id}"):
-            return pb_id
-
-    pb_id = f"${node_id}-{pb_id_cnt}"
+    pb_id = f"${node_id}-{uuid.uuid4().hex}"
     preview_bridge_image_id_map[pb_id] = (file, item)
     preview_bridge_image_name_map[node_id, file] = (pb_id, item)
     if os.path.isfile(file):
@@ -87,8 +80,6 @@ def set_previewbridge_image(node_id, file, item):
             mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
             mask = 1. - torch.from_numpy(mask)
             preview_bridge_last_mask_cache[node_id] = mask.unsqueeze(0)
-    pb_id_cnt += 1
-
     return pb_id
 
 
