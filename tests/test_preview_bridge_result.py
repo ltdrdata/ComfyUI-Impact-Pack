@@ -11,7 +11,7 @@ from impact import bridge_nodes, core
 @pytest.fixture
 def bridge_files(tmp_path, monkeypatch):
     monkeypatch.setattr(bridge_nodes.folder_paths, "temp_directory", str(tmp_path))
-    for name in ("preview_bridge_cache", "preview_bridge_last_mask_cache", "preview_bridge_image_id_map", "preview_bridge_image_name_map"):
+    for name in ("preview_bridge_cache", "preview_bridge_last_mask_cache", "preview_bridge_image_id_map"):
         monkeypatch.setattr(core, name, {})
     return tmp_path
 

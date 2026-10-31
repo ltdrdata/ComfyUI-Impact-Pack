@@ -187,7 +187,6 @@ class PreviewBridge:
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
             core.set_previewbridge_image(unique_id, path, image2[0])
             core.preview_bridge_image_id_map[image] = (path, image2[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
             core.preview_bridge_cache[unique_id] = (images, image2)
 
             image = image2
@@ -471,7 +470,6 @@ class PreviewBridgeLatent:
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
             core.set_previewbridge_image(unique_id, path, res_image[0])
             core.preview_bridge_image_id_map[image] = (path, res_image[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
             core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
 
         if block and is_empty_mask and core.is_execution_model_version_supported():

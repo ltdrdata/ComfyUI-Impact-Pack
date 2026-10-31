@@ -49,7 +49,6 @@ SEG = namedtuple("SEG",
                  defaults=[None])
 
 preview_bridge_image_id_map = {}
-preview_bridge_image_name_map = {}
 
 preview_bridge_cache = {}
 preview_bridge_last_mask_cache = {}
@@ -72,7 +71,6 @@ def is_execution_model_version_supported():
 def set_previewbridge_image(node_id, file, item):
     pb_id = f"${node_id}-{uuid.uuid4().hex}"
     preview_bridge_image_id_map[pb_id] = (file, item)
-    preview_bridge_image_name_map[node_id, file] = (pb_id, item)
     if os.path.isfile(file):
         i = Image.open(file)
         i = ImageOps.exif_transpose(i)
