@@ -123,6 +123,7 @@ class PreviewBridge:
         return True
 
     def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
+        source_image = image
         need_refresh = False
         images_changed = False
 
@@ -206,7 +207,7 @@ class PreviewBridge:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": image},
+            "ui": {"images": image, "source_image": [source_image]},
             "result": result,
         }
 
@@ -486,6 +487,6 @@ class PreviewBridgeLatent:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": res_image},
+            "ui": {"images": res_image, "source_image": [image]},
             "result": result,
         }

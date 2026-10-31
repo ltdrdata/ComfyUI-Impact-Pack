@@ -49,7 +49,7 @@ test("Vue store-only saves keep the filename and register before queueing", asyn
     assert.equal(params.get("filename"), "a & b+#한글.png");
     assert.equal(params.get("subfolder"), "masks");
     assert.equal(params.get("type"), "input");
-    node.onExecuted({ images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
+    node.onExecuted({ source_image: ["$41-1"], images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
     assert.equal(widget.value, "PreviewBridge/next.png [temp]", "Editor must reopen the current upstream image");
 });
 
@@ -81,8 +81,53 @@ test("queue serialization waits for registration and leaves a newer edit intact"
     storeWrite("second.png [input]");
     finish(new Response("$41-2"));
     assert.equal(await submission, "$41-2");
-    node.onExecuted({ images: [{ filename: "first.png", subfolder: "", type: "input" }] });
+    node.onExecuted({ source_image: ["$41-2"], images: [{ filename: "first.png", subfolder: "", type: "input" }] });
     assert.equal(widget.value, "second.png [input]");
+});
+
+test("an earlier queued result cannot overwrite an edit submitted afterward", async t => {
+    const { node, widget, fetch, storeWrite } = await bridge(t);
+    fetch.mock.mockImplementation(async url => new Response(
+        new URL(url, "http://localhost").searchParams.get("filename") === "first.png" ? "$41-first" : "$41-second"));
+    storeWrite("first.png [input]");
+    const first = await widget.serializeValue();
+    storeWrite("second.png [input]");
+    const second = await widget.serializeValue();
+    node.onExecuted({ source_image: [first], images: [{ filename: "first.png", subfolder: "", type: "input" }] });
+    assert.equal(widget.value, "second.png [input]");
+    node.onExecuted({ source_image: [second], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
+    assert.equal(widget.value, "second-output.png [temp]");
+    assert.equal(node.properties.image, "second-output.png [temp]");
+});
+
+test("queued refreshes of the same image advance the editor to the latest output", async t => {
+    const { node, widget, storeWrite, requests } = await bridge(t);
+    storeWrite("source.png [input]");
+    const first = await widget.serializeValue();
+    const second = await widget.serializeValue();
+    assert.equal(requests.length, 1);
+    node.onExecuted({ source_image: [first], images: [{ filename: "first-output.png", subfolder: "", type: "temp" }] });
+    node.onExecuted({ source_image: [second], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
+    assert.equal(widget.value, "second-output.png [temp]");
+    await widget.serializeValue();
+    assert.equal(new URL(requests[1], "http://localhost").searchParams.get("filename"), "second-output.png");
+});
+
+test("out-of-order registrations keep each prompt tied to its own image", async t => {
+    const { node, widget, fetch, storeWrite } = await bridge(t);
+    let finishFirst;
+    fetch.mock.mockImplementationOnce(() => new Promise(resolve => { finishFirst = resolve; }));
+    storeWrite("first.png [input]");
+    const first = widget.serializeValue();
+    storeWrite("second.png [input]");
+    fetch.mock.mockImplementationOnce(async () => new Response("$41-second"));
+    assert.equal(await widget.serializeValue(), "$41-second");
+    finishFirst(new Response("$41-first"));
+    assert.equal(await first, "$41-first");
+    node.onExecuted({ source_image: ["$41-first"], images: [{ filename: "first-output.png", subfolder: "", type: "temp" }] });
+    assert.equal(widget.value, "second.png [input]");
+    node.onExecuted({ source_image: ["$41-second"], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
+    assert.equal(widget.value, "second-output.png [temp]");
 });
 
 test("failed registration rejects submission and can be retried", async t => {

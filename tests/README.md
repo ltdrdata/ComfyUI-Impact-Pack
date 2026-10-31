@@ -165,12 +165,16 @@ point controls, cancellation, stale results, failure/retry and API registration.
 `tests/test_sam_server.py` exercises actual HTTP handlers with a model double in
 isolated subprocesses, including concurrent requests and error recovery.
 `tests/test_preview_bridge_latent.py` checks restored mask propagation and input
-latent preservation. Run these with `tests/test_sam_editor.py` in the ComfyUI
+latent preservation. `tests/test_preview_bridge_result.py` checks submitted-image
+feedback from both bridge types on refresh and reuse.
+Run these with `tests/test_sam_editor.py` in the ComfyUI
 Python environment; the SAM tests also check model selection in misleadingly
 named parent directories. [SAM setup](../docs/SAM_MASK_EDITOR.md) has the command.
 `node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks
 Vue store-only updates, awaited registration, retry after failure, and legacy
-workflow references without starting a server. It also checks native image path
+workflow references without starting a server. Queued results and out-of-order
+registrations must preserve newer edits; repeated executions of the same image
+must advance the editor to the latest output. It also checks native image path
 normalization and ImageReceiver's existing default storage type.
 `python3 tests/e2e_regional.py` checks exact color masks and the localized effect
 of all three regional prompts in the restored regional img2img tutorial.

@@ -43,6 +43,12 @@ PreviewBridgeLatent also passes a restored mask into the output `noise_mask`
 when upstream samples refresh. The input latent and its samples are preserved;
 an incoming `noise_mask` keeps priority over the saved mask.
 
+Preview Bridge execution feedback includes the submitted image reference in
+`source_image`. The browser accepts a filename update only for the current
+registration and unchanged editor value. Older queued results cannot overwrite
+a newer saved edit, including one already submitted to the queue. Repeated
+executions of the same image can still advance to their latest output.
+
 ## Validation
 
 Run the JavaScript contract tests with Node 20.19 or newer:
@@ -56,14 +62,17 @@ Backend validation and cleanup tests use the ComfyUI Python environment:
 ```bash
 PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest \
   tests/test_sam_editor.py tests/test_sam_server.py \
-  tests/test_preview_bridge_latent.py -q
+  tests/test_preview_bridge_latent.py tests/test_preview_bridge_result.py -q
 ```
 
 The HTTP tests run actual handlers in isolated subprocesses with a model double.
 They verify responsiveness during slow request bodies and concurrent inference,
 prepare and release requests, JSON errors and recovery, and repeated preparation.
 The latent tests verify restoration policy, incoming-mask priority, and unchanged
-sample tensors. Chrome keeps the resized restoration and discard cases to verify
+sample tensors. Both bridge types report their submitted reference on refresh
+and reuse. Chrome delays real execution messages across two saved and queued
+edits, then verifies the latest mask after native workflow reload.
+Chrome keeps the resized restoration and discard cases to verify
 propagation through a second bridge. Model inference itself is exercised by the
 Chrome tests below.
 

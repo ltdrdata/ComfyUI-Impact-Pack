@@ -445,7 +445,11 @@ These tests open the Vue **MaskEditor | Image Canvas**, including its paint and
 mask layers. Preview Bridge keeps the native `image` widget's Vue store binding
 and filename. Its asynchronous `serializeValue` registers that file immediately
 before generating the API prompt, without changing native workflow values.
-The execution result updates the filename used for the next edit. Existing
+The execution result includes its submitted image reference, so only feedback
+matching the current registration can update the filename used for the next edit.
+A Chrome case delays actual WebSocket results across two edited and queued
+images, checks that the first result preserves the second edit, and verifies
+the latest mask after native export/import. Existing
 workflows containing `$node-id` references still load in the same widget slot.
 The integration does not import Vue internals or intercept Clipspace call stacks.
 For the original integration context, see the
