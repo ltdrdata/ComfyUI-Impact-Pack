@@ -154,6 +154,14 @@ results. Set `IMPACT_TUTORIALS_DIR` to the tutorial checkout; see the E2E guide
 for its input images and OpenPose requirements.
 Image checks verify that browser previews contain the current server output,
 including rejecting blocked requests and stale pixels served at a new URL.
+`python3 -m pytest tests/test_e2e_preview_bridge.py -v` exercises Preview Bridge
+through Chrome's Vue MaskEditor: paint/mask editing and native reload, Clipspace feedback, downstream
+compositing, latent mask propagation, blocking and restoration. Its default
+cases need no models. Set `IMPACT_E2E_SAM_IMAGE` to include Interactive SAM with
+the server's configured model. See the E2E guide for setup and coverage.
+`node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks
+Vue store-only updates, awaited registration, retry after failure, and legacy
+workflow references without starting a server.
 `python3 tests/e2e_regional.py` checks exact color masks and the localized effect
 of all three regional prompts in the restored regional img2img tutorial.
 Set `IMPACT_REGIONAL_WORKFLOW` to that PNG or JSON; see the E2E guide for assets

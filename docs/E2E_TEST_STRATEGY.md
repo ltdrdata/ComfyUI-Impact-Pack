@@ -25,6 +25,7 @@ that setup does not extend the supported import scope.
 | `tests/e2e_lora_wildcard_inference.py` | Import a prepared graph, choose modes, Run, native Export and reload | Real SD1.5 LoRA loading and BREAK conditioning match core-node reference images pixel-for-pixel; four modes preserve output count/order/text and native saved widgets |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
 | `tests/test_sam_api.py` | Upload an image and send preparation requests over HTTP, without launching Chrome | Valid requests succeed before/after repeated invalid type/path rejection; rejected requests are not cached as successful |
+| `tests/test_e2e_preview_bridge.py` | Create image/latent graphs, draw masks, copy/paste Clipspace results, export and reload; optionally detect a mask with Interactive SAM | Repeated edits, image feedback, localized downstream compositing, latent samples and noise masks, blocking, mask restoration, widget compatibility, current browser previews |
 | `tests/e2e_tutorials.py` | Import the original Switch tutorial PNGs, change selection widgets, save and reimport JSON | Every selected branch and final output matches direct core-node image results; both selection modes retain the final preview |
 | `tests/e2e_regional.py` | Import the regional img2img tutorial and prepared variants, click Run | Exact color masks, output differs from a VAE roundtrip, each regional prompt affects its own region more than distant pixels, browser previews match server images |
 | `tests/e2e_conditionings.py` | Import conditioning and regional-prompt graphs, click Run, save and reimport through the file input | Combine/Concat results match core ComfyUI nodes; regional prompts retain both items in order; dynamic slots and links survive loading |
@@ -430,6 +431,69 @@ creates missing image metadata for core preview refresh. It loads the shipped
 SAM module with controlled UI exports and canvas/event objects, exercising both
 global UI exports and the dynamic UI-module fallback. This checks those import
 contracts; it does not substitute for browser testing an older frontend release.
+Preview Bridge tests follow `previewbridge.md`, `sam_with_preview_bridge.md`,
+and the embedded notes in `workflow/preview-bridge-image.png` and
+`workflow/preview-bridge-latent.png` in `ComfyUI-extension-tutorials`:
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-preview-bridge-e2e \
+python -m pytest tests/test_e2e_preview_bridge.py -v
+```
+
+These tests open the Vue **MaskEditor | Image Canvas**, including its paint and
+mask layers. Preview Bridge keeps the native `image` widget's Vue store binding
+and filename. Its asynchronous `serializeValue` registers that file immediately
+before generating the API prompt, without changing native workflow values.
+The execution result updates the filename used for the next edit. Existing
+workflows containing `$node-id` references still load in the same widget slot.
+The integration does not import Vue internals or intercept Clipspace call stacks.
+For the separate SAM extension work, see the
+[Preview Bridge and Vue MaskEditor SAM handoff](HANDOFF_PREVIEW_BRIDGE_VUE_SAM.md).
+
+For the isolated serialization and legacy-reference checks, run:
+
+```bash
+node --experimental-vm-modules --test tests/preview_bridge.test.mjs
+```
+
+The default cases need no weights. Chrome creates the graphs through node search
+and link dragging. The image cases copy a downstream result back into the bridge
+for a second edit, and compare masked compositing pixel by pixel, including the
+unchanged area outside the mask. The latent cases use `Latent2RGB-SD15` and a
+second bridge to observe `noise_mask`; downloaded SaveLatent outputs verify that
+mask editing preserves the samples. These cases test bridge behavior without
+running a diffusion sampler.
+
+Both bridge types are edited twice, exported through native **Export**, and
+reimported with positional and named restoration. Widget names, order, live
+values and serialized `widgets_values` must survive. The suite also checks
+`block`, all three `restore_mask` modes, same-size and resized inputs, and mask
+propagation into the next latent bridge. The existing catalog fixtures are not
+changed. The mask oracle comes from the editor canvas before Save; it is not
+reconstructed from the saved mask. Float32-to-PNG comparisons allow one 8-bit
+level of quantization error. An RGR case rejects registration, restores it, then
+rejects it again: failures must display a registration error and prevent prompt
+submission; the successful run must produce the edited mask. The paint case
+compares the composed editor layers with IMAGE output and reopens them after
+native export/import.
+
+To include Interactive SAM, install the model configured by `sam_editor_model`
+in the test server's `impact-pack.ini`, and provide an image containing a subject:
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_SAM_IMAGE=/path/to/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/images/interactive-sam-original.png \
+python -m pytest tests/test_e2e_preview_bridge.py -k interactive_sam -v
+```
+
+This case uploads the image through the UI, places positive and negative points,
+clicks Detect and Save to node, then compares the bridge's MASK with the real
+detector response and checks that the image is preserved. It is skipped only
+when `IMPACT_E2E_SAM_IMAGE` is unset; missing models, menus or failed detection
+are test failures. Tests do not download models or change server configuration.
+Each case records a screenshot and trace, with editor masks and native exports
+saved alongside them where applicable.
 
 The all-node catalog requires **Full Cache mode** because the trusted snapshot
 includes wildcard picker values displaying `Select Wildcard 🟢 Full Cache`.
