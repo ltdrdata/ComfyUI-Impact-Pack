@@ -1,0 +1,1 @@
+alias pose, <lora:SD1.5/etc/add_detail:0.7>

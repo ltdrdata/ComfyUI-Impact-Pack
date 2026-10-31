@@ -3969,6 +3969,40 @@
           "value": ""
         }
       ]
+    },
+    {
+      "id": "199",
+      "type": "LoraWildcardSource",
+      "widgets": [
+        {
+          "name": "category",
+          "value": "test_encoding_emoji"
+        },
+        {
+          "name": "lora_wildcard",
+          "value": "(test_encoding_emoji.txt not found)"
+        },
+        {
+          "name": "mode",
+          "value": "fixed"
+        },
+        {
+          "name": "strength",
+          "value": 0.8
+        },
+        {
+          "name": "base_prompt",
+          "value": "masterpiece, best quality, very aesthetic, absurdres, 1girl"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        }
+      ]
     }
   ]
 }
