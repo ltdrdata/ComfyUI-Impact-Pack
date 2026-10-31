@@ -117,6 +117,27 @@ connect them in both orders, run, and save/reload a native JSON workflow. They
 check the widget names and order plus positional `widgets_values`, following
 the repository's workflow compatibility rule in `AGENTS.md`.
 
+Switch loading regressions have a focused suite:
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-switch-loading-e2e \
+python -m pytest tests/test_e2e_switch_loading.py -v
+```
+
+It checks the three unconnected Switch aliases against the unchanged catalog
+snapshot before and after native Export/reload. Separate legacy-workflow fixtures
+contain 16 dynamic inputs and cover a connected selection, a selected empty input
+after the last connection, and a selected empty input between connections. The
+fixtures were prepared from `switch-inputs.json` to simulate saved unused slots,
+then loaded, executed, and exported through Chrome on the trusted Main revision
+`f5d6d43`. Assertions use fixed expected selections and outputs, not values learned
+from the runtime under test. Both positional and named restoration must preserve
+widget names/order, serialized values, connected slot identities, and outputs.
+The checks allow harmless removal of unused sockets while rejecting changed
+selection or activation of a previously empty branch. They pass with PR #1252's
+revised implementation and fail with the original `45afb30` selection clamping.
+
 The all-node catalog requires **Full Cache mode** because the trusted snapshot
 includes wildcard picker values displaying `Select Wildcard 🟢 Full Cache`.
 In the test copy's `impact-pack.ini`, set `wildcard_cache_limit_mb` above the
