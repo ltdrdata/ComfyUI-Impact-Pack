@@ -448,7 +448,7 @@ before generating the API prompt, without changing native workflow values.
 The execution result updates the filename used for the next edit. Existing
 workflows containing `$node-id` references still load in the same widget slot.
 The integration does not import Vue internals or intercept Clipspace call stacks.
-For the separate SAM extension work, see the
+For the original integration context, see the
 [Preview Bridge and Vue MaskEditor SAM handoff](HANDOFF_PREVIEW_BRIDGE_VUE_SAM.md).
 
 For the isolated serialization and legacy-reference checks, run:
@@ -495,6 +495,10 @@ MaskEditor, place positive and negative points, and click Detect and Save.
 They compare the bridge's MASK with the real detector response, preserve paint
 and RGB through manual editing and redetection, and verify rotated snapshots,
 latent samples, downstream noise masks, and both native widget restoration modes.
+They cover an actual HTTP error followed by a UI retry, cancellation with a real
+response held across editing/tool changes/reopening, and legacy HTTP detection
+parity with snapshot inference, including release and re-preparation. Request
+coordinates are checked against the expected image pixels.
 They skip only when `IMPACT_E2E_SAM_IMAGE` is unset; missing models, the extension
 API or failed detection are test failures. Tests do not download models or
 change server configuration.

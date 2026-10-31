@@ -162,6 +162,11 @@ the server's configured model, a frontend exposing the MaskEditor tool API, and
 the SD1.5 VAE for latent coverage. See [SAM setup](../docs/SAM_MASK_EDITOR.md).
 `node --experimental-vm-modules --test tests/sam_mask_editor.test.mjs` verifies
 point controls, cancellation, stale results, failure/retry and API registration.
+`tests/test_sam_server.py` exercises actual HTTP handlers with a model double in
+isolated subprocesses, including concurrent requests and error recovery.
+`tests/test_preview_bridge_latent.py` checks restored mask propagation and input
+latent preservation. Run these with `tests/test_sam_editor.py` in the ComfyUI
+Python environment; [SAM setup](../docs/SAM_MASK_EDITOR.md) has the command.
 `node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks
 Vue store-only updates, awaited registration, retry after failure, and legacy
 workflow references without starting a server.

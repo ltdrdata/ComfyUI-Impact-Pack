@@ -58,9 +58,30 @@ async def sam_detect_snapshot(request):
     return web.Response(body=result, content_type="image/png")
 
 
-def async_prepare_sam(model_name, filename):
+def prepare_sam(data):
     with sam_lock:
-        global sam_predictor
+        global sam_predictor, last_prepare_data
+
+        if sam_predictor is not None and last_prepare_data == data:
+            return web.Response(status=200)
+
+        model_name = impact.config.get_config()['sam_editor_model'] if data['sam_model_name'] == 'auto' else 'sam_vit_b_01ec64.pth'
+        model_path = folder_paths.get_full_path("sams", model_name)
+        if model_path is None:
+            logging.error(f"[Impact Pack] The '{model_name}' model file cannot be found in any sams model path.")
+            return web.Response(status=400)
+
+        filename = data["filename"]
+        _, image_dir = folder_paths.annotated_filepath(filename)
+        if image_dir is None:
+            typ = data['type'] if data['type'] != '' else 'output'
+            if folder_paths.get_directory_by_type(typ) is None:
+                return web.Response(status=400)
+            filename = f"{os.path.join(data['subfolder'] or '', filename)} [{typ}]"
+        try:
+            folder_paths.get_annotated_filepath(filename)
+        except ValueError:
+            return web.Response(status=400)
 
         if 'vit_h' in model_name:
             model_kind = 'vit_h'
@@ -68,9 +89,6 @@ def async_prepare_sam(model_name, filename):
             model_kind = 'vit_l'
         else:
             model_kind = 'vit_b'
-
-        sam_model = sam_model_registry[model_kind](checkpoint=model_name)
-        sam_predictor = SamPredictor(sam_model)
 
         image = nodes.LoadImage().load_image(filename)[0]
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
@@ -80,71 +98,39 @@ def async_prepare_sam(model_name, filename):
         else:
             device = comfy.model_management.get_torch_device()
 
-        sam_predictor.model.to(device=device)
-        sam_predictor.set_image(image, "RGB")
-        sam_predictor.model.cpu()
+        sam_model = sam_model_registry[model_kind](checkpoint=model_path)
+        predictor = SamPredictor(sam_model)
+        try:
+            sam_model.to(device=device)
+            predictor.set_image(image, "RGB")
+        finally:
+            sam_model.cpu()
+        sam_predictor = predictor
+        last_prepare_data = data
+        return web.Response(status=200)
 
 
 @PromptServer.instance.routes.post("/sam/prepare")
 async def sam_prepare(request):
-    global sam_predictor
-    global last_prepare_data
     data = await request.json()
+    return await asyncio.to_thread(prepare_sam, data)
 
+
+def unload_sam():
+    global sam_predictor, last_prepare_data
     with sam_lock:
-        if last_prepare_data is not None and last_prepare_data == data:
-            # already loaded: skip -- prevent redundant loading
-            return web.Response(status=200)
-
-        model_name = 'sam_vit_b_01ec64.pth'
-        if data['sam_model_name'] == 'auto':
-            model_name = impact.config.get_config()['sam_editor_model']
-
-        model_path = folder_paths.get_full_path("sams", model_name)
-
-        if model_path is None:
-            logging.error(f"[Impact Pack] The '{model_name}' model file cannot be found in any sams model path.")
-            return web.Response(status=400)
-
-        logging.info(f"[Impact Pack] Loading SAM model '{model_path}'")
-
-        filename = data["filename"]
-        _, image_dir = folder_paths.annotated_filepath(filename)
-
-        if image_dir is None:
-            typ = data['type'] if data['type'] != '' else 'output'
-            if folder_paths.get_directory_by_type(typ) is None:
-                return web.Response(status=400)
-            filename = f"{os.path.join(data['subfolder'] or '', filename)} [{typ}]"
-
-        try:
-            folder_paths.get_annotated_filepath(filename)
-        except ValueError:
-            return web.Response(status=400)
-
-        last_prepare_data = data
-        thread = threading.Thread(target=async_prepare_sam, args=(model_path, filename,))
-        thread.start()
-
-        logging.info("[Impact Pack] SAM model loaded. ")
-    return web.Response(status=200)
+        sam_predictor = None
+        last_prepare_data = None
+    logging.info("[Impact Pack]: unloading SAM model")
 
 
 @PromptServer.instance.routes.post("/sam/release")
 async def release_sam(request):
-    global sam_predictor
-
-    with sam_lock:
-        temp = sam_predictor
-        del temp
-        sam_predictor = None
-
-    logging.info("[Impact Pack]: unloading SAM model")
+    await asyncio.to_thread(unload_sam)
+    return web.Response(status=200)
 
 
-@PromptServer.instance.routes.post("/sam/detect")
-async def sam_detect(request):
-    global sam_predictor
+def detect_prepared_sam(data):
     with sam_lock:
         if sam_predictor is not None:
             if impact.config.get_config()['sam_editor_cpu']:
@@ -152,9 +138,8 @@ async def sam_detect(request):
             else:
                 device = comfy.model_management.get_torch_device()
 
-            sam_predictor.model.to(device=device)
             try:
-                data = await request.json()
+                sam_predictor.model.to(device=device)
 
                 positive_points = data['positive_points']
                 negative_points = data['negative_points']
@@ -193,6 +178,12 @@ async def sam_detect(request):
 
         else:
             return web.Response(status=400)
+
+
+@PromptServer.instance.routes.post("/sam/detect")
+async def sam_detect(request):
+    data = await request.json()
+    return await asyncio.to_thread(detect_prepared_sam, data)
 
 
 @PromptServer.instance.routes.get("/impact/wildcards/refresh")

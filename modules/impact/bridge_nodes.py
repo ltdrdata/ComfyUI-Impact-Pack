@@ -413,6 +413,7 @@ class PreviewBridgeLatent:
 
             res_image = [path_item]
         else:
+            res_latent = latent
             decoded_image = decode_latent(latent, preview_method, vae_opt)
 
             if 'noise_mask' in latent:
@@ -454,6 +455,8 @@ class PreviewBridgeLatent:
                     mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
                     res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
                 else:
+                    res_latent = latent.copy()
+                    res_latent['noise_mask'] = mask
                     masked_images = utils.tensor_convert_rgba(decoded_image)
                     resized_mask = utils.resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
                     resized_mask = 1 - resized_mask
@@ -469,8 +472,6 @@ class PreviewBridgeLatent:
             core.preview_bridge_image_id_map[image] = (path, res_image[0])
             core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
             core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
-
-            res_latent = latent
 
         if block and is_empty_mask and core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
