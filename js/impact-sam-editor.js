@@ -6,6 +6,8 @@ const { ComfyDialog, $el } = window.comfyAPI?.ui ?? await import("../../scripts/
 function addClipspaceSamButton() {
 	if (!ComfyApp.clipspace?.imgs?.length) return;
 	const content = document.getElementById("clipspace_preview")?.closest(".comfy-modal-content");
+	const selector = content?.querySelector("#clipspace_img_selector");
+	if (selector) selector.value = String(ComfyApp.clipspace.selectedIndex);
 	if (!content || content.querySelector("#impact-sam-clipspace")) return;
 	const button = $el("button", {
 		id: "impact-sam-clipspace",

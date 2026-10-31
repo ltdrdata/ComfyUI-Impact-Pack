@@ -16,6 +16,7 @@ that setup does not extend the supported import scope.
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
+| `tests/test_sam_api.py` | Upload an image and send preparation requests over HTTP, without launching Chrome | Valid requests succeed before/after repeated invalid type/path rejection; rejected requests are not cached as successful |
 | `tests/e2e_tutorials.py` | Import the original Switch tutorial PNGs, change selection widgets, save and reimport JSON | Every selected branch and final output matches direct core-node image results; both selection modes retain the final preview |
 | `tests/e2e_regional.py` | Import the regional img2img tutorial and prepared variants, click Run | Exact color masks, output differs from a VAE roundtrip, each regional prompt affects its own region more than distant pixels, browser previews match server images |
 | `tests/e2e_conditionings.py` | Import conditioning and regional-prompt graphs, click Run, save and reimport through the file input | Combine/Concat results match core ComfyUI nodes; regional prompts retain both items in order; dynamic slots and links survive loading |
@@ -130,27 +131,32 @@ python -m pytest tests/test_e2e_legacy_sam.py -v
 
 Install the model configured by `sam_editor_model` on the isolated server.
 Detection tests skip when `IMPACT_E2E_SAM_IMAGE` is unset; named-restoration
-cases also skip on older frontends without that setting. Other native reloads
-use positional restoration on those frontends. The tests forward
+cases also skip on older frontends without that setting. Positional save/reload
+cases still run on those frontends. The tests forward
 the real detector response without substituting a mask, compare saved outputs
 and browser previews, and reload native exports in positional and named modes.
 The second edit starts from the first saved temporary image and checks that two
 clicks produce exactly one positive and one negative point. The separate menu
-test checks repeated opening and native loading without running detection.
+test checks repeated opening without running detection.
 Detection starts from both an uploaded input and a SaveImage output in a nested
-subfolder, with both native restoration modes. Event checks cover keyboard
+subfolder, with both native restoration modes. The output scenario creates a
+two-image batch through the UI and edits the second image. Saving must preserve
+the first image's URL and metadata, the selected index and its dropdown display.
+Native export/import checks are concentrated in these save scenarios.
+Event checks cover keyboard
 shortcuts, cancellation without changing the image widget, resizing and opening
-a different image. Invalid type/path requests are rejected twice, between valid
-preparation requests, so a rejected request cannot be cached as successful.
-No Vue MaskEditor extension API is required.
+a different image. No Vue MaskEditor extension API is required.
 
-For the frontend 1.42.15 / backend 0.19.3 compatibility comparison, select
-`-k 'not rejects_invalid'`. Those three API checks target the current backend's
-path resolver; the older-pair comparison exercises the legacy UI and image flow.
+Run `python -m pytest tests/test_sam_api.py -v` against the current backend for
+the three HTTP checks. These share one uploaded image and require the configured
+SAM model, but do not launch a browser. Invalid type/path requests are rejected
+twice between valid preparation requests, so rejection cannot be cached as
+success. The frontend 1.42.15 / backend 0.19.3 comparison runs only
+`tests/test_e2e_legacy_sam.py`; its older path resolver is outside these API checks.
 
 `node --experimental-vm-modules --test tests/legacy_sam.test.mjs` checks that
 resizing redraws only the current image after reopening and that mask upload
-sets the selected image reference without changing another image. It loads the shipped
+creates missing image metadata for core preview refresh. It loads the shipped
 SAM module with controlled UI exports and canvas/event objects, exercising both
 global UI exports and the dynamic UI-module fallback. This checks those import
 contracts; it does not substitute for browser testing an older frontend release.

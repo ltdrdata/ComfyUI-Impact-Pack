@@ -76,21 +76,14 @@ for (const legacyUI of [false, true]) {
   });
 }
 
-for (const selectedIndex of [0, 1]) {
-  test(`upload retains image references (selected ${selectedIndex}, metadata ${selectedIndex ? 'present' : 'absent'})`, async () => {
-    const { module, ComfyApp } = await loadSam();
-    const original = { filename: 'original.png', subfolder: '', type: 'input' };
-    const otherImage = { src: 'http://localhost/other.png' };
-    ComfyApp.clipspace = { selectedIndex, imgs: [otherImage, otherImage] };
-    if (selectedIndex) ComfyApp.clipspace.images = [original, original];
-    let refreshes = 0;
-    ComfyApp.clipspace_invalidate_handler = () => { refreshes++; };
-    const saved = { filename: 'saved.png', subfolder: '', type: 'temp' };
-    await module.namespace.uploadMask(saved, {});
-    assert.deepEqual(ComfyApp.clipspace.images?.[selectedIndex], saved,
-      'Saved image metadata is required when the core refreshes node previews');
-    assert.equal(ComfyApp.clipspace.imgs[1 - selectedIndex], otherImage);
-    if (selectedIndex) assert.equal(ComfyApp.clipspace.images[0], original);
-    assert.equal(refreshes, 1);
-  });
-}
+test('upload creates missing image metadata for core preview refresh', async () => {
+  const { module, ComfyApp } = await loadSam();
+  ComfyApp.clipspace = { selectedIndex: 0, imgs: [{ src: 'http://localhost/original.png' }] };
+  let refreshes = 0;
+  ComfyApp.clipspace_invalidate_handler = () => { refreshes++; };
+  const saved = { filename: 'saved.png', subfolder: '', type: 'temp' };
+  await module.namespace.uploadMask(saved, {});
+  assert.deepEqual(ComfyApp.clipspace.images?.[0], saved,
+    'Saved image metadata is required when the core refreshes node previews');
+  assert.equal(refreshes, 1);
+});

@@ -37,13 +37,17 @@ and Clipspace button without importing the removed `ClipspaceDialog` module.
 Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real
 detection, repeated saving/pasting, RGB preservation, and native workflow reload
 in both widget restoration modes, starting from input and nested output images.
+The output case edits the second image of a batch and preserves the other image
+and the Clipspace selection after saving.
 The suite also checks keyboard shortcuts, cancellation, resizing, changing the
-image, and repeated invalid-path rejection. Run
+image. Run `python3 -m pytest tests/test_sam_api.py -v` against the current backend
+for repeated invalid-path rejection between valid preparation requests. It uses
+HTTP without launching Chrome and requires the configured SAM model. Run
 `node --experimental-vm-modules --test tests/legacy_sam.test.mjs` for current-image
-resizing and saved image references with controlled browser objects, including
+resizing and missing image metadata with controlled browser objects, including
 global and fallback UI exports.
 Older frontends without named widget restoration skip the two named detection
-cases; their other native reloads use positional restoration.
+cases; their positional save/reload cases still run.
 With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
 also checks failure cleanup and JavaScript errors during artifact saving using
 intercepted browser requests, without a server.

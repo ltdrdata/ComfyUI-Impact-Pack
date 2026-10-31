@@ -80,6 +80,14 @@ def open_clipspace(browser):
     return content
 
 
+def clipspace_state(browser):
+    return browser.page.evaluate("""() => {
+        const state = window.comfyAPI.app.ComfyApp.clipspace;
+        return {selectedIndex: state.selectedIndex, images: state.images,
+                urls: state.imgs.map(image => image.src)};
+    }""")
+
+
 def widgets(browser):
     # SAM updates LoadImage. Output preview widgets are recreated only on execution.
     return browser.app.evaluate("""app => app.graph._nodes.filter(node => node.type === 'LoadImage').map(node => ({
@@ -138,8 +146,6 @@ def test_legacy_sam_context_menu_and_clipspace_reopen(ui):
         expect(browser.page.locator("#pointsCanvas")).to_be_visible()
         browser.page.get_by_role("button", name="Cancel", exact=True).click()
         content.get_by_role("button", name="Close", exact=True).click()
-    for named in ((False, True) if supports_named_restore(browser) else (False,)):
-        reload_native(browser, artifacts, named)
 
 
 def test_legacy_sam_keyboard_cancel_resize_and_change_image(ui):
@@ -183,32 +189,6 @@ def test_legacy_sam_keyboard_cancel_resize_and_change_image(ui):
             assert widgets(browser) == before, "Cancel changed the source image"
             browser.page.keyboard.press("-")
             expect(brush).to_have_css("background-color", "rgb(0, 0, 255)")
-        reload_native(browser, artifacts, path == second and supports_named_restore(browser))
-
-
-@pytest.mark.parametrize("invalid", [
-    {"type": "unknown"},
-    {"filename": "../outside.png"},
-    {"subfolder": "../../outside"},
-], ids=["unknown-type", "filename-escape", "subfolder-escape"])
-def test_legacy_sam_rejects_invalid_path_on_retry(ui, invalid):
-    browser, artifacts = ui
-    assert_sam_loaded(browser)
-    path = artifacts / "valid-source.png"
-    Image.new("RGB", (256, 256), (64, 128, 192)).save(path)
-    source = source_image(browser, path)
-    with browser.page.expect_response(lambda response: response.url.endswith("/sam/prepare")) as prepared:
-        node_menu(browser, source, "Open in SAM Detector")
-    assert prepared.value.status == 200, "Valid SAM preparation must succeed before testing rejection"
-    valid = prepared.value.request.post_data_json
-    browser.page.get_by_role("button", name="Cancel", exact=True).click()
-    data = dict(valid)
-    data.update(invalid)
-    for _ in range(2):
-        response = browser.page.request.post(f"{browser.base_url}/sam/prepare", data=data)
-        assert response.status == 400, "Rejected SAM preparation was cached as successful"
-    response = browser.page.request.post(f"{browser.base_url}/sam/prepare", data=valid)
-    assert response.status == 200, "Rejected paths prevented valid preparation"
 
 
 @pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"),
@@ -223,10 +203,20 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named, origin):
     source = source_image(browser, os.environ["IMPACT_E2E_SAM_IMAGE"])
     output_type, mask_type = ("PreviewImage", "SaveImage") if origin == "input" else ("SaveImage", "PreviewImage")
     titles = {"PreviewImage": "Preview Image", "SaveImage": "Save Image"}
-    output = browser.add_node(titles[output_type], output_type, 750, 200)
+    output = browser.add_node(titles[output_type], output_type,
+                              1350 if origin == "output_subfolder" else 750, 200)
     convert = browser.add_node("Convert Mask to Image", "MaskToImage", 220, 800)
     mask_output = browser.add_node(titles[mask_type], mask_type, 750, 800)
-    browser.connect("LoadImage", output_type)
+    if origin == "output_subfolder":
+        definition = browser.page.request.get(f"{browser.base_url}/object_info/RepeatImageBatch")
+        assert definition.ok
+        title = definition.json()["RepeatImageBatch"]["display_name"] or "RepeatImageBatch"
+        browser.add_node(title, "RepeatImageBatch", 750, 200)
+        browser.set_number("RepeatImageBatch", "amount", 2)
+        browser.connect("LoadImage", "RepeatImageBatch")
+        browser.connect("RepeatImageBatch", output_type)
+    else:
+        browser.connect("LoadImage", output_type)
     browser.page.mouse.move(*browser.point("LoadImage", slot=1))
     browser.page.mouse.down()
     browser.page.mouse.move(*browser.point("MaskToImage", is_input=True), steps=12)
@@ -257,10 +247,17 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named, origin):
             else:
                 node_menu(browser, output if index == 0 else source, "Copy (Clipspace)")
                 content = open_clipspace(browser)
+                if index == 0:
+                    content.locator("#clipspace_img_selector").select_option("1")
+                before = clipspace_state(browser)
+                if index == 0:
+                    assert len(before["urls"]) == 2
+                    assert before["selectedIndex"] == 1
                 content.get_by_role("button", name="Impact SAM Detector", exact=True).click()
         if index == 0 and origin == "output_subfolder":
             assert prepared.value.post_data_json["type"] == "output"
             assert prepared.value.post_data_json["subfolder"] == "impact-legacy-sam/nested"
+            assert prepared.value.post_data_json["filename"] == before["images"][1]["filename"]
         canvas = browser.page.locator("#pointsCanvas")
         expect(canvas).to_be_visible()
         save = browser.page.get_by_role("button", name="Save to node" if direct else "Save", exact=True)
@@ -290,8 +287,20 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named, origin):
             browser.page.wait_for_function("""() => {
                 const image = document.getElementById('clipspace_preview');
                 return image.complete && image.naturalWidth > 0 &&
-                    image.src === window.comfyAPI.app.ComfyApp.clipspace.imgs[0].src;
+                    image.src === window.comfyAPI.app.ComfyApp.clipspace.imgs[
+                        window.comfyAPI.app.ComfyApp.clipspace.selectedIndex].src;
             }""")
+            after = clipspace_state(browser)
+            selected = before["selectedIndex"]
+            assert after["selectedIndex"] == selected
+            expect(content.locator("#clipspace_img_selector")).to_have_value(str(selected))
+            assert len(after["urls"]) == len(before["urls"])
+            assert after["urls"][selected] != before["urls"][selected]
+            assert after["images"][selected]["type"] == "temp"
+            for other in range(len(before["urls"])):
+                if other != selected:
+                    assert after["urls"][other] == before["urls"][other]
+                    assert after["images"][other] == before["images"][other], "Save changed another image reference"
             expect(content.get_by_role("button", name="Impact SAM Detector", exact=True)).to_have_count(1)
             content.get_by_role("button", name="Close", exact=True).click()
             node_menu(browser, source, "Paste (Clipspace)")
