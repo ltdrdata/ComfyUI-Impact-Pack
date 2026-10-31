@@ -10,12 +10,13 @@ import hashlib
 import json
 
 from e2e_ui import browser_session, options
-from lora_source_case import ALIAS_SECTION, BASE, CHECKPOINT, FIRST_LABEL_SECTION, FIRST_SECTION, LAST_SECTIONS, LORAS, SAVED_LABEL, SAVED_SECTION
+from lora_source_case import ALIAS_SECTION, BASE, CHECKPOINT, FILENAMES, FIRST_LABEL_SECTION, FIRST_SECTION, LAST_SECTIONS, LORAS, SAVED_LABEL, SAVED_SECTION
 from test_e2e_widget_catalog import export_workflow, full_zoom, setting, show_node, widget_state
 
 
 REFERENCE_SECTIONS = [*LAST_SECTIONS, SAVED_SECTION, FIRST_LABEL_SECTION, ALIAS_SECTION]
 REFERENCE_NAMES = [*LORAS, SAVED_LABEL, LORAS[0], LORAS[0]]
+REFERENCE_FILENAMES = [*FILENAMES, "add_detail", "add_detail", "add_detail"]
 
 
 def workflow():
@@ -51,6 +52,7 @@ def workflow():
     actual = preview([source, 0], [source, 2])
     text = add("PreviewAny", source=[source, 3])
     names = add("PreviewAny", source=[source, 5])
+    filenames = add("PreviewAny", source=[source, 4])
     references = []
     for index, lora in enumerate([*LORAS, LORAS[0], LORAS[0], LORAS[0]]):
         base = add("LoraLoader", model=[checkpoint, 0], clip=[checkpoint, 1],
@@ -64,13 +66,13 @@ def workflow():
         references.append(preview([selected, 0], [conditioning, 0]))
     plain = encode([checkpoint, 1], LAST_SECTIONS[0])
     unpatched = preview([checkpoint, 0], [plain, 0])
-    return graph, source, actual, text, names, references, unpatched
+    return graph, source, actual, text, names, filenames, references, unpatched
 
 
 def main():
     args = options(__doc__)
     assert args.artifacts, "Pass --artifacts to retain the native workflow and results"
-    graph, source, actual, text, names, references, unpatched = workflow()
+    graph, source, actual, text, names, filenames, references, unpatched = workflow()
     results = []
     with browser_session(args) as ui:
         ui.page.keyboard.press("Escape")
@@ -98,6 +100,7 @@ def main():
             assert images[references[0]][0].tobytes() != images[unpatched][0].tobytes()
             assert entry["outputs"][text]["text"] == [FIRST_SECTION + " BREAK " + REFERENCE_SECTIONS[i] for i in expected]
             assert entry["outputs"][names]["text"] == [REFERENCE_NAMES[i] for i in expected]
+            assert entry["outputs"][filenames]["text"] == [REFERENCE_FILENAMES[i] for i in expected]
             hashes = [hashlib.sha256(image.tobytes()).hexdigest() for image in images[actual]]
             for i, image in enumerate(images[actual]):
                 image.save(args.artifacts / f"{label}-{i}.png")

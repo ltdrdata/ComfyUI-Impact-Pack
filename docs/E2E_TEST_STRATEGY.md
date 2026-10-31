@@ -71,6 +71,9 @@ restoration without inference. It delays real `/impact/get_items` responses so
 the default category arrives after the restored category. Python tests cover
 file containment, configured paths, parsing, loading/encoding calls, selection
 modes and preservation of existing wildcard results separately.
+The same native-loading cases also switch away and return to a category before
+its responses arrive. After selecting the second item from the newest response,
+an older response for that same category must preserve all saved widget values.
 
 ```bash
 IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
@@ -115,6 +118,22 @@ registration is substituted. It performs no sampling or browser actions:
 
 ```bash
 python tests/integration_lora_wildcard_tensors.py --comfy-root /path/to/ComfyUI
+```
+
+Both model checks assert the filename output as well as the selection label;
+the Chrome graph connects both string outputs to core PreviewAny nodes. Unit
+tests separately cover path separators, reserved filename characters and the
+empty-name fallback.
+
+The input-validation integration check runs on CPU and needs ComfyUI but no
+model files or running server. It calls the real core validator with a
+substituted MODEL/CLIP input provider and unused route registration. Valid modes,
+numeric boundaries, category aliases and saved choices pass; invalid literal
+modes, numeric ranges/types and incompatible links fail with the corresponding
+input-specific error.
+
+```bash
+python tests/integration_lora_wildcard_validation.py --comfy-root /path/to/ComfyUI
 ```
 
 The model samples also include a negative-weight row before two original rows

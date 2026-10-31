@@ -63,7 +63,8 @@ records must remain unchanged; see [the repository rules](../AGENTS.md).
 
 `node --test tests/lora_wildcard_source.test.mjs` checks dependent dropdown
 request ordering, saved selections, query encoding and isolation from existing
-nodes. `tests/test_e2e_lora_wildcard_source.py` verifies the same saved-value
+nodes, including returning to a category while its older response is pending.
+`tests/test_e2e_lora_wildcard_source.py` verifies the same saved-value
 contract through Chrome search, editing, native Export and file import in both
 restoration modes. Configure its isolated server with
 `tests/wildcards/lora_samples`; see the E2E guide.
@@ -72,7 +73,7 @@ restoration modes. Configure its isolated server with
 checks all four modes and native workflow reload against core LoRA/CLIP/sampler
 nodes using real SD1.5 models. Configure the isolated server with
 `tests/wildcards/model_samples` and the models listed in the script docstring.
-It compares every output pixel, output text, list length and entry order;
+It compares every output pixel, output text, filename, list length and entry order;
 browser previews must also match server images. A saved duplicate label must
 still select its original row after syntax expansion and native reload in both
 restoration modes. Mixed-syntax random/sequential/batch workflows also retain
@@ -87,6 +88,13 @@ and weight with core nodes under ComfyUI's default model-loading settings.
 It also checks populated/empty-category punctuation and BREAK conditioning and verifies
 that the input models retain no patches. Only unused HTTP route registration
 is substituted; model operations are real.
+
+`python3 tests/integration_lora_wildcard_validation.py --comfy-root /path/to/ComfyUI`
+uses the real ComfyUI input validator on CPU without loading models. Dynamic
+category aliases and saved choices remain accepted; invalid literal modes and numbers,
+invalid numeric strings and incompatible links are rejected with the expected
+input-specific error. Only the MODEL/CLIP input provider and unused HTTP route
+registration are substituted. Run separately from the stubbed unit tests.
 
 ## Test Suites
 

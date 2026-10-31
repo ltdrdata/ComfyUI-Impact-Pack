@@ -65,3 +65,24 @@ def test_category_response_cannot_overwrite_native_saved_values(tmp_path, restor
         assert widget_state(ui, node_id) == before
         assert ui.app.evaluate("""app => Array.from(app.graph._nodes.find(n => n.type === 'LoraWildcardSource')
             .widgets.find(w => w.name === 'lora_wildcard').options.values)""") == ["Ink first", "Ink second"]
+
+        # Returning to the same category needs request ordering as well as a
+        # category comparison. An older 'ink' response must not reset a choice
+        # made after the newest response, even when both contain the same items.
+        pending.clear()
+        for category in ("aaa", "ink", "aaa", "ink"):
+            with page.expect_request(f"**/impact/get_items?category={category}"):
+                ui.choose("LoraWildcardSource", "category", category)
+        rendered(ui)
+        assert [parse_qs(urlsplit(route.request.url).query)["category"][0] for route in pending] == [
+            "aaa", "ink", "aaa", "ink",
+        ]
+        for index in (3, 1, 2, 0):
+            route = pending[index]
+            with page.expect_response(lambda response: response.url == route.request.url) as received:
+                route.fulfill(response=route.fetch())
+            received.value.finished()
+            rendered(ui)
+            if index == 3:
+                ui.choose("LoraWildcardSource", "lora_wildcard", "Ink second")
+        assert widget_state(ui, node_id) == before

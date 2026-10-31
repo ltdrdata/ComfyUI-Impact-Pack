@@ -181,6 +181,24 @@ def test_existing_primary_tag_keeps_its_label_and_strength(source, model_calls):
     assert result[4] == ["A"]
 
 
+@pytest.mark.parametrize("name,filename", [
+    ("sub/My LoRA", "My_LoRA"),
+    (r"sub\My LoRA", "My_LoRA"),
+    ("sub/[My], LoRA?", "My_LoRA"),
+    ("sub/[]", "no_lora"),
+])
+def test_filename_output_is_cleaned_without_changing_selection(source, model_calls, monkeypatch, name, filename):
+    import folder_paths
+
+    module, custom = source
+    monkeypatch.setattr(folder_paths, "get_filename_list", lambda kind: [name + ".safetensors"])
+    (custom / "styles.txt").write_text(f"portrait, <lora:{name}:0.7>")
+    result = build(module, lora_wildcard=name)
+    assert result[4] == [filename]
+    assert result[5] == [name]
+    assert model_calls == [(name + ".safetensors", 0.8, 0.8)]
+
+
 def test_new_names_cannot_reuse_saved_duplicate_labels(source, model_calls):
     module, custom = source
     (custom / "styles.txt").write_text(

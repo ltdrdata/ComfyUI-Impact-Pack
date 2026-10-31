@@ -237,7 +237,9 @@ class LoraWildcardSource:
                    "The node automatically applies the LoRAs and encodes the prompt.")
 
     @classmethod
-    def VALIDATE_INPUTS(cls, **kwargs):
+    def VALIDATE_INPUTS(cls, category, lora_wildcard):
+        # Dynamic choices may differ from INPUT_TYPES' initial directory scan.
+        # Leave mode and numeric constraints to ComfyUI's standard validation.
         return True
 
     def build(self, model, clip, category, lora_wildcard, mode, strength, base_prompt, seed):

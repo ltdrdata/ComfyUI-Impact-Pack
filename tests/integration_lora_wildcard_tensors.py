@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 import torch
 
-from lora_source_case import BASE, CHECKPOINT, FIRST_SECTION, LAST_SECTIONS, LORAS
+from lora_source_case import BASE, CHECKPOINT, FILENAMES, FIRST_SECTION, LAST_SECTIONS, LORAS
 
 
 def assert_lora_patches_equal(actual, expected):
@@ -47,6 +47,8 @@ def main():
         model, clip, vae = nodes.CheckpointLoaderSimple().load_checkpoint(CHECKPOINT)
         result = wildcard_source.LoraWildcardSource().build(model, clip, "models", LORAS[0], "batch", 0.6, BASE, 1)
         assert [len(output) for output in result] == [2] * 6
+        assert result[4] == FILENAMES
+        assert result[5] == LORAS
         for index, last in enumerate(LAST_SECTIONS):
             reference_model, reference_clip = nodes.LoraLoader().load_lora(
                 model, clip, LORAS[0] + ".safetensors", 0.1, 0.2)
@@ -71,6 +73,7 @@ def main():
                 model, clip, "absent", LORAS[0], "fixed", 0.6, prompt, 1)
             assert plain[0][0] is model and plain[1][0] is clip
             assert plain[3] == [prompt]
+            assert plain[4:] == (["no_lora"], ["no_absent"])
             expected = nodes.CLIPTextEncode().encode(clip, sections[0])[0]
             for section in sections[1:]:
                 encoded = nodes.CLIPTextEncode().encode(clip, section)[0]
@@ -85,6 +88,7 @@ def main():
         expected = nodes.CLIPTextEncode().encode(reference_clip, "base,, saved first")[0]
         torch.testing.assert_close(punctuation[2][0], expected, rtol=0, atol=0)
         assert punctuation[3] == ["base,, saved first"]
+        assert punctuation[4:] == (["add_detail"], [LORAS[0]])
         assert_lora_patches_equal(punctuation[0][0].patches, reference_model.patches)
         assert_lora_patches_equal(punctuation[1][0].patcher.patches, reference_clip.patcher.patches)
         print("PASS: populated category, original punctuation conditioning and all LoRA patches", flush=True)

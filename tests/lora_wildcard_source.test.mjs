@@ -47,6 +47,21 @@ test('only the latest category response can update the dropdown', async () => {
     assert.deepEqual(Array.from(wildcard.options.values), ['C']);
 });
 
+test('returning to a category rejects its older response after a new selection', async () => {
+    const { category, wildcard, reply } = setup();
+    await reply(0, ['A']);
+    for (const value of ['saved', 'other', 'saved']) {
+        category.value = value;
+        category.callback(value);
+    }
+    await reply(3, ['Saved first', 'Saved second']);
+    wildcard.value = 'Saved second';
+    await reply(1, ['Saved first', 'Saved second']);
+    await reply(2, ['Other']);
+    assert.equal(wildcard.value, 'Saved second');
+    assert.deepEqual(Array.from(wildcard.options.values), ['Saved first', 'Saved second']);
+});
+
 test('missing saved choices survive restoration for backend validation', async () => {
     const { category, wildcard, node, reply } = setup();
     await reply(0, ['A']);
