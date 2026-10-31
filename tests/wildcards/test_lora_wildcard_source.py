@@ -32,6 +32,7 @@ def test_shipped_examples_preserve_existing_wildcard_results(tmp_path, monkeypat
         monkeypatch.setattr(wildcards, name, {})
     monkeypatch.setattr(wildcards, "_on_demand_mode", False)
     wildcards.wildcard_load()
+    assert wildcards._on_demand_mode == (cache_limit == 0)
     before = wildcards.process("portrait, __styles__", seed=42)
     shutil.copytree(ROOT / "custom_wildcards", custom, dirs_exist_ok=True)
     wildcards.wildcard_load()
@@ -81,10 +82,7 @@ def model_calls(monkeypatch):
     monkeypatch.setattr(nodes, "LoraLoader", Loader, raising=False)
     monkeypatch.setattr(nodes, "CLIPTextEncode", Encoder, raising=False)
     monkeypatch.setattr(nodes, "ConditioningConcat", Concat, raising=False)
-    monkeypatch.setattr(nodes, "NODE_CLASS_MAPPINGS", {}, raising=False)
     monkeypatch.setattr(folder_paths, "get_filename_list", lambda kind: [f"{name}.safetensors" for name in ("A", "B", "Base")], raising=False)
-    monkeypatch.setattr(folder_paths, "get_full_path", lambda kind, name: "/models/loras/" + name, raising=False)
-    monkeypatch.setattr(folder_paths, "supported_pt_extensions", {".safetensors", ".pt", ".ckpt"}, raising=False)
     return calls
 
 
@@ -122,9 +120,8 @@ def test_full_entry_and_extra_loras_survive_encoding(source, model_calls):
     (custom / "styles.txt").write_text("portrait, <lora:A:0.7>, __color__, <lora:B:-0.3:0.4> BREAK landscape")
     result = build(module, base_prompt="base, <lora:Base:0.2:0.3>")
     assert model_calls == [("Base.safetensors", 0.2, 0.3), ("A.safetensors", 0.8, 0.8), ("B.safetensors", -0.3, 0.4)]
-    assert all(word in result[3][0] for word in ("portrait", "__color__", "landscape"))
-    assert "<lora:" not in result[3][0]
-    assert len(result[2][0]) == 2
+    assert result[3] == ["base, portrait, __color__, BREAK landscape"]
+    assert result[2] == [["base, portrait, __color__,", "landscape"]]
 
 
 def test_simple_entry_keeps_original_clean_text_and_conditioning(source, model_calls):
@@ -168,18 +165,24 @@ def test_category_cannot_read_outside_configured_directory(source, tmp_path, kin
     assert model_calls == []
 
 
-def test_category_decoding_matches_existing_wildcard_loader(source):
+def test_category_decoding_matches_existing_wildcard_loader(source, model_calls):
     module, custom = source
     (custom / "styles.txt").write_bytes(b"caf\xe9, <lora:A:1>\n")
     assert items(module, "styles") == ["A"]
+    result = build(module)
+    assert result[3] == ["base, café"]
+    assert result[2] == [["base, café"]]
 
 
-@pytest.mark.parametrize("mode,expected", [("fixed", ["B"]), ("sequential", ["B"]), ("random", ["A"]), ("batch", ["A", "B"])])
-def test_modes_are_deterministic_and_keep_models_separate(source, model_calls, mode, expected):
+@pytest.mark.parametrize("mode,seed,expected", [
+    ("fixed", 0, ["B"]), ("sequential", 1, ["B"]), ("sequential", 2, ["A"]),
+    ("random", 0, ["B"]), ("random", 1, ["A"]), ("batch", 1, ["A", "B"]),
+])
+def test_modes_are_deterministic_and_keep_models_separate(source, model_calls, mode, seed, expected):
     module, custom = source
     (custom / "styles.txt").write_text("first, <lora:A:1>\nsecond, <lora:B:1>\n")
     state = random.getstate()
-    result = build(module, mode=mode, lora_wildcard="B", seed=1)
+    result = build(module, mode=mode, lora_wildcard="B", seed=seed)
     assert result[5] == expected
     assert result[0] == [(name + ".safetensors",) for name in expected]
     assert result[1] == result[0]

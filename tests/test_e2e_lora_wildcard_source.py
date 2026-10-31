@@ -58,10 +58,10 @@ def test_category_response_cannot_overwrite_native_saved_values(tmp_path, restor
         # completes last and must not change names, order, values or options.
         for category in ("ink", "aaa"):
             route = categories[category]
-            with page.expect_response(lambda response: response.url == route.request.url):
+            with page.expect_response(lambda response: response.url == route.request.url) as received:
                 route.fulfill(response=route.fetch())
+            received.value.finished()
             rendered(ui)
-        page.wait_for_timeout(200)
         assert widget_state(ui, node_id) == before
         assert ui.app.evaluate("""app => Array.from(app.graph._nodes.find(n => n.type === 'LoraWildcardSource')
             .widgets.find(w => w.name === 'lora_wildcard').options.values)""") == ["Ink first", "Ink second"]

@@ -10,13 +10,8 @@ import hashlib
 import json
 
 from e2e_ui import browser_session, options
+from lora_source_case import BASE, CHECKPOINT, FIRST_SECTION, LAST_SECTIONS, LORAS
 from test_e2e_widget_catalog import export_workflow, full_zoom, show_node, widget_state
-
-
-LORAS = ["SD1.5/etc/add_detail", "SD1.5/etc/detailmaker"]
-BASE = "a {red|blue} flower, __color__, <lora: SD1.5/etc/add_detail : +1e-1 : 2e-1> BREAK garden"
-FIRST_SECTION = "a {red|blue} flower, __color__,"
-LAST_SECTIONS = ["garden, petals, dew", "garden, leaves, mist"]
 
 
 def workflow():
@@ -27,16 +22,17 @@ def workflow():
         graph[node_id] = {"class_type": kind, "inputs": inputs}
         return node_id
 
-    checkpoint = add("CheckpointLoaderSimple", ckpt_name="v1-5-pruned-emaonly-fp16.safetensors")
+    checkpoint = add("CheckpointLoaderSimple", ckpt_name=CHECKPOINT)
     negative = add("CLIPTextEncode", clip=[checkpoint, 1], text="")
     latent = add("EmptyLatentImage", width=128, height=128, batch_size=1)
+    seed = add("PrimitiveInt", value=12345)
     # A linked string bypasses CLIPTextEncode's frontend dynamic-prompt widget.
     # The reference must receive the same literal text as the source node.
     literal = add("PrimitiveString", value=FIRST_SECTION)
 
     def preview(model, conditioning):
         sampled = add("KSampler", model=model, positive=conditioning, negative=[negative, 0],
-                      latent_image=[latent, 0], seed=12345, steps=4, cfg=7.0,
+                      latent_image=[latent, 0], seed=[seed, 0], steps=4, cfg=7.0,
                       sampler_name="euler", scheduler="normal", denoise=1.0)
         decoded = add("VAEDecode", samples=[sampled, 0], vae=[checkpoint, 2])
         return add("PreviewImage", images=[decoded, 0])
@@ -78,18 +74,6 @@ def main():
         ui.load_workflow({"name": "lora-inference-api.json", "mimeType": "application/json",
                           "buffer": json.dumps(graph).encode()}, len(graph))
         full_zoom(ui)
-        for node_id, node in graph.items():
-            if node["class_type"] != "KSampler":
-                continue
-            show_node(ui, node_id)
-            point = ui.app.evaluate("""(app, id) => {
-                const node = app.graph.getNodeById(id);
-                const widget = node.widgets.find(w => w.name === 'control_after_generate');
-                return app.canvasPosToClientPos([node.pos[0] + node.size[0] / 2,
-                                                node.pos[1] + widget.last_y + 10]);
-            }""", node_id)
-            ui.page.mouse.click(*point)
-            ui.page.get_by_role("menuitem", name="fixed", exact=True).click()
         show_node(ui, source)
         ui.choose("LoraWildcardSource", "control_after_generate", "fixed")
         before = widget_state(ui, source)

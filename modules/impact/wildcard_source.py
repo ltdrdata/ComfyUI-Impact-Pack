@@ -28,10 +28,12 @@ def parse_linhas_wildcard(caminho):
     entries = []
     counts = {}
     for line in wildcards.load_txt_wildcard(caminho):
-        loras, _ = extrair_e_limpar_loras(line)
-        if not loras or not loras[0][0]:
+        match = _LORA_RE.search(line)
+        if match is None:
             continue
-        name = loras[0][0].strip()
+        name = match.group(1).split(":", 1)[0].strip()
+        if not name:
+            continue
         count = counts.get(name, 0)
         label = f"{name} ({count})" if count else name
         counts[name] = count + 1
@@ -55,12 +57,6 @@ def entry_with_strength(entry, strength):
         name = match.group(1).split(":", 1)[0].strip()
         return f"<lora:{name}:{strength}:{strength}>"
     return _LORA_RE.sub(replace, entry, count=1)
-
-
-def nome_arquivo_limpo(nome, fallback="no_lora"):
-    name = nome.replace("\\", "/").split("/")[-1]
-    name = re.sub(r'[<>:"/\\|?*\[\],]', "", name)
-    return re.sub(r"\s+", "_", name).strip("_") or fallback
 
 
 def resolver_caminho_lora(nome):
@@ -90,6 +86,8 @@ def resolver_caminho_lora(nome):
 def extrair_e_limpar_loras(prompt):
     """Scans the prompt for <lora:NAME:weight> or <lora:NAME:model_w:clip_w> tags,
     returning the list of LoRAs to load and cleaning the tags from the text."""
+    # The shared wildcard parser deduplicates tags and accepts different weights.
+    # Keep this node's original repeated-tag and float() semantics.
     if not prompt:
         return [], ""
 
@@ -159,6 +157,14 @@ def aplicar_loras_e_codificar(model, clip, loras_a_aplicar, prompt_limpo):
             result_conditioning = cond
 
     return model, clip, result_conditioning
+
+
+def nome_arquivo_limpo(nome, fallback="no_lora"):
+    """Cleans and formats the LoRA filename for safe usage in image saving prefixes."""
+    n = nome.replace("\\", "/").split("/")[-1]
+    n = re.sub(r'[<>:"/\\|?*\[\],]', "", n)
+    n = re.sub(r"\s+", "_", n).strip("_")
+    return n or fallback
 
 
 @PromptServer.instance.routes.get("/impact/get_items")
