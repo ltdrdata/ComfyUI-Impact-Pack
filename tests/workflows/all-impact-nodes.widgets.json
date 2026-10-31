@@ -1,0 +1,3974 @@
+{
+  "frontend_version": "1.57.6",
+  "created_via": "Chrome node search and native workflow Export",
+  "nodes": [
+    {
+      "id": "1",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam2.1_hiera_base_plus.pt"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "type": "CLIPSegDetectorProvider",
+      "widgets": [
+        {
+          "name": "text",
+          "value": ""
+        },
+        {
+          "name": "blur",
+          "value": 7
+        },
+        {
+          "name": "threshold",
+          "value": 0.4
+        },
+        {
+          "name": "dilation_factor",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "type": "ONNXDetectorProvider",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "best.onnx"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "type": "BitwiseAndMaskForEach",
+      "widgets": []
+    },
+    {
+      "id": "5",
+      "type": "SubtractMaskForEach",
+      "widgets": []
+    },
+    {
+      "id": "6",
+      "type": "DetailerForEach",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "type": "DetailerForEachAutoRetry",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "max_retries",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "type": "DetailerForEachDebug",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "type": "DetailerForEachPipe",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "type": "DetailerForEachDebugPipe",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "type": "DetailerForEachPipeForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        },
+        {
+          "name": "threshold",
+          "value": 0.93
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "type": "SAMDetectorSegmented",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        },
+        {
+          "name": "threshold",
+          "value": 0.93
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "type": "FaceDetailer",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 768
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1536
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "heun"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 10
+        },
+        {
+          "name": "bbox_crop_factor",
+          "value": 3
+        },
+        {
+          "name": "sam_detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "sam_dilation",
+          "value": 0
+        },
+        {
+          "name": "sam_threshold",
+          "value": 0.93
+        },
+        {
+          "name": "sam_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "sam_mask_hint_use_negative",
+          "value": "False"
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "type": "FaceDetailerPipe",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 10
+        },
+        {
+          "name": "bbox_crop_factor",
+          "value": 3
+        },
+        {
+          "name": "sam_detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "sam_dilation",
+          "value": 0
+        },
+        {
+          "name": "sam_threshold",
+          "value": 0.93
+        },
+        {
+          "name": "sam_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "sam_mask_hint_use_negative",
+          "value": "False"
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "tiled_encode",
+          "value": false
+        },
+        {
+          "name": "tiled_decode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "type": "MaskDetailerPipe",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "mask_mode",
+          "value": true
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "batch_size",
+          "value": 1
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "contour_fill",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "type": "ToDetailerPipe",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "type": "ToDetailerPipeSDXL",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "type": "FromDetailerPipe",
+      "widgets": []
+    },
+    {
+      "id": "20",
+      "type": "FromDetailerPipe_v2",
+      "widgets": []
+    },
+    {
+      "id": "21",
+      "type": "FromDetailerPipeSDXL",
+      "widgets": []
+    },
+    {
+      "id": "22",
+      "type": "AnyPipeToBasic",
+      "widgets": []
+    },
+    {
+      "id": "23",
+      "type": "ToBasicPipe",
+      "widgets": []
+    },
+    {
+      "id": "24",
+      "type": "FromBasicPipe",
+      "widgets": []
+    },
+    {
+      "id": "25",
+      "type": "FromBasicPipe_v2",
+      "widgets": []
+    },
+    {
+      "id": "26",
+      "type": "BasicPipeToDetailerPipe",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "type": "BasicPipeToDetailerPipeSDXL",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "type": "DetailerPipeToBasicPipe",
+      "widgets": []
+    },
+    {
+      "id": "29",
+      "type": "EditBasicPipe",
+      "widgets": []
+    },
+    {
+      "id": "30",
+      "type": "EditDetailerPipe",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "type": "EditDetailerPipeSDXL",
+      "widgets": [
+        {
+          "name": "wildcard",
+          "value": ""
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "32",
+      "type": "LatentPixelScale",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "scale_factor",
+          "value": 1.5
+        },
+        {
+          "name": "use_tiled_vae",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "33",
+      "type": "PixelKSampleUpscalerProvider",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "use_tiled_vae",
+          "value": false
+        },
+        {
+          "name": "tile_size",
+          "value": 512
+        }
+      ]
+    },
+    {
+      "id": "34",
+      "type": "PixelKSampleUpscalerProviderPipe",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "use_tiled_vae",
+          "value": false
+        },
+        {
+          "name": "tile_size",
+          "value": 512
+        },
+        {
+          "name": "tile_cnet_strength",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "35",
+      "type": "IterativeLatentUpscale",
+      "widgets": [
+        {
+          "name": "upscale_factor",
+          "value": 1.5
+        },
+        {
+          "name": "steps",
+          "value": 3
+        },
+        {
+          "name": "temp_prefix",
+          "value": ""
+        },
+        {
+          "name": "step_mode",
+          "value": "simple"
+        },
+        {
+          "name": "vae_compression",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "id": "36",
+      "type": "IterativeImageUpscale",
+      "widgets": [
+        {
+          "name": "upscale_factor",
+          "value": 1.5
+        },
+        {
+          "name": "steps",
+          "value": 3
+        },
+        {
+          "name": "temp_prefix",
+          "value": ""
+        },
+        {
+          "name": "step_mode",
+          "value": "simple"
+        },
+        {
+          "name": "vae_compression",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "id": "37",
+      "type": "PixelTiledKSampleUpscalerProvider",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "tile_width",
+          "value": 512
+        },
+        {
+          "name": "tile_height",
+          "value": 512
+        },
+        {
+          "name": "tiling_strategy",
+          "value": "random"
+        },
+        {
+          "name": "tile_cnet_strength",
+          "value": 1
+        },
+        {
+          "name": "overlap",
+          "value": 64
+        }
+      ]
+    },
+    {
+      "id": "38",
+      "type": "PixelTiledKSampleUpscalerProviderPipe",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "tile_width",
+          "value": 512
+        },
+        {
+          "name": "tile_height",
+          "value": 512
+        },
+        {
+          "name": "tiling_strategy",
+          "value": "random"
+        },
+        {
+          "name": "tile_cnet_strength",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "39",
+      "type": "TwoSamplersForMaskUpscalerProvider",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "full_sample_schedule",
+          "value": "none"
+        },
+        {
+          "name": "use_tiled_vae",
+          "value": false
+        },
+        {
+          "name": "tile_size",
+          "value": 512
+        }
+      ]
+    },
+    {
+      "id": "40",
+      "type": "TwoSamplersForMaskUpscalerProviderPipe",
+      "widgets": [
+        {
+          "name": "scale_method",
+          "value": "nearest-exact"
+        },
+        {
+          "name": "full_sample_schedule",
+          "value": "none"
+        },
+        {
+          "name": "use_tiled_vae",
+          "value": false
+        },
+        {
+          "name": "tile_size",
+          "value": 512
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "type": "PixelKSampleHookCombine",
+      "widgets": []
+    },
+    {
+      "id": "42",
+      "type": "DenoiseScheduleHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_iteration",
+          "value": "simple"
+        },
+        {
+          "name": "target_denoise",
+          "value": 0.2
+        }
+      ]
+    },
+    {
+      "id": "43",
+      "type": "StepsScheduleHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_iteration",
+          "value": "simple"
+        },
+        {
+          "name": "target_steps",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "44",
+      "type": "CfgScheduleHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_iteration",
+          "value": "simple"
+        },
+        {
+          "name": "target_cfg",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "45",
+      "type": "NoiseInjectionHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_iteration",
+          "value": "simple"
+        },
+        {
+          "name": "source",
+          "value": "CPU"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "start_strength",
+          "value": 1
+        },
+        {
+          "name": "end_strength",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "46",
+      "type": "UnsamplerHookProvider",
+      "widgets": [
+        {
+          "name": "steps",
+          "value": 25
+        },
+        {
+          "name": "start_end_at_step",
+          "value": 21
+        },
+        {
+          "name": "end_end_at_step",
+          "value": 24
+        },
+        {
+          "name": "cfg",
+          "value": 1
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "normalize",
+          "value": "disable"
+        },
+        {
+          "name": "schedule_for_iteration",
+          "value": "simple"
+        }
+      ]
+    },
+    {
+      "id": "47",
+      "type": "CoreMLDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "mode",
+          "value": "512x512"
+        }
+      ]
+    },
+    {
+      "id": "48",
+      "type": "PreviewDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "quality",
+          "value": 95
+        }
+      ]
+    },
+    {
+      "id": "49",
+      "type": "BlackPatchRetryHookProvider",
+      "widgets": [
+        {
+          "name": "mean_thresh",
+          "value": 10
+        },
+        {
+          "name": "var_thresh",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "id": "50",
+      "type": "CustomSamplerDetailerHookProvider",
+      "widgets": []
+    },
+    {
+      "id": "51",
+      "type": "LamaRemoverDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "mask_threshold",
+          "value": 250
+        },
+        {
+          "name": "gaussblur_radius",
+          "value": 8
+        },
+        {
+          "name": "skip_sampling",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "52",
+      "type": "DetailerHookCombine",
+      "widgets": []
+    },
+    {
+      "id": "53",
+      "type": "NoiseInjectionDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_cycle",
+          "value": "skip_start"
+        },
+        {
+          "name": "source",
+          "value": "CPU"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "start_strength",
+          "value": 2
+        },
+        {
+          "name": "end_strength",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "54",
+      "type": "UnsamplerDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "steps",
+          "value": 25
+        },
+        {
+          "name": "start_end_at_step",
+          "value": 21
+        },
+        {
+          "name": "end_end_at_step",
+          "value": 24
+        },
+        {
+          "name": "cfg",
+          "value": 1
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "normalize",
+          "value": "disable"
+        },
+        {
+          "name": "schedule_for_cycle",
+          "value": "skip_start"
+        }
+      ]
+    },
+    {
+      "id": "55",
+      "type": "DenoiseSchedulerDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "schedule_for_cycle",
+          "value": "simple"
+        },
+        {
+          "name": "target_denoise",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "id": "56",
+      "type": "SEGSOrderedFilterDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "target",
+          "value": "area(=w*h)"
+        },
+        {
+          "name": "order",
+          "value": true
+        },
+        {
+          "name": "take_start",
+          "value": 0
+        },
+        {
+          "name": "take_count",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "57",
+      "type": "SEGSRangeFilterDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "target",
+          "value": "area(=w*h)"
+        },
+        {
+          "name": "mode",
+          "value": true
+        },
+        {
+          "name": "min_value",
+          "value": 0
+        },
+        {
+          "name": "max_value",
+          "value": 67108864
+        }
+      ]
+    },
+    {
+      "id": "58",
+      "type": "SEGSLabelFilterDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "preset",
+          "value": "all"
+        },
+        {
+          "name": "labels",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "59",
+      "type": "VariationNoiseDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "strength",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "60",
+      "type": "BitwiseAndMask",
+      "widgets": []
+    },
+    {
+      "id": "61",
+      "type": "SubtractMask",
+      "widgets": []
+    },
+    {
+      "id": "62",
+      "type": "AddMask",
+      "widgets": []
+    },
+    {
+      "id": "63",
+      "type": "MaskRectArea",
+      "widgets": [
+        {
+          "name": "x",
+          "value": 0
+        },
+        {
+          "name": "y",
+          "value": 0
+        },
+        {
+          "name": "width",
+          "value": 50
+        },
+        {
+          "name": "height",
+          "value": 50
+        },
+        {
+          "name": "blur_radius",
+          "value": 0
+        },
+        {
+          "name": "mask-rect-area-canvas",
+          "value": null
+        }
+      ]
+    },
+    {
+      "id": "64",
+      "type": "MaskRectAreaAdvanced",
+      "widgets": [
+        {
+          "name": "x",
+          "value": 0
+        },
+        {
+          "name": "y",
+          "value": 0
+        },
+        {
+          "name": "width",
+          "value": 256
+        },
+        {
+          "name": "height",
+          "value": 256
+        },
+        {
+          "name": "image_width",
+          "value": 512
+        },
+        {
+          "name": "image_height",
+          "value": 512
+        },
+        {
+          "name": "blur_radius",
+          "value": 0
+        },
+        {
+          "name": "mask-rect-area-canvas",
+          "value": null
+        }
+      ]
+    },
+    {
+      "id": "65",
+      "type": "ImpactSegsAndMask",
+      "widgets": []
+    },
+    {
+      "id": "66",
+      "type": "ImpactSegsAndMaskForEach",
+      "widgets": []
+    },
+    {
+      "id": "67",
+      "type": "EmptySegs",
+      "widgets": []
+    },
+    {
+      "id": "68",
+      "type": "ImpactFlattenMask",
+      "widgets": []
+    },
+    {
+      "id": "69",
+      "type": "MediaPipeFaceMeshToSEGS",
+      "widgets": [
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "crop_min_size",
+          "value": 50
+        },
+        {
+          "name": "drop_size",
+          "value": 1
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        },
+        {
+          "name": "face",
+          "value": true
+        },
+        {
+          "name": "mouth",
+          "value": false
+        },
+        {
+          "name": "left_eyebrow",
+          "value": false
+        },
+        {
+          "name": "left_eye",
+          "value": false
+        },
+        {
+          "name": "left_pupil",
+          "value": false
+        },
+        {
+          "name": "right_eyebrow",
+          "value": false
+        },
+        {
+          "name": "right_eye",
+          "value": false
+        },
+        {
+          "name": "right_pupil",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "70",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "71",
+      "type": "MaskToSEGS_for_AnimateDiff",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "72",
+      "type": "ToBinaryMask",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "73",
+      "type": "MasksToMaskList",
+      "widgets": []
+    },
+    {
+      "id": "74",
+      "type": "MaskListToMaskBatch",
+      "widgets": []
+    },
+    {
+      "id": "75",
+      "type": "ImageListToImageBatch",
+      "widgets": []
+    },
+    {
+      "id": "76",
+      "type": "SetDefaultImageForSEGS",
+      "widgets": [
+        {
+          "name": "override",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "77",
+      "type": "RemoveImageFromSEGS",
+      "widgets": []
+    },
+    {
+      "id": "78",
+      "type": "BboxDetectorSEGS",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "labels",
+          "value": "all"
+        }
+      ]
+    },
+    {
+      "id": "79",
+      "type": "SegmDetectorSEGS",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "labels",
+          "value": "all"
+        }
+      ]
+    },
+    {
+      "id": "80",
+      "type": "ONNXDetectorSEGS",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "labels",
+          "value": "all"
+        }
+      ]
+    },
+    {
+      "id": "81",
+      "type": "ImpactSimpleDetectorSEGS_for_AD",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 0
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "sub_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "sub_dilation",
+          "value": 0
+        },
+        {
+          "name": "sub_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "masking_mode",
+          "value": "Pivot SEGS"
+        },
+        {
+          "name": "segs_pivot",
+          "value": "Combined mask"
+        }
+      ]
+    },
+    {
+      "id": "82",
+      "type": "ImpactSAM2VideoDetectorSEGS",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "sam2_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "83",
+      "type": "ImpactSimpleDetectorSEGS",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 0
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "sub_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "sub_dilation",
+          "value": 0
+        },
+        {
+          "name": "sub_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "post_dilation",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "84",
+      "type": "ImpactSimpleDetectorSEGSPipe",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 0
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "sub_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "sub_dilation",
+          "value": 0
+        },
+        {
+          "name": "sub_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "post_dilation",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "85",
+      "type": "ImpactControlNetApplySEGS",
+      "widgets": [
+        {
+          "name": "strength",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "86",
+      "type": "ImpactControlNetApplyAdvancedSEGS",
+      "widgets": [
+        {
+          "name": "strength",
+          "value": 1
+        },
+        {
+          "name": "start_percent",
+          "value": 0
+        },
+        {
+          "name": "end_percent",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "87",
+      "type": "ImpactControlNetClearSEGS",
+      "widgets": []
+    },
+    {
+      "id": "88",
+      "type": "ImpactIPAdapterApplySEGS",
+      "widgets": [
+        {
+          "name": "weight",
+          "value": 0.7
+        },
+        {
+          "name": "noise",
+          "value": 0.4
+        },
+        {
+          "name": "weight_type",
+          "value": "channel penalty"
+        },
+        {
+          "name": "start_at",
+          "value": 0
+        },
+        {
+          "name": "end_at",
+          "value": 0.9
+        },
+        {
+          "name": "unfold_batch",
+          "value": false
+        },
+        {
+          "name": "faceid_v2",
+          "value": false
+        },
+        {
+          "name": "weight_v2",
+          "value": 1
+        },
+        {
+          "name": "context_crop_factor",
+          "value": 1.2
+        },
+        {
+          "name": "combine_embeds",
+          "value": "concat"
+        }
+      ]
+    },
+    {
+      "id": "89",
+      "type": "ImpactDecomposeSEGS",
+      "widgets": []
+    },
+    {
+      "id": "90",
+      "type": "ImpactAssembleSEGS",
+      "widgets": []
+    },
+    {
+      "id": "91",
+      "type": "ImpactFrom_SEG_ELT",
+      "widgets": []
+    },
+    {
+      "id": "92",
+      "type": "ImpactEdit_SEG_ELT",
+      "widgets": []
+    },
+    {
+      "id": "93",
+      "type": "ImpactDilate_Mask_SEG_ELT",
+      "widgets": [
+        {
+          "name": "dilation",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "94",
+      "type": "ImpactDilateMask",
+      "widgets": [
+        {
+          "name": "dilation",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "95",
+      "type": "ImpactGaussianBlurMask",
+      "widgets": [
+        {
+          "name": "kernel_size",
+          "value": 10
+        },
+        {
+          "name": "sigma",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "96",
+      "type": "ImpactDilateMaskInSEGS",
+      "widgets": [
+        {
+          "name": "dilation",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "97",
+      "type": "ImpactGaussianBlurMaskInSEGS",
+      "widgets": [
+        {
+          "name": "kernel_size",
+          "value": 10
+        },
+        {
+          "name": "sigma",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "98",
+      "type": "ImpactScaleBy_BBOX_SEG_ELT",
+      "widgets": [
+        {
+          "name": "scale_by",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "99",
+      "type": "ImpactFrom_SEG_ELT_bbox",
+      "widgets": []
+    },
+    {
+      "id": "100",
+      "type": "ImpactFrom_SEG_ELT_crop_region",
+      "widgets": []
+    },
+    {
+      "id": "101",
+      "type": "ImpactCount_Elts_in_SEGS",
+      "widgets": []
+    },
+    {
+      "id": "102",
+      "type": "BboxDetectorCombined_v2",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "103",
+      "type": "SegmDetectorCombined_v2",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "104",
+      "type": "SegsToCombinedMask",
+      "widgets": []
+    },
+    {
+      "id": "105",
+      "type": "KSamplerProvider",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "106",
+      "type": "TwoSamplersForMask",
+      "widgets": []
+    },
+    {
+      "id": "107",
+      "type": "TiledKSamplerProvider",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "tile_width",
+          "value": 512
+        },
+        {
+          "name": "tile_height",
+          "value": 512
+        },
+        {
+          "name": "tiling_strategy",
+          "value": "random"
+        }
+      ]
+    },
+    {
+      "id": "108",
+      "type": "KSamplerAdvancedProvider",
+      "widgets": [
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "sigma_factor",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "109",
+      "type": "TwoAdvancedSamplersForMask",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "overlap_factor",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "id": "110",
+      "type": "ImpactNegativeConditioningPlaceholder",
+      "widgets": []
+    },
+    {
+      "id": "111",
+      "type": "PreviewBridge",
+      "widgets": [
+        {
+          "name": "image",
+          "value": "$111-0"
+        },
+        {
+          "name": "block",
+          "value": false
+        },
+        {
+          "name": "restore_mask",
+          "value": "never"
+        },
+        {
+          "name": "$$canvas-image-preview",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "112",
+      "type": "PreviewBridgeLatent",
+      "widgets": [
+        {
+          "name": "image",
+          "value": "$112-0"
+        },
+        {
+          "name": "preview_method",
+          "value": "Latent2RGB-FLUX.1"
+        },
+        {
+          "name": "block",
+          "value": false
+        },
+        {
+          "name": "restore_mask",
+          "value": "never"
+        },
+        {
+          "name": "$$canvas-image-preview",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "113",
+      "type": "ImageSender",
+      "widgets": [
+        {
+          "name": "filename_prefix",
+          "value": "ImgSender"
+        },
+        {
+          "name": "link_id",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "114",
+      "type": "ImageReceiver",
+      "widgets": [
+        {
+          "name": "image",
+          "value": "0e089ba0bd534649b40e982de6e95270.jpg"
+        },
+        {
+          "name": "link_id",
+          "value": 0
+        },
+        {
+          "name": "save_to_workflow",
+          "value": false
+        },
+        {
+          "name": "image_data",
+          "value": ""
+        },
+        {
+          "name": "trigger_always",
+          "value": false
+        },
+        {
+          "name": "$$canvas-image-preview",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "115",
+      "type": "LatentSender",
+      "widgets": [
+        {
+          "name": "filename_prefix",
+          "value": "latents/LatentSender"
+        },
+        {
+          "name": "link_id",
+          "value": 0
+        },
+        {
+          "name": "preview_method",
+          "value": "Latent2RGB-FLUX.1"
+        }
+      ]
+    },
+    {
+      "id": "116",
+      "type": "LatentReceiver",
+      "widgets": [
+        {
+          "name": "latent",
+          "value": "ComfyUI_00001_.latent"
+        },
+        {
+          "name": "link_id",
+          "value": 0
+        },
+        {
+          "name": "trigger_always",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "117",
+      "type": "ImageMaskSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "118",
+      "type": "LatentSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "119",
+      "type": "SEGSSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "120",
+      "type": "ImpactSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 3
+        },
+        {
+          "name": "sel_mode",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "121",
+      "type": "ImpactInversedSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "122",
+      "type": "ImpactWildcardProcessor",
+      "widgets": [
+        {
+          "name": "wildcard_text",
+          "value": "catalog {red|blue}\nsecond line"
+        },
+        {
+          "name": "populated_text",
+          "value": ""
+        },
+        {
+          "name": "mode",
+          "value": "populate"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        }
+      ]
+    },
+    {
+      "id": "123",
+      "type": "ImpactWildcardEncode",
+      "widgets": [
+        {
+          "name": "wildcard_text",
+          "value": ""
+        },
+        {
+          "name": "populated_text",
+          "value": ""
+        },
+        {
+          "name": "mode",
+          "value": "populate"
+        },
+        {
+          "name": "Select to add LoRA",
+          "value": "Select the LoRA to add to the text"
+        },
+        {
+          "name": "Select to add Wildcard",
+          "value": "Select Wildcard 🟢 Full Cache"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        }
+      ]
+    },
+    {
+      "id": "124",
+      "type": "SEGSUpscaler",
+      "widgets": [
+        {
+          "name": "rescale_factor",
+          "value": 2
+        },
+        {
+          "name": "resampling_method",
+          "value": "lanczos"
+        },
+        {
+          "name": "supersample",
+          "value": "true"
+        },
+        {
+          "name": "rounding_modulus",
+          "value": 8
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "125",
+      "type": "SEGSUpscalerPipe",
+      "widgets": [
+        {
+          "name": "rescale_factor",
+          "value": 2
+        },
+        {
+          "name": "resampling_method",
+          "value": "lanczos"
+        },
+        {
+          "name": "supersample",
+          "value": "true"
+        },
+        {
+          "name": "rounding_modulus",
+          "value": 8
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "126",
+      "type": "SEGSDetailer",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 768
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "noise_mask",
+          "value": true
+        },
+        {
+          "name": "force_inpaint",
+          "value": true
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "batch_size",
+          "value": 1
+        },
+        {
+          "name": "cycle",
+          "value": 1
+        },
+        {
+          "name": "inpaint_model",
+          "value": false
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "127",
+      "type": "SEGSPaste",
+      "widgets": [
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "alpha",
+          "value": 255
+        }
+      ]
+    },
+    {
+      "id": "128",
+      "type": "SEGSPreview",
+      "widgets": [
+        {
+          "name": "alpha_mode",
+          "value": true
+        },
+        {
+          "name": "min_alpha",
+          "value": 0.2
+        }
+      ]
+    },
+    {
+      "id": "129",
+      "type": "SEGSPreviewCNet",
+      "widgets": []
+    },
+    {
+      "id": "130",
+      "type": "SEGSToImageList",
+      "widgets": []
+    },
+    {
+      "id": "131",
+      "type": "ImpactSEGSToMaskList",
+      "widgets": []
+    },
+    {
+      "id": "132",
+      "type": "ImpactSEGSToMaskBatch",
+      "widgets": []
+    },
+    {
+      "id": "133",
+      "type": "ImpactSEGSConcat",
+      "widgets": []
+    },
+    {
+      "id": "134",
+      "type": "ImpactSEGSPicker",
+      "widgets": [
+        {
+          "name": "picks",
+          "value": ""
+        },
+        {
+          "name": "pick",
+          "value": "image"
+        }
+      ]
+    },
+    {
+      "id": "135",
+      "type": "ImpactMakeTileSEGS",
+      "widgets": [
+        {
+          "name": "bbox_size",
+          "value": 512
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "min_overlap",
+          "value": 5
+        },
+        {
+          "name": "filter_segs_dilation",
+          "value": 20
+        },
+        {
+          "name": "mask_irregularity",
+          "value": 0
+        },
+        {
+          "name": "irregular_mask_mode",
+          "value": "Reuse fast"
+        }
+      ]
+    },
+    {
+      "id": "136",
+      "type": "ImpactSEGSMerge",
+      "widgets": []
+    },
+    {
+      "id": "137",
+      "type": "SEGSDetailerForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 512
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 768
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 0.5
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "138",
+      "type": "ImpactKSamplerBasicPipe",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "139",
+      "type": "ImpactKSamplerAdvancedBasicPipe",
+      "widgets": [
+        {
+          "name": "add_noise",
+          "value": true
+        },
+        {
+          "name": "noise_seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "start_at_step",
+          "value": 0
+        },
+        {
+          "name": "end_at_step",
+          "value": 10000
+        },
+        {
+          "name": "return_with_leftover_noise",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "140",
+      "type": "ReencodeLatent",
+      "widgets": [
+        {
+          "name": "tile_mode",
+          "value": "None"
+        },
+        {
+          "name": "tile_size",
+          "value": 512
+        },
+        {
+          "name": "overlap",
+          "value": 64
+        }
+      ]
+    },
+    {
+      "id": "141",
+      "type": "ReencodeLatentPipe",
+      "widgets": [
+        {
+          "name": "tile_mode",
+          "value": "None"
+        }
+      ]
+    },
+    {
+      "id": "142",
+      "type": "ImpactImageBatchToImageList",
+      "widgets": []
+    },
+    {
+      "id": "143",
+      "type": "ImpactMakeImageList",
+      "widgets": []
+    },
+    {
+      "id": "144",
+      "type": "ImpactMakeImageBatch",
+      "widgets": []
+    },
+    {
+      "id": "145",
+      "type": "ImpactMakeAnyList",
+      "widgets": []
+    },
+    {
+      "id": "146",
+      "type": "ImpactMakeMaskList",
+      "widgets": []
+    },
+    {
+      "id": "147",
+      "type": "ImpactMakeMaskBatch",
+      "widgets": []
+    },
+    {
+      "id": "148",
+      "type": "ImpactSelectNthItemOfAnyList",
+      "widgets": [
+        {
+          "name": "index",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "149",
+      "type": "RegionalSampler",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "seed_2nd",
+          "value": 0
+        },
+        {
+          "name": "seed_2nd_mode",
+          "value": "ignore"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "base_only_steps",
+          "value": 2
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        },
+        {
+          "name": "overlap_factor",
+          "value": 10
+        },
+        {
+          "name": "restore_latent",
+          "value": true
+        },
+        {
+          "name": "additional_mode",
+          "value": "ratio between"
+        },
+        {
+          "name": "additional_sampler",
+          "value": "AUTO"
+        },
+        {
+          "name": "additional_sigma_ratio",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "id": "150",
+      "type": "RegionalSamplerAdvanced",
+      "widgets": [
+        {
+          "name": "add_noise",
+          "value": true
+        },
+        {
+          "name": "noise_seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "start_at_step",
+          "value": 0
+        },
+        {
+          "name": "end_at_step",
+          "value": 10000
+        },
+        {
+          "name": "overlap_factor",
+          "value": 10
+        },
+        {
+          "name": "restore_latent",
+          "value": true
+        },
+        {
+          "name": "return_with_leftover_noise",
+          "value": false
+        },
+        {
+          "name": "additional_mode",
+          "value": "ratio between"
+        },
+        {
+          "name": "additional_sampler",
+          "value": "AUTO"
+        },
+        {
+          "name": "additional_sigma_ratio",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "id": "151",
+      "type": "CombineRegionalPrompts",
+      "widgets": []
+    },
+    {
+      "id": "152",
+      "type": "RegionalPrompt",
+      "widgets": [
+        {
+          "name": "variation_seed",
+          "value": 0
+        },
+        {
+          "name": "variation_strength",
+          "value": 0
+        },
+        {
+          "name": "variation_method",
+          "value": "linear"
+        }
+      ]
+    },
+    {
+      "id": "153",
+      "type": "ImpactCombineConditionings",
+      "widgets": []
+    },
+    {
+      "id": "154",
+      "type": "ImpactConcatConditionings",
+      "widgets": []
+    },
+    {
+      "id": "155",
+      "type": "ImpactSEGSLabelAssign",
+      "widgets": [
+        {
+          "name": "labels",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "156",
+      "type": "ImpactSEGSLabelFilter",
+      "widgets": [
+        {
+          "name": "preset",
+          "value": "all"
+        },
+        {
+          "name": "labels",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "157",
+      "type": "ImpactSEGSRangeFilter",
+      "widgets": [
+        {
+          "name": "target",
+          "value": "area(=w*h)"
+        },
+        {
+          "name": "mode",
+          "value": true
+        },
+        {
+          "name": "min_value",
+          "value": 0
+        },
+        {
+          "name": "max_value",
+          "value": 67108864
+        }
+      ]
+    },
+    {
+      "id": "158",
+      "type": "ImpactSEGSOrderedFilter",
+      "widgets": [
+        {
+          "name": "target",
+          "value": "area(=w*h)"
+        },
+        {
+          "name": "order",
+          "value": true
+        },
+        {
+          "name": "take_start",
+          "value": 0
+        },
+        {
+          "name": "take_count",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "159",
+      "type": "ImpactSEGSIntersectionFilter",
+      "widgets": [
+        {
+          "name": "ioa_threshold",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "id": "160",
+      "type": "ImpactSEGSNMSFilter",
+      "widgets": [
+        {
+          "name": "iou_threshold",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "id": "161",
+      "type": "ImpactCompare",
+      "widgets": [
+        {
+          "name": "cmp",
+          "value": "a = b"
+        }
+      ]
+    },
+    {
+      "id": "162",
+      "type": "ImpactConditionalBranch",
+      "widgets": [
+        {
+          "name": "cond",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "163",
+      "type": "ImpactConditionalBranchSelMode",
+      "widgets": [
+        {
+          "name": "cond",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "164",
+      "type": "ImpactIfNone",
+      "widgets": []
+    },
+    {
+      "id": "165",
+      "type": "ImpactConvertDataType",
+      "widgets": []
+    },
+    {
+      "id": "166",
+      "type": "ImpactLogicalOperators",
+      "widgets": [
+        {
+          "name": "operator",
+          "value": "and"
+        }
+      ]
+    },
+    {
+      "id": "167",
+      "type": "ImpactInt",
+      "widgets": [
+        {
+          "name": "value",
+          "value": 37
+        }
+      ]
+    },
+    {
+      "id": "168",
+      "type": "ImpactFloat",
+      "widgets": [
+        {
+          "name": "value",
+          "value": 1.5
+        }
+      ]
+    },
+    {
+      "id": "169",
+      "type": "ImpactBoolean",
+      "widgets": [
+        {
+          "name": "value",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "170",
+      "type": "ImpactValueSender",
+      "widgets": [
+        {
+          "name": "link_id",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "171",
+      "type": "ImpactValueReceiver",
+      "widgets": [
+        {
+          "name": "typ",
+          "value": "STRING"
+        },
+        {
+          "name": "value",
+          "value": ""
+        },
+        {
+          "name": "link_id",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "172",
+      "type": "ImpactImageInfo",
+      "widgets": []
+    },
+    {
+      "id": "173",
+      "type": "ImpactLatentInfo",
+      "widgets": []
+    },
+    {
+      "id": "174",
+      "type": "ImpactMinMax",
+      "widgets": [
+        {
+          "name": "mode",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "175",
+      "type": "ImpactNeg",
+      "widgets": []
+    },
+    {
+      "id": "176",
+      "type": "ImpactConditionalStopIteration",
+      "widgets": []
+    },
+    {
+      "id": "177",
+      "type": "ImpactStringSelector",
+      "widgets": [
+        {
+          "name": "strings",
+          "value": ""
+        },
+        {
+          "name": "multiline",
+          "value": false
+        },
+        {
+          "name": "select",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "178",
+      "type": "StringListToString",
+      "widgets": [
+        {
+          "name": "join_with",
+          "value": "\\n"
+        }
+      ]
+    },
+    {
+      "id": "179",
+      "type": "WildcardPromptFromString",
+      "widgets": [
+        {
+          "name": "delimiter",
+          "value": "\\n"
+        },
+        {
+          "name": "prefix_all",
+          "value": ""
+        },
+        {
+          "name": "postfix_all",
+          "value": ""
+        },
+        {
+          "name": "restrict_to_tags",
+          "value": ""
+        },
+        {
+          "name": "exclude_tags",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "180",
+      "type": "ImpactExecutionOrderController",
+      "widgets": []
+    },
+    {
+      "id": "181",
+      "type": "ImpactListBridge",
+      "widgets": []
+    },
+    {
+      "id": "182",
+      "type": "RemoveNoiseMask",
+      "widgets": []
+    },
+    {
+      "id": "183",
+      "type": "ImpactLogger",
+      "widgets": [
+        {
+          "name": "text",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "184",
+      "type": "ImpactDummyInput",
+      "widgets": []
+    },
+    {
+      "id": "185",
+      "type": "ImpactQueueTrigger",
+      "widgets": [
+        {
+          "name": "mode",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "186",
+      "type": "ImpactQueueTriggerCountdown",
+      "widgets": [
+        {
+          "name": "count",
+          "value": 0
+        },
+        {
+          "name": "total",
+          "value": 10
+        },
+        {
+          "name": "mode",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "187",
+      "type": "ImpactSetWidgetValue",
+      "widgets": [
+        {
+          "name": "node_id",
+          "value": 0
+        },
+        {
+          "name": "widget_name",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "188",
+      "type": "ImpactNodeSetMuteState",
+      "widgets": [
+        {
+          "name": "node_id",
+          "value": 0
+        },
+        {
+          "name": "set_state",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "189",
+      "type": "ImpactControlBridge",
+      "widgets": [
+        {
+          "name": "mode",
+          "value": true
+        },
+        {
+          "name": "behavior",
+          "value": "Stop"
+        }
+      ]
+    },
+    {
+      "id": "190",
+      "type": "ImpactIsNotEmptySEGS",
+      "widgets": []
+    },
+    {
+      "id": "191",
+      "type": "ImpactSleep",
+      "widgets": [
+        {
+          "name": "seconds",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "id": "192",
+      "type": "ImpactRemoteBoolean",
+      "widgets": [
+        {
+          "name": "node_id",
+          "value": 0
+        },
+        {
+          "name": "widget_name",
+          "value": ""
+        },
+        {
+          "name": "value",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "193",
+      "type": "ImpactRemoteInt",
+      "widgets": [
+        {
+          "name": "node_id",
+          "value": 0
+        },
+        {
+          "name": "widget_name",
+          "value": ""
+        },
+        {
+          "name": "value",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "id": "194",
+      "type": "ImpactHFTransformersClassifierProvider",
+      "widgets": [
+        {
+          "name": "preset_repo_id",
+          "value": "rizvandwiki/gender-classification-2"
+        },
+        {
+          "name": "manual_repo_id",
+          "value": ""
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "195",
+      "type": "ImpactSEGSClassify",
+      "widgets": [
+        {
+          "name": "preset_expr",
+          "value": "#Female > #Male"
+        },
+        {
+          "name": "manual_expr",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "196",
+      "type": "ImpactSchedulerAdapter",
+      "widgets": [
+        {
+          "name": "scheduler",
+          "value": "simple"
+        },
+        {
+          "name": "extra_scheduler",
+          "value": "None"
+        }
+      ]
+    },
+    {
+      "id": "197",
+      "type": "GITSSchedulerFuncProvider",
+      "widgets": [
+        {
+          "name": "coeff",
+          "value": 1.2
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

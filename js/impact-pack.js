@@ -430,7 +430,7 @@ app.registerExtension({
 						}
 
 						if(this.outputs[0].type == '*'){
-							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
+							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).inputs[link_info.target_slot].type != '*') {
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
@@ -457,11 +457,6 @@ app.registerExtension({
 
 						if(origin_type==undefined) {
 							return; // fallback
-						}
-
-						if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
-							this.disconnectInput(link_info.target_slot);
-							return;
 						}
 
 						for(let i in this.inputs) {
@@ -600,7 +595,7 @@ app.registerExtension({
 						}
 
 						if(this.outputs[0].type == '*'){
-							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
+							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).inputs[link_info.target_slot].type != '*') {
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
@@ -634,11 +629,6 @@ app.registerExtension({
 						// NOTE: node is undefined when subgraph editing mode
 						if(node) {
 							let origin_type = node.outputs[link_info.origin_slot]?.type;
-							if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
-								this.disconnectInput(link_info.target_slot);
-								return;
-							}
-
 							for(let i in this.inputs) {
 								let input_i = this.inputs[i];
 								if(input_i.name != 'select' && input_i.name != 'sel_mode')
@@ -726,6 +716,7 @@ app.registerExtension({
 		}
 
 		if(node.comfyClass == "ImpactSEGSLabelFilter" || node.comfyClass == "SEGSLabelFilterDetailerHookProvider") {
+			node._value = node.widgets[0].value;
 			node.widgets[0].callback = (value, canvas, node, pos, e) => {
 				if(node) {
 					if(node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
