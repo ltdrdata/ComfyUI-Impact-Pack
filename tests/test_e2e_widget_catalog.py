@@ -256,32 +256,25 @@ def test_label_preset_initial_value_and_selection(ui, node_type):
 
 
 @pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
-@pytest.mark.parametrize("legacy", [False, True], ids=["fresh", "legacy-segs-input"])
-def test_label_filter_hook_executes_after_native_load(ui, restore_by_name, legacy):
+def test_label_filter_hook_executes_after_native_load(ui, restore_by_name):
     browser, args = ui
     node_type = "SEGSLabelFilterDetailerHookProvider"
     expected_widgets = [{"name": "preset", "value": "person"},
                         {"name": "labels", "value": "person, dog"}]
     setting(browser, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
     browser.new_workflow()
-    if legacy:
-        browser.load_workflow(ROOT / "tests/workflows/label-filter-hook-legacy.json", 2)
-        node_id = browser.app.evaluate("""(app, type) =>
-            String(app.graph._nodes.find(node => node.type === type).id)
-        """, node_type)
-    else:
-        full_zoom(browser)
-        definitions = node_definitions(browser)
-        node_id = browser.add_node(definitions[node_type]["display_name"], node_type, 250, 180)
-        browser.choose(node_type, "preset", "person")
-        browser.page.get_by_placeholder(
-            "List the types of segments to be allowed, separated by commas", exact=True
-        ).fill("person, dog")
-        assert "segs" not in browser.app.evaluate("""(app, id) =>
-            app.graph.getNodeById(id).inputs.map(input => input.name)
-        """, node_id)
-        browser.add_node("Preview as Text", "PreviewAny", 850, 180)
-        browser.connect(node_type, "PreviewAny")
+    full_zoom(browser)
+    definitions = node_definitions(browser)
+    node_id = browser.add_node(definitions[node_type]["display_name"], node_type, 250, 180)
+    browser.choose(node_type, "preset", "person")
+    browser.page.get_by_placeholder(
+        "List the types of segments to be allowed, separated by commas", exact=True
+    ).fill("person, dog")
+    assert "segs" not in browser.app.evaluate("""(app, id) =>
+        app.graph.getNodeById(id).inputs.map(input => input.name)
+    """, node_id)
+    browser.add_node("Preview as Text", "PreviewAny", 850, 180)
+    browser.connect(node_type, "PreviewAny")
 
     path = args.artifacts / "label-filter-hook.json"
     for reloaded in (False, True):

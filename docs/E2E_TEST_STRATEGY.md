@@ -185,11 +185,10 @@ and reload.
 
 The label-filter hook execution cases connect the hook to Preview as Text and
 click Run before and after native export/reload, in both widget restoration
-modes. They cover freshly created nodes without a `segs` input and the native
-`label-filter-hook-legacy.json` fixture exported before PR #1218, which retains
-the obsolete unconnected input. The selected preset, label text, widget order,
-and positional saved values must survive loading while hook creation succeeds.
-The all-node catalog replaces that legacy node through Chrome deletion, node
+modes. They cover freshly created nodes without a `segs` input. The selected
+preset, label text, widget order, and positional saved values must survive loading
+while hook creation succeeds.
+The all-node catalog records the node recreated through Chrome deletion, node
 search, and native Export; its widget snapshot changes only the replacement
 node's ID and record position, preserving every expected widget name and value.
 
