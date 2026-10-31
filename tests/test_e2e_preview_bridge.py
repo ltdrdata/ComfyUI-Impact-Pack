@@ -538,6 +538,62 @@ def test_registration_failure_blocks_queue_and_recovers(ui):
             mask_output(browser, entry, mask, expected)
 
 
+def test_queued_bridge_results_preserve_the_latest_saved_edit(ui):
+    browser, args = ui
+    pending = []
+    target = None
+    holding = False
+
+    def is_target_result(message):
+        event = json.loads(message) if isinstance(message, str) else {}
+        data = event.get("data", {})
+        return event.get("type") == "executed" and str(data.get("display_node", data.get("node"))) == target
+
+    def delay_results(socket):
+        server = socket.connect_to_server()
+
+        def receive(message):
+            if holding and (pending or is_target_result(message)):
+                pending.append((socket, message))
+            else:
+                socket.send(message)
+
+        server.on_message(receive)
+
+    browser.page.route_web_socket(re.compile(r"/ws(?:\?|$)"), delay_results)
+    browser.app.dispose()
+    browser.page.reload()
+    browser.app = browser.page.evaluate_handle("async () => (await import('/scripts/app.js')).app")
+    browser.new_workflow()
+    source, target, output, mask = build_bridge(browser, "PreviewBridge")
+    preview(browser, browser.run(), target)
+    edit_mask(browser, target, args.artifacts, "first")
+    holding = True
+    first = browser.run()
+    expected = edit_mask(browser, target, args.artifacts, "second", right=True)
+    saved = widget_state(browser, [target])
+    second = browser.run()
+    results = [index for index, (_, message) in enumerate(pending) if is_target_result(message)]
+    assert len(results) == 2, "Both actual execution results must be delayed"
+    first_messages, second_messages = pending[:results[1]], pending[results[1]:]
+    holding = False
+    for socket, message in first_messages:
+        socket.send(message)
+    preview(browser, first, target)
+    assert widget_state(browser, [target]) == saved, "An earlier queued result must preserve the newer saved edit"
+    for socket, message in second_messages:
+        socket.send(message)
+    preview(browser, second, target)
+    mask_output(browser, second, mask, expected)
+    assert widget_state(browser, [target]) == saved
+    reload_workflow(browser, args.artifacts, [target], False)
+    mask_output(browser, browser.run(), mask, expected)
+    context_menu(browser, target, re.compile(r"^Open in MaskEditor"))
+    wait_sam_canvas(browser, expected.size)
+    pixels_equal(editor_mask(browser), expected, tolerance=1)
+    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+
+
 def sam_image_source(browser):
     source = add_node(browser, "LoadImage", 220, 200)
     upload = browser.app.evaluate("""(app, id) =>
