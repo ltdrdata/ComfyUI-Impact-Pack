@@ -1,13 +1,6 @@
 import { ComfyApp, app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 import { customAlert, isBeforeFrontendVersion } from "./common.js";
-// === SHIM FOR NEW COMFYUI (removes ui.js warning) ===
-let ComfyDialog, $el;
-if (window?.comfyAPI?.ui) {
-    ({ ComfyDialog, $el } = window.comfyAPI.ui);
-} else {
-    ({ ComfyDialog, $el } = await import("../../scripts/ui.js"));
-}
 
 const is_legacy_front = () => isBeforeFrontendVersion('1.16.9');
 

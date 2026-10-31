@@ -46,7 +46,8 @@ class ComfyUI:
         self.page.mouse.dblclick(x, y, delay=100)
         search = self.page.get_by_placeholder("Add a node...", exact=True)
         search.fill(node_type)
-        label = self.page.locator("span.truncate").filter(has_text=re.compile(rf"^\s*{re.escape(title)}\s*$"))
+        label = self.page.locator("span.truncate, .option-container .font-semibold > span").filter(
+            has_text=re.compile(rf"^\s*{re.escape(title)}\s*$"))
         self.page.get_by_role("option").filter(has=label).click()
         expect(search).not_to_be_visible()
         self.page.get_by_role("dialog").wait_for(state="hidden")

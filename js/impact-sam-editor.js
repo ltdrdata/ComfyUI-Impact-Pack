@@ -1,20 +1,21 @@
-import { app } from "../../scripts/app.js";
+import { app, ComfyApp } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
-// === SHIM FOR NEW COMFYUI (removes ui.js + clipspace.js warnings) ===
-let ComfyDialog, $el, ComfyApp, ClipspaceDialog;
 
-if (window?.comfyAPI?.ui) {
-    ({ ComfyDialog, $el } = window.comfyAPI.ui);
-    ComfyApp = window.comfyAPI.app?.ComfyApp || window.ComfyApp;
-} else {
-    ({ ComfyDialog, $el } = await import("../../scripts/ui.js"));
-    ComfyApp = (await import("../../scripts/app.js")).ComfyApp;
-}
+const { ComfyDialog, $el } = window.comfyAPI?.ui ?? await import("../../scripts/ui.js");
 
-if (window?.comfyAPI?.clipspace?.ClipspaceDialog) {
-    ({ ClipspaceDialog } = window.comfyAPI.clipspace);
-} else {
-    ({ ClipspaceDialog } = await import("../../extensions/core/clipspace.js"));
+function addClipspaceSamButton() {
+	if (!ComfyApp.clipspace?.imgs?.length) return;
+	const content = document.getElementById("clipspace_preview")?.closest(".comfy-modal-content");
+	const selector = content?.querySelector("#clipspace_img_selector");
+	if (selector) selector.value = String(ComfyApp.clipspace.selectedIndex);
+	if (!content || content.querySelector("#impact-sam-clipspace")) return;
+	const button = $el("button", {
+		id: "impact-sam-clipspace",
+		type: "button",
+		textContent: "Impact SAM Detector",
+		onclick: () => ImpactSamEditorDialog.getInstance().show()
+	});
+	content.insertBefore(button, content.lastElementChild);
 }
 
 function addMenuHandler(nodeType, cb) {
@@ -66,10 +67,10 @@ async function uploadMask(filepath, formData) {
 	ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex']] = new Image();
 	ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex']].src = `view?filename=${filepath.filename}&type=${filepath.type}`;
 
-	if(ComfyApp.clipspace.images)
-		ComfyApp.clipspace.images[ComfyApp.clipspace['selectedIndex']] = filepath;
+	ComfyApp.clipspace.images ??= [];
+	ComfyApp.clipspace.images[ComfyApp.clipspace['selectedIndex']] = filepath;
 
-	ClipspaceDialog.invalidatePreview();
+	ComfyApp.clipspace_invalidate_handler?.();
 }
 
 class ImpactSamEditorDialog extends ComfyDialog {
@@ -255,6 +256,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 	}
 
 	show() {
+		const self = this;
 		this.mask_image = null;
 		self.prompt_points = [];
 
@@ -287,6 +289,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			this.maskCtx = maskCanvas.getContext('2d');
 			this.pointsCtx = pointsCanvas.getContext('2d');
 
+			this.setEventHandler(pointsCanvas);
 			this.is_layout_created = true;
 
 			// replacement of onClose hook since close is not real close
@@ -307,6 +310,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			observer.observe(this.element, config);
 		}
 
+		document.addEventListener("keydown", ImpactSamEditorDialog.handleKeyDown);
 		this.setImages(target_image_path, this.imgCanvas, this.pointsCanvas);
 
 		if(ComfyApp.clipspace_return_node) {
@@ -344,7 +348,8 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 		// image load
 		const orig_image = new Image();
-		window.addEventListener("resize", () => {
+		window.removeEventListener("resize", this.resizeHandler);
+		this.resizeHandler = () => {
 			// repositioning
 			imgCanvas.width = window.innerWidth - 250;
 			imgCanvas.height = window.innerHeight - 200;
@@ -381,7 +386,8 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 			self.invalidateMaskCanvas(self);
 			self.invalidatePointsCanvas(self);
-		});
+		};
+		window.addEventListener("resize", this.resizeHandler);
 
 		// original image load
 		orig_image.onload = () => self.onLoaded(self);
@@ -400,7 +406,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 		window.dispatchEvent(new Event('resize'));
 
-		self.setEventHandler(pointsCanvas);
 		self.saveButton.disabled = false;
 	}
 
@@ -414,11 +419,11 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		targetCanvas.addEventListener('pointerdown', (event) => this.handlePointerDown(self,event));
 		targetCanvas.addEventListener('pointerover', (event) => { this.brush.style.display = "block"; });
 		targetCanvas.addEventListener('pointerleave', (event) => { this.brush.style.display = "none"; });
-		document.addEventListener('keydown', ImpactSamEditorDialog.handleKeyDown);
 	}
 
 	static handleKeyDown(event) {
 		const self = ImpactSamEditorDialog.instance;
+		const brush = self.brush;
 		if (event.key === '=') { // positive
 			brush.style.backgroundColor = "blue";
 			brush.style.outline = "2px solid pink";
@@ -586,14 +591,11 @@ class ImpactSamEditorDialog extends ComfyDialog {
 				"type": "temp",
 			};
 
-		if(ComfyApp.clipspace.images)
-			ComfyApp.clipspace.images[0] = item;
-
 		if(ComfyApp.clipspace.widgets) {
 			const index = ComfyApp.clipspace.widgets.findIndex(obj => obj.name === 'image');
 
 			if(index >= 0)
-				ComfyApp.clipspace.widgets[index].value = `${filename} [temp]`;
+				ComfyApp.clipspace.widgets[index].value = item;
 		}
 
 		const dataURL = save_canvas.toDataURL();
@@ -623,15 +625,24 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 app.registerExtension({
 	name: "Comfy.Impact.SAMEditor",
-	init(app) {
-		const callback =
-			function () {
-				let dlg = ImpactSamEditorDialog.getInstance();
-				dlg.show();
-			};
-
-		const context_predicate = () => ComfyApp.clipspace && ComfyApp.clipspace.imgs && ComfyApp.clipspace.imgs.length > 0
-		ClipspaceDialog.registerButton("Impact SAM Detector", context_predicate, callback);
+	setup(app) {
+		const openClipspace = app.openClipspace;
+		let invalidate;
+		const invalidateClipspace = function (...args) {
+			const result = invalidate?.apply(this, args);
+			addClipspaceSamButton();
+			return result;
+		};
+		app.openClipspace = function (...args) {
+			const result = openClipspace.apply(this, args);
+			// The core dialog installs its invalidation callback on the first open.
+			if (!invalidate && ComfyApp.clipspace_invalidate_handler) {
+				invalidate = ComfyApp.clipspace_invalidate_handler;
+				ComfyApp.clipspace_invalidate_handler = invalidateClipspace;
+			}
+			addClipspaceSamButton();
+			return result;
+		};
 	},
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {

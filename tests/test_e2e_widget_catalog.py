@@ -112,8 +112,8 @@ def widget_state(ui, node_id):
 
 def export_workflow(ui, path):
     page = ui.page
-    page.get_by_role("button", name="Graph mode, workflow actions", exact=True).click()
-    page.get_by_role("menuitem", name="Export", exact=True).click()
+    page.locator('button[aria-label$="workflow actions" i]').click()
+    page.get_by_text("Export", exact=True).filter(visible=True).click()
     dialog = page.get_by_role("dialog")
     dialog.get_by_role("textbox").fill(path.stem)
     with page.expect_download() as download:
