@@ -1711,20 +1711,6 @@
       ]
     },
     {
-      "id": "58",
-      "type": "SEGSLabelFilterDetailerHookProvider",
-      "widgets": [
-        {
-          "name": "preset",
-          "value": "all"
-        },
-        {
-          "name": "labels",
-          "value": ""
-        }
-      ]
-    },
-    {
       "id": "59",
       "type": "VariationNoiseDetailerHookProvider",
       "widgets": [
@@ -3972,6 +3958,20 @@
     },
     {
       "id": "198",
+      "type": "SEGSLabelFilterDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "preset",
+          "value": "all"
+        },
+        {
+          "name": "labels",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "199",
       "type": "LoraWildcardSource",
       "widgets": [
         {

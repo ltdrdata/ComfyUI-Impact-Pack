@@ -49,7 +49,6 @@ class SEGSLabelFilterDetailerHookProvider:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                        "segs": ("SEGS", ),
                         "preset": (['all'] + defs.detection_labels,),
                         "labels": ("STRING", {"multiline": True, "placeholder": "List the types of segments to be allowed, separated by commas"}),
                      },

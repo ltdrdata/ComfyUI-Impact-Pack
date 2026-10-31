@@ -112,8 +112,8 @@ def widget_state(ui, node_id):
 
 def export_workflow(ui, path):
     page = ui.page
-    page.get_by_role("button", name="Graph mode, workflow actions", exact=True).click()
-    page.get_by_role("menuitem", name="Export", exact=True).click()
+    page.locator('button[aria-label$="workflow actions" i]').click()
+    page.get_by_text("Export", exact=True).filter(visible=True).click()
     dialog = page.get_by_role("dialog")
     dialog.get_by_role("textbox").fill(path.stem)
     with page.expect_download() as download:
@@ -207,6 +207,8 @@ def test_catalog_contains_every_registered_node():
         for widget in node["widgets"]:
             assert set(widget) == {"name", "value"}
             assert isinstance(widget["name"], str)
+    label_hook = next(node for node in workflow["nodes"] if node["type"] == "SEGSLabelFilterDetailerHookProvider")
+    assert label_hook["inputs"] == [], "Recreate the label-filter hook to remove its obsolete SEGS input"
 
 
 @pytest.fixture
@@ -251,6 +253,45 @@ def test_label_preset_initial_value_and_selection(ui, node_type):
     browser.new_workflow()
     browser.load_workflow(path, 1)
     assert_catalog(browser, [before])
+
+
+@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+def test_label_filter_hook_executes_after_native_load(ui, restore_by_name):
+    browser, args = ui
+    node_type = "SEGSLabelFilterDetailerHookProvider"
+    expected_widgets = [{"name": "preset", "value": "person"},
+                        {"name": "labels", "value": "person, dog"}]
+    setting(browser, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+    browser.new_workflow()
+    full_zoom(browser)
+    definitions = node_definitions(browser)
+    node_id = browser.add_node(definitions[node_type]["display_name"], node_type, 250, 180)
+    browser.choose(node_type, "preset", "person")
+    browser.page.get_by_placeholder(
+        "List the types of segments to be allowed, separated by commas", exact=True
+    ).fill("person, dog")
+    assert "segs" not in browser.app.evaluate("""(app, id) =>
+        app.graph.getNodeById(id).inputs.map(input => input.name)
+    """, node_id)
+    browser.add_node("Preview as Text", "PreviewAny", 850, 180)
+    browser.connect(node_type, "PreviewAny")
+
+    path = args.artifacts / "label-filter-hook.json"
+    for reloaded in (False, True):
+        if reloaded:
+            browser.new_workflow()
+            browser.load_workflow(path, 2)
+        full_zoom(browser)
+        show_node(browser, node_id)
+        assert widget_state(browser, node_id)["widgets"] == expected_widgets
+        entry = browser.run()
+        text = next(output["text"] for output in entry["outputs"].values() if "text" in output)
+        assert len(text) == 1 and "SEGSLabelFilterDetailerHook object" in text[0]
+        if not reloaded:
+            export_workflow(browser, path)
+            saved = next(node for node in json.loads(path.read_text())["nodes"] if node["type"] == node_type)
+            assert saved["widgets_values"] == ["person", "person, dog"]
+            assert saved["widgets_values_named"] == {"preset": "person", "labels": "person, dog"}
 
 
 @pytest.mark.parametrize("mutation", [

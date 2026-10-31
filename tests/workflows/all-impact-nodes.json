@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 198,
+  "last_node_id": 199,
   "last_link_id": 0,
   "nodes": [
     {
@@ -3915,46 +3915,6 @@
       }
     },
     {
-      "id": 58,
-      "type": "SEGSLabelFilterDetailerHookProvider",
-      "pos": [
-        722.8888888888887,
-        6135.555555555556
-      ],
-      "size": [
-        400,
-        200
-      ],
-      "flags": {},
-      "order": 57,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "segs",
-          "type": "SEGS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "DETAILER_HOOK",
-          "type": "DETAILER_HOOK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SEGSLabelFilterDetailerHookProvider"
-      },
-      "widgets_values": [
-        "all",
-        ""
-      ],
-      "widgets_values_named": {
-        "preset": "all",
-        "labels": ""
-      }
-    },
-    {
       "id": 59,
       "type": "VariationNoiseDetailerHookProvider",
       "pos": [
@@ -3966,7 +3926,7 @@
         106
       ],
       "flags": {},
-      "order": 58,
+      "order": 57,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -4002,7 +3962,7 @@
         46
       ],
       "flags": {},
-      "order": 59,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
@@ -4039,7 +3999,7 @@
         46
       ],
       "flags": {},
-      "order": 60,
+      "order": 59,
       "mode": 0,
       "inputs": [
         {
@@ -4076,7 +4036,7 @@
         46
       ],
       "flags": {},
-      "order": 61,
+      "order": 60,
       "mode": 0,
       "inputs": [
         {
@@ -4113,7 +4073,7 @@
         358
       ],
       "flags": {},
-      "order": 62,
+      "order": 61,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -4162,7 +4122,7 @@
         426
       ],
       "flags": {},
-      "order": 63,
+      "order": 62,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -4215,7 +4175,7 @@
         46
       ],
       "flags": {},
-      "order": 64,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
@@ -4252,7 +4212,7 @@
         46
       ],
       "flags": {},
-      "order": 65,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
@@ -4289,7 +4249,7 @@
         26
       ],
       "flags": {},
-      "order": 66,
+      "order": 65,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -4315,7 +4275,7 @@
         26
       ],
       "flags": {},
-      "order": 67,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
@@ -4347,7 +4307,7 @@
         346
       ],
       "flags": {},
-      "order": 68,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
@@ -4409,7 +4369,7 @@
         154
       ],
       "flags": {},
-      "order": 69,
+      "order": 68,
       "mode": 0,
       "inputs": [
         {
@@ -4455,7 +4415,7 @@
         154
       ],
       "flags": {},
-      "order": 70,
+      "order": 69,
       "mode": 0,
       "inputs": [
         {
@@ -4501,7 +4461,7 @@
         58
       ],
       "flags": {},
-      "order": 71,
+      "order": 70,
       "mode": 0,
       "inputs": [
         {
@@ -4539,7 +4499,7 @@
         26
       ],
       "flags": {},
-      "order": 72,
+      "order": 71,
       "mode": 0,
       "inputs": [
         {
@@ -4573,7 +4533,7 @@
         26
       ],
       "flags": {},
-      "order": 73,
+      "order": 72,
       "mode": 0,
       "inputs": [
         {
@@ -4605,7 +4565,7 @@
         26
       ],
       "flags": {},
-      "order": 74,
+      "order": 73,
       "mode": 0,
       "inputs": [
         {
@@ -4637,7 +4597,7 @@
         78
       ],
       "flags": {},
-      "order": 75,
+      "order": 74,
       "mode": 0,
       "inputs": [
         {
@@ -4680,7 +4640,7 @@
         26
       ],
       "flags": {},
-      "order": 76,
+      "order": 75,
       "mode": 0,
       "inputs": [
         {
@@ -4712,7 +4672,7 @@
         224
       ],
       "flags": {},
-      "order": 77,
+      "order": 76,
       "mode": 0,
       "inputs": [
         {
@@ -4769,7 +4729,7 @@
         224
       ],
       "flags": {},
-      "order": 78,
+      "order": 77,
       "mode": 0,
       "inputs": [
         {
@@ -4826,7 +4786,7 @@
         224
       ],
       "flags": {},
-      "order": 79,
+      "order": 78,
       "mode": 0,
       "inputs": [
         {
@@ -4883,7 +4843,7 @@
         334
       ],
       "flags": {},
-      "order": 80,
+      "order": 79,
       "mode": 0,
       "inputs": [
         {
@@ -4956,7 +4916,7 @@
         170
       ],
       "flags": {},
-      "order": 81,
+      "order": 80,
       "mode": 0,
       "inputs": [
         {
@@ -5010,7 +4970,7 @@
         310
       ],
       "flags": {},
-      "order": 82,
+      "order": 81,
       "mode": 0,
       "inputs": [
         {
@@ -5081,7 +5041,7 @@
         270
       ],
       "flags": {},
-      "order": 83,
+      "order": 82,
       "mode": 0,
       "inputs": [
         {
@@ -5140,7 +5100,7 @@
         118
       ],
       "flags": {},
-      "order": 84,
+      "order": 83,
       "mode": 0,
       "inputs": [
         {
@@ -5195,7 +5155,7 @@
         186
       ],
       "flags": {},
-      "order": 85,
+      "order": 84,
       "mode": 0,
       "inputs": [
         {
@@ -5260,7 +5220,7 @@
         26
       ],
       "flags": {},
-      "order": 86,
+      "order": 85,
       "mode": 0,
       "inputs": [
         {
@@ -5292,7 +5252,7 @@
         334
       ],
       "flags": {},
-      "order": 87,
+      "order": 86,
       "mode": 0,
       "inputs": [
         {
@@ -5364,7 +5324,7 @@
         46
       ],
       "flags": {},
-      "order": 88,
+      "order": 87,
       "mode": 0,
       "inputs": [
         {
@@ -5402,7 +5362,7 @@
         46
       ],
       "flags": {},
-      "order": 89,
+      "order": 88,
       "mode": 0,
       "inputs": [
         {
@@ -5439,7 +5399,7 @@
         166
       ],
       "flags": {},
-      "order": 90,
+      "order": 89,
       "mode": 0,
       "inputs": [
         {
@@ -5506,7 +5466,7 @@
         166
       ],
       "flags": {},
-      "order": 91,
+      "order": 90,
       "mode": 0,
       "inputs": [
         {
@@ -5580,7 +5540,7 @@
         58
       ],
       "flags": {},
-      "order": 92,
+      "order": 91,
       "mode": 0,
       "inputs": [
         {
@@ -5618,7 +5578,7 @@
         58
       ],
       "flags": {},
-      "order": 93,
+      "order": 92,
       "mode": 0,
       "inputs": [
         {
@@ -5656,7 +5616,7 @@
         82
       ],
       "flags": {},
-      "order": 94,
+      "order": 93,
       "mode": 0,
       "inputs": [
         {
@@ -5696,7 +5656,7 @@
         58
       ],
       "flags": {},
-      "order": 95,
+      "order": 94,
       "mode": 0,
       "inputs": [
         {
@@ -5734,7 +5694,7 @@
         82
       ],
       "flags": {},
-      "order": 96,
+      "order": 95,
       "mode": 0,
       "inputs": [
         {
@@ -5774,7 +5734,7 @@
         58
       ],
       "flags": {},
-      "order": 97,
+      "order": 96,
       "mode": 0,
       "inputs": [
         {
@@ -5812,7 +5772,7 @@
         86
       ],
       "flags": {},
-      "order": 98,
+      "order": 97,
       "mode": 0,
       "inputs": [
         {
@@ -5859,7 +5819,7 @@
         86
       ],
       "flags": {},
-      "order": 99,
+      "order": 98,
       "mode": 0,
       "inputs": [
         {
@@ -5906,7 +5866,7 @@
         26
       ],
       "flags": {},
-      "order": 100,
+      "order": 99,
       "mode": 0,
       "inputs": [
         {
@@ -5938,7 +5898,7 @@
         102
       ],
       "flags": {},
-      "order": 101,
+      "order": 100,
       "mode": 0,
       "inputs": [
         {
@@ -5983,7 +5943,7 @@
         102
       ],
       "flags": {},
-      "order": 102,
+      "order": 101,
       "mode": 0,
       "inputs": [
         {
@@ -6028,7 +5988,7 @@
         26
       ],
       "flags": {},
-      "order": 103,
+      "order": 102,
       "mode": 0,
       "inputs": [
         {
@@ -6060,7 +6020,7 @@
         222
       ],
       "flags": {},
-      "order": 104,
+      "order": 103,
       "mode": 0,
       "inputs": [
         {
@@ -6116,7 +6076,7 @@
         86
       ],
       "flags": {},
-      "order": 105,
+      "order": 104,
       "mode": 0,
       "inputs": [
         {
@@ -6163,7 +6123,7 @@
         274
       ],
       "flags": {},
-      "order": 106,
+      "order": 105,
       "mode": 0,
       "inputs": [
         {
@@ -6219,7 +6179,7 @@
         170
       ],
       "flags": {},
-      "order": 107,
+      "order": 106,
       "mode": 0,
       "inputs": [
         {
@@ -6275,7 +6235,7 @@
         214
       ],
       "flags": {},
-      "order": 108,
+      "order": 107,
       "mode": 0,
       "inputs": [
         {
@@ -6336,7 +6296,7 @@
         26
       ],
       "flags": {},
-      "order": 109,
+      "order": 108,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -6362,7 +6322,7 @@
         338
       ],
       "flags": {},
-      "order": 110,
+      "order": 109,
       "mode": 0,
       "inputs": [
         {
@@ -6409,7 +6369,7 @@
         362
       ],
       "flags": {},
-      "order": 111,
+      "order": 110,
       "mode": 0,
       "inputs": [
         {
@@ -6464,7 +6424,7 @@
         82
       ],
       "flags": {},
-      "order": 112,
+      "order": 111,
       "mode": 0,
       "inputs": [
         {
@@ -6504,7 +6464,7 @@
         386
       ],
       "flags": {},
-      "order": 113,
+      "order": 112,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -6549,7 +6509,7 @@
         106
       ],
       "flags": {},
-      "order": 114,
+      "order": 113,
       "mode": 0,
       "inputs": [
         {
@@ -6585,7 +6545,7 @@
         106
       ],
       "flags": {},
-      "order": 115,
+      "order": 114,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -6621,7 +6581,7 @@
         198
       ],
       "flags": {},
-      "order": 116,
+      "order": 115,
       "mode": 0,
       "inputs": [
         {
@@ -6706,7 +6666,7 @@
         122
       ],
       "flags": {},
-      "order": 117,
+      "order": 116,
       "mode": 0,
       "inputs": [
         {
@@ -6757,7 +6717,7 @@
         122
       ],
       "flags": {},
-      "order": 118,
+      "order": 117,
       "mode": 0,
       "inputs": [
         {
@@ -6808,7 +6768,7 @@
         122
       ],
       "flags": {},
-      "order": 119,
+      "order": 118,
       "mode": 0,
       "inputs": [
         {
@@ -6859,7 +6819,7 @@
         82
       ],
       "flags": {},
-      "order": 120,
+      "order": 119,
       "mode": 0,
       "inputs": [
         {
@@ -6899,7 +6859,7 @@
         238
       ],
       "flags": {},
-      "order": 121,
+      "order": 120,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -6941,7 +6901,7 @@
         322
       ],
       "flags": {},
-      "order": 122,
+      "order": 121,
       "mode": 0,
       "inputs": [
         {
@@ -7011,7 +6971,7 @@
         550
       ],
       "flags": {},
-      "order": 123,
+      "order": 122,
       "mode": 0,
       "inputs": [
         {
@@ -7123,7 +7083,7 @@
         470
       ],
       "flags": {},
-      "order": 124,
+      "order": 123,
       "mode": 0,
       "inputs": [
         {
@@ -7215,7 +7175,7 @@
         522
       ],
       "flags": {},
-      "order": 125,
+      "order": 124,
       "mode": 0,
       "inputs": [
         {
@@ -7313,7 +7273,7 @@
         122
       ],
       "flags": {},
-      "order": 126,
+      "order": 125,
       "mode": 0,
       "inputs": [
         {
@@ -7364,7 +7324,7 @@
         102
       ],
       "flags": {},
-      "order": 127,
+      "order": 126,
       "mode": 0,
       "inputs": [
         {
@@ -7411,7 +7371,7 @@
         26
       ],
       "flags": {},
-      "order": 128,
+      "order": 127,
       "mode": 0,
       "inputs": [
         {
@@ -7444,7 +7404,7 @@
         46
       ],
       "flags": {},
-      "order": 129,
+      "order": 128,
       "mode": 0,
       "inputs": [
         {
@@ -7483,7 +7443,7 @@
         26
       ],
       "flags": {},
-      "order": 130,
+      "order": 129,
       "mode": 0,
       "inputs": [
         {
@@ -7516,7 +7476,7 @@
         26
       ],
       "flags": {},
-      "order": 131,
+      "order": 130,
       "mode": 0,
       "inputs": [
         {
@@ -7548,7 +7508,7 @@
         26
       ],
       "flags": {},
-      "order": 132,
+      "order": 131,
       "mode": 0,
       "inputs": [
         {
@@ -7580,7 +7540,7 @@
         200
       ],
       "flags": {},
-      "order": 133,
+      "order": 132,
       "mode": 0,
       "inputs": [
         {
@@ -7626,7 +7586,7 @@
         218
       ],
       "flags": {},
-      "order": 134,
+      "order": 133,
       "mode": 0,
       "inputs": [
         {
@@ -7686,7 +7646,7 @@
         26
       ],
       "flags": {},
-      "order": 135,
+      "order": 134,
       "mode": 0,
       "inputs": [
         {
@@ -7718,7 +7678,7 @@
         402
       ],
       "flags": {},
-      "order": 136,
+      "order": 135,
       "mode": 0,
       "inputs": [
         {
@@ -7806,7 +7766,7 @@
         242
       ],
       "flags": {},
-      "order": 137,
+      "order": 136,
       "mode": 0,
       "inputs": [
         {
@@ -7877,7 +7837,7 @@
         314
       ],
       "flags": {},
-      "order": 138,
+      "order": 137,
       "mode": 0,
       "inputs": [
         {
@@ -7954,7 +7914,7 @@
         146
       ],
       "flags": {},
-      "order": 139,
+      "order": 138,
       "mode": 0,
       "inputs": [
         {
@@ -8006,7 +7966,7 @@
         98
       ],
       "flags": {},
-      "order": 140,
+      "order": 139,
       "mode": 0,
       "inputs": [
         {
@@ -8054,7 +8014,7 @@
         26
       ],
       "flags": {},
-      "order": 141,
+      "order": 140,
       "mode": 0,
       "inputs": [
         {
@@ -8087,7 +8047,7 @@
         26
       ],
       "flags": {},
-      "order": 142,
+      "order": 141,
       "mode": 0,
       "inputs": [
         {
@@ -8121,7 +8081,7 @@
         26
       ],
       "flags": {},
-      "order": 143,
+      "order": 142,
       "mode": 0,
       "inputs": [
         {
@@ -8154,7 +8114,7 @@
         26
       ],
       "flags": {},
-      "order": 144,
+      "order": 143,
       "mode": 0,
       "inputs": [
         {
@@ -8188,7 +8148,7 @@
         26
       ],
       "flags": {},
-      "order": 145,
+      "order": 144,
       "mode": 0,
       "inputs": [
         {
@@ -8221,7 +8181,7 @@
         26
       ],
       "flags": {},
-      "order": 146,
+      "order": 145,
       "mode": 0,
       "inputs": [
         {
@@ -8254,7 +8214,7 @@
         58
       ],
       "flags": {},
-      "order": 147,
+      "order": 146,
       "mode": 0,
       "inputs": [
         {
@@ -8292,7 +8252,7 @@
         362
       ],
       "flags": {},
-      "order": 148,
+      "order": 147,
       "mode": 0,
       "inputs": [
         {
@@ -8362,7 +8322,7 @@
         362
       ],
       "flags": {},
-      "order": 149,
+      "order": 148,
       "mode": 0,
       "inputs": [
         {
@@ -8432,7 +8392,7 @@
         26
       ],
       "flags": {},
-      "order": 150,
+      "order": 149,
       "mode": 0,
       "inputs": [
         {
@@ -8464,7 +8424,7 @@
         126
       ],
       "flags": {},
-      "order": 151,
+      "order": 150,
       "mode": 0,
       "inputs": [
         {
@@ -8511,7 +8471,7 @@
         26
       ],
       "flags": {},
-      "order": 152,
+      "order": 151,
       "mode": 0,
       "inputs": [
         {
@@ -8543,7 +8503,7 @@
         26
       ],
       "flags": {},
-      "order": 153,
+      "order": 152,
       "mode": 0,
       "inputs": [
         {
@@ -8575,7 +8535,7 @@
         200
       ],
       "flags": {},
-      "order": 154,
+      "order": 153,
       "mode": 0,
       "inputs": [
         {
@@ -8613,7 +8573,7 @@
         200
       ],
       "flags": {},
-      "order": 155,
+      "order": 154,
       "mode": 0,
       "inputs": [
         {
@@ -8658,7 +8618,7 @@
         150
       ],
       "flags": {},
-      "order": 156,
+      "order": 155,
       "mode": 0,
       "inputs": [
         {
@@ -8707,7 +8667,7 @@
         150
       ],
       "flags": {},
-      "order": 157,
+      "order": 156,
       "mode": 0,
       "inputs": [
         {
@@ -8756,7 +8716,7 @@
         78
       ],
       "flags": {},
-      "order": 158,
+      "order": 157,
       "mode": 0,
       "inputs": [
         {
@@ -8799,7 +8759,7 @@
         58
       ],
       "flags": {},
-      "order": 159,
+      "order": 158,
       "mode": 0,
       "inputs": [
         {
@@ -8837,7 +8797,7 @@
         78
       ],
       "flags": {},
-      "order": 160,
+      "order": 159,
       "mode": 0,
       "inputs": [
         {
@@ -8880,7 +8840,7 @@
         78
       ],
       "flags": {},
-      "order": 161,
+      "order": 160,
       "mode": 0,
       "inputs": [
         {
@@ -8923,7 +8883,7 @@
         78
       ],
       "flags": {},
-      "order": 162,
+      "order": 161,
       "mode": 0,
       "inputs": [
         {
@@ -8968,7 +8928,7 @@
         46
       ],
       "flags": {},
-      "order": 163,
+      "order": 162,
       "mode": 0,
       "inputs": [
         {
@@ -9012,7 +8972,7 @@
         86
       ],
       "flags": {},
-      "order": 164,
+      "order": 163,
       "mode": 0,
       "inputs": [
         {
@@ -9059,7 +9019,7 @@
         78
       ],
       "flags": {},
-      "order": 165,
+      "order": 164,
       "mode": 0,
       "inputs": [
         {
@@ -9102,7 +9062,7 @@
         58
       ],
       "flags": {},
-      "order": 166,
+      "order": 165,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9134,7 +9094,7 @@
         58
       ],
       "flags": {},
-      "order": 167,
+      "order": 166,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9166,7 +9126,7 @@
         58
       ],
       "flags": {},
-      "order": 168,
+      "order": 167,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9198,7 +9158,7 @@
         78
       ],
       "flags": {},
-      "order": 169,
+      "order": 168,
       "mode": 0,
       "inputs": [
         {
@@ -9242,7 +9202,7 @@
         106
       ],
       "flags": {},
-      "order": 170,
+      "order": 169,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9278,7 +9238,7 @@
         86
       ],
       "flags": {},
-      "order": 171,
+      "order": 170,
       "mode": 0,
       "inputs": [
         {
@@ -9325,7 +9285,7 @@
         86
       ],
       "flags": {},
-      "order": 172,
+      "order": 171,
       "mode": 0,
       "inputs": [
         {
@@ -9372,7 +9332,7 @@
         78
       ],
       "flags": {},
-      "order": 173,
+      "order": 172,
       "mode": 0,
       "inputs": [
         {
@@ -9415,7 +9375,7 @@
         26
       ],
       "flags": {},
-      "order": 174,
+      "order": 173,
       "mode": 0,
       "inputs": [
         {
@@ -9447,7 +9407,7 @@
         26
       ],
       "flags": {},
-      "order": 175,
+      "order": 174,
       "mode": 0,
       "inputs": [
         {
@@ -9473,7 +9433,7 @@
         200
       ],
       "flags": {},
-      "order": 176,
+      "order": 175,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9509,7 +9469,7 @@
         58
       ],
       "flags": {},
-      "order": 177,
+      "order": 176,
       "mode": 0,
       "inputs": [
         {
@@ -9547,7 +9507,7 @@
         174
       ],
       "flags": {},
-      "order": 178,
+      "order": 177,
       "mode": 0,
       "inputs": [
         {
@@ -9598,7 +9558,7 @@
         46
       ],
       "flags": {},
-      "order": 179,
+      "order": 178,
       "mode": 0,
       "inputs": [
         {
@@ -9640,7 +9600,7 @@
         26
       ],
       "flags": {},
-      "order": 180,
+      "order": 179,
       "mode": 0,
       "inputs": [
         {
@@ -9673,7 +9633,7 @@
         26
       ],
       "flags": {},
-      "order": 181,
+      "order": 180,
       "mode": 0,
       "inputs": [
         {
@@ -9705,7 +9665,7 @@
         200
       ],
       "flags": {},
-      "order": 182,
+      "order": 181,
       "mode": 0,
       "inputs": [
         {
@@ -9737,7 +9697,7 @@
         26
       ],
       "flags": {},
-      "order": 183,
+      "order": 182,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -9763,7 +9723,7 @@
         58
       ],
       "flags": {},
-      "order": 184,
+      "order": 183,
       "mode": 0,
       "inputs": [
         {
@@ -9801,7 +9761,7 @@
         146
       ],
       "flags": {},
-      "order": 185,
+      "order": 184,
       "mode": 0,
       "inputs": [
         {
@@ -9854,7 +9814,7 @@
         162
       ],
       "flags": {},
-      "order": 186,
+      "order": 185,
       "mode": 0,
       "inputs": [
         {
@@ -9918,7 +9878,7 @@
         82
       ],
       "flags": {},
-      "order": 187,
+      "order": 186,
       "mode": 0,
       "inputs": [
         {
@@ -9958,7 +9918,7 @@
         82
       ],
       "flags": {},
-      "order": 188,
+      "order": 187,
       "mode": 0,
       "inputs": [
         {
@@ -9998,7 +9958,7 @@
         26
       ],
       "flags": {},
-      "order": 189,
+      "order": 188,
       "mode": 0,
       "inputs": [
         {
@@ -10030,7 +9990,7 @@
         58
       ],
       "flags": {},
-      "order": 190,
+      "order": 189,
       "mode": 0,
       "inputs": [
         {
@@ -10068,7 +10028,7 @@
         106
       ],
       "flags": {},
-      "order": 191,
+      "order": 190,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -10098,7 +10058,7 @@
         106
       ],
       "flags": {},
-      "order": 192,
+      "order": 191,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -10128,7 +10088,7 @@
         106
       ],
       "flags": {},
-      "order": 193,
+      "order": 192,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -10164,7 +10124,7 @@
         122
       ],
       "flags": {},
-      "order": 194,
+      "order": 193,
       "mode": 0,
       "inputs": [
         {
@@ -10226,7 +10186,7 @@
         82
       ],
       "flags": {},
-      "order": 195,
+      "order": 194,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -10260,7 +10220,7 @@
         82
       ],
       "flags": {},
-      "order": 196,
+      "order": 195,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -10284,10 +10244,44 @@
     },
     {
       "id": 198,
+      "type": "SEGSLabelFilterDetailerHookProvider",
+      "pos": [
+        522.8888644748258,
+        6145.555555555555
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 196,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SEGSLabelFilterDetailerHookProvider"
+      },
+      "widgets_values": [
+        "all",
+        ""
+      ],
+      "widgets_values_named": {
+        "preset": "all",
+        "labels": ""
+      }
+    },
+    {
+      "id": 199,
       "type": "LoraWildcardSource",
       "pos": [
-        775.4892062717008,
-        21195.555555555555
+        1322.8888644748258,
+        6205.555555555555
       ],
       "size": [
         400,
@@ -10376,8 +10370,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -525.4892062717008,
-        -21005.555555555555
+        -1072.8888644748258,
+        -6015.555555555555
       ]
     },
     "frontendVersion": "1.57.6"
