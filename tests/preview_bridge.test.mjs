@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { createContext, SourceTextModule, SyntheticModule } from "node:vm";
+import { getFileItem } from "../js/image-path.js";
 
-async function bridge(t, comfyClass = "PreviewBridge") {
+async function bridge(t) {
     const requests = [];
     const fetch = t.mock.fn(async () => new Response("$41-1"));
     const api = {
@@ -12,38 +13,59 @@ async function bridge(t, comfyClass = "PreviewBridge") {
     };
     const context = createContext({ Image: class {}, URLSearchParams });
     const module = new SourceTextModule(await readFile(new URL("../js/preview-bridge.js", import.meta.url), "utf8"), { context });
-    await module.link(() => new SyntheticModule(["api"], function() { this.setExport("api", api); }, { context }));
+    await module.link(async path => path.endsWith("/api.js")
+        ? new SyntheticModule(["api"], function() { this.setExport("api", api); }, { context })
+        : new SourceTextModule(await readFile(new URL(`../js/${path}`, import.meta.url), "utf8"), { context }));
     await module.evaluate();
     let storedValue = "";
     const widget = { name: "image", get value() { return storedValue; }, set value(value) { storedValue = value; } };
     const descriptor = Object.getOwnPropertyDescriptor(widget, "value");
-    const node = { id: 41, comfyClass, widgets: [widget], properties: {}, graph: { setDirtyCanvas() {} } };
+    const node = { id: 41, widgets: [widget], properties: {}, graph: { setDirtyCanvas() {} } };
     module.namespace.setupPreviewBridge(node);
     node.onAdded();
     return { node, widget, descriptor, requests, fetch, restore: () => module.namespace.restorePreviewBridge(node), storeWrite(value) { storedValue = value; } };
 }
 
-for (const nodeType of ["PreviewBridge", "PreviewBridgeLatent"]) {
-    test(`${nodeType}: Vue store-only saves keep the filename and register before queueing`, async t => {
-        const { node, widget, descriptor, requests, storeWrite } = await bridge(t, nodeType);
-        assert.equal(Object.getOwnPropertyDescriptor(widget, "value").get, descriptor.get);
-        assert.equal(Object.getOwnPropertyDescriptor(widget, "value").set, descriptor.set);
-        assert.equal(widget.value, "$41-0");
-        // Frontend 1.53.7 writes the store without invoking a widget callback.
-        const filename = "masks/a & b+#한글.png [input]";
-        storeWrite(filename);
-        assert.equal(requests.length, 0);
-        assert.equal(await widget.serializeValue(), "$41-1");
-        assert.equal(widget.value, filename);
-        assert.equal(await widget.serializeValue(), "$41-1");
-        assert.equal(requests.length, 1, "Unchanged files should retain their prompt ID");
-        const params = new URL(requests[0], "http://localhost").searchParams;
-        assert.equal(params.get("node_id"), "41");
-        assert.equal(params.get("filename"), "a & b+#한글.png");
-        assert.equal(params.get("subfolder"), "masks");
-        assert.equal(params.get("type"), "input");
-        node.onExecuted({ images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
-        assert.equal(widget.value, "PreviewBridge/next.png [temp]", "Editor must reopen the current upstream image");
+test("ImageReceiver retains its temp default and accepts an explicit input reference", () => {
+    assert.deepEqual(getFileItem("temp", "folder/source.png"), { filename: "source.png", subfolder: "folder", type: "temp" });
+    assert.deepEqual(getFileItem("temp", "folder/source.png [input]"), { filename: "source.png", subfolder: "folder", type: "input" });
+});
+
+test("Vue store-only saves keep the filename and register before queueing", async t => {
+    const { node, widget, descriptor, requests, storeWrite } = await bridge(t);
+    assert.equal(Object.getOwnPropertyDescriptor(widget, "value").get, descriptor.get);
+    assert.equal(Object.getOwnPropertyDescriptor(widget, "value").set, descriptor.set);
+    assert.equal(widget.value, "$41-0");
+    // Frontend 1.53.7 writes the store without invoking a widget callback.
+    const filename = "masks/a & b+#한글.png [input]";
+    storeWrite(filename);
+    assert.equal(requests.length, 0);
+    assert.equal(await widget.serializeValue(), "$41-1");
+    assert.equal(widget.value, filename);
+    assert.equal(await widget.serializeValue(), "$41-1");
+    assert.equal(requests.length, 1, "Unchanged files should retain their prompt ID");
+    const params = new URL(requests[0], "http://localhost").searchParams;
+    assert.equal(params.get("node_id"), "41");
+    assert.equal(params.get("filename"), "a & b+#한글.png");
+    assert.equal(params.get("subfolder"), "masks");
+    assert.equal(params.get("type"), "input");
+    node.onExecuted({ images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
+    assert.equal(widget.value, "PreviewBridge/next.png [temp]", "Editor must reopen the current upstream image");
+});
+
+for (const [value, item] of [
+    ["plain.png", { filename: "plain.png", subfolder: "", type: "input" }],
+    ["folder\\edited.png [INPUT]", { filename: "edited.png", subfolder: "folder", type: "input" }],
+    ["folder/edited.png[OUTPUT] ", { filename: "edited.png", subfolder: "folder", type: "output" }]
+]) {
+    test(`registration and restoration use the native image reference: ${value}`, async t => {
+        const { node, widget, requests, restore, storeWrite } = await bridge(t);
+        storeWrite(value);
+        await widget.serializeValue();
+        assert.deepEqual(Object.fromEntries(new URL(requests[0], "http://localhost").searchParams), { node_id: "41", ...item });
+        await restore();
+        assert.deepEqual(JSON.parse(JSON.stringify(node.images)), [item]);
+        assert.equal(widget.value, value);
     });
 }
 

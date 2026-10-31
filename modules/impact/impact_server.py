@@ -3,7 +3,6 @@ import io
 import logging
 import os
 import random
-import threading
 import traceback
 from io import BytesIO
 
@@ -11,7 +10,6 @@ import comfy
 import folder_paths
 import impact
 import impact.core as core
-import impact.impact_pack as impact_pack
 import impact.utils as utils
 import nodes
 import numpy as np
@@ -20,11 +18,10 @@ from aiohttp import web
 from impact.utils import to_tensor
 from impact import sam_editor
 from PIL import Image, UnidentifiedImageError
-from segment_anything import SamPredictor, sam_model_registry
+from segment_anything import SamPredictor
 from server import PromptServer
 
 sam_predictor = None
-default_sam_model_name = os.path.join(impact_pack.model_path, "sams", "sam_vit_b_01ec64.pth")
 
 sam_lock = sam_editor.sam_editor_lock
 
@@ -83,13 +80,6 @@ def prepare_sam(data):
         except ValueError:
             return web.Response(status=400)
 
-        if 'vit_h' in model_name:
-            model_kind = 'vit_h'
-        elif 'vit_l' in model_name:
-            model_kind = 'vit_l'
-        else:
-            model_kind = 'vit_b'
-
         image = nodes.LoadImage().load_image(filename)[0]
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
@@ -98,7 +88,7 @@ def prepare_sam(data):
         else:
             device = comfy.model_management.get_torch_device()
 
-        sam_model = sam_model_registry[model_kind](checkpoint=model_path)
+        sam_model = core.load_sam_model(model_path)
         predictor = SamPredictor(sam_model)
         try:
             sam_model.to(device=device)

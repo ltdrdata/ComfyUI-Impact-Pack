@@ -1,4 +1,5 @@
 import { api } from "../../scripts/api.js";
+import { getFileItem } from "./image-path.js";
 
 export function isPreviewBridge(node) {
     return node.comfyClass === "PreviewBridge" || node.comfyClass === "PreviewBridgeLatent";
@@ -6,14 +7,6 @@ export function isPreviewBridge(node) {
 
 function imageValue(item) {
     return `${item.subfolder ? item.subfolder + "/" : ""}${item.filename} [${item.type || "temp"}]`;
-}
-
-function imageItem(value) {
-    if (typeof value !== "string" || !value || value.startsWith("$")) return null;
-    const match = value.match(/^(.*?)(?: \[(input|output|temp)\])?$/);
-    const path = match[1];
-    const slash = path.lastIndexOf("/");
-    return { filename: path.slice(slash + 1), subfolder: path.slice(0, slash + 1).replace(/\/$/, ""), type: match[2] || "temp" };
 }
 
 export function setupPreviewBridge(node) {
@@ -38,7 +31,7 @@ export function setupPreviewBridge(node) {
         const value = widget.value || `$${node.id}-0`;
         submittedValue = value;
         if (typeof value === "string" && value.startsWith("$")) return value;
-        const item = imageItem(value);
+        const item = getFileItem("input", value);
         if (!item?.filename) throw new Error("Preview Bridge: no image to register");
         if (value !== registeredValue || !registration) {
             registeredValue = value;
@@ -73,7 +66,7 @@ export function setupPreviewBridge(node) {
 export async function restorePreviewBridge(node) {
     const widget = node.widgets.find(w => w.name === "image");
     const value = widget.value;
-    let item = imageItem(value);
+    let item = getFileItem("input", value);
     if (typeof value === "string" && value.startsWith("$")) {
         // Workflows saved before the Vue integration contain opaque IDs.
         const response = await api.fetchApi(`/impact/get/pb_id_image?${new URLSearchParams({ id: value })}`, { cache: "no-store" });

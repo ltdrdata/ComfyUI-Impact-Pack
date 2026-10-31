@@ -2,7 +2,7 @@ import os
 import warnings
 
 import torch
-from segment_anything import SamPredictor
+from segment_anything import SamPredictor, sam_model_registry
 
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from collections import namedtuple
@@ -563,6 +563,12 @@ def composite_to(dest_latent, crop_region, src_latent):
     orig_image = lc.composite(dest_latent, src_latent, x1, y1)
 
     return orig_image[0]
+
+
+def load_sam_model(model_path):
+    filename = os.path.basename(model_path)
+    model_kind = "vit_h" if "vit_h" in filename else "vit_l" if "vit_l" in filename else "vit_b"
+    return sam_model_registry[model_kind](checkpoint=model_path)
 
 
 def sam_predict(predictor, points, plabs, bbox, threshold):

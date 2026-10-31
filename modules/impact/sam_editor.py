@@ -5,9 +5,9 @@ import threading
 
 import numpy as np
 from PIL import Image
-from segment_anything import SamPredictor, sam_model_registry
+from segment_anything import SamPredictor
 
-from impact.core import sam_predict
+from impact.core import load_sam_model, sam_predict
 
 
 sam_editor_lock = threading.Lock()
@@ -41,8 +41,7 @@ def read_request(image_bytes, prompts_json):
 
 def detect_mask(image, points, labels, threshold, model_path, device):
     with sam_editor_lock:
-        model_kind = "vit_h" if "vit_h" in model_path else "vit_l" if "vit_l" in model_path else "vit_b"
-        model = sam_model_registry[model_kind](checkpoint=model_path)
+        model = load_sam_model(model_path)
         try:
             model.to(device=device)
             predictor = SamPredictor(model)

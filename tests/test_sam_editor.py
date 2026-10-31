@@ -1,11 +1,13 @@
 import io
 import json
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 from PIL import Image
+from segment_anything import sam_model_registry
 
-from impact import sam_editor
+from impact import core, sam_editor
 
 
 def snapshot():
@@ -22,6 +24,19 @@ def test_snapshot_coordinates_and_confidence():
     assert points == [[1.25, 1], [2, 0]]
     assert labels == [1, 0]
     assert threshold == 0.85
+
+
+@pytest.mark.parametrize("path,kind", [
+    ("/models/vit_h_archive/sam_vit_b.pth", "vit_b"),
+    ("/models/vit_h_archive/sam_vit_l.pth", "vit_l"),
+    ("/models/vit_l_archive/sam_vit_h.pth", "vit_h"),
+])
+def test_model_selection_ignores_parent_directories(monkeypatch, path, kind):
+    models = {name: SimpleNamespace() for name in ("vit_b", "vit_l", "vit_h")}
+    for name, model in models.items():
+        monkeypatch.setitem(sam_model_registry, name, lambda checkpoint, model=model: model)
+    result = core.load_sam_model(path)
+    assert result is models[kind]
 
 
 @pytest.mark.parametrize("prompts", [
@@ -65,14 +80,16 @@ def test_request_owned_model_returns_to_cpu_and_uses_the_supplied_snapshot(monke
                               [[False, False, False], [False, True, False]]])
             return masks, np.array([0.9, 0.8]), None
 
-    monkeypatch.setitem(sam_editor.sam_model_registry, "vit_b", lambda checkpoint: Model())
+    monkeypatch.setitem(sam_model_registry, "vit_b", lambda checkpoint: Model())
+    monkeypatch.setitem(sam_model_registry, "vit_h", lambda checkpoint: pytest.fail("Selected the model from its parent directory"))
     monkeypatch.setattr(sam_editor, "SamPredictor", Predictor)
     values = sam_editor.read_request(snapshot(), '{"positive_points": [[1, 1]]}')
+    model_path = "/models/vit_h_archive/sam_vit_b.pth"
     if fail:
         with pytest.raises(RuntimeError, match="inference failed"):
-            sam_editor.detect_mask(*values, "sam_vit_b.pth", "test-device")
+            sam_editor.detect_mask(*values, model_path, "test-device")
     else:
-        result = sam_editor.detect_mask(*values, "sam_vit_b.pth", "test-device")
+        result = sam_editor.detect_mask(*values, model_path, "test-device")
         with Image.open(io.BytesIO(result)) as mask:
             np.testing.assert_array_equal(np.asarray(mask), [[0, 255, 0], [0, 255, 0]])
     assert moves == ["test-device", "cpu"]

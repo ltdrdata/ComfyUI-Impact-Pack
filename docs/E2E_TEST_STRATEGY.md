@@ -468,8 +468,10 @@ running a diffusion sampler.
 Both bridge types are edited twice, exported through native **Export**, and
 reimported with positional and named restoration. Widget names, order, live
 values and serialized `widgets_values` must survive. The suite also checks
-`block`, all three `restore_mask` modes, same-size and resized inputs, and mask
-propagation into the next latent bridge. The existing catalog fixtures are not
+`block`, all three image `restore_mask` modes, and same-size and resized inputs.
+Latent restoration policies are covered by all six combinations in
+`test_preview_bridge_latent.py`; Chrome checks restoration and discard after a
+resize through a second latent bridge. The existing catalog fixtures are not
 changed. The mask oracle comes from the editor canvas before Save; it is not
 reconstructed from the saved mask. Float32-to-PNG comparisons allow one 8-bit
 level of quantization error. An RGR case rejects registration, restores it, then
