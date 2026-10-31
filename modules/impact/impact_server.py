@@ -67,8 +67,6 @@ async def sam_prepare(request):
             # already loaded: skip -- prevent redundant loading
             return web.Response(status=200)
 
-        last_prepare_data = data
-
         model_name = 'sam_vit_b_01ec64.pth'
         if data['sam_model_name'] == 'auto':
             model_name = impact.config.get_config()['sam_editor_model']
@@ -95,6 +93,7 @@ async def sam_prepare(request):
         except ValueError:
             return web.Response(status=400)
 
+        last_prepare_data = data
         thread = threading.Thread(target=async_prepare_sam, args=(model_path, filename,))
         thread.start()
 

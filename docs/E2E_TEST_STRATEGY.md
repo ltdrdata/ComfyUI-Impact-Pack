@@ -129,13 +129,31 @@ python -m pytest tests/test_e2e_legacy_sam.py -v
 ```
 
 Install the model configured by `sam_editor_model` on the isolated server.
-The detection tests skip only when `IMPACT_E2E_SAM_IMAGE` is unset. They forward
+Detection tests skip when `IMPACT_E2E_SAM_IMAGE` is unset; named-restoration
+cases also skip on older frontends without that setting. Other native reloads
+use positional restoration on those frontends. The tests forward
 the real detector response without substituting a mask, compare saved outputs
 and browser previews, and reload native exports in positional and named modes.
 The second edit starts from the first saved temporary image and checks that two
 clicks produce exactly one positive and one negative point. The separate menu
 test checks repeated opening and native loading without running detection.
+Detection starts from both an uploaded input and a SaveImage output in a nested
+subfolder, with both native restoration modes. Event checks cover keyboard
+shortcuts, cancellation without changing the image widget, resizing and opening
+a different image. Invalid type/path requests are rejected twice, between valid
+preparation requests, so a rejected request cannot be cached as successful.
 No Vue MaskEditor extension API is required.
+
+For the frontend 1.42.15 / backend 0.19.3 compatibility comparison, select
+`-k 'not rejects_invalid'`. Those three API checks target the current backend's
+path resolver; the older-pair comparison exercises the legacy UI and image flow.
+
+`node --experimental-vm-modules --test tests/legacy_sam.test.mjs` checks that
+resizing redraws only the current image after reopening and that mask upload
+sets the selected image reference without changing another image. It loads the shipped
+SAM module with controlled UI exports and canvas/event objects, exercising both
+global UI exports and the dynamic UI-module fallback. This checks those import
+contracts; it does not substitute for browser testing an older frontend release.
 
 The all-node catalog requires **Full Cache mode** because the trusted snapshot
 includes wildcard picker values displaying `Select Wildcard 🟢 Full Cache`.

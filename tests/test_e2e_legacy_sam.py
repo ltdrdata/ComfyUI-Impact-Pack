@@ -45,21 +45,28 @@ def node_menu(browser, node_id, name):
 
 def source_image(browser, path):
     source = browser.add_node("Load Image", "LoadImage", 220, 200)
+    upload_image(browser, source, path)
+    return source
+
+
+def upload_image(browser, source, path):
     button = browser.app.evaluate("""(app, id) =>
         app.graph.getNodeById(id).widgets.find(widget => widget.type === 'button').name
     """, source)
     with browser.page.expect_file_chooser() as chooser:
         browser.page.mouse.click(*browser.point("LoadImage", widget=button))
-    chooser.value.set_files(path)
-    browser.page.wait_for_function("""(app) => {
+    with browser.page.expect_response(lambda response: response.url.endswith("/upload/image")) as uploaded:
+        chooser.value.set_files(path)
+    assert uploaded.value.ok
+    filename = uploaded.value.json()["name"]
+    browser.page.wait_for_function("""({app, filename}) => {
         const image = app.graph._nodes.find(node => node.type === 'LoadImage').imgs?.[0];
-        return image?.complete && image.naturalWidth > 0;
-    }""", arg=browser.app)
-    return source
+        return image?.complete && image.naturalWidth > 0 && new URL(image.src).searchParams.get('filename') === filename;
+    }""", arg={"app": browser.app, "filename": filename})
 
 
 def clipspace_menu(browser):
-    browser.page.get_by_test_id("comfy-menu-button").click()
+    browser.page.locator('[data-testid="comfy-menu-button"], .comfy-menu-button-wrapper').click()
     browser.page.get_by_role("menuitem", name="Edit", exact=True).hover()
     browser.page.get_by_role("menuitem", name="Clipspace", exact=True).click()
 
@@ -81,8 +88,15 @@ def widgets(browser):
     }))""")
 
 
+def supports_named_restore(browser):
+    return browser.app.evaluate("app => 'Comfy.Workflow.NamedValuesRestore' in app.ui.settings.settingsLookup")
+
+
 def reload_native(browser, artifacts, named):
-    setting(browser, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", named)
+    if supports_named_restore(browser):
+        setting(browser, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", named)
+    else:
+        assert not named, "This frontend only provides positional widget restoration"
     before = widgets(browser)
     path = artifacts / "edited-workflow.json"
     export_workflow(browser, path)
@@ -105,6 +119,9 @@ def test_legacy_sam_context_menu_and_clipspace_reopen(ui):
     expect(empty_dialog).to_be_visible()
     expect(browser.page.get_by_role("button", name="Impact SAM Detector", exact=True)).not_to_be_visible()
     empty_dialog.get_by_role("button", name="Close", exact=True).click()
+    expect(empty_dialog).not_to_be_visible()
+    browser.page.mouse.click(600, 400)
+    expect(browser.page.get_by_role("menuitem", name="Edit", exact=True)).not_to_be_visible()
     path = artifacts / "source.png"
     Image.new("RGB", (256, 256), (64, 128, 192)).save(path)
     source = source_image(browser, path)
@@ -121,28 +138,107 @@ def test_legacy_sam_context_menu_and_clipspace_reopen(ui):
         expect(browser.page.locator("#pointsCanvas")).to_be_visible()
         browser.page.get_by_role("button", name="Cancel", exact=True).click()
         content.get_by_role("button", name="Close", exact=True).click()
-    for named in (False, True):
+    for named in ((False, True) if supports_named_restore(browser) else (False,)):
         reload_native(browser, artifacts, named)
+
+
+def test_legacy_sam_keyboard_cancel_resize_and_change_image(ui):
+    browser, artifacts = ui
+    assert_sam_loaded(browser)
+    first = artifacts / "landscape.png"
+    second = artifacts / "portrait.png"
+    Image.new("RGB", (1400, 800), (64, 128, 192)).save(first)
+    Image.new("RGB", (700, 1300), (192, 64, 128)).save(second)
+    source = source_image(browser, first)
+    for path, size, color in [(first, (1400, 800), [64, 128, 192]),
+                              (second, (700, 1300), [192, 64, 128])]:
+        if path == second:
+            upload_image(browser, source, path)
+        before = widgets(browser)
+        for _ in range(2):
+            node_menu(browser, source, "Open in SAM Detector")
+            canvas = browser.page.locator("#pointsCanvas")
+            expect(canvas).to_be_visible()
+            expect(browser.page.get_by_role("button", name="Save to node", exact=True)).to_be_enabled()
+            assert canvas.evaluate("canvas => [...canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data].every(value => value === 0)"), "Reopening retained prompt points"
+            brush = browser.page.locator("#sam-brush")
+            browser.page.keyboard.press("-")
+            expect(brush).to_have_css("background-color", "rgb(255, 0, 0)")
+            browser.page.keyboard.press("=")
+            expect(brush).to_have_css("background-color", "rgb(0, 0, 255)")
+            for width, height in [(1100, 900), (2200, 1300)]:
+                browser.page.set_viewport_size({"width": width, "height": height})
+                browser.page.wait_for_function("""({width, height}) => {
+                    const image = document.getElementById('imageCanvas');
+                    return image.width === width - 250 && image.height === height - 200;
+                }""", arg={"width": width, "height": height})
+                box = canvas.bounding_box()
+                assert box["width"] / box["height"] == pytest.approx(size[0] / size[1], abs=0.005)
+                pixel = browser.page.locator("#imageCanvas").evaluate("canvas => [...canvas.getContext('2d').getImageData(10, 10, 1, 1).data].slice(0, 3)")
+                assert pixel == color, "Resize drew a previously edited image"
+            canvas.click(position={"x": 60, "y": 60})
+            assert canvas.evaluate("canvas => canvas.getContext('2d').getImageData(60, 60, 1, 1).data[3]") > 0
+            browser.page.get_by_role("button", name="Cancel", exact=True).click()
+            expect(canvas).not_to_be_visible()
+            assert widgets(browser) == before, "Cancel changed the source image"
+            browser.page.keyboard.press("-")
+            expect(brush).to_have_css("background-color", "rgb(0, 0, 255)")
+        reload_native(browser, artifacts, path == second and supports_named_restore(browser))
+
+
+@pytest.mark.parametrize("invalid", [
+    {"type": "unknown"},
+    {"filename": "../outside.png"},
+    {"subfolder": "../../outside"},
+], ids=["unknown-type", "filename-escape", "subfolder-escape"])
+def test_legacy_sam_rejects_invalid_path_on_retry(ui, invalid):
+    browser, artifacts = ui
+    assert_sam_loaded(browser)
+    path = artifacts / "valid-source.png"
+    Image.new("RGB", (256, 256), (64, 128, 192)).save(path)
+    source = source_image(browser, path)
+    with browser.page.expect_response(lambda response: response.url.endswith("/sam/prepare")) as prepared:
+        node_menu(browser, source, "Open in SAM Detector")
+    assert prepared.value.status == 200, "Valid SAM preparation must succeed before testing rejection"
+    valid = prepared.value.request.post_data_json
+    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+    data = dict(valid)
+    data.update(invalid)
+    for _ in range(2):
+        response = browser.page.request.post(f"{browser.base_url}/sam/prepare", data=data)
+        assert response.status == 400, "Rejected SAM preparation was cached as successful"
+    response = browser.page.request.post(f"{browser.base_url}/sam/prepare", data=valid)
+    assert response.status == 200, "Rejected paths prevented valid preparation"
 
 
 @pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"),
                     reason="Set IMPACT_E2E_SAM_IMAGE and install the configured SAM model")
 @pytest.mark.parametrize("named", [False, True], ids=["positional", "named"])
-def test_legacy_sam_detect_save_and_native_reload(ui, named):
+@pytest.mark.parametrize("origin", ["input", "output_subfolder"])
+def test_legacy_sam_detect_save_and_native_reload(ui, named, origin):
     browser, artifacts = ui
     assert_sam_loaded(browser)
+    if named and not supports_named_restore(browser):
+        pytest.skip("This frontend does not provide named widget restoration")
     source = source_image(browser, os.environ["IMPACT_E2E_SAM_IMAGE"])
-    output = browser.add_node("Preview Image", "PreviewImage", 750, 200)
+    output_type, mask_type = ("PreviewImage", "SaveImage") if origin == "input" else ("SaveImage", "PreviewImage")
+    titles = {"PreviewImage": "Preview Image", "SaveImage": "Save Image"}
+    output = browser.add_node(titles[output_type], output_type, 750, 200)
     convert = browser.add_node("Convert Mask to Image", "MaskToImage", 220, 800)
-    mask_output = browser.add_node("Save Image", "SaveImage", 750, 800)
-    browser.connect("LoadImage", "PreviewImage")
+    mask_output = browser.add_node(titles[mask_type], mask_type, 750, 800)
+    browser.connect("LoadImage", output_type)
     browser.page.mouse.move(*browser.point("LoadImage", slot=1))
     browser.page.mouse.down()
     browser.page.mouse.move(*browser.point("MaskToImage", is_input=True), steps=12)
     browser.page.mouse.up()
     browser.page.wait_for_function("""(app) => app.graph._nodes.find(node =>
         node.type === 'MaskToImage').inputs[0].link !== null""", arg=browser.app)
-    browser.connect("MaskToImage", "SaveImage")
+    browser.connect("MaskToImage", mask_type)
+    if origin == "output_subfolder":
+        browser.page.mouse.dblclick(*browser.point("SaveImage", widget="filename_prefix"), delay=100)
+        editor = browser.page.locator("input.value:visible, textarea.value:visible")
+        editor.fill("impact-legacy-sam/nested/source")
+        editor.press("Enter")
     original = browser.images(browser.run())[output][0]
     responses = []
 
@@ -154,15 +250,20 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named):
     browser.page.route("**/sam/detect", capture)
     previous = None
     for index in range(2):
-        if index == 0:
-            node_menu(browser, source, "Open in SAM Detector")
-        else:
-            node_menu(browser, source, "Copy (Clipspace)")
-            content = open_clipspace(browser)
-            content.get_by_role("button", name="Impact SAM Detector", exact=True).click()
+        direct = index == 0 and origin == "input"
+        with browser.page.expect_request(lambda request: request.url.endswith("/sam/prepare")) as prepared:
+            if direct:
+                node_menu(browser, source, "Open in SAM Detector")
+            else:
+                node_menu(browser, output if index == 0 else source, "Copy (Clipspace)")
+                content = open_clipspace(browser)
+                content.get_by_role("button", name="Impact SAM Detector", exact=True).click()
+        if index == 0 and origin == "output_subfolder":
+            assert prepared.value.post_data_json["type"] == "output"
+            assert prepared.value.post_data_json["subfolder"] == "impact-legacy-sam/nested"
         canvas = browser.page.locator("#pointsCanvas")
         expect(canvas).to_be_visible()
-        save = browser.page.get_by_role("button", name="Save to node" if index == 0 else "Save", exact=True)
+        save = browser.page.get_by_role("button", name="Save to node" if direct else "Save", exact=True)
         expect(save).to_be_enabled()
         box = canvas.bounding_box()
         browser.page.mouse.click(box["x"] + box["width"] * 0.5, box["y"] + box["height"] * (0.5 if index == 0 else 0.25))
@@ -185,7 +286,7 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named):
             save.click()
         assert uploaded.value.ok
         expect(canvas).not_to_be_visible()
-        if index:
+        if not direct:
             browser.page.wait_for_function("""() => {
                 const image = document.getElementById('clipspace_preview');
                 return image.complete && image.naturalWidth > 0 &&

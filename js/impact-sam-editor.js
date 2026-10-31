@@ -65,8 +65,8 @@ async function uploadMask(filepath, formData) {
 	ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex']] = new Image();
 	ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex']].src = `view?filename=${filepath.filename}&type=${filepath.type}`;
 
-	if(ComfyApp.clipspace.images)
-		ComfyApp.clipspace.images[ComfyApp.clipspace['selectedIndex']] = filepath;
+	ComfyApp.clipspace.images ??= [];
+	ComfyApp.clipspace.images[ComfyApp.clipspace['selectedIndex']] = filepath;
 
 	ComfyApp.clipspace_invalidate_handler?.();
 }
@@ -421,6 +421,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 	static handleKeyDown(event) {
 		const self = ImpactSamEditorDialog.instance;
+		const brush = self.brush;
 		if (event.key === '=') { // positive
 			brush.style.backgroundColor = "blue";
 			brush.style.outline = "2px solid pink";
@@ -588,14 +589,11 @@ class ImpactSamEditorDialog extends ComfyDialog {
 				"type": "temp",
 			};
 
-		if(ComfyApp.clipspace.images)
-			ComfyApp.clipspace.images[0] = item;
-
 		if(ComfyApp.clipspace.widgets) {
 			const index = ComfyApp.clipspace.widgets.findIndex(obj => obj.name === 'image');
 
 			if(index >= 0)
-				ComfyApp.clipspace.widgets[index].value = `${filename} [temp]`;
+				ComfyApp.clipspace.widgets[index].value = item;
 		}
 
 		const dataURL = save_canvas.toDataURL();
