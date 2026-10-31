@@ -2,6 +2,10 @@
 
 작성일: 2026-11-01. 수신 대상: 진행 중인 Vue MaskEditor SAM 확장 작업 담당자.
 
+이 문서는 이식 전 최초 인계 기록이다. 아래 브랜치, 커밋, 미커밋 변경 및
+구현 상태는 작성 당시 기준이며, 현재 동작과 릴리즈 조건은
+[SAM MaskEditor 문서](SAM_MASK_EDITOR.md)를 따른다.
+
 Preview Bridge의 일반 마스크 편집은 Vue MaskEditor의 저장 흐름에 맞춰 이식했다.
 SAM 기능은 사용자 설명에 따라 별도 작업에서 Vue MaskEditor를 확장한다.
 다음 연결 지점은 **SAM 검출 결과를 Vue 편집기의 마스크 레이어에 반영하고,
