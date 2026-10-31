@@ -1,0 +1,740 @@
+{
+  "id": "5bbad2f7-8099-4159-98b5-f4b5b8d7a5c7",
+  "revision": 2,
+  "last_node_id": 27,
+  "last_link_id": 32,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -1671.2570156914337,
+        -367.3692838230397
+      ],
+      "size": [
+        380,
+        154.765625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "ckpt_name",
+          "name": "ckpt_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "ckpt_name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODEL",
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        },
+        {
+          "localized_name": "CLIP",
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            2
+          ]
+        },
+        {
+          "localized_name": "VAE",
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 2,
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "divingIllustriousFlat_v80VAE.safetensors"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "LoraWildcardSource",
+      "pos": [
+        -1244.824896335366,
+        -559.562118526313
+      ],
+      "size": [
+        437.109375,
+        510.546875
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "localized_name": "category",
+          "name": "category",
+          "type": "COMBO",
+          "widget": {
+            "name": "category"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "lora_wildcard",
+          "name": "lora_wildcard",
+          "type": "COMBO",
+          "widget": {
+            "name": "lora_wildcard"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "strength",
+          "name": "strength",
+          "type": "FLOAT",
+          "widget": {
+            "name": "strength"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "base_prompt",
+          "name": "base_prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "base_prompt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "shape": 6,
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            5
+          ]
+        },
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "shape": 6,
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            6
+          ]
+        },
+        {
+          "localized_name": "conditioning",
+          "name": "conditioning",
+          "shape": 6,
+          "type": "CONDITIONING",
+          "slot_index": 2,
+          "links": [
+            7
+          ]
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "shape": 6,
+          "type": "STRING",
+          "slot_index": 3,
+          "links": [
+            8
+          ]
+        },
+        {
+          "localized_name": "lora_name",
+          "name": "lora_name",
+          "shape": 6,
+          "type": "STRING",
+          "slot_index": 4,
+          "links": [
+            28
+          ]
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "shape": 6,
+          "type": "STRING",
+          "slot_index": 5,
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraWildcardSource"
+      },
+      "widgets_values": [
+        "styles",
+        "90s Anime Melancholy [Illustrious - Style - 1738546]",
+        "fixed",
+        0.9,
+        "masterpiece, best quality, very aesthetic, absurdres, curvy woman",
+        181,
+        "increment"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 16,
+      "type": "ShowText|pysssss",
+      "pos": [
+        -726.0712492422817,
+        -691.6986336195765
+      ],
+      "size": [
+        466.34375,
+        267.125
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Final Prompt (with triggers)",
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "masterpiece, best quality, very aesthetic, absurdres, curvy woman, 90s_melancholy, retro"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -716.9874037981032,
+        -293.6194316878559
+      ],
+      "size": [
+        440,
+        160
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 6
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Negative Prompt",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "bad quality, worst quality, worst detail, sketch, censored, lowres, bad anatomy, bad hands, missing fingers, extra digits, jpeg artifacts, signature, watermark, text, blurry"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 2,
+      "type": "EmptyLatentImage",
+      "pos": [
+        -676.8974249965847,
+        -18.686873863422832
+      ],
+      "size": [
+        280,
+        168.09375
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "batch_size",
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            13
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        896,
+        1152,
+        1
+      ]
+    },
+    {
+      "id": 11,
+      "type": "KSampler",
+      "pos": [
+        -142.61,
+        -701.85
+      ],
+      "size": [
+        330,
+        360
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 5
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 7
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 9
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 13
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        777,
+        "fixed",
+        28,
+        6,
+        "euler_ancestral",
+        "normal",
+        1
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAEDecode",
+      "pos": [
+        -81.9,
+        -280.33
+      ],
+      "size": [
+        225,
+        96.15625
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 19
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "SaveImage",
+      "pos": [
+        235.86,
+        -704.88
+      ],
+      "size": [
+        520,
+        520
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 20
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": 28
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "Pose"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "MarkdownNote",
+      "pos": [
+        -2188.258220880682,
+        -651.1997392849597
+      ],
+      "size": [
+        440,
+        586.03125
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Lora Wildcard Source Modes",
+      "properties": {},
+      "widgets_values": [
+        "## IL — txt2img (Lora Wildcard Source - Test)\n\nSimplified workflow to test the new generic dynamic `LoraWildcardSource` node:\n\n- The Checkpoint loads model and clip directly into `LoraWildcardSource`.\n- `LoraWildcardSource` receives the base prompt from `PromptBuilder //Inspire` in the `base_prompt` input.\n- Select the `category` (style or pose). The second dropdown (`lora_wildcard`) will update dynamically by querying the Python backend.\n- It applies the corresponding LoRA and encodes the positive prompt directly.\n- The `model` and `conditioning` outputs go to the KSampler.\n- The modified `clip` goes to the negative prompt encoder.\n- The `lora_name` output goes straight to `SaveImage` as a prefix, automatically naming saved images with the LoRA name.\n\n*No need to use ImpactWildcardEncode or Text Concatenate.*"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      26,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      1,
+      1,
+      26,
+      1,
+      "CLIP"
+    ],
+    [
+      4,
+      1,
+      2,
+      12,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      26,
+      0,
+      11,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      26,
+      1,
+      10,
+      0,
+      "CLIP"
+    ],
+    [
+      7,
+      26,
+      2,
+      11,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      26,
+      3,
+      16,
+      0,
+      "STRING"
+    ],
+    [
+      9,
+      10,
+      0,
+      11,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      2,
+      0,
+      11,
+      3,
+      "LATENT"
+    ],
+    [
+      19,
+      11,
+      0,
+      12,
+      0,
+      "LATENT"
+    ],
+    [
+      20,
+      12,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      26,
+      4,
+      13,
+      1,
+      "STRING"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "1 - Lora Wildcard Source (Dynamic)",
+      "bounding": [
+        -1720,
+        -840,
+        1525.5,
+        1014.5
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "2 - Generation (txt2img)",
+      "bounding": [
+        -171.71,
+        -834.97,
+        950,
+        720
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6050000000000015,
+      "offset": [
+        2440.100628994817,
+        1123.5167865693213
+      ]
+    }
+  },
+  "version": 0.4
+}
