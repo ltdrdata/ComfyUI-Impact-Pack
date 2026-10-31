@@ -1,3 +1,4 @@
+import asyncio
 import io
 import logging
 import os
@@ -17,16 +18,44 @@ import numpy as np
 import torchvision
 from aiohttp import web
 from impact.utils import to_tensor
-from PIL import Image
+from impact import sam_editor
+from PIL import Image, UnidentifiedImageError
 from segment_anything import SamPredictor, sam_model_registry
 from server import PromptServer
 
 sam_predictor = None
 default_sam_model_name = os.path.join(impact_pack.model_path, "sams", "sam_vit_b_01ec64.pth")
 
-sam_lock = threading.Condition()
+sam_lock = sam_editor.sam_editor_lock
 
 last_prepare_data = None
+
+
+@PromptServer.instance.routes.post("/impact/sam/detect")
+async def sam_detect_snapshot(request):
+    data = await request.post()
+    image = data.get("image")
+    prompts = data.get("prompts")
+    if not isinstance(image, web.FileField) or not isinstance(prompts, str):
+        return web.json_response({"error": "Provide an image snapshot and SAM prompts."}, status=400)
+    try:
+        values = sam_editor.read_request(image.file.read(), prompts)
+    except (ValueError, UnidentifiedImageError, OSError) as error:
+        return web.json_response({"error": str(error)}, status=400)
+    config = impact.config.get_config()
+    model_name = config["sam_editor_model"]
+    model_path = folder_paths.get_full_path("sams", model_name)
+    if model_path is None:
+        return web.json_response({"error": f"SAM model '{model_name}' was not found. Install it in models/sams or update sam_editor_model."}, status=400)
+    device = "cpu" if config["sam_editor_cpu"] else comfy.model_management.get_torch_device()
+    try:
+        result = await asyncio.to_thread(sam_editor.detect_mask, *values, model_path, device)
+    except ValueError as error:
+        return web.json_response({"error": str(error)}, status=400)
+    except Exception:
+        logging.exception("[Impact Pack] SAM snapshot detection failed")
+        return web.json_response({"error": "SAM detection failed. Check the server log and retry."}, status=500)
+    return web.Response(body=result, content_type="image/png")
 
 
 def async_prepare_sam(model_name, filename):

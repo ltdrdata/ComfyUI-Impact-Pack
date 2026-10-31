@@ -478,8 +478,11 @@ submission; the successful run must produce the edited mask. The paint case
 compares the composed editor layers with IMAGE output and reopens them after
 native export/import.
 
-To include Interactive SAM, install the model configured by `sam_editor_model`
-in the test server's `impact-pack.ini`, and provide an image containing a subject:
+To include Interactive SAM, serve a frontend exposing the MaskEditor tool API,
+install the model configured by `sam_editor_model` in the test server's
+`impact-pack.ini`, and provide an image containing a subject. The latent SAM
+case also uses `vae-ft-mse-840000-ema-pruned.safetensors` to encode that image.
+See [SAM setup](SAM_MASK_EDITOR.md).
 
 ```bash
 IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
@@ -487,11 +490,14 @@ IMPACT_E2E_SAM_IMAGE=/path/to/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/im
 python -m pytest tests/test_e2e_preview_bridge.py -k interactive_sam -v
 ```
 
-This case uploads the image through the UI, places positive and negative points,
-clicks Detect and Save to node, then compares the bridge's MASK with the real
-detector response and checks that the image is preserved. It is skipped only
-when `IMPACT_E2E_SAM_IMAGE` is unset; missing models, menus or failed detection
-are test failures. Tests do not download models or change server configuration.
+These cases upload the image through the UI, select SAM inside the native
+MaskEditor, place positive and negative points, and click Detect and Save.
+They compare the bridge's MASK with the real detector response, preserve paint
+and RGB through manual editing and redetection, and verify rotated snapshots,
+latent samples, downstream noise masks, and both native widget restoration modes.
+They skip only when `IMPACT_E2E_SAM_IMAGE` is unset; missing models, the extension
+API or failed detection are test failures. Tests do not download models or
+change server configuration.
 Each case records a screenshot and trace, with editor masks and native exports
 saved alongside them where applicable.
 

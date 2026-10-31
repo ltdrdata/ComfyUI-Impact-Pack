@@ -158,7 +158,10 @@ including rejecting blocked requests and stale pixels served at a new URL.
 through Chrome's Vue MaskEditor: paint/mask editing and native reload, Clipspace feedback, downstream
 compositing, latent mask propagation, blocking and restoration. Its default
 cases need no models. Set `IMPACT_E2E_SAM_IMAGE` to include Interactive SAM with
-the server's configured model. See the E2E guide for setup and coverage.
+the server's configured model, a frontend exposing the MaskEditor tool API, and
+the SD1.5 VAE for latent coverage. See [SAM setup](../docs/SAM_MASK_EDITOR.md).
+`node --experimental-vm-modules --test tests/sam_mask_editor.test.mjs` verifies
+point controls, cancellation, stale results, failure/retry and API registration.
 `node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks
 Vue store-only updates, awaited registration, retry after failure, and legacy
 workflow references without starting a server.

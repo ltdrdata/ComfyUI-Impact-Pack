@@ -353,7 +353,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 
 
 ## Feature
-* `Interactive SAM Detector (Clipspace)` - When you right-click on a node that has 'MASK' and 'IMAGE' outputs, a context menu will open. From this menu, you can either open a dialog to create a SAM Mask using 'Open in SAM Detector', or copy the content (likely mask data) using 'Copy (Clipspace)' and generate a mask using 'Impact SAM Detector' from the clipspace menu, and then paste it using 'Paste (Clipspace)'.
+* `Interactive SAM Detector` - With the [MaskEditor extension API](docs/SAM_MASK_EDITOR.md), open the native MaskEditor and select **SAM Detector** to generate and refine a mask. Frontends without the API retain the legacy Clipspace integration described below.
 * Providing a feature to detect errors that occur when mixing models and clips from checkpoints such as `SDXL Base`, `SDXL Refiner`, `SD1.x`, `SD2.x` during sample execution, and reporting appropriate errors.
 
 
@@ -462,6 +462,10 @@ gpu_gaussian_blur = False
 
 
 #### 5. Interactive SAM Detector (Clipspace)
+
+Frontends exposing the MaskEditor tool API use **Open in MaskEditor → SAM Detector**.
+See [SAM in the native MaskEditor](docs/SAM_MASK_EDITOR.md) for requirements and controls.
+The following screenshots describe the legacy dialog used without that API.
 
 * When you right-click on the node that outputs 'MASK' and 'IMAGE', a menu called "Open in SAM Detector" appears, as shown in the following picture. Clicking on the menu opens a dialog in SAM's functionality, allowing you to generate a segment mask.
 ![samdetector-menu](https://github.com/ltdrdata/ComfyUI-extension-tutorials/raw/Main/ComfyUI-Impact-Pack/images/SAMDetector-menu.png)

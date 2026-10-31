@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const source = readFileSync(new URL('../js/impact-sam-editor.js', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../js/legacy-sam-editor.mjs', import.meta.url), 'utf8');
 
 async function loadSam(legacyUI = false) {
   const window = new EventTarget();

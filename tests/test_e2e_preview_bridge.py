@@ -7,11 +7,13 @@ SAM case requires IMPACT_E2E_SAM_IMAGE and the server's configured SAM model.
 """
 from argparse import Namespace
 import base64
+from email.parser import BytesParser
 import io
 import json
 import os
 from pathlib import Path
 import re
+import time
 
 import numpy as np
 import pytest
@@ -65,6 +67,11 @@ def point(ui, node_id, *, widget=None, slot=0, is_input=False, menu=False):
 
 
 def connect(ui, source, target, source_slot=0, target_slot=0):
+    if isinstance(target_slot, str):
+        target_slot = ui.app.evaluate("""(app, {id, name}) =>
+            app.graph.getNodeById(id).inputs.findIndex(input => input.name === name)
+        """, {"id": target, "name": target_slot})
+        assert target_slot >= 0, "Target input was not found"
     ui.page.mouse.move(*point(ui, source, slot=source_slot))
     ui.page.mouse.down()
     ui.page.mouse.move(*point(ui, target, slot=target_slot, is_input=True), steps=12)
@@ -380,7 +387,7 @@ def test_image_mask_controls_downstream_composite(ui):
     final = add_node(browser, "PreviewImage", 1700, 760)
     connect(browser, bridge, composite)
     connect(browser, fill, composite, target_slot=1)
-    connect(browser, bridge, composite, source_slot=1, target_slot=2)
+    connect(browser, bridge, composite, source_slot=1, target_slot="mask")
     connect(browser, composite, final)
     entry = browser.run()
     original = preview(browser, entry, output).convert("RGB")
@@ -536,22 +543,88 @@ def test_registration_failure_blocks_queue_and_recovers(ui):
             mask_output(browser, entry, mask, expected)
 
 
-@pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"),
-                    reason="Set IMPACT_E2E_SAM_IMAGE and install the server's configured SAM model")
-def test_interactive_sam_saves_detected_mask_to_bridge(ui):
-    image_path = os.environ["IMPACT_E2E_SAM_IMAGE"]
-    browser, args = ui
+def sam_image_source(browser):
     source = add_node(browser, "LoadImage", 220, 200)
     upload = browser.app.evaluate("""(app, id) =>
         app.graph.getNodeById(id).widgets.find(w => w.type === 'button').name
     """, source)
     with browser.page.expect_file_chooser() as chooser:
         browser.page.mouse.click(*point(browser, source, widget=upload))
-    chooser.value.set_files(image_path)
+    chooser.value.set_files(os.environ["IMPACT_E2E_SAM_IMAGE"])
     browser.page.wait_for_function("""({app, id}) => {
         const image = app.graph.getNodeById(id).imgs?.[0];
         return image?.complete && image.naturalWidth > 0;
     }""", arg={"app": browser.app, "id": source})
+    return source
+
+
+def capture_sam(browser):
+    captured = []
+
+    def capture(route):
+        request = route.request
+        multipart = BytesParser().parsebytes(
+            f"Content-Type: {request.headers['content-type']}\r\n\r\n".encode() + request.post_data_buffer)
+        fields = {part.get_param("name", header="content-disposition"): part.get_payload(decode=True)
+                  for part in multipart.get_payload()}
+        started = time.monotonic()
+        response = route.fetch(timeout=180000)
+        captured.append({"status": response.status, "body": response.body(), "image": fields["image"],
+                         "prompts": json.loads(fields["prompts"]), "seconds": time.monotonic() - started})
+        route.fulfill(response=response)
+
+    browser.page.route("**/impact/sam/detect", capture)
+    return captured
+
+
+def select_sam_points(browser, y=0.5):
+    box = browser.page.get_by_test_id("mask-editor-mask-canvas").bounding_box()
+    browser.page.mouse.click(box["x"] + box["width"] * 0.5, box["y"] + box["height"] * y)
+    browser.page.mouse.click(box["x"] + box["width"] * 0.1, box["y"] + box["height"] * 0.1, button="right")
+    expect(browser.page.get_by_label("SAM status")).to_have_text("2 points.")
+    expect(browser.page.get_by_test_id("mask-editor-tool-overlay").locator("circle")).to_have_count(2)
+
+
+def detect_sam(browser, artifacts, name, captured):
+    size = editor_image(browser).size
+    base = browser.page.get_by_test_id("mask-editor-image-canvas").evaluate(
+        "canvas => canvas.toDataURL('image/png').split(',')[1]")
+    with browser.page.expect_response(lambda r: r.url.endswith("/impact/sam/detect"), timeout=180000):
+        browser.page.get_by_role("button", name="Detect", exact=True).click()
+    assert captured[-1]["status"] == 200, captured[-1]["body"]
+    with Image.open(io.BytesIO(captured[-1]["image"])) as uploaded, Image.open(io.BytesIO(base64.b64decode(base))) as original:
+        pixels_equal(uploaded.convert("RGB"), original.convert("RGB"))
+    prompts = captured[-1]["prompts"]
+    assert len(prompts["positive_points"]) == len(prompts["negative_points"]) == 1
+    with Image.open(io.BytesIO(captured[-1]["body"])) as image:
+        expected = image.convert("L")
+    assert expected.size == size
+    assert expected.getextrema() == (0, 255), "SAM must select a region and exclude the background"
+    expected.save(artifacts / f"{name}-response-mask.png")
+    (artifacts / f"{name}-request.json").write_text(json.dumps({
+        "prompts": prompts, "image_size": list(size), "seconds": captured[-1]["seconds"],
+        "selected_pixels": int(np.count_nonzero(np.asarray(expected)))
+    }, indent=2))
+    expect(browser.page.get_by_label("SAM status")).to_have_text("Mask applied.")
+    pixels_equal(editor_mask(browser), expected)
+    browser.page.screenshot(path=str(artifacts / f"{name}-editor.png"))
+    return expected
+
+
+def sam_stroke(browser, tool, x, y):
+    browser.page.locator(f'[data-tool="{tool}"]').click()
+    box = browser.page.get_by_test_id("mask-editor-mask-canvas").bounding_box()
+    browser.page.mouse.move(box["x"] + box["width"] * x, box["y"] + box["height"] * y)
+    browser.page.mouse.down()
+    browser.page.mouse.move(box["x"] + box["width"] * (x + 0.1), box["y"] + box["height"] * (y + 0.05), steps=12)
+    browser.page.mouse.up()
+
+
+@pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"),
+                    reason="Set IMPACT_E2E_SAM_IMAGE and install the server's configured SAM model")
+def test_interactive_sam_saves_detected_mask_to_bridge(ui):
+    browser, args = ui
+    source = sam_image_source(browser)
     bridge = add_node(browser, "PreviewBridge", 720, 200)
     output = add_node(browser, "PreviewImage", 1220, 200)
     convert = add_node(browser, "MaskToImage", 220, 760)
@@ -562,27 +635,118 @@ def test_interactive_sam_saves_detected_mask_to_bridge(ui):
     connect(browser, convert, mask)
     entry = browser.run()
     original = preview(browser, entry, bridge).convert("RGB")
-    context_menu(browser, bridge, "Open in SAM Detector")
-    canvas = browser.page.locator("#pointsCanvas")
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    canvas = browser.page.get_by_test_id("mask-editor-mask-canvas")
     expect(canvas).to_be_visible()
-    expect(browser.page.get_by_role("button", name="Save to node", exact=True)).to_be_enabled()
-    box = canvas.bounding_box()
-    browser.page.mouse.click(box["x"] + box["width"] * 0.5, box["y"] + box["height"] * 0.5)
-    browser.page.mouse.click(box["x"] + box["width"] * 0.1, box["y"] + box["height"] * 0.1, button="right")
-    with browser.page.expect_response(lambda r: r.url.endswith("/sam/detect"), timeout=120000) as detection:
-        browser.page.get_by_role("button", name="Detect", exact=True).click()
-    assert detection.value.ok, "SAM detection failed"
-    with Image.open(io.BytesIO(detection.value.body())) as image:
-        expected = image.convert("L")
-    assert expected.getextrema() == (0, 255), "SAM must select a region and exclude the background"
-    expected.save(args.artifacts / "sam-expected-mask.png")
-    browser.page.wait_for_function("""() => {
-        const canvas = document.getElementById('samEditorMaskCanvas');
-        return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data
-            .some((value, index) => index % 4 === 0 && value > 0);
-    }""")
-    browser.page.get_by_role("button", name="Save to node", exact=True).click()
+    browser.page.get_by_role("button", name="SAM Detector", exact=True).click()
+    status = browser.page.get_by_label("SAM status")
+    expect(status).to_have_text("Add points, then Detect.")
+    assert not browser.page.evaluate("() => performance.getEntriesByType('resource').some(item => item.name.includes('legacy-sam-editor'))")
+    captured = capture_sam(browser)
+    select_sam_points(browser)
+    expected = detect_sam(browser, args.artifacts, "sam-first", captured)
+    browser.page.get_by_role("button", name="Undo point", exact=True).click()
+    expect(status).to_have_text("1 point.")
+    pixels_equal(editor_mask(browser), expected)
+    browser.page.get_by_title("Undo", exact=True).click()
+    assert not np.count_nonzero(np.asarray(editor_mask(browser)))
+    browser.page.get_by_title("Redo", exact=True).click()
+    pixels_equal(editor_mask(browser), expected)
+    sam_stroke(browser, "rgbPaint", 0.7, 0.7)
+    painted = editor_image(browser)
+    assert ImageChops.difference(painted, original).getbbox(), "Paint stroke must change the image"
+    pixels_equal(editor_mask(browser), expected)
+    browser.page.get_by_role("button", name="Save", exact=True).click()
     expect(canvas).not_to_be_visible()
     entry = browser.run()
     mask_output(browser, entry, mask, expected)
-    pixels_equal(preview(browser, entry, output).convert("RGB"), original)
+    pixels_equal(preview(browser, entry, output).convert("RGB"), painted, tolerance=1)
+    first_widgets = widget_state(browser, [bridge])
+
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    expect(browser.page.get_by_test_id("pointer-zone")).to_be_visible()
+    pixels_equal(editor_mask(browser), expected, tolerance=1)
+    pixels_equal(editor_image(browser), painted, tolerance=1)
+    sam_stroke(browser, "pen", 0.8, 0.1)
+    manual = editor_mask(browser)
+    assert ImageChops.difference(manual, expected).getbbox()
+    browser.page.get_by_role("button", name="Save", exact=True).click()
+    expect(canvas).not_to_be_visible()
+    entry = browser.run()
+    mask_output(browser, entry, mask, manual)
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    expect(browser.page.get_by_test_id("pointer-zone")).to_be_visible()
+    pixels_equal(editor_mask(browser), manual, tolerance=1)
+    pixels_equal(editor_image(browser), painted, tolerance=1)
+    browser.page.get_by_role("button", name="SAM Detector", exact=True).click()
+    expect(status).to_have_text("Add points, then Detect.")
+    select_sam_points(browser, 0.25)
+    expected = detect_sam(browser, args.artifacts, "sam-reopened", captured)
+    assert ImageChops.difference(expected, manual).getbbox(), "SAM must replace the manually drawn mask"
+    browser.page.get_by_role("button", name="Save", exact=True).click()
+    expect(canvas).not_to_be_visible()
+    assert widget_state(browser, [bridge]) != first_widgets, "Saving must create a new image reference"
+    entry = browser.run()
+    mask_output(browser, entry, mask, expected)
+    pixels_equal(preview(browser, entry, output).convert("RGB"), painted, tolerance=1)
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    browser.page.get_by_role("button", name="SAM Detector", exact=True).click()
+    select_sam_points(browser)
+    browser.page.get_by_title("Rotate Right", exact=True).click()
+    expect(status).to_have_text("Image or mask changed. Add points to detect again.")
+    expect(browser.page.get_by_test_id("mask-editor-tool-overlay")).not_to_be_visible()
+    painted = painted.transpose(Image.Transpose.ROTATE_270)
+    pixels_equal(editor_image(browser), painted, tolerance=1)
+    select_sam_points(browser)
+    expected = detect_sam(browser, args.artifacts, "sam-rotated", captured)
+    browser.page.get_by_role("button", name="Save", exact=True).click()
+    expect(canvas).not_to_be_visible()
+    for restore_by_name in (False, True):
+        reload_workflow(browser, args.artifacts, [bridge], restore_by_name)
+        entry = browser.run()
+        mask_output(browser, entry, mask, expected)
+        pixels_equal(preview(browser, entry, output).convert("RGB"), painted, tolerance=1)
+
+
+@pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"),
+                    reason="Set IMPACT_E2E_SAM_IMAGE and install the server's configured SAM model and SD1.5 VAE")
+def test_interactive_sam_preserves_latent_samples_and_downstream_noise_mask(ui):
+    browser, args = ui
+    source = sam_image_source(browser)
+    vae = add_node(browser, "VAELoader", 220, 760)
+    choose(browser, vae, "vae_name", "vae-ft-mse-840000-ema-pruned.safetensors")
+    encode = add_node(browser, "VAEEncode", 720, 760)
+    bridge = add_node(browser, "PreviewBridgeLatent", 720, 200)
+    choose(browser, bridge, "preview_method", "Latent2RGB-SD15")
+    output = add_node(browser, "SaveLatent", 1220, 200)
+    second = add_node(browser, "PreviewBridgeLatent", 1700, 200)
+    choose(browser, second, "preview_method", "Latent2RGB-SD15")
+    convert = add_node(browser, "MaskToImage", 1220, 760)
+    mask = add_node(browser, "PreviewImage", 1700, 760)
+    connect(browser, source, encode)
+    connect(browser, vae, encode, target_slot=1)
+    connect(browser, encode, bridge)
+    connect(browser, bridge, second)
+    connect(browser, second, output)
+    connect(browser, second, convert, source_slot=1)
+    connect(browser, convert, mask)
+    initial = browser.run()
+    samples = latent_samples(browser, initial, output)
+    preview(browser, initial, bridge)
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    browser.page.get_by_role("button", name="SAM Detector", exact=True).click()
+    captured = capture_sam(browser)
+    select_sam_points(browser)
+    expected = detect_sam(browser, args.artifacts, "sam-latent", captured)
+    browser.page.get_by_role("button", name="Save", exact=True).click()
+    expect(browser.page.get_by_test_id("pointer-zone")).not_to_be_visible()
+    entry = browser.run()
+    mask_output(browser, entry, mask, expected)
+    pixels_equal(ImageOps.invert(preview(browser, entry, bridge).getchannel("A")), expected)
+    pixels_equal(ImageOps.invert(preview(browser, entry, second).getchannel("A")), expected)
+    np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
+    for restore_by_name in (False, True):
+        reload_workflow(browser, args.artifacts, [bridge, second], restore_by_name)
+        entry = browser.run()
+        mask_output(browser, entry, mask, expected)
+        np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
