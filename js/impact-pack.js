@@ -676,6 +676,46 @@ app.registerExtension({
 						this.widgets[0].value = 1;
 				}
 			}
+
+			if(nodeData.name == 'ImpactSwitch' || nodeData.name == 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
+				const onAfterGraphConfigured = nodeType.prototype.onAfterGraphConfigured;
+				nodeType.prototype.onAfterGraphConfigured = function () {
+					onAfterGraphConfigured?.apply(this, arguments);
+
+					requestAnimationFrame(() => {
+						if(!this.graph)
+							return;
+
+						const dynamic_inputs = this.inputs.filter(input_i => input_i.name != 'select' && input_i.name != 'sel_mode');
+						let last_used = -1;
+						for(let i = 0; i < dynamic_inputs.length; i++) {
+							if(dynamic_inputs[i].link != null)
+								last_used = i;
+						}
+
+						const select_value = Number(this.widgets?.[0]?.value) || 1;
+						const keep = Math.max(last_used + 2, select_value + 1);
+						for(let i = dynamic_inputs.length - 1; i >= keep; i--) {
+							this.removeInput(this.inputs.indexOf(dynamic_inputs[i]));
+						}
+
+						if(last_used == dynamic_inputs.length - 1)
+							this.addInput(`${input_name}${last_used + 2}`, this.outputs[0].type);
+
+						let slot_i = 1;
+						for(let i = 0; i < this.inputs.length; i++) {
+							let input_i = this.inputs[i];
+							if(input_i.name != 'select' && input_i.name != 'sel_mode')
+								input_i.name = `${input_name}${slot_i++}`;
+						}
+
+						if(this.widgets?.[0]) {
+							const dynamic_count = this.inputs.filter(input_i => input_i.name != 'select' && input_i.name != 'sel_mode').length;
+							this.widgets[0].options.max = Math.max(1, dynamic_count - 1, this.widgets[0].value);
+						}
+					});
+				}
+			}
 		}
 	},
 

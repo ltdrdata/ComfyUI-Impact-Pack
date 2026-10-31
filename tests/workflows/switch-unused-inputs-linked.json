@@ -1,0 +1,349 @@
+{
+  "id": "cdeb827d-ab38-42c8-8c4b-564a4dc65e24",
+  "revision": 0,
+  "last_node_id": 20,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "ImpactWildcardProcessor",
+      "pos": [
+        50,
+        100
+      ],
+      "size": [
+        400,
+        260
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactWildcardProcessor"
+      },
+      "widgets_values": [
+        "first",
+        "first",
+        "fixed",
+        0,
+        "fixed",
+        "Select Wildcard 🟢 Full Cache"
+      ],
+      "widgets_values_named": {
+        "wildcard_text": "first",
+        "populated_text": "first",
+        "mode": "fixed",
+        "seed": 0,
+        "control_after_generate": "fixed",
+        "Select to add Wildcard": "Select Wildcard 🟢 Full Cache"
+      }
+    },
+    {
+      "id": 2,
+      "type": "ImpactWildcardProcessor",
+      "pos": [
+        50,
+        430
+      ],
+      "size": [
+        400,
+        260
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactWildcardProcessor"
+      },
+      "widgets_values": [
+        "second",
+        "second",
+        "fixed",
+        0,
+        "fixed",
+        "Select Wildcard 🟢 Full Cache"
+      ],
+      "widgets_values_named": {
+        "wildcard_text": "second",
+        "populated_text": "second",
+        "mode": "fixed",
+        "seed": 0,
+        "control_after_generate": "fixed",
+        "Select to add Wildcard": "Select Wildcard 🟢 Full Cache"
+      }
+    },
+    {
+      "id": 3,
+      "type": "ImpactWildcardProcessor",
+      "pos": [
+        50,
+        760
+      ],
+      "size": [
+        400,
+        260
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactWildcardProcessor"
+      },
+      "widgets_values": [
+        "third",
+        "third",
+        "fixed",
+        0,
+        "fixed",
+        "Select Wildcard 🟢 Full Cache"
+      ],
+      "widgets_values_named": {
+        "wildcard_text": "third",
+        "populated_text": "third",
+        "mode": "fixed",
+        "seed": 0,
+        "control_after_generate": "fixed",
+        "Select to add Wildcard": "Select Wildcard 🟢 Full Cache"
+      }
+    },
+    {
+      "id": 10,
+      "type": "ImpactSwitch",
+      "pos": [
+        650,
+        430
+      ],
+      "size": [
+        270,
+        382
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input1",
+          "shape": 7,
+          "type": "*",
+          "link": 1
+        },
+        {
+          "name": "input2",
+          "type": "*",
+          "link": 2
+        },
+        {
+          "name": "input3",
+          "type": "*",
+          "link": 3
+        },
+        {
+          "name": "input4",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input5",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input6",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input7",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input8",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input9",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input10",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input11",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input12",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input13",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input14",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input15",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input16",
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "selected_value",
+          "type": "*",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "selected_label",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "selected_index",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactSwitch"
+      },
+      "widgets_values": [
+        2,
+        false
+      ],
+      "widgets_values_named": {
+        "select": 2,
+        "sel_mode": false
+      }
+    },
+    {
+      "id": 20,
+      "type": "PreviewAny",
+      "pos": [
+        1100,
+        430
+      ],
+      "size": [
+        270,
+        200
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      10,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      2,
+      0,
+      10,
+      1,
+      "STRING"
+    ],
+    [
+      3,
+      3,
+      0,
+      10,
+      2,
+      "STRING"
+    ],
+    [
+      4,
+      10,
+      0,
+      20,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7731958762886599,
+      "offset": [
+        324.6666666666665,
+        101.66666666666663
+      ]
+    },
+    "frontendVersion": "1.57.6"
+  },
+  "version": 0.4
+}
