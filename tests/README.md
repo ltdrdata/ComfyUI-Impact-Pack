@@ -39,8 +39,9 @@ detection, repeated saving/pasting, RGB preservation, and native workflow reload
 in both widget restoration modes, starting from input and nested output images.
 The output case edits the second image of a batch and preserves the other image
 and the Clipspace selection after saving.
-The suite also checks keyboard shortcuts, cancellation, resizing, changing the
-image. Run `python3 -m pytest tests/test_sam_api.py -v` against the current backend
+Menu and keyboard/cancel/resize checks use a controlled preparation response;
+they do not load SAM. Detection/save cases use real preparation and inference.
+Run `python3 -m pytest tests/test_sam_api.py -v` against the current backend
 for repeated invalid-path rejection between valid preparation requests. It uses
 HTTP without launching Chrome and requires the configured SAM model. Run
 `node --experimental-vm-modules --test tests/legacy_sam.test.mjs` for current-image

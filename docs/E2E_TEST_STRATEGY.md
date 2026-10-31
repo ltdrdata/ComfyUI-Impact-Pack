@@ -138,6 +138,10 @@ and browser previews, and reload native exports in positional and named modes.
 The second edit starts from the first saved temporary image and checks that two
 clicks produce exactly one positive and one negative point. The separate menu
 test checks repeated opening without running detection.
+Menu and keyboard/cancel/resize tests fulfill `/sam/prepare` with 200 to avoid
+loading a model they do not inspect. Detection/save tests use real preparation
+and inference; their detector response is captured and forwarded unchanged
+because `Response.body()` returned an empty PNG POST body in the tested Chrome.
 Detection starts from both an uploaded input and a SaveImage output in a nested
 subfolder, with both native restoration modes. The output scenario creates a
 two-image batch through the UI and edits the second image. Saving must preserve

@@ -121,6 +121,7 @@ def reload_native(browser, artifacts, named):
 
 def test_legacy_sam_context_menu_and_clipspace_reopen(ui):
     browser, artifacts = ui
+    browser.page.route("**/sam/prepare", lambda route: route.fulfill(status=200))
     assert_sam_loaded(browser)
     clipspace_menu(browser)
     empty_dialog = browser.page.locator(".comfy-modal").filter(has_text="Clipspace is Empty!")
@@ -150,6 +151,7 @@ def test_legacy_sam_context_menu_and_clipspace_reopen(ui):
 
 def test_legacy_sam_keyboard_cancel_resize_and_change_image(ui):
     browser, artifacts = ui
+    browser.page.route("**/sam/prepare", lambda route: route.fulfill(status=200))
     assert_sam_loaded(browser)
     first = artifacts / "landscape.png"
     second = artifacts / "portrait.png"
@@ -166,7 +168,7 @@ def test_legacy_sam_keyboard_cancel_resize_and_change_image(ui):
             canvas = browser.page.locator("#pointsCanvas")
             expect(canvas).to_be_visible()
             expect(browser.page.get_by_role("button", name="Save to node", exact=True)).to_be_enabled()
-            assert canvas.evaluate("canvas => [...canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data].every(value => value === 0)"), "Reopening retained prompt points"
+            assert canvas.evaluate("canvas => canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data.every(value => value === 0)"), "Reopening retained prompt points"
             brush = browser.page.locator("#sam-brush")
             browser.page.keyboard.press("-")
             expect(brush).to_have_css("background-color", "rgb(255, 0, 0)")
@@ -232,6 +234,7 @@ def test_legacy_sam_detect_save_and_native_reload(ui, named, origin):
     original = browser.images(browser.run())[output][0]
     responses = []
 
+    # Response.body() returned an empty PNG POST body in the tested Chrome build.
     def capture(route):
         response = route.fetch(timeout=180000)
         responses.append((route.request.post_data_json, response.body()))
