@@ -32,6 +32,11 @@ inference and image previews. Both default to headless Google Chrome; add
 
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
+`python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
+and Clipspace button without importing the removed `ClipspaceDialog` module.
+Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real
+detection, repeated saving/pasting, RGB preservation, and native workflow reload
+in both widget restoration modes.
 With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
 also checks failure cleanup and JavaScript errors during artifact saving using
 intercepted browser requests, without a server.
