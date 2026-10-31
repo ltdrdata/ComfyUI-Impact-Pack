@@ -7,3 +7,4 @@ FIRST_SECTION = "a {red|blue} flower, __color__,"
 LAST_SECTIONS = ["garden, petals, dew", "garden, leaves, mist"]
 SAVED_LABEL = LORAS[0] + " (1)"
 SAVED_SECTION = "garden, saved second"
+FIRST_LABEL_SECTION = "garden,, saved first"

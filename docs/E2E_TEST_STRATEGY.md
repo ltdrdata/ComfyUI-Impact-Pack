@@ -121,8 +121,16 @@ The model samples also include a negative-weight row before two original rows
 with the same LoRA name. The inference suite selects the saved duplicate label,
 then exports and reloads it under both widget restoration modes; text, pixels
 and widget names/order/values must still identify the original second row.
-The tensor check separately verifies that empty categories preserve ordinary
-prompt punctuation and BREAK sections exactly as the original node did.
+The same mixed file is executed in random, sequential and batch modes, then
+exported and reloaded in both restoration modes. The original seed selections
+and batch count must survive. A leading-comma entry checks original punctuation
+against core-node image references. The tensor check separately compares both
+empty-category and populated-category punctuation/BREAK conditioning.
+
+The Windows path regression uses real `ntpath.commonpath` with simulated link
+resolution to another drive. It checks that the excluded file is never read
+and that valid categories still work through schema, route and execution; it
+is not a Windows filesystem E2E test.
 
 ## Server setup
 

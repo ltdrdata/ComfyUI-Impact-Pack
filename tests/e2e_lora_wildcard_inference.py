@@ -10,12 +10,12 @@ import hashlib
 import json
 
 from e2e_ui import browser_session, options
-from lora_source_case import BASE, CHECKPOINT, FIRST_SECTION, LAST_SECTIONS, LORAS, SAVED_LABEL, SAVED_SECTION
+from lora_source_case import BASE, CHECKPOINT, FIRST_LABEL_SECTION, FIRST_SECTION, LAST_SECTIONS, LORAS, SAVED_LABEL, SAVED_SECTION
 from test_e2e_widget_catalog import export_workflow, full_zoom, setting, show_node, widget_state
 
 
-REFERENCE_SECTIONS = [*LAST_SECTIONS, SAVED_SECTION]
-REFERENCE_NAMES = [*LORAS, SAVED_LABEL]
+REFERENCE_SECTIONS = [*LAST_SECTIONS, SAVED_SECTION, FIRST_LABEL_SECTION]
+REFERENCE_NAMES = [*LORAS, SAVED_LABEL, LORAS[0]]
 
 
 def workflow():
@@ -52,7 +52,7 @@ def workflow():
     text = add("PreviewAny", source=[source, 3])
     names = add("PreviewAny", source=[source, 5])
     references = []
-    for index, lora in enumerate([*LORAS, LORAS[0]]):
+    for index, lora in enumerate([*LORAS, LORAS[0], LORAS[0]]):
         base = add("LoraLoader", model=[checkpoint, 0], clip=[checkpoint, 1],
                    lora_name=LORAS[0] + ".safetensors", strength_model=0.1, strength_clip=0.2)
         selected = add("LoraLoader", model=[base, 0], clip=[base, 1],
@@ -127,18 +127,23 @@ def main():
             .widgets.find(w => w.name === 'lora_wildcard').options.values.includes(value)""",
             arg={"app": ui.app, "value": SAVED_LABEL})
         ui.choose("LoraWildcardSource", "lora_wildcard", SAVED_LABEL)
-        check("saved-label", [2])
-        before = widget_state(ui, source)
-        saved = args.artifacts / "saved-label-workflow.json"
-        export_workflow(ui, saved)
-        for restore_by_name in (False, True):
-            setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
-            ui.new_workflow()
-            ui.load_workflow(saved, len(graph))
-            full_zoom(ui)
-            show_node(ui, source)
-            assert widget_state(ui, source) == before
-            check("saved-label-" + ("named" if restore_by_name else "positional"), [2])
+        for mode, seed, expected in [("fixed", 1, [2]), ("random", 5, [2]),
+                                     ("sequential", 2, [3]), ("batch", 0, [3, 2])]:
+            ui.choose("LoraWildcardSource", "mode", mode)
+            ui.set_number("LoraWildcardSource", "seed", seed)
+            label = "saved-label" if mode == "fixed" else "mixed-" + mode
+            check(label, expected)
+            before = widget_state(ui, source)
+            saved = args.artifacts / (label + "-workflow.json")
+            export_workflow(ui, saved)
+            for restore_by_name in (False, True):
+                setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+                ui.new_workflow()
+                ui.load_workflow(saved, len(graph))
+                full_zoom(ui)
+                show_node(ui, source)
+                assert widget_state(ui, source) == before
+                check(label + ("-named" if restore_by_name else "-positional"), expected)
     (args.artifacts / "results.json").write_text(json.dumps(results, indent=2) + "\n")
 
 

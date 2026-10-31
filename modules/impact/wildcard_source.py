@@ -19,7 +19,11 @@ def achar_arquivo_wildcard(nome_arquivo):
         return None
     root = os.path.realpath(config.get_config()["custom_wildcards"])
     path = os.path.realpath(os.path.join(root, nome_arquivo))
-    if os.path.commonpath((root, path)) == root and os.path.isfile(path):
+    try:
+        contained = os.path.commonpath((root, path)) == root
+    except ValueError:  # Windows links can resolve to a different drive/share.
+        return None
+    if contained and os.path.isfile(path):
         return path
     return None
 
@@ -231,6 +235,10 @@ class LoraWildcardSource:
 
     def build(self, model, clip, category, lora_wildcard, mode, strength, base_prompt, seed):
         entries = parse_linhas_wildcard(achar_arquivo_wildcard(f"{category}.txt"))
+        if mode in ("random", "sequential", "batch") or not any(entry[0] == lora_wildcard for entry in entries):
+            # Extended syntax requires an explicit fixed selection. Keep the
+            # original candidates for saved seeds, batch counts and empty selections.
+            entries = [entry for entry in entries if _LEGACY_LORA_RE.search(entry[1])]
         if not entries:
             loras, text = [], base_prompt
             if _LORA_RE.search(base_prompt):
@@ -251,8 +259,11 @@ class LoraWildcardSource:
 
         outputs = tuple([] for _ in self.RETURN_TYPES)
         for label, entry, name in selected:
-            prompt = ", ".join(part.strip().strip(",") for part in
-                               (base_prompt, entry_with_strength(entry, strength)) if part.strip())
+            parts = []
+            if base_prompt and base_prompt.strip():
+                parts.append(base_prompt.strip().rstrip(","))
+            parts.append(entry_with_strength(entry, strength))
+            prompt = ", ".join(parts)
             loras, text = extrair_e_limpar_loras(prompt)
             result_model, result_clip, conditioning = aplicar_loras_e_codificar(model, clip, loras, text)
             values = (result_model, result_clip, conditioning, text, nome_arquivo_limpo(name), label)

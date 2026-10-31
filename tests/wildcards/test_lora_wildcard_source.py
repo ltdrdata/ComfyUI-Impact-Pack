@@ -2,6 +2,7 @@
 import asyncio
 import importlib.util
 import json
+import ntpath
 from pathlib import Path
 import random
 import shutil
@@ -186,6 +187,84 @@ def test_new_names_cannot_reuse_saved_duplicate_labels(source, model_calls):
         "old first, <lora:A:0.7>\nold second, <lora:A:0.8>\nnew trigger, <lora:A (1):-0.5>\n")
     assert items(module, "styles") == ["A", "A (1)", "A (1) (1)"]
     assert build(module, lora_wildcard="A (1)")[3] == ["base, old second"]
+
+
+@pytest.mark.parametrize("mode,seed,expected", [
+    ("random", 5, ["B"]), ("sequential", 2, ["A"]), ("batch", 0, ["A", "B"]),
+])
+def test_automatic_modes_keep_original_candidates(source, model_calls, mode, seed, expected):
+    module, custom = source
+    (custom / "styles.txt").write_text(
+        "new negative, <lora:A:-0.5>\nold first, <lora:A:0.7>\n"
+        "new dual, <lora:B:0.7:0.2>\nold second, <lora:B:0.8>\n"
+        "new weightless, <lora:A>\nnew exponent, <lora:B:1e-2>\n")
+    result = build(module, mode=mode, seed=seed, lora_wildcard="A (1)")
+    texts = {"A": "base, old first", "B": "base, old second"}
+    assert result[3] == [texts[name] for name in expected]
+    assert result[2] == [[texts[name]] for name in expected]
+    assert result[5] == expected
+    assert [len(output) for output in result] == [len(expected)] * 6
+    assert model_calls == [(name + ".safetensors", 0.8, 0.8) for name in expected]
+
+
+@pytest.mark.parametrize("mode,selection", [
+    ("random", "A"), ("sequential", "A"), ("batch", "A"),
+    ("fixed", "(styles.txt not found)"), ("fixed", ""),
+])
+def test_modes_preserve_empty_legacy_selection(source, model_calls, mode, selection):
+    module, custom = source
+    (custom / "styles.txt").write_text("new negative, <lora:A:-0.5>\nnew weightless, <lora:B>\n")
+    result = build(module, mode=mode, lora_wildcard=selection, base_prompt="base, ")
+    assert result[3] == ["base, "]
+    assert result[2] == [["base,"]]
+    assert result[4:] == (["no_lora"], ["no_styles"])
+    assert model_calls == []
+
+
+@pytest.mark.parametrize("trigger,expected", [
+    (",, portrait", "base,, portrait"), (", , portrait", "base, , portrait"),
+    (",portrait", "base,portrait"), (",,, portrait", "base,, portrait"),
+])
+def test_entry_keeps_original_leading_punctuation(source, model_calls, trigger, expected):
+    module, custom = source
+    (custom / "styles.txt").write_text(trigger + " <lora:A:0.7>\n")
+    result = build(module)
+    assert result[3] == [expected]
+    assert result[2] == [[expected]]
+    assert model_calls == [("A.safetensors", 0.8, 0.8)]
+
+
+def test_windows_cross_drive_link_preserves_valid_categories(source, monkeypatch, model_calls):
+    module, _ = source
+    root = r"C:\wildcards"
+    valid = ntpath.join(root, "good.txt")
+    outside = r"D:\external\styles.txt"
+
+    def realpath(path):
+        return outside if path == ntpath.join(root, "external.txt") else path
+
+    def read(path):
+        assert path == valid, "The excluded file must never be read"
+        return ["portrait, <lora:A:0.7>"]
+
+    # Resolve a Windows link without requiring a Windows filesystem. The
+    # drive comparison itself uses the real Windows standard-library code.
+    monkeypatch.setattr(module, "os", types.SimpleNamespace(
+        path=types.SimpleNamespace(realpath=realpath, join=ntpath.join, splitext=ntpath.splitext,
+                                   commonpath=ntpath.commonpath, isfile=lambda path: path in (valid, outside)),
+        listdir=lambda path: ["external.txt", "good.txt"],
+    ))
+    monkeypatch.setattr(config, "cached_config", {"custom_wildcards": root})
+    monkeypatch.setattr(wildcards, "load_txt_wildcard", read)
+    schema = module.LoraWildcardSource.INPUT_TYPES()["required"]
+    assert schema["category"][0] == ["good"]
+    assert schema["lora_wildcard"][0] == ["A"]
+    assert items(module, "external") == []
+    assert build(module, category="external")[3] == ["base"]
+    assert model_calls == []
+    assert items(module, "good") == ["A"]
+    assert build(module, category="good")[3] == ["base, portrait"]
+    assert model_calls == [("A.safetensors", 0.8, 0.8)]
 
 
 def test_pose_category_uses_the_same_file_in_ui_and_execution(source, model_calls):

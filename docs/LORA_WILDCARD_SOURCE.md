@@ -6,7 +6,7 @@ It scans the directory configured by `custom_wildcards` in `impact-pack.ini`, tr
 
 The optional sample is [example_workflows/wildcards/styles.txt](../example_workflows/wildcards/styles.txt). It is outside the automatically scanned directories so installing this node does not replace an existing `__styles__` wildcard. To use it, copy it into your configured directory under an unused filename, then select that category. Do not overwrite your own wildcard files.
 
-Entries recognized by the original node keep their labels and order. Newly supported entries are appended with unused labels, so a saved `A` or `A (1)` still selects the same original row. The larger candidate list can change random selection, sequential wraparound and batch size. For an empty category, an ordinary base prompt retains its original text and punctuation; LoRA tags in that prompt are still applied and removed before encoding.
+Entries recognized by the original node keep their labels and order. Newly supported entries are appended to the dropdown with unused labels and require an explicit `fixed` selection. The automatic modes keep the original candidate list, so saved seeds, sequential wraparound and batch counts are unchanged by syntax expansion. A saved `A` or `A (1)` still selects the same original row. For an empty category, an ordinary base prompt retains its original text and punctuation; LoRA tags in that prompt are still applied and removed before encoding.
 
 ## Features
 
@@ -18,10 +18,12 @@ Entries recognized by the original node keep their labels and order. Newly suppo
 
 ## Modes
 
-- **fixed**: Applies the selected entry. If that entry has been removed, execution reports the missing selection instead of silently choosing another LoRA. Workflow loading preserves the saved selection.
+- **fixed**: Applies the selected entry, including negative, dual-weight, scientific-notation or weightless tags. If that entry has been removed while original candidates remain, execution reports the missing selection instead of silently choosing another LoRA. An original empty selection remains a base-prompt fallback when the file contains only extended-only rows. Workflow loading preserves the saved selection.
 - **random**: Randomly chooses one LoRA from the active category based on the seed.
 - **sequential**: Progressively cycles through the list of LoRAs in the category using the seed (`seed % total_loras`).
-- **batch**: Runs all LoRAs in the category in a single queue batch.
+- **batch**: Runs every eligible entry in a single queue batch.
+
+The automatic modes (`random`, `sequential`, `batch`) only include rows containing a tag in the original single nonnegative-weight format, such as `<lora:name:0.7>`. They ignore rows recognized only through the extended syntax, even if one is selected in the dropdown. If there are no eligible rows, they encode the base prompt without a category LoRA, as before. Use `fixed` to apply an extended-only row.
 
 ## Inputs
 
