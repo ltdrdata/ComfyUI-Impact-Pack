@@ -1,5 +1,31 @@
 import { app } from "../../scripts/app.js";
 import { readLinkedNumber, getDrawColor, computeCanvasSize } from "./common.js";
+
+const MASK_RECT_AREA_BACKGROUND_HOOK = "__impactMaskRectAreaOnDrawBackgroundHook";
+
+function moveMaskRectAreaWidgetsOffscreen() {
+    for (const node of app.graph?._nodes || []) {
+        for (const widget of node.widgets || []) {
+            if (Object.hasOwn(widget, "canvas")) {
+                widget.canvas.style.left = "-8000px";
+                widget.canvas.style.position = "absolute";
+            }
+        }
+    }
+}
+
+function ensureMaskRectAreaBackgroundHook() {
+    if (app.canvas[MASK_RECT_AREA_BACKGROUND_HOOK]) {
+        return;
+    }
+
+    const onDrawBackground = app.canvas.onDrawBackground;
+    app.canvas.onDrawBackground = function (...args) {
+        onDrawBackground?.apply(this, args);
+        moveMaskRectAreaWidgetsOffscreen();
+    };
+    app.canvas[MASK_RECT_AREA_BACKGROUND_HOOK] = true;
+}
 function showPreviewCanvas(node, app) {
 
     const widget = {
@@ -193,21 +219,7 @@ function showPreviewCanvas(node, app) {
     document.body.appendChild(widget.canvas);
     node.addCustomWidget(widget);
 
-    app.canvas.onDrawBackground = function () {
-        // Draw node isnt fired once the node is off the screen
-        // if it goes off screen quickly, the input may not be removed
-        // this shifts it off screen so it can be moved back if the node is visible.
-        for (let n in app.graph._nodes) {
-            n = app.graph._nodes[n];
-            for (let w in n.widgets) {
-                let wid = n.widgets[w];
-                if (Object.hasOwn(wid, "canvas")) {
-                    wid.canvas.style.left = -8000 + "px";
-                    wid.canvas.style.position = "absolute";
-                }
-            }
-        }
-    };
+    ensureMaskRectAreaBackgroundHook();
 
     node.onResize = function (size) {
         computeCanvasSize(node, size, 220, 240);
@@ -456,4 +468,3 @@ function syncLinkedInputsToPropertiesAdvanced(node) {
 
     return changed;
 }
-
