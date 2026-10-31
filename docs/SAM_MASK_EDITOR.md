@@ -1,10 +1,16 @@
 # SAM in the native MaskEditor
 
-This integration requires a frontend exposing
-`app.extensionManager.maskEditor.registerTool`. The frontend implementation is on
-`feat/mask-editor-extension-api` (validated with commit `d20e674820`). Checking the API, rather
-than a version number, determines which editor integration loads. Frontends
-without it retain the existing legacy SAM dialog.
+This is a proof of concept for the [public MaskEditor tool API](https://github.com/Comfy-Org/ComfyUI_frontend/pull/22519).
+The generic frontend API is independent of Impact Pack; this integration owns
+the SAM controls and inference.
+
+This change remains a draft until the frontend API is released. Before merging,
+record that release version and implement version-based selection: older
+frontends use the legacy dialog, and supported releases use the Vue MaskEditor
+integration. Verify both sides of that version boundary. The development branch
+currently selects the integration by the availability of
+`app.extensionManager.maskEditor.registerTool`; the release-version check is
+pending.
 
 1. Run the image or latent Preview Bridge, then choose **Open in MaskEditor**.
 2. Select **SAM Detector** in the toolbar. Left click adds an Include point;
@@ -50,6 +56,16 @@ a newer saved edit, including one already submitted to the queue. Repeated
 executions of the same image can still advance to their latest output.
 Registrations use unique opaque references so concurrent image preparation and
 HTTP registration cannot assign the same reference to different files.
+
+## Screenshots
+
+Actual SAM inference in the native MaskEditor:
+
+![SAM in the native MaskEditor](images/mask-editor-sam/sam-detector.png)
+
+Additional captures show [paint preserved after redetection](images/mask-editor-sam/sam-redetect-preserves-paint.png),
+[detection after rotation](images/mask-editor-sam/sam-rotated.png), and
+[latent mask propagation after native reload](images/mask-editor-sam/sam-latent-downstream.png).
 
 ## Validation
 
