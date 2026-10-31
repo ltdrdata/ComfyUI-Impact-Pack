@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 198,
+  "last_node_id": 199,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10275,6 +10275,92 @@
         "preset": "all",
         "labels": ""
       }
+    },
+    {
+      "id": 199,
+      "type": "LoraWildcardSource",
+      "pos": [
+        1322.8888644748258,
+        6205.555555555555
+      ],
+      "size": [
+        400,
+        332
+      ],
+      "flags": {},
+      "order": 197,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "shape": 6,
+          "type": "MODEL",
+          "links": null
+        },
+        {
+          "name": "clip",
+          "shape": 6,
+          "type": "CLIP",
+          "links": null
+        },
+        {
+          "name": "conditioning",
+          "shape": 6,
+          "type": "CONDITIONING",
+          "links": null
+        },
+        {
+          "name": "text",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "lora_name",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "name",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraWildcardSource"
+      },
+      "widgets_values": [
+        "test_encoding_emoji",
+        "(test_encoding_emoji.txt not found)",
+        "fixed",
+        0.8,
+        "masterpiece, best quality, very aesthetic, absurdres, 1girl",
+        0,
+        "randomize"
+      ],
+      "widgets_values_named": {
+        "category": "test_encoding_emoji",
+        "lora_wildcard": "(test_encoding_emoji.txt not found)",
+        "mode": "fixed",
+        "strength": 0.8,
+        "base_prompt": "masterpiece, best quality, very aesthetic, absurdres, 1girl",
+        "seed": 0,
+        "control_after_generate": "randomize"
+      }
     }
   ],
   "links": [],
@@ -10284,8 +10370,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -472.8888644748258,
-        -6005.555555555555
+        -1072.8888644748258,
+        -6015.555555555555
       ]
     },
     "frontendVersion": "1.57.6"

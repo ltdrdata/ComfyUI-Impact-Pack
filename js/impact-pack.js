@@ -1,5 +1,4 @@
 import { ComfyApp, app } from "../../scripts/app.js";
-import { ComfyDialog, $el } from "../../scripts/ui.js";
 import { api } from "../../scripts/api.js";
 import { customAlert, isBeforeFrontendVersion } from "./common.js";
 

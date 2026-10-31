@@ -1,0 +1,2 @@
+petals, <lora:SD1.5/etc/add_detail:0.7>, dew, <lora:SD1.5/etc/detailmaker:-0.15:0.2>
+leaves, <lora:SD1.5/etc/detailmaker:0.7>, mist

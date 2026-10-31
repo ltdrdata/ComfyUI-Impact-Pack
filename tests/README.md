@@ -7,14 +7,14 @@ Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 From the `tests/` directory, run `python3 -m pytest`.
 Install dependencies with `python3 -m pip install -r tests/requirements.txt`
 from the repository root. This runs configuration, populate, and strict
-encoding checks without starting ComfyUI. Seed regressions cover negative seeds,
+encoding and LoRA wildcard source checks without starting ComfyUI. Seed regressions cover negative seeds,
 existing outputs, and shared RNG isolation during success, failure, and concurrent
 execution. The configuration keeps pytest from
 importing the extension's server-initializing `__init__.py`.
 Circular-reference tests use `pytest-timeout` to stop after five seconds.
 
 From the Impact Pack root, select the files explicitly:
-`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_seed_regression.py tests/wildcards/test_wildcard_encoding_strict.py`.
+`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_seed_regression.py tests/wildcards/test_wildcard_encoding_strict.py tests/wildcards/test_lora_wildcard_source.py`.
 
 Both suites also run directly with `python3 tests/wildcards/test_populate_regression.py`
 and `python3 tests/wildcards/test_wildcard_encoding_strict.py`; both delegate
@@ -32,6 +32,23 @@ inference and image previews. Both default to headless Google Chrome; add
 
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
+`python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
+and Clipspace button without importing the removed `ClipspaceDialog` module.
+Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real
+detection, repeated saving/pasting, RGB preservation, and native workflow reload
+in both widget restoration modes, starting from input and nested output images.
+The output case edits the second image of a batch and preserves the other image
+and the Clipspace selection after saving.
+Menu and keyboard/cancel/resize checks use a controlled preparation response;
+they do not load SAM. Detection/save cases use real preparation and inference.
+Run `python3 -m pytest tests/test_sam_api.py -v` against the current backend
+for repeated invalid-path rejection between valid preparation requests. It uses
+HTTP without launching Chrome and requires the configured SAM model. Run
+`node --experimental-vm-modules --test tests/legacy_sam.test.mjs` for current-image
+resizing and missing image metadata with controlled browser objects, including
+global and fallback UI exports.
+Older frontends without named widget restoration skip the two named detection
+cases; their positional save/reload cases still run.
 With Playwright and Chrome installed, `python3 -m pytest tests/test_e2e_ui.py`
 also checks failure cleanup and JavaScript errors during artifact saving using
 intercepted browser requests, without a server.
@@ -62,6 +79,41 @@ for recording instructions. It tests loading, not execution of every node.
 For each new registered node, first verify the existing trusted catalog, then
 extend both fixtures through the recorder and rerun the E2E. Existing snapshot
 records must remain unchanged; see [the repository rules](../AGENTS.md).
+
+`node --test tests/lora_wildcard_source.test.mjs` checks dependent dropdown
+request ordering, saved selections, query encoding and isolation from existing
+nodes, including returning to a category while its older response is pending.
+`tests/test_e2e_lora_wildcard_source.py` verifies the same saved-value
+contract through Chrome search, editing, native Export and file import in both
+restoration modes. Configure its isolated server with
+`tests/wildcards/lora_samples`; see the E2E guide.
+
+`python3 tests/e2e_lora_wildcard_inference.py --artifacts /tmp/impact-lora-inference`
+checks all four modes and native workflow reload against core LoRA/CLIP/sampler
+nodes using real SD1.5 models. Configure the isolated server with
+`tests/wildcards/model_samples` and the models listed in the script docstring.
+It compares every output pixel, output text, filename, list length and entry order;
+browser previews must also match server images. A saved duplicate label must
+still select its original row after syntax expansion and native reload in both
+restoration modes. Mixed-syntax random/sequential/batch workflows also retain
+their original candidates, and leading punctuation is compared with core-node
+references. A legacy `pose` category resolves `poses.txt` and survives native
+reload even when the alias is absent from current dropdown options. This is
+separate from the model-free catalog and delayed-response tests.
+Use the deterministic FP32 server options in the E2E guide for pixel equality.
+`python3 tests/integration_lora_wildcard_tensors.py --comfy-root /path/to/ComfyUI`
+separately compares every conditioning tensor and MODEL/CLIP LoRA patch tensor
+and weight with core nodes under ComfyUI's default model-loading settings.
+It also checks populated/empty-category punctuation and BREAK conditioning and verifies
+that the input models retain no patches. Only unused HTTP route registration
+is substituted; model operations are real.
+
+`python3 tests/integration_lora_wildcard_validation.py --comfy-root /path/to/ComfyUI`
+uses the real ComfyUI input validator on CPU without loading models. Dynamic
+category aliases and saved choices remain accepted; invalid literal modes and numbers,
+invalid numeric strings and incompatible links are rejected with the expected
+input-specific error. Only the MODEL/CLIP input provider and unused HTTP route
+registration are substituted. Run separately from the stubbed unit tests.
 
 ## Test Suites
 

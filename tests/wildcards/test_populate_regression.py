@@ -24,6 +24,88 @@ from populate_helpers import (  # noqa: E402
 SEEDS = [0, 1, 42, 100, 999, 12345, 2_147_483_647]
 
 
+@pytest.fixture
+def wildcard_directory(tmp_path, monkeypatch):
+    monkeypatch.setattr(wc, "wildcards_path", str(tmp_path))
+    monkeypatch.setattr(wc, "wildcard_dict", {})
+    monkeypatch.setattr(wc, "available_wildcards", {})
+    monkeypatch.setattr(wc, "loaded_wildcards", {})
+    monkeypatch.setattr(wc, "_on_demand_mode", True)
+    monkeypatch.setattr(wc.config, "get_config", dict)
+    return tmp_path
+
+
+@pytest.mark.parametrize("name", ["my colors.txt", "colors.TXT.txt"])
+@pytest.mark.parametrize("prefix", ["", "collection/"])
+@pytest.mark.parametrize("short_name", [False, True])
+def test_on_demand_expands_indexed_normalized_paths(wildcard_directory, name, prefix, short_name):
+    path = wildcard_directory / prefix / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("red\n", encoding="utf-8")
+    wc.scan_wildcard_metadata(str(wildcard_directory))
+    key = wc.wildcard_normalize(os.path.splitext(name if short_name else prefix + name)[0])
+
+    assert wc.process(f"__{key}__", 42) == "red"
+
+
+@pytest.mark.parametrize("key", ["missing", "collection/missing"])
+def test_on_demand_missing_indexed_file_does_not_recurse(wildcard_directory, key):
+    wc.available_wildcards[key] = str(wildcard_directory / "removed.txt")
+
+    assert wc.get_wildcard_value(key) is None
+
+
+@pytest.mark.parametrize("on_demand", [False, True])
+def test_loading_preserves_direct_file_precedence(wildcard_directory, monkeypatch, on_demand):
+    custom = wildcard_directory / "custom"
+    custom.mkdir()
+    (wildcard_directory / "shared.txt").write_text("builtin\n", encoding="utf-8")
+    (custom / "shared.txt").write_text("custom\n", encoding="utf-8")
+    monkeypatch.setattr(wc.config, "get_config", lambda: {"custom_wildcards": str(custom)})
+    monkeypatch.setattr(wc, "get_cache_limit", lambda: 1 if on_demand else 1024 * 1024)
+
+    wc.wildcard_load()
+
+    # Preserve the existing precedence in each mode, rather than changing it here.
+    assert wc.process("__shared__", 42) == ("builtin" if on_demand else "custom")
+
+
+def test_on_demand_depth_match_keeps_all_available_options(wildcard_directory):
+    for directory, option in (("first", "red"), ("second/nested", "blue")):
+        path = wildcard_directory / directory / "my colors.txt"
+        path.parent.mkdir(parents=True)
+        path.write_text(option + "\n", encoding="utf-8")
+    wc.scan_wildcard_metadata(str(wildcard_directory))
+    wc.available_wildcards["removed/my-colors"] = str(wildcard_directory / "removed.txt")
+
+    assert sorted(wc.get_wildcard_value("my-colors")) == ["blue", "red"]
+
+
+@pytest.mark.parametrize("on_demand", [False, True])
+def test_wildcard_scans_ignore_git_metadata(wildcard_directory, monkeypatch, caplog, on_demand):
+    for name in (".git", ".github"):
+        metadata = wildcard_directory / "collection" / name / "workflows"
+        metadata.mkdir(parents=True)
+        (metadata / "publish.yml").write_text("on: [push]\n", encoding="utf-8")
+        (metadata / "internal.txt").write_text("not a wildcard\n", encoding="utf-8")
+    # Other dot-directories remain valid wildcard locations.
+    visible = wildcard_directory / ".styles"
+    visible.mkdir()
+    (visible / "colors.txt").write_text("red\n", encoding="utf-8")
+    (wildcard_directory / "colors.yaml").write_text("palette: [blue]\n", encoding="utf-8")
+    expected_size = sum(p.stat().st_size for p in
+                        (visible / "colors.txt", wildcard_directory / "colors.yaml"))
+    monkeypatch.setattr(wc, "get_cache_limit", lambda: 1 if on_demand else 1024 * 1024)
+
+    wc.wildcard_load()
+
+    assert wc.calculate_directory_size(str(wildcard_directory)) == expected_size
+    assert wc.process("__.styles/colors__ __palette__", 42) == "red blue"
+    keys = set(wc.available_wildcards) | set(wc.wildcard_dict) | set(wc.loaded_wildcards)
+    assert not any("/.git/" in k or "/.github/" in k for k in keys)
+    assert not [r for r in caplog.records if r.levelno >= logging.WARNING]
+
+
 # ============================================================================
 # Category 1: Basic wildcard __x__
 # Tutorial L28 / PRD §2.1, §2.5
