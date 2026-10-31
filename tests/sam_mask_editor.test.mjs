@@ -109,6 +109,27 @@ test("network failure is visible and can be retried", async () => {
     assert.equal(doc.commits.length, 1);
 });
 
+for (const fail of [false, true]) {
+    test(`an obsolete request cannot replace a newer result or its status: failure=${fail}`, async () => {
+        const doc = editor();
+        const pending = [];
+        const session = createSamSession(doc.context, () => new Promise((resolve, reject) => pending.push({ resolve, reject })));
+        session.onPointer(point(1, 1));
+        const first = session.detect();
+        session.setConfidence(85);
+        const second = session.detect();
+        pending[1].resolve(mask);
+        await second;
+        if (fail) pending[0].reject(new Error("old request failed"));
+        else pending[0].resolve({ ...mask, data: new Uint8Array(6) });
+        await first;
+        assert.equal(doc.commits.length, 1);
+        assert.deepEqual(doc.commits[0], mask);
+        assert.equal(session.state.message, "Mask applied.");
+        assert.equal(session.state.busy, false);
+    });
+}
+
 test("ignores navigation, hover and outside points; supports pen exclusion mode", () => {
     const session = createSamSession(editor().context, async () => mask);
     session.onPointer({ ...point(1, 1), phase: "move" });

@@ -2,7 +2,7 @@
 
 This integration requires a frontend exposing
 `app.extensionManager.maskEditor.registerTool`. The frontend implementation is on
-`feat/mask-editor-extension-api` (commit `63d786ec2d`). Checking the API, rather
+`feat/mask-editor-extension-api` (validated with commit `40ecc3afd6`). Checking the API, rather
 than a version number, determines which editor integration loads. Frontends
 without it retain the existing legacy SAM dialog.
 
@@ -30,9 +30,16 @@ the inferred mask. No input/output filename or global prepared image is used.
 The endpoint uses the existing `sam_editor_model` and `sam_editor_cpu` settings
 and the existing confidence-selection logic. Each request loads its model,
 computes image embeddings and the mask, and releases the model afterward.
-Inference runs outside the server event loop; legacy and snapshot inference
-share a lock. Already-running inference may finish after HTTP cancellation, but
-its result is discarded and no model or image session is retained.
+Inference runs outside the server event loop; legacy and snapshot operations
+acquire their shared lock only in worker threads. Legacy prepare returns after
+the image is ready, and release clears the prepared-image cache so the same image
+can be prepared again. Already-running inference may finish after HTTP
+cancellation, but its result is discarded and no snapshot model or image session
+is retained.
+
+PreviewBridgeLatent also passes a restored mask into the output `noise_mask`
+when upstream samples refresh. The input latent and its samples are preserved;
+an incoming `noise_mask` keeps priority over the saved mask.
 
 ## Validation
 
@@ -45,8 +52,16 @@ node --experimental-vm-modules --test tests/sam_mask_editor.test.mjs tests/previ
 Backend validation and cleanup tests use the ComfyUI Python environment:
 
 ```bash
-PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest tests/test_sam_editor.py -q
+PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest \
+  tests/test_sam_editor.py tests/test_sam_server.py \
+  tests/test_preview_bridge_latent.py -q
 ```
+
+The HTTP tests run actual handlers in isolated subprocesses with a model double.
+They verify responsiveness during slow request bodies and concurrent inference,
+prepare and release requests, JSON errors and recovery, and repeated preparation.
+The latent tests verify restoration policy, incoming-mask priority, and unchanged
+sample tensors. Model inference itself is exercised by the Chrome tests below.
 
 For Chrome E2E, serve a production build of the feature frontend from an
 isolated ComfyUI server with both this SAM integration and the Preview Bridge
@@ -65,5 +80,11 @@ These tests capture the real SAM response, compare it with the editor and
 downstream MASK, check image/paint preservation, manual editing followed by
 redetection, transformed image coordinates, latent samples and downstream
 `noise_mask`, and native export/import in both widget restoration modes.
+They also send an invalid image through the real HTTP endpoint and retry from
+the UI, hold a real SAM response while editing/switching/reopening, and verify
+that cancellation preserves the later mask and saved node state. Legacy HTTP
+prepare/detect/release is compared with snapshot inference and repeated after
+release. The frontend companion independently checks rendered landmarks after
+zoom, pan, rotation, and mirroring.
 SAM responses are never replaced with fixture masks. The tests skip only when
 `IMPACT_E2E_SAM_IMAGE` is unset.
