@@ -10,8 +10,12 @@ import hashlib
 import json
 
 from e2e_ui import browser_session, options
-from lora_source_case import BASE, CHECKPOINT, FIRST_SECTION, LAST_SECTIONS, LORAS
-from test_e2e_widget_catalog import export_workflow, full_zoom, show_node, widget_state
+from lora_source_case import BASE, CHECKPOINT, FIRST_SECTION, LAST_SECTIONS, LORAS, SAVED_LABEL, SAVED_SECTION
+from test_e2e_widget_catalog import export_workflow, full_zoom, setting, show_node, widget_state
+
+
+REFERENCE_SECTIONS = [*LAST_SECTIONS, SAVED_SECTION]
+REFERENCE_NAMES = [*LORAS, SAVED_LABEL]
 
 
 def workflow():
@@ -48,7 +52,7 @@ def workflow():
     text = add("PreviewAny", source=[source, 3])
     names = add("PreviewAny", source=[source, 5])
     references = []
-    for index, lora in enumerate(LORAS):
+    for index, lora in enumerate([*LORAS, LORAS[0]]):
         base = add("LoraLoader", model=[checkpoint, 0], clip=[checkpoint, 1],
                    lora_name=LORAS[0] + ".safetensors", strength_model=0.1, strength_clip=0.2)
         selected = add("LoraLoader", model=[base, 0], clip=[base, 1],
@@ -56,7 +60,7 @@ def workflow():
         if index == 0:
             selected = add("LoraLoader", model=[selected, 0], clip=[selected, 1],
                            lora_name=LORAS[1] + ".safetensors", strength_model=-0.15, strength_clip=0.2)
-        conditioning = encode([selected, 1], LAST_SECTIONS[index])
+        conditioning = encode([selected, 1], REFERENCE_SECTIONS[index])
         references.append(preview([selected, 0], [conditioning, 0]))
     plain = encode([checkpoint, 1], LAST_SECTIONS[0])
     unpatched = preview([checkpoint, 0], [plain, 0])
@@ -92,8 +96,8 @@ def main():
                 assert image.tobytes() == reference.tobytes(), f"{label}: item {index} differs from core nodes"
             assert images[references[0]][0].tobytes() != images[references[1]][0].tobytes()
             assert images[references[0]][0].tobytes() != images[unpatched][0].tobytes()
-            assert entry["outputs"][text]["text"] == [FIRST_SECTION + " BREAK " + LAST_SECTIONS[i] for i in expected]
-            assert entry["outputs"][names]["text"] == [LORAS[i] for i in expected]
+            assert entry["outputs"][text]["text"] == [FIRST_SECTION + " BREAK " + REFERENCE_SECTIONS[i] for i in expected]
+            assert entry["outputs"][names]["text"] == [REFERENCE_NAMES[i] for i in expected]
             hashes = [hashlib.sha256(image.tobytes()).hexdigest() for image in images[actual]]
             for i, image in enumerate(images[actual]):
                 image.save(args.artifacts / f"{label}-{i}.png")
@@ -116,6 +120,25 @@ def main():
         check("sequential", [1])
         ui.choose("LoraWildcardSource", "mode", "random")
         check("random", [0])
+
+        ui.choose("LoraWildcardSource", "mode", "fixed")
+        ui.choose("LoraWildcardSource", "category", "labels")
+        ui.page.wait_for_function("""({app, value}) => app.graph._nodes.find(n => n.type === 'LoraWildcardSource')
+            .widgets.find(w => w.name === 'lora_wildcard').options.values.includes(value)""",
+            arg={"app": ui.app, "value": SAVED_LABEL})
+        ui.choose("LoraWildcardSource", "lora_wildcard", SAVED_LABEL)
+        check("saved-label", [2])
+        before = widget_state(ui, source)
+        saved = args.artifacts / "saved-label-workflow.json"
+        export_workflow(ui, saved)
+        for restore_by_name in (False, True):
+            setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+            ui.new_workflow()
+            ui.load_workflow(saved, len(graph))
+            full_zoom(ui)
+            show_node(ui, source)
+            assert widget_state(ui, source) == before
+            check("saved-label-" + ("named" if restore_by_name else "positional"), [2])
     (args.artifacts / "results.json").write_text(json.dumps(results, indent=2) + "\n")
 
 

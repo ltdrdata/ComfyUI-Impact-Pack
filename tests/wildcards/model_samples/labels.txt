@@ -1,0 +1,3 @@
+new trigger, <lora:SD1.5/etc/add_detail:-0.5>
+saved first, <lora:SD1.5/etc/add_detail:0.7>
+saved second, <lora:SD1.5/etc/add_detail:0.8>

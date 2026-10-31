@@ -117,6 +117,13 @@ registration is substituted. It performs no sampling or browser actions:
 python tests/integration_lora_wildcard_tensors.py --comfy-root /path/to/ComfyUI
 ```
 
+The model samples also include a negative-weight row before two original rows
+with the same LoRA name. The inference suite selects the saved duplicate label,
+then exports and reloads it under both widget restoration modes; text, pixels
+and widget names/order/values must still identify the original second row.
+The tensor check separately verifies that empty categories preserve ordinary
+prompt punctuation and BREAK sections exactly as the original node did.
+
 ## Server setup
 
 Use an isolated checkout/copy and a separate ComfyUI user/output directory.

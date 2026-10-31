@@ -139,6 +139,55 @@ def test_empty_category_still_processes_base_prompt_loras(source, model_calls):
     assert result[3] == ["__color__"]
 
 
+@pytest.mark.parametrize("contents,prompt,sections", [
+    (None, "a flower, ", ["a flower,"]),
+    ("", " first,,  BREAK\nsecond, \t ", ["first,,", "second,"]),
+    ("plain text\n", " \n\t ", [""]),
+    (None, "", [""]),
+])
+def test_empty_category_preserves_plain_prompt(source, model_calls, contents, prompt, sections):
+    module, custom = source
+    if contents is not None:
+        (custom / "styles.txt").write_text(contents)
+    result = build(module, base_prompt=prompt)
+    assert result[3] == [prompt]
+    assert result[2] == [sections]
+    assert result[0] == result[1] == [()]
+    assert result[4:] == (["no_lora"], ["no_styles"])
+    assert model_calls == []
+
+
+@pytest.mark.parametrize("new_tag", ["<lora:A:-0.5>", "<lora:A>", "<lora:A:0.7:0.2>", "<lora:A:1e-2>"])
+def test_extended_syntax_preserves_saved_label_targets(source, model_calls, new_tag):
+    module, custom = source
+    (custom / "styles.txt").write_text(
+        f"new trigger, {new_tag}\nold first, <lora:A:0.7>\nold second, <lora:A:0.8>\n")
+    assert items(module, "styles") == ["A", "A (1)", "A (2)"]
+    for label, text in [("A", "base, old first"), ("A (1)", "base, old second"), ("A (2)", "base, new trigger")]:
+        result = build(module, lora_wildcard=label)
+        assert result[3] == [text]
+        assert result[2] == [[text]]
+    assert model_calls == [("A.safetensors", 0.8, 0.8)] * 3
+
+
+def test_existing_primary_tag_keeps_its_label_and_strength(source, model_calls):
+    module, custom = source
+    (custom / "styles.txt").write_text("<lora:Base:-0.3:0.4>, portrait, <lora:A:0.7>\n")
+    assert items(module, "styles") == ["A"]
+    result = build(module)
+    assert model_calls == [("Base.safetensors", -0.3, 0.4), ("A.safetensors", 0.8, 0.8)]
+    assert result[3] == ["base, portrait"]
+    assert result[4] == ["A"]
+
+
+def test_new_names_cannot_reuse_saved_duplicate_labels(source, model_calls):
+    module, custom = source
+    (custom / "styles.txt").write_text(
+        "old first, <lora:A:0.7>\nold second, <lora:A:0.8>\nnew trigger, <lora:A (1):-0.5>\n")
+    assert items(module, "styles") == ["A", "A (1)", "A (1) (1)"]
+    assert build(module, lora_wildcard="A (1)")[3] == ["base, old second"]
+
+
 def test_pose_category_uses_the_same_file_in_ui_and_execution(source, model_calls):
     module, custom = source
     (custom / "pose.txt").write_text("singular, <lora:A:1>")

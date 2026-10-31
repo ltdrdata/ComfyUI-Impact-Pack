@@ -6,6 +6,8 @@ It scans the directory configured by `custom_wildcards` in `impact-pack.ini`, tr
 
 The optional sample is [example_workflows/wildcards/styles.txt](../example_workflows/wildcards/styles.txt). It is outside the automatically scanned directories so installing this node does not replace an existing `__styles__` wildcard. To use it, copy it into your configured directory under an unused filename, then select that category. Do not overwrite your own wildcard files.
 
+Entries recognized by the original node keep their labels and order. Newly supported entries are appended with unused labels, so a saved `A` or `A (1)` still selects the same original row. The larger candidate list can change random selection, sequential wraparound and batch size. For an empty category, an ordinary base prompt retains its original text and punctuation; LoRA tags in that prompt are still applied and removed before encoding.
+
 ## Features
 
 - **Dynamic Category Mapping**: Automatically populates the `category` dropdown by scanning all `.txt` files in the `custom_wildcards/` directory.
@@ -28,7 +30,7 @@ The optional sample is [example_workflows/wildcards/styles.txt](../example_workf
 - **category** (COMBO): Dropdown containing the text file names (categories) from the `custom_wildcards/` directory.
 - **lora_wildcard** (COMBO): The LoRA entries inside the selected category file.
 - **mode** (COMBO): Select between `fixed`, `random`, `sequential`, or `batch`.
-- **strength** (FLOAT): Overrides the model and CLIP weights of the entry's first LoRA (Default: `0.8`). Other LoRAs in the entry or base prompt retain their declared numeric weights. Block-weight options are not supported by this node.
+- **strength** (FLOAT): Overrides the model and CLIP weights of the selected entry's primary LoRA (Default: `0.8`). For an original entry, this is the first tag recognized by the original node; for a newly supported entry, it is the first LoRA tag. Other LoRAs retain their declared numeric weights. Block-weight options are not supported by this node.
 - **base_prompt** (STRING): Multiline text input for the base prompt.
 - **seed** (INT): Seed used for random selection and sequential index. Image sampling uses the sampler's own seed.
 

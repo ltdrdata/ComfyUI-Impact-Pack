@@ -64,9 +64,22 @@ def main():
             assert_lora_patches_equal(result[1][index].patcher.patches, reference_clip.patcher.patches)
             assert result[3][index] == FIRST_SECTION + " BREAK " + last
             print(f"PASS: entry {index}, exact conditioning and all MODEL/CLIP patch tensors and strengths", flush=True)
+
+        for prompt, sections in [("a flower, ", ["a flower,"]),
+                                 (" first,,  BREAK\nsecond, \t ", ["first,,", "second,"])]:
+            plain = wildcard_source.LoraWildcardSource().build(
+                model, clip, "absent", LORAS[0], "fixed", 0.6, prompt, 1)
+            assert plain[0][0] is model and plain[1][0] is clip
+            assert plain[3] == [prompt]
+            expected = nodes.CLIPTextEncode().encode(clip, sections[0])[0]
+            for section in sections[1:]:
+                encoded = nodes.CLIPTextEncode().encode(clip, section)[0]
+                expected = nodes.ConditioningConcat().concat(expected, encoded)[0]
+            torch.testing.assert_close(plain[2][0], expected, rtol=0, atol=0)
+            print(f"PASS: empty category, original text and conditioning for {prompt!r}", flush=True)
         assert model.patches == {} and clip.patcher.patches == {}, "Input models were mutated"
         comfy.model_management.unload_all_models()
-        del result, reference_model, reference_clip, model, clip, vae
+        del result, plain, reference_model, reference_clip, model, clip, vae
         gc.collect()
 
 

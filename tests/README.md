@@ -73,14 +73,17 @@ checks all four modes and native workflow reload against core LoRA/CLIP/sampler
 nodes using real SD1.5 models. Configure the isolated server with
 `tests/wildcards/model_samples` and the models listed in the script docstring.
 It compares every output pixel, output text, list length and entry order;
-browser previews must also match server images. This is separate from the
-model-free catalog and delayed-response tests.
+browser previews must also match server images. A saved duplicate label must
+still select its original row after syntax expansion and native reload in both
+restoration modes. This is separate from the model-free catalog and
+delayed-response tests.
 Use the deterministic FP32 server options in the E2E guide for pixel equality.
 `python3 tests/integration_lora_wildcard_tensors.py --comfy-root /path/to/ComfyUI`
 separately compares every conditioning tensor and MODEL/CLIP LoRA patch tensor
 and weight with core nodes under ComfyUI's default model-loading settings.
-It also verifies that the input models retain no patches. Only unused HTTP
-route registration is substituted; model operations are real.
+It also checks empty-category punctuation/BREAK conditioning and verifies
+that the input models retain no patches. Only unused HTTP route registration
+is substituted; model operations are real.
 
 ## Test Suites
 

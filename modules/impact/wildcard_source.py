@@ -10,6 +10,8 @@ from impact import config, wildcards
 
 
 _LORA_RE = re.compile(r"<lora:([^>]+)>")
+# Keep labels and strength targets from workflows saved by the incoming node.
+_LEGACY_LORA_RE = re.compile(r"<lora:([^:>]+):([\d.]+)\s*>")
 
 
 def achar_arquivo_wildcard(nome_arquivo):
@@ -25,19 +27,30 @@ def achar_arquivo_wildcard(nome_arquivo):
 def parse_linhas_wildcard(caminho):
     if not caminho:
         return []
-    entries = []
-    counts = {}
+    existing, added = [], []
     for line in wildcards.load_txt_wildcard(caminho):
-        match = _LORA_RE.search(line)
+        legacy_match = _LEGACY_LORA_RE.search(line)
+        match = legacy_match or _LORA_RE.search(line)
         if match is None:
             continue
         name = match.group(1).split(":", 1)[0].strip()
         if not name:
             continue
-        count = counts.get(name, 0)
-        label = f"{name} ({count})" if count else name
-        counts[name] = count + 1
-        entries.append((label, line.strip(), name))
+        (existing if legacy_match else added).append((line.strip(), name))
+
+    entries, counts, used = [], {}, set()
+    # Allocate every old label first. Newly supported rows cannot take an old
+    # row's name, duplicate suffix, or position in the original option list.
+    for group in (existing, added):
+        for line, name in group:
+            count = counts.get(name, 0)
+            label = f"{name} ({count})" if count else name
+            while group is added and label in used:
+                count += 1
+                label = f"{name} ({count})"
+            counts[name] = count + 1
+            used.add(label)
+            entries.append((label, line, name))
     return entries
 
 
@@ -53,10 +66,11 @@ def listar_categorias_wildcard():
 
 
 def entry_with_strength(entry, strength):
-    def replace(match):
-        name = match.group(1).split(":", 1)[0].strip()
-        return f"<lora:{name}:{strength}:{strength}>"
-    return _LORA_RE.sub(replace, entry, count=1)
+    match = _LEGACY_LORA_RE.search(entry) or _LORA_RE.search(entry)
+    if match is None:
+        return entry
+    name = match.group(1).split(":", 1)[0].strip()
+    return entry[:match.start()] + f"<lora:{name}:{strength}:{strength}>" + entry[match.end():]
 
 
 def resolver_caminho_lora(nome):
@@ -218,8 +232,12 @@ class LoraWildcardSource:
     def build(self, model, clip, category, lora_wildcard, mode, strength, base_prompt, seed):
         entries = parse_linhas_wildcard(achar_arquivo_wildcard(f"{category}.txt"))
         if not entries:
-            selected = [(f"no_{category}", "", "no_lora")]
-        elif mode == "batch":
+            loras, text = [], base_prompt
+            if _LORA_RE.search(base_prompt):
+                loras, text = extrair_e_limpar_loras(base_prompt)
+            result_model, result_clip, conditioning = aplicar_loras_e_codificar(model, clip, loras, text)
+            return ([result_model], [result_clip], [conditioning], [text], ["no_lora"], [f"no_{category}"])
+        if mode == "batch":
             selected = entries
         elif mode == "random":
             selected = [random.Random(seed).choice(entries)]
