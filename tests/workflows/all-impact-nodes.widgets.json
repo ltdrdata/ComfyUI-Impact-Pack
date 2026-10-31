@@ -1711,20 +1711,6 @@
       ]
     },
     {
-      "id": "58",
-      "type": "SEGSLabelFilterDetailerHookProvider",
-      "widgets": [
-        {
-          "name": "preset",
-          "value": "all"
-        },
-        {
-          "name": "labels",
-          "value": ""
-        }
-      ]
-    },
-    {
       "id": "59",
       "type": "VariationNoiseDetailerHookProvider",
       "widgets": [
@@ -3967,6 +3953,20 @@
         {
           "name": "denoise",
           "value": 1
+        }
+      ]
+    },
+    {
+      "id": "198",
+      "type": "SEGSLabelFilterDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "preset",
+          "value": "all"
+        },
+        {
+          "name": "labels",
+          "value": ""
         }
       ]
     }
