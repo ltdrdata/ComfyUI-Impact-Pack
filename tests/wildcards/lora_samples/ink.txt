@@ -1,0 +1,2 @@
+first trigger, <lora:Ink first:0.8>
+second trigger, <lora:Ink second:0.7:0.4>

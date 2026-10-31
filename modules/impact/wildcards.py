@@ -514,8 +514,6 @@ def process_comment_out(text):
 def process(text, seed=None):
     text = process_comment_out(text)
 
-    if seed is not None:
-        random.seed(seed)
     random_gen = np.random.default_rng(seed)
 
     local_wildcard_dict = get_wildcard_dict()

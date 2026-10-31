@@ -7,12 +7,12 @@ Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 From the `tests/` directory, run `python3 -m pytest`.
 Install dependencies with `python3 -m pip install -r tests/requirements.txt`
 from the repository root. This runs configuration, populate, and strict
-encoding checks without starting ComfyUI. The configuration keeps pytest from
+encoding and LoRA wildcard source checks without starting ComfyUI. The configuration keeps pytest from
 importing the extension's server-initializing `__init__.py`.
 Circular-reference tests use `pytest-timeout` to stop after five seconds.
 
 From the Impact Pack root, select the files explicitly:
-`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_wildcard_encoding_strict.py`.
+`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_wildcard_encoding_strict.py tests/wildcards/test_lora_wildcard_source.py`.
 
 Both suites also run directly with `python3 tests/wildcards/test_populate_regression.py`
 and `python3 tests/wildcards/test_wildcard_encoding_strict.py`; both delegate
@@ -60,6 +60,13 @@ for recording instructions. It tests loading, not execution of every node.
 For each new registered node, first verify the existing trusted catalog, then
 extend both fixtures through the recorder and rerun the E2E. Existing snapshot
 records must remain unchanged; see [the repository rules](../AGENTS.md).
+
+`node --test tests/lora_wildcard_source.test.mjs` checks dependent dropdown
+request ordering, saved selections, query encoding and isolation from existing
+nodes. `tests/test_e2e_lora_wildcard_source.py` verifies the same saved-value
+contract through Chrome search, editing, native Export and file import in both
+restoration modes. Configure its isolated server with
+`tests/wildcards/lora_samples`; see the E2E guide.
 
 ## Test Suites
 

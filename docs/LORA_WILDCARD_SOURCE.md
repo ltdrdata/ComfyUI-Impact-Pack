@@ -2,19 +2,21 @@
 
 The `LoraWildcardSource` is a generic, dynamic node designed to simplify and automate the application of LoRAs and prompt encoding in ComfyUI, replacing complex text-concatenation setups.
 
-It scans files inside the `custom_wildcards/` directory, treating each `.txt` file name as a category dropdown option. Selecting a category dynamically updates the second dropdown with the corresponding LoRA wildcards parsed from the file.
+It scans the directory configured by `custom_wildcards` in `impact-pack.ini`, treating each top-level `.txt` file name as a category dropdown option. Selecting a category updates the second dropdown with the corresponding LoRA entries. Files and symlinks outside that directory cannot be read through the category input or HTTP route.
+
+The optional sample is [example_workflows/wildcards/styles.txt](../example_workflows/wildcards/styles.txt). It is outside the automatically scanned directories so installing this node does not replace an existing `__styles__` wildcard. To use it, copy it into your configured directory under an unused filename, then select that category. Do not overwrite your own wildcard files.
 
 ## Features
 
 - **Dynamic Category Mapping**: Automatically populates the `category` dropdown by scanning all `.txt` files in the `custom_wildcards/` directory.
 - **Dynamic Options Update**: Changing the `category` in the UI dynamically fetches and updates the available LoRAs in the `lora_wildcard` dropdown.
-- **Built-in LoRA Loading & Encoding**: Sequentially loads the selected LoRAs onto the model and CLIP and encodes the prompt using `CLIPTextEncode` (supporting the `BREAK` keyword) to output `MODEL`, `CLIP`, and `CONDITIONING` directly.
+- **LoRA Loading & Encoding**: Uses Impact Pack's existing wildcard/LoRA processor, including wildcard expansion, multiple LoRAs, block weights and `BREAK`. Text after a LoRA tag is preserved.
 - **Cleanup**: Strips `<lora:...>` tags from the final text prompt before encoding.
 - **Outputs for File Saving**: Provides `lora_name` (clean filename) and `name` (label) outputs, which can be connected directly to `SaveImage` as a filename prefix.
 
 ## Modes
 
-- **fixed**: Applies the single selected LoRA from the dropdown.
+- **fixed**: Applies the selected entry. If that entry has been removed, execution reports the missing selection instead of silently choosing another LoRA. Workflow loading preserves the saved selection.
 - **random**: Randomly chooses one LoRA from the active category based on the seed.
 - **sequential**: Progressively cycles through the list of LoRAs in the category using the seed (`seed % total_loras`).
 - **batch**: Runs all LoRAs in the category in a single queue batch.
@@ -26,9 +28,9 @@ It scans files inside the `custom_wildcards/` directory, treating each `.txt` fi
 - **category** (COMBO): Dropdown containing the text file names (categories) from the `custom_wildcards/` directory.
 - **lora_wildcard** (COMBO): The LoRA entries inside the selected category file.
 - **mode** (COMBO): Select between `fixed`, `random`, `sequential`, or `batch`.
-- **strength** (FLOAT): The model and clip strength of the applied LoRA (Default: `0.8`).
+- **strength** (FLOAT): Overrides the model and CLIP weights of the entry's first LoRA (Default: `0.8`). Other LoRAs in the entry or base prompt retain their declared weights. The first LoRA's block-weight/loader options are preserved.
 - **base_prompt** (STRING): Multiline text input for the base prompt.
-- **seed** (INT): Seed used for random selection, sequential index, or generation.
+- **seed** (INT): Seed used for random selection, sequential index and wildcard expansion. Image sampling uses the sampler's own seed.
 
 ## Outputs
 

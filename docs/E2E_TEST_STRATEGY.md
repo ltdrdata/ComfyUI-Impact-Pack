@@ -15,6 +15,7 @@ that setup does not extend the supported import scope.
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
+| `tests/test_e2e_lora_wildcard_source.py` | Search for the node, select non-default values, native Export and file import | Delayed creation responses cannot overwrite saved widget names/order/values or category options in either restoration mode |
 | `tests/e2e_tutorials.py` | Import the original Switch tutorial PNGs, change selection widgets, save and reimport JSON | Every selected branch and final output matches direct core-node image results; both selection modes retain the final preview |
 | `tests/e2e_regional.py` | Import the regional img2img tutorial and prepared variants, click Run | Exact color masks, output differs from a VAE roundtrip, each regional prompt affects its own region more than distant pixels, browser previews match server images |
 | `tests/e2e_conditionings.py` | Import conditioning and regional-prompt graphs, click Run, save and reimport through the file input | Combine/Concat results match core ComfyUI nodes; regional prompts retain both items in order; dynamic slots and links survive loading |
@@ -61,6 +62,27 @@ wildcard_cache_limit_mb = 50
 
 To repeat the wildcard UI test in on-demand mode, set the limit to `0.0001`
 and restart the test server. Both modes use the same UI assertions.
+
+For `tests/test_e2e_lora_wildcard_source.py`, instead set `custom_wildcards` to
+the test copy's `tests/wildcards/lora_samples` directory and restart. The two
+categories have no model dependencies: this suite checks native workflow
+restoration without inference. It delays real `/impact/get_items` responses so
+the default category arrives after the restored category. Python tests cover
+file containment, configured paths, parsing, loading/encoding calls, selection
+modes and preservation of existing wildcard results separately.
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-lora-source-e2e \
+python -m pytest tests/test_e2e_lora_wildcard_source.py -v
+node --test tests/lora_wildcard_source.test.mjs
+```
+
+For RGR, run the same tests against the incoming implementation, the fix, and
+the incoming implementation again. The final Red must fail on the same
+assertions; keep the tests and trusted fixtures unchanged. Restore the fix
+before final catalog verification. Catalog recording uses the ordinary Full
+Cache setup below, not the LoRA sample directory.
 
 ## Server setup
 
