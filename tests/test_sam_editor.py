@@ -77,8 +77,9 @@ def test_request_owned_model_returns_to_cpu_and_uses_the_supplied_snapshot(monke
             np.testing.assert_array_equal(point_labels, [1])
             assert box is None
             masks = np.array([[[False, True, False], [False, True, False]],
-                              [[False, False, False], [False, True, False]]])
-            return masks, np.array([0.9, 0.8]), None
+                              [[False, False, False], [False, False, True]],
+                              [[True, False, False], [False, False, False]]])
+            return masks, np.array([0.9, 0.8, 0.6]), None
 
     monkeypatch.setitem(sam_model_registry, "vit_b", lambda checkpoint: Model())
     monkeypatch.setitem(sam_model_registry, "vit_h", lambda checkpoint: pytest.fail("Selected the model from its parent directory"))
@@ -91,6 +92,6 @@ def test_request_owned_model_returns_to_cpu_and_uses_the_supplied_snapshot(monke
     else:
         result = sam_editor.detect_mask(*values, model_path, "test-device")
         with Image.open(io.BytesIO(result)) as mask:
-            np.testing.assert_array_equal(np.asarray(mask), [[0, 255, 0], [0, 255, 0]])
+            np.testing.assert_array_equal(np.asarray(mask), [[0, 255, 0], [0, 255, 255]])
     assert moves == ["test-device", "cpu"]
     np.testing.assert_array_equal(images[0], values[0])
