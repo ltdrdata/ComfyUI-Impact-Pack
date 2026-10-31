@@ -512,21 +512,11 @@ def process_comment_out(text):
 
 
 def process(text, seed=None):
-    # Restore the global random state afterwards so seeding here does not affect other nodes.
-    state = random.getstate()
-    try:
-        return _process(text, seed)
-    finally:
-        random.setstate(state)
-
-
-def _process(text, seed=None):
     text = process_comment_out(text)
 
     if seed is not None:
         # np.random.default_rng() only accepts non negative seeds.
         seed = int(seed) & 0xFFFFFFFFFFFFFFFF
-        random.seed(seed)
     random_gen = np.random.default_rng(seed)
 
     local_wildcard_dict = get_wildcard_dict()

@@ -7,12 +7,14 @@ Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 From the `tests/` directory, run `python3 -m pytest`.
 Install dependencies with `python3 -m pip install -r tests/requirements.txt`
 from the repository root. This runs configuration, populate, and strict
-encoding checks without starting ComfyUI. The configuration keeps pytest from
+encoding checks without starting ComfyUI. Seed regressions cover negative seeds,
+existing outputs, and shared RNG isolation during success, failure, and concurrent
+execution. The configuration keeps pytest from
 importing the extension's server-initializing `__init__.py`.
 Circular-reference tests use `pytest-timeout` to stop after five seconds.
 
 From the Impact Pack root, select the files explicitly:
-`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_wildcard_encoding_strict.py`.
+`python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_seed_regression.py tests/wildcards/test_wildcard_encoding_strict.py`.
 
 Both suites also run directly with `python3 tests/wildcards/test_populate_regression.py`
 and `python3 tests/wildcards/test_wildcard_encoding_strict.py`; both delegate
