@@ -16,4 +16,5 @@ impact_subpack
 !tests/wildcards/samples/test_encoding_emoji.txt
 !tests/wildcards/samples/test_encoding_special.txt
 !tests/wildcards/lora_samples/*.txt
+!tests/wildcards/model_samples/*.txt
 !example_workflows/wildcards/styles.txt

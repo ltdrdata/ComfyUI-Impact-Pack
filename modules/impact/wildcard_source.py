@@ -1,6 +1,8 @@
 import os
 import re
 import random
+import logging
+import folder_paths
 import nodes
 from aiohttp import web
 from server import PromptServer
@@ -26,7 +28,7 @@ def parse_linhas_wildcard(caminho):
     entries = []
     counts = {}
     for line in wildcards.load_txt_wildcard(caminho):
-        loras = wildcards.extract_lora_values(line)
+        loras, _ = extrair_e_limpar_loras(line)
         if not loras or not loras[0][0]:
             continue
         name = loras[0][0].strip()
@@ -39,19 +41,19 @@ def parse_linhas_wildcard(caminho):
 
 def listar_categorias_wildcard():
     root = config.get_config()["custom_wildcards"]
-    categories = sorted(os.path.splitext(name)[0] for name in os.listdir(root)
-                        if name.endswith(".txt") and achar_arquivo_wildcard(name))
+    try:
+        categories = sorted(os.path.splitext(name)[0] for name in os.listdir(root)
+                            if name.endswith(".txt") and achar_arquivo_wildcard(name))
+    except OSError as error:
+        logging.warning(f"[Impact Wildcard] Error listing custom_wildcards: {error}")
+        categories = []
     return categories or ["styles", "poses"]
 
 
 def entry_with_strength(entry, strength):
     def replace(match):
-        parts = match.group(1).split(":")
-        name = parts.pop(0).strip()
-        for _ in range(2):
-            if parts and wildcards.is_numeric_string(parts[0]):
-                parts.pop(0)
-        return "<lora:" + ":".join([name, str(strength), str(strength), *parts]) + ">"
+        name = match.group(1).split(":", 1)[0].strip()
+        return f"<lora:{name}:{strength}:{strength}>"
     return _LORA_RE.sub(replace, entry, count=1)
 
 
@@ -61,14 +63,102 @@ def nome_arquivo_limpo(nome, fallback="no_lora"):
     return re.sub(r"\s+", "_", name).strip("_") or fallback
 
 
-def clean_prompt(text):
-    text = re.sub(r",\s*,", ",", text)
-    return re.sub(r"\s+", " ", text).strip().strip(",").strip()
+def resolver_caminho_lora(nome):
+    """Locates the .safetensors (or other supported formats) in the ComfyUI cache, resolving subfolders."""
+    if not nome.endswith((".safetensors", ".ckpt", ".pt")):
+        nome_com_ext = nome + ".safetensors"
+    else:
+        nome_com_ext = nome
 
+    todos_loras = folder_paths.get_filename_list("loras")
 
-class _PromptEncoder:
-    def encode(self, clip, text):
-        return nodes.CLIPTextEncode().encode(clip, clean_prompt(text))
+    # Attempt 1: Exact match or relative path
+    for lora in todos_loras:
+        lora_norm = lora.replace("\\", "/")
+        nome_norm = nome_com_ext.replace("\\", "/")
+        if lora_norm == nome_norm or lora_norm.endswith("/" + nome_norm):
+            return lora
+
+    # Attempt 2: Filename only (ignores subfolders)
+    nome_basico = os.path.basename(nome_com_ext)
+    for lora in todos_loras:
+        if os.path.basename(lora) == nome_basico:
+            return lora
+
+    return None
+
+def extrair_e_limpar_loras(prompt):
+    """Scans the prompt for <lora:NAME:weight> or <lora:NAME:model_w:clip_w> tags,
+    returning the list of LoRAs to load and cleaning the tags from the text."""
+    if not prompt:
+        return [], ""
+
+    pattern = r"<lora:([^>]+)>"
+    matches = re.findall(pattern, prompt)
+
+    loras_extraidos = []
+    for match in matches:
+        parts = match.split(":")
+        if len(parts) >= 1:
+            nome_lora = parts[0].strip()
+            weight_model = 1.0
+            weight_clip = 1.0
+
+            if len(parts) >= 2:
+                try:
+                    weight_model = float(parts[1].strip())
+                    weight_clip = weight_model
+                except ValueError:
+                    pass
+            if len(parts) >= 3:
+                try:
+                    weight_clip = float(parts[2].strip())
+                except ValueError:
+                    pass
+
+            loras_extraidos.append((nome_lora, weight_model, weight_clip))
+
+    # Clean the tags from the prompt
+    prompt_limpo = re.sub(pattern, "", prompt)
+
+    # Remove duplicate/trailing commas and extra spaces
+    prompt_limpo = re.sub(r",\s*,", ",", prompt_limpo)
+    prompt_limpo = re.sub(r"\s+", " ", prompt_limpo).strip()
+    prompt_limpo = prompt_limpo.strip(",").strip()
+
+    return loras_extraidos, prompt_limpo
+
+def aplicar_loras_e_codificar(model, clip, loras_a_aplicar, prompt_limpo):
+    """Loads LoRAs sequentially and encodes the prompt using CLIPTextEncode (supporting BREAK)."""
+    loader = nodes.LoraLoader()
+
+    # 1. Load LoRAs onto the model and CLIP
+    for nome_lora, w_model, w_clip in loras_a_aplicar:
+        caminho_resolvido = resolver_caminho_lora(nome_lora)
+        if caminho_resolvido:
+            logging.info(f"[Impact Wildcard] Applying LoRA: {caminho_resolvido} (model={w_model}, clip={w_clip})")
+            model, clip = loader.load_lora(model, clip, caminho_resolvido, w_model, w_clip)
+        else:
+            logging.warning(f"[Impact Wildcard] WARNING: LoRA '{nome_lora}' could not be found in ComfyUI.")
+
+    # 2. Split by BREAK and encode (for composite conditioning / ImpactWildcardEncode compatibility)
+    secoes = [x.strip() for x in prompt_limpo.split("BREAK")]
+    secoes = [x for x in secoes if x != ""]
+    if not secoes:
+        secoes = [""]
+
+    encoder = nodes.CLIPTextEncode()
+    result_conditioning = None
+
+    for secao in secoes:
+        logging.info(f"[Impact Wildcard] Encoding prompt: '{secao}'")
+        cond = encoder.encode(clip, secao)[0]
+        if result_conditioning is not None:
+            result_conditioning = nodes.ConditioningConcat().concat(result_conditioning, cond)[0]
+        else:
+            result_conditioning = cond
+
+    return model, clip, result_conditioning
 
 
 @PromptServer.instance.routes.get("/impact/get_items")
@@ -139,10 +229,9 @@ class LoraWildcardSource:
         for label, entry, name in selected:
             prompt = ", ".join(part.strip().strip(",") for part in
                                (base_prompt, entry_with_strength(entry, strength)) if part.strip())
-            processed = []
-            result_model, result_clip, conditioning = wildcards.process_with_loras(
-                prompt, model, clip, clip_encoder=_PromptEncoder(), seed=seed, processed=processed)
-            values = (result_model, result_clip, conditioning, clean_prompt(processed[1]), nome_arquivo_limpo(name), label)
+            loras, text = extrair_e_limpar_loras(prompt)
+            result_model, result_clip, conditioning = aplicar_loras_e_codificar(model, clip, loras, text)
+            values = (result_model, result_clip, conditioning, text, nome_arquivo_limpo(name), label)
             for output, value in zip(outputs, values):
                 output.append(value)
         return outputs

@@ -10,7 +10,7 @@ The optional sample is [example_workflows/wildcards/styles.txt](../example_workf
 
 - **Dynamic Category Mapping**: Automatically populates the `category` dropdown by scanning all `.txt` files in the `custom_wildcards/` directory.
 - **Dynamic Options Update**: Changing the `category` in the UI dynamically fetches and updates the available LoRAs in the `lora_wildcard` dropdown.
-- **LoRA Loading & Encoding**: Uses Impact Pack's existing wildcard/LoRA processor, including wildcard expansion, multiple LoRAs, block weights and `BREAK`. Text after a LoRA tag is preserved.
+- **LoRA Loading & Encoding**: Applies LoRA tags in order using ComfyUI's LoRA loader, then encodes the cleaned prompt with `BREAK` support. Text and additional LoRAs after the first tag are preserved. Repeated LoRAs are applied separately. Prompt text such as `__color__` or `{red|blue}` remains literal, matching the original node.
 - **Cleanup**: Strips `<lora:...>` tags from the final text prompt before encoding.
 - **Outputs for File Saving**: Provides `lora_name` (clean filename) and `name` (label) outputs, which can be connected directly to `SaveImage` as a filename prefix.
 
@@ -28,9 +28,9 @@ The optional sample is [example_workflows/wildcards/styles.txt](../example_workf
 - **category** (COMBO): Dropdown containing the text file names (categories) from the `custom_wildcards/` directory.
 - **lora_wildcard** (COMBO): The LoRA entries inside the selected category file.
 - **mode** (COMBO): Select between `fixed`, `random`, `sequential`, or `batch`.
-- **strength** (FLOAT): Overrides the model and CLIP weights of the entry's first LoRA (Default: `0.8`). Other LoRAs in the entry or base prompt retain their declared weights. The first LoRA's block-weight/loader options are preserved.
+- **strength** (FLOAT): Overrides the model and CLIP weights of the entry's first LoRA (Default: `0.8`). Other LoRAs in the entry or base prompt retain their declared numeric weights. Block-weight options are not supported by this node.
 - **base_prompt** (STRING): Multiline text input for the base prompt.
-- **seed** (INT): Seed used for random selection, sequential index and wildcard expansion. Image sampling uses the sampler's own seed.
+- **seed** (INT): Seed used for random selection and sequential index. Image sampling uses the sampler's own seed.
 
 ## Outputs
 

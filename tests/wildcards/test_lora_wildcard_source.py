@@ -17,14 +17,15 @@ from impact import config, wildcards
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_shipped_examples_preserve_existing_wildcard_results(tmp_path, monkeypatch):
+@pytest.mark.parametrize("cache_limit", [0, 50], ids=["on_demand", "full_cache"])
+def test_shipped_examples_preserve_existing_wildcard_results(tmp_path, monkeypatch, cache_limit):
     bundled = tmp_path / "wildcards"
     bundled.mkdir()
     (bundled / "styles.txt").write_text("watercolor\n", encoding="utf-8")
     custom = tmp_path / "custom_wildcards"
     custom.mkdir()
     monkeypatch.setattr(config, "cached_config", {
-        "custom_wildcards": str(custom), "wildcard_cache_limit_mb": 50,
+        "custom_wildcards": str(custom), "wildcard_cache_limit_mb": cache_limit,
     })
     monkeypatch.setattr(wildcards, "wildcards_path", str(bundled))
     for name in ("wildcard_dict", "available_wildcards", "loaded_wildcards"):
@@ -121,7 +122,7 @@ def test_full_entry_and_extra_loras_survive_encoding(source, model_calls):
     (custom / "styles.txt").write_text("portrait, <lora:A:0.7>, __color__, <lora:B:-0.3:0.4> BREAK landscape")
     result = build(module, base_prompt="base, <lora:Base:0.2:0.3>")
     assert model_calls == [("Base.safetensors", 0.2, 0.3), ("A.safetensors", 0.8, 0.8), ("B.safetensors", -0.3, 0.4)]
-    assert all(word in result[3][0] for word in ("portrait", "blue", "landscape"))
+    assert all(word in result[3][0] for word in ("portrait", "__color__", "landscape"))
     assert "<lora:" not in result[3][0]
     assert len(result[2][0]) == 2
 
@@ -138,7 +139,7 @@ def test_empty_category_still_processes_base_prompt_loras(source, model_calls):
     module, _ = source
     result = build(module, base_prompt="__color__, <lora:Base:0.2:0.3>")
     assert model_calls == [("Base.safetensors", 0.2, 0.3)]
-    assert "blue" in result[3][0] and "<lora:" not in result[3][0]
+    assert result[3] == ["__color__"]
 
 
 def test_pose_category_uses_the_same_file_in_ui_and_execution(source, model_calls):
@@ -199,3 +200,58 @@ def test_input_names_and_order_remain_compatible(source):
     assert list(module.LoraWildcardSource.INPUT_TYPES()["required"]) == [
         "model", "clip", "category", "lora_wildcard", "mode", "strength", "base_prompt", "seed",
     ]
+
+
+@pytest.mark.parametrize("tag,expected", [
+    ("<lora:A:0.2>", ("A.safetensors", 0.2, 0.2)),
+    ("<lora: Base : 0.2 : 0.3>", ("Base.safetensors", 0.2, 0.3)),
+    ("<lora:Base:1e-2:2e-2>", ("Base.safetensors", 0.01, 0.02)),
+    ("<lora:Base:+0.2:+0.3>", ("Base.safetensors", 0.2, 0.3)),
+])
+def test_base_loras_keep_original_weights_and_repeated_applications(source, model_calls, tag, expected):
+    module, custom = source
+    (custom / "styles.txt").write_text("portrait, <lora:A:0.7>\n")
+    result = build(module, base_prompt="base, " + tag)
+    assert model_calls == [expected, ("A.safetensors", 0.8, 0.8)]
+    assert result[0] == [(expected[0], "A.safetensors")]
+    assert result[1] == result[0]
+
+
+def test_prompt_syntax_remains_literal(source, model_calls):
+    module, custom = source
+    (custom / "styles.txt").write_text("portrait, <lora:A:0.7>\n")
+    prompt = "a {red|blue} vase, __color__"
+    result = build(module, base_prompt=prompt)
+    assert result[3] == [prompt + ", portrait"]
+    assert result[2] == [[prompt + ", portrait"]]
+
+
+def test_model_resolution_requires_filename_boundary(source, model_calls, monkeypatch):
+    import folder_paths
+    module, custom = source
+    (custom / "styles.txt").write_text("portrait, <lora:A:0.7>\n")
+    monkeypatch.setattr(folder_paths, "get_filename_list", lambda kind: ["aaa/NotA.safetensors", "zzz/A.safetensors"])
+    build(module)
+    assert model_calls == [("zzz/A.safetensors", 0.8, 0.8)]
+
+
+def test_break_keeps_original_section_punctuation(source, model_calls):
+    module, custom = source
+    (custom / "styles.txt").write_text("portrait, <lora:A:0.7>\n")
+    result = build(module, base_prompt="flowers, BREAK sky")
+    assert result[3] == ["flowers, BREAK sky, portrait"]
+    assert result[2] == [["flowers,", "sky, portrait"]]
+
+
+@pytest.mark.parametrize("unavailable", ["missing", "permission"])
+def test_unavailable_directory_does_not_break_node_schema(source, monkeypatch, unavailable):
+    module, custom = source
+    if unavailable == "missing":
+        custom.rmdir()
+    else:
+        def denied(path):
+            raise PermissionError(path)
+        monkeypatch.setattr(module.os, "listdir", denied)
+    schema = module.LoraWildcardSource.INPUT_TYPES()["required"]
+    assert schema["category"][0] == ["styles", "poses"]
+    assert schema["lora_wildcard"][0] == ["(styles.txt not found)"]
