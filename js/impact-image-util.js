@@ -117,6 +117,12 @@ app.registerExtension({
 				}
 			});
 
+			const callback = w.callback;
+			w.callback = function(value, ...args) {
+				w.value = value;
+				return callback?.call(this, value, ...args);
+			};
+
 			Object.defineProperty(node, 'imgs', {
 				set(v) {
 					const stackTrace = new Error().stack;
