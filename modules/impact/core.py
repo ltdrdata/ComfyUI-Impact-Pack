@@ -482,28 +482,10 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
 
     logging.info(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
-    # upscale the mask tensor by a factor of 2 using bilinear interpolation
-    if isinstance(noise_mask, np.ndarray):
-        noise_mask = torch.from_numpy(noise_mask)
+    upscaled_mask = F.interpolate(noise_mask.unsqueeze(1), size=(new_h, new_w),
+                                  mode='bilinear', align_corners=False).squeeze(1)
 
-    if len(noise_mask.shape) == 2:
-        noise_mask = noise_mask.unsqueeze(0)
-    else:  # == 3
-        noise_mask = noise_mask
-
-    upscaled_mask = None
-
-    for single_mask in noise_mask:
-        single_mask = single_mask.unsqueeze(0).unsqueeze(0)
-        upscaled_single_mask = torch.nn.functional.interpolate(single_mask, size=(new_h, new_w), mode='bilinear', align_corners=False)
-        upscaled_single_mask = upscaled_single_mask.squeeze(0)
-
-        if upscaled_mask is None:
-            upscaled_mask = upscaled_single_mask
-        else:
-            upscaled_mask = torch.cat((upscaled_mask, upscaled_single_mask), dim=0)
-
-    latent_frames = None
+    latent_frames = []
     for image in image_frames:
         image = torch.from_numpy(image).unsqueeze(0)
 
@@ -513,10 +495,9 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
         # ksampler
         samples = utils.to_latent_image(upscaled_image, vae)['samples']
 
-        if latent_frames is None:
-            latent_frames = samples
-        else:
-            latent_frames = torch.concat((latent_frames, samples), dim=0)
+        latent_frames.append(samples)
+
+    latent_frames = torch.cat(latent_frames, dim=0) if len(latent_frames) > 1 else latent_frames[0]
 
     cnet_images = None
     if control_net_wrapper is not None:
