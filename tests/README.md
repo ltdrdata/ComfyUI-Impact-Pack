@@ -32,6 +32,12 @@ inference and image previews. Both default to headless Google Chrome; add
 
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
+`python3 -m pytest tests/test_e2e_wildcard_cache.py -v` checks both wildcard nodes'
+seeded output, real downstream cache reuse and native widget restoration in both
+modes. Encode cases need a local checkpoint; see the E2E guide. The separate
+`python3 tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI` runs on
+CPU with real prompt hooks/parser/cache keys and a substituted CLIP model.
+It covers legacy modes, linked inputs, dynamic syntax and saved seed positions.
 `python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
 and Clipspace button without importing the removed `ClipspaceDialog` module.
 Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real

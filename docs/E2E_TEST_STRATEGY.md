@@ -12,6 +12,7 @@ that setup does not extend the supported import scope.
 | Script | Setup through the UI | Assertions |
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |
+| `tests/test_e2e_wildcard_cache.py` | Create both wildcard node graphs, edit seeds/text, Run, native Export and reload | Seeded outputs, actual downstream cache hits, invalidation on text changes, and widget names/order/values under both restoration modes |
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
@@ -54,7 +55,7 @@ server and samples without modifying its configuration or managing processes.
   for different local assets.
 - Conditioning tests use the same checkpoint and do not require Impact Subpack.
 
-Wildcard UI tests require no models. Configure the **test copy** of Impact
+The basic wildcard UI test requires no models. Configure the **test copy** of Impact
 Pack to use its tracked samples in `impact-pack.ini`:
 
 ```ini
@@ -62,6 +63,30 @@ Pack to use its tracked samples in `impact-pack.ini`:
 custom_wildcards = /absolute/path/to/test-copy/tests/wildcards/samples
 wildcard_cache_limit_mb = 50
 ```
+
+The wildcard cache suite additionally runs `ImpactWildcardEncode` with a local
+checkpoint, defaulting to `v1-5-pruned-emaonly-fp16.safetensors`. Override it with
+`IMPACT_E2E_CHECKPOINT`; missing models fail rather than skip. No models are
+downloaded. Use an isolated server with caching enabled (`--cache-classic`).
+The tests check history cache events and displayed text, then native widget
+values and serialized `widgets_values` before/after positional and named loading.
+Encode runs use real CLIP encoding, but do not sample images or benchmark speed.
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-wildcard-cache \
+python -m pytest tests/test_e2e_wildcard_cache.py -v
+python tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-cache.json
+```
+
+The separate CPU integration uses real prompt hooks, parser, node methods and
+ComfyUI cache keys, with HTTP feedback and the CLIP model substituted. Fixed
+expectations from pre-change Main cover dynamic syntax, legacy modes, linked
+text/seeds, unresolved wildcards and saved seed positions. Run it separately
+from the stubbed pytest wildcard suite. For RGR, keep tests and expectations
+unchanged while applying incoming code, the correction, and incoming code again;
+both Red runs must fail on the same assertions. Restore the correction before
+the final catalog run. Do not change either trusted catalog fixture.
 
 To repeat the wildcard UI test in on-demand mode, set the limit to `0.0001`
 and restart the test server. Both modes use the same UI assertions.
