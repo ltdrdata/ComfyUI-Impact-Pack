@@ -17,6 +17,8 @@ that setup does not extend the supported import scope.
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
 | `tests/test_e2e_mask_to_segs.py` | Import a prepared bicubic mask graph, Run, native Export/reload, change the resize widget and Run again | Contour pixels match an explicit clamp reference; saved widget names/order/values survive both restoration modes; changed inputs produce uncached mask outputs |
 | `tests/test_e2e_mask_tutorials.py` | Load original tutorial PNG/JSON files, native Export and reload | MaskToSEGS widget names/order/values survive both restoration modes, including the default contour_fill omitted by older four-value workflows |
+| `tests/test_e2e_sam_masks.py` | Upload a subject image, import the prepared SAM graph, Run, native Export/import and Run again | Real ViT-B batch count/order/pixels, combined masks and downstream per-SEGS masks match raw SAM predictions for three score regimes; fresh files, browser previews and saved widget mappings survive both restoration modes |
+| `tests/test_e2e_sam_tutorials.py` | Load original detector PNG and Mask Pointer JSON; native Export/import in both restoration modes; Run the detector PNG | Original SAM/mask widget names, order and values survive; real BBOX/SAM previews stay identical after reload. Mask Pointer checks loading only, without diffusion execution |
 | `tests/test_e2e_lora_wildcard_source.py` | Search for the node, select non-default values, native Export and file import | Delayed creation responses cannot overwrite saved widget names/order/values or category options in either restoration mode |
 | `tests/e2e_lora_wildcard_inference.py` | Import a prepared graph, choose modes, Run, native Export and reload | Real SD1.5 LoRA loading and BREAK conditioning match core-node reference images pixel-for-pixel; four modes preserve output count/order/text and native saved widgets |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
@@ -55,6 +57,34 @@ server and samples without modifying its configuration or managing processes.
   `ComfyUI_00156_.png` in the input directory. Adjust `PROMPT` in the script
   for different local assets.
 - Conditioning tests use the same checkpoint and do not require Impact Subpack.
+
+SAM mask tests require an isolated `--cache-none` server with Impact Pack and
+Impact Subpack, `sam_vit_b_01ec64.pth` and `bbox/face_yolov8m.pt`. Use the same
+SAM weights for the independent predictor and server. No assets are downloaded.
+
+```bash
+export IMPACT_E2E_BASE_URL=http://127.0.0.1:18188
+export IMPACT_E2E_SAM_IMAGE=/path/to/ComfyUI/input/ComfyUI_00156_.png
+export IMPACT_E2E_SAM_MODEL=/path/to/ComfyUI/models/sams/sam_vit_b_01ec64.pth
+export IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials
+export IMPACT_E2E_TUTORIAL_IMAGE=/path/to/ComfyUI_temp_xltgv_00001_.png
+export IMPACT_E2E_ARTIFACTS=/tmp/impact-sam-e2e
+python -m pytest tests/test_e2e_sam_masks.py tests/test_e2e_sam_tutorials.py -v
+```
+
+The tiled subject must yield unequal retained counts, including two candidates,
+at threshold 0.93; 1.0 exercises fallback and 0.0 retains all three. The suite
+rejects inputs that miss these preconditions. It checks both detector outputs,
+per-SEGS consumers, preview pixels, uncached execution and both saved widget maps
+before/after native reload in positional and named restoration modes.
+
+Original tutorials are `ComfyUI-Impact-Pack/images/detectors-sam.png` and
+`ComfyUI-Impact-Pack/workflow/maskpointer.json`. The PNG runs BBOX/SAM with its
+original input, using the server-assigned upload name even after a filename
+collision. The JSON checks loading and serialization only: its external painted
+Clipspace mask is not bundled, so diffusion is not executed. To compare revisions,
+compare widget records and decoded-pixel hashes in `results.json`; execution IDs
+and output filenames should differ.
 
 Wildcard UI tests require no models. Configure the **test copy** of Impact
 Pack to use its tracked samples in `impact-pack.ini`:

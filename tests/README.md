@@ -13,6 +13,17 @@ execution. The configuration keeps pytest from
 importing the extension's server-initializing `__init__.py`.
 Circular-reference tests use `pytest-timeout` to stop after five seconds.
 
+SAM mask regressions use real ComfyUI/Impact code with controlled predictions.
+Use ComfyUI's Python dependencies and set `IMPACT_COMFY_ROOT` explicitly; no
+weights, GPU or server are needed. Run separately from stubbed wildcard tests:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_sam_masks.py tests/test_mask_to_segs.py -v
+```
+
+They check detection grouping, threshold/fallback rules, combined pixels,
+empty predictions, hint layouts, downstream masks and device cleanup.
+
 From the Impact Pack root, select the files explicitly:
 `python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_seed_regression.py tests/wildcards/test_wildcard_encoding_strict.py tests/wildcards/test_lora_wildcard_source.py`.
 
@@ -86,6 +97,12 @@ inference and image previews. Both default to headless Google Chrome; add
 
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
+
+SAM execution and original tutorial suites check real ViT-B masks, downstream
+consumers and native widget restoration in both modes. The detector PNG executes;
+the Mask Pointer JSON covers loading only because its painted mask is absent.
+See the linked E2E guide for assets, environment variables and commands.
+
 `python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
 and Clipspace button without importing the removed `ClipspaceDialog` module.
 Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real
