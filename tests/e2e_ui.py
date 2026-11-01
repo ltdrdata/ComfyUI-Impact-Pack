@@ -73,10 +73,12 @@ class ComfyUI:
     def point(self, node_type, *, widget=None, slot=0, is_input=False):
         return self.page.evaluate("""({app, type, widget, slot, isInput}) => {
             const node = app.graph._nodes.find(n => n.type === type);
+            const control = widget ? node.widgets.find(w => w.name === widget) : null;
             const point = widget
                 ? [node.pos[0] + node.size[0] / 2,
-                   node.pos[1] + node.widgets.find(w => w.name === widget).last_y + 10]
+                   node.pos[1] + (control.last_y ?? control.y) + 10]
                 : node.getConnectionPos(isInput, slot);
+            if (!point.every(Number.isFinite)) throw new Error(`Invalid canvas point: ${type}.${widget ?? slot}`);
             return app.canvasPosToClientPos(point);
         }""", {"app": self.app, "type": node_type, "widget": widget, "slot": slot, "isInput": is_input})
 

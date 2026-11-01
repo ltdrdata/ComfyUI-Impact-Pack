@@ -12,7 +12,7 @@ from pathlib import Path
 from PIL import Image
 import pytest
 
-from test_e2e_wildcard_cache import ui as ui  # shared browser fixture
+from test_e2e_wildcard_cache import cached, ui as ui  # shared browser fixture
 from test_e2e_widget_catalog import ROOT, export_workflow, setting, show_node, widget_state
 from wildcard_tutorial_cases import CASES, tutorial
 
@@ -79,3 +79,15 @@ def test_lbw_tutorial_inference(ui):
     saved = next(n for n in entry["prompt"][3]["extra_pnginfo"]["workflow"]["nodes"]
                  if str(n["id"]) == str(target["id"]))
     assert saved["widgets_values"][5] == target["widgets_values"][5]
+    show_node(ui, str(target["id"]))
+    before = widget_state(ui, str(target["id"]))
+    values = {w["name"]: w["value"] for w in before["widgets"]}
+    assert (values["mode"], values["seed"], values["control_after_generate"]) == (
+        "fixed", target["widgets_values"][5], "randomize")
+    second = ui.run()
+    (ui.artifacts / "cached-history.json").write_text(json.dumps(second, indent=2) + "\n")
+    downstream = {str(node["id"]) for node in workflow["nodes"] if node["type"] in (
+        "ImpactWildcardEncode", "KSampler", "VAEDecode", "SaveImage")}
+    assert downstream <= cached(second)
+    assert ui.images(second)["9"][0].tobytes() == actual.tobytes()
+    assert widget_state(ui, str(target["id"])) == before
