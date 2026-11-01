@@ -8,6 +8,7 @@ import base64
 from contextlib import contextmanager
 import io
 import logging
+import os
 from pathlib import Path
 import re
 import sys
@@ -17,6 +18,7 @@ from urllib.parse import urlsplit
 
 from PIL import Image
 from playwright.sync_api import Error as PlaywrightError, expect, sync_playwright
+import pytest
 
 
 def options(description):
@@ -27,6 +29,16 @@ def options(description):
     parser.add_argument("--timeout", type=float, default=600)
     parser.add_argument("--artifacts", type=Path)
     return parser.parse_args()
+
+
+@pytest.fixture
+def ui(tmp_path, request):
+    artifacts = Path(os.environ.get("IMPACT_E2E_ARTIFACTS", str(tmp_path))) / request.node.name
+    args = argparse.Namespace(base_url=os.environ.get("IMPACT_E2E_BASE_URL", "http://127.0.0.1:18188"),
+                              browser_channel="chrome", headed=False, timeout=180, artifacts=artifacts)
+    with browser_session(args) as browser:
+        browser.page.keyboard.press("Escape")
+        yield browser, artifacts
 
 
 class ComfyUI:

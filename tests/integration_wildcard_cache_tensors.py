@@ -6,6 +6,7 @@ substituted. Expected selections and reference text are explicit test data.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -41,8 +42,9 @@ def main():
     args = parser.parse_args()
     nodes, impact_server, impact_pack = runtime(args.comfy_root)
 
-    model, clip, _ = nodes.CheckpointLoaderSimple().load_checkpoint("v1-5-pruned-emaonly-fp16.safetensors")
-    lora = "SD1.5/etc/add_detail.safetensors"
+    checkpoint = os.environ.get("IMPACT_E2E_CHECKPOINT", "v1-5-pruned-emaonly-fp16.safetensors")
+    lora = os.environ.get("IMPACT_E2E_LORA", "SD1.5/etc/add_detail.safetensors")
+    model, clip, _ = nodes.CheckpointLoaderSimple().load_checkpoint(checkpoint)
 
     class EncodeTensorTests(unittest.TestCase):
         def compare(self, *, seed, text, expected, mode="fixed", source="", sections=None, with_lora=False):
@@ -92,7 +94,7 @@ def main():
             self.compare(seed=5, text="red", source="{red|green|blue}", mode="reproduce", expected="red")
 
         def test_lora_and_break(self):
-            tag = "<lora:SD1.5/etc/add_detail:0.6:0.4>"
+            tag = f"<lora:{lora.removesuffix('.safetensors')}:0.6:0.4>"
             for seed, color in ((2, "red"), (5, "blue")):
                 with self.subTest(seed=seed):
                     self.compare(seed=seed, text="", mode="populate",
@@ -100,10 +102,12 @@ def main():
                                  expected=tag + f" {color} BREAK a flower",
                                  sections=[color, "a flower"], with_lora=True)
 
-    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(EncodeTensorTests))
+    with torch.inference_mode():
+        result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(EncodeTensorTests))
     if args.report:
         args.report.write_text(json.dumps({
             "tests_run": result.testsRun, "successful": result.wasSuccessful(),
+            "checkpoint": checkpoint, "lora": lora,
             "failures": [{"test": str(test), "detail": detail} for test, detail in result.failures],
             "errors": [{"test": str(test), "detail": detail} for test, detail in result.errors],
             "skipped": result.skipped,

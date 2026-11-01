@@ -12,10 +12,15 @@ that setup does not extend the supported import scope.
 | Script | Setup through the UI | Assertions |
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |
-| `tests/test_e2e_wildcard_cache.py` | Create both wildcard node graphs, connect text/seed providers, convert a provider to a subgraph, Run, native Export and reload | Seeded outputs, cache reuse for fixed text and identical populate results, reproduce-to-populate transition, linked execution, and widget names/order/values under both restoration modes |
+| `tests/test_e2e_wildcard_cache.py` | Create/link nodes, edit source and seeds, queue, native Export/reload | Seeded selection, static/equal-result cache reuse, changed-result invalidation, linked inputs/subgraphs and saved widget compatibility |
+| `tests/test_e2e_wildcard_tutorials.py` | Load hash-pinned tutorial PNGs, Export/reload; run the original LBW graph | Original wildcard widget names/order/values and links in both restoration modes; LBW output pixels match trusted Main |
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
+| `tests/test_e2e_mask_to_segs.py` | Import a prepared bicubic mask graph, Run, native Export/reload, change the resize widget and Run again | Contour pixels match an explicit clamp reference; saved widget names/order/values survive both restoration modes; changed inputs produce uncached mask outputs |
+| `tests/test_e2e_mask_tutorials.py` | Load original tutorial PNG/JSON files, native Export and reload | MaskToSEGS widget names/order/values survive both restoration modes, including the default contour_fill omitted by older four-value workflows |
+| `tests/test_e2e_sam_masks.py` | Upload a subject image, import the prepared SAM graph, Run, native Export/import and Run again | Real ViT-B batch count/order/pixels, combined masks and downstream per-SEGS masks match raw SAM predictions for three score regimes; fresh files, browser previews and saved widget mappings survive both restoration modes |
+| `tests/test_e2e_sam_tutorials.py` | Load original detector PNG and Mask Pointer JSON; native Export/import in both restoration modes; Run the detector PNG | Original SAM/mask widget names, order and values survive; real BBOX/SAM previews stay identical after reload. Mask Pointer checks loading only, without diffusion execution |
 | `tests/test_e2e_lora_wildcard_source.py` | Search for the node, select non-default values, native Export and file import | Delayed creation responses cannot overwrite saved widget names/order/values or category options in either restoration mode |
 | `tests/e2e_lora_wildcard_inference.py` | Import a prepared graph, choose modes, Run, native Export and reload | Real SD1.5 LoRA loading and BREAK conditioning match core-node reference images pixel-for-pixel; four modes preserve output count/order/text and native saved widgets |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
@@ -55,7 +60,35 @@ server and samples without modifying its configuration or managing processes.
   for different local assets.
 - Conditioning tests use the same checkpoint and do not require Impact Subpack.
 
-The basic wildcard UI test requires no models. Configure the **test copy** of Impact
+SAM mask tests require an isolated `--cache-none` server with Impact Pack and
+Impact Subpack, `sam_vit_b_01ec64.pth` and `bbox/face_yolov8m.pt`. Use the same
+SAM weights for the independent predictor and server. No assets are downloaded.
+
+```bash
+export IMPACT_E2E_BASE_URL=http://127.0.0.1:18188
+export IMPACT_E2E_SAM_IMAGE=/path/to/ComfyUI/input/ComfyUI_00156_.png
+export IMPACT_E2E_SAM_MODEL=/path/to/ComfyUI/models/sams/sam_vit_b_01ec64.pth
+export IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials
+export IMPACT_E2E_TUTORIAL_IMAGE=/path/to/ComfyUI_temp_xltgv_00001_.png
+export IMPACT_E2E_ARTIFACTS=/tmp/impact-sam-e2e
+python -m pytest tests/test_e2e_sam_masks.py tests/test_e2e_sam_tutorials.py -v
+```
+
+The tiled subject must yield unequal retained counts, including two candidates,
+at threshold 0.93; 1.0 exercises fallback and 0.0 retains all three. The suite
+rejects inputs that miss these preconditions. It checks both detector outputs,
+per-SEGS consumers, preview pixels, uncached execution and both saved widget maps
+before/after native reload in positional and named restoration modes.
+
+Original tutorials are `ComfyUI-Impact-Pack/images/detectors-sam.png` and
+`ComfyUI-Impact-Pack/workflow/maskpointer.json`. The PNG runs BBOX/SAM with its
+original input, using the server-assigned upload name even after a filename
+collision. The JSON checks loading and serialization only: its external painted
+Clipspace mask is not bundled, so diffusion is not executed. To compare revisions,
+compare widget records and decoded-pixel hashes in `results.json`; execution IDs
+and output filenames should differ.
+
+Wildcard UI tests require no models. Configure the **test copy** of Impact
 Pack to use its tracked samples in `impact-pack.ini`:
 
 ```ini
@@ -64,38 +97,34 @@ custom_wildcards = /absolute/path/to/test-copy/tests/wildcards/samples
 wildcard_cache_limit_mb = 50
 ```
 
-The wildcard cache suite additionally runs `ImpactWildcardEncode` with a local
-checkpoint, defaulting to `v1-5-pruned-emaonly-fp16.safetensors`. Override it with
-`IMPACT_E2E_CHECKPOINT`; missing models fail rather than skip. No models are
-downloaded. Use an isolated server with caching enabled (`--cache-classic`).
-Cache cases use distinct inputs per invocation and can run again on a warm cache.
-The tests check history cache events and displayed text, then native widget
-values and serialized `widgets_values` before/after positional and named loading.
-Different seeds that expand to the same text must reuse both wildcard and
-downstream caches; a different expansion must invalidate them. Linked text is
-produced by a real core Concatenate Text node, also inside a UI-created subgraph,
-and linked seeds come from ImpactInt. The wildcard node stays outside the subgraph.
-Native exports preserve links and subgraph
-definitions as well as widgets. A restored reproduce workflow uses its saved
-expansion once, then populates from its source with the saved original seed.
-Fixed multiline/nested selection and fixed native restoration run independently;
-an earlier population failure cannot prevent those assertions from executing.
-The reproduce case starts from an explicit saved expansion entered through the
-UI; population metadata is checked separately in the populate/cache case.
-Encode runs use real CLIP encoding, but do not sample images or benchmark speed.
+Wildcard cache checks use an isolated `--cache-classic` server and an installed
+SD1.5 checkpoint. `IMPACT_E2E_CHECKPOINT` overrides the default
+`v1-5-pruned-emaonly-fp16.safetensors` for both Chrome and general CPU tensor tests;
+`IMPACT_E2E_LORA` overrides `SD1.5/etc/add_detail.safetensors` for the latter.
+Use compatible SD1.5 weights and names relative to ComfyUI's model search paths.
+Missing models, references or required plugins fail; nothing is downloaded or skipped.
 
 ```bash
-IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
-IMPACT_E2E_ARTIFACTS=/tmp/impact-wildcard-cache \
-python -m pytest tests/test_e2e_wildcard_cache.py -v
-python tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-cache.json
-python tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-tensors.json
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 IMPACT_E2E_ARTIFACTS=/tmp/impact-cache \
+  python -m pytest tests/test_e2e_wildcard_cache.py -v
+python tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI --report /tmp/cache.json
+python tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI --report /tmp/tensors.json
 ```
 
-Original wildcard tutorials provide additional compatibility cases. Check out
-`ComfyUI-extension-tutorials` at `ca31a3bae14dbede5366de4904dfedea2697b082`;
-`wildcard_tutorial_cases.py` pins the four original PNG hashes. The tests read
-their embedded workflows directly, never regenerate them or edit their JSON.
+Run CPU integrations separately from pytest's dependency stubs. The first uses
+real hooks/parser/cache keys with HTTP feedback and CLIP substituted; the second
+compares real conditioning, MODEL/CLIP patches and BREAK against core nodes.
+Chrome checks both restoration modes, reproduce/populate transitions and actual
+linked providers, including a text provider inside a subgraph. The wildcard node
+stays outside it. To repeat warm-cache cases with LRU, start `--cache-lru 10` and
+run the Chrome suite with `-k 'plain_text or populate_reuses'`.
+
+Original tutorials are pinned to `ComfyUI-extension-tutorials` revision
+`ca31a3bae14dbede5366de4904dfedea2697b082`; `wildcard_tutorial_cases.py` checks PNG
+hashes. Native tests preserve widget names/order, typed values and original links
+through import/Export/reload. Missing unrelated plugins are tolerated for loading
+only; the legacy `sdxl6.png` uppercase `Fixed` mode remains invalid for execution.
+Never rewrite the tutorials or trusted catalog to match current runtime output.
 
 ```bash
 export IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials
@@ -103,70 +132,34 @@ python -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v
 python tests/integration_wildcard_tutorial_tensors.py \
   --comfy-root /path/to/ComfyUI --tutorials-root "$IMPACT_TUTORIALS_DIR" \
   --inspire-root /path/to/ComfyUI/custom_nodes/comfyui-inspire-pack \
-  --report /tmp/wildcard-tutorial-tensors.json
+  --report /tmp/tutorial-tensors.json
 ```
 
-The eight native cases check the registered wildcard node's widget names,
-order, typed saved values, target-node connections, legacy boolean modes and
-short widget arrays through PNG import, native Export and reload, in both
-restoration modes. Unrelated missing
-plugins are tolerated for these loading checks; this does not establish that
-the complete graph can execute. In particular, `sdxl6.png` retains its old
-uppercase `Fixed` mode, which current execution validation does not accept.
-Expected defaults come from the unchanged trusted widget catalog; connections
-come directly from the pinned original, so an already damaged first import
-cannot become the roundtrip reference. Compare with Main rather than rewriting
-that old fixture as a new baseline.
+Tutorial tensors check actual Inspire LBW with an explicit A/B vector, SDXL
+LoRA selection, empty-prompt identity and downstream CLIP reuse; SDXLPromptStyler
+and BNK are not substituted or executed. Defaults follow these original assets:
 
-The separate CPU tensor checks require the original installed checkpoints
-`SD1.5/epicrealism_naturalSinRC1VAE.safetensors`,
-`SDXL/MOHAWK_v20BackedVAE.safetensors`, and
-`SDXL/realisticFreedomSFW_alpha.safetensors`, plus LoRAs
-`SD1.5/cloth/2b leotardV2.safetensors`, `SDXL/person/d.va_xl_v1.safetensors`
-and `SDXL/person/chun-li_xl_v1.safetensors`. They compare the actual Inspire
-LBW loader with an explicitly expanded A/B vector, seed-dependent SDXL LoRA
-selection, empty prompt pass-through and downstream CLIP reuse. They do not
-substitute or test SDXLPromptStyler or BNK_CLIPTextEncodeAdvanced.
+| Case | Checkpoint | LoRA(s) |
+| --- | --- | --- |
+| LBW | `SD1.5/epicrealism_naturalSinRC1VAE.safetensors` | `SD1.5/cloth/2b leotardV2.safetensors` |
+| Styler | `SDXL/MOHAWK_v20BackedVAE.safetensors` | `SDXL/person/d.va_xl_v1.safetensors`, `SDXL/person/chun-li_xl_v1.safetensors` |
+| Empty prompt | `SDXL/realisticFreedomSFW_alpha.safetensors` | None |
 
-For full inference, first import the original `wildcard-lbw.png` through Chrome
-on an isolated trusted Main server, run it unchanged, and retain SaveImage's
-output. Restart with the candidate on the same device and ComfyUI version:
+`IMPACT_TUTORIAL_SD15_CHECKPOINT` and `IMPACT_TUTORIAL_SDXL_CHECKPOINT` allow
+compatible checkpoint overrides in the tensor script only. Its report records
+original/selected names; an override checks node behavior with alternative weights,
+not original-model parity. Original PNG inputs, LoRA tags and references stay fixed.
+
+For LBW image parity, capture SaveImage output by running the unchanged original
+`wildcard-lbw.png` through Chrome on trusted Main. Restart with the candidate,
+same device/version and original checkpoint/LoRA plus Inspire Pack, then run:
 
 ```bash
-export IMPACT_E2E_REFERENCE_IMAGE=/path/to/trusted-main-output.png
-python -m pytest tests/test_e2e_wildcard_tutorials.py -k inference -v
+IMPACT_E2E_REFERENCE_IMAGE=/path/to/main-output.png \
+  python -m pytest tests/test_e2e_wildcard_tutorials.py -k inference -v
 ```
 
-This queues the unchanged original PNG, checks the displayed image against the
-server output, compares every RGB pixel with Main, and checks that the native
-workflow metadata retains the original wildcard seed. The inference case
-requires Inspire Pack and the original LBW checkpoint/LoRA; missing assets,
-references or plugins are failures, not passing skips. For RGR, freeze these
-tests and tutorial hashes while changing only the server implementation.
-
-For the core LRU cache, restart the isolated server with `--cache-lru 10` instead
-of `--cache-classic`, then run the same cache assertions with
-`python -m pytest tests/test_e2e_wildcard_cache.py -k 'plain_text or populate_reuses'`.
-
-The tensor integration runs on CPU with installed
-`v1-5-pruned-emaonly-fp16.safetensors` and `loras/SD1.5/etc/add_detail.safetensors`.
-It compares all conditioning tensors and metadata, MODEL/CLIP LoRA patches and
-strengths with independent core CLIPTextEncode/LoraLoader/ConditioningConcat
-execution, using explicit reference selections and prompt sections. Plain,
-populate, fixed multiline/nested, reproduce, LoRA and BREAK cases are covered;
-input MODEL/CLIP patch sets must remain unchanged. Only HTTP routes/feedback are
-substituted.
-Missing models fail without downloading or skipping. These checks do not cover
-other model architectures or external LoRA loader plugins.
-
-The separate CPU integration uses real prompt hooks, parser, node methods and
-ComfyUI cache keys, with HTTP feedback and the CLIP model substituted. Fixed
-expectations from pre-change Main cover dynamic syntax, legacy modes, linked
-text/seeds, unresolved wildcards and saved seed positions. Run it separately
-from the stubbed pytest wildcard suite. For RGR, keep tests and expectations
-unchanged while applying incoming code, the correction, and incoming code again;
-both Red runs must fail on the same assertions. Restore the correction before
-the final catalog run. Do not change either trusted catalog fixture.
+This checks browser/server RGB pixels, exact Main parity and the saved seed.
 
 To repeat the wildcard UI test in on-demand mode, set the limit to `0.0001`
 and restart the test server. Both modes use the same UI assertions.
@@ -278,11 +271,63 @@ python main.py --listen 127.0.0.1 --port 18188 \
   --whitelist-custom-nodes comfyui-impact-pack comfyui-impact-subpack
 ```
 
-Only Impact Pack is needed for the wildcard UI test. When testing inside a
-separate base directory, use ComfyUI's `--base-directory`, `--models-directory`,
+Only Impact Pack is needed for the wildcard and Mask-to-SEGS UI tests. When
+testing inside a separate base directory, use ComfyUI's `--base-directory`, `--models-directory`,
 and `--input-directory` options to keep test data separate and reuse local models.
 
 ## Run
+
+Mask-to-SEGS needs no models. Use a Python environment with the ComfyUI and
+Impact Pack dependencies, `tests/requirements.txt`, and Playwright; install Google
+Chrome for the browser test. Start the isolated server above with `--cpu` to run
+without a GPU, and make sure its Impact Pack checkout is the one under test.
+The full widget catalog also needs the Full Cache/sample configuration above.
+The standalone CPU command is documented in `tests/README.md`.
+
+Its Chrome test imports a prepared execution graph,
+clicks Run, and compares a bicubic mask's output pixels with a core MaskComposite
+clamp reference. Native Export and reload preserve non-default widget values,
+names, and order under both restoration modes. Browser previews must match the
+server images. The fixed node catalog remains unchanged.
+After reload, the test changes ImageScaleBy through its widget and checks the
+submitted value, cache status of the affected nodes, changed preview filenames,
+output dimensions and exact agreement with the reference pixels. Execution
+history is saved for both runs so cached replays cannot count as new computation.
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-mask-to-segs-e2e \
+python -m pytest tests/test_e2e_mask_to_segs.py -v
+```
+
+For RGR, run the CPU and Chrome mask tests on the original code, the fix, and the
+original code again, keeping tests and fixtures unchanged. Both Red runs must
+fail on the same behavioral assertions. Restore the fix and rerun the mask tests
+and `tests/test_e2e_widget_catalog.py` before preparing the PR.
+The CPU boundary and mixed-batch cases must also reject forced float32 conversion
+and clamping only the first batch, respectively.
+Chrome Red runs stop at the initial pixel mismatch. Native reload and the changed
+input run are checked in Green and after restoring the fix.
+
+The tutorial regression suite loads the original `mask_to_segs.png`,
+`maskpointer.json` and `segs-manipulation.png` from the extension-tutorials
+checkout, then exports and reloads each through the UI. It checks saved widgets,
+including the old four-value layout; missing media/model assets do not prevent
+this loading check. Original saved values are checked before loading so fixture
+updates cannot silently remove the legacy-layout case. Both mask E2E suites
+compare JSON values with their types, distinguishing Boolean controls from 0/1.
+The tutorial loading test does not execute those workflows. The CPU suite separately
+tests the tutorial's holes, nested regions, fill options, expanded crop, drop-size
+boundaries, combined regions and mask-list coordinates.
+
+```bash
+IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials \
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+python -m pytest tests/test_e2e_mask_tutorials.py -v
+```
+
+Keep the original tutorial files unchanged when comparing the base and fix. The
+reviewed examples are from tutorial commit `ca31a3bae14dbede5366de4904dfedea2697b082`.
 
 From the Impact Pack root:
 

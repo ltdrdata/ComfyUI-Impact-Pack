@@ -13,6 +13,17 @@ execution. The configuration keeps pytest from
 importing the extension's server-initializing `__init__.py`.
 Circular-reference tests use `pytest-timeout` to stop after five seconds.
 
+SAM mask regressions use real ComfyUI/Impact code with controlled predictions.
+Use ComfyUI's Python dependencies and set `IMPACT_COMFY_ROOT` explicitly; no
+weights, GPU or server are needed. Run separately from stubbed wildcard tests:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_sam_masks.py tests/test_mask_to_segs.py -v
+```
+
+They check detection grouping, threshold/fallback rules, combined pixels,
+empty predictions, hint layouts, downstream masks and device cleanup.
+
 From the Impact Pack root, select the files explicitly:
 `python3 -m pytest tests/wildcards/test_config.py tests/wildcards/test_populate_regression.py tests/wildcards/test_seed_regression.py tests/wildcards/test_wildcard_encoding_strict.py tests/wildcards/test_lora_wildcard_source.py`.
 
@@ -21,6 +32,60 @@ and `python3 tests/wildcards/test_wildcard_encoding_strict.py`; both delegate
 to pytest with the same configuration.
 The three TXT encoding fixtures in `tests/wildcards/samples/` are included
 in the repository. The older server-dependent suites below are run separately.
+
+## Mask-to-SEGS regression tests
+
+Run separately from the stubbed wildcard tests, using a real ComfyUI installation
+on CPU without models. Use its Python environment with the Impact Pack dependencies
+and `tests/requirements.txt` installed; `IMPACT_COMFY_ROOT` points to the directory
+containing ComfyUI's `nodes.py` and `comfy/`:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_mask_to_segs.py -v
+```
+
+Checks cover finite out-of-range values before contour quantization, bicubic
+overshoot, adjacent values at the quantization threshold, mixed ranges in every
+batch, input immutability, and existing combined behavior.
+Tutorial-derived cases also cover holes and nested regions, bbox/contour fill,
+expanded edge crops, `drop_size` boundaries, disconnected combined regions and
+the mask-list consumer's image coordinates.
+Only unused server registration is substituted, using pytest's scoped
+monkeypatch cleanup. `tests/test_e2e_mask_to_segs.py` separately executes the bicubic
+workflow in Chrome, compares preview pixels with an explicit core-node clamp,
+and checks native saved widget names/order/values in both restoration modes.
+After reload it changes the resize factor through the UI, verifies the changed
+prompt and uncached execution path, and checks new filenames, dimensions and pixels.
+See [E2E setup and commands](../docs/E2E_TEST_STRATEGY.md) for the isolated CPU
+server, Playwright/Chrome requirements, and catalog sample configuration.
+
+`tests/test_e2e_mask_tutorials.py` separately loads the original tutorial PNG/JSON
+files, checks their saved controls, exports and reloads them under both restoration
+modes. Set `IMPACT_TUTORIALS_DIR` to the `ComfyUI-extension-tutorials` checkout.
+This loading test needs no referenced media or models and performs no inference.
+Missing required environment variables fail with setup guidance; they do not
+silently skip an explicitly requested regression suite.
+
+## AnimateDiff tensor assembly
+
+Run separately from the wildcard suite, whose dependency stubs conflict with
+the real ComfyUI imports used here:
+
+```bash
+COMFYUI_ROOT=/path/to/ComfyUI python -m pytest tests/test_animatediff_assembly.py -v
+```
+
+Checks preserve tensors, pixels, dtype, frame order, hooks and tutorial node
+paths while bounding mask/latent concatenation allocations before sampling.
+Learned-model operations and HTTP registration are controlled; no model weights,
+GPU or server are required, and full AnimateDiff inference is not tested.
+
+Against an isolated server, run
+`IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials python tests/e2e_animatediff_tutorials.py --base-url http://127.0.0.1:18188 --artifacts /tmp/impact-animatediff-tutorials`
+for four original PNGs and native JSON export/reload in both widget restoration
+modes. Also run the catalog suite with its trusted fixtures and Full Cache setup
+from [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md); these browser checks
+validate widget names/order/values, not inference.
 
 ## Chrome UI E2E
 
@@ -32,25 +97,29 @@ inference and image previews. Both default to headless Google Chrome; add
 
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
-`python3 -m pytest tests/test_e2e_wildcard_cache.py -v` checks both wildcard nodes'
-seeded output, real downstream cache reuse and native widget restoration in both
-modes. It also checks equal/different populate results, restored reproduce mode,
-and actual linked text/seed execution through a native subgraph. Encode cases
-need a local checkpoint; see the E2E guide. The separate
-`python3 tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI` runs on
-CPU with real prompt hooks/parser/cache keys and a substituted CLIP model.
-It covers legacy modes, linked inputs, dynamic syntax and saved seed positions.
-`python3 tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI`
-uses installed SD1.5/LoRA weights on CPU to compare conditioning and MODEL/CLIP
-patches against core-node references, including seeded expansion and BREAK.
 
-`python3 -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v` loads the
-original wildcard tutorial PNGs using `IMPACT_TUTORIALS_DIR`, checks their
-widget names/order, typed saved values and target-node connections, then exports
-and reloads them in both restoration modes. The separate
-`integration_wildcard_tutorial_tensors.py` checks actual Inspire LBW and SDXL
-LoRA/empty-prompt outputs. See the E2E guide for pinned originals, required local
-weights, and the full LBW sampling comparison against a trusted Main image.
+Wildcard cache and original-PNG cases check seeded selection, cache reuse, linked
+providers and native widget restoration in both modes:
+
+```bash
+python3 -m pytest tests/test_e2e_wildcard_cache.py -v
+python3 -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v
+```
+
+Run CPU hook/cache checks and real SD1.5 conditioning/LoRA comparisons separately:
+
+```bash
+python3 tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI
+python3 tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI
+```
+
+The [E2E guide](../docs/E2E_TEST_STRATEGY.md) lists model overrides, pinned tutorial
+assets, the Inspire/SDXL tensor script and the original LBW sampling comparison.
+
+SAM execution and original tutorial suites check real ViT-B masks, downstream
+consumers and native widget restoration in both modes. The detector PNG executes;
+the Mask Pointer JSON covers loading only because its painted mask is absent.
+See the linked E2E guide for assets, environment variables and commands.
 
 `python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
 and Clipspace button without importing the removed `ClipspaceDialog` module.

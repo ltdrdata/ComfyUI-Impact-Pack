@@ -163,6 +163,8 @@ def main():
             self.assertEqual(combined, "__colors__")
             sources = [
                 {"class_type": "StringConcatenate", "inputs": parts},
+                # Unregistered descriptors model opaque providers, not real nodes.
+                # Their resolved output is supplied below; upstream execution is outside this test.
                 {"class_type": "ExternalTextReader", "inputs": {"path": "prompt.txt"}},
                 {"class_type": "ExternalTextGenerator", "inputs": {}},
             ]

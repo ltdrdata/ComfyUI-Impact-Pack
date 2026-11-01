@@ -555,11 +555,9 @@ def onprompt_populate_wildcards(json_data):
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
                 updated_widget_values[k] = inputs['populated_text']
 
-            # Populate with the requested seed before normalizing execution inputs.
+            # Static text can share cache entries; preserve seeds for syntax markers and links.
             populated_text = inputs['populated_text']
             if isinstance(inputs['seed'], int) and isinstance(populated_text, str):
-                # Markers are deliberately conservative, including escaped/nested
-                # syntax. Linked text cannot be determined before execution.
                 if '{' not in populated_text and '__' not in populated_text:
                     inputs['seed'] = 0
 

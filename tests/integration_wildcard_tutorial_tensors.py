@@ -7,6 +7,7 @@ missing SDXLPromptStyler and BNK plugins are not substituted or claimed tested.
 import argparse
 import gc
 import json
+import os
 from pathlib import Path
 import sys
 import unittest
@@ -30,12 +31,16 @@ def main():
     from inspire.lora_block_weight import LoraLoaderBlockWeight
     import comfy.model_management
     nodes.NODE_CLASS_MAPPINGS["LoraLoaderBlockWeight //Inspire"] = LoraLoaderBlockWeight
+    checkpoints = {}
 
     def original(case):
         _, workflow, target = tutorial(args.tutorials_root, case)
         checkpoint = next(n["widgets_values"][0] for n in workflow["nodes"]
                           if n["type"] == "CheckpointLoaderSimple")
-        model, clip, _ = nodes.CheckpointLoaderSimple().load_checkpoint(checkpoint)
+        override = "IMPACT_TUTORIAL_SD15_CHECKPOINT" if case == "lbw" else "IMPACT_TUTORIAL_SDXL_CHECKPOINT"
+        selected = os.environ.get(override, checkpoint)
+        checkpoints[case] = {"original": checkpoint, "selected": selected}
+        model, clip, _ = nodes.CheckpointLoaderSimple().load_checkpoint(selected)
         source, text, mode, _, _, seed, _ = target["widgets_values"]
         return model, clip, dict(wildcard_text=source, populated_text=text, mode=mode, seed=seed)
 
@@ -98,6 +103,7 @@ def main():
             unittest.defaultTestLoader.loadTestsFromTestCase(TutorialTensorTests))
     args.report.write_text(json.dumps({
         "test_groups": result.testsRun, "successful": result.wasSuccessful(),
+        "checkpoints": checkpoints,
         "failures": [{"test": str(test), "detail": detail} for test, detail in result.failures],
         "errors": [{"test": str(test), "detail": detail} for test, detail in result.errors],
         "skipped": result.skipped,
