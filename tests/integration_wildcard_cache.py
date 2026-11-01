@@ -10,8 +10,10 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 
 def main():
@@ -107,6 +109,33 @@ def main():
         return [keys.get_data_key(node) for node in ("1", "2")]
 
     class WildcardCacheTests(unittest.TestCase):
+        def test_file_loading_modes_preserve_seeded_output(self):
+            # Exercise the real startup loader, lazy TXT lookup and preloaded
+            # YAML through the hook, not just an injected wildcard dictionary.
+            with TemporaryDirectory() as directory, patch.multiple(
+                    wildcards, wildcards_path=directory, wildcard_dict={},
+                    available_wildcards={}, loaded_wildcards={}, _on_demand_mode=False):
+                Path(directory, "colors.txt").write_text("red\ngreen\nblue\n")
+                Path(directory, "palette.yaml").write_text("palette:\n  colors: [red, green, blue]\n")
+                for on_demand in (False, True):
+                    with patch.object(wildcards.config, "get_config", return_value={
+                            "custom_wildcards": "", "wildcard_cache_limit_mb": 0 if on_demand else 50}):
+                        wildcards.wildcard_load()
+                    self.assertEqual(wildcards.is_on_demand_mode(), on_demand)
+                    if on_demand:
+                        self.assertNotIn("colors", wildcards.loaded_wildcards)
+                        self.assertIn("palette/colors", wildcards.loaded_wildcards)
+                    for name in classes:
+                        for mode in ("populate", "fixed"):
+                            for text in ("__colors__", "__palette/colors__"):
+                                with self.subTest(node=name, mode=mode, text=text, on_demand=on_demand):
+                                    for seed, expected in ((2, "red"), (5, "blue")):
+                                        previous = "old result" if mode == "populate" else text
+                                        inputs = prepare(name, seed, previous, mode, text)["1"]["inputs"]
+                                        self.assertEqual(output(name, inputs), expected)
+                    if on_demand:
+                        self.assertEqual(wildcards.loaded_wildcards["colors"], ["red", "green", "blue"])
+
         def test_populate_preserves_seeded_output_and_saved_values(self):
             for name in classes:
                 for mode in ("populate", True):

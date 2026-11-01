@@ -43,6 +43,15 @@ It covers legacy modes, linked inputs, dynamic syntax and saved seed positions.
 `python3 tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI`
 uses installed SD1.5/LoRA weights on CPU to compare conditioning and MODEL/CLIP
 patches against core-node references, including seeded expansion and BREAK.
+
+`python3 -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v` loads the
+original wildcard tutorial PNGs using `IMPACT_TUTORIALS_DIR`, checks their
+widget names/order, typed saved values and target-node connections, then exports
+and reloads them in both restoration modes. The separate
+`integration_wildcard_tutorial_tensors.py` checks actual Inspire LBW and SDXL
+LoRA/empty-prompt outputs. See the E2E guide for pinned originals, required local
+weights, and the full LBW sampling comparison against a trusted Main image.
+
 `python3 -m pytest tests/test_e2e_legacy_sam.py -v` checks the legacy SAM menu
 and Clipspace button without importing the removed `ClipspaceDialog` module.
 Set `IMPACT_E2E_SAM_IMAGE` and install the configured SAM model to include real

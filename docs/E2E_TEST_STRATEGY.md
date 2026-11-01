@@ -92,6 +92,58 @@ python tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI --repor
 python tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-tensors.json
 ```
 
+Original wildcard tutorials provide additional compatibility cases. Check out
+`ComfyUI-extension-tutorials` at `ca31a3bae14dbede5366de4904dfedea2697b082`;
+`wildcard_tutorial_cases.py` pins the four original PNG hashes. The tests read
+their embedded workflows directly, never regenerate them or edit their JSON.
+
+```bash
+export IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials
+python -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v
+python tests/integration_wildcard_tutorial_tensors.py \
+  --comfy-root /path/to/ComfyUI --tutorials-root "$IMPACT_TUTORIALS_DIR" \
+  --inspire-root /path/to/ComfyUI/custom_nodes/comfyui-inspire-pack \
+  --report /tmp/wildcard-tutorial-tensors.json
+```
+
+The eight native cases check the registered wildcard node's widget names,
+order, typed saved values, target-node connections, legacy boolean modes and
+short widget arrays through PNG import, native Export and reload, in both
+restoration modes. Unrelated missing
+plugins are tolerated for these loading checks; this does not establish that
+the complete graph can execute. In particular, `sdxl6.png` retains its old
+uppercase `Fixed` mode, which current execution validation does not accept.
+Expected defaults come from the unchanged trusted widget catalog; connections
+come directly from the pinned original, so an already damaged first import
+cannot become the roundtrip reference. Compare with Main rather than rewriting
+that old fixture as a new baseline.
+
+The separate CPU tensor checks require the original installed checkpoints
+`SD1.5/epicrealism_naturalSinRC1VAE.safetensors`,
+`SDXL/MOHAWK_v20BackedVAE.safetensors`, and
+`SDXL/realisticFreedomSFW_alpha.safetensors`, plus LoRAs
+`SD1.5/cloth/2b leotardV2.safetensors`, `SDXL/person/d.va_xl_v1.safetensors`
+and `SDXL/person/chun-li_xl_v1.safetensors`. They compare the actual Inspire
+LBW loader with an explicitly expanded A/B vector, seed-dependent SDXL LoRA
+selection, empty prompt pass-through and downstream CLIP reuse. They do not
+substitute or test SDXLPromptStyler or BNK_CLIPTextEncodeAdvanced.
+
+For full inference, first import the original `wildcard-lbw.png` through Chrome
+on an isolated trusted Main server, run it unchanged, and retain SaveImage's
+output. Restart with the candidate on the same device and ComfyUI version:
+
+```bash
+export IMPACT_E2E_REFERENCE_IMAGE=/path/to/trusted-main-output.png
+python -m pytest tests/test_e2e_wildcard_tutorials.py -k inference -v
+```
+
+This queues the unchanged original PNG, checks the displayed image against the
+server output, compares every RGB pixel with Main, and checks that the native
+workflow metadata retains the original wildcard seed. The inference case
+requires Inspire Pack and the original LBW checkpoint/LoRA; missing assets,
+references or plugins are failures, not passing skips. For RGR, freeze these
+tests and tutorial hashes while changing only the server implementation.
+
 For the core LRU cache, restart the isolated server with `--cache-lru 10` instead
 of `--cache-classic`, then run the same cache assertions with
 `python -m pytest tests/test_e2e_wildcard_cache.py -k 'plain_text or populate_reuses'`.

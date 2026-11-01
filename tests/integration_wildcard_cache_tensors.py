@@ -16,13 +16,10 @@ import torch
 from integration_lora_wildcard_tensors import assert_lora_patches_equal
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--comfy-root", type=Path, required=True)
-    parser.add_argument("--report", type=Path)
-    args = parser.parse_args()
+def runtime(comfy_root):
+    """Use real ComfyUI on CPU; substitute only unused HTTP registration/feedback."""
     root = Path(__file__).resolve().parents[1]
-    sys.path[:0] = [str(args.comfy_root.resolve()), str(root / "modules")]
+    sys.path[:0] = [str(comfy_root.resolve()), str(root / "modules")]
     from comfy.cli_args import args as comfy_args
     comfy_args.cpu = True
     torch.set_num_threads(2)
@@ -34,6 +31,15 @@ def main():
     )
     import nodes
     from impact import impact_server, impact_pack
+    return nodes, impact_server, impact_pack
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--comfy-root", type=Path, required=True)
+    parser.add_argument("--report", type=Path)
+    args = parser.parse_args()
+    nodes, impact_server, impact_pack = runtime(args.comfy_root)
 
     model, clip, _ = nodes.CheckpointLoaderSimple().load_checkpoint("v1-5-pruned-emaonly-fp16.safetensors")
     lora = "SD1.5/etc/add_detail.safetensors"
