@@ -15,6 +15,8 @@ that setup does not extend the supported import scope.
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
+| `tests/test_e2e_mask_to_segs.py` | Import a prepared bicubic mask graph, Run, native Export/reload, change the resize widget and Run again | Contour pixels match an explicit clamp reference; saved widget names/order/values survive both restoration modes; changed inputs produce uncached mask outputs |
+| `tests/test_e2e_mask_tutorials.py` | Load original tutorial PNG/JSON files, native Export and reload | MaskToSEGS widget names/order/values survive both restoration modes, including the default contour_fill omitted by older four-value workflows |
 | `tests/test_e2e_lora_wildcard_source.py` | Search for the node, select non-default values, native Export and file import | Delayed creation responses cannot overwrite saved widget names/order/values or category options in either restoration mode |
 | `tests/e2e_lora_wildcard_inference.py` | Import a prepared graph, choose modes, Run, native Export and reload | Real SD1.5 LoRA loading and BREAK conditioning match core-node reference images pixel-for-pixel; four modes preserve output count/order/text and native saved widgets |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
@@ -173,11 +175,63 @@ python main.py --listen 127.0.0.1 --port 18188 \
   --whitelist-custom-nodes comfyui-impact-pack comfyui-impact-subpack
 ```
 
-Only Impact Pack is needed for the wildcard UI test. When testing inside a
-separate base directory, use ComfyUI's `--base-directory`, `--models-directory`,
+Only Impact Pack is needed for the wildcard and Mask-to-SEGS UI tests. When
+testing inside a separate base directory, use ComfyUI's `--base-directory`, `--models-directory`,
 and `--input-directory` options to keep test data separate and reuse local models.
 
 ## Run
+
+Mask-to-SEGS needs no models. Use a Python environment with the ComfyUI and
+Impact Pack dependencies, `tests/requirements.txt`, and Playwright; install Google
+Chrome for the browser test. Start the isolated server above with `--cpu` to run
+without a GPU, and make sure its Impact Pack checkout is the one under test.
+The full widget catalog also needs the Full Cache/sample configuration above.
+The standalone CPU command is documented in `tests/README.md`.
+
+Its Chrome test imports a prepared execution graph,
+clicks Run, and compares a bicubic mask's output pixels with a core MaskComposite
+clamp reference. Native Export and reload preserve non-default widget values,
+names, and order under both restoration modes. Browser previews must match the
+server images. The fixed node catalog remains unchanged.
+After reload, the test changes ImageScaleBy through its widget and checks the
+submitted value, cache status of the affected nodes, changed preview filenames,
+output dimensions and exact agreement with the reference pixels. Execution
+history is saved for both runs so cached replays cannot count as new computation.
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-mask-to-segs-e2e \
+python -m pytest tests/test_e2e_mask_to_segs.py -v
+```
+
+For RGR, run the CPU and Chrome mask tests on the original code, the fix, and the
+original code again, keeping tests and fixtures unchanged. Both Red runs must
+fail on the same behavioral assertions. Restore the fix and rerun the mask tests
+and `tests/test_e2e_widget_catalog.py` before preparing the PR.
+The CPU boundary and mixed-batch cases must also reject forced float32 conversion
+and clamping only the first batch, respectively.
+Chrome Red runs stop at the initial pixel mismatch. Native reload and the changed
+input run are checked in Green and after restoring the fix.
+
+The tutorial regression suite loads the original `mask_to_segs.png`,
+`maskpointer.json` and `segs-manipulation.png` from the extension-tutorials
+checkout, then exports and reloads each through the UI. It checks saved widgets,
+including the old four-value layout; missing media/model assets do not prevent
+this loading check. Original saved values are checked before loading so fixture
+updates cannot silently remove the legacy-layout case. Both mask E2E suites
+compare JSON values with their types, distinguishing Boolean controls from 0/1.
+The tutorial loading test does not execute those workflows. The CPU suite separately
+tests the tutorial's holes, nested regions, fill options, expanded crop, drop-size
+boundaries, combined regions and mask-list coordinates.
+
+```bash
+IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials \
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+python -m pytest tests/test_e2e_mask_tutorials.py -v
+```
+
+Keep the original tutorial files unchanged when comparing the base and fix. The
+reviewed examples are from tutorial commit `ca31a3bae14dbede5366de4904dfedea2697b082`.
 
 From the Impact Pack root:
 

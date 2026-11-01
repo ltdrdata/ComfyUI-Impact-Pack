@@ -1350,7 +1350,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                         result.append(item)
 
         else:
-            mask_i_uint8 = (mask_i * 255.0).astype(np.uint8)
+            mask_i_uint8 = (np.clip(mask_i, 0, 1) * 255.0).astype(np.uint8)
             contours, ctree = cv2.findContours(mask_i_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for j, contour in enumerate(contours):
                 hierarchy = ctree[0][j]
