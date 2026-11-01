@@ -26,6 +26,7 @@ def test_optional_model_preserves_user_settings(tmp_path, monkeypatch, caplog, m
         "sam_editor_model": model or "sam_vit_b_01ec64.pth",
         "custom_wildcards": str(custom),
         "disable_gpu_opencv": False,
+        "gpu_gaussian_blur": False,
         "wildcard_cache_limit_mb": 0.25,
     }
     assert not caplog.records
@@ -44,6 +45,24 @@ def test_unreadable_config_reports_fallback(tmp_path, monkeypatch, caplog, conte
         "sam_editor_model": "sam_vit_b_01ec64.pth",
         "custom_wildcards": str((Path(config.my_path) / "../../custom_wildcards").resolve()),
         "disable_gpu_opencv": True,
+        "gpu_gaussian_blur": False,
         "wildcard_cache_limit_mb": 50,
     }
     assert "Failed to read impact-pack.ini" in caplog.text
+
+
+@pytest.mark.parametrize("value, enabled", [(None, False), ("False", False), ("tRuE", True)])
+def test_gpu_gaussian_blur_config_roundtrip(tmp_path, monkeypatch, value, enabled):
+    path = tmp_path / "impact-pack.ini"
+    path.write_text(
+        f"[default]\ncustom_wildcards = {tmp_path}\nsam_editor_cpu = True\n"
+        + (f"gpu_gaussian_blur = {value}\n" if value is not None else ""),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(config, "config_path", str(path))
+    monkeypatch.setattr(config, "cached_config", None)
+    before = config.get_config().copy()
+    assert before["gpu_gaussian_blur"] is enabled
+    assert before["sam_editor_cpu"] is True
+    config.write_config()
+    assert config.read_config() == before

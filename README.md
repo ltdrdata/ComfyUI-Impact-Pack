@@ -404,10 +404,12 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * sam_editor_model: Specify the SAM model for the SAM editor.
     * You can download various SAM models using ComfyUI-Manager.
     * Path to SAM model: `ComfyUI/models/sams`
+  * `gpu_gaussian_blur` - defaults to `False` (CPU), also when absent. Keep it disabled when VRAM is not ample for the models you intend to use. If there is sufficient memory to spare beyond those models, set it to `True` to run mask blur on ComfyUI's selected compute device. Blur's temporary memory requirements depend on mask dimensions, kernel size and the convolution backend ([#1260](https://github.com/ltdrdata/ComfyUI-Impact-Pack/issues/1260)). Restart ComfyUI after changing this setting.
 ```
 [default]
 sam_editor_cpu = False
 sam_editor_model = sam_vit_b_01ec64.pth
+gpu_gaussian_blur = False
 ```
 
 

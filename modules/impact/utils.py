@@ -466,7 +466,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
             return mask  # skip feathering
 
     prev_device = mask.device
-    device = comfy.model_management.get_torch_device()
+    device = comfy.model_management.get_torch_device() if config.get_config()['gpu_gaussian_blur'] else torch.device('cpu')
     mask = mask.to(device)
 
     # apply gaussian blur
