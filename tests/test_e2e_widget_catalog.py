@@ -56,7 +56,10 @@ def full_zoom(ui):
     page = ui.page
     page.get_by_test_id("zoom-controls-button").click()
     zoom = page.get_by_test_id("zoom-percentage-input").locator("input")
-    zoom.fill("100")
+    # The number field can restore its previous value after a synthetic fill.
+    # Type through its keyboard handlers before committing with Enter.
+    zoom.press("ControlOrMeta+a")
+    zoom.press_sequentially("100", delay=100)
     zoom.press("Enter")
     page.get_by_test_id("zoom-controls-button").click()
     page.wait_for_function("app => app.canvas.ds.scale === 1", arg=ui.app)

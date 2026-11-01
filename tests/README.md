@@ -55,6 +55,27 @@ This loading test needs no referenced media or models and performs no inference.
 Missing required environment variables fail with setup guidance; they do not
 silently skip an explicitly requested regression suite.
 
+## AnimateDiff tensor assembly
+
+Run separately from the wildcard suite, whose dependency stubs conflict with
+the real ComfyUI imports used here:
+
+```bash
+COMFYUI_ROOT=/path/to/ComfyUI python -m pytest tests/test_animatediff_assembly.py -v
+```
+
+Checks preserve tensors, pixels, dtype, frame order, hooks and tutorial node
+paths while bounding mask/latent concatenation allocations before sampling.
+Learned-model operations and HTTP registration are controlled; no model weights,
+GPU or server are required, and full AnimateDiff inference is not tested.
+
+Against an isolated server, run
+`IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials python tests/e2e_animatediff_tutorials.py --base-url http://127.0.0.1:18188 --artifacts /tmp/impact-animatediff-tutorials`
+for four original PNGs and native JSON export/reload in both widget restoration
+modes. Also run the catalog suite with its trusted fixtures and Full Cache setup
+from [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md); these browser checks
+validate widget names/order/values, not inference.
+
 ## Chrome UI E2E
 
 `python3 tests/e2e_wildcards.py` creates and connects nodes, edits widgets,
