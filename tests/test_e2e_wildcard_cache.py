@@ -72,6 +72,144 @@ def run(ui, preview_id, expected, label):
     return entry
 
 
+def native_roundtrip(ui, node_id):
+    """Compare rendered widget names/order/values and the native serialization."""
+    show_node(ui, node_id)
+    before = widget_state(ui, node_id)
+    trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
+    reference = next(node for node in trusted["nodes"] if node["type"] == before["type"])
+    assert [w["name"] for w in before["widgets"]] == [w["name"] for w in reference["widgets"]]
+    workflow = ui.artifacts / "saved.json"
+    export_workflow(ui, workflow)
+    saved = json.loads(workflow.read_text())
+    ui.new_workflow()
+    ui.load_workflow(workflow, len(saved["nodes"]))
+    full_zoom(ui)
+    show_node(ui, node_id)
+    assert widget_state(ui, node_id) == before
+    roundtrip = ui.artifacts / "roundtrip.json"
+    export_workflow(ui, roundtrip)
+    restored = json.loads(roundtrip.read_text())
+    assert {str(n["id"]): n.get("widgets_values", []) for n in restored["nodes"]} == {
+        str(n["id"]): n.get("widgets_values", []) for n in saved["nodes"]}
+    # Native loading can reorder link records; their IDs and endpoints must
+    # remain identical. Widget arrays above deliberately retain their order.
+    assert sorted(restored["links"]) == sorted(saved["links"])
+    assert restored.get("definitions") == saved.get("definitions")
+    (ui.artifacts / "widget-state.json").write_text(json.dumps(before, indent=2) + "\n")
+    return before
+
+
+def input_slot(ui, node_type, name):
+    return ui.app.evaluate("""(app, {type, name}) =>
+        app.graph._nodes.find(n => n.type === type).inputs.findIndex(i => i.name === name)
+    """, {"type": node_type, "name": name})
+
+
+@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+@pytest.mark.parametrize("node_type", NODE_TYPES)
+def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name):
+    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+    node_id, preview_id = graph(ui, node_type)
+    ui.choose(node_type, "mode", "fixed")
+    source_id = ui.add_node("Concatenate Text", "StringConcatenate", 100, 650)
+    show_node(ui, source_id)
+    # Neither fragment contains a complete choice, so scanning upstream input
+    # strings cannot determine the seed dependence of their combined output.
+    ui.page.get_by_placeholder("string_a", exact=True).fill("{red|")
+    ui.page.get_by_placeholder("string_b", exact=True).fill("green|blue}")
+    show_node(ui, node_id)
+    connect(ui, "StringConcatenate", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
+    for seed, expected in ((2, "red"), (5, "blue")):
+        ui.set_number(node_type, "seed", seed)
+        entry = run(ui, preview_id, expected, f"linked-text-{seed}")
+        assert entry["prompt"][2][node_id]["inputs"]["populated_text"] == [source_id, 0]
+        assert entry["prompt"][2][node_id]["inputs"]["seed"] == seed
+
+    seed_id = ui.add_node("ImpactInt", "ImpactInt", 850, 180)
+    show_node(ui, seed_id)
+    ui.set_number("ImpactInt", "value", 2)
+    show_node(ui, node_id)
+    connect(ui, "ImpactInt", node_type, target_slot=input_slot(ui, node_type, "seed"))
+    entry = run(ui, preview_id, "red", "linked-seed")
+    assert entry["prompt"][2][node_id]["inputs"]["seed"] == [seed_id, 0]
+
+    # Convert the real upstream node using the frontend menu. No graph mutation
+    # or hand-written workflow JSON is used to construct the subgraph.
+    show_node(ui, source_id)
+    title = ui.page.evaluate("""({app, id}) => {
+        const n = app.graph.getNodeById(id);
+        return app.canvasPosToClientPos([n.pos[0] + 40, n.pos[1] - 15]);
+    }""", {"app": ui.app, "id": source_id})
+    ui.page.mouse.click(*title)
+    ui.page.mouse.click(*title, button="right")
+    ui.page.get_by_role("menuitem", name="Convert to Subgraph", exact=True).click()
+    ui.page.wait_for_function("""({app, id}) => !app.graph.getNodeById(id)
+    """, arg={"app": ui.app, "id": source_id})
+    native_roundtrip(ui, node_id)
+    saved = json.loads((ui.artifacts / "saved.json").read_text())
+    assert any(n["type"] == "StringConcatenate"
+               for subgraph in saved["definitions"]["subgraphs"] for n in subgraph["nodes"])
+    for seed, expected in ((5, "blue"), (2, "red")):
+        show_node(ui, seed_id)
+        ui.set_number("ImpactInt", "value", seed)
+        entry = run(ui, preview_id, expected, f"restored-subgraph-{seed}")
+        inputs = entry["prompt"][2][node_id]["inputs"]
+        assert inputs["seed"] == [seed_id, 0]
+        assert isinstance(inputs["populated_text"], list)
+        upstream_id = inputs["populated_text"][0]
+        assert entry["prompt"][2][upstream_id]["class_type"] == "StringConcatenate"
+
+
+@pytest.mark.parametrize("node_type", NODE_TYPES)
+def test_populate_reuses_cache_only_for_same_expansion(ui, node_type):
+    node_id, preview_id = graph(ui, node_type)
+    prefix = "populate cache "
+    ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill(prefix + "{red|green|blue}")
+    # Trusted pre-change selections: 0 and 1 -> green; 2 -> red.
+    for seed, color in ((0, "green"), (1, "green"), (2, "red")):
+        ui.set_number(node_type, "seed", seed)
+        entry = run(ui, preview_id, prefix + color, f"populate-cache-{seed}")
+        if seed == 1:
+            assert {node_id, preview_id} <= cached(entry)
+        else:
+            assert {node_id, preview_id}.isdisjoint(cached(entry))
+        assert entry["prompt"][2][node_id]["inputs"]["seed"] == 0
+        assert next(w["value"] for w in widget_state(ui, node_id)["widgets"] if w["name"] == "seed") == seed
+
+
+@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+@pytest.mark.parametrize("node_type", NODE_TYPES)
+def test_reproduce_native_workflow_then_populate(ui, node_type, restore_by_name):
+    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+    node_id, preview_id = graph(ui, node_type)
+    ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill("{red|green|blue}")
+    ui.set_number(node_type, "seed", 2)
+    initial = run(ui, preview_id, "red", "initial-populate")
+    # The queued native metadata also preserves the original seed and stores
+    # expanded text in reproduce mode, as image/workflow reproduction requires.
+    saved_node = next(n for n in initial["prompt"][3]["extra_pnginfo"]["workflow"]["nodes"]
+                      if str(n["id"]) == node_id)
+    assert saved_node["widgets_values"][:3] == ["{red|green|blue}", "red", "reproduce"]
+    seed_index = 3 if node_type == "ImpactWildcardProcessor" else 5
+    assert saved_node["widgets_values"][seed_index] == 2
+    ui.choose(node_type, "mode", "reproduce")
+    ui.set_number(node_type, "seed", 5)
+    before = native_roundtrip(ui, node_id)
+    values = {w["name"]: w["value"] for w in before["widgets"]}
+    assert (values["wildcard_text"], values["populated_text"], values["mode"], values["seed"]) == (
+        "{red|green|blue}", "red", "reproduce", 5)
+    run(ui, preview_id, "red", "restored-reproduce")
+    ui.page.wait_for_function("""({app, id}) =>
+        app.graph.getNodeById(id).widgets.find(w => w.name === 'mode').value === 'populate'
+    """, arg={"app": ui.app, "id": node_id})
+    run(ui, preview_id, "blue", "next-populate")
+    assert widget_state(ui, node_id)["widgets"] == [
+        dict(w, value="populate") if w["name"] == "mode" else
+        dict(w, value="blue") if w["name"] == "populated_text" else w for w in before["widgets"]
+    ]
+
+
 @pytest.mark.parametrize("node_type", NODE_TYPES)
 def test_plain_text_reuses_downstream_cache(ui, node_type):
     node_id, preview_id = graph(ui, node_type)
@@ -120,24 +258,7 @@ def test_seeded_output_and_native_widgets(ui, node_type, restore_by_name):
     ui.set_number(node_type, "seed", 731)
     ui.choose(node_type, "control_after_generate", "increment")
     rendered(ui)
-    before = widget_state(ui, node_id)
-    trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
-    reference = next(node for node in trusted["nodes"] if node["type"] == node_type)
-    assert [w["name"] for w in before["widgets"]] == [w["name"] for w in reference["widgets"]]
-    workflow = ui.artifacts / "saved.json"
-    export_workflow(ui, workflow)
-    saved = json.loads(workflow.read_text())
-    ui.new_workflow()
-    ui.load_workflow(workflow, len(saved["nodes"]))
-    full_zoom(ui)
-    show_node(ui, node_id)
-    assert widget_state(ui, node_id) == before
-    roundtrip = ui.artifacts / "roundtrip.json"
-    export_workflow(ui, roundtrip)
-    restored = json.loads(roundtrip.read_text())
-    saved_widgets = {str(node["id"]): node.get("widgets_values", []) for node in saved["nodes"]}
-    assert {str(node["id"]): node.get("widgets_values", []) for node in restored["nodes"]} == saved_widgets
-    (ui.artifacts / "widget-state.json").write_text(json.dumps(before, indent=2) + "\n")
+    before = native_roundtrip(ui, node_id)
     run(ui, preview_id, "saved plain α", "restored")
     assert widget_state(ui, node_id)["widgets"] == [
         dict(widget, value=732) if widget["name"] == "seed" else widget for widget in before["widgets"]

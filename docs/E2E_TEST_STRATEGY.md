@@ -12,7 +12,7 @@ that setup does not extend the supported import scope.
 | Script | Setup through the UI | Assertions |
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |
-| `tests/test_e2e_wildcard_cache.py` | Create both wildcard node graphs, edit seeds/text, Run, native Export and reload | Seeded outputs, actual downstream cache hits, invalidation on text changes, and widget names/order/values under both restoration modes |
+| `tests/test_e2e_wildcard_cache.py` | Create both wildcard node graphs, connect text/seed providers, convert a provider to a subgraph, Run, native Export and reload | Seeded outputs, cache reuse for fixed text and identical populate results, reproduce-to-populate transition, linked execution, and widget names/order/values under both restoration modes |
 | `tests/e2e_dd_compat.py` | Load the prepared Detailer graph through the frontend file input, click Run | Successful SEGSDetailer inference with DifferentialDiffusion, output image loaded in the UI, non-degenerate image, changed pixels by mean/std comparison |
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
@@ -67,9 +67,16 @@ wildcard_cache_limit_mb = 50
 The wildcard cache suite additionally runs `ImpactWildcardEncode` with a local
 checkpoint, defaulting to `v1-5-pruned-emaonly-fp16.safetensors`. Override it with
 `IMPACT_E2E_CHECKPOINT`; missing models fail rather than skip. No models are
-downloaded. Use an isolated server with caching enabled (`--cache-classic`).
+downloaded. Start a fresh isolated server with caching enabled (`--cache-classic`)
+for each suite invocation, so initial cache-miss assertions start with empty caches.
 The tests check history cache events and displayed text, then native widget
 values and serialized `widgets_values` before/after positional and named loading.
+Different seeds that expand to the same text must reuse both wildcard and
+downstream caches; a different expansion must invalidate them. Linked text is
+produced by a real core Concatenate Text node, also inside a UI-created subgraph,
+and linked seeds come from ImpactInt. Native exports preserve links and subgraph
+definitions as well as widgets. A restored reproduce workflow uses its saved
+expansion once, then populates from its source with the saved original seed.
 Encode runs use real CLIP encoding, but do not sample images or benchmark speed.
 
 ```bash
@@ -77,7 +84,22 @@ IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
 IMPACT_E2E_ARTIFACTS=/tmp/impact-wildcard-cache \
 python -m pytest tests/test_e2e_wildcard_cache.py -v
 python tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-cache.json
+python tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI --report /tmp/wildcard-tensors.json
 ```
+
+For the core LRU cache, restart the isolated server with `--cache-lru 10` instead
+of `--cache-classic`, then run the same cache assertions with
+`python -m pytest tests/test_e2e_wildcard_cache.py -k 'plain_text or populate_reuses'`.
+
+The tensor integration runs on CPU with installed
+`v1-5-pruned-emaonly-fp16.safetensors` and `loras/SD1.5/etc/add_detail.safetensors`.
+It compares all conditioning tensors and metadata, MODEL/CLIP LoRA patches and
+strengths with independent core CLIPTextEncode/LoraLoader/ConditioningConcat
+execution, using explicit reference selections and prompt sections. Plain,
+populate, fixed multiline/nested, reproduce, LoRA and BREAK cases are covered;
+input models must remain unmodified. Only HTTP routes/feedback are substituted.
+Missing models fail without downloading or skipping. These checks do not cover
+other model architectures or external LoRA loader plugins.
 
 The separate CPU integration uses real prompt hooks, parser, node methods and
 ComfyUI cache keys, with HTTP feedback and the CLIP model substituted. Fixed
