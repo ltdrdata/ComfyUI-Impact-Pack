@@ -22,6 +22,39 @@ to pytest with the same configuration.
 The three TXT encoding fixtures in `tests/wildcards/samples/` are included
 in the repository. The older server-dependent suites below are run separately.
 
+## Mask-to-SEGS regression tests
+
+Run separately from the stubbed wildcard tests, using a real ComfyUI installation
+on CPU without models. Use its Python environment with the Impact Pack dependencies
+and `tests/requirements.txt` installed; `IMPACT_COMFY_ROOT` points to the directory
+containing ComfyUI's `nodes.py` and `comfy/`:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_mask_to_segs.py -v
+```
+
+Checks cover finite out-of-range values before contour quantization, bicubic
+overshoot, adjacent values at the quantization threshold, mixed ranges in every
+batch, input immutability, and existing combined behavior.
+Tutorial-derived cases also cover holes and nested regions, bbox/contour fill,
+expanded edge crops, `drop_size` boundaries, disconnected combined regions and
+the mask-list consumer's image coordinates.
+Only unused server registration is substituted, using pytest's scoped
+monkeypatch cleanup. `tests/test_e2e_mask_to_segs.py` separately executes the bicubic
+workflow in Chrome, compares preview pixels with an explicit core-node clamp,
+and checks native saved widget names/order/values in both restoration modes.
+After reload it changes the resize factor through the UI, verifies the changed
+prompt and uncached execution path, and checks new filenames, dimensions and pixels.
+See [E2E setup and commands](../docs/E2E_TEST_STRATEGY.md) for the isolated CPU
+server, Playwright/Chrome requirements, and catalog sample configuration.
+
+`tests/test_e2e_mask_tutorials.py` separately loads the original tutorial PNG/JSON
+files, checks their saved controls, exports and reloads them under both restoration
+modes. Set `IMPACT_TUTORIALS_DIR` to the `ComfyUI-extension-tutorials` checkout.
+This loading test needs no referenced media or models and performs no inference.
+Missing required environment variables fail with setup guidance; they do not
+silently skip an explicitly requested regression suite.
+
 ## Chrome UI E2E
 
 `python3 tests/e2e_wildcards.py` creates and connects nodes, edits widgets,
