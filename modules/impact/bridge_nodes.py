@@ -126,14 +126,20 @@ class PreviewBridge:
         source_image = image
         need_refresh = False
         images_changed = False
+        cached = core.preview_bridge_cache.get(unique_id)
 
         # Check if images have changed (this determines if we start fresh)
-        if unique_id not in core.preview_bridge_cache:
+        if cached is None:
             need_refresh = True
             images_changed = True
-        elif core.preview_bridge_cache[unique_id][0] is not images:
+        elif cached[0] is not images and (
+            cached[0].device != images.device
+            or not torch.equal(cached[0], images)
+        ):
             need_refresh = True
             images_changed = True
+        elif cached[0] is not images:
+            core.preview_bridge_cache[unique_id] = (images, cached[1])
 
         # If images changed, clear the mask cache to ensure fresh start behavior
         # This restores the original behavior where new images start with empty masks
