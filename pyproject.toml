@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-impact-pack"
 description = "This node pack offers various detector nodes and detailer nodes that allow you to configure a workflow that automatically enhances facial details. And provide iterative upscaler."
-version = "8.29"
+version = "8.30"
 license = { file = "LICENSE.txt" }
 dependencies = [
     "segment-anything",
