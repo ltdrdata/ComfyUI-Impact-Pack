@@ -1,11 +1,12 @@
 # SAM in the native MaskEditor
 
-This is a proof of concept for the [public MaskEditor tool API](https://github.com/Comfy-Org/ComfyUI_frontend/pull/22519).
+This is a proof of concept for the [public MaskEditor tool contract](https://github.com/Comfy-Org/ComfyUI_frontend/pull/22519)
+and its [runtime integration](https://github.com/Comfy-Org/ComfyUI_frontend/pull/22550).
 The generic frontend API is independent of Impact Pack; this integration owns
 the SAM controls and inference.
 
-This change remains a draft until the frontend API is released. Before merging,
-record that release version and implement version-based selection: older
+This change remains a draft until the frontend contract and runtime ship together.
+Before merging, record that release version and implement version-based selection: older
 frontends use the legacy dialog, and supported releases use the Vue MaskEditor
 integration. Verify both sides of that version boundary. The development branch
 currently selects the integration by the availability of
