@@ -54,3 +54,23 @@ def test_concurrent_registrations_keep_distinct_image_references(bridge_files, m
         references = list(executor.map(register, [first, second]))
     assert references[0] != references[1]
     assert [core.preview_bridge_image_id_map[reference][0] for reference in references] == [str(first), str(second)]
+
+
+@pytest.mark.parametrize("value,rgb,mask_shape,mask_value", [
+    (0, [1, 0, 0], (1, 3, 2), 127 / 255),
+    (1, [1, 1, 1], (64, 64), 0),
+])
+def test_recomputed_source_preserves_edits_only_when_pixels_match(bridge_files, value, rgb, mask_shape, mask_value):
+    node = bridge_nodes.PreviewBridge()
+    source = torch.zeros((1, 3, 2, 3))
+    node.doit(source, "$source", unique_id="recomputed")
+    edited = bridge_files / "edited.png"
+    Image.new("RGBA", (2, 3), (255, 0, 0, 128)).save(edited)
+    reference = core.set_previewbridge_image("recomputed", str(edited), {
+        "filename": edited.name, "subfolder": "", "type": "temp",
+    })
+
+    pixels, mask = node.doit(torch.full_like(source, value), reference, unique_id="recomputed")["result"]
+
+    torch.testing.assert_close(pixels, torch.tensor(rgb, dtype=torch.float32).expand(1, 3, 2, 3))
+    torch.testing.assert_close(mask, torch.full(mask_shape, mask_value, dtype=torch.float32))
