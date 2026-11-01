@@ -33,27 +33,16 @@ def ui(tmp_path, request):
         yield browser
 
 
-def connect(ui, source, target, source_slot=0, target_slot=0):
-    page = ui.page
-    page.mouse.move(*ui.point(source, slot=source_slot))
-    page.mouse.down()
-    page.mouse.move(*ui.point(target, slot=target_slot, is_input=True), steps=12)
-    page.mouse.up()
-    page.wait_for_function("""({app, type, slot}) =>
-        app.graph._nodes.find(n => n.type === type).inputs[slot].link != null
-    """, arg={"app": ui.app, "type": target, "slot": target_slot})
-
-
 def graph(ui, node_type):
     node_id = ui.add_node(node_type, node_type, 550, 170)
     preview_id = ui.add_node("Preview as Text", "PreviewAny", 1150, 450)
-    connect(ui, node_type, "PreviewAny", 3 if node_type == "ImpactWildcardEncode" else 0)
+    ui.connect(node_type, "PreviewAny", source_slot=3 if node_type == "ImpactWildcardEncode" else 0)
     if node_type == "ImpactWildcardEncode":
         ui.add_node("Load Checkpoint", "CheckpointLoaderSimple", 100, 500)
         checkpoint = os.environ.get("IMPACT_E2E_CHECKPOINT", "v1-5-pruned-emaonly-fp16.safetensors")
         ui.choose("CheckpointLoaderSimple", "ckpt_name", checkpoint)
-        connect(ui, "CheckpointLoaderSimple", node_type, 0, 0)
-        connect(ui, "CheckpointLoaderSimple", node_type, 1, 1)
+        ui.connect("CheckpointLoaderSimple", node_type)
+        ui.connect("CheckpointLoaderSimple", node_type, 1, source_slot=1)
     show_node(ui, node_id)
     ui.choose(node_type, "control_after_generate", "fixed")
     return node_id, preview_id
@@ -119,7 +108,7 @@ def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name)
     ui.page.get_by_placeholder("string_a", exact=True).fill("{red|")
     ui.page.get_by_placeholder("string_b", exact=True).fill("green|blue}")
     show_node(ui, node_id)
-    connect(ui, "StringConcatenate", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
+    ui.connect("StringConcatenate", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
     for seed, expected in ((2, "red"), (5, "blue")):
         ui.set_number(node_type, "seed", seed)
         entry = run(ui, preview_id, expected, f"linked-text-{seed}")
@@ -130,7 +119,7 @@ def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name)
     show_node(ui, seed_id)
     ui.set_number("ImpactInt", "value", 2)
     show_node(ui, node_id)
-    connect(ui, "ImpactInt", node_type, target_slot=input_slot(ui, node_type, "seed"))
+    ui.connect("ImpactInt", node_type, target_slot=input_slot(ui, node_type, "seed"))
     entry = run(ui, preview_id, "red", "linked-seed")
     assert entry["prompt"][2][node_id]["inputs"]["seed"] == [seed_id, 0]
 
@@ -165,17 +154,27 @@ def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name)
 def test_populate_reuses_cache_only_for_same_expansion(ui, node_type):
     node_id, preview_id = graph(ui, node_type)
     prefix = "populate cache "
-    ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill(prefix + "{red|green|blue}")
+    # The source participates in the cache key. A unique comment isolates this
+    # case even on a warm LRU server, while keeping expected output deterministic.
+    source = f"# cache case {uuid4().hex}\n" + prefix + "{red|green|blue}"
+    ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill(source)
     # Trusted pre-change selections: 0 and 1 -> green; 2 -> red.
     for seed, color in ((0, "green"), (1, "green"), (2, "red")):
         ui.set_number(node_type, "seed", seed)
         entry = run(ui, preview_id, prefix + color, f"populate-cache-{seed}")
+        expect(ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True)).to_have_value(
+            prefix + color)
         if seed == 1:
             assert {node_id, preview_id} <= cached(entry)
         else:
             assert {node_id, preview_id}.isdisjoint(cached(entry))
         assert entry["prompt"][2][node_id]["inputs"]["seed"] == 0
         assert next(w["value"] for w in widget_state(ui, node_id)["widgets"] if w["name"] == "seed") == seed
+        saved_node = next(n for n in entry["prompt"][3]["extra_pnginfo"]["workflow"]["nodes"]
+                          if str(n["id"]) == node_id)
+        assert saved_node["widgets_values"][:3] == [source, prefix + color, "reproduce"]
+        seed_index = 3 if node_type == "ImpactWildcardProcessor" else 5
+        assert saved_node["widgets_values"][seed_index] == seed
 
 
 @pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
@@ -184,15 +183,10 @@ def test_reproduce_native_workflow_then_populate(ui, node_type, restore_by_name)
     setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
     node_id, preview_id = graph(ui, node_type)
     ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill("{red|green|blue}")
-    ui.set_number(node_type, "seed", 2)
-    initial = run(ui, preview_id, "red", "initial-populate")
-    # The queued native metadata also preserves the original seed and stores
-    # expanded text in reproduce mode, as image/workflow reproduction requires.
-    saved_node = next(n for n in initial["prompt"][3]["extra_pnginfo"]["workflow"]["nodes"]
-                      if str(n["id"]) == node_id)
-    assert saved_node["widgets_values"][:3] == ["{red|green|blue}", "red", "reproduce"]
-    seed_index = 3 if node_type == "ImpactWildcardProcessor" else 5
-    assert saved_node["widgets_values"][seed_index] == 2
+    # Set a known saved expansion through the UI so a population bug cannot
+    # prevent this test from reaching the reproduce/load behavior it protects.
+    ui.choose(node_type, "mode", "fixed")
+    ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill("red")
     ui.choose(node_type, "mode", "reproduce")
     ui.set_number(node_type, "seed", 5)
     before = native_roundtrip(ui, node_id)
@@ -232,29 +226,25 @@ def test_plain_text_reuses_downstream_cache(ui, node_type):
     assert {node_id, preview_id}.isdisjoint(cached(changed))
 
 
-@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
 @pytest.mark.parametrize("node_type", NODE_TYPES)
-def test_seeded_output_and_native_widgets(ui, node_type, restore_by_name):
-    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
-    node_id, preview_id = graph(ui, node_type)
-    page = ui.page
-    wildcard = page.get_by_placeholder("Wildcard Prompt (User input)", exact=True)
-    populated = page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True)
-    wildcard.fill("{red|green|blue}")
-    # Trusted pre-change selections: seed 2 -> red, seed 5 -> blue.
+@pytest.mark.parametrize("text", ["{red|\ngreen|blue}", "{red|{green}|blue}"], ids=["multiline", "nested"])
+def test_fixed_syntax_preserves_seed(ui, node_type, text):
+    _, preview_id = graph(ui, node_type)
+    ui.choose(node_type, "mode", "fixed")
+    ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill(text)
     for seed, expected in ((2, "red"), (5, "blue")):
         ui.set_number(node_type, "seed", seed)
-        run(ui, preview_id, expected, f"populate-{seed}")
-        expect(populated).to_have_value(expected)
+        run(ui, preview_id, expected, f"fixed-{seed}")
 
+
+@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+@pytest.mark.parametrize("node_type", NODE_TYPES)
+def test_fixed_native_workflow_preserves_widgets(ui, node_type, restore_by_name):
+    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+    node_id, preview_id = graph(ui, node_type)
     ui.choose(node_type, "mode", "fixed")
-    for label, text in (("multiline", "{red|\ngreen|blue}"), ("nested", "{red|{green}|blue}")):
-        populated.fill(text)
-        for seed, expected in ((2, "red"), (5, "blue")):
-            ui.set_number(node_type, "seed", seed)
-            run(ui, preview_id, expected, f"{label}-{seed}")
-
-    populated.fill("saved plain α")
+    ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill("unused {red|blue}")
+    ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill("saved plain α")
     ui.set_number(node_type, "seed", 731)
     ui.choose(node_type, "control_after_generate", "increment")
     rendered(ui)

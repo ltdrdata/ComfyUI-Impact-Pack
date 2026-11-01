@@ -67,16 +67,21 @@ wildcard_cache_limit_mb = 50
 The wildcard cache suite additionally runs `ImpactWildcardEncode` with a local
 checkpoint, defaulting to `v1-5-pruned-emaonly-fp16.safetensors`. Override it with
 `IMPACT_E2E_CHECKPOINT`; missing models fail rather than skip. No models are
-downloaded. Start a fresh isolated server with caching enabled (`--cache-classic`)
-for each suite invocation, so initial cache-miss assertions start with empty caches.
+downloaded. Use an isolated server with caching enabled (`--cache-classic`).
+Cache cases use distinct inputs per invocation and can run again on a warm cache.
 The tests check history cache events and displayed text, then native widget
 values and serialized `widgets_values` before/after positional and named loading.
 Different seeds that expand to the same text must reuse both wildcard and
 downstream caches; a different expansion must invalidate them. Linked text is
 produced by a real core Concatenate Text node, also inside a UI-created subgraph,
-and linked seeds come from ImpactInt. Native exports preserve links and subgraph
+and linked seeds come from ImpactInt. The wildcard node stays outside the subgraph.
+Native exports preserve links and subgraph
 definitions as well as widgets. A restored reproduce workflow uses its saved
 expansion once, then populates from its source with the saved original seed.
+Fixed multiline/nested selection and fixed native restoration run independently;
+an earlier population failure cannot prevent those assertions from executing.
+The reproduce case starts from an explicit saved expansion entered through the
+UI; population metadata is checked separately in the populate/cache case.
 Encode runs use real CLIP encoding, but do not sample images or benchmark speed.
 
 ```bash
@@ -97,7 +102,8 @@ It compares all conditioning tensors and metadata, MODEL/CLIP LoRA patches and
 strengths with independent core CLIPTextEncode/LoraLoader/ConditioningConcat
 execution, using explicit reference selections and prompt sections. Plain,
 populate, fixed multiline/nested, reproduce, LoRA and BREAK cases are covered;
-input models must remain unmodified. Only HTTP routes/feedback are substituted.
+input MODEL/CLIP patch sets must remain unchanged. Only HTTP routes/feedback are
+substituted.
 Missing models fail without downloading or skipping. These checks do not cover
 other model architectures or external LoRA loader plugins.
 
