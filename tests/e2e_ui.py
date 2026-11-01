@@ -94,8 +94,8 @@ class ComfyUI:
             app.graph._nodes.find(n => n.type === type).widgets.find(w => w.name === widget).value === value
         """, arg={"app": self.app, "type": node_type, "widget": widget, "value": value})
 
-    def connect(self, source, target, target_slot=0):
-        self.page.mouse.move(*self.point(source))
+    def connect(self, source, target, target_slot=0, *, source_slot=0):
+        self.page.mouse.move(*self.point(source, slot=source_slot))
         self.page.mouse.down()
         self.page.mouse.move(*self.point(target, slot=target_slot, is_input=True), steps=12)
         self.page.mouse.up()

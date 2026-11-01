@@ -98,6 +98,24 @@ inference and image previews. Both default to headless Google Chrome; add
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
 
+Wildcard cache and original-PNG cases check seeded selection, cache reuse, linked
+providers and native widget restoration in both modes:
+
+```bash
+python3 -m pytest tests/test_e2e_wildcard_cache.py -v
+python3 -m pytest tests/test_e2e_wildcard_tutorials.py -k native -v
+```
+
+Run CPU hook/cache checks and real SD1.5 conditioning/LoRA comparisons separately:
+
+```bash
+python3 tests/integration_wildcard_cache.py --comfy-root /path/to/ComfyUI
+python3 tests/integration_wildcard_cache_tensors.py --comfy-root /path/to/ComfyUI
+```
+
+The [E2E guide](../docs/E2E_TEST_STRATEGY.md) lists model overrides, pinned tutorial
+assets, the Inspire/SDXL tensor script and the original LBW sampling comparison.
+
 SAM execution and original tutorial suites check real ViT-B masks, downstream
 consumers and native widget restoration in both modes. The detector PNG executes;
 the Mask Pointer JSON covers loading only because its painted mask is absent.
