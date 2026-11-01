@@ -18,6 +18,7 @@ def write_config():
                             'sam_editor_model': get_config()['sam_editor_model'],
                             'custom_wildcards': get_config()['custom_wildcards'],
                             'disable_gpu_opencv': get_config()['disable_gpu_opencv'],
+                            'gpu_gaussian_blur': str(get_config()['gpu_gaussian_blur']),
                             'wildcard_cache_limit_mb': str(get_config()['wildcard_cache_limit_mb']),
                         }
     with open(config_path, 'w') as configfile:
@@ -53,6 +54,7 @@ def read_config():
                     'sam_editor_model': default_conf['sam_editor_model'].lower() if 'sam_editor_model' in default_conf else 'sam_vit_b_01ec64.pth',
                     'custom_wildcards': default_conf['custom_wildcards'] if 'custom_wildcards' in default_conf else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
                     'disable_gpu_opencv': default_conf['disable_gpu_opencv'].lower() == 'true' if 'disable_gpu_opencv' in default_conf else True,
+                    'gpu_gaussian_blur': default_conf.get('gpu_gaussian_blur', 'false').lower() == 'true',
                     'wildcard_cache_limit_mb': cache_limit_mb
                }
 
@@ -63,6 +65,7 @@ def read_config():
             'sam_editor_model': 'sam_vit_b_01ec64.pth',
             'custom_wildcards': os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "custom_wildcards")),
             'disable_gpu_opencv': True,
+            'gpu_gaussian_blur': False,
             'wildcard_cache_limit_mb': 50
         }
 
