@@ -1,5 +1,4 @@
 """Legacy SAM compatibility on a frontend without the ClipspaceDialog export."""
-from argparse import Namespace
 import io
 import json
 import os
@@ -9,21 +8,18 @@ import pytest
 from PIL import Image
 from playwright.sync_api import expect
 
-from e2e_ui import browser_session
+from e2e_ui import ui as browser_ui
 from test_e2e_widget_catalog import export_workflow, setting
 
 
 @pytest.fixture
-def ui(tmp_path, request):
-    artifacts = Path(os.environ.get("IMPACT_E2E_ARTIFACTS", str(tmp_path))) / request.node.name
-    args = Namespace(base_url=os.environ.get("IMPACT_E2E_BASE_URL", "http://127.0.0.1:18188"),
-                     browser_channel="chrome", headed=False, timeout=120, artifacts=artifacts)
-    with browser_session(args) as browser:
-        browser.page.keyboard.press("Escape")
-        browser.page.set_viewport_size({"width": 2200, "height": 1300})
-        browser.page.set_default_timeout(10000)
-        browser.new_workflow()
-        yield browser, artifacts
+def ui(browser_ui):
+    browser, artifacts = browser_ui
+    browser.timeout = 120
+    browser.page.set_viewport_size({"width": 2200, "height": 1300})
+    browser.page.set_default_timeout(10000)
+    browser.new_workflow()
+    return browser, artifacts
 
 
 def assert_sam_loaded(browser):

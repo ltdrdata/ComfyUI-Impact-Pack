@@ -944,40 +944,6 @@ def generate_detection_hints(image, seg, center, detection_hint, dilated_bbox, m
     return points, plabs
 
 
-def convert_and_stack_masks(masks):
-    if len(masks) == 0:
-        return None
-
-    mask_tensors = []
-    for mask in masks:
-        mask_array = np.array(mask, dtype=np.uint8)
-        mask_tensor = torch.from_numpy(mask_array)
-        mask_tensors.append(mask_tensor)
-
-    stacked_masks = torch.stack(mask_tensors, dim=0)
-    stacked_masks = stacked_masks.unsqueeze(1)
-
-    return stacked_masks
-
-
-def merge_and_stack_masks(stacked_masks, group_size):
-    if stacked_masks is None:
-        return None
-
-    num_masks = stacked_masks.size(0)
-    merged_masks = []
-
-    for i in range(0, num_masks, group_size):
-        subset_masks = stacked_masks[i:i + group_size]
-        merged_mask = torch.any(subset_masks, dim=0)
-        merged_masks.append(merged_mask)
-
-    if len(merged_masks) > 0:
-        merged_masks = torch.stack(merged_masks, dim=0)
-
-    return merged_masks
-
-
 def segs_scale_match(segs, target_shape):
     h = segs[0][0]
     w = segs[0][1]
@@ -1023,13 +989,6 @@ def segs_scale_match(segs, target_shape):
     return (th, tw), new_segs
 
 
-# Used Python's slicing feature. stacked_masks[2::3] means starting from index 2, selecting every third tensor with a step size of 3.
-# This allows for quickly obtaining the last tensor of every three tensors in stacked_masks.
-def every_three_pick_last(stacked_masks):
-    selected_masks = stacked_masks[2::3]
-    return selected_masks
-
-
 def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
@@ -1042,6 +1001,7 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
     try:
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
+        # Keep one mask per prediction; thresholding can leave fewer than three candidates.
         total_masks = []
 
         use_small_negative = mask_hint_use_negative == "Small"
@@ -1064,7 +1024,8 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                     plabs.append(1)
 
             detected_masks = sam_obj.predict(image, points, plabs, None, threshold)
-            total_masks += detected_masks
+            if detected_masks:
+                total_masks.append(utils.combine_masks2(detected_masks))
 
         else:
             for i in range(len(segs)):
@@ -1083,10 +1044,11 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
 
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
 
-                total_masks += detected_masks
+                if detected_masks:
+                    total_masks.append(utils.combine_masks2(detected_masks))
 
         # merge every collected masks
-        mask = utils.combine_masks2(total_masks)
+        mask = utils.combine_masks2([m.numpy() for m in total_masks])
 
     finally:
         sam_obj.release_device()
@@ -1105,10 +1067,11 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
             (height, width), dtype=torch.float32, device=mask_working_device
         )  # empty mask
 
-    stacked_masks = convert_and_stack_masks(total_masks)
-
-    return (mask, merge_and_stack_masks(stacked_masks, group_size=3))
-    # return every_three_pick_last(stacked_masks)
+    batch_masks = None
+    if total_masks:
+        # Preserve binary uint8 batches even for wrappers returning 0/255 masks.
+        batch_masks = torch.stack(total_masks).unsqueeze(1).ne(0).to(torch.uint8)
+    return mask, batch_masks
 
 
 def segs_bitwise_and_mask(segs, mask):
