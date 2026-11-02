@@ -561,9 +561,10 @@ def onprompt_populate_wildcards(json_data):
                 if impact.wildcards.is_static_text(populated_text):
                     inputs['seed'] = 0
             elif isinstance(inputs['seed'], int):
-                # Linked text that a finished run received as static text reuses that run's seed.
-                key = impact.wildcards.linked_text_key(prompt, k)
-                inputs['seed'] = impact.wildcards.static_linked_text_seeds.get(key, inputs['seed'])
+                # Linked text that the last finished run received as static text reuses that run's seed.
+                seed = impact.wildcards.recorded_static_seed(prompt, k)
+                if seed is not None:
+                    inputs['seed'] = seed
 
             if inputs['mode'] == 'reproduce':
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "mode", "type": "STRING", "value": 'populate'})

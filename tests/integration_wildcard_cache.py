@@ -37,11 +37,11 @@ def main():
     from comfy_execution.caching import CacheKeySetInputSignature
     from comfy_execution.graph import DynamicPrompt
     from comfy_extras.nodes_preview_any import PreviewAny
-    from comfy_extras.nodes_primitive import StringMultiline
+    from comfy_extras.nodes_primitive import Float, StringMultiline
     from comfy_extras.nodes_string import StringConcatenate
-    from execution import IsChangedCache
+    from execution import IsChangedCache, validate_prompt
     # Match server startup order; importing impact_pack first creates a cycle.
-    from impact import impact_server, impact_pack, wildcards
+    from impact import impact_server, impact_pack, logics, wildcards
 
     # Text providers whose output may change while their inputs stay equal, like file loaders.
     class ChangingTextSource:
@@ -62,12 +62,20 @@ def main():
         def fingerprint_inputs(cls, path):
             return float("NaN")
 
+    # Breaks ComfyUI's cache contract: its text may change without declaring IS_CHANGED.
+    class UndeclaredTextSource:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {"path": ("STRING",)}}
+
     classes = {name: getattr(impact_pack, name) for name in (
         "ImpactWildcardProcessor", "ImpactWildcardEncode",
     )}
     nodes.NODE_CLASS_MAPPINGS.update(classes | {
         "PreviewAny": PreviewAny, "PrimitiveStringMultiline": StringMultiline, "StringConcatenate": StringConcatenate,
         "ChangingTextSource": ChangingTextSource, "ChangingTextSourceV3": ChangingTextSourceV3,
+        "UndeclaredTextSource": UndeclaredTextSource, "PrimitiveFloat": Float,
+        "ImpactConvertDataType": logics.ImpactConvertDataType,
     })
     wildcards.wildcard_dict = {"colors": ["red", "green", "blue"]}
     wildcards._on_demand_mode = False
@@ -238,6 +246,10 @@ def main():
                             self.assertEqual(third["1"]["inputs"]["seed"], 733)
                             self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
 
+                            # Only the last run is kept; ComfyUI's cache drops the earlier text too.
+                            output(name, third["1"]["inputs"], resolve(changed), prompt=third)
+                            self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
+
         def test_linked_dynamic_text_keeps_seeds_of_queued_runs(self):
             sources = (
                 {"class_type": "PrimitiveStringMultiline", "inputs": {"value": "__colors__"}},
@@ -277,6 +289,53 @@ def main():
                         self.assertEqual(output(name, first["1"]["inputs"], "plain α", prompt=first), "plain α")
                         self.assertEqual(wildcards.static_linked_text_seeds, {})
                         self.assertEqual(prepare(name, 732, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 732)
+
+        def test_validated_upstream_values_keep_fingerprint(self):
+            # The hook sees the submitted prompt, the node sees it after ComfyUI's validation
+            # cast the FLOAT (JSON sends 1.0 as 1) and unwrapped the __value__ widget.
+            name = "ImpactWildcardProcessor"  # Encode needs a model loader to validate
+            upstream = {
+                "float": {"class_type": "PrimitiveFloat", "inputs": {"value": 1}},
+                "number": {"class_type": "ImpactConvertDataType", "inputs": {"value": ["float", 0]}},
+                "text": {"class_type": "StringConcatenate", "inputs": {
+                    "string_a": {"__value__": "plain"}, "string_b": ["number", 0], "delimiter": " "}},
+                "2": {"class_type": "PreviewAny", "inputs": {"source": ["1", 0]}},
+            }
+            for mode in ("populate", "fixed", "reproduce"):
+                with self.subTest(mode=mode):
+                    wildcards.static_linked_text_seeds.clear()
+
+                    def submit(seed):
+                        prompt = prepare(name, seed, ["text", 0], mode, upstream=upstream)
+                        prompt["1"]["inputs"]["Select to add Wildcard"] = "Select the Wildcard to add to the text"
+                        self.assertTrue(asyncio.run(validate_prompt("test", prompt, None))[0])
+                        return prompt
+
+                    first = submit(731)
+                    self.assertIsInstance(first["float"]["inputs"]["value"], float)
+                    self.assertEqual(first["text"]["inputs"]["string_a"], "plain")
+                    self.assertEqual(output(name, first["1"]["inputs"], "plain 1.0", prompt=first), "plain 1.0")
+                    self.assertEqual(submit(732)["1"]["inputs"]["seed"], 731)
+
+        def test_list_widget_values_are_not_followed_as_links(self):
+            upstream = {"text": {"class_type": "UndeclaredTextSource", "inputs": {"path": "prompt.txt", "points": [[0, 0], [1, 1]]}}}
+            for name in classes:
+                with self.subTest(node=name):
+                    prompt = prepare(name, 731, ["text", 0], upstream=upstream)
+                    self.assertIsNotNone(wildcards.linked_text_fingerprint(prompt, "1"))
+
+        def test_recorded_seed_is_dropped_when_text_gains_syntax(self):
+            upstream = {"text": {"class_type": "UndeclaredTextSource", "inputs": {"path": "prompt.txt"}}}
+            for name in classes:
+                with self.subTest(node=name):
+                    wildcards.static_linked_text_seeds.clear()
+                    first = prepare(name, 731, ["text", 0], upstream=upstream)
+                    output(name, first["1"]["inputs"], "plain α", prompt=first)
+                    second = prepare(name, 732, ["text", 0], upstream=upstream)
+                    self.assertEqual(second["1"]["inputs"]["seed"], 731)
+                    # Same inputs, different text: only a contract-breaking upstream node does this.
+                    output(name, second["1"]["inputs"], "__colors__", prompt=second)
+                    self.assertEqual(prepare(name, 733, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 733)
 
         def test_linked_seed_is_never_replaced(self):
             for name in classes:
