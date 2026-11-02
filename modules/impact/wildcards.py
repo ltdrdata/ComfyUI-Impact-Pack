@@ -1,3 +1,5 @@
+import hashlib
+import json
 import logging
 import os
 import random
@@ -817,6 +819,60 @@ def process(text, seed=None):
         logging.warning("[Impact Pack] Wildcard expansion limit reached; check for circular references.")
 
     return text
+
+
+# Seeds of finished runs whose linked populated_text had no seed-dependent syntax.
+# Forgetting an entry only gives up one cache reuse, so the oldest entries are dropped.
+static_linked_text_seeds = {}
+STATIC_LINKED_TEXT_LIMIT = 1024
+
+
+def is_static_text(text):
+    return '{' not in text and '__' not in text
+
+
+def _may_change_with_same_inputs(class_def):
+    if hasattr(class_def, 'GET_BASE_CLASS'):
+        from comfy_api.internal import first_real_override  # only V3 nodes have GET_BASE_CLASS
+        return first_real_override(class_def, 'fingerprint_inputs') is not None
+    return hasattr(class_def, 'IS_CHANGED')
+
+
+def linked_text_key(prompt, node_id):
+    # Like ComfyUI's cache, equal upstream inputs are trusted to produce equal text unless
+    # an upstream node declares IS_CHANGED/fingerprint_inputs.
+    link = prompt[node_id]['inputs']['populated_text']
+    if not isinstance(link, list):
+        return None
+
+    upstream = {}
+    pending = [link[0]]
+    while pending:
+        upstream_id = pending.pop()
+        if upstream_id in upstream:
+            continue
+        node = prompt.get(upstream_id)
+        class_def = nodes.NODE_CLASS_MAPPINGS.get(node['class_type']) if node is not None else None
+        if class_def is None or _may_change_with_same_inputs(class_def):
+            return None
+        upstream[upstream_id] = [node['class_type'], node['inputs']]
+        pending += [v[0] for v in node['inputs'].values() if isinstance(v, list) and len(v) == 2]
+
+    return node_id, tuple(link), hashlib.sha256(json.dumps(upstream, sort_keys=True).encode()).hexdigest()
+
+
+def remember_static_linked_text(prompt, node_id, text, seed):
+    # Direct doit() callers and expanded nodes have no prompt entry to learn from.
+    if node_id not in (prompt or {}) or not is_static_text(text):
+        return
+
+    key = linked_text_key(prompt, node_id)
+    if key is None:
+        return
+
+    if len(static_linked_text_seeds) >= STATIC_LINKED_TEXT_LIMIT:
+        del static_linked_text_seeds[next(iter(static_linked_text_seeds))]
+    static_linked_text_seeds[key] = seed
 
 
 def is_numeric_string(input_str):

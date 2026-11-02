@@ -33,18 +33,42 @@ def main():
         send_sync=lambda event, data: feedback.append((event, data)),
     )
     import nodes
+    from comfy_api.latest import io
     from comfy_execution.caching import CacheKeySetInputSignature
     from comfy_execution.graph import DynamicPrompt
     from comfy_extras.nodes_preview_any import PreviewAny
+    from comfy_extras.nodes_primitive import StringMultiline
     from comfy_extras.nodes_string import StringConcatenate
     from execution import IsChangedCache
     # Match server startup order; importing impact_pack first creates a cycle.
     from impact import impact_server, impact_pack, wildcards
 
+    # Text providers whose output may change while their inputs stay equal, like file loaders.
+    class ChangingTextSource:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {"path": ("STRING",)}}
+
+        @classmethod
+        def IS_CHANGED(cls, path):
+            return float("NaN")
+
+    class ChangingTextSourceV3(io.ComfyNode):
+        @classmethod
+        def define_schema(cls):
+            return io.Schema(node_id="ChangingTextSourceV3", inputs=[io.String.Input("path")], outputs=[io.String.Output()])
+
+        @classmethod
+        def fingerprint_inputs(cls, path):
+            return float("NaN")
+
     classes = {name: getattr(impact_pack, name) for name in (
         "ImpactWildcardProcessor", "ImpactWildcardEncode",
     )}
-    nodes.NODE_CLASS_MAPPINGS.update(classes | {"PreviewAny": PreviewAny})
+    nodes.NODE_CLASS_MAPPINGS.update(classes | {
+        "PreviewAny": PreviewAny, "PrimitiveStringMultiline": StringMultiline, "StringConcatenate": StringConcatenate,
+        "ChangingTextSource": ChangingTextSource, "ChangingTextSourceV3": ChangingTextSourceV3,
+    })
     wildcards.wildcard_dict = {"colors": ["red", "green", "blue"]}
     wildcards._on_demand_mode = False
 
@@ -80,15 +104,17 @@ def main():
         feedback.clear()
         impact_server.onprompt_populate_wildcards(data)
         expected_widgets = deepcopy(widgets)
-        if mode in ("populate", True) and isinstance(text, str):
+        # Linked populated_text cannot be populated before execution.
+        populated = mode in ("populate", True) and isinstance(text, str)
+        if populated:
             expected_widgets[1:3] = [inputs["populated_text"], "reproduce"]
         assert workflow_node["widgets_values"] == expected_widgets
         mode_feedback = [data["value"] for _, data in feedback if data["widget_name"] == "mode"]
-        assert mode_feedback == (["populate"] if mode in ("populate", "reproduce", True) else [])
+        assert mode_feedback == (["populate"] if populated or mode == "reproduce" else [])
         assert all(data["widget_name"] != "seed" for _, data in feedback)
         return prompt
 
-    def output(name, inputs, resolved_text=None, resolved_seed=None):
+    def output(name, inputs, resolved_text=None, resolved_seed=None, prompt=None):
         values = dict(inputs)
         if resolved_text is not None:
             values["populated_text"] = resolved_text
@@ -96,7 +122,13 @@ def main():
             values["seed"] = resolved_seed
         if name == "ImpactWildcardEncode":
             values.update(model=object(), clip=Clip())
+        if prompt is not None:
+            # Hidden inputs supplied by ComfyUI during execution.
+            values.update(prompt=prompt, unique_id="1")
         return classes[name]().doit(**values)[-1]
+
+    def resolve(source):
+        return nodes.NODE_CLASS_MAPPINGS[source["class_type"]].execute(**source["inputs"])[0]
 
     async def cache_keys(prompt):
         name = prompt["1"]["class_type"]
@@ -176,6 +208,75 @@ def main():
                             self.assertEqual(inputs["seed"], seed)
                             self.assertEqual(inputs["populated_text"], ["upstream", 0])
                             self.assertEqual(output(name, inputs, combined), selection)
+
+        def test_linked_static_text_reuses_learned_seed(self):
+            sources = (
+                {"class_type": "PrimitiveStringMultiline", "inputs": {"value": "plain α"}},
+                {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": "α", "delimiter": " "}},
+            )
+            for name in classes:
+                for mode in ("populate", "fixed", "reproduce"):
+                    for source in sources:
+                        with self.subTest(node=name, mode=mode, source=source["class_type"]):
+                            wildcards.static_linked_text_seeds.clear()
+
+                            def linked(seed, upstream=source):
+                                return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
+
+                            # Nothing is known about the text before the first run.
+                            first = linked(731)
+                            self.assertEqual(first["1"]["inputs"]["seed"], 731)
+                            self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
+
+                            second = linked(732)
+                            self.assertEqual(second["1"]["inputs"]["seed"], 731)
+                            self.assertEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(second)))
+
+                            changed = deepcopy(source)
+                            changed["inputs"][next(iter(changed["inputs"]))] = "changed"
+                            third = linked(733, changed)
+                            self.assertEqual(third["1"]["inputs"]["seed"], 733)
+                            self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
+
+        def test_linked_dynamic_text_keeps_seeds_of_queued_runs(self):
+            sources = (
+                {"class_type": "PrimitiveStringMultiline", "inputs": {"value": "__colors__"}},
+                {"class_type": "StringConcatenate", "inputs": {"string_a": "__", "string_b": "colors__", "delimiter": ""}},
+            )
+            for name in classes:
+                for mode in ("populate", "fixed", "reproduce"):
+                    for source in sources:
+                        with self.subTest(node=name, mode=mode, source=source["class_type"]):
+                            wildcards.static_linked_text_seeds.clear()
+                            for _ in range(2):
+                                # Queue every prompt before any of them runs.
+                                queued = [prepare(name, seed, ["text", 0], mode, upstream={"text": source}) for seed in seeds]
+                                self.assertEqual([p["1"]["inputs"]["seed"] for p in queued], list(seeds))
+                                actual = tuple(output(name, p["1"]["inputs"], resolve(source), prompt=p) for p in queued)
+                                self.assertEqual(actual, selections["__colors__"])
+                            self.assertEqual(wildcards.static_linked_text_seeds, {})
+
+        def test_linked_text_from_changing_source_keeps_seed(self):
+            def file_source(class_type):
+                return {"class_type": class_type, "inputs": {"path": "prompt.txt"}}
+
+            upstreams = {
+                "IS_CHANGED": {"text": file_source("ChangingTextSource")},
+                "fingerprint_inputs": {"text": file_source("ChangingTextSourceV3")},
+                "unregistered": {"text": file_source("ExternalTextReader")},
+                "nested IS_CHANGED": {
+                    "text": {"class_type": "StringConcatenate", "inputs": {"string_a": ["file", 0], "string_b": "α", "delimiter": " "}},
+                    "file": file_source("ChangingTextSource"),
+                },
+            }
+            for name in classes:
+                for kind, upstream in upstreams.items():
+                    with self.subTest(node=name, upstream=kind):
+                        wildcards.static_linked_text_seeds.clear()
+                        first = prepare(name, 731, ["text", 0], upstream=upstream)
+                        self.assertEqual(output(name, first["1"]["inputs"], "plain α", prompt=first), "plain α")
+                        self.assertEqual(wildcards.static_linked_text_seeds, {})
+                        self.assertEqual(prepare(name, 732, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 732)
 
         def test_linked_seed_is_never_replaced(self):
             for name in classes:

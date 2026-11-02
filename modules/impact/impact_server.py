@@ -558,8 +558,12 @@ def onprompt_populate_wildcards(json_data):
             # Static text can share cache entries; preserve seeds for syntax markers and links.
             populated_text = inputs['populated_text']
             if isinstance(inputs['seed'], int) and isinstance(populated_text, str):
-                if '{' not in populated_text and '__' not in populated_text:
+                if impact.wildcards.is_static_text(populated_text):
                     inputs['seed'] = 0
+            elif isinstance(inputs['seed'], int):
+                # Linked text that a finished run received as static text reuses that run's seed.
+                key = impact.wildcards.linked_text_key(prompt, k)
+                inputs['seed'] = impact.wildcards.static_linked_text_seeds.get(key, inputs['seed'])
 
             if inputs['mode'] == 'reproduce':
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "mode", "type": "STRING", "value": 'populate'})
