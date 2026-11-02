@@ -327,7 +327,8 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot]?.type;
+					// An upstream dynamic output may not be restored yet during workflow loading.
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;
@@ -353,7 +354,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;
@@ -371,7 +372,7 @@ app.registerExtension({
 
 				// assign type
 				const node = app.graph.getNodeById(link_info.origin_id);
-				let slot_type = node?.outputs[link_info.origin_slot].type;
+				let slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 
 				this.inputs[0].type = slot_type;
 				this.inputs[1].type = slot_type;
@@ -395,7 +396,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;

@@ -385,6 +385,22 @@ The checks allow harmless removal of unused sockets while rejecting changed
 selection or activation of a previously empty branch. They pass with PR #1252's
 revised implementation and fail with the original `45afb30` selection clamping.
 
+Connection-type restoration checks need no models:
+
+```bash
+node --experimental-vm-modules --test tests/connection_types.test.mjs
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-connection-types-e2e \
+python -m pytest tests/test_e2e_connection_types.py -v
+```
+
+Chrome creates Control Bridge, both conditional branches, Compare, and Nth Item
+before or after an upstream Inversed Switch, connects its dynamic second output,
+then uses native Export/load/re-export/load. Both widget restoration modes must
+preserve rendered widget names/order/values, saved values, and links while
+restoring valid slot types. The unit checks cover unavailable source nodes and
+slots, saved link types, and resolving an unknown type on a later connection.
+
 Legacy SAM compatibility tests use the separate **Open in SAM Detector** dialog
 and the **Impact SAM Detector** button inside **Menu → Edit → Clipspace**:
 
