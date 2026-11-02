@@ -11,13 +11,14 @@ if sys.argv[0] == 'install.py':
     sys.path.append('.')   # for portable version
 
 
-impact_path = os.path.join(os.path.dirname(__file__), "modules")
+pack_path = os.path.dirname(os.path.abspath(__file__))
+impact_path = os.path.join(pack_path, "modules")
 
 
 comfy_path = os.environ.get('COMFYUI_PATH')
 if comfy_path is None:
-    print(f"\nWARN: The `COMFYUI_PATH` environment variable is not set. Assuming `{os.path.dirname(__file__)}/../../` as the ComfyUI path.", file=sys.stderr)
-    comfy_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    comfy_path = os.path.dirname(os.path.dirname(pack_path))
+    print(f"\nWARN: The `COMFYUI_PATH` environment variable is not set. Assuming `{comfy_path}` as the ComfyUI path.", file=sys.stderr)
 
 model_path = os.environ.get('COMFYUI_MODEL_PATH')
 if model_path is None:
@@ -82,7 +83,7 @@ try:
         sam_path = os.path.join(model_path, "sams")
         onnx_path = os.path.join(model_path, "onnx")
 
-        if not os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'skip_download_model')):
+        if not os.path.exists(os.path.join(os.path.dirname(pack_path), 'skip_download_model')):
             try:
                 if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
                     download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
@@ -97,12 +98,12 @@ try:
 
         # Remove legacy subpack
         try:
-            subpack_path = os.path.join(os.path.dirname(__file__), 'impact_subpack')
+            subpack_path = os.path.join(pack_path, 'impact_subpack')
             if os.path.exists(subpack_path):
                 shutil.rmtree(subpack_path)
                 print(f"Legacy subpack is detected. '{subpack_path}' is removed.")
                 
-            subpack_path = os.path.join(os.path.dirname(__file__), 'subpack')
+            subpack_path = os.path.join(pack_path, 'subpack')
             if os.path.exists(subpack_path):
                 shutil.rmtree(subpack_path)
                 print(f"Legacy subpack is detected. '{subpack_path}' is removed.")
