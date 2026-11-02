@@ -397,8 +397,10 @@ python -m pytest tests/test_e2e_connection_types.py -v
 Chrome creates Control Bridge, both conditional branches, Compare, and Nth Item
 before or after an upstream Inversed Switch, connects its dynamic second output,
 then uses native Export/load/re-export/load. Both widget restoration modes must
-preserve rendered widget names/order/values, saved values, and links while
-restoring valid slot types. The unit checks cover unavailable source nodes and
+preserve explicit non-default widget values and their names/order, both saved
+value representations, and links while restoring every data input/output type.
+The checks use the shared browser fixture and existing native export/widget
+helpers. The unit checks cover unavailable source nodes and
 slots, saved link types, and resolving an unknown type on a later connection.
 
 Legacy SAM compatibility tests use the separate **Open in SAM Detector** dialog
