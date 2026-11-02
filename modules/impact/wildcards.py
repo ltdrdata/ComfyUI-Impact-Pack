@@ -10,7 +10,7 @@ import numpy as np
 import yaml
 from impact import config, utils
 
-wildcards_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "wildcards"))
+wildcards_path = os.path.join(config.pack_root, "wildcards")
 
 RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+?)__", re.IGNORECASE)
 wildcard_lock = threading.Lock()
