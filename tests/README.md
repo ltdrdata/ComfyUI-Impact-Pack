@@ -154,6 +154,29 @@ results. Set `IMPACT_TUTORIALS_DIR` to the tutorial checkout; see the E2E guide
 for its input images and OpenPose requirements.
 Image checks verify that browser previews contain the current server output,
 including rejecting blocked requests and stale pixels served at a new URL.
+`python3 -m pytest tests/test_e2e_preview_bridge.py -v` exercises Preview Bridge
+through Chrome's Vue MaskEditor: paint/mask editing and native reload, Clipspace feedback, downstream
+compositing, latent mask propagation, blocking and restoration. Its default
+cases need no models. Set `IMPACT_E2E_SAM_IMAGE` to include Interactive SAM with
+the server's configured model, a frontend exposing the MaskEditor tool API, and
+the SD1.5 VAE for latent coverage. See [SAM setup](../docs/SAM_MASK_EDITOR.md).
+`node --experimental-vm-modules --test tests/sam_mask_editor.test.mjs` verifies
+point controls, cancellation, stale results, failure/retry and API registration.
+`tests/test_sam_server.py` exercises actual HTTP handlers with a model double in
+isolated subprocesses, including concurrent requests and error recovery.
+`tests/test_preview_bridge_latent.py` checks restored mask propagation and input
+latent preservation. `tests/test_preview_bridge_result.py` checks submitted-image
+feedback from both bridge types on refresh and reuse, and distinct references
+for concurrently registered files.
+Run these with `tests/test_sam_editor.py` in the ComfyUI
+Python environment; the SAM tests also check model selection in misleadingly
+named parent directories. [SAM setup](../docs/SAM_MASK_EDITOR.md) has the command.
+`node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks
+Vue store-only updates, awaited registration, retry after failure, and legacy
+workflow references without starting a server. Queued results and out-of-order
+registrations must preserve newer edits; repeated executions of the same image
+must advance the editor to the latest output. It also checks native image path
+normalization and ImageReceiver's existing default storage type.
 `python3 tests/e2e_regional.py` checks exact color masks and the localized effect
 of all three regional prompts in the restored regional img2img tutorial.
 Set `IMPACT_REGIONAL_WORKFLOW` to that PNG or JSON; see the E2E guide for assets

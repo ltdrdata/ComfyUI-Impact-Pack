@@ -1,8 +1,9 @@
 import os
+import uuid
 import warnings
 
 import torch
-from segment_anything import SamPredictor
+from segment_anything import SamPredictor, sam_model_registry
 
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from collections import namedtuple
@@ -47,9 +48,7 @@ SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
                  defaults=[None])
 
-pb_id_cnt = time.time()
 preview_bridge_image_id_map = {}
-preview_bridge_image_name_map = {}
 
 preview_bridge_cache = {}
 preview_bridge_last_mask_cache = {}
@@ -70,16 +69,8 @@ def is_execution_model_version_supported():
 
 
 def set_previewbridge_image(node_id, file, item):
-    global pb_id_cnt
-
-    if file in preview_bridge_image_name_map:
-        pb_id = preview_bridge_image_name_map[node_id, file]
-        if pb_id.startswith(f"${node_id}"):
-            return pb_id
-
-    pb_id = f"${node_id}-{pb_id_cnt}"
+    pb_id = f"${node_id}-{uuid.uuid4().hex}"
     preview_bridge_image_id_map[pb_id] = (file, item)
-    preview_bridge_image_name_map[node_id, file] = (pb_id, item)
     if os.path.isfile(file):
         i = Image.open(file)
         i = ImageOps.exif_transpose(i)
@@ -87,8 +78,6 @@ def set_previewbridge_image(node_id, file, item):
             mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
             mask = 1. - torch.from_numpy(mask)
             preview_bridge_last_mask_cache[node_id] = mask.unsqueeze(0)
-    pb_id_cnt += 1
-
     return pb_id
 
 
@@ -563,6 +552,12 @@ def composite_to(dest_latent, crop_region, src_latent):
     orig_image = lc.composite(dest_latent, src_latent, x1, y1)
 
     return orig_image[0]
+
+
+def load_sam_model(model_path):
+    filename = os.path.basename(model_path)
+    model_kind = "vit_h" if "vit_h" in filename else "vit_l" if "vit_l" in filename else "vit_b"
+    return sam_model_registry[model_kind](checkpoint=model_path)
 
 
 def sam_predict(predictor, points, plabs, bbox, threshold):
