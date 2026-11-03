@@ -48,6 +48,23 @@ The shell tests using `curl` are API integration tests, not UI E2E tests.
 `bash tests/test_encoding.sh http://127.0.0.1:18188` uses the same isolated
 server and samples without modifying its configuration or managing processes.
 
+`(cd tests && python -m pytest -c pytest.ini)` includes the isolated loader tests in
+`tests/wildcards/test_progressive_loading.py` and `test_lazy_load_verification.py`.
+They create temporary TXT/YAML data and check metadata, progressive loading,
+YAML preload, cache hits and fresh reloads in both modes.
+
+The API parity diagnostic now uses two already-running isolated servers:
+
+```bash
+python tests/wildcards/test_wildcard_final.py --full-url http://127.0.0.1:18188 --on-demand-url http://127.0.0.1:18189
+```
+
+Both servers must expose the same `samples/flower`, `samples/jewel` and `colors`
+fixtures. The script requires the reported modes to differ as requested, checks
+HTTP status and complete expansion, and compares all seven cases. It does not
+start servers or edit configuration.
+
+
 ## Prerequisites
 
 - A working ComfyUI installation with dependencies matching its requirements.
