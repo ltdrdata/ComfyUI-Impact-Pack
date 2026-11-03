@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py",
+    "-k",
+    "promoted_fixed_seed",
+    "-v",
+    "--tb=short",
+    "--maxfail=1",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/review3-20261103/promoted-classic.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T10:21:18.135414+00:00",
+  "exit_code": 0,
+  "seconds": 385.14,
+  "counts": {
+    "tests": "24",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

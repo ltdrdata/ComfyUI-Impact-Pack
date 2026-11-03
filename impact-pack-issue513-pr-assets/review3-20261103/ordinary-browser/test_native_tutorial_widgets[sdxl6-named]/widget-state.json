@@ -1,0 +1,30 @@
+{
+  "id": "109",
+  "type": "ImpactWildcardProcessor",
+  "widgets": [
+    {
+      "name": "wildcard_text",
+      "value": "Masterpiece, 4k, 3/4 view, (from below:1.2), (ValGarzon-5000_1:1.0), (light smile:0.5), (elegant, sexy natural pose), perfect anatomy, Detailed body, face, eyes, hands, feet, hair, clothes, Thigh High Stockings, (intricate miniskirt), high heels, Walking, climbing stairs, Natural light, volumetric lighting, (soft lighting:1.2), deep shadows, santorini background, Canon EOS R3, outdoors, chiaroscuro"
+    },
+    {
+      "name": "populated_text",
+      "value": "Masterpiece, 4k, 3/4 view, (from below:1.2), (ValGarzon-5000_1:1.0), (light smile:0.5), (elegant, sexy natural pose), perfect anatomy, Detailed body, face, eyes, hands, feet, hair, clothes, Thigh High Stockings, (intricate miniskirt), high heels, Walking, climbing stairs, Natural light, volumetric lighting, (soft lighting:1.2), deep shadows, santorini background, Canon EOS R3, outdoors, chiaroscuro"
+    },
+    {
+      "name": "mode",
+      "value": "Fixed"
+    },
+    {
+      "name": "seed",
+      "value": 0
+    },
+    {
+      "name": "control_after_generate",
+      "value": "randomize"
+    },
+    {
+      "name": "Select to add Wildcard",
+      "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "21",
+  "type": "ImpactWildcardEncode",
+  "widgets": [
+    {
+      "name": "wildcard_text",
+      "value": "{D.VA <lora:SDXL/person/d.va_xl_v1>|chunli <lora:SDXL/person/chun-li_xl_v1>|ahri, 1girl, long hair, animal ears, whisker markings, korean clothes, cleavage, detached sleeves <lora:SDXL/person/ahri_sdxl_lowlearningrate-000024>\n|arcane jinx <lora:SDXL/person/jinx>|Dark Magician Girl <lora:SDXL/person/dark_magician_girl_xl_v4>|SailorJupiter <lora:SDXL/person/SailorJupiter>|wearing supergirl outfit with cape <lora:SDXL/cloth/SDXL1.0-LoRa_Zeitgeist-Supergirl-Outfit_by-AI_Characters-v2.0>}"
+    },
+    {
+      "name": "populated_text",
+      "value": "wearing supergirl outfit with cape <lora:SDXL/cloth/SDXL1.0-LoRa_Zeitgeist-Supergirl-Outfit_by-AI_Characters-v2.0>"
+    },
+    {
+      "name": "mode",
+      "value": "populate"
+    },
+    {
+      "name": "Select to add LoRA",
+      "value": "Select the LoRA to add to the text"
+    },
+    {
+      "name": "Select to add Wildcard",
+      "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+    },
+    {
+      "name": "seed",
+      "value": 480192516675649
+    },
+    {
+      "name": "control_after_generate",
+      "value": "fixed"
+    }
+  ]
+}

@@ -1,0 +1,1260 @@
+{
+  "prompt": [
+    0,
+    "5d540044-8bbb-4fb8-8509-da65f9b5f6a7",
+    {
+      "3": {
+        "inputs": {
+          "seed": 20261103,
+          "steps": 20,
+          "cfg": 6.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "20:10",
+            0
+          ],
+          "positive": [
+            "20:10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "class_type": "KSampler",
+        "_meta": {
+          "title": "Wildcard branch sampler \u2014 fixed"
+        }
+      },
+      "4": {
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "class_type": "CheckpointLoaderSimple",
+        "_meta": {
+          "title": "Load Checkpoint"
+        }
+      },
+      "5": {
+        "inputs": {
+          "width": 512,
+          "height": 512,
+          "batch_size": 1
+        },
+        "class_type": "EmptyLatentImage",
+        "_meta": {
+          "title": "Empty Latent Image"
+        }
+      },
+      "7": {
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "class_type": "CLIPTextEncode",
+        "_meta": {
+          "title": "CLIP Text Encode (Prompt)"
+        }
+      },
+      "8": {
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "class_type": "VAEDecode",
+        "_meta": {
+          "title": "VAE Decode"
+        }
+      },
+      "9": {
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "class_type": "SaveImage",
+        "_meta": {
+          "title": "Fixed wildcard output"
+        }
+      },
+      "16": {
+        "inputs": {
+          "text": "professional product photograph of a red ceramic teapot on a wooden table, green garden background, bright daylight, realistic texture",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "class_type": "CLIPTextEncode",
+        "_meta": {
+          "title": "CLIP Text Encode (Prompt)"
+        }
+      },
+      "17": {
+        "inputs": {
+          "seed": 9001,
+          "steps": 20,
+          "cfg": 6.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "4",
+            0
+          ],
+          "positive": [
+            "16",
+            0
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "class_type": "KSampler",
+        "_meta": {
+          "title": "Independent sampler \u2014 increment"
+        }
+      },
+      "18": {
+        "inputs": {
+          "samples": [
+            "17",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "class_type": "VAEDecode",
+        "_meta": {
+          "title": "VAE Decode"
+        }
+      },
+      "19": {
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "18",
+            0
+          ]
+        },
+        "class_type": "SaveImage",
+        "_meta": {
+          "title": "Independent output \u2014 changes each queue"
+        }
+      },
+      "20:10": {
+        "inputs": {
+          "wildcard_text": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+          "populated_text": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+          "mode": "fixed",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 513,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "class_type": "ImpactWildcardEncode",
+        "_meta": {
+          "title": "ImpactWildcardEncode"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "3fd0f357-40ac-48f8-9a5e-2377924b1262",
+          "revision": 0,
+          "last_node_id": 20,
+          "last_link_id": 27,
+          "nodes": [
+            {
+              "id": 5,
+              "type": "EmptyLatentImage",
+              "pos": [
+                750,
+                890
+              ],
+              "size": [
+                315,
+                106
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "slot_index": 0,
+                  "links": [
+                    2,
+                    18
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "EmptyLatentImage"
+              },
+              "widgets_values": [
+                512,
+                512,
+                1
+              ],
+              "widgets_values_named": {
+                "width": 512,
+                "height": 512,
+                "batch_size": 1
+              }
+            },
+            {
+              "id": 8,
+              "type": "VAEDecode",
+              "pos": [
+                1660,
+                230
+              ],
+              "size": [
+                210,
+                46
+              ],
+              "flags": {},
+              "order": 8,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "link": 7
+                },
+                {
+                  "name": "vae",
+                  "type": "VAE",
+                  "link": 8
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "slot_index": 0,
+                  "links": [
+                    9
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "VAEDecode"
+              }
+            },
+            {
+              "id": 4,
+              "type": "CheckpointLoaderSimple",
+              "pos": [
+                250,
+                240
+              ],
+              "size": [
+                315,
+                98
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MODEL",
+                  "type": "MODEL",
+                  "slot_index": 0,
+                  "links": [
+                    15,
+                    22
+                  ]
+                },
+                {
+                  "name": "CLIP",
+                  "type": "CLIP",
+                  "slot_index": 1,
+                  "links": [
+                    5,
+                    14,
+                    23
+                  ]
+                },
+                {
+                  "name": "VAE",
+                  "type": "VAE",
+                  "slot_index": 2,
+                  "links": [
+                    8,
+                    20
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CheckpointLoaderSimple"
+              },
+              "widgets_values": [
+                "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+              ],
+              "widgets_values_named": {
+                "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+              }
+            },
+            {
+              "id": 7,
+              "type": "CLIPTextEncode",
+              "pos": [
+                690,
+                670
+              ],
+              "size": [
+                425.27801513671875,
+                180.6060791015625
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "CONDITIONING",
+                  "type": "CONDITIONING",
+                  "slot_index": 0,
+                  "links": [
+                    6,
+                    17
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CLIPTextEncode"
+              },
+              "widgets_values": [
+                "text, watermark"
+              ],
+              "widgets_values_named": {
+                "text": "text, watermark"
+              }
+            },
+            {
+              "id": 9,
+              "type": "SaveImage",
+              "pos": [
+                1900,
+                230
+              ],
+              "size": [
+                344.9357604980469,
+                577.8340454101562
+              ],
+              "flags": {},
+              "order": 10,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 9
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "title": "Fixed wildcard output",
+              "properties": {},
+              "widgets_values": [
+                "ComfyUI"
+              ],
+              "widgets_values_named": {
+                "filename_prefix": "ComfyUI"
+              }
+            },
+            {
+              "id": 3,
+              "type": "KSampler",
+              "pos": [
+                1320,
+                240
+              ],
+              "size": [
+                320,
+                474
+              ],
+              "flags": {},
+              "order": 6,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 24
+                },
+                {
+                  "name": "positive",
+                  "type": "CONDITIONING",
+                  "link": 25
+                },
+                {
+                  "name": "negative",
+                  "type": "CONDITIONING",
+                  "link": 6
+                },
+                {
+                  "name": "latent_image",
+                  "type": "LATENT",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "slot_index": 0,
+                  "links": [
+                    7
+                  ]
+                }
+              ],
+              "title": "Wildcard branch sampler \u2014 fixed",
+              "properties": {
+                "Node name for S&R": "KSampler"
+              },
+              "widgets_values": [
+                20261103,
+                "fixed",
+                20,
+                6,
+                "euler",
+                "normal",
+                1
+              ],
+              "widgets_values_named": {
+                "seed": 20261103,
+                "control_after_generate": "fixed",
+                "steps": 20,
+                "cfg": 6,
+                "sampler_name": "euler",
+                "scheduler": "normal",
+                "denoise": 1
+              }
+            },
+            {
+              "id": 16,
+              "type": "CLIPTextEncode",
+              "pos": [
+                469.99998474121116,
+                1110.0000000000002
+              ],
+              "size": [
+                400,
+                200
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 14
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "CONDITIONING",
+                  "type": "CONDITIONING",
+                  "links": [
+                    16
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CLIPTextEncode"
+              },
+              "widgets_values": [
+                "professional product photograph of a red ceramic teapot on a wooden table, green garden background, bright daylight, realistic texture"
+              ],
+              "widgets_values_named": {
+                "text": "professional product photograph of a red ceramic teapot on a wooden table, green garden background, bright daylight, realistic texture"
+              }
+            },
+            {
+              "id": 17,
+              "type": "KSampler",
+              "pos": [
+                1184.999984741211,
+                1110.0000000000002
+              ],
+              "size": [
+                270,
+                262
+              ],
+              "flags": {},
+              "order": 5,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 15
+                },
+                {
+                  "name": "positive",
+                  "type": "CONDITIONING",
+                  "link": 16
+                },
+                {
+                  "name": "negative",
+                  "type": "CONDITIONING",
+                  "link": 17
+                },
+                {
+                  "name": "latent_image",
+                  "type": "LATENT",
+                  "link": 18
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    19
+                  ]
+                }
+              ],
+              "title": "Independent sampler \u2014 increment",
+              "properties": {
+                "Node name for S&R": "KSampler"
+              },
+              "widgets_values": [
+                9001,
+                "increment",
+                20,
+                6,
+                "euler",
+                "normal",
+                1
+              ],
+              "widgets_values_named": {
+                "seed": 9001,
+                "control_after_generate": "increment",
+                "steps": 20,
+                "cfg": 6,
+                "sampler_name": "euler",
+                "scheduler": "normal",
+                "denoise": 1
+              }
+            },
+            {
+              "id": 18,
+              "type": "VAEDecode",
+              "pos": [
+                1589.999984741211,
+                1110.0000000000002
+              ],
+              "size": [
+                140,
+                46
+              ],
+              "flags": {},
+              "order": 7,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "link": 19
+                },
+                {
+                  "name": "vae",
+                  "type": "VAE",
+                  "link": 20
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    21
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "VAEDecode"
+              }
+            },
+            {
+              "id": 19,
+              "type": "SaveImage",
+              "pos": [
+                1764.999984741211,
+                1110.0000000000002
+              ],
+              "size": [
+                330.0650390625,
+                58
+              ],
+              "flags": {},
+              "order": 9,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 21
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "title": "Independent output \u2014 changes each queue",
+              "properties": {},
+              "widgets_values": [
+                "ComfyUI"
+              ],
+              "widgets_values_named": {
+                "filename_prefix": "ComfyUI"
+              }
+            },
+            {
+              "id": 20,
+              "type": "d5543109-47c2-4144-ae60-ca71d162470e",
+              "pos": [
+                841.539794921875,
+                392.0810241699219
+              ],
+              "size": [
+                210,
+                102
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 22
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 23
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "links": [
+                    24
+                  ]
+                },
+                {
+                  "name": "conditioning",
+                  "type": "CONDITIONING",
+                  "links": [
+                    25
+                  ]
+                }
+              ],
+              "properties": {
+                "previewExposures": []
+              },
+              "widgets_values": [
+                513,
+                "fixed"
+              ],
+              "widgets_values_named": {
+                "seed": 513,
+                "mode": "fixed"
+              }
+            }
+          ],
+          "links": [
+            [
+              2,
+              5,
+              0,
+              3,
+              3,
+              "LATENT"
+            ],
+            [
+              5,
+              4,
+              1,
+              7,
+              0,
+              "CLIP"
+            ],
+            [
+              6,
+              7,
+              0,
+              3,
+              2,
+              "CONDITIONING"
+            ],
+            [
+              7,
+              3,
+              0,
+              8,
+              0,
+              "LATENT"
+            ],
+            [
+              8,
+              4,
+              2,
+              8,
+              1,
+              "VAE"
+            ],
+            [
+              9,
+              8,
+              0,
+              9,
+              0,
+              "IMAGE"
+            ],
+            [
+              14,
+              4,
+              1,
+              16,
+              0,
+              "CLIP"
+            ],
+            [
+              15,
+              4,
+              0,
+              17,
+              0,
+              "MODEL"
+            ],
+            [
+              16,
+              16,
+              0,
+              17,
+              1,
+              "CONDITIONING"
+            ],
+            [
+              17,
+              7,
+              0,
+              17,
+              2,
+              "CONDITIONING"
+            ],
+            [
+              18,
+              5,
+              0,
+              17,
+              3,
+              "LATENT"
+            ],
+            [
+              19,
+              17,
+              0,
+              18,
+              0,
+              "LATENT"
+            ],
+            [
+              20,
+              4,
+              2,
+              18,
+              1,
+              "VAE"
+            ],
+            [
+              21,
+              18,
+              0,
+              19,
+              0,
+              "IMAGE"
+            ],
+            [
+              22,
+              4,
+              0,
+              20,
+              0,
+              "MODEL"
+            ],
+            [
+              23,
+              4,
+              1,
+              20,
+              1,
+              "CLIP"
+            ],
+            [
+              24,
+              20,
+              0,
+              3,
+              0,
+              "MODEL"
+            ],
+            [
+              25,
+              20,
+              1,
+              3,
+              1,
+              "CONDITIONING"
+            ]
+          ],
+          "groups": [],
+          "definitions": {
+            "subgraphs": [
+              {
+                "id": "d5543109-47c2-4144-ae60-ca71d162470e",
+                "version": 1,
+                "state": {
+                  "lastGroupId": 0,
+                  "lastNodeId": 20,
+                  "lastLinkId": 27,
+                  "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "New Subgraph",
+                "inputNode": {
+                  "id": -10,
+                  "bounding": [
+                    482,
+                    356.0810241699219,
+                    128,
+                    128
+                  ]
+                },
+                "outputNode": {
+                  "id": -20,
+                  "bounding": [
+                    1222.90380859375,
+                    356.0810241699219,
+                    128,
+                    88
+                  ]
+                },
+                "inputs": [
+                  {
+                    "id": "3a4e8720-9f1f-4d9e-bfeb-75b85ee46395",
+                    "name": "model",
+                    "type": "MODEL",
+                    "linkIds": [
+                      10
+                    ],
+                    "localized_name": "model",
+                    "pos": [
+                      586,
+                      380.0810241699219
+                    ]
+                  },
+                  {
+                    "id": "da6f77d0-d656-463c-8936-5c9e54e1dcd9",
+                    "name": "clip",
+                    "type": "CLIP",
+                    "linkIds": [
+                      11
+                    ],
+                    "localized_name": "clip",
+                    "pos": [
+                      586,
+                      400.0810241699219
+                    ]
+                  },
+                  {
+                    "id": "9b1e75d6-c6d1-41da-afc3-8731f5c0cc15",
+                    "name": "seed",
+                    "type": "INT",
+                    "linkIds": [
+                      26
+                    ],
+                    "pos": [
+                      586,
+                      420.0810241699219
+                    ]
+                  },
+                  {
+                    "id": "de66d22e-b9d7-439c-8146-831ddc0dca8a",
+                    "name": "mode",
+                    "type": "COMBO",
+                    "linkIds": [
+                      27
+                    ],
+                    "pos": [
+                      586,
+                      440.0810241699219
+                    ]
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "d1682e43-2f77-40f0-b454-874253892245",
+                    "name": "model",
+                    "type": "MODEL",
+                    "linkIds": [
+                      12
+                    ],
+                    "localized_name": "model",
+                    "pos": [
+                      1246.90380859375,
+                      380.0810241699219
+                    ]
+                  },
+                  {
+                    "id": "8fefc9a8-8246-4d0b-85d1-f1193fcd09d9",
+                    "name": "conditioning",
+                    "type": "CONDITIONING",
+                    "linkIds": [
+                      13
+                    ],
+                    "localized_name": "conditioning",
+                    "pos": [
+                      1246.90380859375,
+                      400.0810241699219
+                    ]
+                  }
+                ],
+                "widgets": [],
+                "nodes": [
+                  {
+                    "id": 10,
+                    "type": "ImpactWildcardEncode",
+                    "pos": [
+                      670,
+                      240
+                    ],
+                    "size": [
+                      492.90380859375,
+                      350.16204833984375
+                    ],
+                    "flags": {},
+                    "order": 0,
+                    "mode": 0,
+                    "inputs": [
+                      {
+                        "localized_name": "model",
+                        "name": "model",
+                        "type": "MODEL",
+                        "link": 10
+                      },
+                      {
+                        "localized_name": "clip",
+                        "name": "clip",
+                        "type": "CLIP",
+                        "link": 11
+                      },
+                      {
+                        "localized_name": "mode",
+                        "name": "mode",
+                        "type": "COMBO",
+                        "widget": {
+                          "name": "mode"
+                        },
+                        "link": 27
+                      },
+                      {
+                        "localized_name": "seed",
+                        "name": "seed",
+                        "type": "INT",
+                        "widget": {
+                          "name": "seed"
+                        },
+                        "link": 26
+                      }
+                    ],
+                    "outputs": [
+                      {
+                        "localized_name": "model",
+                        "name": "model",
+                        "type": "MODEL",
+                        "slot_index": 0,
+                        "links": [
+                          12
+                        ]
+                      },
+                      {
+                        "localized_name": "clip",
+                        "name": "clip",
+                        "type": "CLIP",
+                        "slot_index": 1,
+                        "links": null
+                      },
+                      {
+                        "localized_name": "conditioning",
+                        "name": "conditioning",
+                        "type": "CONDITIONING",
+                        "slot_index": 2,
+                        "links": [
+                          13
+                        ]
+                      },
+                      {
+                        "localized_name": "populated_text",
+                        "name": "populated_text",
+                        "type": "STRING",
+                        "links": null
+                      }
+                    ],
+                    "properties": {
+                      "Node name for S&R": "ImpactWildcardEncode"
+                    },
+                    "widgets_values": [
+                      "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+                      "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+                      "populate",
+                      "Select the LoRA to add to the text",
+                      "Select Wildcard \ud83d\udfe2 Full Cache",
+                      513,
+                      "increment"
+                    ],
+                    "widgets_values_named": {
+                      "wildcard_text": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+                      "populated_text": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture",
+                      "mode": "populate",
+                      "Select to add LoRA": "Select the LoRA to add to the text",
+                      "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache",
+                      "seed": 513,
+                      "control_after_generate": "increment"
+                    },
+                    "color": "#322",
+                    "bgcolor": "#533"
+                  }
+                ],
+                "groups": [],
+                "links": [
+                  {
+                    "id": 10,
+                    "origin_id": -10,
+                    "origin_slot": 0,
+                    "target_id": 10,
+                    "target_slot": 0,
+                    "type": "MODEL"
+                  },
+                  {
+                    "id": 11,
+                    "origin_id": -10,
+                    "origin_slot": 1,
+                    "target_id": 10,
+                    "target_slot": 1,
+                    "type": "CLIP"
+                  },
+                  {
+                    "id": 12,
+                    "origin_id": 10,
+                    "origin_slot": 0,
+                    "target_id": -20,
+                    "target_slot": 0,
+                    "type": "MODEL"
+                  },
+                  {
+                    "id": 13,
+                    "origin_id": 10,
+                    "origin_slot": 2,
+                    "target_id": -20,
+                    "target_slot": 1,
+                    "type": "CONDITIONING"
+                  },
+                  {
+                    "id": 27,
+                    "origin_id": -10,
+                    "origin_slot": 3,
+                    "target_id": 10,
+                    "target_slot": 2,
+                    "type": "COMBO"
+                  },
+                  {
+                    "id": 26,
+                    "origin_id": -10,
+                    "origin_slot": 2,
+                    "target_id": 10,
+                    "target_slot": 3,
+                    "type": "INT"
+                  }
+                ],
+                "extra": {}
+              }
+            ]
+          },
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 0.8933287280360144,
+              "offset": [
+                95.82262674967455,
+                221.46788024902332
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "3": {
+              "seed": 0,
+              "sampler_name": 4,
+              "scheduler": 5
+            },
+            "17": {
+              "seed": 0,
+              "sampler_name": 4,
+              "scheduler": 5
+            },
+            "20": {
+              "seed": 0
+            }
+          }
+        }
+      },
+      "client_id": "5fafca51f43f481398a81a4d703541d0",
+      "workflow_metadata": {
+        "workflow_id": "3fd0f357-40ac-48f8-9a5e-2377924b1262"
+      },
+      "create_time": 1793700532969
+    },
+    [
+      "9",
+      "19"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "ComfyUI_00001_.png",
+          "subfolder": "",
+          "type": "output",
+          "metadata": {
+            "kind": "image",
+            "width": 512,
+            "height": 512
+          }
+        }
+      ]
+    },
+    "19": {
+      "images": [
+        {
+          "filename": "ComfyUI_00002_.png",
+          "subfolder": "",
+          "type": "output",
+          "metadata": {
+            "kind": "image",
+            "width": 512,
+            "height": 512
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "5d540044-8bbb-4fb8-8509-da65f9b5f6a7",
+          "timestamp": 1793700532971
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "5d540044-8bbb-4fb8-8509-da65f9b5f6a7",
+          "timestamp": 1793700532973
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "5d540044-8bbb-4fb8-8509-da65f9b5f6a7",
+          "timestamp": 1793700537914
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    },
+    "19": {
+      "node_id": "19",
+      "display_node": "19",
+      "parent_node": null,
+      "real_node_id": "19"
+    }
+  }
+}

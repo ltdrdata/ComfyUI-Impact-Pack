@@ -1,0 +1,26 @@
+{
+  "type": "frame-snapshot",
+  "snapshot": {
+    "callId": "call@41",
+    "snapshotName": "after@call@41",
+    "pageId": "page@e7126eeb6c913bef08d89f5cfcbfd744",
+    "frameId": "frame@1c152368370ea2a9d0c2ad62fc467e6a",
+    "frameUrl": "http://127.0.0.1:18410/#9538ee13-9ab9-42fe-b36b-c4ed706efd3c",
+    "doctype": "html",
+    "html": [
+      [
+        2,
+        62
+      ]
+    ],
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "timestamp": 33933.018,
+    "wallTime": 1793700701665,
+    "collectionTime": 2.799999713897705,
+    "resourceOverrides": [],
+    "isMainFrame": true
+  }
+}

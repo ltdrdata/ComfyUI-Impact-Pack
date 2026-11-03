@@ -1,0 +1,388 @@
+TAP version 13
+# (node:2333179) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactControlBridge: restore the link type while the source node is unavailable
+ok 1 - ImpactControlBridge: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 2.450456
+  type: 'test'
+  ...
+# Subtest: ImpactControlBridge: restore the link type while the source output is unavailable
+ok 2 - ImpactControlBridge: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.032178
+  type: 'test'
+  ...
+# Subtest: ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+ok 3 - ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 5.010448
+  type: 'test'
+  ...
+# Subtest: ImpactControlBridge: an available source type takes precedence over saved link metadata
+ok 4 - ImpactControlBridge: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.379954
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source node is unavailable
+ok 5 - ImpactConditionalBranch: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.009345
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source output is unavailable
+ok 6 - ImpactConditionalBranch: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.908214
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+ok 7 - ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.982524
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+ok 8 - ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.225583
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+ok 9 - ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.999076
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+ok 10 - ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.035043
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+ok 11 - ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.979459
+  type: 'test'
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+ok 12 - ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.877377
+  type: 'test'
+  ...
+# Subtest: ImpactCompare: restore the link type while the source node is unavailable
+ok 13 - ImpactCompare: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.886484
+  type: 'test'
+  ...
+# Subtest: ImpactCompare: restore the link type while the source output is unavailable
+ok 14 - ImpactCompare: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.943461
+  type: 'test'
+  ...
+# Subtest: ImpactCompare: an unknown type stays wildcard and can be resolved later
+ok 15 - ImpactCompare: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.949372
+  type: 'test'
+  ...
+# Subtest: ImpactCompare: an available source type takes precedence over saved link metadata
+ok 16 - ImpactCompare: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.86377
+  type: 'test'
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+ok 17 - ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.902183
+  type: 'test'
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+ok 18 - ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.924696
+  type: 'test'
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+ok 19 - ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.877246
+  type: 'test'
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+ok 20 - ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.900089
+  type: 'test'
+  ...
+# (node:2333180) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: resize redraws only the current image (global UI exports)
+ok 21 - resize redraws only the current image (global UI exports)
+  ---
+  duration_ms: 2.904713
+  type: 'test'
+  ...
+# Subtest: resize redraws only the current image (UI module fallback)
+ok 22 - resize redraws only the current image (UI module fallback)
+  ---
+  duration_ms: 1.109364
+  type: 'test'
+  ...
+# Subtest: upload creates missing image metadata for core preview refresh
+ok 23 - upload creates missing image metadata for core preview refresh
+  ---
+  duration_ms: 0.935706
+  type: 'test'
+  ...
+# Subtest: late creation response cannot replace a restored selection
+ok 24 - late creation response cannot replace a restored selection
+  ---
+  duration_ms: 3.75618
+  type: 'test'
+  ...
+# Subtest: only the latest category response can update the dropdown
+ok 25 - only the latest category response can update the dropdown
+  ---
+  duration_ms: 0.951756
+  type: 'test'
+  ...
+# Subtest: returning to a category rejects its older response after a new selection
+ok 26 - returning to a category rejects its older response after a new selection
+  ---
+  duration_ms: 5.156273
+  type: 'test'
+  ...
+# Subtest: missing saved choices survive restoration for backend validation
+ok 27 - missing saved choices survive restoration for backend validation
+  ---
+  duration_ms: 0.898817
+  type: 'test'
+  ...
+# Subtest: category query values are encoded
+ok 28 - category query values are encoded
+  ---
+  duration_ms: 0.677419
+  type: 'test'
+  ...
+# Subtest: existing nodes are not changed or queried
+ok 29 - existing nodes are not changed or queried
+  ---
+  duration_ms: 0.914056
+  type: 'test'
+  ...
+# (node:2333193) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+ok 30 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 3.472865
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 31 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.300565
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 32 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.140082
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 33 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.349428
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 34 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.148698
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+ok 35 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.375446
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+ok 36 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.292881
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+ok 37 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.277411
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+ok 38 - ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.327796
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: shared hosts use their own promoted modes
+ok 39 - ImpactWildcardProcessor: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.362232
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+ok 40 - ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.269386
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: native promoted widget errors propagate unchanged
+ok 41 - ImpactWildcardProcessor: native promoted widget errors propagate unchanged
+  ---
+  duration_ms: 1.13372
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+ok 42 - ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 14.383701
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+ok 43 - ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 1.198192
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+ok 44 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.233819
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+ok 45 - ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.309873
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+ok 46 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.100287
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 47 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.087513
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 48 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.041005
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 49 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.076221
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 50 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.03808
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+ok 51 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.192221
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+ok 52 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.34034
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+ok 53 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 2.048617
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+ok 54 - ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.161071
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: shared hosts use their own promoted modes
+ok 55 - ImpactWildcardEncode: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.233018
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+ok 56 - ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.151283
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: native promoted widget errors propagate unchanged
+ok 57 - ImpactWildcardEncode: native promoted widget errors propagate unchanged
+  ---
+  duration_ms: 1.073977
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: API drift declines promotion without breaking the queue
+ok 58 - ImpactWildcardEncode: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 12.825208
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: after-phase restoration redraws the selected policy
+ok 59 - ImpactWildcardEncode: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 1.127458
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+ok 60 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.159859
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+ok 61 - ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 2.316733
+  type: 'test'
+  ...
+# Subtest: unrelated node types are untouched
+ok 62 - unrelated node types are untouched
+  ---
+  duration_ms: 1.016528
+  type: 'test'
+  ...
+1..62
+# tests 62
+# suites 0
+# pass 62
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 121.270969

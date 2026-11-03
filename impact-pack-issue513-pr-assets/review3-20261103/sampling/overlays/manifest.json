@@ -1,0 +1,567 @@
+{
+  "method": "Unchanged original Chrome screenshots embedded as img; separate SVG borders/numbers and English HTML notes, rendered in Chrome. Annotation toggle exposes the original. No crop, retouching, new inference or generated screenshot content.",
+  "reference_style": "/mnt/teratera/git/impact-pack-pr1190-constant-text-pr-assets/annotated-screenshots/render.py",
+  "capture_parent_head": "6d1a48803313c0b38193366bcef8f31dd552e70d",
+  "candidate_source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+  "baseline": "b1ee82d248499bfd3ed375da59f1027593bb7d28",
+  "images": [
+    {
+      "id": "candidate-queue-1",
+      "phase": "candidate",
+      "queue": 1,
+      "title": "Patched \u00b7 Queue 1/3 \u2014 initial render",
+      "prompt_id": "8b6ac84a-2faf-4eee-bd40-35f0dfd416a5",
+      "execution_start_utc": "2026-11-03T10:08:27.331000+00:00",
+      "source": "review3-20261103/sampling/candidate/queue-1-workflow.png",
+      "source_sha256": "2392cc3bc5bb7f08d4c62cdab8a89d25f1c6952cbdaaecfa982a9789b4f39f8a",
+      "history_sha256": "0da9b5196d2e9cc56bfcbb48dd822d4ed8bef7b50ebbebb26b6829bdfee54e87",
+      "highlights": [
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed stays 513",
+          "Host mode=fixed overrides interior mode=populate. Increment stays selected. Submitted/visible seed: 513 in all three queues."
+        ],
+        [
+          "Same rendered branch",
+          "Initial sampling establishes the reference image. Sampler seed: 20261103. Pancake RGB bytes match across all three queues."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9001; visible: 9002 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/candidate/queue-1-workflow.png",
+        "review3-20261103/sampling/candidate/queue-1-history.json",
+        "review3-20261103/sampling/candidate/queue-1-widget-state.json",
+        "review3-20261103/sampling/candidate/queue-1-fixed-output.png",
+        "review3-20261103/sampling/candidate/queue-1-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+      "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+      "annotated_sha256": "cfd050b894f37b4a259e6ba52a2b26a01e370e8beb8135f83902b957a9a7700f"
+    },
+    {
+      "id": "candidate-queue-2",
+      "phase": "candidate",
+      "queue": 2,
+      "title": "Patched \u00b7 Queue 2/3 \u2014 fixed branch cached",
+      "prompt_id": "b4fc4f67-3bf6-4e3b-9f36-52732230b8c9",
+      "execution_start_utc": "2026-11-03T10:08:33.304000+00:00",
+      "source": "review3-20261103/sampling/candidate/queue-2-workflow.png",
+      "source_sha256": "f6a4e65980e741eede6de066fa45eb23ae4a9be89a84e31869612d0c1910b704",
+      "history_sha256": "d91a41642c1fbadbc47a311ea69bb98828c77dfd140fcaed62d3005ebfb9ce92",
+      "highlights": [
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed stays 513",
+          "Host mode=fixed overrides interior mode=populate. Increment stays selected. Submitted/visible seed: 513 in all three queues."
+        ],
+        [
+          "Same rendered branch",
+          "Wildcard, sampler, decode and SaveImage are cached. Sampler seed: 20261103. Pancake RGB bytes match across all three queues."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9002; visible: 9003 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/candidate/queue-2-workflow.png",
+        "review3-20261103/sampling/candidate/queue-2-history.json",
+        "review3-20261103/sampling/candidate/queue-2-widget-state.json",
+        "review3-20261103/sampling/candidate/queue-2-fixed-output.png",
+        "review3-20261103/sampling/candidate/queue-2-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+      "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+      "annotated_sha256": "4a6a9ae0f4779a8865aa4efe392bf40ceea580ac97dade45281e77c3be01f618"
+    },
+    {
+      "id": "candidate-queue-3",
+      "phase": "candidate",
+      "queue": 3,
+      "title": "Patched \u00b7 Queue 3/3 \u2014 fixed branch cached after native reload",
+      "prompt_id": "f461ce9d-d9e8-4474-9e72-cab4d46d0cc5",
+      "execution_start_utc": "2026-11-03T10:08:37.319000+00:00",
+      "source": "review3-20261103/sampling/candidate/queue-3-workflow.png",
+      "source_sha256": "1f0b676f3f99b7b7e406bdaceff79d2f4c6f25a948b5ce94daef7ab45ae76957",
+      "history_sha256": "85eb60f8d224f7a0582f2d871fea4e20cd937713a04e364b7ad675b5b791599c",
+      "highlights": [
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#a3e635",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed stays 513",
+          "Host mode=fixed overrides interior mode=populate. Increment stays selected. Submitted/visible seed: 513 in all three queues."
+        ],
+        [
+          "Same rendered branch",
+          "Wildcard, sampler, decode and SaveImage are cached. Sampler seed: 20261103. Pancake RGB bytes match across all three queues."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9003; visible: 9004 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/candidate/queue-3-workflow.png",
+        "review3-20261103/sampling/candidate/queue-3-history.json",
+        "review3-20261103/sampling/candidate/queue-3-widget-state.json",
+        "review3-20261103/sampling/candidate/queue-3-fixed-output.png",
+        "review3-20261103/sampling/candidate/queue-3-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+      "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+      "annotated_sha256": "b0fef2b14a3820a96abb74d05920d480040566c42dbdef6f0e8815db84aa2754"
+    },
+    {
+      "id": "baseline-queue-1",
+      "phase": "baseline",
+      "queue": 1,
+      "title": "Previous PR \u00b7 Queue 1/3 \u2014 seed advances after the first render",
+      "prompt_id": "5d540044-8bbb-4fb8-8509-da65f9b5f6a7",
+      "execution_start_utc": "2026-11-03T10:08:52.971000+00:00",
+      "source": "review3-20261103/sampling/baseline/queue-1-workflow.png",
+      "source_sha256": "bf5b34ccede7c76562f211874743ef5f339c4c83587872e91efd846098b0307a",
+      "history_sha256": "90c3614474162f213873ab6ad66b947911396d4f0dedb6f8c724353057663862",
+      "highlights": [
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed still advances",
+          "Host mode=fixed, interior mode=populate, increment selected. Submitted wildcard seed: 513; visible seed: 514. Baseline submissions use 513 \u2192 514 \u2192 515."
+        ],
+        [
+          "Sampling seed is still fixed",
+          "Initial render matches the patched first output. Sampler seed stays 20261103. The three previous-PR pancake outputs have distinct RGB hashes."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9001; visible: 9002 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/baseline/queue-1-workflow.png",
+        "review3-20261103/sampling/baseline/queue-1-history.json",
+        "review3-20261103/sampling/baseline/queue-1-widget-state.json",
+        "review3-20261103/sampling/baseline/queue-1-fixed-output.png",
+        "review3-20261103/sampling/baseline/queue-1-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+      "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+      "annotated_sha256": "5c5404fd138def4f9ca3b381809d7534268af249f7e42c6f182ba104cd4da94c"
+    },
+    {
+      "id": "baseline-queue-2",
+      "phase": "baseline",
+      "queue": 2,
+      "title": "Previous PR \u00b7 Queue 2/3 \u2014 fixed branch runs again",
+      "prompt_id": "346dfd60-96c1-4f60-8dba-ac4e841b6ba1",
+      "execution_start_utc": "2026-11-03T10:08:59.718000+00:00",
+      "source": "review3-20261103/sampling/baseline/queue-2-workflow.png",
+      "source_sha256": "cc3cd0223b310c4b1ef10373bee2909a0d4ed0982104de41d0fb4c7dd47e5053",
+      "history_sha256": "1d089db067f5c76c84a3e5ec9887a04d26dc888e6c0c2b85c5193d49cf265fd9",
+      "highlights": [
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed still advances",
+          "Host mode=fixed, interior mode=populate, increment selected. Submitted wildcard seed: 514; visible seed: 515. Baseline submissions use 513 \u2192 514 \u2192 515."
+        ],
+        [
+          "Sampling seed is still fixed",
+          "Wildcard, sampler, decode and SaveImage run again. Sampler seed stays 20261103. The three previous-PR pancake outputs have distinct RGB hashes."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9002; visible: 9003 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/baseline/queue-2-workflow.png",
+        "review3-20261103/sampling/baseline/queue-2-history.json",
+        "review3-20261103/sampling/baseline/queue-2-widget-state.json",
+        "review3-20261103/sampling/baseline/queue-2-fixed-output.png",
+        "review3-20261103/sampling/baseline/queue-2-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+      "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+      "annotated_sha256": "214b25d13d60857b6b39aa3efebed3eb972765975558a1401bf2510859d56d65"
+    },
+    {
+      "id": "baseline-queue-3",
+      "phase": "baseline",
+      "queue": 3,
+      "title": "Previous PR \u00b7 Queue 3/3 \u2014 fixed branch runs again after native reload",
+      "prompt_id": "1cfdc385-b3f5-43b8-9077-191b189d842d",
+      "execution_start_utc": "2026-11-03T10:09:05.493000+00:00",
+      "source": "review3-20261103/sampling/baseline/queue-3-workflow.png",
+      "source_sha256": "f8cf86f081908c6d6bf745ccfde5bb257ca167c81b3f940f6d63e365b19178e1",
+      "history_sha256": "de9f14a66532968cba3677cd0f9c618cd2ad99a09cfe77c2d4b19834fdafe85e",
+      "highlights": [
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "20",
+              "widget": null,
+              "x": 837.3727798606035,
+              "y": 517.727685619242,
+              "width": 187.599032887563,
+              "height": 117.91939210075384
+            }
+          ]
+        ],
+        [
+          "#fb7185",
+          [
+            {
+              "node_id": "3",
+              "widget": "seed",
+              "x": 1264.7950262788954,
+              "y": 483.70881273521695,
+              "width": 285.8651929715247,
+              "height": 21.439889472864365
+            },
+            {
+              "node_id": "9",
+              "widget": null,
+              "x": 1782.9256885397838,
+              "y": 372.9360504587512,
+              "width": 308.141024179856,
+              "height": 542.99561464324
+            }
+          ]
+        ],
+        [
+          "#ffbf69",
+          [
+            {
+              "node_id": "17",
+              "widget": "seed",
+              "x": 1144.195634362919,
+              "y": 1260.9048061265496,
+              "width": 241.19875656972386,
+              "height": 21.43988947286425
+            },
+            {
+              "node_id": "19",
+              "widget": null,
+              "x": 1662.3262966238074,
+              "y": 1159.0653311304438,
+              "width": 294.8565815148604,
+              "height": 267.9986184108045
+            }
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          "Promoted fixed seed still advances",
+          "Host mode=fixed, interior mode=populate, increment selected. Submitted wildcard seed: 515; visible seed: 516. Baseline submissions use 513 \u2192 514 \u2192 515."
+        ],
+        [
+          "Sampling seed is still fixed",
+          "Wildcard, sampler, decode and SaveImage run again. Sampler seed stays 20261103. The three previous-PR pancake outputs have distinct RGB hashes."
+        ],
+        [
+          "Independent sampler increments",
+          "Submitted: 9003; visible: 9004 (the next seed). Sampler, decode and SaveImage execute each time; three teapot images have distinct RGB hashes."
+        ]
+      ],
+      "evidence": [
+        "review3-20261103/sampling/baseline/queue-3-workflow.png",
+        "review3-20261103/sampling/baseline/queue-3-history.json",
+        "review3-20261103/sampling/baseline/queue-3-widget-state.json",
+        "review3-20261103/sampling/baseline/queue-3-fixed-output.png",
+        "review3-20261103/sampling/baseline/queue-3-independent-output.png",
+        "review3-20261103/sampling/comparison.json"
+      ],
+      "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+      "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+      "annotated_sha256": "5503cb155de2a37a87c0416f14b98aa20b3819778846b026d44b57cc69447b00"
+    }
+  ]
+}

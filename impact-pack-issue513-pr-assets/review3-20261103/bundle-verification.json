@@ -1,0 +1,7 @@
+{
+  "node_passed": 62,
+  "artifact_passed": 3,
+  "source_manifest": "source-bundle.json",
+  "purpose": "Verify the published focused source bundle can execute without extracting PR files or starting ComfyUI.",
+  "canonical_commit_blobs": true
+}

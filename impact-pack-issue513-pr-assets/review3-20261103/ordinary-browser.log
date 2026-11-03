@@ -1,0 +1,85 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 87 items / 25 deselected / 62 selected
+
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-positional] PASSED [  1%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-named] PASSED [  3%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional] PASSED [  4%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named] PASSED [  6%]
+tests/test_e2e_wildcard_cache.py::test_populate_reuses_cache_only_for_same_expansion[ImpactWildcardProcessor] PASSED [  8%]
+tests/test_e2e_wildcard_cache.py::test_populate_reuses_cache_only_for_same_expansion[ImpactWildcardEncode] PASSED [  9%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardProcessor-positional] PASSED [ 11%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardProcessor-named] PASSED [ 12%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardEncode-positional] PASSED [ 14%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardEncode-named] PASSED [ 16%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardProcessor] PASSED [ 17%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardEncode] PASSED [ 19%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardProcessor] PASSED [ 20%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardEncode] PASSED [ 22%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardProcessor] PASSED [ 24%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardEncode] PASSED [ 25%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor] PASSED [ 27%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode] PASSED [ 29%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-after-ImpactWildcardProcessor] PASSED [ 30%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-after-ImpactWildcardEncode] PASSED [ 32%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-after-ImpactWildcardProcessor] PASSED [ 33%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-after-ImpactWildcardEncode] PASSED [ 35%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor] PASSED [ 37%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode] PASSED [ 38%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor] PASSED [ 40%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode] PASSED [ 41%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor] PASSED [ 43%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode] PASSED [ 45%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor] PASSED [ 46%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode] PASSED [ 48%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor] PASSED [ 50%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode] PASSED [ 51%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor] PASSED [ 53%]
+tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode] PASSED [ 54%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[multiline-ImpactWildcardProcessor] PASSED [ 56%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[multiline-ImpactWildcardEncode] PASSED [ 58%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[nested-ImpactWildcardProcessor] PASSED [ 59%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[nested-ImpactWildcardEncode] PASSED [ 61%]
+tests/test_e2e_wildcard_cache.py::test_fixed_policy_edit_survives_reload_and_resumes[before-ImpactWildcardProcessor] PASSED [ 62%]
+tests/test_e2e_wildcard_cache.py::test_fixed_policy_edit_survives_reload_and_resumes[before-ImpactWildcardEncode] PASSED [ 64%]
+tests/test_e2e_wildcard_cache.py::test_fixed_policy_edit_survives_reload_and_resumes[after-ImpactWildcardProcessor] PASSED [ 66%]
+tests/test_e2e_wildcard_cache.py::test_fixed_policy_edit_survives_reload_and_resumes[after-ImpactWildcardEncode] PASSED [ 67%]
+tests/test_e2e_wildcard_cache.py::test_linked_seed_remains_authoritative_in_fixed_mode[before-ImpactWildcardProcessor] PASSED [ 69%]
+tests/test_e2e_wildcard_cache.py::test_linked_seed_remains_authoritative_in_fixed_mode[before-ImpactWildcardEncode] PASSED [ 70%]
+tests/test_e2e_wildcard_cache.py::test_linked_seed_remains_authoritative_in_fixed_mode[after-ImpactWildcardProcessor] PASSED [ 72%]
+tests/test_e2e_wildcard_cache.py::test_linked_seed_remains_authoritative_in_fixed_mode[after-ImpactWildcardEncode] PASSED [ 74%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardProcessor-positional] PASSED [ 75%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardProcessor-named] PASSED [ 77%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardEncode-positional] PASSED [ 79%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardEncode-named] PASSED [ 80%]
+tests/test_e2e_wildcard_cache.py::test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardProcessor] PASSED [ 82%]
+tests/test_e2e_wildcard_cache.py::test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardEncode] PASSED [ 83%]
+tests/test_e2e_wildcard_cache.py::test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardProcessor] PASSED [ 85%]
+tests/test_e2e_wildcard_cache.py::test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardEncode] PASSED [ 87%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[lbw-positional] PASSED [ 88%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[lbw-named] PASSED [ 90%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[styler-positional] PASSED [ 91%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[styler-named] PASSED [ 93%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[sdxl6-positional] PASSED [ 95%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[sdxl6-named] PASSED [ 96%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[a1111-positional] PASSED [ 98%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[a1111-named] PASSED [100%]
+
+=============================== warnings summary ===============================
+test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-positional]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/review3-20261103/ordinary-browser.xml -
+=========== 62 passed, 25 deselected, 1 warning in 626.82s (0:10:26) ===========

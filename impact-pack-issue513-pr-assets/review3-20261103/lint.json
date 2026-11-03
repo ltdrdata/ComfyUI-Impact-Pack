@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "tests/test_e2e_wildcard_cache.py",
+      "tests/test_wildcard_cache_artifacts.py"
+    ],
+    "exit_code": 0,
+    "output": "All checks passed!\n"
+  },
+  {
+    "command": [
+      "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+      "--input-type=module",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]

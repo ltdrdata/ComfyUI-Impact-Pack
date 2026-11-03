@@ -1,0 +1,198 @@
+{
+  "root": {
+    "3": {
+      "id": "3",
+      "type": "KSampler",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 20261103
+        },
+        {
+          "name": "control_after_generate",
+          "value": "fixed"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 6
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        }
+      ]
+    },
+    "4": {
+      "id": "4",
+      "type": "CheckpointLoaderSimple",
+      "widgets": [
+        {
+          "name": "ckpt_name",
+          "value": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        }
+      ]
+    },
+    "5": {
+      "id": "5",
+      "type": "EmptyLatentImage",
+      "widgets": [
+        {
+          "name": "width",
+          "value": 512
+        },
+        {
+          "name": "height",
+          "value": 512
+        },
+        {
+          "name": "batch_size",
+          "value": 1
+        }
+      ]
+    },
+    "7": {
+      "id": "7",
+      "type": "CLIPTextEncode",
+      "widgets": [
+        {
+          "name": "text",
+          "value": "text, watermark"
+        }
+      ]
+    },
+    "8": {
+      "id": "8",
+      "type": "VAEDecode",
+      "widgets": []
+    },
+    "9": {
+      "id": "9",
+      "type": "SaveImage",
+      "widgets": [
+        {
+          "name": "filename_prefix",
+          "value": "ComfyUI"
+        }
+      ]
+    },
+    "16": {
+      "id": "16",
+      "type": "CLIPTextEncode",
+      "widgets": [
+        {
+          "name": "text",
+          "value": "professional product photograph of a red ceramic teapot on a wooden table, green garden background, bright daylight, realistic texture"
+        }
+      ]
+    },
+    "17": {
+      "id": "17",
+      "type": "KSampler",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 9004
+        },
+        {
+          "name": "control_after_generate",
+          "value": "increment"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 6
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 1
+        }
+      ]
+    },
+    "18": {
+      "id": "18",
+      "type": "VAEDecode",
+      "widgets": []
+    },
+    "19": {
+      "id": "19",
+      "type": "SaveImage",
+      "widgets": [
+        {
+          "name": "filename_prefix",
+          "value": "ComfyUI"
+        }
+      ]
+    },
+    "20": {
+      "id": "20",
+      "type": "d5543109-47c2-4144-ae60-ca71d162470e",
+      "widgets": [
+        {
+          "name": "seed",
+          "value": 516
+        },
+        {
+          "name": "mode",
+          "value": "fixed"
+        }
+      ]
+    }
+  },
+  "interior": {
+    "id": "10",
+    "type": "ImpactWildcardEncode",
+    "widgets": [
+      {
+        "name": "wildcard_text",
+        "value": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture"
+      },
+      {
+        "name": "populated_text",
+        "value": "<lora:SD1.5/obj/foodphoto:0.65:0.65>, foodphoto, professional food photograph of three golden pancakes topped with fresh {blueberries|strawberries}, on a white ceramic plate, bright soft daylight, light wooden table, clean background, realistic natural colors, sharp food texture"
+      },
+      {
+        "name": "mode",
+        "value": "populate"
+      },
+      {
+        "name": "Select to add LoRA",
+        "value": "Select the LoRA to add to the text"
+      },
+      {
+        "name": "Select to add Wildcard",
+        "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+      },
+      {
+        "name": "seed",
+        "value": 513
+      },
+      {
+        "name": "control_after_generate",
+        "value": "increment"
+      }
+    ]
+  }
+}

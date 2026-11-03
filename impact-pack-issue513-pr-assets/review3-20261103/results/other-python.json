@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_mask_blur.py",
+    "tests/test_sam_masks.py",
+    "tests/test_mask_to_segs.py",
+    "tests/test_animatediff_assembly.py",
+    "tests/test_e2e_ui.py",
+    "tests/test_wildcard_cache_artifacts.py",
+    "-v",
+    "--tb=short",
+    "--maxfail=1",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/review3-20261103/other-python.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T10:21:13.833479+00:00",
+  "exit_code": 0,
+  "seconds": 8.18,
+  "counts": {
+    "tests": "168",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

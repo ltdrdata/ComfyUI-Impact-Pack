@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py",
+    "-k",
+    "promoted_fixed_seed",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/review3-20261103/promoted-lru.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T10:17:26.908022+00:00",
+  "exit_code": -15,
+  "seconds": 180.76,
+  "counts": {
+    "tests": "9",
+    "failures": "9",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": [
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]",
+    "test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]"
+  ]
+}

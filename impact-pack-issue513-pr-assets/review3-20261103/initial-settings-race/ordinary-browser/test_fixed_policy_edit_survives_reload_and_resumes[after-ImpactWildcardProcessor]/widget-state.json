@@ -1,0 +1,30 @@
+{
+  "id": "1",
+  "type": "ImpactWildcardProcessor",
+  "widgets": [
+    {
+      "name": "wildcard_text",
+      "value": "resumed b61b9f9657a849a58e2c9d624fe66771"
+    },
+    {
+      "name": "populated_text",
+      "value": "{red|green|blue}"
+    },
+    {
+      "name": "mode",
+      "value": "fixed"
+    },
+    {
+      "name": "seed",
+      "value": 5
+    },
+    {
+      "name": "control_after_generate",
+      "value": "decrement"
+    },
+    {
+      "name": "Select to add Wildcard",
+      "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+    }
+  ]
+}

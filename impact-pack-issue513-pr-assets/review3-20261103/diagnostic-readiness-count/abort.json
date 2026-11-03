@@ -1,0 +1,9 @@
+{
+  "reason": "Incorrect diagnostic combobox count included the search input. Replaced with the observed search-result heading; these aborted preparation failures are not product regressions.",
+  "pids": [
+    2319312,
+    2319313
+  ],
+  "signal": "SIGTERM",
+  "note": "SIGINT was ignored by these noninteractive child processes; raw partial logs and screenshots retained."
+}

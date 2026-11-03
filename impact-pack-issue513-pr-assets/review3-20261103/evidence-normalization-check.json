@@ -1,0 +1,8 @@
+{
+  "prepared_evidence_head": "4ced862cb2a35bae7e00099f264075c569003194",
+  "mismatches": [
+    "impact-pack-issue513-pr-assets/review3-20261103/validated-source/js/impact-sam-editor.js"
+  ],
+  "state": "Unpublished; correcting source bundle to canonical code-commit blobs before push.",
+  "resolution": "Canonical code-commit blobs with text conversion disabled for the bounded source bundle; committed evidence hashes checked after amendment."
+}

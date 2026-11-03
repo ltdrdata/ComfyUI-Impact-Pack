@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "type": "ImpactInt",
+    "widgets": [
+      {
+        "name": "value",
+        "value": 37
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "type": "ImpactBoolean",
+    "widgets": [
+      {
+        "name": "value",
+        "value": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "change": "Behavior-preserving refactor: optional native-binding errors are caught at one adapter boundary; native delegate errors still propagate.",
+  "production_before": "6d1a48803313c0b38193366bcef8f31dd552e70d",
+  "before_test_log": "node-before-refactor.log",
+  "before_seed_tests_passed": 33,
+  "after_test_log": "node-all.log",
+  "after_all_node_tests_passed": 62,
+  "after_seed_tests_passed": 33,
+  "candidate_test_sha256": "feda938b1d65f8bebe9f65fd580b356b350172cf9a89e74ae9cfb7e48025f4de",
+  "before_source": "refactor-before",
+  "note": "The same 33 behavior checks ran before and after. This is refactor equivalence, not a claimed new bug Red/Green run."
+}

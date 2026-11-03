@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="9" time="85.387" timestamp="2026-11-03T19:17:27.397450+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]" time="8.762"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]" time="9.088"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]" time="8.168"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]" time="8.648"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]" time="8.804"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]" time="8.928"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]" time="8.781"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]" time="8.783"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]" time="8.865"><failure message="AssertionError: Locator expected to have count '1'&#10;Actual value: 2 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; with timeout 5000ms&#10;  - waiting for get_by_role(&quot;dialog&quot;).get_by_role(&quot;combobox&quot;)&#10;    3 × locator resolved to 9 elements&#10;      - unexpected value &quot;9&quot;&#10;    6 × locator resolved to 2 elements&#10;      - unexpected value &quot;2&quot;">tests/test_e2e_wildcard_cache.py:391: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    control_timing(ui, timing)
+tests/test_e2e_wildcard_cache.py:247: in control_timing
+    expect(ui.page.get_by_role("dialog").get_by_role("combobox")).to_have_count(1)
+E   AssertionError: Locator expected to have count '1'
+E   Actual value: 2 
+E   Call log:
+E     - Expect "to_have_count" with timeout 5000ms
+E     - waiting for get_by_role("dialog").get_by_role("combobox")
+E       3 × locator resolved to 9 elements
+E         - unexpected value "9"
+E       6 × locator resolved to 2 elements
+E         - unexpected value "2"</failure></testcase><testcase time="3.320" /></testsuite></testsuites>
