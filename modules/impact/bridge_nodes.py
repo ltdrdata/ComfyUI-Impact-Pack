@@ -127,6 +127,11 @@ class PreviewBridge:
         need_refresh = False
         images_changed = False
         cached = core.preview_bridge_cache.get(unique_id)
+        # A different workflow can reuse this ID for the other bridge type.
+        if cached is not None and not isinstance(cached[0], torch.Tensor):
+            core.preview_bridge_cache.pop(unique_id)
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+            cached = None
 
         # Check if images have changed (this determines if we start fresh)
         if cached is None:
@@ -372,15 +377,20 @@ class PreviewBridgeLatent:
 
         need_refresh = False
         latent_changed = False
+        cached = core.preview_bridge_cache.get(unique_id)
+        if cached is not None and not isinstance(cached[0], dict):
+            core.preview_bridge_cache.pop(unique_id)
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+            cached = None
 
         # Check if latent has changed
-        if unique_id not in core.preview_bridge_cache:
+        if cached is None:
             need_refresh = True
             latent_changed = True
-        elif (core.preview_bridge_cache[unique_id][0] is not latent
-              or (vae_opt is None and core.preview_bridge_cache[unique_id][2] is not None)
-              or (vae_opt is None and core.preview_bridge_cache[unique_id][1] != preview_method)
-              or (vae_opt is not None and core.preview_bridge_cache[unique_id][2] is not vae_opt)):
+        elif (cached[0] is not latent
+              or (vae_opt is None and cached[2] is not None)
+              or (vae_opt is None and cached[1] != preview_method)
+              or (vae_opt is not None and cached[2] is not vae_opt)):
             need_refresh = True
             latent_changed = True
 

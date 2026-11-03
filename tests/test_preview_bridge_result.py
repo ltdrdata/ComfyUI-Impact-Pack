@@ -74,3 +74,32 @@ def test_recomputed_source_preserves_edits_only_when_pixels_match(bridge_files, 
 
     torch.testing.assert_close(pixels, torch.tensor(rgb, dtype=torch.float32).expand(1, 3, 2, 3))
     torch.testing.assert_close(mask, torch.full(mask_shape, mask_value, dtype=torch.float32))
+
+
+@pytest.mark.parametrize("first_type", ["PreviewBridge", "PreviewBridgeLatent"])
+def test_reusing_a_node_id_for_the_other_bridge_discards_its_cache(bridge_files, first_type):
+    images = torch.zeros((1, 64, 64, 3))
+    latent = {"samples": torch.zeros((1, 4, 8, 8))}
+
+    def execute(node_type):
+        inputs = {"image": "$reused-id", "unique_id": "reused-id", "restore_mask": "always"}
+        if node_type == "PreviewBridge":
+            inputs["images"] = images
+        else:
+            inputs.update(latent=latent, preview_method="Latent2RGB-SD15")
+        return getattr(bridge_nodes, node_type)().doit(**inputs)
+
+    execute(first_type)
+    # An edited mask from the other node type must not leak into the new node.
+    core.preview_bridge_last_mask_cache["reused-id"] = torch.full((1, 64, 64), 0.5)
+    second_type = "PreviewBridgeLatent" if first_type == "PreviewBridge" else "PreviewBridge"
+    result = execute(second_type)
+    output, mask = result["result"]
+    if second_type == "PreviewBridge":
+        torch.testing.assert_close(output, images)
+        assert torch.all(mask == 0)
+    else:
+        assert output is latent
+        assert "noise_mask" not in output
+        assert torch.all(mask == 1)
+    assert result["ui"]["source_image"] == ["$reused-id"]
