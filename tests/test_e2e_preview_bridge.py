@@ -469,7 +469,7 @@ def test_new_image_refreshes_preview_and_obeys_restore_mask(ui, restore, resize)
     wait_editor_canvas(browser, size)
     pixels_equal(editor_image(browser), Image.new("RGB", size, (192, 128, 64)))
     browser.page.screenshot(path=str(args.artifacts / "reopened-after-upstream-change.png"))
-    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
 
 
 @pytest.mark.parametrize("restore,restored", [("always", True), ("if_same_size", False)],
@@ -595,14 +595,12 @@ def test_queued_bridge_results_preserve_the_latest_saved_edit(ui):
     context_menu(browser, target, re.compile(r"^Open in MaskEditor"))
     wait_editor_canvas(browser, expected.size)
     pixels_equal(editor_mask(browser), expected, tolerance=1)
-    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
 
 
 
 def wait_editor_canvas(browser, size):
-    canvas = browser.page.get_by_test_id("mask-editor-mask-canvas")
+    canvas = browser.page.locator("#maskEditorCanvasContainer canvas").nth(2)
     expect(canvas).to_be_visible()
     expect(canvas).to_have_js_property("width", size[0])
     expect(canvas).to_have_js_property("height", size[1])
-
-
