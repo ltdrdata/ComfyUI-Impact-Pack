@@ -7,6 +7,7 @@ and the CLIP model are substituted; this does not test neural encoding quality.
 import argparse
 import asyncio
 from copy import deepcopy
+from itertools import product
 import json
 from pathlib import Path
 import sys
@@ -33,15 +34,15 @@ def main():
         send_sync=lambda event, data: feedback.append((event, data)),
     )
     import nodes
-    from comfy_api.latest import io
     from comfy_execution.caching import CacheKeySetInputSignature
     from comfy_execution.graph import DynamicPrompt
+    from comfy_api.latest import io
+    from comfy_extras.nodes_primitive import Float, String, StringMultiline
     from comfy_extras.nodes_preview_any import PreviewAny
-    from comfy_extras.nodes_primitive import Float, StringMultiline
     from comfy_extras.nodes_string import StringConcatenate
-    from execution import IsChangedCache, validate_prompt
+    from execution import IsChangedCache, _async_map_node_over_list, validate_prompt
     # Match server startup order; importing impact_pack first creates a cycle.
-    from impact import impact_server, impact_pack, logics, wildcards
+    from impact import impact_server, impact_pack, logics, util_nodes, wildcards
 
     # Text providers whose output may change while their inputs stay equal, like file loaders.
     class ChangingTextSource:
@@ -71,12 +72,16 @@ def main():
     classes = {name: getattr(impact_pack, name) for name in (
         "ImpactWildcardProcessor", "ImpactWildcardEncode",
     )}
-    nodes.NODE_CLASS_MAPPINGS.update(classes | {
-        "PreviewAny": PreviewAny, "PrimitiveStringMultiline": StringMultiline, "StringConcatenate": StringConcatenate,
+    constants = {"PrimitiveString": String, "PrimitiveStringMultiline": StringMultiline}
+    nodes.NODE_CLASS_MAPPINGS.update(classes | constants | {
+        "PreviewAny": PreviewAny, "StringConcatenate": StringConcatenate,
         "ChangingTextSource": ChangingTextSource, "ChangingTextSourceV3": ChangingTextSourceV3,
         "UndeclaredTextSource": UndeclaredTextSource, "PrimitiveFloat": Float,
-        "ImpactConvertDataType": logics.ImpactConvertDataType,
+        "ImpactConvertDataType": logics.ImpactConvertDataType, "ImpactMakeAnyList": util_nodes.MakeAnyList,
     })
+    widget_defaults = {node["type"]: {w["name"]: w["value"] for w in node["widgets"]}
+                       for node in json.loads((root / "tests/workflows/all-impact-nodes.widgets.json").read_text())["nodes"]
+                       if node["type"] in classes}
     wildcards.wildcard_dict = {"colors": ["red", "green", "blue"]}
     wildcards._on_demand_mode = False
 
@@ -103,16 +108,13 @@ def main():
         inputs = dict(wildcard_text=source, populated_text=text, seed=seed, mode=mode)
         prompt = deepcopy(upstream or {}) | {"1": {"class_type": name, "inputs": inputs}}
         # The saved native workflow must keep the user's seed and widget slots.
-        widgets = [source, text, mode]
-        widgets += ([seed, "increment", "Select the Wildcard to add to the text"]
-                    if name == "ImpactWildcardProcessor" else [
-                        "Select the LoRA to add to the text", "Select the Wildcard to add to the text", seed, "increment"])
+        widgets = list(dict(widget_defaults[name], wildcard_text=source, populated_text=text,
+                            mode=mode, seed=seed, control_after_generate="increment").values())
         workflow_node = {"id": 1, "widgets_values": deepcopy(widgets)}
         data = {"prompt": prompt, "extra_data": {"extra_pnginfo": {"workflow": {"nodes": [workflow_node]}}}}
         feedback.clear()
         impact_server.onprompt_populate_wildcards(data)
         expected_widgets = deepcopy(widgets)
-        # Linked populated_text cannot be populated before execution.
         populated = mode in ("populate", True) and isinstance(text, str)
         if populated:
             expected_widgets[1:3] = [inputs["populated_text"], "reproduce"]
@@ -131,7 +133,6 @@ def main():
         if name == "ImpactWildcardEncode":
             values.update(model=object(), clip=Clip())
         if prompt is not None:
-            # Hidden inputs supplied by ComfyUI during execution.
             values.update(prompt=prompt, unique_id="1")
         return classes[name]().doit(**values)[-1]
 
@@ -149,6 +150,9 @@ def main():
         return [keys.get_data_key(node) for node in ("1", "2")]
 
     class WildcardCacheTests(unittest.TestCase):
+        def setUp(self):
+            wildcards.static_linked_text_seeds.clear()
+
         def test_file_loading_modes_preserve_seeded_output(self):
             # Exercise the real startup loader, lazy TXT lookup and preloaded
             # YAML through the hook, not just an injected wildcard dictionary.
@@ -218,37 +222,32 @@ def main():
                             self.assertEqual(output(name, inputs, combined), selection)
 
         def test_linked_static_text_reuses_learned_seed(self):
-            sources = (
-                {"class_type": "PrimitiveStringMultiline", "inputs": {"value": "plain α"}},
-                {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": "α", "delimiter": " "}},
-            )
-            for name in classes:
-                for mode in ("populate", "fixed", "reproduce"):
-                    for source in sources:
-                        with self.subTest(node=name, mode=mode, source=source["class_type"]):
-                            wildcards.static_linked_text_seeds.clear()
+            source = {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": "α", "delimiter": " "}}
+            for name, mode in product(classes, ("populate", "fixed", "reproduce")):
+                with self.subTest(node=name, mode=mode):
+                    wildcards.static_linked_text_seeds.clear()
 
-                            def linked(seed, upstream=source):
-                                return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
+                    def linked(seed, upstream=source):
+                        return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
 
-                            # Nothing is known about the text before the first run.
-                            first = linked(731)
-                            self.assertEqual(first["1"]["inputs"]["seed"], 731)
-                            self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
+                    # Nothing is known about the text before the first run.
+                    first = linked(731)
+                    self.assertEqual(first["1"]["inputs"]["seed"], 731)
+                    self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
 
-                            second = linked(732)
-                            self.assertEqual(second["1"]["inputs"]["seed"], 731)
-                            self.assertEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(second)))
+                    second = linked(732)
+                    self.assertEqual(second["1"]["inputs"]["seed"], 731)
+                    self.assertEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(second)))
 
-                            changed = deepcopy(source)
-                            changed["inputs"][next(iter(changed["inputs"]))] = "changed"
-                            third = linked(733, changed)
-                            self.assertEqual(third["1"]["inputs"]["seed"], 733)
-                            self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
+                    changed = deepcopy(source)
+                    changed["inputs"]["string_a"] = "changed"
+                    third = linked(733, changed)
+                    self.assertEqual(third["1"]["inputs"]["seed"], 733)
+                    self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
 
-                            # Only the last run is kept; ComfyUI's cache drops the earlier text too.
-                            output(name, third["1"]["inputs"], resolve(changed), prompt=third)
-                            self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
+                    # Only the last run is kept; ComfyUI's cache drops the earlier text too.
+                    output(name, third["1"]["inputs"], resolve(changed), prompt=third)
+                    self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
 
         def test_linked_dynamic_text_keeps_seeds_of_queued_runs(self):
             sources = (
@@ -324,6 +323,59 @@ def main():
                     prompt = prepare(name, 731, ["text", 0], upstream=upstream)
                     self.assertIsNotNone(wildcards.linked_text_fingerprint(prompt, "1"))
 
+        def test_mapped_text_lists_keep_requested_seeds(self):
+            for name, texts in product(classes, (("{red|green|blue}", "plain"),
+                                                 ("plain", "{red|green|blue}"), ("one", "two"))):
+                with self.subTest(node=name, texts=texts):
+                    wildcards.static_linked_text_seeds.clear()
+                    upstream = {"list": {"class_type": "ImpactMakeAnyList", "inputs": {
+                        "value1": texts[0], "value2": texts[1]}}}
+                    mapped_text = util_nodes.MakeAnyList().doit(**upstream["list"]["inputs"])[0]
+                    original = classes[name].doit
+
+                    def execute(instance, **values):
+                        result = original(instance, **values)
+                        # A request may arrive between mapped calls, before the list finishes.
+                        queued = prepare(name, 42, ["list", 0], upstream=upstream)
+                        self.assertEqual(queued["1"]["inputs"]["seed"], 42)
+                        return result
+
+                    for seed, color in ((2, "red"), (5, "blue")):
+                        prompt = prepare(name, seed, ["list", 0], upstream=upstream)
+                        self.assertEqual(prompt["1"]["inputs"]["seed"], seed)
+                        values = {k: [v] for k, v in prompt["1"]["inputs"].items()}
+                        values.update(populated_text=mapped_text, prompt=[prompt], unique_id=["1"])
+                        if name == "ImpactWildcardEncode":
+                            values.update(model=[object()], clip=[Clip()])
+                        with patch.object(classes[name], "doit", execute):
+                            results = asyncio.run(_async_map_node_over_list("test", "1", classes[name](), values, "doit"))
+                        self.assertEqual([result[-1] for result in results],
+                                         [color if text.startswith("{") else text for text in texts])
+                        self.assertEqual(wildcards.static_linked_text_seeds, {})
+
+        def test_list_output_detection_follows_selected_slots_and_ancestors(self):
+            class TextOutputs(io.ComfyNode):
+                @classmethod
+                def define_schema(cls):
+                    return io.Schema(node_id="TextOutputs", outputs=[
+                        io.String.Output(), io.String.Output(is_output_list=True)])
+
+                @classmethod
+                def execute(cls):
+                    return io.NodeOutput("plain", ["plain", "{red|green|blue}"])
+
+            with patch.dict(nodes.NODE_CLASS_MAPPINGS, TextOutputs=TextOutputs):
+                for source_type, slot, allowed in (("ImpactMakeAnyList", 0, False),
+                                                   ("TextOutputs", 1, False), ("TextOutputs", 0, True)):
+                    with self.subTest(source=source_type, slot=slot):
+                        upstream = {
+                            "source": {"class_type": source_type, "inputs": {}},
+                            "text": {"class_type": "StringConcatenate", "inputs": {
+                                "string_a": ["source", slot], "string_b": "plain", "delimiter": " "}},
+                        }
+                        prompt = prepare("ImpactWildcardProcessor", 731, ["text", 0], upstream=upstream)
+                        self.assertEqual(wildcards.linked_text_fingerprint(prompt, "1") is not None, allowed)
+
         def test_recorded_seed_is_dropped_when_text_gains_syntax(self):
             upstream = {"text": {"class_type": "UndeclaredTextSource", "inputs": {"path": "prompt.txt"}}}
             for name in classes:
@@ -338,13 +390,129 @@ def main():
                     self.assertEqual(prepare(name, 733, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 733)
 
         def test_linked_seed_is_never_replaced(self):
-            for name in classes:
+            for name, (source_type, field) in product(classes, (("ImpactInt", "value"), ("Seed (rgthree)", "seed"))):
                 for mode in ("populate", "fixed", "reproduce"):
-                    with self.subTest(node=name, mode=mode):
-                        upstream = {"seed": {"class_type": "ImpactInt", "inputs": {"value": 5}}}
+                    with self.subTest(node=name, mode=mode, source=source_type):
+                        upstream = {"seed": {"class_type": source_type, "inputs": {field: 5}}}
                         inputs = prepare(name, ["seed", 0], "__colors__", mode, "__colors__", upstream)["1"]["inputs"]
                         self.assertEqual(inputs["seed"], ["seed", 0])
                         self.assertEqual(output(name, inputs, resolved_seed=5), "blue")
+
+        def test_constant_text_links_reuse_cache(self):
+            cases = (("populated_text", "fixed"), ("populated_text", "populate"),
+                     ("populated_text", "reproduce"), ("wildcard_text", "populate"))
+            for name, source_type, (field, mode), text in product(classes, constants, cases, ("", "plain α")):
+                with self.subTest(node=name, source=source_type, field=field, mode=mode, text=text):
+                    keys = []
+                    for seed, value in ((731, text), (732, text), (733, text + " changed")):
+                        upstream = {"source": {"class_type": source_type, "inputs": {"value": value}}}
+                        link = ["source", 0]
+                        prompt = prepare(name, seed, link if field == "populated_text" else "old",
+                                         mode, link if field == "wildcard_text" else "unused", upstream)
+                        inputs = prompt["1"]["inputs"]
+                        self.assertEqual(inputs[field], link)
+                        self.assertEqual(prompt["source"], upstream["source"])
+                        self.assertEqual(inputs["seed"], 0)
+                        resolved = constants[source_type].execute(value)[0] if field == "populated_text" else None
+                        self.assertEqual(output(name, inputs, resolved), value)
+                        keys.append(asyncio.run(cache_keys(prompt)))
+                    self.assertEqual(keys[0], keys[1])
+                    self.assertNotEqual(keys[0], keys[2])
+
+        def test_constant_text_links_preserve_seeded_output(self):
+            for name, source_type, field, text in product(classes, constants, ("populated_text", "wildcard_text"), selections):
+                with self.subTest(node=name, source=source_type, field=field, text=text):
+                    for seed, selection in zip(seeds, selections[text]):
+                        upstream = {"source": {"class_type": source_type, "inputs": {"value": text}}}
+                        link = ["source", 0]
+                        inputs = prepare(name, seed, link if field == "populated_text" else "old",
+                                         "populate", link if field == "wildcard_text" else "unused", upstream)["1"]["inputs"]
+                        resolved = constants[source_type].execute(text)[0] if field == "populated_text" else None
+                        self.assertEqual(output(name, inputs, resolved), selection)
+                        self.assertEqual(inputs[field], link)
+                        self.assertEqual(inputs["seed"], seed if field == "populated_text" else 0)
+
+            for name, source_type, field, text in product(
+                    classes, constants, ("populated_text", "wildcard_text"), ("plain", "__colors__")):
+                with self.subTest(node=name, source=source_type, field=field, text=text, linked_seed=True):
+                    for seed, expected in ((2, "red"), (5, "blue")):
+                        upstream = {"source": {"class_type": source_type, "inputs": {"value": text}},
+                                    "seed": {"class_type": "ImpactInt", "inputs": {"value": seed}}}
+                        link = ["source", 0]
+                        inputs = prepare(name, ["seed", 0], link if field == "populated_text" else "old",
+                                         "populate", link if field == "wildcard_text" else "unused", upstream)["1"]["inputs"]
+                        self.assertEqual(inputs["seed"], ["seed", 0])
+                        self.assertEqual(inputs[field], link)
+                        resolved = text if field == "populated_text" else None
+                        self.assertEqual(output(name, inputs, resolved, seed), "plain" if text == "plain" else expected)
+
+        def test_only_direct_constant_text_links_are_resolved(self):
+            cases = [
+                (["source", 0], {"class_type": "PrimitiveString", "inputs": {"value": ["literal", 0]}}),
+                (["source", 0], {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": " text", "delimiter": ""}}),
+                (["source", 0], {"class_type": "ExternalTextReader", "inputs": {"value": "plain"}}),
+            ]
+            constant = {"class_type": "PrimitiveString", "inputs": {"value": "plain"}}
+            cases += [(link, constant) for link in (
+                ["source", 1], ["source", -1], ["source", False], ["source", 0.0],
+                ["source"], ["source", 0, 1], [1, 0], ["missing", 0])]
+            cases += [(["source", 0], {"class_type": source_type, "inputs": inputs})
+                      for source_type, inputs in product(constants, ({}, {"value": None}, {"value": 0}, {"value": True}))]
+            for name, (link, source), field in product(classes, cases, ("populated_text", "wildcard_text")):
+                with self.subTest(node=name, link=link, source=source, field=field):
+                    data = {"prompt": {
+                        "source": source, "literal": constant,
+                        "1": {"class_type": name, "inputs": {
+                            "populated_text": link if field == "populated_text" else "old",
+                            "wildcard_text": link if field == "wildcard_text" else "unused",
+                            "mode": "populate", "seed": 731,
+                        }},
+                    }}
+                    before = deepcopy(data)
+                    feedback.clear()
+                    impact_server.onprompt_populate_wildcards(data)
+                    self.assertEqual(data, before)
+                    self.assertEqual(feedback, [])
+
+        def test_unsupported_population_does_not_abort_other_nodes_or_hooks(self):
+            for name, named in product(classes, (False, True)):
+                with self.subTest(node=name, named=named):
+                    values = dict(widget_defaults[name], wildcard_text="saved source", populated_text="old",
+                                  mode="populate", seed=2)
+                    saved = [{"id": i, "widgets_values": list(values.values())} for i in (1, 2)]
+                    if named:
+                        for node in saved:
+                            node["widgets_values_named"] = dict(values)
+                    inputs = dict(wildcard_text=["runtime", 0], populated_text="old", mode="populate", seed=2)
+                    data = {"prompt": {
+                        "runtime": {"class_type": "StringConcatenate", "inputs": {
+                            "string_a": "{red|", "string_b": "green|blue}", "delimiter": ""}},
+                        "constant": {"class_type": "PrimitiveString", "inputs": {"value": "{red|green|blue}"}},
+                        "1": {"class_type": name, "inputs": inputs},
+                        "2": {"class_type": name, "inputs": dict(inputs, wildcard_text=["constant", 0])},
+                        "receiver": {"class_type": "ImageReceiver", "inputs": {
+                            "save_to_workflow": True, "image": "previous image"}},
+                    }, "extra_data": {"extra_pnginfo": {"workflow": {"nodes": saved}}}}
+                    skipped = deepcopy(saved[0])
+                    skipped_inputs = deepcopy(inputs)
+                    feedback.clear()
+                    self.assertIs(impact_server.onprompt(data), data)
+                    self.assertEqual(data["prompt"]["1"]["inputs"], skipped_inputs)
+                    self.assertEqual(saved[0], skipped)
+                    self.assertEqual(data["prompt"]["2"]["inputs"], dict(
+                        wildcard_text=["constant", 0], populated_text="red", mode="reproduce", seed=0))
+                    expected = dict(values, populated_text="red", mode="reproduce")
+                    self.assertEqual(saved[1]["widgets_values"], list(expected.values()))
+                    if named:
+                        self.assertEqual(saved[1]["widgets_values_named"], expected)
+                    else:
+                        self.assertNotIn("widgets_values_named", saved[1])
+                    self.assertEqual([(event, item["node_id"], item["widget_name"], item["value"])
+                                      for event, item in feedback], [
+                        ("impact-node-feedback", "2", "populated_text", "red"),
+                        ("impact-node-feedback", "2", "mode", "populate"),
+                    ])
+                    self.assertEqual(data["prompt"]["receiver"]["inputs"]["image"], "#DATA")
 
         def test_unresolved_syntax_after_population_keeps_seed(self):
             for name in classes:
