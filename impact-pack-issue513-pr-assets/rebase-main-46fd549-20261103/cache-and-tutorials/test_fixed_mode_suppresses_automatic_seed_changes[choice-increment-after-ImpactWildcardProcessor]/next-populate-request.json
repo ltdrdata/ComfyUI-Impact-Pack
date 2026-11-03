@@ -1,0 +1,153 @@
+{
+  "client_id": "7c4415c9416a4b15aa57fc8c5c79f5fe",
+  "prompt": {
+    "1": {
+      "inputs": {
+        "wildcard_text": "{red|green|blue}",
+        "populated_text": "blue",
+        "mode": "populate",
+        "seed": 6,
+        "Select to add Wildcard": "Select the Wildcard to add to the text"
+      },
+      "class_type": "ImpactWildcardProcessor",
+      "_meta": {
+        "title": "ImpactWildcardProcessor"
+      }
+    },
+    "2": {
+      "inputs": {
+        "source": [
+          "1",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    }
+  },
+  "extra_data": {
+    "comfy_usage_source": "comfyui-frontend",
+    "extra_pnginfo": {
+      "workflow": {
+        "id": "7bf737e3-94d2-49b0-9a04-bee26af3d981",
+        "revision": 0,
+        "last_node_id": 2,
+        "last_link_id": 1,
+        "nodes": [
+          {
+            "id": 1,
+            "type": "ImpactWildcardProcessor",
+            "pos": [
+              22.888888888888914,
+              125.55555555555554
+            ],
+            "size": [
+              400,
+              238
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "processed text",
+                "type": "STRING",
+                "links": [
+                  1
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactWildcardProcessor"
+            },
+            "widgets_values": [
+              "{red|green|blue}",
+              "blue",
+              "populate",
+              6,
+              "increment",
+              "Select Wildcard \ud83d\udfe2 Full Cache"
+            ],
+            "widgets_values_named": {
+              "wildcard_text": "{red|green|blue}",
+              "populated_text": "blue",
+              "mode": "populate",
+              "seed": 6,
+              "control_after_generate": "increment",
+              "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+            }
+          },
+          {
+            "id": 2,
+            "type": "PreviewAny",
+            "pos": [
+              717.8888888888889,
+              405.55555555555554
+            ],
+            "size": [
+              210,
+              122
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "*",
+                "link": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PreviewAny"
+            },
+            "widgets_values": [],
+            "widgets_values_named": {}
+          }
+        ],
+        "links": [
+          [
+            1,
+            1,
+            0,
+            2,
+            0,
+            "STRING"
+          ]
+        ],
+        "groups": [],
+        "config": {},
+        "extra": {
+          "ds": {
+            "scale": 1,
+            "offset": [
+              227.1111111111111,
+              4.444444444444457
+            ]
+          },
+          "frontendVersion": "1.57.6",
+          "VHS_latentpreview": false,
+          "VHS_latentpreviewrate": 0,
+          "VHS_MetadataImage": true,
+          "VHS_KeepIntermediate": true
+        },
+        "version": 0.4,
+        "widget_idx_map": {
+          "1": {
+            "seed": 3
+          }
+        }
+      }
+    }
+  }
+}

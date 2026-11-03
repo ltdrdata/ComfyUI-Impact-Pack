@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="36.675" timestamp="2026-11-03T22:37:30.189387+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_controls" name="test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional]" time="16.750"><failure message="AssertionError: assert (732, 'increment') == (731, 'increment')&#10;  &#10;  At index 0 diff: 732 != 731&#10;  &#10;  Full diff:&#10;    (&#10;  -     731,&#10;  ?       ^...&#10;  &#10;  ...Full output truncated (4 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_controls.py:131: in test_control_bridge_stop_with_constant
+    assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+E   AssertionError: assert (732, 'increment') == (731, 'increment')
+E     
+E     At index 0 diff: 732 != 731
+E     
+E     Full diff:
+E       (
+E     -     731,
+E     ?       ^...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_controls" name="test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional]" time="19.851"><failure message="AssertionError: assert (732, 'increment') == (731, 'increment')&#10;  &#10;  At index 0 diff: 732 != 731&#10;  &#10;  Full diff:&#10;    (&#10;  -     731,&#10;  ?       ^...&#10;  &#10;  ...Full output truncated (4 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_controls.py:131: in test_control_bridge_stop_with_constant
+    assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+E   AssertionError: assert (732, 'increment') == (731, 'increment')
+E     
+E     At index 0 diff: 732 != 731
+E     
+E     Full diff:
+E       (
+E     -     731,
+E     ?       ^...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

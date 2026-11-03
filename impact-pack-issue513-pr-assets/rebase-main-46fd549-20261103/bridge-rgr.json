@@ -1,0 +1,87 @@
+{
+  "base": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+  "candidate_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+  "results": {
+    "red": {
+      "label": "bridge-rgr-red",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "control_bridge_stop_with_constant and before_wildcard and positional",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-red.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:37:29.500448+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18516"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 1,
+      "duration_seconds": 39.19,
+      "served_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+    },
+    "green": {
+      "label": "bridge-rgr-green",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "control_bridge_stop_with_constant and before_wildcard and positional",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-green.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:38:08.690283+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18516"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 53.84,
+      "served_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85"
+    },
+    "red-again": {
+      "label": "bridge-rgr-red-again",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "control_bridge_stop_with_constant and before_wildcard and positional",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-red-again.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:39:02.533538+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18516"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 1,
+      "duration_seconds": 36.78,
+      "served_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+    }
+  },
+  "red_failures": [
+    [
+      "test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional]",
+      "AssertionError: assert (732, 'increment') == (731, 'increment')\n  \n  At index 0 diff: 732 != 731\n  \n  Full diff:\n    (\n  -     731,\n  ?       ^...\n  \n  ...Full output truncated (4 lines hidden), use '-vv' to show"
+    ],
+    [
+      "test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional]",
+      "AssertionError: assert (732, 'increment') == (731, 'increment')\n  \n  At index 0 diff: 732 != 731\n  \n  Full diff:\n    (\n  -     731,\n  ?       ^...\n  \n  ...Full output truncated (4 lines hidden), use '-vv' to show"
+    ]
+  ],
+  "intentional_red": true,
+  "scope": "Same fixed-mode seed and selected-policy assertions on Main, candidate, Main; all backend files and test bytes unchanged."
+}

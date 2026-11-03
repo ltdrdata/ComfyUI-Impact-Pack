@@ -1,0 +1,69 @@
+{
+  "main": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+  "same_two_xfail_on_main_and_candidate": true,
+  "results": {
+    "main": {
+      "source_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+      "result": {
+        "label": "bypass-main",
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_controls.py",
+          "-k",
+          "Bypass-populated-only and ImpactWildcardProcessor",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bypass-main.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T13:45:21.405360+00:00",
+        "environment_overrides": {
+          "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18517"
+        },
+        "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+        "exit_code": 0,
+        "duration_seconds": 27.97
+      },
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    },
+    "candidate": {
+      "source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+      "result": {
+        "label": "bypass-candidate",
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_controls.py",
+          "-k",
+          "Bypass-populated-only and ImpactWildcardProcessor",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bypass-candidate.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T13:45:49.371671+00:00",
+        "environment_overrides": {
+          "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18517"
+        },
+        "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+        "exit_code": 0,
+        "duration_seconds": 31.08
+      },
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    }
+  },
+  "symptom": "Processor Bypass with only populated_text connected drops PreviewAny.source; positional and named restoration."
+}

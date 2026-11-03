@@ -1,0 +1,397 @@
+{
+  "completed": true,
+  "completed_utc": "2026-11-03T13:50:06.343791+00:00",
+  "head": "9cd74e5134cc441739c193e7a5ae6902ab5edb18",
+  "base": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+  "previous_head": "057abbe915048910ab2e656f991af6a029747323",
+  "commits": 1,
+  "source_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "7dd8b95bfe16986051a31a2c0e97bb2a62b4bdad936223b8ea7a53be95a13188",
+    "js/impact-pack.js": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+    "tests/README.md": "0c81262d1b16760912685c102e5c6ab3f05a53b92706641d6257c40b6e36fb71",
+    "tests/e2e_ui.py": "64bba81df71dd76d9fdfac429dd073dd8a78b8400fe59caf281b783ebc9843da",
+    "tests/test_e2e_wildcard_cache.py": "3f08892f857f0ce6df46b6772263639d31d2000fc2fb75f622de5588261fbdb5",
+    "tests/test_e2e_wildcard_controls.py": "41b882f83c03a24e7831031165e51f7073b12fca3a770e73c63decc8d1071a88",
+    "tests/test_e2e_wildcard_tutorials.py": "97dc2f7c52e227cd18e5d2e364f2f968f5bd55ec1dd9cef92d978f36d0629f8f",
+    "tests/test_wildcard_cache_artifacts.py": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701",
+    "tests/wildcard_seed_control.test.mjs": "feda938b1d65f8bebe9f65fd580b356b350172cf9a89e74ae9cfb7e48025f4de"
+  },
+  "production_js_unchanged": true,
+  "test_capture_head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+  "capture_note": "Production JS and cache/tutorial tests are unchanged. The README and fixed-mode Control Bridge assertions were updated; all eight changed cases rerun, with Main/candidate/Main RGR.",
+  "node_passed": 62,
+  "python_passed": 379,
+  "browser_passed": 297,
+  "browser_xfailed": 2,
+  "browser_cases_verified": 299,
+  "upstream_aggregation": "71 unchanged cases (69 pass, 2 existing Main xfail) plus 8 updated fixed-mode Bridge cases passed. Initial four old-expectation failures retained, not reported as a raw all-green 79-case run.",
+  "bypass_comparison": "bypass-comparison.json",
+  "bypass_followup": "bypass-follow-up.md",
+  "results": {
+    "wildcard-unit": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "--maxfail=1",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/wildcard-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+      "started_utc": "2026-11-03T13:12:48.831858+00:00",
+      "exit_code": 0,
+      "seconds": 1.17,
+      "counts": {
+        "tests": 211,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": []
+    },
+    "other-python": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_mask_blur.py",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "tests/test_animatediff_assembly.py",
+        "tests/test_e2e_ui.py",
+        "tests/test_wildcard_cache_artifacts.py",
+        "-v",
+        "--tb=short",
+        "--maxfail=1",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/other-python.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:12:49.998594+00:00",
+      "exit_code": 0,
+      "seconds": 7.83,
+      "counts": {
+        "tests": 168,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": []
+    },
+    "cache-and-tutorials": {
+      "label": "cache-and-tutorials",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-k",
+        "not (mapped_list or scalar_runtime or constant_text_link or runtime_population_source or execution_metadata or inference)",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/cache-and-tutorials.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:33.957866+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18510"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 1029.68,
+      "counts": {
+        "tests": 86,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "cache-lru": {
+      "label": "cache-lru",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/cache-lru.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:33.958658+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18511"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 1754.7,
+      "counts": {
+        "tests": 120,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "upstream-interactions": {
+      "label": "upstream-interactions",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "mapped_list or scalar_runtime or constant_text_link or runtime_population_source or execution_metadata or wildcard_controls",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/upstream-interactions.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:33.972024+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18512"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 1,
+      "duration_seconds": 1651.26,
+      "counts": {
+        "tests": 79,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 2
+      }
+    },
+    "bridge-fixed": {
+      "label": "bridge-fixed",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "control_bridge_stop_with_constant",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-fixed.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:35:52.161275+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18515"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 206.2,
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "catalog": {
+      "label": "catalog",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_widget_catalog.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/catalog.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:43:05.230766+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18512"
+      },
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 324.51,
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "node-all": {
+      "command": [
+        "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+        "--experimental-vm-modules",
+        "--test-reporter=tap",
+        "--test",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/connection_types.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/legacy_sam.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/lora_wildcard_source.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/wildcard_seed_control.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:12:48.617220+00:00",
+      "exit_code": 0,
+      "seconds": 0.21
+    },
+    "input-validation": {
+      "label": "input-validation",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_validation.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:28.232600+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 4.47
+    },
+    "cache-integration": {
+      "label": "cache-integration",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/cache-integration-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:32.704093+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 5.02
+    },
+    "cache-tensors": {
+      "label": "cache-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/cache-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:37.727394+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 10.53
+    },
+    "tutorial-tensors": {
+      "label": "tutorial-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_tutorial_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--tutorials-root",
+        "/mnt/teratera/git/ComfyUI-extension-tutorials",
+        "--inspire-root",
+        "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/tutorial-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:15:48.260940+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 26.17
+    },
+    "lora-tensors": {
+      "label": "lora-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:16:14.426922+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 7.68
+    },
+    "sampling-capture": {
+      "label": "sampling-capture",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/sampling_capture.py"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:16:22.105700+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 59.18
+    },
+    "sampling-overlays": {
+      "label": "sampling-overlays",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/sampling/overlays/render.py"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T13:30:53.611109+00:00",
+      "environment_overrides": {},
+      "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "exit_code": 0,
+      "duration_seconds": 3.07
+    }
+  },
+  "fixture_sha256": {
+    "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "catalog_records": 198,
+  "servers": [
+    {
+      "profile": "server-cache-classic",
+      "pid": 2753596,
+      "stopped": true
+    },
+    {
+      "profile": "server-cache-lru",
+      "pid": 2753595,
+      "stopped": true
+    },
+    {
+      "profile": "server-bridge-rgr",
+      "pid": 2845868,
+      "stopped": true
+    },
+    {
+      "profile": "server-sampling-candidate",
+      "pid": 2756839,
+      "stopped": true
+    },
+    {
+      "profile": "server-bypass-compare",
+      "pid": 2897904,
+      "stopped": true
+    },
+    {
+      "profile": "server-upstream",
+      "pid": 2753597,
+      "stopped": true
+    },
+    {
+      "profile": "server-bridge-fixed",
+      "pid": 2832990,
+      "stopped": true
+    },
+    {
+      "profile": "server-sampling-baseline",
+      "pid": 2759121,
+      "stopped": true
+    }
+  ],
+  "prior_full_regression": "../full-regression-057abbe-20261103/summary.json",
+  "prior_full_regression_is_historical": true,
+  "scope": "All affected seed/cache and upstream control cases on classic/LRU, native tutorials/catalog, current loader units, validation and real tensor boundaries, fresh three-render comparison per revision. Unchanged SAM/mask/Switch inference from the previous full run is historical."
+}

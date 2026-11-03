@@ -1,0 +1,573 @@
+{
+  "id": "4f1568dc-0f4c-42a8-8107-46897a94113f",
+  "revision": 0,
+  "last_node_id": 5,
+  "last_link_id": 11,
+  "nodes": [
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        717.8888888888889,
+        405.55555555555554
+      ],
+      "size": [
+        210,
+        122
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 3,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -362.1111111111111,
+        455.55555555555554
+      ],
+      "size": [
+        270,
+        98
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "v1-5-pruned-emaonly-fp16.safetensors"
+      ],
+      "widgets_values_named": {
+        "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+      }
+    },
+    {
+      "id": 5,
+      "type": "cde757b6-199b-4080-a458-702fc7ad5f0b",
+      "pos": [
+        164.4299045138889,
+        279.55555555555554
+      ],
+      "size": [
+        210,
+        78
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 8
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "populated_text",
+          "type": "STRING",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "previewExposures": []
+      },
+      "widgets_values": [
+        5
+      ],
+      "widgets_values_named": {
+        "seed": 5
+      }
+    }
+  ],
+  "links": [
+    [
+      8,
+      3,
+      0,
+      5,
+      0,
+      "MODEL"
+    ],
+    [
+      9,
+      3,
+      1,
+      5,
+      1,
+      "CLIP"
+    ],
+    [
+      10,
+      5,
+      0,
+      2,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "207f2a5f-3cd0-46fd-9570-354a66c7c7da",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 5,
+          "lastLinkId": 11,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "New Subgraph",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -165.1111111111111,
+            227.55555555555554,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            482.8888888888889,
+            237.55555555555554,
+            131.501953125,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "275376a0-502b-41d7-8ef3-e1206e880e4f",
+            "name": "model",
+            "type": "MODEL",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "model",
+            "pos": [
+              51,
+              24
+            ]
+          },
+          {
+            "id": "a28ba23d-fc01-4c61-b80a-35950dba1cf4",
+            "name": "clip",
+            "type": "CLIP",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "clip",
+            "pos": [
+              51,
+              44
+            ]
+          },
+          {
+            "id": "1f6cbeea-2cb6-4735-82c9-2d13d16bd506",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              7
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "5499c9c4-2aac-4a39-83b7-9b03d543af89",
+            "name": "populated_text",
+            "type": "STRING",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "populated_text",
+            "pos": [
+              24,
+              24
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "ImpactWildcardEncode",
+            "pos": [
+              22.888888888888914,
+              125.55555555555554
+            ],
+            "size": [
+              400,
+              322
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "MODEL",
+                "link": 2
+              },
+              {
+                "localized_name": "clip",
+                "name": "clip",
+                "type": "CLIP",
+                "link": 3
+              },
+              {
+                "localized_name": "seed",
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 7
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "MODEL",
+                "links": null
+              },
+              {
+                "localized_name": "clip",
+                "name": "clip",
+                "type": "CLIP",
+                "links": null
+              },
+              {
+                "localized_name": "conditioning",
+                "name": "conditioning",
+                "type": "CONDITIONING",
+                "links": null
+              },
+              {
+                "localized_name": "populated_text",
+                "name": "populated_text",
+                "type": "STRING",
+                "links": [
+                  1
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactWildcardEncode"
+            },
+            "widgets_values": [
+              "# promoted e96e53be064c4bb3b5c57b5afacac756\n{red|green|blue}",
+              "{red|green|blue}",
+              "fixed",
+              "Select the LoRA to add to the text",
+              "Select Wildcard 🟢 Full Cache",
+              5,
+              "increment"
+            ],
+            "widgets_values_named": {
+              "wildcard_text": "# promoted e96e53be064c4bb3b5c57b5afacac756\n{red|green|blue}",
+              "populated_text": "{red|green|blue}",
+              "mode": "fixed",
+              "Select to add LoRA": "Select the LoRA to add to the text",
+              "Select to add Wildcard": "Select Wildcard 🟢 Full Cache",
+              "seed": 5,
+              "control_after_generate": "increment"
+            }
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "CLIP"
+          },
+          {
+            "id": 1,
+            "origin_id": 1,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 7,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 2,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "cde757b6-199b-4080-a458-702fc7ad5f0b",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 5,
+          "lastLinkId": 11,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "New Subgraph",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -46.840603298611086,
+            243.55555555555554,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            411.1593967013889,
+            253.55555555555554,
+            131.501953125,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "72edb950-045c-4806-aefc-07ae027de3a3",
+            "name": "model",
+            "type": "MODEL",
+            "linkIds": [
+              4
+            ],
+            "localized_name": "model",
+            "pos": [
+              51,
+              24
+            ]
+          },
+          {
+            "id": "87613930-17cd-4c99-9254-86c624780032",
+            "name": "clip",
+            "type": "CLIP",
+            "linkIds": [
+              5
+            ],
+            "localized_name": "clip",
+            "pos": [
+              51,
+              44
+            ]
+          },
+          {
+            "id": "3a3a41e7-733e-4b5d-b8a6-403e49c672e8",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              11
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "436714d8-921f-45c0-8f87-afbc15b683a7",
+            "name": "populated_text",
+            "type": "STRING",
+            "linkIds": [
+              6
+            ],
+            "localized_name": "populated_text",
+            "pos": [
+              24,
+              24
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 4,
+            "type": "207f2a5f-3cd0-46fd-9570-354a66c7c7da",
+            "pos": [
+              141.1593967013889,
+              263.55555555555554
+            ],
+            "size": [
+              210,
+              78
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "MODEL",
+                "link": 4
+              },
+              {
+                "localized_name": "clip",
+                "name": "clip",
+                "type": "CLIP",
+                "link": 5
+              },
+              {
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 11
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "populated_text",
+                "name": "populated_text",
+                "type": "STRING",
+                "links": [
+                  6
+                ]
+              }
+            ],
+            "properties": {
+              "previewExposures": []
+            },
+            "widgets_values": [
+              5
+            ],
+            "widgets_values_named": {
+              "seed": 5
+            }
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "CLIP"
+          },
+          {
+            "id": 6,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 11,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 4,
+            "target_slot": 2,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        85.57009548611097,
+        -149.55555555555554
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

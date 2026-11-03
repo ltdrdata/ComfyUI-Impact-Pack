@@ -1,0 +1,153 @@
+1:  057abbe ! 1:  9cd74e5 Pause automatic wildcard seed updates in fixed mode
+    @@ Commit message
+         Pause automatic wildcard seed updates in fixed mode
+     
+      ## docs/E2E_TEST_STRATEGY.md ##
+    -@@ docs/E2E_TEST_STRATEGY.md: server and samples without modifying its configuration or managing processes.
+    +@@ docs/E2E_TEST_STRATEGY.md: start servers or edit configuration.
+      
+      ## Prerequisites
+      
+    @@ tests/README.md: inference and image previews. Both default to headless Google C
+     +
+     +Fixed also pauses automatic variation of choices in `populated_text`, even if the
+     +selected policy is randomize. Use populate with the expression in `wildcard_text`
+    -+for automatic variation. Manual edits and upstream seed changes still invalidate
+    -+the cache. Inspire GlobalSeed remains an independent upstream control.
+    ++for automatic variation. Manual and upstream inputs retain their cache semantics:
+    ++seed-dependent text follows seed changes, while constant text can reuse cached
+    ++output. Inspire GlobalSeed remains an independent upstream control.
+     +
+     +Run the Chrome checks against an isolated server:
+      
+    @@ tests/test_e2e_wildcard_cache.py: from argparse import Namespace
+      
+      import pytest
+     @@ tests/test_e2e_wildcard_cache.py: def cached(entry):
+    -             if event == "execution_cached" for node in data["nodes"]}
+    +     return set(map(str, events[0]))
+      
+      
+     -def run(ui, preview_id, expected, label):
+    @@ tests/test_e2e_wildcard_cache.py: def cached(entry):
+          return entry
+      
+      
+    --def native_roundtrip(ui, node_id):
+     +def run(ui, preview_id, expected, label):
+     +    return check_run(ui, ui.run(), preview_id, expected, label)
+     +
+    @@ tests/test_e2e_wildcard_cache.py: def cached(entry):
+     +    return check_run(ui, entry, preview_id, expected, label), request["prompt"]
+     +
+     +
+    -+def native_roundtrip(ui, node_id, *, expected_widget_names=None):
+    + def set_text(ui, node_type, widget, value):
+    +     ui.page.mouse.dblclick(*ui.point(node_type, widget=widget), delay=100)
+    +     editor = ui.page.locator("input.value:visible")
+    +@@ tests/test_e2e_wildcard_cache.py: def set_text(ui, node_type, widget, value):
+    +     editor.press("Enter")
+    + 
+    + 
+    +-def native_roundtrip(ui, node_id, *other_ids):
+    ++def native_roundtrip(ui, node_id, *other_ids, expected_widget_names=None):
+          """Compare rendered widget names/order/values and the native serialization."""
+    -     show_node(ui, node_id)
+    --    before = widget_state(ui, node_id)
+    --    trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
+    --    reference = next(node for node in trusted["nodes"] if node["type"] == before["type"])
+    --    assert [w["name"] for w in before["widgets"]] == [w["name"] for w in reference["widgets"]]
+    -+    snapshot = widget_state if expected_widget_names is None else promoted_widget_state
+    -+    before = snapshot(ui, node_id)
+    -+    if expected_widget_names is None:
+    -+        trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
+    -+        reference = next(node for node in trusted["nodes"] if node["type"] == before["type"])
+    -+        expected_widget_names = [w["name"] for w in reference["widgets"]]
+    -+    assert [w["name"] for w in before["widgets"]] == expected_widget_names
+    +     trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
+    +     states = {}
+    +     for target_id in (node_id, *other_ids):
+    +         show_node(ui, target_id)
+    +-        state = widget_state(ui, target_id)
+    +-        reference = next(node for node in trusted["nodes"] if node["type"] == state["type"])
+    +-        assert [w["name"] for w in state["widgets"]] == [w["name"] for w in reference["widgets"]]
+    ++        snapshot = promoted_widget_state if target_id == node_id and expected_widget_names is not None else widget_state
+    ++        state = snapshot(ui, target_id)
+    ++        if target_id == node_id and expected_widget_names is not None:
+    ++            names = expected_widget_names
+    ++        else:
+    ++            reference = next(node for node in trusted["nodes"] if node["type"] == state["type"])
+    ++            names = [w["name"] for w in reference["widgets"]]
+    ++        assert [w["name"] for w in state["widgets"]] == names
+    +         states[target_id] = state
+          workflow = ui.artifacts / "saved.json"
+          export_workflow(ui, workflow)
+    -     saved = json.loads(workflow.read_text())
+    -@@ tests/test_e2e_wildcard_cache.py: def native_roundtrip(ui, node_id):
+    -     ui.load_workflow(workflow, len(saved["nodes"]))
+    +@@ tests/test_e2e_wildcard_cache.py: def native_roundtrip(ui, node_id, *other_ids):
+          full_zoom(ui)
+    -     show_node(ui, node_id)
+    --    assert widget_state(ui, node_id) == before
+    -+    assert snapshot(ui, node_id) == before
+    +     for target_id, before in states.items():
+    +         show_node(ui, target_id)
+    +-        assert json.dumps(widget_state(ui, target_id), sort_keys=True) == json.dumps(before, sort_keys=True)
+    ++        snapshot = promoted_widget_state if target_id == node_id and expected_widget_names is not None else widget_state
+    ++        assert json.dumps(snapshot(ui, target_id), sort_keys=True) == json.dumps(before, sort_keys=True)
+          roundtrip = ui.artifacts / "roundtrip.json"
+          export_workflow(ui, roundtrip)
+          restored = json.loads(roundtrip.read_text())
+    -@@ tests/test_e2e_wildcard_cache.py: def native_roundtrip(ui, node_id):
+    +@@ tests/test_e2e_wildcard_cache.py: def native_roundtrip(ui, node_id, *other_ids):
+          # Native loading can reorder link records; their IDs and endpoints must
+          # remain identical. Widget arrays above deliberately retain their order.
+          assert sorted(restored["links"]) == sorted(saved["links"])
+    @@ tests/test_e2e_wildcard_cache.py: def native_roundtrip(ui, node_id):
+     +            {**subgraph, "links": sorted(subgraph["links"], key=lambda link: link["id"])}
+     +            for subgraph in definitions["subgraphs"]]}
+     +    assert ordered_links(restored.get("definitions")) == ordered_links(saved.get("definitions"))
+    -     (ui.artifacts / "widget-state.json").write_text(json.dumps(before, indent=2) + "\n")
+    -     return before
+    +     (ui.artifacts / "widget-state.json").write_text(json.dumps(states, indent=2) + "\n")
+    +     show_node(ui, node_id)
+    +     return states[node_id]
+      
+      
+     +def promoted_widget_state(ui, node_id):
+    @@ tests/test_e2e_wildcard_cache.py: def test_reproduce_native_workflow_then_popula
+     +    assert {target, preview_id}.isdisjoint(cached(manual))
+      
+      
+    - @pytest.mark.parametrize("node_type", NODE_TYPES)
+    + @pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+     @@ tests/test_e2e_wildcard_cache.py: def test_fixed_syntax_preserves_seed(ui, node_type, text):
+              run(ui, preview_id, expected, f"fixed-{seed}")
+      
+    @@ tests/test_e2e_wildcard_cache.py: def test_fixed_native_workflow_preserves_widge
+     +    assert (values["seed"], values["control_after_generate"]) == (5, "increment")
+     +    expect(ui.page.get_by_role("textbox", name="preview_text", exact=True)).to_have_value("blue")
+     
+    + ## tests/test_e2e_wildcard_controls.py ##
+    +@@ tests/test_e2e_wildcard_controls.py: def test_control_bridge_stop_with_constant(ui, node_type, upstream, restore_by_n
+    +     for index in range(2):
+    +         entry = run(ui, preview_id, text, f"active-{index}")
+    +         inputs = entry["prompt"][2][node_id]["inputs"]
+    +-        assert inputs["seed"] == (731 + index if upstream else 0)
+    ++        # Fixed mode pauses the selected increment policy; direct constants
+    ++        # still use the backend's normalized static cache key.
+    ++        assert inputs["seed"] == (731 if upstream else 0)
+    +         assert inputs["populated_text"] == [bridge_id if upstream else source_id, 0]
+    +         if index:
+    +-            assert (node_id in cached(entry)) is not upstream
+    ++            assert node_id in cached(entry)
+    ++        show_node(ui, node_id)
+    ++        values = {widget["name"]: widget["value"] for widget in widget_state(ui, node_id)["widgets"]}
+    ++        assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+    + 
+    +     show_node(ui, bridge_id)
+    +     toggle(ui, "ImpactControlBridge", "mode", False)
+    +
+      ## tests/test_e2e_wildcard_tutorials.py ##
+     @@ tests/test_e2e_wildcard_tutorials.py: from pathlib import Path
+      from PIL import Image

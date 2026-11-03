@@ -1,0 +1,214 @@
+{
+  "successful": true,
+  "capture_parent_head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+  "candidate_source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+  "base": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+  "host_id": "20",
+  "resolution": [
+    512,
+    512
+  ],
+  "workflow_sha256": "dc75f77b95bf2cc2aa6b70e4b5dc0522dcd3f6f682499f0c478cba2b5289d975",
+  "reports": {
+    "candidate": {
+      "capture_parent_head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "commit": "working-tree",
+      "source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+      "queues": [
+        {
+          "queue": 1,
+          "prompt_id": "2ec7b802-6984-4c93-8a5e-62c2718e6e7d",
+          "execution_start_ms": 1793711797545,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9001,
+          "independent_ui_seed_after_queue": 9002,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+          "screenshot_sha256": "5871a4e138059c94773198f89a8d2d712353ecc8e6470eee843b914b7d319046",
+          "history_sha256": "9a3fc1417083db0ad2968a9df6e958a93c15938c494fb4b677ae81a52399b6e6",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 2,
+          "prompt_id": "1da0a64b-5a21-4ff7-83b0-38d9958b2402",
+          "execution_start_ms": 1793711804414,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9002,
+          "independent_ui_seed_after_queue": 9003,
+          "fixed_branch_cached": true,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "20:10",
+            "3",
+            "4",
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+          "screenshot_sha256": "4b8c051e0fd6f57fd123e4198479554f0a55059f17c8f657e9658bed03a28cc7",
+          "history_sha256": "a4209c65d996b3badee788b9ed1015891428697921a5bc27deefb02f56cf5442",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 3,
+          "prompt_id": "77e75476-bcd9-499b-8a1f-f06073c26a14",
+          "execution_start_ms": 1793711808419,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9003,
+          "independent_ui_seed_after_queue": 9004,
+          "fixed_branch_cached": true,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "20:10",
+            "3",
+            "4",
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+          "screenshot_sha256": "3e63597cbe18711d6875b85675990a22ba456d48ab3682cb2a0807bd2fe2ebd2",
+          "history_sha256": "335b11e0336d1b0f0734c5e0774190ff491e5d8da240737c539f7d2270b507ad",
+          "native_reload_before_queue": true
+        }
+      ],
+      "native_widget_compatibility": true,
+      "server_stopped": true
+    },
+    "baseline": {
+      "capture_parent_head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+      "commit": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+      "source_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+      "queues": [
+        {
+          "queue": 1,
+          "prompt_id": "2396f20e-0763-48d8-9f58-83d4077e2312",
+          "execution_start_ms": 1793711823935,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 514,
+          "independent_execution_seed": 9001,
+          "independent_ui_seed_after_queue": 9002,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+          "screenshot_sha256": "b31b81a81ddfd79e6cd396d1b5888a70d1a5d8e3f29c2d420423b40e4f24788a",
+          "history_sha256": "65069016781da464fec1bddb117bbab9c041603a87ae55367587732a974e8e69",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 2,
+          "prompt_id": "931426ca-62b9-42c8-8df4-2affa2c69f09",
+          "execution_start_ms": 1793711830185,
+          "fixed_execution_seed": 514,
+          "fixed_ui_seed_after_queue": 515,
+          "independent_execution_seed": 9002,
+          "independent_ui_seed_after_queue": 9003,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+          "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+          "screenshot_sha256": "8ae682376c20309a62e966665672fa2f4ac2c326001a6908f857eb2f979791cd",
+          "history_sha256": "d4d441ede350437c728c2c4de23efae0abc234243b0dfcc7b66af3c1eaabde7b",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 3,
+          "prompt_id": "862b7718-85f8-4623-8e22-d926d8695745",
+          "execution_start_ms": 1793711835694,
+          "fixed_execution_seed": 515,
+          "fixed_ui_seed_after_queue": 516,
+          "independent_execution_seed": 9003,
+          "independent_ui_seed_after_queue": 9004,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+          "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+          "screenshot_sha256": "6c81889d38efd8de2ec4324ae64deca5c39fec0913e66c1d469cceb52a161255",
+          "history_sha256": "da2eba175c382be55e7d9fb058b7796b315ec7c5cb5d653821a1082fa691c3e0",
+          "native_reload_before_queue": true
+        }
+      ],
+      "native_widget_compatibility": true,
+      "server_stopped": true
+    }
+  },
+  "independent_branch_pixel_parity": [
+    {
+      "queue": 1,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    },
+    {
+      "queue": 2,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    },
+    {
+      "queue": 3,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    }
+  ],
+  "first_fixed_baseline_candidate_different_rgb_pixels": 0,
+  "completed_utc": "2026-11-03T13:17:21.225145+00:00"
+}

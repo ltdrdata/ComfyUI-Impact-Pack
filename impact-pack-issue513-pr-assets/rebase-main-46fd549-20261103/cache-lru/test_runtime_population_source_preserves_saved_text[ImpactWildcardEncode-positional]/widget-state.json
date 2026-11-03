@@ -1,0 +1,36 @@
+{
+  "1": {
+    "id": "1",
+    "type": "ImpactWildcardEncode",
+    "widgets": [
+      {
+        "name": "wildcard_text",
+        "value": ""
+      },
+      {
+        "name": "populated_text",
+        "value": "saved text f107b3b1cfcf488c9ec9b9dd4cdb0f34"
+      },
+      {
+        "name": "mode",
+        "value": "populate"
+      },
+      {
+        "name": "Select to add LoRA",
+        "value": "Select the LoRA to add to the text"
+      },
+      {
+        "name": "Select to add Wildcard",
+        "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+      },
+      {
+        "name": "seed",
+        "value": 2
+      },
+      {
+        "name": "control_after_generate",
+        "value": "fixed"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1486 @@
+[
+  {
+    "prompt": [
+      359,
+      "fc966da5-e7d5-49e6-ba19-91b8e1555ee4",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "",
+            "populated_text": [
+              "3",
+              0
+            ],
+            "mode": "fixed",
+            "seed": 0,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        },
+        "3": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa"
+          },
+          "class_type": "PrimitiveString",
+          "_meta": {
+            "title": "Text"
+          }
+        },
+        "4": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+          },
+          "class_type": "PrimitiveStringMultiline",
+          "_meta": {
+            "title": "Text (Multiline)"
+          }
+        },
+        "5": {
+          "inputs": {
+            "node_id": 3,
+            "widget_name": "value",
+            "signal": [
+              "1",
+              0
+            ],
+            "string_value": [
+              "4",
+              0
+            ]
+          },
+          "class_type": "ImpactSetWidgetValue",
+          "_meta": {
+            "title": "Set Widget Value"
+          }
+        },
+        "6": {
+          "inputs": {
+            "count": 0,
+            "total": 3,
+            "mode": true,
+            "signal": [
+              "5",
+              0
+            ]
+          },
+          "class_type": "ImpactQueueTriggerCountdown",
+          "_meta": {
+            "title": "Queue Trigger (Countdown)"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1",
+            "revision": 0,
+            "last_node_id": 6,
+            "last_link_id": 5,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 2,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "populated_text",
+                    "type": "STRING",
+                    "widget": {
+                      "name": "populated_text"
+                    },
+                    "link": 2
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1,
+                      3
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "",
+                  "",
+                  "fixed",
+                  731,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "",
+                  "populated_text": "",
+                  "mode": "fixed",
+                  "seed": 731,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 3,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              },
+              {
+                "id": 3,
+                "type": "PrimitiveString",
+                "pos": [
+                  -262.1111111111111,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  58
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      2
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveString"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa"
+                }
+              },
+              {
+                "id": 4,
+                "type": "PrimitiveStringMultiline",
+                "pos": [
+                  -327.1111111111111,
+                  855.5555555555555
+                ],
+                "size": [
+                  400,
+                  200
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      4
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveStringMultiline"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                }
+              },
+              {
+                "id": 5,
+                "type": "ImpactSetWidgetValue",
+                "pos": [
+                  587.8888888888889,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  162
+                ],
+                "flags": {},
+                "order": 4,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "type": "*",
+                    "link": 3
+                  },
+                  {
+                    "name": "boolean_value",
+                    "shape": 7,
+                    "type": "BOOLEAN",
+                    "link": null
+                  },
+                  {
+                    "name": "int_value",
+                    "shape": 7,
+                    "type": "INT",
+                    "link": null
+                  },
+                  {
+                    "name": "float_value",
+                    "shape": 7,
+                    "type": "FLOAT",
+                    "link": null
+                  },
+                  {
+                    "name": "string_value",
+                    "shape": 7,
+                    "type": "STRING",
+                    "link": 4
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": [
+                      5
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactSetWidgetValue"
+                },
+                "widgets_values": [
+                  3,
+                  "value"
+                ],
+                "widgets_values_named": {
+                  "node_id": 3,
+                  "widget_name": "value"
+                }
+              },
+              {
+                "id": 6,
+                "type": "ImpactQueueTriggerCountdown",
+                "pos": [
+                  930.2504123263889,
+                  705.5555555555555
+                ],
+                "size": [
+                  285.276953125,
+                  146
+                ],
+                "flags": {},
+                "order": 5,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "shape": 7,
+                    "type": "*",
+                    "link": 5
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": null
+                  },
+                  {
+                    "name": "count",
+                    "type": "INT",
+                    "links": null
+                  },
+                  {
+                    "name": "total",
+                    "type": "INT",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactQueueTriggerCountdown"
+                },
+                "widgets_values": [
+                  0,
+                  3,
+                  true
+                ],
+                "widgets_values_named": {
+                  "count": 0,
+                  "total": 3,
+                  "mode": true
+                }
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ],
+              [
+                3,
+                1,
+                0,
+                5,
+                0,
+                "STRING"
+              ],
+              [
+                4,
+                4,
+                0,
+                5,
+                4,
+                "STRING"
+              ],
+              [
+                5,
+                5,
+                0,
+                6,
+                0,
+                "*"
+              ],
+              [
+                2,
+                3,
+                0,
+                1,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.11114773220493,
+                  4.44444444444423
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "f091592f0a9b4de38296707dd26d1a57",
+        "workflow_metadata": {
+          "workflow_id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1"
+        },
+        "create_time": 1793713303545
+      },
+      [
+        "5",
+        "6",
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "feedback 9feb362a1e154dd9b408a01169bac6aa"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "fc966da5-e7d5-49e6-ba19-91b8e1555ee4",
+            "timestamp": 1793713303546
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "fc966da5-e7d5-49e6-ba19-91b8e1555ee4",
+            "timestamp": 1793713303647
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "fc966da5-e7d5-49e6-ba19-91b8e1555ee4",
+            "timestamp": 1793713303649
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  },
+  {
+    "prompt": [
+      360,
+      "c90511bb-5ff6-4ba3-b11f-191cb00a11ab",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "",
+            "populated_text": [
+              "3",
+              0
+            ],
+            "mode": "fixed",
+            "seed": 0,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        },
+        "3": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+          },
+          "class_type": "PrimitiveString",
+          "_meta": {
+            "title": "Text"
+          }
+        },
+        "4": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+          },
+          "class_type": "PrimitiveStringMultiline",
+          "_meta": {
+            "title": "Text (Multiline)"
+          }
+        },
+        "5": {
+          "inputs": {
+            "node_id": 3,
+            "widget_name": "value",
+            "signal": [
+              "1",
+              0
+            ],
+            "string_value": [
+              "4",
+              0
+            ]
+          },
+          "class_type": "ImpactSetWidgetValue",
+          "_meta": {
+            "title": "Set Widget Value"
+          }
+        },
+        "6": {
+          "inputs": {
+            "count": 1,
+            "total": 3,
+            "mode": true,
+            "signal": [
+              "5",
+              0
+            ]
+          },
+          "class_type": "ImpactQueueTriggerCountdown",
+          "_meta": {
+            "title": "Queue Trigger (Countdown)"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1",
+            "revision": 0,
+            "last_node_id": 6,
+            "last_link_id": 5,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 2,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "populated_text",
+                    "type": "STRING",
+                    "widget": {
+                      "name": "populated_text"
+                    },
+                    "link": 2
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1,
+                      3
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "",
+                  "",
+                  "fixed",
+                  731,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "",
+                  "populated_text": "",
+                  "mode": "fixed",
+                  "seed": 731,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 3,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              },
+              {
+                "id": 3,
+                "type": "PrimitiveString",
+                "pos": [
+                  -262.1111111111111,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  58
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      2
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveString"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                }
+              },
+              {
+                "id": 4,
+                "type": "PrimitiveStringMultiline",
+                "pos": [
+                  -327.1111111111111,
+                  855.5555555555555
+                ],
+                "size": [
+                  400,
+                  200
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      4
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveStringMultiline"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                }
+              },
+              {
+                "id": 5,
+                "type": "ImpactSetWidgetValue",
+                "pos": [
+                  587.8888888888889,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  162
+                ],
+                "flags": {},
+                "order": 4,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "type": "*",
+                    "link": 3
+                  },
+                  {
+                    "name": "boolean_value",
+                    "shape": 7,
+                    "type": "BOOLEAN",
+                    "link": null
+                  },
+                  {
+                    "name": "int_value",
+                    "shape": 7,
+                    "type": "INT",
+                    "link": null
+                  },
+                  {
+                    "name": "float_value",
+                    "shape": 7,
+                    "type": "FLOAT",
+                    "link": null
+                  },
+                  {
+                    "name": "string_value",
+                    "shape": 7,
+                    "type": "STRING",
+                    "link": 4
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": [
+                      5
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactSetWidgetValue"
+                },
+                "widgets_values": [
+                  3,
+                  "value"
+                ],
+                "widgets_values_named": {
+                  "node_id": 3,
+                  "widget_name": "value"
+                }
+              },
+              {
+                "id": 6,
+                "type": "ImpactQueueTriggerCountdown",
+                "pos": [
+                  930.2504123263889,
+                  705.5555555555555
+                ],
+                "size": [
+                  285.276953125,
+                  146
+                ],
+                "flags": {},
+                "order": 5,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "shape": 7,
+                    "type": "*",
+                    "link": 5
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": null
+                  },
+                  {
+                    "name": "count",
+                    "type": "INT",
+                    "links": null
+                  },
+                  {
+                    "name": "total",
+                    "type": "INT",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactQueueTriggerCountdown"
+                },
+                "widgets_values": [
+                  1,
+                  3,
+                  true
+                ],
+                "widgets_values_named": {
+                  "count": 1,
+                  "total": 3,
+                  "mode": true
+                }
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ],
+              [
+                3,
+                1,
+                0,
+                5,
+                0,
+                "STRING"
+              ],
+              [
+                4,
+                4,
+                0,
+                5,
+                4,
+                "STRING"
+              ],
+              [
+                5,
+                5,
+                0,
+                6,
+                0,
+                "*"
+              ],
+              [
+                2,
+                3,
+                0,
+                1,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.11114773220493,
+                  4.44444444444423
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "f091592f0a9b4de38296707dd26d1a57",
+        "workflow_metadata": {
+          "workflow_id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1"
+        },
+        "create_time": 1793713304006
+      },
+      [
+        "5",
+        "6",
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "c90511bb-5ff6-4ba3-b11f-191cb00a11ab",
+            "timestamp": 1793713304007
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [
+              "4"
+            ],
+            "prompt_id": "c90511bb-5ff6-4ba3-b11f-191cb00a11ab",
+            "timestamp": 1793713304008
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "c90511bb-5ff6-4ba3-b11f-191cb00a11ab",
+            "timestamp": 1793713304009
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  },
+  {
+    "prompt": [
+      361,
+      "7a72af9e-697d-47ed-b89c-9ba188a033f6",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "",
+            "populated_text": [
+              "3",
+              0
+            ],
+            "mode": "fixed",
+            "seed": 0,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        },
+        "3": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+          },
+          "class_type": "PrimitiveString",
+          "_meta": {
+            "title": "Text"
+          }
+        },
+        "4": {
+          "inputs": {
+            "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+          },
+          "class_type": "PrimitiveStringMultiline",
+          "_meta": {
+            "title": "Text (Multiline)"
+          }
+        },
+        "5": {
+          "inputs": {
+            "node_id": 3,
+            "widget_name": "value",
+            "signal": [
+              "1",
+              0
+            ],
+            "string_value": [
+              "4",
+              0
+            ]
+          },
+          "class_type": "ImpactSetWidgetValue",
+          "_meta": {
+            "title": "Set Widget Value"
+          }
+        },
+        "6": {
+          "inputs": {
+            "count": 2,
+            "total": 3,
+            "mode": true,
+            "signal": [
+              "5",
+              0
+            ]
+          },
+          "class_type": "ImpactQueueTriggerCountdown",
+          "_meta": {
+            "title": "Queue Trigger (Countdown)"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1",
+            "revision": 0,
+            "last_node_id": 6,
+            "last_link_id": 5,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 2,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "populated_text",
+                    "type": "STRING",
+                    "widget": {
+                      "name": "populated_text"
+                    },
+                    "link": 2
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1,
+                      3
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "",
+                  "",
+                  "fixed",
+                  731,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "",
+                  "populated_text": "",
+                  "mode": "fixed",
+                  "seed": 731,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 3,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              },
+              {
+                "id": 3,
+                "type": "PrimitiveString",
+                "pos": [
+                  -262.1111111111111,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  58
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      2
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveString"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                }
+              },
+              {
+                "id": 4,
+                "type": "PrimitiveStringMultiline",
+                "pos": [
+                  -327.1111111111111,
+                  855.5555555555555
+                ],
+                "size": [
+                  400,
+                  200
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": [
+                      4
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PrimitiveStringMultiline"
+                },
+                "widgets_values": [
+                  "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                ],
+                "widgets_values_named": {
+                  "value": "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+                }
+              },
+              {
+                "id": 5,
+                "type": "ImpactSetWidgetValue",
+                "pos": [
+                  587.8888888888889,
+                  655.5555555555555
+                ],
+                "size": [
+                  270,
+                  162
+                ],
+                "flags": {},
+                "order": 4,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "type": "*",
+                    "link": 3
+                  },
+                  {
+                    "name": "boolean_value",
+                    "shape": 7,
+                    "type": "BOOLEAN",
+                    "link": null
+                  },
+                  {
+                    "name": "int_value",
+                    "shape": 7,
+                    "type": "INT",
+                    "link": null
+                  },
+                  {
+                    "name": "float_value",
+                    "shape": 7,
+                    "type": "FLOAT",
+                    "link": null
+                  },
+                  {
+                    "name": "string_value",
+                    "shape": 7,
+                    "type": "STRING",
+                    "link": 4
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": [
+                      5
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactSetWidgetValue"
+                },
+                "widgets_values": [
+                  3,
+                  "value"
+                ],
+                "widgets_values_named": {
+                  "node_id": 3,
+                  "widget_name": "value"
+                }
+              },
+              {
+                "id": 6,
+                "type": "ImpactQueueTriggerCountdown",
+                "pos": [
+                  930.2504123263889,
+                  705.5555555555555
+                ],
+                "size": [
+                  285.276953125,
+                  146
+                ],
+                "flags": {},
+                "order": 5,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "signal",
+                    "shape": 7,
+                    "type": "*",
+                    "link": 5
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "signal_opt",
+                    "type": "*",
+                    "links": null
+                  },
+                  {
+                    "name": "count",
+                    "type": "INT",
+                    "links": null
+                  },
+                  {
+                    "name": "total",
+                    "type": "INT",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactQueueTriggerCountdown"
+                },
+                "widgets_values": [
+                  2,
+                  3,
+                  true
+                ],
+                "widgets_values_named": {
+                  "count": 2,
+                  "total": 3,
+                  "mode": true
+                }
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ],
+              [
+                3,
+                1,
+                0,
+                5,
+                0,
+                "STRING"
+              ],
+              [
+                4,
+                4,
+                0,
+                5,
+                4,
+                "STRING"
+              ],
+              [
+                5,
+                5,
+                0,
+                6,
+                0,
+                "*"
+              ],
+              [
+                2,
+                3,
+                0,
+                1,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.11114773220493,
+                  4.44444444444423
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "f091592f0a9b4de38296707dd26d1a57",
+        "workflow_metadata": {
+          "workflow_id": "ecd8c91b-ad62-4809-ad0d-8811c72125c1"
+        },
+        "create_time": 1793713304025
+      },
+      [
+        "5",
+        "6",
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "feedback 9feb362a1e154dd9b408a01169bac6aa changed"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "7a72af9e-697d-47ed-b89c-9ba188a033f6",
+            "timestamp": 1793713304026
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "prompt_id": "7a72af9e-697d-47ed-b89c-9ba188a033f6",
+            "timestamp": 1793713304027
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "7a72af9e-697d-47ed-b89c-9ba188a033f6",
+            "timestamp": 1793713304027
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  }
+]

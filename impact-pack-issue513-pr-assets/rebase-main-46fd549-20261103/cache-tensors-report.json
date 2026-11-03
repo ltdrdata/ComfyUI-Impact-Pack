@@ -1,0 +1,9 @@
+{
+  "tests_run": 5,
+  "successful": true,
+  "checkpoint": "v1-5-pruned-emaonly-fp16.safetensors",
+  "lora": "SD1.5/etc/add_detail.safetensors",
+  "failures": [],
+  "errors": [],
+  "skipped": []
+}

@@ -1,0 +1,312 @@
+{
+  "prompt": [
+    286,
+    "22954296-1e5e-4dc1-a699-4747a0139169",
+    {
+      "1": {
+        "inputs": {
+          "wildcard_text": "",
+          "populated_text": [
+            "3",
+            0
+          ],
+          "mode": "fixed",
+          "seed": 0,
+          "Select to add Wildcard": "Select the Wildcard to add to the text"
+        },
+        "class_type": "ImpactWildcardProcessor",
+        "_meta": {
+          "title": "ImpactWildcardProcessor"
+        }
+      },
+      "2": {
+        "inputs": {
+          "source": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3": {
+        "inputs": {
+          "value": "remote 2ae597d830dd452f9384960ca0e77068"
+        },
+        "class_type": "PrimitiveString",
+        "_meta": {
+          "title": "Text"
+        }
+      },
+      "4": {
+        "inputs": {
+          "node_id": 1,
+          "widget_name": "seed",
+          "value": 731
+        },
+        "class_type": "ImpactRemoteInt",
+        "_meta": {
+          "title": "Remote Int (on prompt)"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "e8750ad0-3401-4777-a540-b23b802e2271",
+          "revision": 0,
+          "last_node_id": 4,
+          "last_link_id": 2,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactWildcardProcessor",
+              "pos": [
+                22.888888888888914,
+                125.55555555555554
+              ],
+              "size": [
+                400,
+                238
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "widget": {
+                    "name": "populated_text"
+                  },
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "processed text",
+                  "type": "STRING",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactWildcardProcessor"
+              },
+              "widgets_values": [
+                "",
+                "",
+                "fixed",
+                5,
+                "fixed",
+                "Select Wildcard \ud83d\udfe2 Full Cache"
+              ],
+              "widgets_values_named": {
+                "wildcard_text": "",
+                "populated_text": "",
+                "mode": "fixed",
+                "seed": 5,
+                "control_after_generate": "fixed",
+                "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "PrimitiveString",
+              "pos": [
+                -262.1111111111111,
+                655.5555555555555
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveString"
+              },
+              "widgets_values": [
+                "remote 2ae597d830dd452f9384960ca0e77068"
+              ],
+              "widgets_values_named": {
+                "value": "remote 2ae597d830dd452f9384960ca0e77068"
+              }
+            },
+            {
+              "id": 4,
+              "type": "ImpactRemoteInt",
+              "pos": [
+                587.8888888888889,
+                705.5555555555555
+              ],
+              "size": [
+                270,
+                106
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [],
+              "properties": {
+                "Node name for S&R": "ImpactRemoteInt"
+              },
+              "widgets_values": [
+                1,
+                "seed",
+                731
+              ],
+              "widgets_values_named": {
+                "node_id": 1,
+                "widget_name": "seed",
+                "value": 731
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "STRING"
+            ],
+            [
+              2,
+              3,
+              0,
+              1,
+              0,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                -467.8888888888888,
+                -275.55555555555554
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "1": {
+              "seed": 3
+            }
+          }
+        }
+      },
+      "client_id": "2dfc2aab04ea46a19eba9c8c438c8b64",
+      "workflow_metadata": {
+        "workflow_id": "e8750ad0-3401-4777-a540-b23b802e2271"
+      },
+      "create_time": 1793712958708
+    },
+    [
+      "4",
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "remote 2ae597d830dd452f9384960ca0e77068"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "22954296-1e5e-4dc1-a699-4747a0139169",
+          "timestamp": 1793712958709
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "22954296-1e5e-4dc1-a699-4747a0139169",
+          "timestamp": 1793712958709
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "22954296-1e5e-4dc1-a699-4747a0139169",
+          "timestamp": 1793712958710
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

@@ -1,0 +1,380 @@
+{
+  "prompt": [
+    127,
+    "fd0686d9-fdc9-48cf-be2e-e671459b7ae6",
+    {
+      "1": {
+        "inputs": {
+          "wildcard_text": [
+            "4",
+            0
+          ],
+          "populated_text": "constant prompt 2043862423f04d92b5a978d6279240a9 blue",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "3",
+            0
+          ],
+          "clip": [
+            "3",
+            1
+          ]
+        },
+        "class_type": "ImpactWildcardEncode",
+        "_meta": {
+          "title": "ImpactWildcardEncode"
+        }
+      },
+      "2": {
+        "inputs": {
+          "source": [
+            "1",
+            3
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3": {
+        "inputs": {
+          "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+        },
+        "class_type": "CheckpointLoaderSimple",
+        "_meta": {
+          "title": "Load Checkpoint"
+        }
+      },
+      "4": {
+        "inputs": {
+          "value": "constant prompt 2043862423f04d92b5a978d6279240a9 {red|green|blue}"
+        },
+        "class_type": "PrimitiveString",
+        "_meta": {
+          "title": "Text"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "a7c10b8d-6de9-464b-90d4-428badcec72b",
+          "revision": 0,
+          "last_node_id": 4,
+          "last_link_id": 4,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactWildcardEncode",
+              "pos": [
+                22.888888888888914,
+                125.55555555555554
+              ],
+              "size": [
+                400,
+                322
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 2
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 3
+                },
+                {
+                  "name": "wildcard_text",
+                  "type": "STRING",
+                  "widget": {
+                    "name": "wildcard_text"
+                  },
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "links": null
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "links": null
+                },
+                {
+                  "name": "conditioning",
+                  "type": "CONDITIONING",
+                  "links": null
+                },
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactWildcardEncode"
+              },
+              "widgets_values": [
+                "",
+                "constant prompt 2043862423f04d92b5a978d6279240a9 blue",
+                "reproduce",
+                "Select the LoRA to add to the text",
+                "Select Wildcard \ud83d\udfe2 Full Cache",
+                5,
+                "fixed"
+              ],
+              "widgets_values_named": {
+                "wildcard_text": "",
+                "populated_text": "constant prompt 2043862423f04d92b5a978d6279240a9 blue",
+                "mode": "reproduce",
+                "Select to add LoRA": "Select the LoRA to add to the text",
+                "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache",
+                "seed": 5,
+                "control_after_generate": "fixed"
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "CheckpointLoaderSimple",
+              "pos": [
+                -362.1111111111111,
+                455.55555555555554
+              ],
+              "size": [
+                270,
+                98
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MODEL",
+                  "type": "MODEL",
+                  "links": [
+                    2
+                  ]
+                },
+                {
+                  "name": "CLIP",
+                  "type": "CLIP",
+                  "links": [
+                    3
+                  ]
+                },
+                {
+                  "name": "VAE",
+                  "type": "VAE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CheckpointLoaderSimple"
+              },
+              "widgets_values": [
+                "v1-5-pruned-emaonly-fp16.safetensors"
+              ],
+              "widgets_values_named": {
+                "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+              }
+            },
+            {
+              "id": 4,
+              "type": "PrimitiveString",
+              "pos": [
+                -262.1111111111111,
+                655.5555555555555
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveString"
+              },
+              "widgets_values": [
+                "constant prompt 2043862423f04d92b5a978d6279240a9 {red|green|blue}"
+              ],
+              "widgets_values_named": {
+                "value": "constant prompt 2043862423f04d92b5a978d6279240a9 {red|green|blue}"
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              3,
+              2,
+              0,
+              "STRING"
+            ],
+            [
+              2,
+              3,
+              0,
+              1,
+              0,
+              "MODEL"
+            ],
+            [
+              3,
+              3,
+              1,
+              1,
+              1,
+              "CLIP"
+            ],
+            [
+              4,
+              4,
+              0,
+              1,
+              2,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                227.11111111111097,
+                4.444444444444457
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "1": {
+              "seed": 5
+            }
+          }
+        }
+      },
+      "client_id": "fa985178a7d54a4289381df9e0d4cd98",
+      "workflow_metadata": {
+        "workflow_id": "a7c10b8d-6de9-464b-90d4-428badcec72b"
+      },
+      "create_time": 1793712183705
+    },
+    [
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "constant prompt 2043862423f04d92b5a978d6279240a9 blue"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "fd0686d9-fdc9-48cf-be2e-e671459b7ae6",
+          "timestamp": 1793712183705
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "3",
+            "4"
+          ],
+          "prompt_id": "fd0686d9-fdc9-48cf-be2e-e671459b7ae6",
+          "timestamp": 1793712183706
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "fd0686d9-fdc9-48cf-be2e-e671459b7ae6",
+          "timestamp": 1793712183791
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "label": "input-validation",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/integration_lora_wildcard_validation.py",
+    "--comfy-root",
+    "/mnt/teratera/git/ComfyUI"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T13:15:28.232600+00:00",
+  "environment_overrides": {},
+  "head": "1c6297472f7567268e3bc00a35c5207c87c7473c",
+  "exit_code": 0,
+  "duration_seconds": 4.47
+}

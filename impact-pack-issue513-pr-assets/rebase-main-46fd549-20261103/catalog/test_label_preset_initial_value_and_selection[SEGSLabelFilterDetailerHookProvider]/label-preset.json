@@ -1,0 +1,60 @@
+{
+  "id": "de9fcd8a-7c0b-41bc-aab2-1c84d3064aaf",
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "SEGSLabelFilterDetailerHookProvider",
+      "pos": [
+        -77.11111111111109,
+        135.55555555555554
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SEGSLabelFilterDetailerHookProvider"
+      },
+      "widgets_values": [
+        "person",
+        "person"
+      ],
+      "widgets_values_named": {
+        "preset": "person",
+        "labels": "person"
+      }
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        327.1111111111111,
+        54.44444444444446
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

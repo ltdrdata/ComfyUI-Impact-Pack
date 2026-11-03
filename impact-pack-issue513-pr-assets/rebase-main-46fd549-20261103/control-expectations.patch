@@ -1,0 +1,22 @@
+diff --git a/tests/test_e2e_wildcard_controls.py b/tests/test_e2e_wildcard_controls.py
+index f1173eb..60aeaaa 100644
+--- a/tests/test_e2e_wildcard_controls.py
++++ b/tests/test_e2e_wildcard_controls.py
+@@ -120,10 +120,15 @@ def test_control_bridge_stop_with_constant(ui, node_type, upstream, restore_by_n
+     for index in range(2):
+         entry = run(ui, preview_id, text, f"active-{index}")
+         inputs = entry["prompt"][2][node_id]["inputs"]
+-        assert inputs["seed"] == (731 + index if upstream else 0)
++        # Fixed mode pauses the selected increment policy; direct constants
++        # still use the backend's normalized static cache key.
++        assert inputs["seed"] == (731 if upstream else 0)
+         assert inputs["populated_text"] == [bridge_id if upstream else source_id, 0]
+         if index:
+-            assert (node_id in cached(entry)) is not upstream
++            assert node_id in cached(entry)
++        show_node(ui, node_id)
++        values = {widget["name"]: widget["value"] for widget in widget_state(ui, node_id)["widgets"]}
++        assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+ 
+     show_node(ui, bridge_id)
+     toggle(ui, "ImpactControlBridge", "mode", False)

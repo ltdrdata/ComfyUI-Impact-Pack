@@ -1,0 +1,63 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 37 items / 35 deselected / 2 selected
+
+tests/test_e2e_wildcard_controls.py::test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional] FAILED [ 50%]
+tests/test_e2e_wildcard_controls.py::test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional] _
+tests/test_e2e_wildcard_controls.py:131: in test_control_bridge_stop_with_constant
+    assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+E   AssertionError: assert (732, 'increment') == (731, 'increment')
+E     
+E     At index 0 diff: 732 != 731
+E     
+E     Full diff:
+E       (
+E     -     731,
+E     ?       ^...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-red-again/test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (b0ff5fba-0e55-40f1-8fd0-92f4d6d01f23)
+_ test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional] _
+tests/test_e2e_wildcard_controls.py:131: in test_control_bridge_stop_with_constant
+    assert (values["seed"], values["control_after_generate"]) == (731, "increment")
+E   AssertionError: assert (732, 'increment') == (731, 'increment')
+E     
+E     At index 0 diff: 732 != 731
+E     
+E     Full diff:
+E       (
+E     -     731,
+E     ?       ^...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-red-again/test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (281fdba6-dddc-47b8-9f27-bf97798068f7)
+=============================== warnings summary ===============================
+test_e2e_wildcard_controls.py::test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/rebase-main-46fd549-20261103/bridge-rgr-red-again.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_wildcard_controls.py::test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardProcessor-positional]
+FAILED tests/test_e2e_wildcard_controls.py::test_control_bridge_stop_with_constant[before_wildcard-ImpactWildcardEncode-positional]
+================= 2 failed, 35 deselected, 1 warning in 35.92s =================

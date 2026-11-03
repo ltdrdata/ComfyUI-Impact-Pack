@@ -1,0 +1,414 @@
+{
+  "prompt": [
+    255,
+    "ef933417-a61a-4745-ba64-29df83db0288",
+    {
+      "1": {
+        "inputs": {
+          "wildcard_text": "",
+          "populated_text": [
+            "5",
+            0
+          ],
+          "mode": "fixed",
+          "seed": 5,
+          "Select to add Wildcard": "Select the Wildcard to add to the text"
+        },
+        "class_type": "ImpactWildcardProcessor",
+        "_meta": {
+          "title": "ImpactWildcardProcessor"
+        }
+      },
+      "2": {
+        "inputs": {
+          "source": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3": {
+        "inputs": {
+          "value": "switch 0fe715a3709f4afaa3e61f39fca33820"
+        },
+        "class_type": "PrimitiveString",
+        "_meta": {
+          "title": "Text"
+        }
+      },
+      "4": {
+        "inputs": {
+          "value": "{red|green|blue}"
+        },
+        "class_type": "PrimitiveStringMultiline",
+        "_meta": {
+          "title": "Text (Multiline)"
+        }
+      },
+      "5": {
+        "inputs": {
+          "select": 1,
+          "sel_mode": false,
+          "input1": [
+            "3",
+            0
+          ],
+          "input2": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "ImpactSwitch",
+        "_meta": {
+          "title": "Switch (Any)"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "d7cd0fd8-271d-4beb-8072-2d4caedf3b23",
+          "revision": 0,
+          "last_node_id": 5,
+          "last_link_id": 5,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactWildcardProcessor",
+              "pos": [
+                22.888888888888914,
+                125.55555555555554
+              ],
+              "size": [
+                400,
+                238
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "widget": {
+                    "name": "populated_text"
+                  },
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "processed text",
+                  "type": "STRING",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactWildcardProcessor"
+              },
+              "widgets_values": [
+                "",
+                "",
+                "fixed",
+                5,
+                "fixed",
+                "Select Wildcard \ud83d\udfe2 Full Cache"
+              ],
+              "widgets_values_named": {
+                "wildcard_text": "",
+                "populated_text": "",
+                "mode": "fixed",
+                "seed": 5,
+                "control_after_generate": "fixed",
+                "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "PrimitiveString",
+              "pos": [
+                -262.1111111111111,
+                655.5555555555555
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    3
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveString"
+              },
+              "widgets_values": [
+                "switch 0fe715a3709f4afaa3e61f39fca33820"
+              ],
+              "widgets_values_named": {
+                "value": "switch 0fe715a3709f4afaa3e61f39fca33820"
+              }
+            },
+            {
+              "id": 4,
+              "type": "PrimitiveStringMultiline",
+              "pos": [
+                -327.1111111111111,
+                855.5555555555555
+              ],
+              "size": [
+                400,
+                200
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveStringMultiline"
+              },
+              "widgets_values": [
+                "{red|green|blue}"
+              ],
+              "widgets_values_named": {
+                "value": "{red|green|blue}"
+              }
+            },
+            {
+              "id": 5,
+              "type": "ImpactSwitch",
+              "pos": [
+                587.8888888888889,
+                705.5555555555555
+              ],
+              "size": [
+                270,
+                122
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "input1",
+                  "shape": 7,
+                  "type": "*",
+                  "link": 3
+                },
+                {
+                  "name": "input2",
+                  "type": "STRING",
+                  "link": 4
+                },
+                {
+                  "name": "input3",
+                  "type": "STRING",
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "label": "STRING",
+                  "name": "selected_value",
+                  "type": "*",
+                  "links": [
+                    5
+                  ]
+                },
+                {
+                  "name": "selected_label",
+                  "type": "STRING",
+                  "links": null
+                },
+                {
+                  "name": "selected_index",
+                  "type": "INT",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactSwitch"
+              },
+              "widgets_values": [
+                1,
+                false
+              ],
+              "widgets_values_named": {
+                "select": 1,
+                "sel_mode": false
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "STRING"
+            ],
+            [
+              3,
+              3,
+              0,
+              5,
+              0,
+              "STRING"
+            ],
+            [
+              5,
+              5,
+              0,
+              1,
+              0,
+              "STRING"
+            ],
+            [
+              4,
+              4,
+              0,
+              5,
+              1,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                -467.8888888888889,
+                -275.55555555555577
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "1": {
+              "seed": 3
+            }
+          }
+        }
+      },
+      "client_id": "ecff9af5e0bd45358f256f1681e63770",
+      "workflow_metadata": {
+        "workflow_id": "d7cd0fd8-271d-4beb-8072-2d4caedf3b23"
+      },
+      "create_time": 1793712829178
+    },
+    [
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "switch 0fe715a3709f4afaa3e61f39fca33820"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "ef933417-a61a-4745-ba64-29df83db0288",
+          "timestamp": 1793712829178
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "3",
+            "4"
+          ],
+          "prompt_id": "ef933417-a61a-4745-ba64-29df83db0288",
+          "timestamp": 1793712829179
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "ef933417-a61a-4745-ba64-29df83db0288",
+          "timestamp": 1793712829179
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

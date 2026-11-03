@@ -1,6 +1,6 @@
 {
-  "code_head": "057abbe915048910ab2e656f991af6a029747323",
-  "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
-  "evidence_before": "15d41d9b38b3cffe191d78ec90a1f3e87e9d08e4",
-  "scope": "Full regression of the published PR; preserved source, model references, native widget compatibility and baseline-matched legacy failures."
+  "code_head": "9cd74e5134cc441739c193e7a5ae6902ab5edb18",
+  "base": "46fd5493ca0005b59ef178c40159c3d958b46c73",
+  "evidence_before": "a8f91327a0ba07cc1e15b14d44828f7a53684f01",
+  "scope": "Rebase on Main 46fd549: preserve both native workflow test contracts; current affected regression and fresh Main/patch rendered comparisons. Prior full regression retained as historical."
 }

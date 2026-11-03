@@ -1,0 +1,64 @@
+{
+  "1": {
+    "id": "1",
+    "type": "ImpactWildcardProcessor",
+    "widgets": [
+      {
+        "name": "wildcard_text",
+        "value": ""
+      },
+      {
+        "name": "populated_text",
+        "value": ""
+      },
+      {
+        "name": "mode",
+        "value": "fixed"
+      },
+      {
+        "name": "seed",
+        "value": 2
+      },
+      {
+        "name": "control_after_generate",
+        "value": "fixed"
+      },
+      {
+        "name": "Select to add Wildcard",
+        "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+      }
+    ]
+  },
+  "5": {
+    "id": "5",
+    "type": "ImpactSetWidgetValue",
+    "widgets": [
+      {
+        "name": "node_id",
+        "value": 3
+      },
+      {
+        "name": "widget_name",
+        "value": "value"
+      }
+    ]
+  },
+  "6": {
+    "id": "6",
+    "type": "ImpactQueueTriggerCountdown",
+    "widgets": [
+      {
+        "name": "count",
+        "value": 0
+      },
+      {
+        "name": "total",
+        "value": 3
+      },
+      {
+        "name": "mode",
+        "value": true
+      }
+    ]
+  }
+}
