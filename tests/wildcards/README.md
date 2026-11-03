@@ -1,5 +1,14 @@
 # Wildcard System - Complete Test Suite
 
+The automated loader regressions run with
+`(cd tests && python -m pytest -c pytest.ini)` from the repository root. This includes
+`test_progressive_loading.py` and `test_lazy_load_verification.py`, which use
+isolated temporary fixtures rather than external wildcard collections.
+`test_wildcard_final.py` requires `--full-url` and `--on-demand-url` for two
+already-running isolated servers; see [current validation commands](../../docs/E2E_TEST_STRATEGY.md).
+The historical diagnostics below are separate from that pytest suite.
+
+
 Comprehensive testing guide for the ComfyUI Impact Pack wildcard system.
 
 ---
@@ -516,7 +525,7 @@ ls custom_wildcards/*.txt
 **Standalone** (no server required):
 ```bash
 python3 test_wildcard_lazy_loading.py
-python3 test_progressive_loading.py
+python3 -m pytest -c ../pytest.ini test_progressive_loading.py
 ```
 
 **Note**: Requires ComfyUI environment or will show import errors.
@@ -690,11 +699,11 @@ ModuleNotFoundError: No module named 'modules'
 ```bash
 # Option 1: Run from ComfyUI directory
 cd /path/to/ComfyUI
-python3 custom_nodes/comfyui-impact-pack/tests/test_progressive_loading.py
+python3 -m pytest -c custom_nodes/comfyui-impact-pack/tests/pytest.ini custom_nodes/comfyui-impact-pack/tests/wildcards/test_progressive_loading.py
 
 # Option 2: Add to PYTHONPATH
 export PYTHONPATH=/path/to/ComfyUI/custom_nodes/comfyui-impact-pack:$PYTHONPATH
-python3 test_progressive_loading.py
+python3 -m pytest -c ../pytest.ini test_progressive_loading.py
 ```
 
 #### 3. On-Demand Mode Not Activating

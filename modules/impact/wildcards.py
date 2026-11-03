@@ -10,6 +10,7 @@ import folder_paths
 import nodes
 import numpy as np
 import yaml
+from comfy_execution.graph_utils import is_link
 from impact import config, utils
 
 wildcards_path = os.path.join(config.pack_root, "wildcards")
@@ -838,10 +839,6 @@ def _may_change_with_same_inputs(class_def):
     return hasattr(class_def, 'IS_CHANGED')
 
 
-def _is_link(value):
-    return isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and isinstance(value[1], int)
-
-
 def _validated_input(value):
     # The hook sees the prompt before validation, nodes see it after. Validation unwraps
     # list widgets and casts FLOAT widgets, which JSON sends as 1 for 1.0.
@@ -856,21 +853,27 @@ def linked_text_fingerprint(prompt, node_id):
     # Like ComfyUI's cache, equal upstream inputs are trusted to produce equal text unless
     # an upstream node declares IS_CHANGED/fingerprint_inputs.
     link = prompt[node_id]['inputs']['populated_text']
-    if not _is_link(link):
+    if not is_link(link):
         return None
 
     upstream = {}
-    pending = [link[0]]
+    pending = [link]
     while pending:
-        upstream_id = pending.pop()
-        if upstream_id in upstream:
-            continue
+        upstream_id, slot = pending.pop()
         node = prompt.get(upstream_id)
         class_def = nodes.NODE_CLASS_MAPPINGS.get(node['class_type']) if node is not None else None
         if class_def is None or _may_change_with_same_inputs(class_def):
             return None
+        if type(slot) is not int or slot < 0:
+            return None
+        # One mapped item cannot establish that every text in a list is static.
+        output_is_list = getattr(class_def, 'OUTPUT_IS_LIST', ())
+        if slot < len(output_is_list) and output_is_list[slot]:
+            return None
+        if upstream_id in upstream:
+            continue
         upstream[upstream_id] = [node['class_type'], {k: _validated_input(v) for k, v in node['inputs'].items()}]
-        pending += [v[0] for v in node['inputs'].values() if _is_link(v)]
+        pending += [v for v in node['inputs'].values() if is_link(v)]
 
     return hashlib.sha256(json.dumps([link, upstream], sort_keys=True).encode()).hexdigest()
 

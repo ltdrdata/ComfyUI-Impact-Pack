@@ -68,7 +68,7 @@ echo "Waiting for server startup..."
 sleep 15
 
 # Check server
-if ! curl -s http://127.0.0.1:$PORT/ > /dev/null; then
+if ! curl -fsS http://127.0.0.1:$PORT/ > /dev/null; then
     echo "${RED}✗ Server failed to start${NC}"
     cat /tmp/progressive_test.log | grep -i "wildcard\|error" | tail -20
     exit 1
@@ -90,7 +90,7 @@ echo ""
 
 # Step 1: Initial state (no wildcards accessed)
 echo "${CYAN}Step 1: Initial state (before any wildcard access)${NC}"
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))" 2>/dev/null || echo "0")
 ON_DEMAND=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('on_demand_mode', False))" 2>/dev/null || echo "false")
 TOTAL_AVAILABLE=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('total_available', 0))" 2>/dev/null || echo "0")
@@ -104,26 +104,25 @@ if [ "$ON_DEMAND" != "True" ]; then
     exit 1
 fi
 
-if [ "$LOADED_COUNT" -ne 0 ]; then
-    echo "${YELLOW}⚠ WARNING: Expected 0 loaded, got $LOADED_COUNT${NC}"
-fi
+echo "$RESPONSE" | python3 -c 'import sys, json; data=json.load(sys.stdin)["data"]; assert "__colors__" in data, "Expected YAML colors to be preloaded"'
+echo "${GREEN}✓ PASS: YAML colors is preloaded${NC}"
 echo ""
 
 # Step 2: Access first wildcard
 echo "${CYAN}Step 2: Access first wildcard (__samples/flower__)${NC}"
-RESULT1=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
+RESULT1=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
     -X POST \
     -H "Content-Type: application/json" \
     -d '{"text": "__samples/flower__", "seed": 42}')
-TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
+TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
 echo "  Result: $TEXT1"
 
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT_1=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
 echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_1${NC}"
 
-if [ "$LOADED_COUNT_1" -lt 1 ]; then
-    echo "${RED}✗ FAIL: Expected at least 1 loaded wildcard${NC}"
+if [ "$LOADED_COUNT_1" -le "$LOADED_COUNT" ]; then
+    echo "${RED}✗ FAIL: First TXT access did not increase the loaded count${NC}"
     exit 1
 fi
 echo "${GREEN}✓ PASS: Wildcard count increased${NC}"
@@ -131,14 +130,14 @@ echo ""
 
 # Step 3: Access second wildcard (different from first)
 echo "${CYAN}Step 3: Access second wildcard (__dragon__)${NC}"
-RESULT2=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
+RESULT2=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
     -X POST \
     -H "Content-Type: application/json" \
     -d '{"text": "__dragon__", "seed": 200}')
-TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
+TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
 echo "  Result: $TEXT2"
 
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT_2=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
 echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_2${NC}"
 
@@ -151,39 +150,40 @@ echo ""
 
 # Step 4: Access third wildcard (YAML)
 echo "${CYAN}Step 4: Access third wildcard (__colors__)${NC}"
-RESULT3=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
+RESULT3=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
     -X POST \
     -H "Content-Type: application/json" \
     -d '{"text": "__colors__", "seed": 333}')
-TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
+TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
 echo "  Result: $TEXT3"
 
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT_3=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
 LOADED_LIST=$(echo "$RESPONSE" | python3 -c "import sys, json; print(', '.join(json.load(sys.stdin)['data'][:10]))")
 echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_3${NC}"
 echo "  Sample loaded: $LOADED_LIST"
 
-if [ "$LOADED_COUNT_3" -le "$LOADED_COUNT_2" ]; then
-    echo "${RED}✗ FAIL: Expected loaded count to increase (was $LOADED_COUNT_2, now $LOADED_COUNT_3)${NC}"
+if [ "$LOADED_COUNT_3" -ne "$LOADED_COUNT_2" ]; then
+    echo "${RED}✗ FAIL: Preloaded YAML access changed the loaded count${NC}"
     exit 1
 fi
-echo "${GREEN}✓ PASS: Wildcard count increased progressively${NC}"
+echo "${GREEN}✓ PASS: Preloaded YAML access kept the loaded count${NC}"
 echo ""
 
 # Step 5: Re-access first wildcard (should not increase count)
 echo "${CYAN}Step 5: Re-access first wildcard (cached)${NC}"
-RESULT4=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
+RESULT4=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
     -X POST \
     -H "Content-Type: application/json" \
     -d '{"text": "__samples/flower__", "seed": 42}')
 
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT_4=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
 echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_4${NC}"
 
 if [ "$LOADED_COUNT_4" -ne "$LOADED_COUNT_3" ]; then
-    echo "${YELLOW}⚠ WARNING: Count changed on cache access (was $LOADED_COUNT_3, now $LOADED_COUNT_4)${NC}"
+    echo "${RED}✗ FAIL: Count changed on cache access (was $LOADED_COUNT_3, now $LOADED_COUNT_4)${NC}"
+    exit 1
 else
     echo "${GREEN}✓ PASS: Cached access did not change count${NC}"
 fi
@@ -191,14 +191,14 @@ echo ""
 
 # Step 6: Deep transitive wildcard (should load multiple wildcards)
 echo "${CYAN}Step 6: Deep transitive wildcard (__adnd__)${NC}"
-RESULT5=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
+RESULT5=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
     -X POST \
     -H "Content-Type: application/json" \
     -d '{"text": "__adnd__ creature", "seed": 222}')
-TEXT5=$(echo "$RESULT5" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
+TEXT5=$(echo "$RESULT5" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
 echo "  Result: $TEXT5"
 
-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
 LOADED_COUNT_5=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
 echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_5${NC}"
 
@@ -224,34 +224,8 @@ echo "  After step 5:  $LOADED_COUNT_4 (cache, no change)"
 echo "  After step 6:  $LOADED_COUNT_5 (+$(($LOADED_COUNT_5 - $LOADED_COUNT_4)))"
 echo ""
 
-# Validation
-ALL_PASSED=true
-
-if [ "$LOADED_COUNT_1" -le "$LOADED_COUNT" ]; then
-    echo "${RED}✗ FAIL: Step 2 did not increase count${NC}"
-    ALL_PASSED=false
-fi
-
-if [ "$LOADED_COUNT_2" -le "$LOADED_COUNT_1" ]; then
-    echo "${RED}✗ FAIL: Step 3 did not increase count${NC}"
-    ALL_PASSED=false
-fi
-
-if [ "$LOADED_COUNT_3" -le "$LOADED_COUNT_2" ]; then
-    echo "${RED}✗ FAIL: Step 4 did not increase count${NC}"
-    ALL_PASSED=false
-fi
-
-if [ "$ALL_PASSED" = true ]; then
-    echo "${GREEN}🎉 ALL TESTS PASSED${NC}"
-    echo "${GREEN}Progressive on-demand loading verified successfully!${NC}"
-    EXIT_CODE=0
-else
-    echo "${RED}❌ TESTS FAILED${NC}"
-    echo "${RED}Progressive loading did not work as expected!${NC}"
-    EXIT_CODE=1
-fi
-echo ""
+echo "${GREEN}PASS: TXT loads progressively; YAML and cached TXT access preserve the loaded count${NC}"
+EXIT_CODE=0
 
 # Restore config
 cleanup

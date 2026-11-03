@@ -16,6 +16,7 @@ import nodes
 import numpy as np
 import torchvision
 from aiohttp import web
+from comfy_execution.graph_utils import is_link
 from impact.utils import to_tensor
 from PIL import Image
 from segment_anything import SamPredictor, sam_model_registry
@@ -510,6 +511,19 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
     return input_val
 
 
+def _constant_text(value, prompt):
+    """Read literals and direct core string constants without executing upstream nodes."""
+    if isinstance(value, str):
+        return value
+    if not is_link(value) or type(value[1]) is not int or value[1] != 0:
+        return None
+    source = prompt.get(value[0], {})
+    if source.get('class_type') not in ('PrimitiveString', 'PrimitiveStringMultiline'):
+        return None
+    text = source.get('inputs', {}).get('value')
+    return text if isinstance(text, str) else None
+
+
 def onprompt_populate_wildcards(json_data):
     prompt = json_data['prompt']
 
@@ -528,17 +542,19 @@ def onprompt_populate_wildcards(json_data):
                 inputs['mode'] = new_mode
 
             if inputs['mode'] == 'populate' and isinstance(inputs['populated_text'], str):
+                wildcard_text = _constant_text(inputs['wildcard_text'], prompt)
+                if wildcard_text is None:
+                    logging.info("[Impact Pack] Node %s: wildcard_text requires text or a core string constant. "
+                                 "Connect runtime text to populated_text.", k)
+                    continue
+
                 if isinstance(inputs['seed'], list):
                     try:
                         input_node = prompt[inputs['seed'][0]]
                         if input_node['class_type'] == 'ImpactInt':
                             input_seed = int(input_node['inputs']['value'])
-                            if not isinstance(input_seed, int):
-                                continue
                         elif input_node['class_type'] == 'Seed (rgthree)':
                             input_seed = int(input_node['inputs']['seed'])
-                            if not isinstance(input_seed, int):
-                                continue
                         else:
                             input_seed = find_input_value(input_node, prompt=prompt, input_type=int, input_keys=('int', 'seed', 'value'))
                             if input_seed is None:
@@ -549,19 +565,18 @@ def onprompt_populate_wildcards(json_data):
                 else:
                     input_seed = int(inputs['seed'])
 
-                inputs['populated_text'] = impact.wildcards.process(inputs['wildcard_text'], input_seed)
+                inputs['populated_text'] = impact.wildcards.process(wildcard_text, input_seed)
                 inputs['mode'] = 'reproduce'
 
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
                 updated_widget_values[k] = inputs['populated_text']
 
-            # Static text can share cache entries; preserve seeds for syntax markers and links.
-            populated_text = inputs['populated_text']
-            if isinstance(inputs['seed'], int) and isinstance(populated_text, str):
+            # Static text can share cache entries; preserve seeds for syntax and unknown outputs.
+            populated_text = _constant_text(inputs['populated_text'], prompt)
+            if isinstance(inputs['seed'], int) and populated_text is not None:
                 if impact.wildcards.is_static_text(populated_text):
                     inputs['seed'] = 0
             elif isinstance(inputs['seed'], int):
-                # Linked text that the last finished run received as static text reuses that run's seed.
                 seed = impact.wildcards.recorded_static_seed(prompt, k)
                 if seed is not None:
                     inputs['seed'] = seed
@@ -580,6 +595,9 @@ def onprompt_populate_wildcards(json_data):
                         if key in updated_widget_values:
                             widgets_values[1] = updated_widget_values[key]
                             widgets_values[2] = "reproduce"
+                            if "widgets_values_named" in node:
+                                node["widgets_values_named"].update(
+                                    populated_text=updated_widget_values[key], mode="reproduce")
 
 
 def onprompt_for_remote(json_data):
