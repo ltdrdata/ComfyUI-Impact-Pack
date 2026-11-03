@@ -2,6 +2,17 @@
 
 Comprehensive test suite for ComfyUI Impact Pack wildcard system.
 
+## Node unit tests
+
+Use Node 24 for all `tests/*.test.mjs` suites, including the VM-based seed-control,
+legacy SAM and connection-type tests. The validated runtime is Node 24.12.0;
+local Node 20.19.5 intermittently exited with SIGSEGV before assertions.
+Run from the repository root:
+
+```bash
+node --experimental-vm-modules --test tests/*.test.mjs
+```
+
 ## Standalone regression tests
 
 From the `tests/` directory, run `python3 -m pytest`.
@@ -98,8 +109,41 @@ inference and image previews. Both default to headless Google Chrome; add
 See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
 a running test server and are separate from the curl-based API integration tests.
 
-Wildcard cache and original-PNG cases check seeded selection, cache reuse, linked
-providers and native widget restoration in both modes:
+Wildcard seed-control unit tests load the real extension with core-hook spies.
+Use the runtime specified in [Node unit tests](#node-unit-tests).
+They check policy selection, argument/return forwarding and error cleanup without
+reimplementing core seed arithmetic. Promoted controls also check per-instance
+modes, nested bindings, native projection identity, graceful fallback when subgraph
+APIs are unavailable, and policy restoration before serialization or after an error:
+
+```bash
+node --experimental-vm-modules --test tests/wildcard_seed_control.test.mjs
+```
+
+Chrome cache and original-PNG cases check actual seed updates, cache reuse, linked
+providers and native widget restoration in both modes. Fixed-mode cases cover
+increment/decrement/randomize under both before/after timing, manual seed/text edits,
+and resuming automatic increments after leaving fixed. Edge cases check changing
+the policy while fixed, preserving it through native reload and resuming decrement;
+an upstream seed changing despite the node's fixed mode; and three prompts submitted
+by one Run click without automatic seed changes or repeated downstream execution.
+Promoted-seed cases run three fixed queues per scenario, including nested subgraphs,
+contrasting host/interior modes and both native restoration modes. Direct-node transitions
+assert the actual POSTed seed, since backend history can normalize it after population.
+Native promoted widgets retain core identity and bookkeeping. These cases cover
+fixed queues and manual invalidation; the frontend's populate/before projection
+recreation behavior belongs in a separate core reproducer, not this fix's tests.
+`tests/test_wildcard_cache_artifacts.py` checks that the original prompt POST is
+saved before output/preview assertions, including when either assertion fails.
+It imports the Playwright harness but does not launch Chrome or a server.
+
+Fixed also pauses automatic variation of choices in `populated_text`, even if the
+selected policy is randomize. Use populate with the expression in `wildcard_text`
+for automatic variation. Manual and upstream inputs retain their cache semantics:
+seed-dependent text follows seed changes, while constant text can reuse cached
+output. Inspire GlobalSeed remains an independent upstream control.
+
+Run the Chrome checks against an isolated server:
 
 ```bash
 python3 -m pytest tests/test_e2e_wildcard_cache.py -v

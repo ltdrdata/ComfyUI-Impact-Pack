@@ -4,6 +4,76 @@ import { customAlert, isBeforeFrontendVersion } from "./common.js";
 
 const is_legacy_front = () => isBeforeFrontendVersion('1.16.9');
 
+// Promoted controls run after the interior widget hooks in the same queue phase.
+// Restore before serialization, with a microtask fallback for errors/afterQueued.
+const paused_seed_controls = new Map();
+const wildcard_seed_modes = new WeakMap();
+let seed_control_phase = false;
+function restore_seed_control(control) {
+	if (!paused_seed_controls.has(control)) return;
+	control.value = paused_seed_controls.get(control);
+	paused_seed_controls.delete(control);
+}
+
+function finish_seed_control_phase() {
+	const redraw = seed_control_phase === 'afterQueued' && paused_seed_controls.size > 0;
+	seed_control_phase = false;
+	for (const control of paused_seed_controls.keys()) restore_seed_control(control);
+	// Core draws before this microtask; refresh restored controls before paint.
+	if (redraw && typeof app.canvas?.draw === 'function') app.canvas.draw(true, true);
+}
+
+function begin_seed_control_phase(hook) {
+	if (seed_control_phase) return;
+	seed_control_phase = hook;
+	queueMicrotask(finish_seed_control_phase);
+}
+
+function promoted_target(host, name) {
+	const graph = host.subgraph;
+	const slot = graph.inputNode.slots.find((slot) => slot.name === name);
+	if (!slot) return;
+	for (const id of slot.linkIds) {
+		const link = graph.getLink(id);
+		if (!link) continue;
+		const target = link.resolve(graph);
+		if (!target || !target.inputNode || !target.input) continue;
+		const node = target.inputNode;
+		const widget = node.isSubgraphNode() ? target.input : node.getWidgetFromSlot(target.input);
+		if (widget) return { node, name: widget.name };
+	}
+}
+
+function promoted_seed_source(host, name) {
+	const hosts = [];
+	while (host.isSubgraphNode()) {
+		if (hosts.includes(host)) return;
+		hosts.push(host);
+		const target = promoted_target(host, name);
+		if (!target) return;
+		host = target.node;
+		name = target.name;
+	}
+	if (name === 'seed' && wildcard_seed_modes.has(host)) return { node: host, hosts };
+}
+
+function promoted_wildcard_mode(node, hosts) {
+	let mode = wildcard_seed_modes.get(node).value;
+	let name = 'mode';
+	for (const host of hosts.slice().reverse()) {
+		const input = host.inputs.find((input) => {
+			const source = promoted_target(host, input.name);
+			return source && source.node === node && source.name === name;
+		});
+		if (!input) break;
+		mode = host.getWidgetFromSlot(input).value;
+		if (mode == null) return;
+		name = input.name;
+		node = host;
+	}
+	return mode;
+}
+
 if(is_legacy_front()) {
 	customAlert("An outdated version(<1.16.9) of the `comfyui-frontend-package` is installed. It is not compatible with the current version of the Impact Pack.");
 }
@@ -276,6 +346,13 @@ api.addEventListener("executed", async (event) => {
 
 app.registerExtension({
 	name: "Comfy.Impack",
+	setup() {
+		const original = app.graphToPrompt;
+		app.graphToPrompt = function (...args) {
+			finish_seed_control_phase();
+			return original.apply(this, args);
+		};
+	},
 
 	commands: [
 		{
@@ -717,6 +794,32 @@ app.registerExtension({
 	},
 
 	nodeCreated(node, app) {
+		if (typeof node.isSubgraphNode === 'function' && node.isSubgraphNode() && typeof node.getWidgetFromSlot === 'function') {
+			const original = node.getWidgetFromSlot;
+			node.getWidgetFromSlot = function (input, ...args) {
+				const widget = original.call(this, input, ...args);
+				if (!seed_control_phase || !widget || !input?.widgetId || input.link != null) return widget;
+				let seed, mode;
+				try {
+					const source = promoted_seed_source(this, input.name);
+					if (!source) return widget;
+					seed = source.node.widgets.find((widget) => widget.name === 'seed');
+					// Another host may have paused this shared control earlier in the phase.
+					for (const control of seed.linkedWidgets) restore_seed_control(control);
+					mode = promoted_wildcard_mode(source.node, source.hosts);
+				} catch {
+					// Optional native bindings may change; leave core behavior intact.
+					return widget;
+				}
+				if (mode === 'fixed' || mode === false) {
+					for (const control of seed.linkedWidgets) {
+						paused_seed_controls.set(control, control.value);
+						control.value = 'fixed';
+					}
+				}
+				return widget;
+			};
+		}
 		if(node.comfyClass == "MaskPainter") {
 			node.addWidget("button", "Edit mask", null, () => {
 				ComfyApp.copyToClipspace(node);
@@ -925,6 +1028,33 @@ app.registerExtension({
 							return 'populate';
 					 }
 			});
+
+			// Keep fixed prompts cached by pausing the core's automatic seed updates.
+			// Keep core hook bookkeeping and restore the user's selected control policy.
+			const seed_widget = node.widgets.find((w) => w.name == 'seed');
+			wildcard_seed_modes.set(node, mode_widget);
+			mode_widget.tooltip = (mode_widget.tooltip ? mode_widget.tooltip + '\n' : '')
+				+ 'Fixed also pauses automatic seed changes, including choices in populated_text. Use populate for automatic variation.';
+			for (const control of seed_widget?.linkedWidgets ?? []) {
+				for (const hook of ['beforeQueued', 'afterQueued']) {
+					const original = control[hook];
+					if (typeof original !== 'function') continue;
+					control[hook] = function (...args) {
+						begin_seed_control_phase(hook);
+						restore_seed_control(this);
+						if (mode_widget.value !== 'fixed') return original.apply(this, args);
+						const selected = this.value;
+						try {
+							this.value = 'fixed';
+							return original.apply(this, args);
+						} finally {
+							this.value = selected;
+						}
+					};
+				}
+				control.tooltip = (control.tooltip ? control.tooltip + '\n' : '')
+					+ 'Automatic seed changes are paused while wildcard mode is fixed.';
+			}
 		}
 
 		if (node.comfyClass == "MaskPainter") {

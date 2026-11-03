@@ -67,6 +67,9 @@ start servers or edit configuration.
 
 ## Prerequisites
 
+For the Node unit commands below, see the shared
+[Node runtime requirement](../tests/README.md#node-unit-tests).
+
 - A working ComfyUI installation with dependencies matching its requirements.
 - Impact Pack; also Impact Subpack for the Detailer test.
 - Python Playwright and Google Chrome. The scripts default to
@@ -132,9 +135,13 @@ Run CPU integrations separately from pytest's dependency stubs. The first uses
 real hooks/parser/cache keys with HTTP feedback and CLIP substituted; the second
 compares real conditioning, MODEL/CLIP patches and BREAK against core nodes.
 Chrome checks both restoration modes, reproduce/populate transitions and actual
-linked providers, including a text provider inside a subgraph. The wildcard node
-stays outside it. To repeat warm-cache cases with LRU, start `--cache-lru 10` and
-run the Chrome suite with `-k 'plain_text or populate_reuses'`.
+linked providers, including a text provider inside a subgraph. Promoted-seed
+cases put each wildcard node inside a native subgraph and run three fixed queues,
+then check manual edits without replacing native projection identity.
+Direct-node populate transitions assert actual submitted seeds.
+They include nested subgraphs, differing host/interior modes and positional/named restoration.
+To repeat warm-cache cases with LRU, start `--cache-lru 10` and run the Chrome
+suite with `-k 'fixed_mode_suppresses or populate_reuses or promoted_fixed_seed'`.
 
 Original tutorials are pinned to `ComfyUI-extension-tutorials` revision
 `ca31a3bae14dbede5366de4904dfedea2697b082`; `wildcard_tutorial_cases.py` checks PNG
