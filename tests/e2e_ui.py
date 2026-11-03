@@ -37,7 +37,6 @@ def ui(tmp_path, request):
     args = argparse.Namespace(base_url=os.environ.get("IMPACT_E2E_BASE_URL", "http://127.0.0.1:18188"),
                               browser_channel="chrome", headed=False, timeout=180, artifacts=artifacts)
     with browser_session(args) as browser:
-        browser.page.keyboard.press("Escape")
         yield browser, artifacts
 
 
