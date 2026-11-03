@@ -1,3 +1,5 @@
+import hashlib
+import json
 import logging
 import os
 import random
@@ -817,6 +819,81 @@ def process(text, seed=None):
         logging.warning("[Impact Pack] Wildcard expansion limit reached; check for circular references.")
 
     return text
+
+
+# Per wildcard node: upstream fingerprint and seed of the last finished run whose linked
+# populated_text had no seed-dependent syntax. Earlier runs don't matter because ComfyUI's
+# default and classic caches drop results that the current prompt doesn't use.
+static_linked_text_seeds = {}
+
+
+def is_static_text(text):
+    return '{' not in text and '__' not in text
+
+
+def _may_change_with_same_inputs(class_def):
+    if hasattr(class_def, 'GET_BASE_CLASS'):
+        from comfy_api.internal import first_real_override  # only V3 nodes have GET_BASE_CLASS
+        return first_real_override(class_def, 'fingerprint_inputs') is not None
+    return hasattr(class_def, 'IS_CHANGED')
+
+
+def _is_link(value):
+    return isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and isinstance(value[1], int)
+
+
+def _validated_input(value):
+    # The hook sees the prompt before validation, nodes see it after. Validation unwraps
+    # list widgets and casts FLOAT widgets, which JSON sends as 1 for 1.0.
+    if isinstance(value, dict) and '__value__' in value:
+        value = value['__value__']
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return value
+
+
+def linked_text_fingerprint(prompt, node_id):
+    # Like ComfyUI's cache, equal upstream inputs are trusted to produce equal text unless
+    # an upstream node declares IS_CHANGED/fingerprint_inputs.
+    link = prompt[node_id]['inputs']['populated_text']
+    if not _is_link(link):
+        return None
+
+    upstream = {}
+    pending = [link[0]]
+    while pending:
+        upstream_id = pending.pop()
+        if upstream_id in upstream:
+            continue
+        node = prompt.get(upstream_id)
+        class_def = nodes.NODE_CLASS_MAPPINGS.get(node['class_type']) if node is not None else None
+        if class_def is None or _may_change_with_same_inputs(class_def):
+            return None
+        upstream[upstream_id] = [node['class_type'], {k: _validated_input(v) for k, v in node['inputs'].items()}]
+        pending += [v[0] for v in node['inputs'].values() if _is_link(v)]
+
+    return hashlib.sha256(json.dumps([link, upstream], sort_keys=True).encode()).hexdigest()
+
+
+def recorded_static_seed(prompt, node_id):
+    record = static_linked_text_seeds.get(node_id)
+    if record is not None and record[0] == linked_text_fingerprint(prompt, node_id):
+        return record[1]
+    return None
+
+
+def remember_static_linked_text(prompt, node_id, text, seed):
+    # Direct doit() callers and expanded nodes have no prompt entry to learn from.
+    if node_id not in (prompt or {}):
+        return
+
+    fingerprint = linked_text_fingerprint(prompt, node_id)
+    if fingerprint is not None and is_static_text(text):
+        static_linked_text_seeds[node_id] = (fingerprint, seed)
+    else:
+        # Also covers upstream nodes that break ComfyUI's cache contract and turn a
+        # recorded upstream state into syntax.
+        static_linked_text_seeds.pop(node_id, None)
 
 
 def is_numeric_string(input_str):

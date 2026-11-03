@@ -2682,6 +2682,7 @@ class ImpactWildcardProcessor:
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"],),
                     },
+                "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
                 }
 
     CATEGORY = "ImpactPack/Prompt"
@@ -2699,6 +2700,7 @@ class ImpactWildcardProcessor:
 
     def doit(self, *args, **kwargs):
         populated_text = ImpactWildcardProcessor.process(text=kwargs['populated_text'], seed=kwargs['seed'])
+        wildcards.remember_static_linked_text(kwargs.get('prompt'), kwargs.get('unique_id'), kwargs['populated_text'], kwargs['seed'])
         return (populated_text, )
 
 
@@ -2718,6 +2720,7 @@ class ImpactWildcardEncode:
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"], ),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
                     },
+                "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
                 }
 
     CATEGORY = "ImpactPack/Prompt"
@@ -2742,6 +2745,7 @@ class ImpactWildcardEncode:
         populated = kwargs['populated_text']
         processed = []
         model, clip, conditioning = impact.wildcards.process_with_loras(wildcard_opt=populated, model=kwargs['model'], clip=kwargs['clip'], seed=kwargs['seed'], processed=processed)
+        wildcards.remember_static_linked_text(kwargs.get('prompt'), kwargs.get('unique_id'), populated, kwargs['seed'])
         return model, clip, conditioning, processed[0]
 
 
