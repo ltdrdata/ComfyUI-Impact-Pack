@@ -385,7 +385,8 @@ The checks allow harmless removal of unused sockets while rejecting changed
 selection or activation of a previously empty branch. They pass with PR #1252's
 revised implementation and fail with the original `45afb30` selection clamping.
 
-Connection-type restoration checks need no models:
+Connection-type restoration and execution checks need no models. Start the
+isolated server with `--cache-none` so the execution cases cannot reuse results:
 
 ```bash
 node --experimental-vm-modules --test tests/connection_types.test.mjs
@@ -402,6 +403,16 @@ value representations, and links while restoring every data input/output type.
 The checks use the shared browser fixture and existing native export/widget
 helpers. The unit checks cover unavailable source nodes and
 slots, saved link types, and resolving an unknown type on a later connection.
+
+Ten additional consumer-first cases execute each restored node after both
+native loads, in both restoration modes. Queue history and browser text must
+show both branch selections (42/7), true/false comparisons, and last/first
+selection from the two-item list [42, 7]. Control Bridge must pass, block and
+resume its value in Stop mode. Mute/Bypass checks observe real browser
+continuation requests, downstream node modes and resumed outputs; they do not
+mock websocket events or accept arbitrary execution errors. The native exports
+also retain widget arrays, named values and links. Use `-k consumer_executes`
+to run these execution cases alone.
 
 Legacy SAM compatibility tests use the separate **Open in SAM Detector** dialog
 and the **Impact SAM Detector** button inside **Menu → Edit → Clipspace**:
