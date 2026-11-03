@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="0.305" timestamp="2026-11-03T17:21:13.678120+09:00" hostname="hyewon"><testcase classname="test_wildcard_cache_artifacts" name="test_original_post_survives_output_verification_failure[output]" time="0.155"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou0/failed-request.json'">test_wildcard_cache_artifacts.py:55: in test_original_post_survives_output_verification_failure
+    assert json.loads((ui.artifacts / "failed-request.json").read_text()) == request
+/usr/lib/python3.12/pathlib.py:1029: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/usr/lib/python3.12/pathlib.py:1015: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou0/failed-request.json'</failure></testcase><testcase classname="test_wildcard_cache_artifacts" name="test_original_post_survives_output_verification_failure[preview]" time="0.001"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou1/failed-request.json'">test_wildcard_cache_artifacts.py:55: in test_original_post_survives_output_verification_failure
+    assert json.loads((ui.artifacts / "failed-request.json").read_text()) == request
+/usr/lib/python3.12/pathlib.py:1029: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/usr/lib/python3.12/pathlib.py:1015: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou1/failed-request.json'</failure></testcase><testcase classname="test_wildcard_cache_artifacts" name="test_returns_the_original_seed_instead_of_normalized_history" time="0.001" /></testsuite></testsuites>

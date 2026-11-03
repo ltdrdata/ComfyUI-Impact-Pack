@@ -1,0 +1,15 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/sampling/candidate
+PASS: UI Run completed (222cb6d1-2732-4ea3-b126-ecc5022d3c56)
+candidate 1 513 False
+PASS: UI Run completed (080e18f5-9032-4ea0-b906-0b6b2aa0c481)
+candidate 2 513 True
+PASS: UI Run completed (8ccccd3b-d02c-4a0a-b9f0-e95b75a4659a)
+candidate 3 513 True
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/sampling/baseline
+PASS: UI Run completed (ab935da7-9961-410a-af07-1381f767eb65)
+baseline 1 513 False
+PASS: UI Run completed (145f3d35-cdf0-4783-98aa-bbca3c87a06d)
+baseline 2 514 False
+PASS: UI Run completed (081fda70-3554-4101-9e9c-f9c327b8394f)
+baseline 3 515 False
+Six actual promoted-seed captures and twelve output PNGs verified.

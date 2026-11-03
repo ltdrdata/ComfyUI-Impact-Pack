@@ -1,0 +1,21 @@
+TAP version 13
+# Subtest: /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs
+not ok 1 - /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs
+  ---
+  duration_ms: 1125.267122
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: ~
+  signal: 'SIGSEGV'
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1128.480072

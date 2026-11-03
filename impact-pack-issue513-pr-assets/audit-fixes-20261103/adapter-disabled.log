@@ -1,0 +1,108 @@
+TAP version 13
+# (node:2149462) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+not ok 1 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 3.986513
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:182:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'decrement'
+    - 'fixed'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'decrement'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:191:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+  ...
+# Subtest: ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+not ok 2 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.493973
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:199:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'randomize'
+    - 'fixed'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'randomize'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:211:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+not ok 3 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.326176
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:182:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'decrement'
+    - 'fixed'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'decrement'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:191:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+not ok 4 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.231847
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:199:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'randomize'
+    - 'fixed'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'randomize'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/adapter-disabled/tests/wildcard_seed_control.test.mjs:211:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 47.695331

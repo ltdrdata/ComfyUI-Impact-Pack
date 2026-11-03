@@ -1,0 +1,11 @@
+{
+  "head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "sha256": {
+    "js/impact-pack.js": "a5d0597478ce76db86dea718314d8a99961b204fe18a9a31af58384dda276a8b",
+    "tests/wildcard_seed_control.test.mjs": "14aa33e90917dd0d919ed836323304d15a1cf22f3863ae7a37925d23bb22055e",
+    "tests/test_e2e_wildcard_cache.py": "f6ff4a52ef29c4ad553347590fb756fd3657b87525b8f0840c510d2984885426",
+    "tests/README.md": "58edb21968596ddadcd15e5fa13b5684cd5a455c6074151b991dd1d3a12bde90",
+    "docs/E2E_TEST_STRATEGY.md": "c9e4462a32bf76eda6ad4f740dc5205ee1d268ab50bdc0033a20d61a2f2e3bda"
+  },
+  "remote_writes_prohibited": true
+}

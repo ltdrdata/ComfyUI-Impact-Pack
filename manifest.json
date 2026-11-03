@@ -8386,5 +8386,2625 @@
   "subgraph-fix-20261103/verify_publication.py": {
     "size": 3856,
     "sha256": "cced4a9af037d481b6d4cb564ba88545e5a16f06f1251691f465ab0076926894"
+  },
+  "audit-fixes-20261103/adapter-disabled.json": {
+    "size": 471,
+    "sha256": "d732356cadb7a97c7188ccdba6fee520ae2d129b3ce2886e1b9920ee8ca1c85f"
+  },
+  "audit-fixes-20261103/adapter-disabled.log": {
+    "size": 4203,
+    "sha256": "d23630508d39d08ea944dfc3eb5b172cdc1cb9ebdf091b897c450ed53780a74b"
+  },
+  "audit-fixes-20261103/artifacts-green.log": {
+    "size": 1319,
+    "sha256": "d29a4f5c8b5c3f07edd3ad63ef0d8d19c4c26f07484effc069a5e50cbb796f93"
+  },
+  "audit-fixes-20261103/artifacts-green.xml": {
+    "size": 634,
+    "sha256": "0bcfd10a851d6761a415b1c8f37dc787c4cf5e64129e5259d9c82cdc70d8d863"
+  },
+  "audit-fixes-20261103/artifacts-red.log": {
+    "size": 3004,
+    "sha256": "bde7f5219de7927e9913627854850e27ee182c5a038080ce36761332b56c117e"
+  },
+  "audit-fixes-20261103/artifacts-red.xml": {
+    "size": 2120,
+    "sha256": "17e417293df85667fe7762d29c6b5903146cd792def4a5e21fe63677b74f8c05"
+  },
+  "audit-fixes-20261103/artifacts-rgr-green.log": {
+    "size": 1323,
+    "sha256": "41dabc3e6566fbd929adc972379fc3a71c212c02d8d98ebd9f03c1839147e815"
+  },
+  "audit-fixes-20261103/artifacts-rgr-green.xml": {
+    "size": 634,
+    "sha256": "aa1014aa4b3d355c7f30b11e9d9deb9306262a16d62a4ddd190216abda5461c1"
+  },
+  "audit-fixes-20261103/artifacts-rgr-red-again.log": {
+    "size": 2990,
+    "sha256": "745f272d3d495d0d765f5b72ea865ddf13f6de0ff25ec6bc3c253d29d8a6d92a"
+  },
+  "audit-fixes-20261103/artifacts-rgr-red-again.xml": {
+    "size": 2108,
+    "sha256": "1c24c966ae592796fd497fb72439d8c97f25769127073cea6cadd68c9e6fbd74"
+  },
+  "audit-fixes-20261103/artifacts-rgr-red.log": {
+    "size": 2984,
+    "sha256": "b339af28bf80540c2b98167883fbb9e6ae5e915de10dc87e2f564c697c21f197"
+  },
+  "audit-fixes-20261103/artifacts-rgr-red.xml": {
+    "size": 2108,
+    "sha256": "b2128ba8f0548cbe5d8608970c89e2ff1ba14aac65cbb8bd67e52dd4c0267b11"
+  },
+  "audit-fixes-20261103/artifacts-rgr.json": {
+    "size": 2270,
+    "sha256": "af20cfcbb6800d2a1cc6fc936356fcd3aa76bfe8043b4b42632afd12c77fce16"
+  },
+  "audit-fixes-20261103/before/js/impact-pack.js": {
+    "size": 34990,
+    "sha256": "a5d0597478ce76db86dea718314d8a99961b204fe18a9a31af58384dda276a8b"
+  },
+  "audit-fixes-20261103/before/tests/test_e2e_wildcard_cache.py": {
+    "size": 30170,
+    "sha256": "f6ff4a52ef29c4ad553347590fb756fd3657b87525b8f0840c510d2984885426"
+  },
+  "audit-fixes-20261103/before/tests/wildcard_seed_control.test.mjs": {
+    "size": 14832,
+    "sha256": "14aa33e90917dd0d919ed836323304d15a1cf22f3863ae7a37925d23bb22055e"
+  },
+  "audit-fixes-20261103/before.json": {
+    "size": 616,
+    "sha256": "cf3c6b7933d7b45e40bdad2a72f6fb64bad117f8a520d6e934a38d071cfcc7c0"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/final.png": {
+    "size": 76904,
+    "sha256": "a1c83badcf624488d0129b180cff03a91cf48b5874fcdb6ba1eeac12fd2f4d9a"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15288,
+    "sha256": "c0b5aff292135c1b553ecd2edbf2281659479a6cdc137d24f034bdf0fff0c815"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15351,
+    "sha256": "238356ad4c276098ef1e1e7fd43b4086f32a1312c360bcbb1e8bed1ccfe1a1ea"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15351,
+    "sha256": "26c0a0f14f219369287baa8fcee77de5fff532303c16a1b2d95425d5af0c452d"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15314,
+    "sha256": "40aa4c21b662084c5b406c5b88b6835bcd7778a6d442c63c6f5e9f813f01caff"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "af962f1f10307ed7ed722d2b772c053cd294fffc29fa3272323f5e587a3860f5"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "af962f1f10307ed7ed722d2b772c053cd294fffc29fa3272323f5e587a3860f5"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "58241ac74ed889a2764b415ed0ddfd408ac45303771ade6cd3def2796d1101f4"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/final.png": {
+    "size": 76066,
+    "sha256": "54bb819a015845cd71ca1b15230e204b4640b90d7e54efdc6d3b090c3012cf11"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "1ee24d1194e7ea8ef6cf7c2a575f84dc5654d8ee0b318c43a63e9cb63875959c"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10452,
+    "sha256": "16ad7f5944fdf02963f4eedacfbab104981e66c09e4bb462e68249b86bc7a9c7"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10452,
+    "sha256": "6e1df434c0619decccd154c46f32b78f669736be16fde5b5e10332bdce9c15d7"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10405,
+    "sha256": "eeb6347a7586b9467e4c36590e701702afb2dff034b8045965c5c121d73f779f"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "70d9bdfb734eb49b8d365f10f1731198d5cd279e3c070467910f496eeb9b84ef"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "70d9bdfb734eb49b8d365f10f1731198d5cd279e3c070467910f496eeb9b84ef"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "a4644fa83c5a85e69530d6d2a7493627885e52720e30f16bd08ee32abbbf6b8b"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green.log": {
+    "size": 2323,
+    "sha256": "33acfd7508e5a337625f2d0f0373a29288f092c8fe34763f3ce148142c3fd149"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-green.xml": {
+    "size": 554,
+    "sha256": "a0f51b6b6e209613febe6f6d2aedd2faac192d9adba52134a222f2fbdf5eba27"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/final.png": {
+    "size": 99186,
+    "sha256": "79dc0b3348bd1b082d86c0a0cdd28686d5d1ec6b3f9cd7ba1fd14730dfab6489"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15288,
+    "sha256": "ffa692b710e21da6cc1e9f522ad0bf2a188b18654fe8b1f2f575f41a1e26979d"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "795c579ddf2d4dd27fb6afea3e2348d12710bd9366ce6dab868c3731d246da30"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9490,
+    "sha256": "44d8a94ea3d949ac2907edc1866b7ffbf2f246878fd1c25751eb03a6adef5def"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "1f8c23a54eda0e4e8370a3571adeaa0ceae822fc4f436e047156464c37b49fcc"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/final.png": {
+    "size": 87915,
+    "sha256": "6ddbaf370e6e4acd267cbb15fde4ac09b381f6056d2969c77c413b75029fe758"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "2a34b9464a4d6cd22dd7ded56af43a10f9c147dd995bcfd49a10d916b30ae092"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "72bbfab4f640d55d127d1bf7d7aa7c1fcb77a6604c0ad91aac8e966218f7da43"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6191,
+    "sha256": "3abfe3faf1358b2a90d61a90ef191b885a5561145817293b0fbb4cb501bd55ac"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "1db99c56843c276dc5fd87a9ef3a62f20dcc1f78e7d48c314c21ea24f978165b"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/final.png": {
+    "size": 99192,
+    "sha256": "8d6a019815534d1db5ed1f36b5a7edbbc6e0ce8cf46b578f6e2c6279a754740a"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15289,
+    "sha256": "a0dccd3b41f3f9150d2e6a4482261fda746ff099fd56e3604158db09af4ddac7"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "a343b1a41888b48d77798a38f2e8c0cfdaf07090e6c835318d444f9b85ce046e"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9490,
+    "sha256": "f3f19cd127751dffc90b2a16531f60650723bb2fb796e150728362e421ff2d7f"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "14b048fe4db5361f70c648db77831140ea7111b9b85b5f486fd6fe57509d5808"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/final.png": {
+    "size": 87950,
+    "sha256": "8a1512763425cf7d0ab9959e15cd25c00b7c662767e7c5cffa0a3167ede036c5"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10407,
+    "sha256": "7960fd717336d28ea2720cac75d9039a70a9256fb040032f258ecd19edc0d17d"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "b116998aa3b62c7cae6058245bf7a46adc08307839559c175d5e634007e91d9d"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6191,
+    "sha256": "67ab0b3908c83447031d3b86876522ab458aef2ea86c7543cf8b5fa3e5ed15b0"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "68b45ea05c75da5da9175283efe4264af835844abb06fa1355e4a7c9193ef372"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again.log": {
+    "size": 5022,
+    "sha256": "d711a6a96145dff435267b07400e4b5e5cc1604425367b00b0476eb650429e74"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red-again.xml": {
+    "size": 2726,
+    "sha256": "23cf645af42015b9b0c8c4571322b09620ff799c7f513897a7d838d2f9f43a65"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red.log": {
+    "size": 5004,
+    "sha256": "03a6dc00942f0d48a37a57e5a0b7cdec0f15eee051060f3c9f75e0ad5ab0d93d"
+  },
+  "audit-fixes-20261103/browser-mode-rgr-red.xml": {
+    "size": 2726,
+    "sha256": "acace4093ebe89466dd95524b455fd21e8c68dda45d1f45d401cc98f062cc996"
+  },
+  "audit-fixes-20261103/browser-mode-rgr.json": {
+    "size": 2736,
+    "sha256": "e9dcdb51a07879183eea67927ac0cf4e3e1c1fc25f6a8a69b40fa6764e936ea3"
+  },
+  "audit-fixes-20261103/candidate-source.json": {
+    "size": 1083,
+    "sha256": "2f996f36faddb39a0a36c21e853d33bf728bbe7ce9fe9d5c0d94d6113d86bc7e"
+  },
+  "audit-fixes-20261103/catalog-browser.log": {
+    "size": 3471,
+    "sha256": "734976c613ca2ad5081ecce59c48fb4d9119f39648ae9c9bb65223c529702ce1"
+  },
+  "audit-fixes-20261103/catalog-browser.xml": {
+    "size": 2043,
+    "sha256": "b4472f4e6204fb4b23a7fdc423be1308bfb5a16bc7e6516c908d5b6ab335748c"
+  },
+  "audit-fixes-20261103/catalog-driver.log": {
+    "size": 44,
+    "sha256": "2d4be8fc0e67fe4b0c3f28de7e4bf137a9850dfe4ff7827a2768d45e0ead79e0"
+  },
+  "audit-fixes-20261103/classic-driver.log": {
+    "size": 46,
+    "sha256": "61d709a50ad4f630a34d6967d73a68fdef7e8701e43303d3f18ee49ac8a7d521"
+  },
+  "audit-fixes-20261103/commit.json": {
+    "size": 1401,
+    "sha256": "29405da8370176b3963c7e2ccb404fc4a2386a126e0c2804a85469fb1cda58e4"
+  },
+  "audit-fixes-20261103/finalize.py": {
+    "size": 7990,
+    "sha256": "30c6412bd694262828d2791d9ffe0a2beb90772e6495c18a962cbe4777497764"
+  },
+  "audit-fixes-20261103/findings-resolution.json": {
+    "size": 1586,
+    "sha256": "c1af01fadec71c4e777c09e6ad951d5ab88d0923e304e499c0a84dc37eb25298"
+  },
+  "audit-fixes-20261103/lru-driver.log": {
+    "size": 38,
+    "sha256": "5889d2d55306afc67b8e392adaf66e60f05cc3ab8fd96fa0f9fb91a987b6c71e"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/final.png": {
+    "size": 77033,
+    "sha256": "af796002bd22a9a1b71188daf43929f06c7d4369a167174ef1bfe5d6e6aed16e"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15289,
+    "sha256": "2719a75db58148d4dfdfb28ea43752ea610baf949684a42a0ecf7acb5adac94f"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15352,
+    "sha256": "56c1b4c02d90e04d471da631da5a083ebb8caac40da84b89256d00b4af2cdb77"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15352,
+    "sha256": "b4a8495ba5f22356a6bd212e0d70e583eef0cd09cb8a0d30bc1f21c27a67937d"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15315,
+    "sha256": "1518f56fd4a8c0e03a397bea6b363ecd5215c9046c1b47424f0da22e9a09cbc2"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "982e130ce21fc5a22a8f852cfc950a49d2ac6c6357d1b72979a5954e74fc6a37"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "982e130ce21fc5a22a8f852cfc950a49d2ac6c6357d1b72979a5954e74fc6a37"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "99bd007f574fe96b8b3344a7993d09df85c134fe80a5775ab3205e37ffe82822"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/final.png": {
+    "size": 76038,
+    "sha256": "1e1745c3343904901c44940ec5d55dc4601cb1fc7d45ba9e86e2bf29ab573827"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "36ae9bc7953c3f9a7d9a445c347f82a2ce7adb52bb826184c381d01be520b150"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10452,
+    "sha256": "ac372e28676aa69f3a0ba910b1610cbc787be41eeab4058eb73e4c90db9baa86"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "a728487da6c49ce4d3093550790f243842335992db6245ffcb5aa8dbf10d3ae4"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "3d2c78d65cbca43e1780600c52bd579d2243e2374c8e1195ec121d5b0433e0b0"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "4a458475edeeb9584fd6d89999b7259fc77c57f7c7acfcf74ed3c526cc6e9f0a"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "4a458475edeeb9584fd6d89999b7259fc77c57f7c7acfcf74ed3c526cc6e9f0a"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "9b5bc5f9cce24766f5a17a840b8e26ec8342406fb22af444329e95edfb14780c"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/final.png": {
+    "size": 76904,
+    "sha256": "a1c83badcf624488d0129b180cff03a91cf48b5874fcdb6ba1eeac12fd2f4d9a"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15288,
+    "sha256": "a1da03f668a52ebe8a3f209202795f47bc009d989c72634e6d5a2b895eef1645"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15351,
+    "sha256": "e8b0a49033c96de8d2605d4824c7f898b24041903ae5453b2e568e007c2a94d5"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15351,
+    "sha256": "78693b0612ee15bf60b2a26c0dd672a9e4f28730d46f034bf9ac993a7d2d8fea"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15314,
+    "sha256": "f444fcba9e1a664f328bee09becf1c22784ad79caedaec566bc177ec50615d25"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "0ec4bfd500f64bb637faca1df4d8ce49008ec6c72f75225976ec44eb2b34bb7f"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "0ec4bfd500f64bb637faca1df4d8ce49008ec6c72f75225976ec44eb2b34bb7f"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "0bc20c1d9b5b2c657d6a207a3da37ad918a58d88e2fb1dd30e387846e520535b"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/final.png": {
+    "size": 76154,
+    "sha256": "1c00fad774e3371897a79bbf63dda06122109330c4973841dc11052787f488e5"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "f3bb4dd1c91eec56e2ec8e7dac965a8902425d30eddad6da048d8f8b9d56448a"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10452,
+    "sha256": "bd056a75360a28881153dd5990719d50095af11e22508c4cd6ae3c2456374fd1"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10452,
+    "sha256": "85baa579ee7b7c2178d27d378f87f3a2d2d2ebe154dbe97784c1ae854407075b"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10405,
+    "sha256": "6eea008dfbf65701f08549df42011eba268476ed5543e55686cf5f0ea659db49"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "d6960548070a0b36b4c3f4623a2f9a219a8e2b354e92fa35a40b2a0f0c4b65db"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "d6960548070a0b36b4c3f4623a2f9a219a8e2b354e92fa35a40b2a0f0c4b65db"
+  },
+  "audit-fixes-20261103/mode-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "f2cb72350004f694db3ed177217d9ccdd85b5f7e67aaaae299232989cd4bf731"
+  },
+  "audit-fixes-20261103/mode-browser.log": {
+    "size": 2605,
+    "sha256": "3fadcf93597cbcd09755ea0fd9b7a85b2d2a5922125e2c7e5f0f94c891d37adc"
+  },
+  "audit-fixes-20261103/mode-browser.xml": {
+    "size": 887,
+    "sha256": "8d90c2c011c07eb5122fa03060b08eda279375263379cfe7fb76973e8a31898b"
+  },
+  "audit-fixes-20261103/mode-driver-final.log": {
+    "size": 38,
+    "sha256": "10663ec7bf006edf0942af7881f96b9ca87ae0681ad07216d5f3a2109c045602"
+  },
+  "audit-fixes-20261103/mode-driver.log": {
+    "size": 38,
+    "sha256": "44d1ef0e471f0ee668103376c447412e943233d4d84f488dac87a358af3c5a55"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/final.png": {
+    "size": 76883,
+    "sha256": "ccd842fc23eda58298a51c34f4efe2dba24c3ac726fe8cc0fb0d1a7fadf8a4b0"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15316,
+    "sha256": "a19e016a5dab5b73e074c71d88ed3e20b875a8269edc42f59f5e57917a4e3caa"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15352,
+    "sha256": "f5a6a53d80b6de4c792f69a1842f65ccaf33f224ec2763eda0b76dd286b0502e"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15352,
+    "sha256": "163add58656dc0eacf9524f943d7bb5922d36449ad3a596e33d35e9d3bcb903b"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15315,
+    "sha256": "c7c7f1e77a881ed3f5932cb72f40efc5091ff1923929a39493142b21e177132c"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "284634c2bdd429979917e35272107ea94136c6f0f936942878d1c10b78bd8055"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "284634c2bdd429979917e35272107ea94136c6f0f936942878d1c10b78bd8055"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "b69445021f659e3890a9bb2b32f622147815b9687438aeaf34ef383db7b56171"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/final.png": {
+    "size": 76147,
+    "sha256": "99108b9ec2643a48f8db54f7c060c837dedb23f8952375f6cf4f035522b7c12f"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "bcec171985ff351fd6de4309cb47122110cd01ae96024dedf1d7f6826679b24b"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10452,
+    "sha256": "29dce140315a4bef1ba94579bb8aec215b5a41488f6a8aaffd6dbe0dfb65c0f7"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "18d7f08e70fa0201784e6cc2134bf148366f1bfde8de100046b1b1aeb6c3960b"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "21430fd96fbae018c0afe4027fb369c435474bdf021544839b205df13f1e010b"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "df462a17c9b074ec86ac101ab691476e9a05996c4a0da24bfe0d903c8b52162d"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "df462a17c9b074ec86ac101ab691476e9a05996c4a0da24bfe0d903c8b52162d"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "82f2e004d44e01f7dd4af6b040f6815c376191d168f07300f0bcee3efaf4b29f"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/final.png": {
+    "size": 77048,
+    "sha256": "f4210ffa239740ba126ad050732a39c78709c7c35273faac38b91f7a66952a05"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15288,
+    "sha256": "92fdf072d36d15a75694a766bb78f9697e04a6f718bf89bdaceaf8f0c58ce2ff"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15351,
+    "sha256": "e48d7b82ce0438baec5c08c09d843542df91a1d1733e53f5614275015b5abe06"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15351,
+    "sha256": "1ea08ea2ee4f655020dce31bc34b6525ef88933d097fe94f653ccce7c8d40c5a"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15314,
+    "sha256": "40139c27ed39f92fb6d8faddc4daf7cb11b20858f47b07e786d5affb41dc2674"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "9575545d33c7026fac381168eb7da937480e5870cbbb6cfd970d57245abd1b78"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "9575545d33c7026fac381168eb7da937480e5870cbbb6cfd970d57245abd1b78"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "6435c245d30d934f5141bc8d89c6c8e75fa657c7cc7e53c857479764bc1169b4"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/final.png": {
+    "size": 76115,
+    "sha256": "5c12e9da39e222136a840cd329f0c6f787ba49cdfab29ca24abe7db4a3d7c5de"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10406,
+    "sha256": "a5f6beb51fa0e2d2e13c7208810bc2c5a99e9428a6ff6fd4c67b1addbb403c07"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10452,
+    "sha256": "244ed6c4795564c9b7b7edb84dbc625ed611fcd01cdc7cb492df0b6f59a9e060"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10452,
+    "sha256": "6e1870dff5e176d035cbaa7784e5e15feacadb65b912acc0c5238b25e28f2654"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10405,
+    "sha256": "9dc34cab559e06861c0bd934b95216ed733f5bd7502e54cd9e790ff9eda21f87"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "139287a9b4c84e610bf7d7190a6222ce12eafd758e3ecf1715da9a20c0168f11"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "139287a9b4c84e610bf7d7190a6222ce12eafd758e3ecf1715da9a20c0168f11"
+  },
+  "audit-fixes-20261103/mode-lru-browser/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "c2b2438cd2b6561cd5b8fa7f9cfdbbd90336a768190cbd5de233f60d99c5a8b9"
+  },
+  "audit-fixes-20261103/mode-lru-browser.log": {
+    "size": 2609,
+    "sha256": "a3cff42fafdef7b608491447db0aa8443c9ce7ff41252dfb75c7900c3e64b3a8"
+  },
+  "audit-fixes-20261103/mode-lru-browser.xml": {
+    "size": 887,
+    "sha256": "164940abcd890815a9b6efe890ee94d0559cad6128b4e574ebca7f812a2de649"
+  },
+  "audit-fixes-20261103/mode-lru-driver.log": {
+    "size": 46,
+    "sha256": "19dc35d66bad427302b2695691b83228f55bbc4d9fd46300bcc6d328e0522213"
+  },
+  "audit-fixes-20261103/mode-rgr-final-driver.log": {
+    "size": 178,
+    "sha256": "84305ef65c23a34150f6cabdca53ce1e116e89ea402bde5d2416cc0c81ff1469"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-1.log": {
+    "size": 13529,
+    "sha256": "840d1ed29a193c2f2f1d66f4e1a29fff364ff023dae44f7f89b2af0a07d5afe7"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-10.log": {
+    "size": 13536,
+    "sha256": "22941bb5b064148722d1645fee63255f12a3550ae7bcb93f03db9a60602e78a1"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-2.log": {
+    "size": 13537,
+    "sha256": "014e045affc7d1a1fb1a1a8667bea23b695679b80f7d26d1fafbd7ae56d0f966"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-3.log": {
+    "size": 13531,
+    "sha256": "2739a60c0c96725182aaed893e2cff9eae8846707493e431267c025fb073c229"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-4.log": {
+    "size": 13528,
+    "sha256": "057a918c78a40f8bb97bdbd4dfa01b3320ddf5a5fe4ebbe40a2920c6f7143fca"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-5.log": {
+    "size": 9307,
+    "sha256": "f59002dfa0e6a8ae895972b34ebf42edfa478376214ba04a8c9defb8da8f138e"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-6.log": {
+    "size": 13524,
+    "sha256": "0514a29721f14e987064d07d7cb2e39144bd6a14e08ff20f63b38b798af1f159"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-7.log": {
+    "size": 13529,
+    "sha256": "a14b94e38cd50ef443c9150d98a6ef230337c4f9faa90fd28734f0671ccad064"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-8.log": {
+    "size": 13534,
+    "sha256": "cc1fc61902b4791fbaf41cf178b8480fd7e6041b38e9c3379d4233779c2942bb"
+  },
+  "audit-fixes-20261103/node-20.19.5-soak-9.log": {
+    "size": 13533,
+    "sha256": "a59198670581fc3319e23b0eee61a1b830723f55dfcff62f87a4066c3c6de9eb"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-1.log": {
+    "size": 6446,
+    "sha256": "539dadf2638aa8cdf0ca60b555e79b8acfc40fc6d85aa5cadc1defa119ea15d0"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-10.log": {
+    "size": 6455,
+    "sha256": "2e2814415a9c1fd9707253061b907888ec526db8ae2ab71e8c7bdca3a658dd73"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-2.log": {
+    "size": 6455,
+    "sha256": "008300cb1fe950f5d0e991b9cfa8c32e6886a08872f70aba9bff0fdbc83a8f65"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-3.log": {
+    "size": 6453,
+    "sha256": "0f4bc60f0710648d8acd578a71a63e40024bd7c30e7cb69ede43bb2d57d6cc12"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-4.log": {
+    "size": 6447,
+    "sha256": "050efa8abf458c48a16807ef5d0dac29330d95201b03df097bf28bae9888764c"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-5.log": {
+    "size": 6445,
+    "sha256": "6519061cea40ac8ecb982472d5b8e7e9ebb338b3d60486500b4c467ec5dbbd5b"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-6.log": {
+    "size": 6453,
+    "sha256": "e63c9b913f0640589e1afb48405fff336b0f2c004e3b1ca791bde572a0ef565b"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-7.log": {
+    "size": 6452,
+    "sha256": "40dd5292e6f2c07f62c3381740814e27fa7f662c03e68685892331b590bb6199"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-8.log": {
+    "size": 6449,
+    "sha256": "11ca521e63f2211caac03c997136f99e23be73139ecd098ba2bcc6eb5abf925d"
+  },
+  "audit-fixes-20261103/node-24.12.0-soak-9.log": {
+    "size": 6446,
+    "sha256": "1782c0e9dc45be9751e561eb4c6cf66f7764424349212ecd3599c7b15c6c33d1"
+  },
+  "audit-fixes-20261103/node-all.log": {
+    "size": 13531,
+    "sha256": "bd422aa6d80a0cb199c890631190d3095abf96156bc23e43cefc825a5174773e"
+  },
+  "audit-fixes-20261103/node-runtime-comparison.json": {
+    "size": 4683,
+    "sha256": "11d34074f4202e6176ef8c2d9faa2564e331a72ac18d75334ba8ab97ddc34b95"
+  },
+  "audit-fixes-20261103/node20-unit-rgr-green.log": {
+    "size": 7132,
+    "sha256": "7d99e76cbd117f7898c61287c4ed76fef37a344f9e1fbee6618f656685403c90"
+  },
+  "audit-fixes-20261103/node20-unit-rgr-red-again.log": {
+    "size": 9984,
+    "sha256": "a8a106ce0d29372f5be439f40ab9201eb0c5d117c1970c2c6c025d3c3f4aa14f"
+  },
+  "audit-fixes-20261103/node20-unit-rgr-red.log": {
+    "size": 664,
+    "sha256": "fc73c67fbda6907624c8b3d7661823ae29809bae348278d8273d6b31dde773f4"
+  },
+  "audit-fixes-20261103/offline-driver.log": {
+    "size": 108,
+    "sha256": "10e57e2440141010471219885a7900761900ac80b31206d07c58150e43ff5d65"
+  },
+  "audit-fixes-20261103/ordinary-browser.log": {
+    "size": 10061,
+    "sha256": "4d609b6ef2a5339ff9a602d45776c705ffa0633b6e97ab916c02a450228446b0"
+  },
+  "audit-fixes-20261103/ordinary-browser.xml": {
+    "size": 9543,
+    "sha256": "316c5fc8c7cc4106eaa5fcbb6efe248638bce907165612c14b7cecf162824347"
+  },
+  "audit-fixes-20261103/ordinary-driver.log": {
+    "size": 46,
+    "sha256": "a921813f329f76e33f339c58d05a69db07b6706588e2b447f6cda9c83e2c899d"
+  },
+  "audit-fixes-20261103/original-audit-probes.log": {
+    "size": 1841,
+    "sha256": "69a0af1f1011377446dd042afc1b712cc67890d8b3e043697bc8238a4b4d4b57"
+  },
+  "audit-fixes-20261103/other-python.log": {
+    "size": 22407,
+    "sha256": "ba0763ab953a80e05e24a8d95dcb7efa7c5b0d38e52723d7396d6f6708073ab5"
+  },
+  "audit-fixes-20261103/other-python.xml": {
+    "size": 21016,
+    "sha256": "9487f86f39d3db5d12cbf9eda5ba9a86c5d6b59c653ab44eb55e927c6cd16a0d"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-green.log": {
+    "size": 6120,
+    "sha256": "817e00e4e99f1690e36df16fbcbeee7bff251d5ed66385bfe61c2e9b8d47ee2d"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-green.xml": {
+    "size": 3640,
+    "sha256": "42238f4c69c632836179c01ab87bc59e5003dd20f6ffc62bcbd38cdb6ab5ede3"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-red-again.log": {
+    "size": 6138,
+    "sha256": "b331b5790af2ad43d65929558059587bfd1e842fcb2d38222fb622d42cd330d3"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-red-again.xml": {
+    "size": 3640,
+    "sha256": "6bc01d62069756b50863983349ebe33f8ec9f37e82c2224aaa5384ea531ae79e"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-red.log": {
+    "size": 5296,
+    "sha256": "67583a5f8e42c43152265f946f61a534f2e7e858cf8bf9a5018e545b06eb2b80"
+  },
+  "audit-fixes-20261103/popup-browser-mode-rgr-red.xml": {
+    "size": 3059,
+    "sha256": "d260ada2386d3393f2a9f536c87e1dcc53a4bfa82e04ec2f66ae4fbc6c9184fb"
+  },
+  "audit-fixes-20261103/popup-mode-browser.log": {
+    "size": 4408,
+    "sha256": "49f2814b2daa0984e6c026629e4e9896c171a49bd352dfb39da4bc5591b83280"
+  },
+  "audit-fixes-20261103/popup-mode-browser.xml": {
+    "size": 1883,
+    "sha256": "888c8b419caec8805e6ad4e3501fbd948bfdae5ae99ad5b762ee5e6aed321f6c"
+  },
+  "audit-fixes-20261103/popup-mode-rgr-driver.log": {
+    "size": 667,
+    "sha256": "bb4cf33f4ad9c80e6ca85d5f175cfbfebf65180bbf21807c4533c3eff73fe8a4"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "417080ce2f8f90d7c6aaad4f4edb8914aa4f0a6427250e6400403fe7e770c901"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "1a44eaf5ce0c2be1e708f48bbfc4e2e261d69f88c42de658bc36d032515370df"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "2625a52c7ee1486e6eb3eab7fe657b7d07884dd9c457446221a0925c6c90bd13"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "dca944b427d6bb746e622995cdf7497de9ee8c8f577279ef0f074d62b6ff004a"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "740ea21a24ab9fef6b87bf9673a6a4c2def4450a5c0bfbd57cc456a36692c6f6"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "740ea21a24ab9fef6b87bf9673a6a4c2def4450a5c0bfbd57cc456a36692c6f6"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "a6713b97129657039155873851569a8884183f4d4edf78ecf299301448f26253"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "44d345edf681d03fee7e004f59d6c4560ff44b477461b842ca765fcfd1b40098"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "6f192d90b6e53cc672c777f595d18da2516c40ea0a533ca596e7fef590fa0a38"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "d247bc3e017ce1d360e7742c532202c5af74e812d8c7d5dae6c842643fc88d88"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "58373e7a59cf9aaa77aaf00a71c84019391a6d239ab55f705789107142dc155d"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "a84408e514638c42c922d2840a875ba70ea487821408ad02153d004fa5dfedda"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "a84408e514638c42c922d2840a875ba70ea487821408ad02153d004fa5dfedda"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "01f6f27c87c24d417d17b3045350570a377627985eea9f804e190fb32c681e6d"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "2640452d6711bb3388b94a6fd258e5b6787f2ea32c686afd04614c76bad57c6a"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "76a81cd0fba5bf006b8e79862b9c05a71cd2749f6abe73578c320a8195cdf1e9"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "6f35e9308c63e29decfffc35a6f9653808d6b4c52975cd8494e704527818e50e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "e10df14d46d218b68042a222241c95be9aef4a822b218d00e1bbc8117a5be66a"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "946f540bb9cd0568e7ea2bd779b25c6ecfed7594f56087e0f20882a9dde21a0b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "946f540bb9cd0568e7ea2bd779b25c6ecfed7594f56087e0f20882a9dde21a0b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "a124bc72a3d207b0608dad352517c80871ac3d0fec8d3e6be5664d1d723ac0ef"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "900cfd5ad25b08f7a86651def3ec226cc2a268aac349811670ed20423a8b03ec"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "f3f2b81755ba876b9a393232c766da4dfac06822e06c9464d0d0a3934f3367f8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "da9e313b03442347b75f68b04ac7eae45555c223ee595b23ce8b19d0ca00cbf3"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "a86e713b40ac6fb5dbf447f525493b1010784995e7f8cdee12a6a6515953d35f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "39cb74b2cf11ca1dd4812b855adb713c02f51b1224e415c30b968827f1fec10d"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "39cb74b2cf11ca1dd4812b855adb713c02f51b1224e415c30b968827f1fec10d"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "18d4da5b7a3201ba8fcf78a239de1afd8b29e635db2e23c4123839cd91eceb31"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "91c9201900f5584696a540141a94fa144b5686c456d48cff770bf5a1eb6704ad"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "7eb42b9553e166b1fe029cfe50a092d03083946f0b23406991ce1e7d0e2ade57"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "7c1f39e5dbb207f778b9c6d95f3552008530e0d60d156eaabfc307373319a841"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "a5dec77ddcec7519c9d0a61ebac51f2895e49d757ad3e6fc551d3b02baaed38c"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "ccb6e59176a251f3a1cacce6737c77dd011c1df5481f801783cb03d6625ea7d9"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "ccb6e59176a251f3a1cacce6737c77dd011c1df5481f801783cb03d6625ea7d9"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "3f3e0c251cd757475b8a16523c4fc849b32c9e46a8f21e742770e07f41fba0bc"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "21f0b7cb5d6acaf10a59022a6bbcd3bf3d3be2920e2ec6abee70dcb17dc4b673"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "13df59056d57dec57a630da832775b9735bdf12fc0138fe2a11589956ce417e3"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "751711c3d703de4bd8573d29732d326278fbdd386e4dd0d2cb5927038cb69844"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "d7dbddc333104fcd0091f9ea4cdfdd2d7c0b1755539f2a3edb2d2e48e4d7e6f8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "47695f66619943aa05aabf0c0fea8278cfa4e9968e725ecc5cbe4545a5a3811e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "47695f66619943aa05aabf0c0fea8278cfa4e9968e725ecc5cbe4545a5a3811e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "ce80bef113322620970eb00f8977f69de4a3aaaf92092e82eb8d052d2d8cd93b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "54dae68f2df9eb2c1967db814c947baf574d6e81b1e1b30d450d57d70d8d2c29"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "ad693e657241fa5e5615ada36fad406fae6dace8f3435e374646d8643d6b952e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "f116ef13f375e3a04094ff187442b54d9a2b4b40daad60175ac01911a3c96405"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "45de1bc7883ab0777b7a3774882f0436eaa8bb745394c798a75ca0d497e94919"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "d6d4cf3656c1b63f07b56ce5b5432b4cf7e093d16a214bec145a1557436866e8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "d6d4cf3656c1b63f07b56ce5b5432b4cf7e093d16a214bec145a1557436866e8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "462ce60480cb0ec1390e8a66e4fa2ae6b84798103d58462282c83ee0661e2183"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "6eabbbd218ebdbe631bac30a908831b34c84e2959a745f3e6bc3882b1ba08d52"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "1250fb14963a3a16b04b648665dd0ec81dd66950e93153bbba4e7efd6b9b8353"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "d19e56dbeded5ec314eed2d8f369659d7381204ce237ab587ed3cd652dd40fe9"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "06229c01175b16dfd65338c440a775b029f11a1b4bbae16ef70edeeee9b1b56c"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "07ea17644565a47141e0f1f1609f48377f289fd27a0ca223cb2d65928731df03"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "07ea17644565a47141e0f1f1609f48377f289fd27a0ca223cb2d65928731df03"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "451c815481c28397d6723d740ba6160e2b3da9e4d3285f64f472ea593217e437"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 19835,
+    "sha256": "eca613d14d83dee168d93e0b502af5660cdabd33691fdee0f6b4380f2e2fd392"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 19900,
+    "sha256": "023c12dc24b117ac92575ebbb73eed5ef6e2d8b279aa31e3ea42d519d716443e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 19900,
+    "sha256": "7d16dc5d8ebb17c94654e0907c8400c55f13f74d2fb95b33b370595c406fd8a0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 19861,
+    "sha256": "da00a9094f8bfe59543dd2dcba4e1054eeed04ac064761aeae0e6ce6131678e5"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 12814,
+    "sha256": "f7d902e556a1f3f45a659bd9f31aa8c3e519bbc8221ef6181bcea53f7c0da9fe"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/saved.json": {
+    "size": 12814,
+    "sha256": "f7d902e556a1f3f45a659bd9f31aa8c3e519bbc8221ef6181bcea53f7c0da9fe"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "9a7e0579d02d501f96ec9c8ece575f8842f527628e6cbc6d3930667ab39cdcc7"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 13255,
+    "sha256": "13e4c195d014e406e42d5860e7590f62d42abf5fa947000ec1ff74354ba4efa0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 13303,
+    "sha256": "179ddbd6d50b792e034521d41596e279242fb337629d5de75e8f8bbf7b769977"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 13303,
+    "sha256": "d62dd08a5fd5c1c0669f42026f76c4823fe672ebcf843257fc5a4a5a57fb816f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 13254,
+    "sha256": "89298bb6519ab4e64c3d41e7c804942c06857416ba0e885e08edd28217e3c058"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 8263,
+    "sha256": "cd6333d820bea3925ed91cc2e1bdfc9d9389c9708a627bea4920ab05e9d15b4b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 8263,
+    "sha256": "cd6333d820bea3925ed91cc2e1bdfc9d9389c9708a627bea4920ab05e9d15b4b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "2a2e1f56b7af630da51861f2d60d53509de811235f5b9b0e137f200bb354bf0c"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 19835,
+    "sha256": "34889ea6302f0876bf85ef17e838c145a01123302978f9c18a0571a85b550364"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 19900,
+    "sha256": "687fb06e39ad7cd30b33ff0d568328d029c8557b59df2cf5b6d2198dea62e7ce"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 19900,
+    "sha256": "12eebbf0734a148e7e2027d327225c9bab876d5fd81948cbf19fd59b4633fed1"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 19861,
+    "sha256": "86d6c0e3d7d0476aba7f1958973da98638370b88ed28ab05e680ab9fae42b429"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 12814,
+    "sha256": "fcfc0ad4f06326128fc4c631613cf5027b39823e2e921366f6f8a82e1f9499a5"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/saved.json": {
+    "size": 12814,
+    "sha256": "fcfc0ad4f06326128fc4c631613cf5027b39823e2e921366f6f8a82e1f9499a5"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "18b26bd1917d14f4ea6ee38a567367da6ad35ecebc2e5b8fceae9b3150ea2fde"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 13255,
+    "sha256": "bded3d81c0e7235c6f4d14baa0c155f58782d7bb9da018968ebfac5e13200ff8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 13303,
+    "sha256": "ce63b15225f2649d2632edb6ef9df996fd945c07dbdb890861e2d0993e0614d4"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 13303,
+    "sha256": "a71b461476f3f24be97513cfbb386d5899fc59d9a935f2c416852ee8e8b864f1"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 13254,
+    "sha256": "a0501e0e6b4eabf28d3659ffeaf27ac70d5e8940b6eef24fdde3920e08c62ef7"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 8263,
+    "sha256": "3a8f9462100b5877f454b971c9ab471a71e21624eaf41c9af8f5c0d92dba44ba"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 8263,
+    "sha256": "3a8f9462100b5877f454b971c9ab471a71e21624eaf41c9af8f5c0d92dba44ba"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "e8e8939c27d1fe6fb3055024fa373174581bb799f526deb075e2989ea6d5858f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "2903586a2dfff90f9dfe61819ef3dbf4e0d8e5ec9eba67fac872d899bd564fd9"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "74df26aa4e7978eb9157b491bda7c689ae505fcfeafd23fdf940a4b8ff3e2ede"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "16b97d36381911084ee2a98c9177d5370bcd364c824993ac2663c5c50299d5eb"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "d80e12f7ce0e33036e640f6f67cbdecf7178e338c5bd49d3590286a063b53ab1"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "ad3d3c429af0fdfe4a919547fb9d1fed0829a1100dabc8398f160d06beeeab12"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "ad3d3c429af0fdfe4a919547fb9d1fed0829a1100dabc8398f160d06beeeab12"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "39df5398be4a7e9186ee9a3eab1fa790859945be0d2c131d7639ed1f3c540491"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9307,
+    "sha256": "79cd693ce04da617fc052b6bd87601c1901724f20be4a5c8ae4d08d6cb51eaaf"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9353,
+    "sha256": "c72a69a65496655a27e138fc466beb6253deff5a8a76bd37cadb71f53cb564a6"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "3d9b382d484fad1fa08a72314bd14ea5ad186d0b9314f2ecdfaff4fd82418926"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "e7eda6018ce04e84124f63ee3f2058126d344109a92e64f903e245531cdd6742"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "ae80aefd982ca90466f8983ed36de197a956d0267fa763ab3bdf95c38eeebc0c"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "ae80aefd982ca90466f8983ed36de197a956d0267fa763ab3bdf95c38eeebc0c"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "fa66de200ccabd2bfdfab5bfa1e6c4f601282e0e2a4df993f2ea2317008d4b60"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14121,
+    "sha256": "5d5f2b8e84c5d41008c288c393a8c7fbb85e43c5823fed700d8c567721958306"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14184,
+    "sha256": "df4d152ade42a7b35c34fdb239b954b1bfd8e77dc55d591b89243a763fb7f87b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14184,
+    "sha256": "65362e5f407ebfb5e3e0cd09ecbf21b218b8eb941f5b07b37c8defae5def02c2"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14147,
+    "sha256": "ca119ed188a417ce35c092b1ff2b50ed749f6abfc7dd7e68532ff837c38088b8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "aa5dfc8f74d4aeea88e1225c5ec293de064250e146bd136f06926e551c288fb7"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "aa5dfc8f74d4aeea88e1225c5ec293de064250e146bd136f06926e551c288fb7"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "0ffa856511f6ae114b53ce529792281b15f1840eac3cdf2f80433bfebb6850f0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9307,
+    "sha256": "ee6e5a01226d37e7aa2a5f57214cdf94558311eb363250a2aa88b51493be392f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9353,
+    "sha256": "127a87dd934e55b293fbe71b6ad1f8bb24e04215081e27f1db62b9f720263fb4"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9353,
+    "sha256": "f21e186b82cc4ccc9edd67dc51bdbd1b14976521c4f5a6ab9fd3a345b1904f85"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9306,
+    "sha256": "c980b1069c9ce25004a31e932450461a0f836c40784e43f7ee8002e929149394"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "5a536dd1adeba365a56c8f1f3bdd8891f6425f45a96c55b9d5ff86ed818bf892"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "5a536dd1adeba365a56c8f1f3bdd8891f6425f45a96c55b9d5ff86ed818bf892"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "fb099a45dca9fae6053299d2d915e03581bd92b43b3c31bcb09de7a07bde3faf"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 15289,
+    "sha256": "a6fa43d71fa8855f0e0250884adefdea8cdccdf453c6de229cba7dc736502424"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 15352,
+    "sha256": "45e3eb7ed27951ca3fbbc928c6fce3357801b2d337ff85d8c9dd853ef8e68926"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 15352,
+    "sha256": "f0db5d538e4e4cf5bb98477374235c6453721ce534511b215040fb3ab072a2dd"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 15315,
+    "sha256": "3ad9355ab8df20fb2cff7c351c0dbe12fe6aaa989f75c00b26ad78cdec4f4815"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 9473,
+    "sha256": "91be09b9c49099e0a2a45af6cdd068ff7f6bf2aa0a3b5f987ac75a706610f3e1"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/saved.json": {
+    "size": 9473,
+    "sha256": "91be09b9c49099e0a2a45af6cdd068ff7f6bf2aa0a3b5f987ac75a706610f3e1"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 195,
+    "sha256": "8521f5ba1666050f02a26d62d3986c805386896d92c095646660c0b3b21140cd"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10407,
+    "sha256": "2f623ef9ae5abc2be64e1183fc1d2f19a6e8b80541fc522f075d3e78a9441420"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10453,
+    "sha256": "3310608a5373796d7241f48f857718ad6361b284223661a54b1e718cda288f37"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "e8369dffb7480408fe949af3d050cfe15d20073171dcf7a9c5e194b34259bd70"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "37d72fb3b8a3bf610e1da7064aae480cc030e12472c1f6c5fe27d2790a9ec430"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "7826c6748bf9a58a53c115a8e96b4b072dab3289eddf1b367297cf57763cc5fa"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "7826c6748bf9a58a53c115a8e96b4b072dab3289eddf1b367297cf57763cc5fa"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "098d91ee83c429879e144ddbad612ae1ef5fa899710196629d05171ae289fb92"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10407,
+    "sha256": "8052eaa3f103ef4106bcbe3e9509d452d745a3327e11b24a48e36059ebf5279b"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10453,
+    "sha256": "645cdfd94c0023e3450600c2f645a458a8b19e104b40c996f6f2018e65f2a9c0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "a6c61f1d7bb12e2720bf08c1272230b59c79bd257f1a83f26084c65282673943"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "a11588fea75b24f7156a1961592db2241f26706614ee11c6151537bb1545c633"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "fbd797e5d8ad36385842c6400769d603f89444b376feb2a5e79dc63dbf8605d0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "fbd797e5d8ad36385842c6400769d603f89444b376feb2a5e79dc63dbf8605d0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "077ceb938b3d06b43af940d8b0690b6f8edf03bd050c734f20cb400530a022e2"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "bb8ce3b60ff9f983d0d478c0096ae605996430aab0dafa2d22eed9d20b85974f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "2d8954a16571e2da4d5c7955a5c7dbe6ea06d82d398ff1d022dfe49ab3de3cca"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "6f7557330e86ee6d709e6cfdeddda13fd4e77bdc70a22e927e2f961b170e9d3e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "7239ba8dd851b0e513cc9b563c52751b041de243279d981cfde4773198b06668"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "19664c24a5e6a74d3b1426266b3f19b2a1a41f709e7fcd876ee2b648ffe5ec06"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "19664c24a5e6a74d3b1426266b3f19b2a1a41f709e7fcd876ee2b648ffe5ec06"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "f74de9333fd06fbd04471d97c1238726737775f997821d32338ab6b4b11324f6"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "e7e287e39085965c0095247231d83a06eb7c12d186d9296d8eeff2ac1f414f5e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "976e42ddfb7d2ec631fa897b1e6139d2b3792ce12bb81e986d9bcb87f11fe06e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "eca0a80f60627887324448b713b55441380ae276b9e98d0aba5969cabaedd0eb"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "9bd768f90dfdbccb189344d853c31d880f6f300a6da73f32fb17f87808110b5a"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "9d5a50ce5a9a873f145dc935f920dcc28fc33d04692058bc429fa145463c9446"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "9d5a50ce5a9a873f145dc935f920dcc28fc33d04692058bc429fa145463c9446"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "3041177b84deda3717536f142bbe0a4668f8737e516a8905c2000670d834a72f"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14122,
+    "sha256": "20960898e66878cb96659f58628b85f852ee930d73b23027cbf9a2772c0d4729"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "8f557eb0d9d5442013030f4263093f9eca071fee6cf185c89354c24ab67a6575"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "2501716ff43a267061b417b92b9547cd502768ba5e259fefe4a04a51c1180d41"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "e38f69eb204ac8f9bf4019e409341b2dff29c630eebbf904f0ac618e296edde0"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "1be6da6220ed61b0f924b6797aaa466273be7ceb2ed9bbf91b9adbd5186b4b7e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "1be6da6220ed61b0f924b6797aaa466273be7ceb2ed9bbf91b9adbd5186b4b7e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "4d1a19c54879d6dbe2be59bf97995fd56f09a03d819ed0f8d59d95a4ecfe77d8"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "58c33ad4b83eb7d57fbabb6bcfe9883d4503faf3b8cb6d279d64955f3e6d1014"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "b830ab6ed8761c4ab58d783514fdd23addd44b904538c90103b8d6ec93a59afc"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "23e36b3b42f4fcd54f413dd3e073a9be58de2f0bfd159d8471066cae7229a1ee"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "f30c182fe7a544106511efacdcdde699b6405921367c9999af09cb63f393b1c6"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "61c20dbd823a216c0c8bec7f872aaf666fabccd0b8a2f5e9b92078a252a02e9e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "61c20dbd823a216c0c8bec7f872aaf666fabccd0b8a2f5e9b92078a252a02e9e"
+  },
+  "audit-fixes-20261103/popup-promoted-classic/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "2fcb12afe2a23af870cc4cef1d3f9e39f982ca8e68d00f50d7bc2d01a4c7c056"
+  },
+  "audit-fixes-20261103/popup-promoted-classic.log": {
+    "size": 7232,
+    "sha256": "fd4ec9b0139b6c6a954abc94d0045baa336dc39cf71bd7ee9e231f8d1fb06206"
+  },
+  "audit-fixes-20261103/popup-promoted-classic.xml": {
+    "size": 5481,
+    "sha256": "1d34db43e3686c3694fa55839acc1e5bfc25f9683acc698a56b7e414e83a5d2b"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "53c3435fd9d951f226b32ad18130179128f5ddc657e96e4603035279ac34e61b"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "2adc8448da56c1baaf9b8bdd40f98610f02d2c3c93a2e5249be35e45400efb4c"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "22ec9291ee2e8e1c133ddc2c90dc80e399b4d53db69f9d2cc248e402e1593774"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "f740afb0bbcc6be2ae022deb7c2f488bc7c6bef1a0a61ac9dc4551406159acee"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "0698aedaa48380834688576d528c862e670d8330631eaf33ade6253fb42fb484"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "0698aedaa48380834688576d528c862e670d8330631eaf33ade6253fb42fb484"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "0bf0418b172f4e7aed955b5886ea30b96dd2f5823075fbadca2f19e9aa0395d5"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "f148c249f991ee7d9e75401920fedd1769db66c87792309dfdf4a01ba60dfa74"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "fc52498ed28b02d04fc649ce3b8fc4c3e7fe0e7e386d612adf19ac6a6b4bd114"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "eaca3ae77100ebfde7a7487bc8a889d1f53086e60828b1682be1fea924605ca3"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "f8e3778e49bcbb668ff6c0eb33cc81ff39e6398fe6b1e8bb9360639091c6f8bb"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "7e20a014bfe091e3fdf7b417b520604d10e8b2ce1efe07148c606b199aefcbf5"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "7e20a014bfe091e3fdf7b417b520604d10e8b2ce1efe07148c606b199aefcbf5"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "a9588386c2351296539c8eba4a41c9fb648bf7bf14e82923d545e341467fa073"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "975896ecc41d12f53febc0bbf3c960ade6e379b89012ae67856d0181f6c1c70d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "76ff64e1d2381603f095437e4aaf5001315ab7d26234f6d9155d213ba21a7e60"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "5a30185ce7350bf98b0df11104c076724477a6a949971dfdc5345c0bdb22767f"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "a3d1753edf3f35aa4881093ba73d14c4b8ace1389b92e453364a7eaac4471d41"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "a40beffdbfc1d08277f9b66c2791318bf4fb5f3aa01dc1ff0665175a8c78f245"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "a40beffdbfc1d08277f9b66c2791318bf4fb5f3aa01dc1ff0665175a8c78f245"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "99f9fc13b4c85beba372f9347773c45d0673eb0fddde79ddf7de14b2dece4ccc"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "8fe12f6e328d73be61dd19295a2dc43d0c8dde7e955bd30cd9b198c004f5fcac"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "684f2204f2b29c85aa1faea47c80bd69757ce16deb130519bc8dc35f702cd7ab"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "498f1719e09364b95d52ec6dbd6e6a2cf0324cfd00b2f7ac545c434b401da585"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "4ea490bceed03764437d4cde1df32d44a31390bad8ea4173dbcf204a54f349a8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "201d097038a84b9d25c3096834e9fa61e6b998b86ae5ac2c4729d054a544bff1"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "201d097038a84b9d25c3096834e9fa61e6b998b86ae5ac2c4729d054a544bff1"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "1bfc25145759ee163b999347fe455c9d2de34ea6f84938b9b77b8a6b79d44eec"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "29cd8669abb9540323a18484395f67b4fc32468f5a5264065f1ed80030c06057"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "a0fe6590e11da5f5e8f108f5cfef467e6ef9162dea30e6aceb9e03f90e885d01"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "9286f95627e2502b7fd42da32b89975d36dc8c2fb87d05ed8d8f21777ba7feac"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "438ea8350ffb7913273998dfd481b839e4d39ea3b83b3e5edd02d188ea5ef5a4"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "114e71375fdb34acb5407b41cef11bd11a7f1da608496f2887473d8bd862a3c1"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "114e71375fdb34acb5407b41cef11bd11a7f1da608496f2887473d8bd862a3c1"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "f87f21a5bb09824e27b92ac8ae2ff09dca4d9820c020c9df666baf7e6253e7ef"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "0d73887bd0606696f4af19a64643bff12e2a3721ab2bfa7d3946e07127cb6fa4"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "bd6a6ca41332298884e028a907578207615a00478532514860449e2588ddccb2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "b26169f5e8ee67e2752a250eb1f8af7538d850f823dff09f5f0740d5b8157541"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "517e50e07e4ffbbc10dc4b75c9f594a76e16928956cec952e3e41ec7c0afe294"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "2eeca9e0ceab16be3f465604e99dc1be20358d841e8b9e530985300ba6c316ff"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "2eeca9e0ceab16be3f465604e99dc1be20358d841e8b9e530985300ba6c316ff"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "183672cedec49a1732e9a90ee6121522aeb4b821d4f5099fa8d80f9720e134ae"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "1ad94308f001a289c7f2ec5edc28e51ec731040b44f47132bce83862eb4f50b8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "e47a9349be73ca938238fe7fdca12a494b68aef35bfcbc8ba793e946a6ff1711"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "b6186637bf77fd1927c18c642d89553bf57e663c77e2a1b63653c5a0c61f8be2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "7941fab49c743873b5683cb12bbeb2870ae274299e832a4e4f3ad14e1e54170c"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "7bd947509b5ec810e410f3e5182da46a0daf5aa3f2f1962b34f0fea7059012a7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "7bd947509b5ec810e410f3e5182da46a0daf5aa3f2f1962b34f0fea7059012a7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "947207319cb061ceacadb491115d72f44d36723ae60f715d5d16517670278ef6"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "860fc7e056b4b453077de3a66cfa2c429fd2be7bc303dd25815c4477b42e53b2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "d0088969d578531a8f139aaaa1020d214f28726a91c5b4815c966957959f6acb"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "d445b2f750feceb95fbd7cf1656d94af9105398e0cd7dedea128ce397d210a14"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "989e38341ea83e7fa8ad697db558f77d86a67470458cb50974b75235c85b37a7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "e8be981b95286bbf80b79013d9ae7441ac0a32e78853fc124e6513f0b8dbfb0f"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "e8be981b95286bbf80b79013d9ae7441ac0a32e78853fc124e6513f0b8dbfb0f"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "46d1f8c2d2166be3b34be36547cdcf61d654f931cdd67c7599729810b79ac38b"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 19862,
+    "sha256": "2b45969c3df8221f841ba85c0c291238e9045971dc5c28c3c803b22ffd0ba7e8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 19900,
+    "sha256": "c6a0147253d0b84fba1e4e27aafb17b74310eae78a3343175470f6bfe8c4d86d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 19900,
+    "sha256": "6e7ac87b93f9fe56575930b7d6d2ddff3bc7bafbca73e4165ae236f5bd5e7ff4"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 19861,
+    "sha256": "16a51b9463a6cd24846cdf42ebfb21e19291dfc116525bdf9d06d2c800325be3"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 12814,
+    "sha256": "14fa3a18d7a76388d2dbc5908ced32ead878645a92fa23fd98baa0529bc58fe7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/saved.json": {
+    "size": 12814,
+    "sha256": "14fa3a18d7a76388d2dbc5908ced32ead878645a92fa23fd98baa0529bc58fe7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "75b5da2b56718711d9274958610ffbee164fed3bb19072c9536038ea08455c72"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 13255,
+    "sha256": "9b211d35b289782e518438b956d61984fa05c66a61dc0d9c985185e27bd729f9"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 13303,
+    "sha256": "ad8c3581a76b54a5f6f96134486c7b6d46dc14ab5fbd4f0b953f9bca89d0fe16"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 13303,
+    "sha256": "1bf53b6e3d7a51d3aa4b934b09019622117af03c486ba13eb7b3079d549da10c"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 13254,
+    "sha256": "d55fd982e24681a9acb396f879a311c248dce647bdcc324152eb6110f2ab0203"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 8263,
+    "sha256": "d25953daa0dee56174a18d23b473a986f26d227fc9ddcd4d51cd1b3d50aa64a7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 8263,
+    "sha256": "d25953daa0dee56174a18d23b473a986f26d227fc9ddcd4d51cd1b3d50aa64a7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "10109f7856b7e79a4ef74f43c96e73f326d6ce34deb7728e5bc5859c0e963d14"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 19862,
+    "sha256": "8f926b2c2198b94336350e407dcc8f3272af1b32f88d6131fc2b7a5400c63548"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 19900,
+    "sha256": "c0fac4dc22f2ce8d79d621049c2e483f6da3b189554ea740ba240163846cd4a3"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 19900,
+    "sha256": "ef9b3bbf5e298ff4c044f406bf6a894c53c8e8c8f708dac543232e83eb8dc509"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 19861,
+    "sha256": "0879aabe3fa9fa8b4b37d6fadecec3d02f8f51be4ec2aec4e85898c3d954bc69"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 12814,
+    "sha256": "c138b3e1c404da528a45ac738829baaf17f1706f629bedc70201725dcd800cc2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/saved.json": {
+    "size": 12814,
+    "sha256": "c138b3e1c404da528a45ac738829baaf17f1706f629bedc70201725dcd800cc2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "9effc49b8ba5eb7919995b4139330b524d07d657327286c1f516edc0ef223919"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 13255,
+    "sha256": "5b254e534497965482298005e0b68ab3e03a330300f8588400a33e5a2fc2101d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 13303,
+    "sha256": "fa9976166059bce5795e44423902c049c3da45ca386b3b98a9fb52a9afedcf3e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 13303,
+    "sha256": "ce4a632db34095c947ea4cbe2297d336d3ebe5d4d504a3c1201b9bc486ad2584"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 13254,
+    "sha256": "71f5b9adf21b56fd8578eb811b5f7eae3ee3cc76605fa812c2bc6520e9be890d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 8263,
+    "sha256": "c8841ab6679489b9a1e2845c7f412b5b5eb224c7c1ecde4b9ea41e1cb13c7b5a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 8263,
+    "sha256": "c8841ab6679489b9a1e2845c7f412b5b5eb224c7c1ecde4b9ea41e1cb13c7b5a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "9022707e49bc39e7eaab4d72f9bcd7242c437e783dfadf562c41b74861c66eea"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "e147dc7cf3d4fcfc2349b6627abc43c1afa6749940fc1375798764036f6e5c7a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "e9c5e6568c0c37f493ca11913165d621e6d35fc77d078acf1a7ab828ceff2038"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "20d86eab057e02eb80fd3e29f7f043e055c803bcfc3b9c1b196b9803830b3507"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "ee9fcda9a5143f2a7047cc958ba354e6575169a1fe03133a8680fd7426fbdee5"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "dd7e91f3e779a127e5f8ffc969030b1348a3bf5e951e029a80e44a51319c242d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "dd7e91f3e779a127e5f8ffc969030b1348a3bf5e951e029a80e44a51319c242d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "398b6c68d8937de27e025ebf22f3ded2a3abe6446df19782f91dac1eff3279ec"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9307,
+    "sha256": "4c792648201e25a95d0c328a6f3562c3f8ea3eef747efd74501082a77849b501"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9353,
+    "sha256": "c26f76117cda590f299b102413c5e149a510a105f94dc3a1c8a97abda481567d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "27fb6f814ee50e080baa92aed97a56d08e46fce122e21b31496ec8ef4060a924"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "e5df8e6b9792e78d8c245a26c3b56f5e324af551abd57b6b5aea26c6159eb54e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "478efb0dc4d183407e8c7cda7c9c561d312a74b7fcf23d75e84a8932437d5b88"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "478efb0dc4d183407e8c7cda7c9c561d312a74b7fcf23d75e84a8932437d5b88"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "3b21d2e834dfd464c6bf96dc66884a9a15eb5f1a017e1c1a28e352d9db092826"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14121,
+    "sha256": "05191fb9a0eead4d6f8c457b8b9806ec7abfcce5029a53f22fd712ecd96c87bf"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14184,
+    "sha256": "bb40bb45b54c78f4b79a98cb7c180dcce9ae32d4edee99d5924eb4fcf790685e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14184,
+    "sha256": "e59d2daf3f52f2ff62bb6ae1750a2120f0134bfb69f34a61a375b4064f3cf2dc"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14147,
+    "sha256": "271bd07981de4ad2a53519b36f366086e4d8712b15141e75dde8806430759ef8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "6b26091aded53d0ca1f877df006679048e3ffa7632ce0c19de2878bc4465733f"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "6b26091aded53d0ca1f877df006679048e3ffa7632ce0c19de2878bc4465733f"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "ba2f197d63b273850329060930ea1b825aeb4b0536c19d2c768f3afcfda8371a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9307,
+    "sha256": "b317d73b5ab792d172aa7c5a37b52e3f377a9f861b95511b54c34205006ef522"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9353,
+    "sha256": "3d8c1c14d0b620f8a870fe533c11a8d5553fa617c5a77039b8d27c4655da1cac"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9353,
+    "sha256": "114ba19a10225e61e23c6b176e6040cdce0fc3f05aaeec7580c4ce0eddf6ce0e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9306,
+    "sha256": "2b5673dfa3db337ff31ce5dd2f1f39b8397301fb14015bcc003ce7b050d08469"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "23e360759bc4916b896d89989245e48b141fc8a895a9ed35ae57e04dbe6a1722"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "23e360759bc4916b896d89989245e48b141fc8a895a9ed35ae57e04dbe6a1722"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "3df0342bcc7084f5125ec695acab567ea2553043350cddefa3662261d0cad5cf"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10407,
+    "sha256": "1ac4aba03a29591ec6cf302b330bf9daeffd075985a78242e34605ece463c8c3"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10453,
+    "sha256": "827ccc14ee48c899f62ec75239d60c319429ad6e9a3c5f6a4f49eb2ed4563e95"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "2cb29bb93b413fd3f3dfb92ff9cdbd7351963054c5187abbf2ac28c71650d1a4"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "aa01d6ae93a1a7dccf45cf69087b090dd33031dfb6808f6889ef225e70b97b21"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "c089b1d7a893561b7b08f44b65d4145737d5dc76523d4f7a3d18fc2247004b4e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "c089b1d7a893561b7b08f44b65d4145737d5dc76523d4f7a3d18fc2247004b4e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "d710a6f3839dbf413840aa5f93de71302f1411839ea28fa5cf13482a7b2e112d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 10407,
+    "sha256": "573d2852d8e461838b4341d9150ced5f87e598c71cb0afc66bc55be37d6d5f95"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 10453,
+    "sha256": "b1aa88a2d1738bd1d45b95cb30593a663bee58dd2b857c3fe26752a65090e53a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 10453,
+    "sha256": "8e4da40f0acf223eef2692810e23eac29d9309bc6e3f985983eeed7aad713fee"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 10406,
+    "sha256": "b6843fced184b0f50ddb3ca971a65de4b38ea62fca360ff33c349fc89bf34d93"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 6187,
+    "sha256": "fa732dec1bf00dc629f6936d2a95208bbc1a3e2cbe4c873a0c14c37dd4fbfeec"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 6187,
+    "sha256": "fa732dec1bf00dc629f6936d2a95208bbc1a3e2cbe4c873a0c14c37dd4fbfeec"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 195,
+    "sha256": "b582e78f435eb59d9e63f2cd4030f36fdda9b8fc7900cd6dffd52f03a41d9dd6"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "b9d2f24fa80d43127104c3741257a24b7ec5e50daac78278aaea06ce17ccb865"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "94171a7beb9446aaa34bc17b91ceb1413b6035f999b6357f08a8db46d09b686a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "a0dfef466cf635999058fa0b5123c3670579ad1a05e0fc096e3e15db581cc84a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "6514d8156818fdb73e7ec36243196af741f24fd6b88e2b094e87701f9f57e414"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "8e2b9bb56f15b2e16963554618f5aef3da23a9488599b6fb08b2f67f71cce6c8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "8e2b9bb56f15b2e16963554618f5aef3da23a9488599b6fb08b2f67f71cce6c8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "5afeb0641973868b664b7e3c39b0be9ce659120504887dae53aa67cb922baa26"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "4ba250fce97a50e20a12f31850b4c635410854deb04d1574965493f4b9ca8d9d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "6744a9f5e7b80a2220a85223dc71a1c76ad0410e45bfa0e7bf1fe497658d50c8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "b48f220cfbe487aa2b24f217bce930f53f36f180ce80cd5a6b8ebbaf05bf3019"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "c007cc8e38c907938530187385afcf680c8bfbcaab9928d24a3cc199fcc15f5e"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "870c4aad5c32baabff2c691b5dbe5237c0297ed234656dbfd7eceaaf87eeeec7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "870c4aad5c32baabff2c691b5dbe5237c0297ed234656dbfd7eceaaf87eeeec7"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "91fd5b0156d6e0336e00d50b8ad9cb03eac6a9fa04302c9fa7aad5736addad07"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-1.json": {
+    "size": 14149,
+    "sha256": "bac033b307777c0a270f423977b2f6c2eb36717ca067f4ed73d26cbc7cce04d5"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-2.json": {
+    "size": 14185,
+    "sha256": "914c04681cd2450bdcb017c3bdcba37d853191f969dff12a3151032a11c56b78"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/fixed-3.json": {
+    "size": 14185,
+    "sha256": "0a71f1ccc5b3c5e3e7eb7bb30d7d80c00f9704ad70a696bbfe7d8835d7658322"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/manual-host-seed.json": {
+    "size": 14148,
+    "sha256": "a9e073fd577d9c90e9e79db542b8176dde51758af6ef19ee320e0bb9fdb641af"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/roundtrip.json": {
+    "size": 8554,
+    "sha256": "4cd357295920a0b25a5e01de9178cf9c8ee8c5909087e9ecd2aef9cc38e61f14"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/saved.json": {
+    "size": 8554,
+    "sha256": "4cd357295920a0b25a5e01de9178cf9c8ee8c5909087e9ecd2aef9cc38e61f14"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]/widget-state.json": {
+    "size": 137,
+    "sha256": "ab8fe5406c92bdccb483593658311090bb4eba46d46dc57e799cb04f44e83812"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-1.json": {
+    "size": 9308,
+    "sha256": "39b7496aebac83fe84141c2dc7c4bd361963ff7005a516964a3291a9d24d9140"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-2.json": {
+    "size": 9354,
+    "sha256": "80249a9f7f38823c3b892f144c0f17980d82fb199bb6350ea47e70bc25fbbe3b"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/fixed-3.json": {
+    "size": 9354,
+    "sha256": "22b2f839c44af719567496b985d85d43d10e3329ab8785a5c0a7dafbdbae5fe2"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/manual-host-seed.json": {
+    "size": 9307,
+    "sha256": "4ce7144a7552170a6ff12b8e8210643652f68a5b30aa031a2e27c86ebd9d863a"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/roundtrip.json": {
+    "size": 5336,
+    "sha256": "4dc8dd6f04348b0f9fe0f5e5f8ce0673f779782ed14c4cb9031927863f8c39b8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/saved.json": {
+    "size": 5336,
+    "sha256": "4dc8dd6f04348b0f9fe0f5e5f8ce0673f779782ed14c4cb9031927863f8c39b8"
+  },
+  "audit-fixes-20261103/popup-promoted-lru/test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]/widget-state.json": {
+    "size": 137,
+    "sha256": "dc2ec567fc49351521c15a49c08aa7b8925c08028c304241278910ebf71d1074"
+  },
+  "audit-fixes-20261103/popup-promoted-lru.log": {
+    "size": 8884,
+    "sha256": "dcc42d4e5d17519c1cd36c830da6e622666d2d267f305200d9aa39ed8a7f348d"
+  },
+  "audit-fixes-20261103/popup-promoted-lru.xml": {
+    "size": 6857,
+    "sha256": "6dca4afe26c29864a793861fedf516c2ff1bda8f897ae3a72fdd7f1acde7d1e8"
+  },
+  "audit-fixes-20261103/pr-candidate.patch": {
+    "size": 57234,
+    "sha256": "82d65addbbe688817ef5163562dcf66cde4fca88e82768d4fa4d09553dbb9d3d"
+  },
+  "audit-fixes-20261103/pre-push-validation.json": {
+    "size": 429,
+    "sha256": "9d6750fe70ed1f35e9976c668b31009239c2b19dd04baeca2c86f606c47d1a20"
+  },
+  "audit-fixes-20261103/publish.py": {
+    "size": 10617,
+    "sha256": "a207bb810411cebaf9c4751afe0973a9afee152325a0364acc0091e3c711f1fa"
+  },
+  "audit-fixes-20261103/results/browser-mode-rgr-green.json": {
+    "size": 606,
+    "sha256": "276856cb53de3c55da2c926c82276a6f9aea5df6ae2eb36234ca379040d4e503"
+  },
+  "audit-fixes-20261103/results/browser-mode-rgr-red-again.json": {
+    "size": 819,
+    "sha256": "6827aa634e8d50899709d94439e002647373728573a151364ab4d7630a8fb1b2"
+  },
+  "audit-fixes-20261103/results/browser-mode-rgr-red.json": {
+    "size": 813,
+    "sha256": "9345b0b0c75fc9f55e2eea2b3651cf8ac2adc72e56606c65212c672c703fcb45"
+  },
+  "audit-fixes-20261103/results/catalog-browser.json": {
+    "size": 536,
+    "sha256": "4ded680807379fbfa994531a857593e0c3ecb70c9ab5812376dd56f5def7567b"
+  },
+  "audit-fixes-20261103/results/mode-browser.json": {
+    "size": 586,
+    "sha256": "15c79b5d1c72f92503932d122696997e5f64e81d96fcd8a7973246773ff58128"
+  },
+  "audit-fixes-20261103/results/mode-lru-browser.json": {
+    "size": 590,
+    "sha256": "a9e86269e90148c1d38720225c8c4d89299464e1749ddc890b305ecebf8436ed"
+  },
+  "audit-fixes-20261103/results/node-all.json": {
+    "size": 652,
+    "sha256": "32243f79bd14dcec4428a9cf3426548e0d725ce921538e9bc57d59478862d085"
+  },
+  "audit-fixes-20261103/results/ordinary-browser.json": {
+    "size": 640,
+    "sha256": "107cd4675e59feef4cc097022b07bcbb2870e12ea4cb702d4c00ba6b2396f170"
+  },
+  "audit-fixes-20261103/results/other-python.json": {
+    "size": 704,
+    "sha256": "0f47ebb5670b830236d38817b9f3a086e8a3226742b440baeb4c9c6e672db834"
+  },
+  "audit-fixes-20261103/results/popup-browser-mode-rgr-green.json": {
+    "size": 804,
+    "sha256": "1d7894dca8db87337a8d38315b836aa35b6159585c85912aee24efcf751b10d0"
+  },
+  "audit-fixes-20261103/results/popup-browser-mode-rgr-red-again.json": {
+    "size": 810,
+    "sha256": "b3babffab8e1c52de185365eef5262727ef65ac69cb770b7badcde3a232a2912"
+  },
+  "audit-fixes-20261103/results/popup-browser-mode-rgr-red.json": {
+    "size": 803,
+    "sha256": "92cdf762d221ada7989cf63aae2e402d377aac445adc743804c9f2dd63121e34"
+  },
+  "audit-fixes-20261103/results/popup-mode-browser.json": {
+    "size": 793,
+    "sha256": "29d57d7d5b201c65fe1483117e208dce4b50d393c1837a42a78c9af12b513761"
+  },
+  "audit-fixes-20261103/results/popup-promoted-classic.json": {
+    "size": 678,
+    "sha256": "f5304d057347efc84b647005308020eb9c94f1e32cc7236cb665aba8fc0afb8b"
+  },
+  "audit-fixes-20261103/results/popup-promoted-lru.json": {
+    "size": 776,
+    "sha256": "e973cd6c0b64fbf8d0756af5578416123acfe52ebe4afe2499da01ae0a2a9ef4"
+  },
+  "audit-fixes-20261103/results/wildcard-unit.json": {
+    "size": 499,
+    "sha256": "502152e845ea3fbbc7c7ff4f65b5caa87f84cb6371d3bed7b0c2c52fb08fe138"
+  },
+  "audit-fixes-20261103/review-fixes.patch": {
+    "size": 28550,
+    "sha256": "a3bd44c975bbc5b23697018550ec47e289ba266cede58aca26a84cbf962f8a91"
+  },
+  "audit-fixes-20261103/review-notes.md": {
+    "size": 5309,
+    "sha256": "bb130d5c33c3bd10673fe270c2852ffdac6cce23d5eadc16a4137cf07786614f"
+  },
+  "audit-fixes-20261103/rgr.py": {
+    "size": 2996,
+    "sha256": "cb37abb2adf8b9c6689c7edea3bb9f5179e73ca17d079b6be01e88bea1a357fe"
+  },
+  "audit-fixes-20261103/sampling/README.md": {
+    "size": 921,
+    "sha256": "c745b0923cdced1e44ec06dcddb00f37003afb332d29a88f39c6878dc9b0b777"
+  },
+  "audit-fixes-20261103/sampling/baseline/before-third-queue.json": {
+    "size": 19738,
+    "sha256": "945367aec54195ec2b6a0d1a28c1314f284e460bc1de4fb74948304c01411d68"
+  },
+  "audit-fixes-20261103/sampling/baseline/final.png": {
+    "size": 533657,
+    "sha256": "ff74bf9e2f32c39192160b9abbedef99dd7b36205a70a1c6a7115e221810794b"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-fixed-output.png": {
+    "size": 344502,
+    "sha256": "52c8f90b9ed028c3842a27a050b30ebc198ea92b583211fbe0da1f50fa577b60"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-highlight-regions.json": {
+    "size": 862,
+    "sha256": "e854ada9052666b2709bcbc6dfc10c5c565f20ef0d371eb3e3cd0b31ae11d2df"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-history.json": {
+    "size": 34297,
+    "sha256": "235033860d798952d75db7111e6b646c2a9f91801e98c7937ea21914be0dbbed"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-independent-output.png": {
+    "size": 389302,
+    "sha256": "cac1c1f1c6d6f4fa8a5eca547b0628b5d2713d34616dc3ba1c7c9dabde89f575"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-widget-state.json": {
+    "size": 4296,
+    "sha256": "60e819109721eb5d24f61581610067030ab8418b6c806507902478e55ef4d75f"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-1-workflow.png": {
+    "size": 542050,
+    "sha256": "0c045de18beb7938986954e1a4dfafe811b0e7945be1ea45ed71d5a145f86ad8"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-fixed-output.png": {
+    "size": 316407,
+    "sha256": "6cf36759b68026615d1991acd5963cda14557b890cfd273757742a9fc17bd357"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-highlight-regions.json": {
+    "size": 859,
+    "sha256": "b8df01d550f277dddd353c7144e371189612e359e2c08cae5c58c7755b17ba4f"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-history.json": {
+    "size": 34377,
+    "sha256": "1ac051091246f6bc8a8f2178c998c8142e9aac57ce9fbc3819cc7b01c6c9987f"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-independent-output.png": {
+    "size": 377634,
+    "sha256": "da50c074399fed1d224e3f75b6ef2cc4e5535308ea09a4342c6cd47603417062"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-widget-state.json": {
+    "size": 4296,
+    "sha256": "2a8bdbbc1f597b74be51ed551bc29290163d48825d61f36a349d97dda02b0a60"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-2-workflow.png": {
+    "size": 529754,
+    "sha256": "115f3920a3dcb688a5e723fec43d982a0e417026c1fc8c553a618ff8ade02df0"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-fixed-output.png": {
+    "size": 316407,
+    "sha256": "6cf36759b68026615d1991acd5963cda14557b890cfd273757742a9fc17bd357"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-highlight-regions.json": {
+    "size": 859,
+    "sha256": "b8df01d550f277dddd353c7144e371189612e359e2c08cae5c58c7755b17ba4f"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-history.json": {
+    "size": 34377,
+    "sha256": "ed6a37d88a4cdd0095cd554e363ec742a8a702ba9b420701c7b7a3c0829a59fa"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-independent-output.png": {
+    "size": 394641,
+    "sha256": "b9655946662931d011a1883a821745f7b44883445254e541c608ceb45a38cbdd"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-widget-state.json": {
+    "size": 4296,
+    "sha256": "e1fbc75d556cb3e1a1b16ac90ce2432387c8d4ca5f7e76dd967f21614f1ea4e8"
+  },
+  "audit-fixes-20261103/sampling/baseline/queue-3-workflow.png": {
+    "size": 533501,
+    "sha256": "5b97355d4619270509129fc48c0fe54525cf08c808729b8a85c0d3eea8c44344"
+  },
+  "audit-fixes-20261103/sampling/baseline/queues.json": {
+    "size": 2740,
+    "sha256": "8efdb4bc372d755d2e84e3a3206740001b459ff7ced5de3c6f8abce46456a718"
+  },
+  "audit-fixes-20261103/sampling/baseline/result.json": {
+    "size": 3196,
+    "sha256": "e229202314aab79184c92f278506b711e103615cc931320bb11ad37558bde568"
+  },
+  "audit-fixes-20261103/sampling/candidate/before-third-queue.json": {
+    "size": 19738,
+    "sha256": "2083ac73ac5afcb2f3103b2cf1c61aa62e99bc27d4852e6cfec996ebbd3a9fa4"
+  },
+  "audit-fixes-20261103/sampling/candidate/final.png": {
+    "size": 543431,
+    "sha256": "1c80c9432e61d5fe849e8d08a024b9e9048d1078559508d2d44508c6940c8180"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-fixed-output.png": {
+    "size": 344502,
+    "sha256": "52c8f90b9ed028c3842a27a050b30ebc198ea92b583211fbe0da1f50fa577b60"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-highlight-regions.json": {
+    "size": 859,
+    "sha256": "b8df01d550f277dddd353c7144e371189612e359e2c08cae5c58c7755b17ba4f"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-history.json": {
+    "size": 34297,
+    "sha256": "09e5817f1f87e78b2a97734b1a70ae24f7961e9b992c2024f1a3aee259243cd6"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-independent-output.png": {
+    "size": 389302,
+    "sha256": "cac1c1f1c6d6f4fa8a5eca547b0628b5d2713d34616dc3ba1c7c9dabde89f575"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-widget-state.json": {
+    "size": 4296,
+    "sha256": "260e752fbdbce8561490c04ecf65b35546ca7b3823e5e04d74d9b737809e32b1"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-1-workflow.png": {
+    "size": 539967,
+    "sha256": "43837b6049f6a2b2fb1b5c23626879fa4212c249dac38971b40178bc0616484c"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-fixed-output.png": {
+    "size": 344502,
+    "sha256": "52c8f90b9ed028c3842a27a050b30ebc198ea92b583211fbe0da1f50fa577b60"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-highlight-regions.json": {
+    "size": 859,
+    "sha256": "b8df01d550f277dddd353c7144e371189612e359e2c08cae5c58c7755b17ba4f"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-history.json": {
+    "size": 34449,
+    "sha256": "f9c8623c5bb8891002d7c1b9a0bef3393da51a0db83e9ef80fc07ea95ebb1134"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-independent-output.png": {
+    "size": 377634,
+    "sha256": "da50c074399fed1d224e3f75b6ef2cc4e5535308ea09a4342c6cd47603417062"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-widget-state.json": {
+    "size": 4296,
+    "sha256": "3cde68b6ca62e0d48a8c2c7b9d653cdbb376597965e138677312d3f7bccdfb10"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-2-workflow.png": {
+    "size": 538203,
+    "sha256": "d4c27ebda20ded4c6ca96daf8aaace0a408b74868b6c65b5c997df97c5c359c5"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-fixed-output.png": {
+    "size": 344502,
+    "sha256": "52c8f90b9ed028c3842a27a050b30ebc198ea92b583211fbe0da1f50fa577b60"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-highlight-regions.json": {
+    "size": 859,
+    "sha256": "b8df01d550f277dddd353c7144e371189612e359e2c08cae5c58c7755b17ba4f"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-history.json": {
+    "size": 34449,
+    "sha256": "85cd6e998ad512ee9878ab0fb26bef8842eb6722eccecc93d024f38e4e5fb28f"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-independent-output.png": {
+    "size": 394641,
+    "sha256": "b9655946662931d011a1883a821745f7b44883445254e541c608ceb45a38cbdd"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-widget-state.json": {
+    "size": 4296,
+    "sha256": "5e0b8fa74dd056a0c17b8056996f7fe386f4304e2d07bb11a10baec626f49704"
+  },
+  "audit-fixes-20261103/sampling/candidate/queue-3-workflow.png": {
+    "size": 543354,
+    "sha256": "dac3e743fb3b6fa8a42f71fa4113b215d9cc79b5d0076dfb199a1ce8caa61c88"
+  },
+  "audit-fixes-20261103/sampling/candidate/queues.json": {
+    "size": 2834,
+    "sha256": "91b71708c9baaf815e12c04204759ae2a53e9851af75011408c46ed7fad4ea49"
+  },
+  "audit-fixes-20261103/sampling/candidate/result.json": {
+    "size": 3278,
+    "sha256": "8d39e648be5ab806af5d7d5d98eb4a0f2450346b60e70175c9669d53046f74c8"
+  },
+  "audit-fixes-20261103/sampling/comparison.json": {
+    "size": 8092,
+    "sha256": "835736a8a297df423e56f5a556cb8f37a398deeefb22302cdcc2f37948b94d2a"
+  },
+  "audit-fixes-20261103/sampling/host.json": {
+    "size": 22,
+    "sha256": "2ffdddc0980a555b64e0c91a9814de8a4b26a08bd1f21c2737c9ffe8cdd161f9"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-1.html": {
+    "size": 4998,
+    "sha256": "16faccad3dd2ce0a9da83ae0124a36327d585e25898d203b5ae7ba00fa4f79e3"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-1.png": {
+    "size": 667431,
+    "sha256": "fa7354c125665de46820029a8a924a1d0b59e39bf184404d5ce344054a991e43"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-2.html": {
+    "size": 4971,
+    "sha256": "36af4c4466a8c2ed86c80f05446999f07555d303592bde010474ee16abe84971"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-2.png": {
+    "size": 658208,
+    "sha256": "300f7ead5c778f0492f4e95fab09a60a64ab8b0e40c0b063f23551bc1e18b7b1"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-3.html": {
+    "size": 5011,
+    "sha256": "b655c4e237300a58b1bc91ffde96c5da512e628f1d433e6ab96ad77592fe8a8b"
+  },
+  "audit-fixes-20261103/sampling/overlays/baseline-queue-3.png": {
+    "size": 667076,
+    "sha256": "b27fb51d5134cc7508d90f7353b96a1bf2c53ef4a2ce8a33fc188bc07e301848"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-1.html": {
+    "size": 4887,
+    "sha256": "787608af698249d612a17e51ba4a41cce1ef5a613548dbf981a98bc8a440b758"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-1.png": {
+    "size": 657602,
+    "sha256": "10cfc473fe439c5e8483a4d168d59aebf25a3992d10f16c700156c4273bc9924"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-2.html": {
+    "size": 4899,
+    "sha256": "aedff2815cfeae7da8dce0e21b7c4ea1817b7ba32a0db28e38bac404e09ed2b8"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-2.png": {
+    "size": 659904,
+    "sha256": "1b41bb84175c8bdc76128dd4ed0f94c1dd3edc624ff8b12e356744da3e1ae234"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-3.html": {
+    "size": 4939,
+    "sha256": "62fdcf12a8cc89b792dc6eafc12a2e76278fe3b422c08f36cb005e4ab41ba1bc"
+  },
+  "audit-fixes-20261103/sampling/overlays/candidate-queue-3.png": {
+    "size": 667853,
+    "sha256": "818e6127458585755dcd028ccf86f3162ae3c609d3d170160803dd6fa2b4a587"
+  },
+  "audit-fixes-20261103/sampling/overlays/manifest.json": {
+    "size": 21384,
+    "sha256": "82f601a48bfba26349023e34108a9d156c3b5997dbf5c62248558cbd5bf5fc65"
+  },
+  "audit-fixes-20261103/sampling/overlays/render.py": {
+    "size": 12203,
+    "sha256": "a811d693c1b13bda4e8382e1f3f9dcec60ab217b709c6143215f5ca30d395b14"
+  },
+  "audit-fixes-20261103/sampling/promoted-two-branch-workflow.json": {
+    "size": 19721,
+    "sha256": "bd4f92480bd42a95b44618cd8206ee5fbd5b8a79c48f617e9f6fc3bd611cc193"
+  },
+  "audit-fixes-20261103/sampling-driver.log": {
+    "size": 765,
+    "sha256": "963620901b13834349306851b5ba68e3bb81321719a7fe86851e5ab39dcf9290"
+  },
+  "audit-fixes-20261103/sampling_capture.py": {
+    "size": 9888,
+    "sha256": "a5ed7391fe491f99fabd9e323ddee81e22be1ef51eacfaf9bf8f6747f3e4f2fc"
+  },
+  "audit-fixes-20261103/serve.py": {
+    "size": 3273,
+    "sha256": "1bb6c1c5276cbd82064b9e11a35f03508a1cf56f39709620ddf2504d4fd0ab1c"
+  },
+  "audit-fixes-20261103/server-catalog.json": {
+    "size": 889,
+    "sha256": "3f8e1a9b6226fe3586445871121be03a1a0e9ec1af100f1d255f2def45e17e58"
+  },
+  "audit-fixes-20261103/server-catalog.log": {
+    "size": 11416,
+    "sha256": "0140530f63b323367cd980eafde39f583ab1050ba131eae7d5ea53b988baa6f6"
+  },
+  "audit-fixes-20261103/server-classic.json": {
+    "size": 889,
+    "sha256": "eee7d59ac84f8e0645dcc42caa19293d89e4b07e1c534c925ebb89f629c732ea"
+  },
+  "audit-fixes-20261103/server-classic.log": {
+    "size": 29720,
+    "sha256": "75ee13b6a96b6143b821981a4c91e2ddfbc90ba4a7fc4e74ca8fb2ee8f0c223a"
+  },
+  "audit-fixes-20261103/server-lru.json": {
+    "size": 887,
+    "sha256": "c2e5646283af1216141a55bd2f13070c7b2fa0b1a16f6e5c6dd7b3c75a32d801"
+  },
+  "audit-fixes-20261103/server-lru.log": {
+    "size": 19941,
+    "sha256": "e64ee303ea6f0df18fde3db2e5ce2c79e185672567c9a489f3a2c3fe27835957"
+  },
+  "audit-fixes-20261103/server-mode-lru.json": {
+    "size": 897,
+    "sha256": "7b92e0b78c2d7bf1c15e92c04ffc74c8bbfa51ee79f5b916631f752be2c0d677"
+  },
+  "audit-fixes-20261103/server-mode-lru.log": {
+    "size": 13522,
+    "sha256": "aa0bd8f66ea60425b90d2abd27dba579fbbc4b2e5290b77fe5c2608fefd3e822"
+  },
+  "audit-fixes-20261103/server-mode-rgr.json": {
+    "size": 891,
+    "sha256": "b38ecd9939405bcb548b475555fae45696ae9a0e55737f865f6c3aa075dac1b6"
+  },
+  "audit-fixes-20261103/server-mode-rgr.log": {
+    "size": 14550,
+    "sha256": "f0eb3e81bcebf0e27f04bc8d3e93cd516d76295afa33e6b2dc0d494225f5ce6e"
+  },
+  "audit-fixes-20261103/server-mode.json": {
+    "size": 883,
+    "sha256": "47c85c2fe0eec8ef15ed17069afce4660b4050140d0c9388a1a0609c5cea9ca6"
+  },
+  "audit-fixes-20261103/server-mode.log": {
+    "size": 13886,
+    "sha256": "51da3e03ce26b83388e8406db33effd150b4763c95bf076a2ebb3c5ded2ea7aa"
+  },
+  "audit-fixes-20261103/server-ordinary.json": {
+    "size": 891,
+    "sha256": "bc3f586fc39e3793bebb41fa6f6cc1d56c73c0f2ae8524b3f08ab7a6bc4ea0b8"
+  },
+  "audit-fixes-20261103/server-ordinary.log": {
+    "size": 51050,
+    "sha256": "f70edcbee7ba7eb3388c47d3ab7cafe85307a4504829d56e2a58d5c9ccc89ace"
+  },
+  "audit-fixes-20261103/server-sampling-baseline.json": {
+    "size": 1012,
+    "sha256": "25a68020dcdc6fca94d8b4022a3f46a887e4766766b1e4ec75ddbddac4201f4e"
+  },
+  "audit-fixes-20261103/server-sampling-candidate.json": {
+    "size": 1014,
+    "sha256": "a7d66a5d6a6ff008fad28ee40385c497800a50a3be6deb991b944340c187963d"
+  },
+  "audit-fixes-20261103/summary.json": {
+    "size": 34998,
+    "sha256": "4d266d8a3e76628da92f256b31ea836425eed738b66bbfb319609ef7cb8d77be"
+  },
+  "audit-fixes-20261103/unit-green.log": {
+    "size": 7135,
+    "sha256": "052bed10c4fe6b464fca37aa8fa7b276e89cabf175af37c541c0b4c6ea44e227"
+  },
+  "audit-fixes-20261103/unit-red.log": {
+    "size": 9849,
+    "sha256": "74b0cca1ab92e595e6fe6cfd9c0c5a96f8b49bc12d47649611a7e8a12706cb66"
+  },
+  "audit-fixes-20261103/unit-rgr-green.log": {
+    "size": 7600,
+    "sha256": "4ccb91dda970681236069d4fcccc876dbfc553c6a563a3aa5a58f1225fe5fe91"
+  },
+  "audit-fixes-20261103/unit-rgr-red-again.log": {
+    "size": 10473,
+    "sha256": "09612046fe08a56936587432fbf28ee733ff10f41fa6a6f6c63bcce498c34757"
+  },
+  "audit-fixes-20261103/unit-rgr-red.log": {
+    "size": 10474,
+    "sha256": "b508340884d8331c78d40ecb5cc91b414931526deaf7bc016540f2e8f46ecfe4"
+  },
+  "audit-fixes-20261103/unit-rgr.json": {
+    "size": 2205,
+    "sha256": "05680a31867ff8a2079587e0e810c0719540fa3474a91edfc94f8ea6e0afc41a"
+  },
+  "audit-fixes-20261103/validated-source/README.md": {
+    "size": 474,
+    "sha256": "f2d2f43f2258fcbe071786736c67de690953eea8c81e84cb37988bae6cf9eeca"
+  },
+  "audit-fixes-20261103/validated-source/js/impact-pack.js": {
+    "size": 35108,
+    "sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5"
+  },
+  "audit-fixes-20261103/validated-source/tests/e2e_ui.py": {
+    "size": 11209,
+    "sha256": "64bba81df71dd76d9fdfac429dd073dd8a78b8400fe59caf281b783ebc9843da"
+  },
+  "audit-fixes-20261103/validated-source/tests/pytest.ini": {
+    "size": 381,
+    "sha256": "120512f814aec0a6c6b5fd818236673d7bb67136fad9ea9358169a015454d451"
+  },
+  "audit-fixes-20261103/validated-source/tests/test_e2e_widget_catalog.py": {
+    "size": 19291,
+    "sha256": "26781bb37e28328a29d1daed06a5a5b0bcd91fed6aafc3c297771201156a87a0"
+  },
+  "audit-fixes-20261103/validated-source/tests/test_e2e_wildcard_cache.py": {
+    "size": 31308,
+    "sha256": "96c74e9f1f4a92e8496c1383b46fca8446978b9adaa3fc067516270b5eacfb0d"
+  },
+  "audit-fixes-20261103/validated-source/tests/test_wildcard_cache_artifacts.py": {
+    "size": 2621,
+    "sha256": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701"
+  },
+  "audit-fixes-20261103/validated-source/tests/wildcard_seed_control.test.mjs": {
+    "size": 15990,
+    "sha256": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481"
+  },
+  "audit-fixes-20261103/validated-source/tests/workflows/all-impact-nodes.json": {
+    "size": 204946,
+    "sha256": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be"
+  },
+  "audit-fixes-20261103/validated-source/tests/workflows/all-impact-nodes.widgets.json": {
+    "size": 75355,
+    "sha256": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "audit-fixes-20261103/verify.py": {
+    "size": 5005,
+    "sha256": "694957836d5c5cecdf970bb1ca67fd7bae286d2d51ee8375804734052dfadb07"
+  },
+  "audit-fixes-20261103/wildcard-unit.log": {
+    "size": 24255,
+    "sha256": "ecac31939b4ae7178cd0d5705644b776757625d94be5d0e8abf9214b2439ab4c"
+  },
+  "audit-fixes-20261103/wildcard-unit.xml": {
+    "size": 27731,
+    "sha256": "98622cf8fde6cf95b50f8087b14bfdfcd63af58eabcdb11df74e26d677894bee"
+  },
+  "review2-20261103/core-probe-driver.log": {
+    "size": 1002,
+    "sha256": "1decb0a9f1e158aede30e9d2ea8681fd0267217e91440e002ee6cfe88f76a969"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/queue-1-history.json": {
+    "size": 13952,
+    "sha256": "54efa8bcd5cc95270d1d88e258715f94bd897740bee2fe29a91bc8e3ddc9928e"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/queue-1-request.json": {
+    "size": 12021,
+    "sha256": "959274286fc77b1291be0c6c8a6b7468e68607b29cc6342478c30c322769137a"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/queue-2-history.json": {
+    "size": 14015,
+    "sha256": "2202cb2325d3a534adec32c988f8eee98f4b8831b39b58fe8dc1086cab3d5d63"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/queue-2-request.json": {
+    "size": 12021,
+    "sha256": "959274286fc77b1291be0c6c8a6b7468e68607b29cc6342478c30c322769137a"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/roundtrip.json": {
+    "size": 8438,
+    "sha256": "8c011d5dc0fdb4990ff8c311c143b0c0a8fa9c69ab90e787139e87ce1f8f80ae"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/saved.json": {
+    "size": 8438,
+    "sha256": "0e49dbfd50d7faf81d0a7daba68466d879bab17b64552b5760095ad55c7ab013"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardEncode/widget-state.json": {
+    "size": 137,
+    "sha256": "76e11cddfafdc87ffb2634b6475930df1c3c58d581d9702b23543c76a1368ac9"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/queue-1-history.json": {
+    "size": 9138,
+    "sha256": "594ab171aa5b50289f3e2500eba57159fa8180c9ae699f893ba282b4b7cb8d68"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/queue-1-request.json": {
+    "size": 7537,
+    "sha256": "68574b12c45cfae173f7bfc1095a6f2c770b358cfd00e85c7fc54687ae44f5a2"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/queue-2-history.json": {
+    "size": 9184,
+    "sha256": "cedfbe2f0f901030c628bb2a0eb58a29268d53c3c489d24ab9dca6d2e4c8b5f8"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/queue-2-request.json": {
+    "size": 7537,
+    "sha256": "68574b12c45cfae173f7bfc1095a6f2c770b358cfd00e85c7fc54687ae44f5a2"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/roundtrip.json": {
+    "size": 5220,
+    "sha256": "2c212d9ece2e0b1c235e0a75ae4958b41ebd24f7dfdce9eb4912b358b0c7a7f6"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/saved.json": {
+    "size": 5220,
+    "sha256": "2c212d9ece2e0b1c235e0a75ae4958b41ebd24f7dfdce9eb4912b358b0c7a7f6"
+  },
+  "review2-20261103/core-probe-verified/baseline/ImpactWildcardProcessor/widget-state.json": {
+    "size": 137,
+    "sha256": "8417cb881d1734cbd72f1faa9d66e36323ad57698db9f8ba0b63ab8dc5ca2a2e"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/queue-1-history.json": {
+    "size": 13952,
+    "sha256": "d4d36acfd1e5e03d79c74f676f973f9ac47e645d19300e842c8cf5ce98df3051"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/queue-1-request.json": {
+    "size": 12021,
+    "sha256": "6a23026e68edae9e507c6ef0ad36d44ffa26eaeeec6059c4c0b5f2a77355d1ba"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/queue-2-history.json": {
+    "size": 14015,
+    "sha256": "c647a38ca8b1bcd6e4e58cf4c78c12dd3998e6b550930f53e31225ff79cbfbb1"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/queue-2-request.json": {
+    "size": 12021,
+    "sha256": "6a23026e68edae9e507c6ef0ad36d44ffa26eaeeec6059c4c0b5f2a77355d1ba"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/roundtrip.json": {
+    "size": 8438,
+    "sha256": "f0f1bd6fb56d6aef158c4aee15d442a18802901cc911b0b056fd8893afd9b0fb"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/saved.json": {
+    "size": 8438,
+    "sha256": "fbeeb05ea156c049d465049c660e8c5b425c3a3337149aaca7b1bb380f4d9e73"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode/widget-state.json": {
+    "size": 137,
+    "sha256": "d1f32058013e9c5a775a5c21b479067bb21be0ed59bc96102bda414f2199c5a9"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/queue-1-history.json": {
+    "size": 9138,
+    "sha256": "511434ab4d29ca56f8cff369ad6df542fa08b94449b1659ea4b3e0072237f839"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/queue-1-request.json": {
+    "size": 7537,
+    "sha256": "c3282b4bd1ad4bd29a17ec9b27320c1db0a4291de157d6039b5b1ac441b3adbc"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/queue-2-history.json": {
+    "size": 9184,
+    "sha256": "f2ecbbda10b15e676d346b0a1608a70dea41a52f794b25087cabf0dbc581463c"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/queue-2-request.json": {
+    "size": 7537,
+    "sha256": "c3282b4bd1ad4bd29a17ec9b27320c1db0a4291de157d6039b5b1ac441b3adbc"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/roundtrip.json": {
+    "size": 5220,
+    "sha256": "98eea3dfee59e593ca5ab6911b0981b18999a902912138205023f13c3aa2656f"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/saved.json": {
+    "size": 5220,
+    "sha256": "98eea3dfee59e593ca5ab6911b0981b18999a902912138205023f13c3aa2656f"
+  },
+  "review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor/widget-state.json": {
+    "size": 137,
+    "sha256": "ff1a91c8760d9c87b70d7f3318926df53419962a18b6d53da69ad37185260cff"
+  },
+  "review2-20261103/core-probe-verified/comparison.json": {
+    "size": 2025,
+    "sha256": "90f3051001071ef56a616a2a51a0ff7c9cf9712c63a13169532893041806a023"
+  },
+  "review2-20261103/frontend.json": {
+    "size": 532,
+    "sha256": "2a7414210a22178fb79295120d93a7fbfa23598590601883ed25f08e809d73a3"
   }
 }

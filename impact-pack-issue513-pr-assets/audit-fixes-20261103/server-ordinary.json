@@ -1,0 +1,30 @@
+{
+  "pid": 2082342,
+  "command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "18412",
+    "--disable-auto-launch",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/runtime-ordinary",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "comfyui-inspire-pack",
+    "comfyui-impact-subpack",
+    "comfyui_essentials",
+    "comfyui_controlnet_aux",
+    "comfyui-animatediff-evolved",
+    "comfyui-videohelpersuite",
+    "comfyui_ipadapter_plus",
+    "--cpu",
+    "--cache-classic"
+  ],
+  "runtime": "/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/runtime-ordinary",
+  "source_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5"
+}

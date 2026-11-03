@@ -1,0 +1,37 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 14 items
+
+tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node PASSED [  7%]
+tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional] PASSED [ 14%]
+tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named] PASSED [ 21%]
+tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider] PASSED [ 28%]
+tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter] PASSED [ 35%]
+tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional] PASSED [ 42%]
+tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named] PASSED [ 50%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name] PASSED [ 57%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order] PASSED [ 64%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value] PASSED [ 71%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type] PASSED [ 78%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success] PASSED [ 85%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror] PASSED [ 92%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace] PASSED [100%]
+
+=============================== warnings summary ===============================
+test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/catalog-browser.xml -
+================== 14 passed, 1 warning in 360.03s (0:06:00) ===================

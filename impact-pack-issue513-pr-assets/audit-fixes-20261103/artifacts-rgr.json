@@ -1,0 +1,80 @@
+{
+  "test_sha256": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701",
+  "results": {
+    "red": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "test_wildcard_cache_artifacts.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-red.xml"
+      ],
+      "exit_code": 1,
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "3",
+        "time": "0.305",
+        "timestamp": "2026-11-03T17:21:13.678120+09:00",
+        "hostname": "hyewon"
+      },
+      "failures": [
+        "test_original_post_survives_output_verification_failure[output]",
+        "test_original_post_survives_output_verification_failure[preview]"
+      ]
+    },
+    "green": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "test_wildcard_cache_artifacts.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-green.xml"
+      ],
+      "exit_code": 0,
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "3",
+        "time": "0.148",
+        "timestamp": "2026-11-03T17:21:14.647854+09:00",
+        "hostname": "hyewon"
+      },
+      "failures": []
+    },
+    "red-again": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "test_wildcard_cache_artifacts.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-red-again.xml"
+      ],
+      "exit_code": 1,
+      "counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "3",
+        "time": "0.231",
+        "timestamp": "2026-11-03T17:21:15.411515+09:00",
+        "hostname": "hyewon"
+      },
+      "failures": [
+        "test_original_post_survives_output_verification_failure[output]",
+        "test_original_post_survives_output_verification_failure[preview]"
+      ]
+    }
+  }
+}

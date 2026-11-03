@@ -1,0 +1,270 @@
+TAP version 13
+# (node:2130429) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+ok 1 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 3.393813
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.248298
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 3 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.187054
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.329022
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.151105
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+ok 6 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.321097
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+not ok 7 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.658805
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:182:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'fixed'
+    - 'decrement'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'decrement'
+  actual: 'fixed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:194:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+not ok 8 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.300267
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:199:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'fixed'
+    - 'randomize'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'randomize'
+  actual: 'fixed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:213:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+ok 9 - ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.332859
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: shared hosts use their own promoted modes
+ok 10 - ImpactWildcardProcessor: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.393813
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+ok 11 - ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.289557
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+ok 12 - ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 13.890859
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+ok 13 - ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 1.230966
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+ok 14 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.23281
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+ok 15 - ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.199747
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+ok 16 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.080431
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 17 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.036008
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 18 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.025868
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 19 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.052519
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 20 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.019036
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+ok 21 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.141717
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+not ok 22 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.259549
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:182:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'fixed'
+    - 'decrement'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'decrement'
+  actual: 'fixed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:194:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+not ok 23 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.26485
+  type: 'test'
+  location: '/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:199:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'fixed'
+    - 'randomize'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'randomize'
+  actual: 'fixed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/unit-rgr/tests/wildcard_seed_control.test.mjs:213:16)
+    async Test.run (node:internal/test_runner/test:1113:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+ok 24 - ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.747462
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: shared hosts use their own promoted modes
+ok 25 - ImpactWildcardEncode: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.12158
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+ok 26 - ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.180511
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: API drift declines promotion without breaking the queue
+ok 27 - ImpactWildcardEncode: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 14.138426
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: after-phase restoration redraws the selected policy
+ok 28 - ImpactWildcardEncode: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 1.147438
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+ok 29 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.151196
+  type: 'test'
+  ...
+# Subtest: ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+ok 30 - ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.113193
+  type: 'test'
+  ...
+# Subtest: unrelated node types are untouched
+ok 31 - unrelated node types are untouched
+  ---
+  duration_ms: 0.952019
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 27
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 108.934666

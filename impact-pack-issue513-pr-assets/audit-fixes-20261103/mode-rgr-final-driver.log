@@ -1,0 +1,6 @@
+START browser-mode-rgr-red
+END browser-mode-rgr-red 1
+START browser-mode-rgr-green
+END browser-mode-rgr-green 0
+START browser-mode-rgr-red-again
+END browser-mode-rgr-red-again 1

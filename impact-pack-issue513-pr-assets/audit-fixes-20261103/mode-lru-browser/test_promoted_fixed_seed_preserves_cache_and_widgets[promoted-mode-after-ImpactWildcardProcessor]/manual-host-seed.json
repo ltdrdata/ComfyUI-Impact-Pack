@@ -1,0 +1,370 @@
+{
+  "prompt": [
+    11,
+    "41d622e7-99c7-4f04-bb68-935ae1ffa29d",
+    {
+      "2": {
+        "inputs": {
+          "source": [
+            "3:1",
+            0
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3:1": {
+        "inputs": {
+          "wildcard_text": "# promoted 77721e2c46504ce1b22b3ae4ed6c5109\n{red|green|blue}",
+          "populated_text": "{red|green|blue}",
+          "mode": "fixed",
+          "seed": 2,
+          "Select to add Wildcard": "Select the Wildcard to add to the text"
+        },
+        "class_type": "ImpactWildcardProcessor",
+        "_meta": {
+          "title": "ImpactWildcardProcessor"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "afbcab70-ae7f-4269-bdcd-069cd7f74a06",
+          "revision": 0,
+          "last_node_id": 3,
+          "last_link_id": 4,
+          "nodes": [
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "58901cf3-63f5-48cd-ab39-a9689c71d4be",
+              "pos": [
+                152.8888888888889,
+                231.55555555555554
+              ],
+              "size": [
+                210,
+                82
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "processed text",
+                  "type": "STRING",
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "previewExposures": []
+              },
+              "widgets_values": [
+                2,
+                "fixed"
+              ],
+              "widgets_values_named": {
+                "seed": 2,
+                "mode": "fixed"
+              }
+            }
+          ],
+          "links": [
+            [
+              2,
+              3,
+              0,
+              2,
+              0,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "definitions": {
+            "subgraphs": [
+              {
+                "id": "58901cf3-63f5-48cd-ab39-a9689c71d4be",
+                "version": 1,
+                "state": {
+                  "lastGroupId": 0,
+                  "lastNodeId": 3,
+                  "lastLinkId": 4,
+                  "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "New Subgraph",
+                "inputNode": {
+                  "id": -10,
+                  "bounding": [
+                    -165.1111111111111,
+                    205.55555555555554,
+                    128,
+                    88
+                  ]
+                },
+                "outputNode": {
+                  "id": -20,
+                  "bounding": [
+                    482.8888888888889,
+                    195.55555555555554,
+                    132.345703125,
+                    68
+                  ]
+                },
+                "inputs": [
+                  {
+                    "id": "731e7820-1837-44df-bcb3-d3c06368ecd1",
+                    "name": "seed",
+                    "type": "INT",
+                    "linkIds": [
+                      3
+                    ],
+                    "pos": [
+                      -61.111111111111086,
+                      229.55555555555554
+                    ]
+                  },
+                  {
+                    "id": "957de31b-101d-45ea-93a0-63b78f7f38b9",
+                    "name": "mode",
+                    "type": "COMBO",
+                    "linkIds": [
+                      4
+                    ],
+                    "pos": [
+                      -61.111111111111086,
+                      249.55555555555554
+                    ]
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "5cc7686a-6903-4949-9e73-2e517f1302ba",
+                    "name": "processed text",
+                    "type": "STRING",
+                    "linkIds": [
+                      1
+                    ],
+                    "localized_name": "processed text",
+                    "pos": [
+                      506.8888888888889,
+                      219.55555555555554
+                    ]
+                  }
+                ],
+                "widgets": [],
+                "nodes": [
+                  {
+                    "id": 1,
+                    "type": "ImpactWildcardProcessor",
+                    "pos": [
+                      22.888888888888914,
+                      125.55555555555554
+                    ],
+                    "size": [
+                      400,
+                      238
+                    ],
+                    "flags": {},
+                    "order": 0,
+                    "mode": 0,
+                    "inputs": [
+                      {
+                        "localized_name": "mode",
+                        "name": "mode",
+                        "type": "COMBO",
+                        "widget": {
+                          "name": "mode"
+                        },
+                        "link": 4
+                      },
+                      {
+                        "localized_name": "seed",
+                        "name": "seed",
+                        "type": "INT",
+                        "widget": {
+                          "name": "seed"
+                        },
+                        "link": 3
+                      }
+                    ],
+                    "outputs": [
+                      {
+                        "localized_name": "processed text",
+                        "name": "processed text",
+                        "type": "STRING",
+                        "links": [
+                          1
+                        ]
+                      }
+                    ],
+                    "properties": {
+                      "Node name for S&R": "ImpactWildcardProcessor"
+                    },
+                    "widgets_values": [
+                      "# promoted 77721e2c46504ce1b22b3ae4ed6c5109\n{red|green|blue}",
+                      "{red|green|blue}",
+                      "populate",
+                      5,
+                      "increment",
+                      "Select Wildcard \ud83d\udfe2 Full Cache"
+                    ],
+                    "widgets_values_named": {
+                      "wildcard_text": "# promoted 77721e2c46504ce1b22b3ae4ed6c5109\n{red|green|blue}",
+                      "populated_text": "{red|green|blue}",
+                      "mode": "populate",
+                      "seed": 5,
+                      "control_after_generate": "increment",
+                      "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                    }
+                  }
+                ],
+                "groups": [],
+                "links": [
+                  {
+                    "id": 1,
+                    "origin_id": 1,
+                    "origin_slot": 0,
+                    "target_id": -20,
+                    "target_slot": 0,
+                    "type": "STRING"
+                  },
+                  {
+                    "id": 4,
+                    "origin_id": -10,
+                    "origin_slot": 1,
+                    "target_id": 1,
+                    "target_slot": 0,
+                    "type": "COMBO"
+                  },
+                  {
+                    "id": 3,
+                    "origin_id": -10,
+                    "origin_slot": 0,
+                    "target_id": 1,
+                    "target_slot": 1,
+                    "type": "INT"
+                  }
+                ],
+                "extra": {}
+              }
+            ]
+          },
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                -467.8888888888889,
+                -275.55555555555554
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "3": {
+              "seed": 0
+            }
+          }
+        }
+      },
+      "client_id": "232b1ff91a7741ffb2e9cdc0b26160f0",
+      "workflow_metadata": {
+        "workflow_id": "afbcab70-ae7f-4269-bdcd-069cd7f74a06"
+      },
+      "create_time": 1793694198739
+    },
+    [
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "red"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "41d622e7-99c7-4f04-bb68-935ae1ffa29d",
+          "timestamp": 1793694198740
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "41d622e7-99c7-4f04-bb68-935ae1ffa29d",
+          "timestamp": 1793694198740
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "41d622e7-99c7-4f04-bb68-935ae1ffa29d",
+          "timestamp": 1793694198741
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

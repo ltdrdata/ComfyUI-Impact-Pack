@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py",
+    "-k",
+    "promoted_fixed_seed and promoted-mode and after",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/browser-mode-rgr-green.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T08:23:35.144409+00:00",
+  "exit_code": 0,
+  "seconds": 32.12,
+  "counts": {
+    "tests": "2",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

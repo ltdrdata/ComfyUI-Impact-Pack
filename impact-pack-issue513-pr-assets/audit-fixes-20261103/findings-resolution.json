@@ -1,0 +1,47 @@
+{
+  "F1": {
+    "status": "fixed",
+    "evidence": [
+      "unit-rgr.json",
+      "original-audit-probes.log"
+    ],
+    "change": "Restore a known shared control before mode resolution can decline the override."
+  },
+  "F2": {
+    "status": "fixed",
+    "evidence": [
+      "unit-rgr.json",
+      "original-audit-probes.log"
+    ],
+    "change": "An existing but unreadable mode projection returns unsupported, not the interior default."
+  },
+  "F3": {
+    "status": "fixed",
+    "evidence": [
+      "adapter-disabled.json",
+      "adapter-disabled.log"
+    ],
+    "change": "Two duplicate tests replaced by four pending-state tests; disabling the adapter now makes all four fail."
+  },
+  "F4": {
+    "status": "fixed",
+    "evidence": [
+      "mode-browser.xml",
+      "mode-lru-browser.xml",
+      "browser-mode-rgr.json",
+      "sampling/comparison.json"
+    ],
+    "change": "Host fixed versus interior populate is asserted in positional and named serialization, queued three times and rendered. Ignoring host mode is detected in after timing. Before timing retains the separate native core issue."
+  },
+  "F5": {
+    "status": "fixed",
+    "evidence": [
+      "artifacts-rgr.json"
+    ],
+    "change": "Capture/save the original POST before checking backend output or UI preview; three focused regressions include failure paths and normalized history."
+  },
+  "F6": {
+    "status": "fixed",
+    "change": "Three fixed repetitions per matrix scenario: 144 planned fixed submissions over both caches, down from 480; native reload and manual invalidation assertions retained."
+  }
+}

@@ -1,0 +1,33 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_original_post_survives_output_verification_failure[output] ________
+test_wildcard_cache_artifacts.py:55: in test_original_post_survives_output_verification_failure
+    assert json.loads((ui.artifacts / "failed-request.json").read_text()) == request
+/usr/lib/python3.12/pathlib.py:1029: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/usr/lib/python3.12/pathlib.py:1015: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou0/failed-request.json'
+_______ test_original_post_survives_output_verification_failure[preview] _______
+test_wildcard_cache_artifacts.py:55: in test_original_post_survives_output_verification_failure
+    assert json.loads((ui.artifacts / "failed-request.json").read_text()) == request
+/usr/lib/python3.12/pathlib.py:1029: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/usr/lib/python3.12/pathlib.py:1015: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-rho/pytest-3046/test_original_post_survives_ou1/failed-request.json'
+=============================== warnings summary ===============================
+test_wildcard_cache_artifacts.py::test_original_post_survives_output_verification_failure[output]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-red.xml -
+=========================== short test summary info ============================
+FAILED test_wildcard_cache_artifacts.py::test_original_post_survives_output_verification_failure[output]
+FAILED test_wildcard_cache_artifacts.py::test_original_post_survives_output_verification_failure[preview]
+2 failed, 1 passed, 1 warning in 0.30s

@@ -1,0 +1,8 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/review2-20261103/core-probe-verified/candidate/ImpactWildcardProcessor
+PASS: UI Run completed (b87a0e70-0563-4722-99eb-975c277307dc)
+PASS: UI Run completed (06553f40-3590-4c25-9309-3107aedda32f)
+candidate ImpactWildcardProcessor [{'queue': 1, 'prompt_id': 'b87a0e70-0563-4722-99eb-975c277307dc', 'submitted_seed': 5, 'visible_seed': 5}, {'queue': 2, 'prompt_id': '06553f40-3590-4c25-9309-3107aedda32f', 'submitted_seed': 5, 'visible_seed': 5}]
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/review2-20261103/core-probe-verified/candidate/ImpactWildcardEncode
+PASS: UI Run completed (d5ad0621-9c87-4c20-be4f-67fe196cea96)
+PASS: UI Run completed (40f492ba-7464-4c06-91fe-8a0a71846db0)
+candidate ImpactWildcardEncode [{'queue': 1, 'prompt_id': 'd5ad0621-9c87-4c20-be4f-67fe196cea96', 'submitted_seed': 5, 'visible_seed': 5}, {'queue': 2, 'prompt_id': '40f492ba-7464-4c06-91fe-8a0a71846db0', 'submitted_seed': 5, 'visible_seed': 5}]

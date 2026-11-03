@@ -1,0 +1,225 @@
+TAP version 13
+# Subtest: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/connection_types.test.mjs
+not ok 1 - /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/connection_types.test.mjs
+  ---
+  duration_ms: 1120.840239
+  location: '/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/connection_types.test.mjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: ~
+  signal: 'SIGSEGV'
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# (node:2106190) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: resize redraws only the current image (global UI exports)
+ok 2 - resize redraws only the current image (global UI exports)
+  ---
+  duration_ms: 4.016859
+  ...
+# Subtest: resize redraws only the current image (UI module fallback)
+ok 3 - resize redraws only the current image (UI module fallback)
+  ---
+  duration_ms: 1.275009
+  ...
+# Subtest: upload creates missing image metadata for core preview refresh
+ok 4 - upload creates missing image metadata for core preview refresh
+  ---
+  duration_ms: 0.924106
+  ...
+# Subtest: late creation response cannot replace a restored selection
+ok 5 - late creation response cannot replace a restored selection
+  ---
+  duration_ms: 5.13912
+  ...
+# Subtest: only the latest category response can update the dropdown
+ok 6 - only the latest category response can update the dropdown
+  ---
+  duration_ms: 1.285859
+  ...
+# Subtest: returning to a category rejects its older response after a new selection
+ok 7 - returning to a category rejects its older response after a new selection
+  ---
+  duration_ms: 1.465579
+  ...
+# Subtest: missing saved choices survive restoration for backend validation
+ok 8 - missing saved choices survive restoration for backend validation
+  ---
+  duration_ms: 0.814238
+  ...
+# Subtest: category query values are encoded
+ok 9 - category query values are encoded
+  ---
+  duration_ms: 0.798789
+  ...
+# Subtest: existing nodes are not changed or queried
+ok 10 - existing nodes are not changed or queried
+  ---
+  duration_ms: 1.168478
+  ...
+# (node:2106197) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+ok 11 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 3.975361
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 12 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.435793
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 13 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.30707
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 14 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.558745
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 15 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.516986
+  ...
+# Subtest: ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+ok 16 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.76208
+  ...
+# Subtest: ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+ok 17 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.63568
+  ...
+# Subtest: ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+ok 18 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 1.346424
+  ...
+# Subtest: ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+ok 19 - ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.435543
+  ...
+# Subtest: ImpactWildcardProcessor: shared hosts use their own promoted modes
+ok 20 - ImpactWildcardProcessor: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.488703
+  ...
+# Subtest: ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+ok 21 - ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.508561
+  ...
+# Subtest: ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+ok 22 - ImpactWildcardProcessor: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 18.172004
+  ...
+# Subtest: ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+ok 23 - ImpactWildcardProcessor: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 2.175771
+  ...
+# Subtest: ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+ok 24 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.378044
+  ...
+# Subtest: ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+ok 25 - ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.334932
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+ok 26 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.380979
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 27 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.161495
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 28 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.500525
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 29 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.377673
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 30 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.181703
+  ...
+# Subtest: ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+ok 31 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.710492
+  ...
+# Subtest: ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+ok 32 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy
+  ---
+  duration_ms: 1.5563
+  ...
+# Subtest: ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+ok 33 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode
+  ---
+  duration_ms: 2.240003
+  ...
+# Subtest: ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+ok 34 - ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.194197
+  ...
+# Subtest: ImpactWildcardEncode: shared hosts use their own promoted modes
+ok 35 - ImpactWildcardEncode: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.517377
+  ...
+# Subtest: ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+ok 36 - ImpactWildcardEncode: native promoted projections keep their own identity and frozen values
+  ---
+  duration_ms: 1.366521
+  ...
+# Subtest: ImpactWildcardEncode: API drift declines promotion without breaking the queue
+ok 37 - ImpactWildcardEncode: API drift declines promotion without breaking the queue
+  ---
+  duration_ms: 14.9303
+  ...
+# Subtest: ImpactWildcardEncode: after-phase restoration redraws the selected policy
+ok 38 - ImpactWildcardEncode: after-phase restoration redraws the selected policy
+  ---
+  duration_ms: 1.434781
+  ...
+# Subtest: ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+ok 39 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.602167
+  ...
+# Subtest: ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+ok 40 - ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.679453
+  ...
+# Subtest: unrelated node types are untouched
+ok 41 - unrelated node types are untouched
+  ---
+  duration_ms: 1.400095
+  ...
+1..41
+# tests 41
+# suites 0
+# pass 40
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1124.769193

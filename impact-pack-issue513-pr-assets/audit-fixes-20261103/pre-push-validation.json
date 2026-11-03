@@ -1,0 +1,13 @@
+{
+  "validated_source_unchanged": true,
+  "files": [
+    "docs/E2E_TEST_STRATEGY.md",
+    "js/impact-pack.js",
+    "tests/README.md",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/wildcard_seed_control.test.mjs",
+    "tests/test_wildcard_cache_artifacts.py"
+  ],
+  "validation_parent": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "validated_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5"
+}

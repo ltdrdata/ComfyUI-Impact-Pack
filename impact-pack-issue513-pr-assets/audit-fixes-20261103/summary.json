@@ -1,0 +1,1008 @@
+{
+  "completed": true,
+  "completed_utc": "2026-11-03T08:32:17.888104+00:00",
+  "state": "uncommitted local fixes; no commit, push, PR edit or evidence publication",
+  "parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
+  "candidate_source": {
+    "parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+    "state": "uncommitted local fixes; no remote changes",
+    "sha256": {
+      "js/impact-pack.js": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+      "tests/wildcard_seed_control.test.mjs": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481",
+      "tests/test_e2e_wildcard_cache.py": "96c74e9f1f4a92e8496c1383b46fca8446978b9adaa3fc067516270b5eacfb0d",
+      "tests/test_wildcard_cache_artifacts.py": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701",
+      "tests/README.md": "f258e7a5c5a314b7169810aed4297ac364b5f958cc411b1097aacc666b717ace",
+      "docs/E2E_TEST_STRATEGY.md": "df18279f42e03f7e7aa904ab19a53dd075d740c2ae01d3c646367ea4d4ff1b4e",
+      "tests/e2e_ui.py": "64bba81df71dd76d9fdfac429dd073dd8a78b8400fe59caf281b783ebc9843da",
+      "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+      "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+    }
+  },
+  "findings_resolution": {
+    "F1": {
+      "status": "fixed",
+      "evidence": [
+        "unit-rgr.json",
+        "original-audit-probes.log"
+      ],
+      "change": "Restore a known shared control before mode resolution can decline the override."
+    },
+    "F2": {
+      "status": "fixed",
+      "evidence": [
+        "unit-rgr.json",
+        "original-audit-probes.log"
+      ],
+      "change": "An existing but unreadable mode projection returns unsupported, not the interior default."
+    },
+    "F3": {
+      "status": "fixed",
+      "evidence": [
+        "adapter-disabled.json",
+        "adapter-disabled.log"
+      ],
+      "change": "Two duplicate tests replaced by four pending-state tests; disabling the adapter now makes all four fail."
+    },
+    "F4": {
+      "status": "fixed",
+      "evidence": [
+        "mode-browser.xml",
+        "mode-lru-browser.xml",
+        "browser-mode-rgr.json",
+        "sampling/comparison.json"
+      ],
+      "change": "Host fixed versus interior populate is asserted in positional and named serialization, queued three times and rendered. Ignoring host mode is detected in after timing. Before timing retains the separate native core issue."
+    },
+    "F5": {
+      "status": "fixed",
+      "evidence": [
+        "artifacts-rgr.json"
+      ],
+      "change": "Capture/save the original POST before checking backend output or UI preview; three focused regressions include failure paths and normalized history."
+    },
+    "F6": {
+      "status": "fixed",
+      "change": "Three fixed repetitions per matrix scenario: 144 planned fixed submissions over both caches, down from 480; native reload and manual invalidation assertions retained."
+    }
+  },
+  "node_tests": {
+    "passed": 60,
+    "validated_runtime": "24.12.0",
+    "full_suite_runs": 10,
+    "runtime_comparison": {
+      "source_sha256": {
+        "js/impact-pack.js": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+        "tests/wildcard_seed_control.test.mjs": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481"
+      },
+      "retries": false,
+      "purpose": "Bounded runtime stability experiment after repeated Node20 VM SIGSEGV; each invocation retained regardless of result.",
+      "runtimes": {
+        "20.19.5": {
+          "binary": "/home/rho/.nvm/versions/node/v20.19.5/bin/node",
+          "results": [
+            {
+              "iteration": 1,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.265,
+              "log": "node-20.19.5-soak-1.log"
+            },
+            {
+              "iteration": 2,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-20.19.5-soak-2.log"
+            },
+            {
+              "iteration": 3,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.164,
+              "log": "node-20.19.5-soak-3.log"
+            },
+            {
+              "iteration": 4,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-20.19.5-soak-4.log"
+            },
+            {
+              "iteration": 5,
+              "exit_code": 1,
+              "passed_60": false,
+              "segfault": true,
+              "seconds": 1.167,
+              "log": "node-20.19.5-soak-5.log"
+            },
+            {
+              "iteration": 6,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-20.19.5-soak-6.log"
+            },
+            {
+              "iteration": 7,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-20.19.5-soak-7.log"
+            },
+            {
+              "iteration": 8,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.218,
+              "log": "node-20.19.5-soak-8.log"
+            },
+            {
+              "iteration": 9,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-20.19.5-soak-9.log"
+            },
+            {
+              "iteration": 10,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-20.19.5-soak-10.log"
+            }
+          ]
+        },
+        "24.12.0": {
+          "binary": "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+          "results": [
+            {
+              "iteration": 1,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.315,
+              "log": "node-24.12.0-soak-1.log"
+            },
+            {
+              "iteration": 2,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-24.12.0-soak-2.log"
+            },
+            {
+              "iteration": 3,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-24.12.0-soak-3.log"
+            },
+            {
+              "iteration": 4,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.265,
+              "log": "node-24.12.0-soak-4.log"
+            },
+            {
+              "iteration": 5,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.266,
+              "log": "node-24.12.0-soak-5.log"
+            },
+            {
+              "iteration": 6,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-24.12.0-soak-6.log"
+            },
+            {
+              "iteration": 7,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.214,
+              "log": "node-24.12.0-soak-7.log"
+            },
+            {
+              "iteration": 8,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.265,
+              "log": "node-24.12.0-soak-8.log"
+            },
+            {
+              "iteration": 9,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-24.12.0-soak-9.log"
+            },
+            {
+              "iteration": 10,
+              "exit_code": 0,
+              "passed_60": true,
+              "segfault": false,
+              "seconds": 0.215,
+              "log": "node-24.12.0-soak-10.log"
+            }
+          ]
+        }
+      }
+    },
+    "boundary": "Node20 SIGSEGV root cause is not claimed fixed; Node24 is the bounded validated runner, with no global runtime changes."
+  },
+  "python_passed": 373,
+  "results": {
+    "wildcard-unit": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/wildcard-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+      "started_utc": "2026-11-03T08:11:03.867898+00:00",
+      "exit_code": 0,
+      "seconds": 1.12,
+      "counts": {
+        "tests": "205",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    },
+    "other-python": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_mask_blur.py",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "tests/test_animatediff_assembly.py",
+        "tests/test_e2e_ui.py",
+        "tests/test_wildcard_cache_artifacts.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/other-python.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T08:11:04.983979+00:00",
+      "exit_code": 0,
+      "seconds": 7.58,
+      "counts": {
+        "tests": "168",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    },
+    "ordinary-browser": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-k",
+        "not promoted_fixed_seed and not inference",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/ordinary-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T08:11:10.606245+00:00",
+      "exit_code": 0,
+      "seconds": 624.31,
+      "counts": {
+        "tests": "62",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    },
+    "catalog-browser": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_widget_catalog.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/catalog-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T08:11:11.254897+00:00",
+      "exit_code": 0,
+      "seconds": 360.93,
+      "counts": {
+        "tests": "14",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    },
+    "mode-browser": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "promoted_fixed_seed and promoted-mode",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/mode-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T08:21:21.517894+00:00",
+      "exit_code": 0,
+      "seconds": 62.77,
+      "counts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    },
+    "mode-lru-browser": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "promoted_fixed_seed and promoted-mode",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/mode-lru-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T08:22:29.943717+00:00",
+      "exit_code": 0,
+      "seconds": 66.53,
+      "counts": {
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      "failures": []
+    }
+  },
+  "promoted_matrix": {
+    "classic": {
+      "validated_scenarios": 24,
+      "unchanged_cases_passed": 20,
+      "updated_mode_cases_passed": 4,
+      "initial_popup_run": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/promoted-classic.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:11:55.413638+00:00",
+        "exit_code": 1,
+        "seconds": 420.2,
+        "counts": {
+          "tests": "24",
+          "failures": "1",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": [
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]"
+        ]
+      },
+      "final_mode_run": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed and promoted-mode",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/mode-browser.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:21:21.517894+00:00",
+        "exit_code": 0,
+        "seconds": 62.77,
+        "counts": {
+          "tests": "4",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": []
+      },
+      "explanation": "Only the promoted-mode interaction changed after the initial matrix; all 20 other paths are unchanged. The four affected cases were rerun with a single native arrow press, no retries."
+    },
+    "lru": {
+      "validated_scenarios": 24,
+      "unchanged_cases_passed": 20,
+      "updated_mode_cases_passed": 4,
+      "initial_popup_run": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/promoted-lru.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:11:56.581357+00:00",
+        "exit_code": 1,
+        "seconds": 435.6,
+        "counts": {
+          "tests": "24",
+          "failures": "2",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": [
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]",
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]"
+        ]
+      },
+      "final_mode_run": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed and promoted-mode",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/mode-lru-browser.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:22:29.943717+00:00",
+        "exit_code": 0,
+        "seconds": 66.53,
+        "counts": {
+          "tests": "4",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": []
+      },
+      "explanation": "Only the promoted-mode interaction changed after the initial matrix; all 20 other paths are unchanged. The four affected cases were rerun with a single native arrow press, no retries."
+    }
+  },
+  "unit_rgr": {
+    "candidate_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+    "test_sha256": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481",
+    "results": {
+      "red": {
+        "command": [
+          "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+          "--experimental-vm-modules",
+          "--test-reporter=tap",
+          "--test",
+          "tests/wildcard_seed_control.test.mjs"
+        ],
+        "exit_code": 1,
+        "counts": [
+          "# tests 31",
+          "# pass 27",
+          "# fail 4"
+        ],
+        "failures": [
+          "not ok 7 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy",
+          "not ok 8 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode",
+          "not ok 22 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy",
+          "not ok 23 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode"
+        ]
+      },
+      "green": {
+        "command": [
+          "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+          "--experimental-vm-modules",
+          "--test-reporter=tap",
+          "--test",
+          "tests/wildcard_seed_control.test.mjs"
+        ],
+        "exit_code": 0,
+        "counts": [
+          "# tests 31",
+          "# pass 31",
+          "# fail 0"
+        ],
+        "failures": []
+      },
+      "red-again": {
+        "command": [
+          "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+          "--experimental-vm-modules",
+          "--test-reporter=tap",
+          "--test",
+          "tests/wildcard_seed_control.test.mjs"
+        ],
+        "exit_code": 1,
+        "counts": [
+          "# tests 31",
+          "# pass 27",
+          "# fail 4"
+        ],
+        "failures": [
+          "not ok 7 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy",
+          "not ok 8 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode",
+          "not ok 22 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy",
+          "not ok 23 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode"
+        ]
+      }
+    }
+  },
+  "artifact_rgr": {
+    "test_sha256": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701",
+    "results": {
+      "red": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "test_wildcard_cache_artifacts.py",
+          "-q",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-red.xml"
+        ],
+        "exit_code": 1,
+        "counts": {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "3",
+          "time": "0.305",
+          "timestamp": "2026-11-03T17:21:13.678120+09:00",
+          "hostname": "hyewon"
+        },
+        "failures": [
+          "test_original_post_survives_output_verification_failure[output]",
+          "test_original_post_survives_output_verification_failure[preview]"
+        ]
+      },
+      "green": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "test_wildcard_cache_artifacts.py",
+          "-q",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-green.xml"
+        ],
+        "exit_code": 0,
+        "counts": {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "3",
+          "time": "0.148",
+          "timestamp": "2026-11-03T17:21:14.647854+09:00",
+          "hostname": "hyewon"
+        },
+        "failures": []
+      },
+      "red-again": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "test_wildcard_cache_artifacts.py",
+          "-q",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/artifacts-rgr-red-again.xml"
+        ],
+        "exit_code": 1,
+        "counts": {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "3",
+          "time": "0.231",
+          "timestamp": "2026-11-03T17:21:15.411515+09:00",
+          "hostname": "hyewon"
+        },
+        "failures": [
+          "test_original_post_survives_output_verification_failure[output]",
+          "test_original_post_survives_output_verification_failure[preview]"
+        ]
+      }
+    }
+  },
+  "promoted_mode_browser_rgr": {
+    "candidate_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+    "baseline": "Ignore promoted modes",
+    "results": {
+      "red": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed and promoted-mode and after",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/browser-mode-rgr-red.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:23:09.435434+00:00",
+        "exit_code": 1,
+        "seconds": 25.71,
+        "counts": {
+          "tests": "2",
+          "failures": "2",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": [
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]",
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]"
+        ]
+      },
+      "green": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed and promoted-mode and after",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/browser-mode-rgr-green.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:23:35.144409+00:00",
+        "exit_code": 0,
+        "seconds": 32.12,
+        "counts": {
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": []
+      },
+      "red-again": {
+        "command": [
+          "/home/rho/venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_e2e_wildcard_cache.py",
+          "-k",
+          "promoted_fixed_seed and promoted-mode and after",
+          "-v",
+          "--tb=short",
+          "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/browser-mode-rgr-red-again.xml"
+        ],
+        "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+        "started_utc": "2026-11-03T08:24:07.263736+00:00",
+        "exit_code": 1,
+        "seconds": 23.75,
+        "counts": {
+          "tests": "2",
+          "failures": "2",
+          "errors": "0",
+          "skipped": "0"
+        },
+        "failures": [
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]",
+          "test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]"
+        ]
+      }
+    }
+  },
+  "sampling": {
+    "successful": true,
+    "capture_parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+    "candidate_source_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+    "base": "b1ee82d248499bfd3ed375da59f1027593bb7d28",
+    "host_id": "20",
+    "resolution": [
+      512,
+      512
+    ],
+    "workflow_sha256": "bd4f92480bd42a95b44618cd8206ee5fbd5b8a79c48f617e9f6fc3bd611cc193",
+    "reports": {
+      "candidate": {
+        "capture_parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+        "commit": "working-tree",
+        "source_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+        "queues": [
+          {
+            "queue": 1,
+            "prompt_id": "222cb6d1-2732-4ea3-b126-ecc5022d3c56",
+            "execution_start_ms": 1793694158841,
+            "fixed_execution_seed": 513,
+            "fixed_ui_seed_after_queue": 513,
+            "independent_execution_seed": 9001,
+            "independent_ui_seed_after_queue": 9002,
+            "fixed_branch_cached": false,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [],
+            "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+            "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+            "screenshot_sha256": "43837b6049f6a2b2fb1b5c23626879fa4212c249dac38971b40178bc0616484c",
+            "history_sha256": "09e5817f1f87e78b2a97734b1a70ae24f7961e9b992c2024f1a3aee259243cd6",
+            "native_reload_before_queue": false
+          },
+          {
+            "queue": 2,
+            "prompt_id": "080e18f5-9032-4ea0-b906-0b6b2aa0c481",
+            "execution_start_ms": 1793694164256,
+            "fixed_execution_seed": 513,
+            "fixed_ui_seed_after_queue": 513,
+            "independent_execution_seed": 9002,
+            "independent_ui_seed_after_queue": 9003,
+            "fixed_branch_cached": true,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [
+              "16",
+              "20:10",
+              "3",
+              "4",
+              "5",
+              "7",
+              "8",
+              "9"
+            ],
+            "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+            "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+            "screenshot_sha256": "d4c27ebda20ded4c6ca96daf8aaace0a408b74868b6c65b5c997df97c5c359c5",
+            "history_sha256": "f9c8623c5bb8891002d7c1b9a0bef3393da51a0db83e9ef80fc07ea95ebb1134",
+            "native_reload_before_queue": false
+          },
+          {
+            "queue": 3,
+            "prompt_id": "8ccccd3b-d02c-4a0a-b9f0-e95b75a4659a",
+            "execution_start_ms": 1793694168204,
+            "fixed_execution_seed": 513,
+            "fixed_ui_seed_after_queue": 513,
+            "independent_execution_seed": 9003,
+            "independent_ui_seed_after_queue": 9004,
+            "fixed_branch_cached": true,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [
+              "16",
+              "20:10",
+              "3",
+              "4",
+              "5",
+              "7",
+              "8",
+              "9"
+            ],
+            "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+            "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+            "screenshot_sha256": "dac3e743fb3b6fa8a42f71fa4113b215d9cc79b5d0076dfb199a1ce8caa61c88",
+            "history_sha256": "85cd6e998ad512ee9878ab0fb26bef8842eb6722eccecc93d024f38e4e5fb28f",
+            "native_reload_before_queue": true
+          }
+        ],
+        "native_widget_compatibility": true,
+        "server_stopped": true
+      },
+      "baseline": {
+        "capture_parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+        "commit": "b1ee82d248499bfd3ed375da59f1027593bb7d28",
+        "source_js_sha256": "dbe1010d1a600a2fe28d1d566b904aaafe65fe9e63cd09fe13cb87d09d26be95",
+        "queues": [
+          {
+            "queue": 1,
+            "prompt_id": "ab935da7-9961-410a-af07-1381f767eb65",
+            "execution_start_ms": 1793694181577,
+            "fixed_execution_seed": 513,
+            "fixed_ui_seed_after_queue": 514,
+            "independent_execution_seed": 9001,
+            "independent_ui_seed_after_queue": 9002,
+            "fixed_branch_cached": false,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [],
+            "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+            "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+            "screenshot_sha256": "0c045de18beb7938986954e1a4dfafe811b0e7945be1ea45ed71d5a145f86ad8",
+            "history_sha256": "235033860d798952d75db7111e6b646c2a9f91801e98c7937ea21914be0dbbed",
+            "native_reload_before_queue": false
+          },
+          {
+            "queue": 2,
+            "prompt_id": "145f3d35-cdf0-4783-98aa-bbca3c87a06d",
+            "execution_start_ms": 1793694187140,
+            "fixed_execution_seed": 514,
+            "fixed_ui_seed_after_queue": 515,
+            "independent_execution_seed": 9002,
+            "independent_ui_seed_after_queue": 9003,
+            "fixed_branch_cached": false,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+            "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+            "screenshot_sha256": "115f3920a3dcb688a5e723fec43d982a0e417026c1fc8c553a618ff8ade02df0",
+            "history_sha256": "1ac051091246f6bc8a8f2178c998c8142e9aac57ce9fbc3819cc7b01c6c9987f",
+            "native_reload_before_queue": false
+          },
+          {
+            "queue": 3,
+            "prompt_id": "081fda70-3554-4101-9e9c-f9c327b8394f",
+            "execution_start_ms": 1793694192239,
+            "fixed_execution_seed": 515,
+            "fixed_ui_seed_after_queue": 516,
+            "independent_execution_seed": 9003,
+            "independent_ui_seed_after_queue": 9004,
+            "fixed_branch_cached": false,
+            "independent_branch_cached": false,
+            "independent_sampler_ancestors": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "cached_nodes": [
+              "16",
+              "4",
+              "5",
+              "7"
+            ],
+            "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+            "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+            "screenshot_sha256": "5b97355d4619270509129fc48c0fe54525cf08c808729b8a85c0d3eea8c44344",
+            "history_sha256": "ed6a37d88a4cdd0095cd554e363ec742a8a702ba9b420701c7b7a3c0829a59fa",
+            "native_reload_before_queue": true
+          }
+        ],
+        "native_widget_compatibility": true,
+        "server_stopped": true
+      }
+    },
+    "independent_branch_pixel_parity": [
+      {
+        "queue": 1,
+        "independent_baseline_candidate_different_rgb_pixels": 0
+      },
+      {
+        "queue": 2,
+        "independent_baseline_candidate_different_rgb_pixels": 0
+      },
+      {
+        "queue": 3,
+        "independent_baseline_candidate_different_rgb_pixels": 0
+      }
+    ],
+    "first_fixed_baseline_candidate_different_rgb_pixels": 0,
+    "completed_utc": "2026-11-03T08:23:17.227388+00:00"
+  },
+  "servers": [
+    {
+      "profile": "server-mode",
+      "stopped": true
+    },
+    {
+      "profile": "server-ordinary",
+      "stopped": true
+    },
+    {
+      "profile": "server-sampling-candidate",
+      "stopped": true
+    },
+    {
+      "profile": "server-catalog",
+      "stopped": true
+    },
+    {
+      "profile": "server-classic",
+      "stopped": true
+    },
+    {
+      "profile": "server-mode-lru",
+      "stopped": true
+    },
+    {
+      "profile": "server-lru",
+      "stopped": true
+    },
+    {
+      "profile": "server-mode-rgr",
+      "stopped": true
+    },
+    {
+      "profile": "server-sampling-baseline",
+      "stopped": true
+    }
+  ],
+  "trusted_fixtures_unchanged": true,
+  "diagnostics": [
+    "Popup-based initial mode failures and the first wrong mode-index assertion are retained; final code uses one native arrow action and mode index 2 in both node types.",
+    "Ruff was once incorrectly run on JavaScript; corrected Python lint and Node syntax checks passed.",
+    "Initial Node20 RGR SIGSEGV and an initial four-case mutation expectation are retained separately. The final browser mutation RGR selects after timing to isolate the existing before-mode core limitation."
+  ],
+  "remaining_limits": [
+    "Independent Inspire GlobalSeed may change upstream inputs.",
+    "Native promoted populate/before projection bookkeeping remains a separate frontend issue.",
+    "Artifact regressions cover output/preview assertion failures after successful UI execution; they do not claim every earlier submission/backend failure path.",
+    "Broader historical model/SAM regression is not presented as rerun here."
+  ]
+}

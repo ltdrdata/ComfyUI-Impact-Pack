@@ -1,0 +1,64 @@
+{
+  "candidate_js_sha256": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+  "test_sha256": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481",
+  "results": {
+    "red": {
+      "command": [
+        "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+        "--experimental-vm-modules",
+        "--test-reporter=tap",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 1,
+      "counts": [
+        "# tests 31",
+        "# pass 27",
+        "# fail 4"
+      ],
+      "failures": [
+        "not ok 7 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy",
+        "not ok 8 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode",
+        "not ok 22 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy",
+        "not ok 23 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode"
+      ]
+    },
+    "green": {
+      "command": [
+        "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+        "--experimental-vm-modules",
+        "--test-reporter=tap",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 0,
+      "counts": [
+        "# tests 31",
+        "# pass 31",
+        "# fail 0"
+      ],
+      "failures": []
+    },
+    "red-again": {
+      "command": [
+        "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+        "--experimental-vm-modules",
+        "--test-reporter=tap",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 1,
+      "counts": [
+        "# tests 31",
+        "# pass 27",
+        "# fail 4"
+      ],
+      "failures": [
+        "not ok 7 - ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy",
+        "not ok 8 - ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode",
+        "not ok 22 - ImpactWildcardEncode: unavailable host mode restores an already paused shared policy",
+        "not ok 23 - ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode"
+      ]
+    }
+  }
+}

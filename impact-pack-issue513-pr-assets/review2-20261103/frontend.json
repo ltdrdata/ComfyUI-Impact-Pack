@@ -1,0 +1,10 @@
+{
+  "version": "1.57.6",
+  "bundle": "/home/rho/venv/lib/python3.12/site-packages/comfyui_frontend_package/static/assets/app-B03VdYVv.js",
+  "bundle_sha256": "9e4dfc2f5fc61f3e4153b0a0ca97142a0916259288bb0ee6a696535f44bb3add",
+  "core_sources": [
+    "/mnt/teratera/git/ComfyUI_frontend/src/core/graph/subgraph/promotedWidgetControl.ts",
+    "/mnt/teratera/git/ComfyUI_frontend/src/core/graph/widgets/valueControl.ts"
+  ],
+  "analysis": "Installed 1.57.6 bundle is the runtime authority; the source checkout is read-only context."
+}

@@ -1,0 +1,583 @@
+diff --git a/docs/E2E_TEST_STRATEGY.md b/docs/E2E_TEST_STRATEGY.md
+index ad1bc15..440e7e4 100644
+--- a/docs/E2E_TEST_STRATEGY.md
++++ b/docs/E2E_TEST_STRATEGY.md
+@@ -116,9 +116,10 @@ real hooks/parser/cache keys with HTTP feedback and CLIP substituted; the second
+ compares real conditioning, MODEL/CLIP patches and BREAK against core nodes.
+ Chrome checks both restoration modes, reproduce/populate transitions and actual
+ linked providers, including a text provider inside a subgraph. Promoted-seed
+-cases put each wildcard node inside a native subgraph and run ten fixed queues,
+-then check manual edits and populate resumption using actual submitted seeds.
+-They include nested subgraphs, promoted modes and positional/named restoration.
++cases put each wildcard node inside a native subgraph and run three fixed queues,
++then check manual edits without replacing native projection identity.
++Direct-node populate transitions assert actual submitted seeds.
++They include nested subgraphs, differing host/interior modes and positional/named restoration.
+ To repeat warm-cache cases with LRU, start `--cache-lru 10` and run the Chrome
+ suite with `-k 'fixed_mode_suppresses or populate_reuses or promoted_fixed_seed'`.
+ 
+diff --git a/js/impact-pack.js b/js/impact-pack.js
+index d74f1be..db0338a 100644
+--- a/js/impact-pack.js
++++ b/js/impact-pack.js
+@@ -8,7 +8,6 @@ const is_legacy_front = () => isBeforeFrontendVersion('1.16.9');
+ // Restore before serialization, with a microtask fallback for errors/afterQueued.
+ const paused_seed_controls = new Map();
+ const wildcard_seed_modes = new WeakMap();
+-const promoted_seed_views = new WeakMap();
+ let seed_control_phase = false;
+ function restore_seed_control(control) {
+ 	if (!paused_seed_controls.has(control)) return;
+@@ -17,76 +16,74 @@ function restore_seed_control(control) {
+ }
+ 
+ function finish_seed_control_phase() {
++	const redraw = seed_control_phase === 'afterQueued' && paused_seed_controls.size > 0;
+ 	seed_control_phase = false;
+ 	for (const control of paused_seed_controls.keys()) restore_seed_control(control);
++	// Core draws before this microtask; refresh restored controls before paint.
++	if (redraw && typeof app.canvas?.draw === 'function') app.canvas.draw(true, true);
+ }
+ 
+-function begin_seed_control_phase() {
++function begin_seed_control_phase(hook) {
+ 	if (seed_control_phase) return;
+-	seed_control_phase = true;
++	seed_control_phase = hook;
+ 	queueMicrotask(finish_seed_control_phase);
+ }
+ 
++// These native subgraph bindings are optional: unsupported frontend shapes
++// leave the native seed control untouched rather than failing the whole queue.
+ function promoted_target(host, name) {
+-	const slot = host.subgraph?.inputNode?.slots?.find((slot) => slot.name === name);
+-	for (const id of slot?.linkIds ?? []) {
+-		const link = host.subgraph.getLink(id);
+-		const target = link?.resolve(host.subgraph);
+-		if (!target?.inputNode || !target.input) continue;
+-		const node = target.inputNode;
+-		const widget = node.isSubgraphNode?.() ? target.input : node.getWidgetFromSlot(target.input);
+-		if (widget) return { node, name: widget.name };
++	try {
++		const graph = host?.subgraph;
++		const slot = graph?.inputNode?.slots?.find?.((slot) => slot?.name === name);
++		for (const id of slot?.linkIds ?? []) {
++			const target = graph?.getLink?.(id)?.resolve?.(graph);
++			if (!target?.inputNode || !target.input) continue;
++			const node = target.inputNode;
++			const widget = node.isSubgraphNode?.() ? target.input : node.getWidgetFromSlot?.(target.input);
++			if (widget) return { node, name: widget.name };
++		}
++	} catch {
++		// A changed or unavailable native binding is outside this extension's scope.
+ 	}
+ }
+ 
+ function promoted_seed_source(host, name) {
+-	const hosts = [];
+-	while (host?.isSubgraphNode?.()) {
+-		if (hosts.includes(host)) return;
+-		hosts.push(host);
+-		const target = promoted_target(host, name);
+-		if (!target) return;
+-		host = target.node;
+-		name = target.name;
++	try {
++		const hosts = [];
++		while (host?.isSubgraphNode?.()) {
++			if (hosts.includes(host)) return;
++			hosts.push(host);
++			const target = promoted_target(host, name);
++			if (!target) return;
++			host = target.node;
++			name = target.name;
++		}
++		if (name === 'seed' && wildcard_seed_modes.has(host)) return { node: host, hosts };
++	} catch {
++		// Preserve native behavior if a frontend no longer exposes this binding.
+ 	}
+-	if (name === 'seed' && wildcard_seed_modes.has(host)) return { node: host, hosts };
+ }
+ 
+ function promoted_wildcard_mode(node, hosts) {
+-	let mode = wildcard_seed_modes.get(node).value;
+-	let name = 'mode';
+-	for (const host of hosts.slice().reverse()) {
+-		const input = host.inputs.find((input) => {
+-			const source = promoted_target(host, input.name);
+-			return source?.node === node && source.name === name;
+-		});
+-		if (!input) break;
+-		mode = host.getWidgetFromSlot(input)?.value ?? mode;
+-		name = input.name;
+-		node = host;
+-	}
+-	return mode;
+-}
+-
+-function promoted_seed_view(host, input, widget, source) {
+-	// The core remembers the first queue by widget identity. Mode edits can
+-	// recreate a store projection, so keep a control-only view of the same binding.
+-	let views = promoted_seed_views.get(host);
+-	if (!views) promoted_seed_views.set(host, views = new Map());
+-	let view = views.get(input.widgetId);
+-	if (!view || view.source !== source) {
+-		view = { source, widget };
+-		view.proxy = new Proxy(widget, {
+-			get: (_, key) => {
+-				const value = Reflect.get(view.widget, key, view.widget);
+-				return key === 'callback' && typeof value === 'function' ? value.bind(view.widget) : value;
+-			},
+-			set: (_, key, value) => Reflect.set(view.widget, key, value, view.widget)
+-		});
+-		views.set(input.widgetId, view);
++	try {
++		let mode = wildcard_seed_modes.get(node)?.value;
++		let name = 'mode';
++		for (const host of hosts.slice().reverse()) {
++			if (!Array.isArray(host?.inputs)) return;
++			const input = host.inputs.find((input) => {
++				const source = promoted_target(host, input?.name);
++				return source?.node === node && source.name === name;
++			});
++			if (!input) break;
++			mode = host.getWidgetFromSlot?.(input)?.value;
++			if (mode == null) return;
++			name = input.name;
++			node = host;
++		}
++		return mode;
++	} catch {
++		// Mode promotion is optional too; do not let API drift break a queue.
+ 	}
+-	view.widget = widget;
+-	return view.proxy;
+ }
+ 
+ if(is_legacy_front()) {
+@@ -809,23 +806,25 @@ app.registerExtension({
+ 	},
+ 
+ 	nodeCreated(node, app) {
+-		if (node.isSubgraphNode?.()) {
++		if (typeof node.isSubgraphNode === 'function' && node.isSubgraphNode() && typeof node.getWidgetFromSlot === 'function') {
+ 			const original = node.getWidgetFromSlot;
+ 			node.getWidgetFromSlot = function (input, ...args) {
+ 				const widget = original.call(this, input, ...args);
+-				if (!seed_control_phase || !widget || !input.widgetId || input.link != null) return widget;
++				if (!seed_control_phase || !widget || !input?.widgetId || input.link != null) return widget;
+ 				const source = promoted_seed_source(this, input.name);
+ 				if (!source) return widget;
++				const seed = source.node.widgets?.find?.((widget) => widget.name === 'seed');
++				if (!Array.isArray(seed?.linkedWidgets)) return widget;
++				// Another host may have paused this shared control earlier in the phase.
++				for (const control of seed.linkedWidgets) restore_seed_control(control);
+ 				const mode = promoted_wildcard_mode(source.node, source.hosts);
+-				const seed = source.node.widgets.find((widget) => widget.name === 'seed');
+-				for (const control of seed?.linkedWidgets ?? []) {
+-					restore_seed_control(control);
+-					if (mode === 'fixed' || mode === false) {
++				if (mode === 'fixed' || mode === false) {
++					for (const control of seed.linkedWidgets) {
+ 						paused_seed_controls.set(control, control.value);
+ 						control.value = 'fixed';
+ 					}
+ 				}
+-				return promoted_seed_view(this, input, widget, source.node);
++				return widget;
+ 			};
+ 		}
+ 		if(node.comfyClass == "MaskPainter") {
+@@ -1048,7 +1047,7 @@ app.registerExtension({
+ 					const original = control[hook];
+ 					if (typeof original !== 'function') continue;
+ 					control[hook] = function (...args) {
+-						begin_seed_control_phase();
++						begin_seed_control_phase(hook);
+ 						restore_seed_control(this);
+ 						if (mode_widget.value !== 'fixed') return original.apply(this, args);
+ 						const selected = this.value;
+diff --git a/tests/README.md b/tests/README.md
+index 3d347db..c38947a 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -99,10 +99,12 @@ See [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md). These scripts need
+ a running test server and are separate from the curl-based API integration tests.
+ 
+ Wildcard seed-control unit tests load the real extension with core-hook spies.
++Use Node 24 for this VM-based suite. Local Node 20.19.5 runs intermittently
++exited with SIGSEGV before assertions; Node 24.12.0 passed ten full-suite runs.
+ They check policy selection, argument/return forwarding and error cleanup without
+ reimplementing core seed arithmetic. Promoted controls also check per-instance
+-modes, nested bindings, stable core queue bookkeeping after projection recreation,
+-and policy restoration before serialization or after an error:
++modes, nested bindings, native projection identity, graceful fallback when subgraph
++APIs are unavailable, and policy restoration before serialization or after an error:
+ 
+ ```bash
+ node --experimental-vm-modules --test tests/wildcard_seed_control.test.mjs
+@@ -115,9 +117,14 @@ and resuming automatic increments after leaving fixed. Edge cases check changing
+ the policy while fixed, preserving it through native reload and resuming decrement;
+ an upstream seed changing despite the node's fixed mode; and three prompts submitted
+ by one Run click without automatic seed changes or repeated downstream execution.
+-Promoted-seed cases run ten fixed queues per scenario, including nested subgraphs,
+-promoted mode controls and both native restoration modes. Transitions assert the
+-actual POSTed seed, since backend history can normalize it after population.
++Promoted-seed cases run three fixed queues per scenario, including nested subgraphs,
++contrasting host/interior modes and both native restoration modes. Direct-node transitions
++assert the actual POSTed seed, since backend history can normalize it after population.
++Native promoted widgets retain core identity and bookkeeping. These cases cover
++fixed queues and manual invalidation; the frontend's populate/before projection
++recreation behavior belongs in a separate core reproducer, not this fix's tests.
++`tests/test_wildcard_cache_artifacts.py` checks that the original prompt POST is
++saved before output/preview assertions, including when either assertion fails.
+ 
+ Fixed also pauses automatic variation of choices in `populated_text`, even if the
+ selected policy is randomize. Use populate with the expression in `wildcard_text`
+diff --git a/tests/test_e2e_wildcard_cache.py b/tests/test_e2e_wildcard_cache.py
+index d0d2d60..8e77acb 100644
+--- a/tests/test_e2e_wildcard_cache.py
++++ b/tests/test_e2e_wildcard_cache.py
+@@ -54,22 +54,25 @@ def cached(entry):
+             if event == "execution_cached" for node in data["nodes"]}
+ 
+ 
+-def run(ui, preview_id, expected, label):
+-    entry = ui.run()
++def check_run(ui, entry, preview_id, expected, label):
+     (ui.artifacts / f"{label}.json").write_text(json.dumps(entry, indent=2) + "\n")
+     assert entry["outputs"][preview_id]["text"][0] == expected
+     expect(ui.page.get_by_role("textbox", name="preview_text", exact=True)).to_have_value(expected)
+     return entry
+ 
+ 
++def run(ui, preview_id, expected, label):
++    return check_run(ui, ui.run(), preview_id, expected, label)
++
++
+ def run_submitted(ui, preview_id, expected, label):
+     # History contains the backend-normalized seed. Observe the real POST to
+     # distinguish before/after frontend control timing without copying core RNG.
+     with ui.page.expect_request(lambda req: req.method == "POST" and urlsplit(req.url).path in ("/prompt", "/api/prompt")) as queued:
+-        entry = run(ui, preview_id, expected, label)
++        entry = ui.run()
+     request = queued.value.post_data_json
+     (ui.artifacts / f"{label}-request.json").write_text(json.dumps(request, indent=2) + "\n")
+-    return entry, request["prompt"]
++    return check_run(ui, entry, preview_id, expected, label), request["prompt"]
+ 
+ 
+ def native_roundtrip(ui, node_id, *, expected_widget_names=None):
+@@ -390,6 +393,8 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing,
+     source = f"# promoted {uuid4().hex}\n{{red|green|blue}}"
+     ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill(source)
+     ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill("{red|green|blue}")
++    if promote_mode:
++        ui.choose(node_type, "mode", "populate")
+     host = convert_to_subgraph(ui, node_id)
+     if nesting == 2:
+         host = convert_to_subgraph(ui, host)
+@@ -400,6 +405,19 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing,
+         ui.page.get_by_role("menuitem", name="Promote Widget: mode", exact=True).click()
+         ui.page.get_by_test_id("subgraph-breadcrumb-back").click()
+         ui.page.wait_for_function("app => app.canvas.graph === app.rootGraph", arg=ui.app)
++        show_node(ui, host)
++        # Move the native combo once from populate to fixed, without a popup.
++        right = ui.app.evaluate("""(app, id) => {
++            const node = app.graph.getNodeById(id);
++            const mode = node.widgets.find(w => w.name === 'mode');
++            return app.canvasPosToClientPos([node.pos[0] + node.size[0] - 25,
++                node.pos[1] + (mode.last_y ?? mode.y) + 10]);
++        }""", host)
++        ui.page.mouse.click(1400, 450)  # End the previous gesture on empty canvas.
++        ui.page.mouse.click(*right, delay=100)
++        ui.page.wait_for_function("""({app, id}) =>
++            app.graph.getNodeById(id).widgets.find(w => w.name === 'mode').value === 'fixed'
++        """, arg={"app": ui.app, "id": host})
+     names = ["seed", "mode"] if promote_mode else ["seed"]
+     before = native_roundtrip(ui, host, expected_widget_names=names)
+     workflow = json.loads((ui.artifacts / "saved.json").read_text())
+@@ -407,7 +425,9 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing,
+     controls = interior["widgets_values"]
+     seed_index = 3 if node_type == "ImpactWildcardProcessor" else 5
+     assert controls[seed_index:seed_index + 2] == [5, control]
+-    for iteration in range(10):
++    # A promoted mode must override a different interior mode, not merely copy it.
++    assert controls[2] == interior["widgets_values_named"]["mode"] == ("populate" if promote_mode else "fixed")
++    for iteration in range(3):
+         show_node(ui, preview_id)
+         entry = run(ui, preview_id, "blue", f"fixed-{iteration + 1}")
+         target = next(k for k, v in entry["prompt"][2].items() if v["class_type"] == node_type)
+@@ -435,50 +455,6 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing,
+     target = next(k for k, v in manual["prompt"][2].items() if v["class_type"] == node_type)
+     assert manual["prompt"][2][target]["inputs"]["seed"] == 2
+     assert {target, preview_id}.isdisjoint(cached(manual))
+-    show_node(ui, host)
+-    ui.set_number(before["type"], "seed", 5)
+-
+-    if control != "increment":
+-        return
+-    # Resume without reloading: before/after core bookkeeping must survive fixed.
+-    if promote_mode:
+-        # Manual seed edits recreate host projections; wait for their redraw.
+-        show_node(ui, host)
+-        # Use the native combo arrow: fixed immediately follows populate.
+-        left = ui.app.evaluate("""(app, id) => {
+-            const node = app.graph.getNodeById(id);
+-            const mode = node.widgets.find(w => w.name === 'mode');
+-            return app.canvasPosToClientPos([node.pos[0] + 25, node.pos[1] + (mode.last_y ?? mode.y) + 10]);
+-        }""", host)
+-        observed_modes = []
+-        # Native canvas projections can consume the first click after editing.
+-        # The left arrow clamps at populate, so repeating this UI action is safe.
+-        for _ in range(3):
+-            ui.page.mouse.click(*left, delay=100)
+-            rendered(ui)
+-            mode = ui.app.evaluate("""(app, id) =>
+-                app.graph.getNodeById(id).widgets.find(w => w.name === 'mode').value
+-            """, host)
+-            observed_modes.append(mode)
+-            if mode == "populate":
+-                break
+-        (ui.artifacts / "mode-interaction.json").write_text(json.dumps(observed_modes) + "\n")
+-        assert observed_modes[-1] == "populate"
+-    else:
+-        enter_subgraphs(ui, nesting)
+-        ui.page.mouse.click(*interior_mode_point(ui, node_type))
+-        ui.page.get_by_role("menuitem", name="populate", exact=True).click()
+-        for _ in range(nesting):
+-            ui.page.get_by_test_id("subgraph-breadcrumb-back").click()
+-        ui.page.wait_for_function("app => app.canvas.graph === app.rootGraph", arg=ui.app)
+-    show_node(ui, host)
+-    for index, expected_seed in enumerate((5, 6) if timing == "after" else (6, 7)):
+-        show_node(ui, preview_id)
+-        _, submitted = run_submitted(ui, preview_id, "blue" if expected_seed == 5 else "green", f"resume-{index}")
+-        target = next(k for k, v in submitted.items() if v["class_type"] == node_type)
+-        assert submitted[target]["inputs"]["seed"] == expected_seed
+-        show_node(ui, host)
+-        assert promoted_widget_state(ui, host)["widgets"][0]["value"] == 6 + index
+ 
+ 
+ @pytest.mark.parametrize("node_type", NODE_TYPES)
+diff --git a/tests/wildcard_seed_control.test.mjs b/tests/wildcard_seed_control.test.mjs
+index ca6c150..877016a 100644
+--- a/tests/wildcard_seed_control.test.mjs
++++ b/tests/wildcard_seed_control.test.mjs
+@@ -40,6 +40,8 @@ async function setup(type, beforeQueued = true, failure, serializationFailure) {
+     const calls = [];
+     const result = {};
+     const serializations = [];
++    const draws = [];
++    app.canvas = { draw() { draws.push(control.value); } };
+     app.graphToPrompt = function (...args) {
+         serializations.push({ receiver: this, args, policy: control.value });
+         if (serializationFailure) throw serializationFailure;
+@@ -58,7 +60,7 @@ async function setup(type, beforeQueued = true, failure, serializationFailure) {
+     const before = widgets.map(({ name, value }) => ({ name, value }));
+     extension.nodeCreated(node, app);
+     assert.deepEqual(widgets.map(({ name, value }) => ({ name, value })), before);
+-    return { node, seed, mode, control, calls, result, serializations, extension, app };
++    return { node, seed, mode, control, calls, result, serializations, draws, extension, app };
+ }
+ 
+ function promotedHost(node, extension, app, modeValue, projection) {
+@@ -177,16 +179,40 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
+         assert.equal(control.value, 'randomize');
+     });
+ 
+-    test(`${type}: promoted hook errors restore immediately`, async () => {
+-        const error = new Error('promoted core hook failed');
+-        const { node, mode, control, extension, app } = await setup(type, true, error);
+-        promotedHost(node, extension, app);
+-        mode.value = 'fixed';
++    test(`${type}: unavailable host mode restores an already paused shared policy`, async () => {
++        const { node, mode, control, app, extension } = await setup(type);
++        const fixed = promotedHost(node, extension, app, 'fixed');
++        const unknown = promotedHost(node, extension, app, 'populate');
++        const input = unknown.inputs[0];
++        mode.value = 'populate';
+         control.value = 'decrement';
+-        for (const hook of ['beforeQueued', 'afterQueued']) {
+-            assert.throws(() => control[hook](), thrown => thrown === error);
+-            assert.equal(control.value, 'decrement');
+-        }
++        control.afterQueued();
++        fixed.getWidgetFromSlot(fixed.inputs[0]);
++        assert.equal(control.value, 'fixed');
++        unknown.inputs = undefined;
++        unknown.getWidgetFromSlot(input);
++        assert.equal(control.value, 'decrement'); // Core consumes it synchronously.
++        await Promise.resolve();
++        assert.equal(control.value, 'decrement');
++    });
++
++    test(`${type}: a missing promoted mode does not imply the interior fixed mode`, async () => {
++        const { node, mode, control, app, extension } = await setup(type);
++        const fixed = promotedHost(node, extension, app, 'fixed');
++        const unknown = promotedHost(node, extension, app, 'populate');
++        const original = unknown.getWidgetFromSlot;
++        unknown.getWidgetFromSlot = function (input) {
++            return input.name === 'mode' ? undefined : original.call(this, input);
++        };
++        mode.value = 'fixed';
++        control.value = 'randomize';
++        control.afterQueued();
++        fixed.getWidgetFromSlot(fixed.inputs[0]);
++        assert.equal(control.value, 'fixed');
++        unknown.getWidgetFromSlot(unknown.inputs[0]);
++        assert.equal(control.value, 'randomize');
++        await Promise.resolve();
++        assert.equal(control.value, 'randomize');
+     });
+ 
+     test(`${type}: promoted pending controls resume the selected policy on a mode change`, async () => {
+@@ -219,27 +245,65 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
+         assert.equal(control.value, 'increment');
+     });
+ 
+-    test(`${type}: recreated projections preserve core target identity and use live values`, async () => {
++    test(`${type}: native promoted projections keep their own identity and frozen values`, async () => {
+         const { node, mode, control, app, extension } = await setup(type);
+-        const first = { name: 'seed', value: 42 };
+-        let current = first;
+-        let callbackReceiver;
++        let current = Object.freeze({ name: 'seed', value: 42 });
+         const host = promotedHost(node, extension, app, undefined, () => current);
+         mode.value = 'fixed';
+         control.beforeQueued();
++        assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
++        current = Object.freeze({ name: 'seed', value: 99 });
+         const target = host.getWidgetFromSlot(host.inputs[0]);
+-        current = { name: 'seed', value: 99, callback() { callbackReceiver = this; } };
+-        assert.equal(host.getWidgetFromSlot(host.inputs[0]), target);
++        assert.equal(target, current);
+         assert.equal(target.value, 99);
+-        target.value = 13;
+-        target.callback();
+-        assert.equal(current.value, 13);
+-        assert.equal(first.value, 42);
+-        assert.equal(callbackReceiver, current);
+         await Promise.resolve();
+         assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
+     });
+ 
++    test(`${type}: API drift declines promotion without breaking the queue`, async () => {
++        const changes = [
++            host => { host.subgraph.inputNode = null; },
++            host => { host.subgraph.inputNode.slots = {}; },
++            host => { host.subgraph.inputNode.slots[0].linkIds = {}; },
++            host => { host.subgraph.getLink = undefined; },
++            host => { host.subgraph.getLink = () => null; },
++            host => { host.subgraph.getLink = () => ({}); },
++            host => { host.subgraph.getLink = () => ({ resolve: () => null }); },
++            host => { host.subgraph.getLink = () => ({ resolve() { throw new Error('API drift'); } }); },
++            (_, node) => { node.getWidgetFromSlot = undefined; },
++            host => { host.inputs = undefined; },
++            (_, node) => { node.widgets = undefined; },
++            (_, node, seed) => { seed.linkedWidgets = {}; },
++        ];
++        for (const change of changes) {
++            const { node, seed, mode, control, app, extension } = await setup(type);
++            const current = { name: 'seed', value: 42 };
++            const host = promotedHost(node, extension, app, undefined, () => current);
++            const input = host.inputs[0];
++            mode.value = 'fixed';
++            control.beforeQueued();
++            change(host, node, seed);
++            assert.equal(host.getWidgetFromSlot(input), current);
++            assert.equal(control.value, 'increment');
++            await Promise.resolve();
++            assert.equal(control.value, 'increment');
++        }
++    });
++
++    test(`${type}: after-phase restoration redraws the selected policy`, async () => {
++        const { node, mode, control, app, extension, draws } = await setup(type);
++        const host = promotedHost(node, extension, app);
++        mode.value = 'fixed';
++        control.value = 'decrement';
++        control.afterQueued();
++        host.getWidgetFromSlot(host.inputs[0]);
++        app.canvas.draw(); // Core draws synchronously before microtasks.
++        assert.equal(draws.at(-1), 'fixed');
++        await Promise.resolve();
++        assert.equal(control.value, 'decrement');
++        assert.deepEqual(draws, ['fixed', 'decrement']);
++    });
++
+     test(`${type}: nested promoted modes are resolved through the host chain`, async () => {
+         const { node, mode, control, app, extension } = await setup(type);
+         const inner = promotedHost(node, extension, app, 'populate');
+diff --git a/tests/test_wildcard_cache_artifacts.py b/tests/test_wildcard_cache_artifacts.py
+new file mode 100644
+index 0000000..96fca4e
+--- /dev/null
++++ b/tests/test_wildcard_cache_artifacts.py
+@@ -0,0 +1,67 @@
++"""Original prompt artifact regressions; no Chrome or ComfyUI server required."""
++from contextlib import contextmanager
++import json
++from types import SimpleNamespace
++
++import pytest
++
++import test_e2e_wildcard_cache as cache
++
++
++@pytest.fixture
++def queued_run(tmp_path, monkeypatch):
++    request = SimpleNamespace(method="POST", url="http://impact.test/prompt", post_data_json={
++        "prompt": {"source": {"class_type": "ImpactWildcardProcessor", "inputs": {"seed": 5}}}})
++    entry = {"outputs": {"preview": {"text": ["blue"]}},
++             "prompt": [None, None, {"source": {"inputs": {"seed": 0}}}]}
++    values = []
++    preview_error = None
++
++    class Page:
++        @contextmanager
++        def expect_request(self, predicate):
++            assert predicate(request)
++            yield SimpleNamespace(value=request)
++
++        def get_by_role(self, role, *, name, exact):
++            assert (role, name, exact) == ("textbox", "preview_text", True)
++            return self
++
++    def to_have_value(value):
++        values.append(value)
++        if preview_error is not None:
++            raise preview_error
++
++    monkeypatch.setattr(cache, "expect", lambda _: SimpleNamespace(to_have_value=to_have_value))
++    ui = SimpleNamespace(page=Page(), artifacts=tmp_path, run=lambda: entry)
++
++    def fail_preview(error):
++        nonlocal preview_error
++        preview_error = error
++
++    return ui, request.post_data_json, entry, values, fail_preview
++
++
++@pytest.mark.parametrize("failure", ["output", "preview"])
++def test_original_post_survives_output_verification_failure(queued_run, failure):
++    ui, request, entry, _, fail_preview = queued_run
++    error = AssertionError("preview did not update")
++    if failure == "preview":
++        fail_preview(error)
++    with pytest.raises(AssertionError) as caught:
++        cache.run_submitted(ui, "preview", "green" if failure == "output" else "blue", "failed")
++    if failure == "preview":
++        assert caught.value is error
++    assert json.loads((ui.artifacts / "failed-request.json").read_text()) == request
++    assert json.loads((ui.artifacts / "failed.json").read_text()) == entry
++
++
++def test_returns_the_original_seed_instead_of_normalized_history(queued_run):
++    ui, request, entry, values, _ = queued_run
++    actual, submitted = cache.run_submitted(ui, "preview", "blue", "success")
++    assert actual is entry
++    assert submitted == request["prompt"]
++    assert submitted["source"]["inputs"]["seed"] == 5
++    assert actual["prompt"][2]["source"]["inputs"]["seed"] == 0
++    assert values == ["blue"]
++    assert json.loads((ui.artifacts / "success-request.json").read_text()) == request

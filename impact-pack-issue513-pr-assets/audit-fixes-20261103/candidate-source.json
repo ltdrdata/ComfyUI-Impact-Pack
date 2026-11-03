@@ -1,0 +1,15 @@
+{
+  "parent_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "state": "uncommitted local fixes; no remote changes",
+  "sha256": {
+    "js/impact-pack.js": "e8bface3a3a3aeeb9d6581b49ec2f4ff6fc390214d946141cf08300121a0d7f5",
+    "tests/wildcard_seed_control.test.mjs": "1e5ab1eaf2244d0d78f24593ea5dbeed454a3b6bdcc79d79cb4a7a3de0662481",
+    "tests/test_e2e_wildcard_cache.py": "96c74e9f1f4a92e8496c1383b46fca8446978b9adaa3fc067516270b5eacfb0d",
+    "tests/test_wildcard_cache_artifacts.py": "dec679b9ea9944d8e9a4db8d1ddc106da131c1768587eae8fd86bd0f5b8a4701",
+    "tests/README.md": "f258e7a5c5a314b7169810aed4297ac364b5f958cc411b1097aacc666b717ace",
+    "docs/E2E_TEST_STRATEGY.md": "df18279f42e03f7e7aa904ab19a53dd075d740c2ae01d3c646367ea4d4ff1b4e",
+    "tests/e2e_ui.py": "64bba81df71dd76d9fdfac429dd073dd8a78b8400fe59caf281b783ebc9843da",
+    "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  }
+}

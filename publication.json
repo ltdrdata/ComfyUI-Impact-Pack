@@ -1,8 +1,7 @@
 {
-  "code_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "code_head": "6d1a48803313c0b38193366bcef8f31dd552e70d",
   "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
-  "published_utc": "2026-11-03T05:16:14.238075+00:00",
-  "new_files": 1622,
-  "files": 2097,
-  "scope": "Current promoted-seed validation and three queue-pair render sequences; previous broad evidence preserved as historical. No runtimes, models or trace ZIPs."
+  "prepared_utc": "2026-11-03T09:47:59.627341+00:00",
+  "new_files": 656,
+  "scope": "Current audit fixes, bounded regression results and fresh rendered output evidence; earlier evidence retained as historical."
 }

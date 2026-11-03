@@ -1,0 +1,11 @@
+START browser-mode-rgr-red
+END browser-mode-rgr-red 1
+START browser-mode-rgr-green
+END browser-mode-rgr-green 1
+START browser-mode-rgr-red-again
+END browser-mode-rgr-red-again 1
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-issue513-pr-assets/audit-fixes-20261103/verify.py", line 51, in <module>
+    assert len(reports['red']['failures'])==(2 if profile=='mode-rgr' else 4) and reports['red']['failures']==reports['red-again']['failures'] and reports['green']['exit_code']==0
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

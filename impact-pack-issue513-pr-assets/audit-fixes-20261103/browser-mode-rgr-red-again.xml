@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="23.194" timestamp="2026-11-03T17:24:07.706900+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]" time="10.255"><failure message="AssertionError: assert {'id': '3', '...e': 'fixed'}]} == {'id': '3', '...e': 'fixed'}]}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'widgets': [{'name': 'seed', 'value': 6}, {'name': 'mode', 'value': 'fixed'}]} != {'widgets': [{'name': 'seed', 'value': 5}, {'name': 'mode', 'value': 'fixed'}]}&#10;  &#10;  Full diff:&#10;    {...&#10;  &#10;  ...Full output truncated (16 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:440: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '3', '...e': 'fixed'}]} == {'id': '3', '...e': 'fixed'}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}, {'name': 'mode', 'value': 'fixed'}]} != {'widgets': [{'name': 'seed', 'value': 5}, {'name': 'mode', 'value': 'fixed'}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (16 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]" time="12.883"><failure message="AssertionError: assert {'id': '4', '...e': 'fixed'}]} == {'id': '4', '...e': 'fixed'}]}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'widgets': [{'name': 'seed', 'value': 6}, {'name': 'mode', 'value': 'fixed'}]} != {'widgets': [{'name': 'seed', 'value': 5}, {'name': 'mode', 'value': 'fixed'}]}&#10;  &#10;  Full diff:&#10;    {...&#10;  &#10;  ...Full output truncated (16 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:440: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '4', '...e': 'fixed'}]} == {'id': '4', '...e': 'fixed'}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}, {'name': 'mode', 'value': 'fixed'}]} != {'widgets': [{'name': 'seed', 'value': 5}, {'name': 'mode', 'value': 'fixed'}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (16 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

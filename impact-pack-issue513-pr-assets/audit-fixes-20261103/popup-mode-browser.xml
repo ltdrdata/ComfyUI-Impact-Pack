@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="50.504" timestamp="2026-11-03T17:10:05.641960+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]" time="14.117" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]" time="10.950"><failure message="AssertionError: assert 'Select Wildcard #x1F7E2 Full Cache' == 'populate'&#10;  &#10;  - populate&#10;  + Select Wildcard #x1F7E2 Full Cache">tests/test_e2e_wildcard_cache.py:419: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert controls[seed_index - 1] == ("populate" if promote_mode else "fixed")
+E   AssertionError: assert 'Select Wildcard #x1F7E2 Full Cache' == 'populate'
+E     
+E     - populate
+E     + Select Wildcard #x1F7E2 Full Cache</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]" time="14.361" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]" time="11.013"><failure message="AssertionError: assert 'Select Wildcard #x1F7E2 Full Cache' == 'populate'&#10;  &#10;  - populate&#10;  + Select Wildcard #x1F7E2 Full Cache">tests/test_e2e_wildcard_cache.py:419: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert controls[seed_index - 1] == ("populate" if promote_mode else "fixed")
+E   AssertionError: assert 'Select Wildcard #x1F7E2 Full Cache' == 'populate'
+E     
+E     - populate
+E     + Select Wildcard #x1F7E2 Full Cache</failure></testcase></testsuite></testsuites>

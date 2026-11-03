@@ -1,0 +1,13 @@
+{
+  "mutation": "Disable the entire promoted adapter",
+  "command": [
+    "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+    "--experimental-vm-modules",
+    "--test-reporter=tap",
+    "--test",
+    "--test-name-pattern=unavailable host mode|a missing promoted mode",
+    "tests/wildcard_seed_control.test.mjs"
+  ],
+  "failed_tests": 4,
+  "result": "The replacement tests require entering the promoted phase; the previous duplicate tests passed with this mutation."
+}

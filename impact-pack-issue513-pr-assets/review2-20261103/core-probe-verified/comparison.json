@@ -1,0 +1,74 @@
+{
+  "baseline": "b1ee82d",
+  "candidate_parent_head": "3452e43",
+  "before_timing": true,
+  "native_behavior_matches_baseline": true,
+  "reports": {
+    "baseline": {
+      "js_sha256": "dbe1010d1a600a2fe28d1d566b904aaafe65fe9e63cd09fe13cb87d09d26be95",
+      "cases": {
+        "ImpactWildcardProcessor": [
+          {
+            "queue": 1,
+            "prompt_id": "be867d63-e2c7-4f51-aaa0-832d327b3c7a",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          },
+          {
+            "queue": 2,
+            "prompt_id": "451fadcd-2b82-474a-8a6f-bed9a68d2b7f",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          }
+        ],
+        "ImpactWildcardEncode": [
+          {
+            "queue": 1,
+            "prompt_id": "a3a517c0-1b86-4992-9fb8-13e810b23171",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          },
+          {
+            "queue": 2,
+            "prompt_id": "27002125-d701-4998-9e69-eda74f06047b",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          }
+        ]
+      }
+    },
+    "candidate": {
+      "js_sha256": "a5d0597478ce76db86dea718314d8a99961b204fe18a9a31af58384dda276a8b",
+      "cases": {
+        "ImpactWildcardProcessor": [
+          {
+            "queue": 1,
+            "prompt_id": "b87a0e70-0563-4722-99eb-975c277307dc",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          },
+          {
+            "queue": 2,
+            "prompt_id": "06553f40-3590-4c25-9309-3107aedda32f",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          }
+        ],
+        "ImpactWildcardEncode": [
+          {
+            "queue": 1,
+            "prompt_id": "d5ad0621-9c87-4c20-be4f-67fe196cea96",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          },
+          {
+            "queue": 2,
+            "prompt_id": "40f492ba-7464-4c06-91fe-8a0a71846db0",
+            "submitted_seed": 5,
+            "visible_seed": 5
+          }
+        ]
+      }
+    }
+  }
+}
