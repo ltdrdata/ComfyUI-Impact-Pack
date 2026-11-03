@@ -1,0 +1,137 @@
+TAP version 13
+# (node:1160277) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+ok 1 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 4.125286
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.924156
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 3 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.331422
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 2.165041
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.844354
+  ...
+# Subtest: ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+ok 6 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.658522
+  ...
+# Subtest: ImpactWildcardProcessor: promoted hook errors restore immediately
+ok 7 - ImpactWildcardProcessor: promoted hook errors restore immediately
+  ---
+  duration_ms: 1.487428
+  ...
+# Subtest: ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+ok 8 - ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 2.144303
+  ...
+# Subtest: ImpactWildcardProcessor: shared hosts use their own promoted modes
+ok 9 - ImpactWildcardProcessor: shared hosts use their own promoted modes
+  ---
+  duration_ms: 1.890682
+  ...
+# Subtest: ImpactWildcardProcessor: recreated projections preserve core target identity and use live values
+ok 10 - ImpactWildcardProcessor: recreated projections preserve core target identity and use live values
+  ---
+  duration_ms: 1.848221
+  ...
+# Subtest: ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+ok 11 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 2.063469
+  ...
+# Subtest: ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+ok 12 - ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.465377
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+ok 13 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.527654
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 14 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.422315
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 15 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.418177
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 16 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.697626
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 17 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.402788
+  ...
+# Subtest: ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+ok 18 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization
+  ---
+  duration_ms: 1.614358
+  ...
+# Subtest: ImpactWildcardEncode: promoted hook errors restore immediately
+ok 19 - ImpactWildcardEncode: promoted hook errors restore immediately
+  ---
+  duration_ms: 1.202959
+  ...
+# Subtest: ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+ok 20 - ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change
+  ---
+  duration_ms: 1.5309
+  ...
+# Subtest: ImpactWildcardEncode: shared hosts use their own promoted modes
+ok 21 - ImpactWildcardEncode: shared hosts use their own promoted modes
+  ---
+  duration_ms: 2.508353
+  ...
+# Subtest: ImpactWildcardEncode: recreated projections preserve core target identity and use live values
+ok 22 - ImpactWildcardEncode: recreated projections preserve core target identity and use live values
+  ---
+  duration_ms: 1.642292
+  ...
+# Subtest: ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+ok 23 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain
+  ---
+  duration_ms: 1.355748
+  ...
+# Subtest: ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+ok 24 - ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged
+  ---
+  duration_ms: 1.262192
+  ...
+# Subtest: unrelated node types are untouched
+ok 25 - unrelated node types are untouched
+  ---
+  duration_ms: 1.195124
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 95.77191

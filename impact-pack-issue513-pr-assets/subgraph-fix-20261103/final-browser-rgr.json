@@ -1,0 +1,84 @@
+{
+  "red": {
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "promoted_fixed_seed and positional",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+    "started_utc": "2026-11-03T05:01:48.287010+00:00",
+    "exit_code": 1,
+    "duration_seconds": 55.47,
+    "counts": {
+      "tests": "4",
+      "failures": "4",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "failures": [
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]"
+    ]
+  },
+  "green": {
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "promoted_fixed_seed and positional",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-green.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+    "started_utc": "2026-11-03T05:02:43.752835+00:00",
+    "exit_code": 0,
+    "duration_seconds": 92.43,
+    "counts": {
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "failures": []
+  },
+  "red-again": {
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "promoted_fixed_seed and positional",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red-again.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+    "started_utc": "2026-11-03T05:04:16.187223+00:00",
+    "exit_code": 1,
+    "duration_seconds": 54.86,
+    "counts": {
+      "tests": "4",
+      "failures": "4",
+      "errors": "0",
+      "skipped": "0"
+    },
+    "failures": [
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]",
+      "test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]"
+    ]
+  }
+}

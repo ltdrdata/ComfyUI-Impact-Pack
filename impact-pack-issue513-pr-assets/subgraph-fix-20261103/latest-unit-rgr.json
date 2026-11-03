@@ -1,0 +1,70 @@
+{
+  "baseline": "b1ee82d248499bfd3ed375da59f1027593bb7d28",
+  "candidate_js_sha256": "34ca0477de4b37ae7df1e7cb6d3dbdfef089a1502fba6437ec8867b5cf9bc48b",
+  "test_sha256": "7b28cd235324ee8afe323e01cad95f64a969e798d87a325a5ec905df4cec2521",
+  "phases": {
+    "red": {
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 1,
+      "counts": [
+        "# tests 25",
+        "# pass 17",
+        "# fail 8"
+      ],
+      "failed": [
+        "not ok 6 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization",
+        "not ok 9 - ImpactWildcardProcessor: shared hosts use their own promoted modes",
+        "not ok 10 - ImpactWildcardProcessor: recreated projections preserve core target identity and use live values",
+        "not ok 11 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain",
+        "not ok 18 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization",
+        "not ok 21 - ImpactWildcardEncode: shared hosts use their own promoted modes",
+        "not ok 22 - ImpactWildcardEncode: recreated projections preserve core target identity and use live values",
+        "not ok 23 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain"
+      ]
+    },
+    "green": {
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 0,
+      "counts": [
+        "# tests 25",
+        "# pass 25",
+        "# fail 0"
+      ],
+      "failed": []
+    },
+    "red-again": {
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "tests/wildcard_seed_control.test.mjs"
+      ],
+      "exit_code": 1,
+      "counts": [
+        "# tests 25",
+        "# pass 17",
+        "# fail 8"
+      ],
+      "failed": [
+        "not ok 6 - ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization",
+        "not ok 9 - ImpactWildcardProcessor: shared hosts use their own promoted modes",
+        "not ok 10 - ImpactWildcardProcessor: recreated projections preserve core target identity and use live values",
+        "not ok 11 - ImpactWildcardProcessor: nested promoted modes are resolved through the host chain",
+        "not ok 18 - ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization",
+        "not ok 21 - ImpactWildcardEncode: shared hosts use their own promoted modes",
+        "not ok 22 - ImpactWildcardEncode: recreated projections preserve core target identity and use live values",
+        "not ok 23 - ImpactWildcardEncode: nested promoted modes are resolved through the host chain"
+      ]
+    }
+  }
+}

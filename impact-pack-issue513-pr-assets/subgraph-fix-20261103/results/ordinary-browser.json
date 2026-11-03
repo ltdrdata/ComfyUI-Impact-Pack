@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/test_e2e_wildcard_tutorials.py",
+    "-k",
+    "not promoted_fixed_seed and not inference",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/ordinary-browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T04:25:44.389559+00:00",
+  "exit_code": 0,
+  "duration_seconds": 640.62,
+  "counts": {
+    "tests": "62",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

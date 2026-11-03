@@ -1,0 +1,539 @@
+{
+  "prompt": [
+    18,
+    "7cd48d1d-ae74-4657-9656-260853a0d80b",
+    {
+      "2": {
+        "inputs": {
+          "source": [
+            "4:1",
+            3
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3": {
+        "inputs": {
+          "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+        },
+        "class_type": "CheckpointLoaderSimple",
+        "_meta": {
+          "title": "Load Checkpoint"
+        }
+      },
+      "4:1": {
+        "inputs": {
+          "wildcard_text": "# promoted 71f02f2137b74c45b5d3cf81ce90f10e\n{red|green|blue}",
+          "populated_text": "{red|green|blue}",
+          "mode": "fixed",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 5,
+          "model": [
+            "3",
+            0
+          ],
+          "clip": [
+            "3",
+            1
+          ]
+        },
+        "class_type": "ImpactWildcardEncode",
+        "_meta": {
+          "title": "ImpactWildcardEncode"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "b74cc17e-4509-4015-ba39-d858b0eefd21",
+          "revision": 0,
+          "last_node_id": 4,
+          "last_link_id": 8,
+          "nodes": [
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 6
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "CheckpointLoaderSimple",
+              "pos": [
+                -362.1111111111111,
+                455.55555555555554
+              ],
+              "size": [
+                270,
+                98
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MODEL",
+                  "type": "MODEL",
+                  "links": [
+                    4
+                  ]
+                },
+                {
+                  "name": "CLIP",
+                  "type": "CLIP",
+                  "links": [
+                    5
+                  ]
+                },
+                {
+                  "name": "VAE",
+                  "type": "VAE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CheckpointLoaderSimple"
+              },
+              "widgets_values": [
+                "v1-5-pruned-emaonly-fp16.safetensors"
+              ],
+              "widgets_values_named": {
+                "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+              }
+            },
+            {
+              "id": 4,
+              "type": "5087629a-a3b3-4e7a-a2da-c76d795166c1",
+              "pos": [
+                141.1593967013889,
+                263.55555555555554
+              ],
+              "size": [
+                210,
+                102
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 4
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "links": [
+                    6
+                  ]
+                }
+              ],
+              "properties": {
+                "previewExposures": []
+              },
+              "widgets_values": [
+                5,
+                "fixed"
+              ],
+              "widgets_values_named": {
+                "seed": 5,
+                "mode": "fixed"
+              }
+            }
+          ],
+          "links": [
+            [
+              4,
+              3,
+              0,
+              4,
+              0,
+              "MODEL"
+            ],
+            [
+              5,
+              3,
+              1,
+              4,
+              1,
+              "CLIP"
+            ],
+            [
+              6,
+              4,
+              0,
+              2,
+              0,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "definitions": {
+            "subgraphs": [
+              {
+                "id": "5087629a-a3b3-4e7a-a2da-c76d795166c1",
+                "version": 1,
+                "state": {
+                  "lastGroupId": 0,
+                  "lastNodeId": 4,
+                  "lastLinkId": 8,
+                  "lastRerouteId": 0
+                },
+                "revision": 0,
+                "config": {},
+                "name": "New Subgraph",
+                "inputNode": {
+                  "id": -10,
+                  "bounding": [
+                    -165.1111111111111,
+                    227.55555555555554,
+                    128,
+                    128
+                  ]
+                },
+                "outputNode": {
+                  "id": -20,
+                  "bounding": [
+                    482.8888888888889,
+                    237.55555555555554,
+                    131.501953125,
+                    68
+                  ]
+                },
+                "inputs": [
+                  {
+                    "id": "a96d2c63-65a3-43d6-9d9e-484b62457590",
+                    "name": "model",
+                    "type": "MODEL",
+                    "linkIds": [
+                      2
+                    ],
+                    "localized_name": "model",
+                    "pos": [
+                      -61.111111111111086,
+                      251.55555555555554
+                    ]
+                  },
+                  {
+                    "id": "e16522fa-a83b-46d6-9d37-5dfef063d15c",
+                    "name": "clip",
+                    "type": "CLIP",
+                    "linkIds": [
+                      3
+                    ],
+                    "localized_name": "clip",
+                    "pos": [
+                      -61.111111111111086,
+                      271.55555555555554
+                    ]
+                  },
+                  {
+                    "id": "231f87f2-5165-43c0-bbf1-956a11ab03eb",
+                    "name": "seed",
+                    "type": "INT",
+                    "linkIds": [
+                      7
+                    ],
+                    "pos": [
+                      -61.111111111111086,
+                      291.55555555555554
+                    ]
+                  },
+                  {
+                    "id": "50d3e7d4-c489-4b64-8267-cbbb21427af1",
+                    "name": "mode",
+                    "type": "COMBO",
+                    "linkIds": [
+                      8
+                    ],
+                    "pos": [
+                      -61.111111111111086,
+                      311.55555555555554
+                    ]
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "a524e36f-0f04-4ce3-8b6e-2b7eeeb317f4",
+                    "name": "populated_text",
+                    "type": "STRING",
+                    "linkIds": [
+                      1
+                    ],
+                    "localized_name": "populated_text",
+                    "pos": [
+                      506.8888888888889,
+                      261.55555555555554
+                    ]
+                  }
+                ],
+                "widgets": [],
+                "nodes": [
+                  {
+                    "id": 1,
+                    "type": "ImpactWildcardEncode",
+                    "pos": [
+                      22.888888888888914,
+                      125.55555555555554
+                    ],
+                    "size": [
+                      400,
+                      322
+                    ],
+                    "flags": {},
+                    "order": 0,
+                    "mode": 0,
+                    "inputs": [
+                      {
+                        "localized_name": "model",
+                        "name": "model",
+                        "type": "MODEL",
+                        "link": 2
+                      },
+                      {
+                        "localized_name": "clip",
+                        "name": "clip",
+                        "type": "CLIP",
+                        "link": 3
+                      },
+                      {
+                        "localized_name": "mode",
+                        "name": "mode",
+                        "type": "COMBO",
+                        "widget": {
+                          "name": "mode"
+                        },
+                        "link": 8
+                      },
+                      {
+                        "localized_name": "seed",
+                        "name": "seed",
+                        "type": "INT",
+                        "widget": {
+                          "name": "seed"
+                        },
+                        "link": 7
+                      }
+                    ],
+                    "outputs": [
+                      {
+                        "localized_name": "model",
+                        "name": "model",
+                        "type": "MODEL",
+                        "links": null
+                      },
+                      {
+                        "localized_name": "clip",
+                        "name": "clip",
+                        "type": "CLIP",
+                        "links": null
+                      },
+                      {
+                        "localized_name": "conditioning",
+                        "name": "conditioning",
+                        "type": "CONDITIONING",
+                        "links": null
+                      },
+                      {
+                        "localized_name": "populated_text",
+                        "name": "populated_text",
+                        "type": "STRING",
+                        "links": [
+                          1
+                        ]
+                      }
+                    ],
+                    "properties": {
+                      "Node name for S&R": "ImpactWildcardEncode"
+                    },
+                    "widgets_values": [
+                      "# promoted 71f02f2137b74c45b5d3cf81ce90f10e\n{red|green|blue}",
+                      "{red|green|blue}",
+                      "fixed",
+                      "Select the LoRA to add to the text",
+                      "Select Wildcard \ud83d\udfe2 Full Cache",
+                      5,
+                      "increment"
+                    ],
+                    "widgets_values_named": {
+                      "wildcard_text": "# promoted 71f02f2137b74c45b5d3cf81ce90f10e\n{red|green|blue}",
+                      "populated_text": "{red|green|blue}",
+                      "mode": "fixed",
+                      "Select to add LoRA": "Select the LoRA to add to the text",
+                      "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache",
+                      "seed": 5,
+                      "control_after_generate": "increment"
+                    }
+                  }
+                ],
+                "groups": [],
+                "links": [
+                  {
+                    "id": 2,
+                    "origin_id": -10,
+                    "origin_slot": 0,
+                    "target_id": 1,
+                    "target_slot": 0,
+                    "type": "MODEL"
+                  },
+                  {
+                    "id": 3,
+                    "origin_id": -10,
+                    "origin_slot": 1,
+                    "target_id": 1,
+                    "target_slot": 1,
+                    "type": "CLIP"
+                  },
+                  {
+                    "id": 1,
+                    "origin_id": 1,
+                    "origin_slot": 3,
+                    "target_id": -20,
+                    "target_slot": 0,
+                    "type": "STRING"
+                  },
+                  {
+                    "id": 8,
+                    "origin_id": -10,
+                    "origin_slot": 3,
+                    "target_id": 1,
+                    "target_slot": 2,
+                    "type": "COMBO"
+                  },
+                  {
+                    "id": 7,
+                    "origin_id": -10,
+                    "origin_slot": 2,
+                    "target_id": 1,
+                    "target_slot": 3,
+                    "type": "INT"
+                  }
+                ],
+                "extra": {}
+              }
+            ]
+          },
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                -467.888888888889,
+                -275.55555555555554
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "4": {
+              "seed": 0
+            }
+          }
+        }
+      },
+      "client_id": "c1b0ce4d5b084d159162a33935d6f9c3",
+      "workflow_metadata": {
+        "workflow_id": "b74cc17e-4509-4015-ba39-d858b0eefd21"
+      },
+      "create_time": 1793682737834
+    },
+    [
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "blue"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "7cd48d1d-ae74-4657-9656-260853a0d80b",
+          "timestamp": 1793682737834
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "2",
+            "3",
+            "4:1"
+          ],
+          "prompt_id": "7cd48d1d-ae74-4657-9656-260853a0d80b",
+          "timestamp": 1793682737835
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "7cd48d1d-ae74-4657-9656-260853a0d80b",
+          "timestamp": 1793682737835
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

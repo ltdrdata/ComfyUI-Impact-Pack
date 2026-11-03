@@ -1,10 +1,8 @@
 {
-  "code_head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
-  "full_regression_base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
-  "target_checked": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
-  "merge_conflicts": false,
-  "files": 475,
-  "bytes": 18387192,
-  "scope": "Published linked evidence and relevant logs/reports. Trace ZIPs, runtime copies and models excluded.",
-  "prepared_utc": "2026-11-03T03:28:58.909951+00:00"
+  "code_head": "3452e437c982c7578cc4dd4a04ff748eb4484df6",
+  "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
+  "published_utc": "2026-11-03T05:16:14.238075+00:00",
+  "new_files": 1622,
+  "files": 2097,
+  "scope": "Current promoted-seed validation and three queue-pair render sequences; previous broad evidence preserved as historical. No runtimes, models or trace ZIPs."
 }

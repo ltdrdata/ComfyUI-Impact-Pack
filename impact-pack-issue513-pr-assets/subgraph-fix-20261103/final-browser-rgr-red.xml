@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="54.702" timestamp="2026-11-03T14:01:48.830001+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]" time="14.366"><failure message="AssertionError: assert 'green' == 'blue'&#10;  &#10;  - blue&#10;  + green">tests/test_e2e_wildcard_cache.py:412: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    entry = run(ui, preview_id, "blue", f"fixed-{iteration + 1}")
+tests/test_e2e_wildcard_cache.py:60: in run
+    assert entry["outputs"][preview_id]["text"][0] == expected
+E   AssertionError: assert 'green' == 'blue'
+E     
+E     - blue
+E     + green</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]" time="15.316"><failure message="AssertionError: assert 'green' == 'blue'&#10;  &#10;  - blue&#10;  + green">tests/test_e2e_wildcard_cache.py:412: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    entry = run(ui, preview_id, "blue", f"fixed-{iteration + 1}")
+tests/test_e2e_wildcard_cache.py:60: in run
+    assert entry["outputs"][preview_id]["text"][0] == expected
+E   AssertionError: assert 'green' == 'blue'
+E     
+E     - blue
+E     + green</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]" time="11.884"><failure message="AssertionError: assert {'id': '3', '... 'value': 6}]} == {'id': '3', '... 'value': 5}]}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}&#10;  &#10;  Full diff:&#10;    {...&#10;  &#10;  ...Full output truncated (12 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:420: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '3', '... 'value': 6}]} == {'id': '3', '... 'value': 5}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (12 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]" time="13.042"><failure message="AssertionError: assert {'id': '4', '... 'value': 6}]} == {'id': '4', '... 'value': 5}]}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}&#10;  &#10;  Full diff:&#10;    {...&#10;  &#10;  ...Full output truncated (12 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:420: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '4', '... 'value': 6}]} == {'id': '4', '... 'value': 5}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (12 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

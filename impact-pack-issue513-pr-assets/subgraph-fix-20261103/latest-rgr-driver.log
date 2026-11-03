@@ -1,0 +1,6 @@
+START latest-browser-rgr-red
+END latest-browser-rgr-red 1
+START latest-browser-rgr-green
+END latest-browser-rgr-green 0
+START latest-browser-rgr-red-again
+END latest-browser-rgr-red-again 1

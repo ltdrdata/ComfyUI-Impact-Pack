@@ -1,0 +1,95 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 78 items / 74 deselected / 4 selected
+
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor] FAILED [ 25%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode] PASSED [ 50%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor] PASSED [ 75%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor] _
+tests/test_e2e_wildcard_cache.py:445: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    ui.choose(before["type"], "mode", "populate")
+tests/e2e_ui.py:87: in choose
+    self.page.get_by_role("menuitem", name=value, exact=True).click()
+/home/rho/venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15631: in click
+    self._sync(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:162: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:566: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:559: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+E   Call log:
+E     - waiting for get_by_role("menuitem", name="populate", exact=True)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-promoted-lru-retry/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (d1799fd7-444d-4b07-8faf-335299dc5ca2)
+PASS: UI Run completed (2356406e-9074-4b33-b18b-d42a84006acb)
+PASS: UI Run completed (4131532f-ffd5-475e-bc56-777eebdee346)
+PASS: UI Run completed (f9e8daa5-e2de-4a14-b59d-e1f07aef71dc)
+PASS: UI Run completed (a7a8ead2-5d9e-4a3a-a4bd-73aed854bcaa)
+PASS: UI Run completed (a9ada169-73ee-4da5-8e9f-72d7c1c6dc9d)
+PASS: UI Run completed (bdc0330f-2733-4470-b0d2-18f27824ae8f)
+PASS: UI Run completed (88af2e77-3b25-43c5-90a5-81a50883529c)
+PASS: UI Run completed (b22023cc-9697-47cc-9f03-e1be1370c738)
+PASS: UI Run completed (cd0aa9e8-116d-45c0-ad78-7056225001d5)
+PASS: UI Run completed (9f38a710-fa2a-4a11-9576-b488d38d2310)
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode] _
+tests/test_e2e_wildcard_cache.py:445: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    ui.choose(before["type"], "mode", "populate")
+tests/e2e_ui.py:87: in choose
+    self.page.get_by_role("menuitem", name=value, exact=True).click()
+/home/rho/venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15631: in click
+    self._sync(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:162: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:566: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:559: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+E   Call log:
+E     - waiting for get_by_role("menuitem", name="populate", exact=True)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-promoted-lru-retry/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (6e150f2a-b18e-4f0e-bcd1-db64041ee224)
+PASS: UI Run completed (b231acb1-0b4e-4559-b4ba-f8e239e59859)
+PASS: UI Run completed (00cc66a4-024b-4c33-951f-86630193d415)
+PASS: UI Run completed (a64af091-58cc-4b85-b51e-10b296e19a24)
+PASS: UI Run completed (b814f273-68ca-4b2d-99a4-d0c9458bb204)
+PASS: UI Run completed (2e182dbf-7881-4e71-9ce5-623aa7d5e0ee)
+PASS: UI Run completed (ec9db92c-fb80-4b8a-a9af-f032df0850cf)
+PASS: UI Run completed (d36a88f1-f0a7-4610-a804-8c617ba4ce30)
+PASS: UI Run completed (fe9bfa33-64aa-4b4e-9a0c-6689e207e372)
+PASS: UI Run completed (df34e874-adfd-4a24-b0b1-488ff9a4796e)
+PASS: UI Run completed (044f1483-0f8d-488b-af1d-458fce4ed72d)
+=============================== warnings summary ===============================
+test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-promoted-lru-retry.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]
+====== 2 failed, 2 passed, 74 deselected, 1 warning in 137.44s (0:02:17) =======

@@ -1,0 +1,89 @@
+[
+  {
+    "queue": 1,
+    "prompt_id": "511d291d-3222-4f9f-910f-3733d19c6230",
+    "execution_start_ms": 1793681706744,
+    "fixed_execution_seed": 513,
+    "fixed_ui_seed_after_queue": 513,
+    "independent_execution_seed": 9001,
+    "independent_ui_seed_after_queue": 9002,
+    "fixed_branch_cached": false,
+    "independent_branch_cached": false,
+    "independent_sampler_ancestors": [
+      "16",
+      "4",
+      "5",
+      "7"
+    ],
+    "cached_nodes": [],
+    "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+    "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+    "screenshot_sha256": "dad0f30738c6c8aa4b02436fa59985d9341cdba551a7038af63df04004bb4e3b",
+    "history_sha256": "21062ceeb61319c70a6e133b45151bab61cc492556cdea03faf90cfa2fb2640a",
+    "native_reload_before_queue": false
+  },
+  {
+    "queue": 2,
+    "prompt_id": "f5db66a0-8056-45c6-bd12-60125a5cd980",
+    "execution_start_ms": 1793681713614,
+    "fixed_execution_seed": 513,
+    "fixed_ui_seed_after_queue": 513,
+    "independent_execution_seed": 9002,
+    "independent_ui_seed_after_queue": 9003,
+    "fixed_branch_cached": true,
+    "independent_branch_cached": false,
+    "independent_sampler_ancestors": [
+      "16",
+      "4",
+      "5",
+      "7"
+    ],
+    "cached_nodes": [
+      "16",
+      "20:10",
+      "3",
+      "4",
+      "5",
+      "7",
+      "8",
+      "9"
+    ],
+    "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+    "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+    "screenshot_sha256": "551967b7d0d3bdf26ddaace965be7e4b0f44312216e701700449776b13c60a7d",
+    "history_sha256": "94fd8432119fa95a62a99b9e6db41223aee20f7603f8640456e45dca171c82f9",
+    "native_reload_before_queue": false
+  },
+  {
+    "queue": 3,
+    "prompt_id": "1e71df88-9853-4bc7-9736-7c83365c34c1",
+    "execution_start_ms": 1793681717638,
+    "fixed_execution_seed": 513,
+    "fixed_ui_seed_after_queue": 513,
+    "independent_execution_seed": 9003,
+    "independent_ui_seed_after_queue": 9004,
+    "fixed_branch_cached": true,
+    "independent_branch_cached": false,
+    "independent_sampler_ancestors": [
+      "16",
+      "4",
+      "5",
+      "7"
+    ],
+    "cached_nodes": [
+      "16",
+      "20:10",
+      "3",
+      "4",
+      "5",
+      "7",
+      "8",
+      "9"
+    ],
+    "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+    "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+    "screenshot_sha256": "9da725b46170cd03523489913435971de56778277bc21b9d20bbd6a4db9dc783",
+    "history_sha256": "5f93cdef855fa7448f6e805edebec5a9f65e3618f2ab94fbc36e4f146c0db599",
+    "native_reload_before_queue": true
+  }
+]

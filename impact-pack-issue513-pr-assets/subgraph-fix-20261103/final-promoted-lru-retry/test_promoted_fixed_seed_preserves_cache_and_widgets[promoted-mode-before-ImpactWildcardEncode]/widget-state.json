@@ -1,0 +1,14 @@
+{
+  "id": "4",
+  "type": "8bc5e582-c987-4659-a505-cf0a880dfe7e",
+  "widgets": [
+    {
+      "name": "seed",
+      "value": 5
+    },
+    {
+      "name": "mode",
+      "value": "fixed"
+    }
+  ]
+}

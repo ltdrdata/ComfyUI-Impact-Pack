@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/serve.py", line 27, in <module>
+    with socket.socket() as s:assert s.connect_ex(('127.0.0.1',a.port))!=0,'Port already occupied'
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Port already occupied

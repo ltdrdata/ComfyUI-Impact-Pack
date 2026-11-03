@@ -1,0 +1,121 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 78 items / 54 deselected / 24 selected
+
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor] PASSED [  4%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode] PASSED [  8%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor] PASSED [ 12%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode] PASSED [ 16%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor] PASSED [ 20%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode] PASSED [ 25%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor] PASSED [ 29%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode] PASSED [ 33%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor] PASSED [ 37%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode] PASSED [ 41%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor] PASSED [ 45%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode] PASSED [ 50%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor] PASSED [ 54%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode] PASSED [ 58%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor] PASSED [ 62%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode] PASSED [ 66%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor] PASSED [ 70%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode] PASSED [ 75%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor] PASSED [ 79%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode] PASSED [ 83%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor] FAILED [ 87%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode] FAILED [ 91%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor] FAILED [ 95%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor] _
+tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    before = native_roundtrip(ui, host, expected_widget_names=names)
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    assert restored.get("definitions") == saved.get("definitions")
+E   AssertionError: assert {'subgraphs':...0295b', ...}]} == {'subgraphs':...0295b', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '3a5a1bd6-9079-47c7-aae1-87dee3b0295b', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '3a5a1bd6-9079-47c7-aae1-87dee3b0295b', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (179 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-promoted/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode] _
+tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    before = native_roundtrip(ui, host, expected_widget_names=names)
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    assert restored.get("definitions") == saved.get("definitions")
+E   AssertionError: assert {'subgraphs':...27ed3', ...}]} == {'subgraphs':...27ed3', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '5169603d-5b95-4047-bc4e-6d6060827ed3', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '5169603d-5b95-4047-bc4e-6d6060827ed3', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (253 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-promoted/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor] _
+tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    before = native_roundtrip(ui, host, expected_widget_names=names)
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    assert restored.get("definitions") == saved.get("definitions")
+E   AssertionError: assert {'subgraphs':...8cf1d', ...}]} == {'subgraphs':...8cf1d', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '6bc6eb4a-d391-4f5d-8633-b5b06d28cf1d', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '6bc6eb4a-d391-4f5d-8633-b5b06d28cf1d', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (179 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-promoted/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode] _
+tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    before = native_roundtrip(ui, host, expected_widget_names=names)
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    assert restored.get("definitions") == saved.get("definitions")
+E   AssertionError: assert {'subgraphs':...cac07', ...}]} == {'subgraphs':...cac07', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '7c359cfc-0ccc-464b-ae5d-82f5b8ccac07', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '7c359cfc-0ccc-464b-ae5d-82f5b8ccac07', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (253 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-promoted/test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]
+=============================== warnings summary ===============================
+test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-promoted.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]
+====== 4 failed, 20 passed, 54 deselected, 1 warning in 476.46s (0:07:56) ======

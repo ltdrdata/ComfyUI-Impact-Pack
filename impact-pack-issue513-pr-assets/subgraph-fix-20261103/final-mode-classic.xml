@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="110.517" timestamp="2026-11-03T14:09:26.742611+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]" time="19.831" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]" time="50.986"><failure message="playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.&#10;Call log:&#10;  - waiting for get_by_role(&quot;menuitem&quot;, name=&quot;populate&quot;, exact=True)">tests/test_e2e_wildcard_cache.py:447: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    ui.choose(before["type"], "mode", "populate")
+tests/e2e_ui.py:87: in choose
+    self.page.get_by_role("menuitem", name=value, exact=True).click()
+/home/rho/venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15631: in click
+    self._sync(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:162: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:566: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:559: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+E   Call log:
+E     - waiting for get_by_role("menuitem", name="populate", exact=True)</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]" time="18.934" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]" time="20.495" /></testsuite></testsuites>

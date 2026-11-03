@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="24" time="470.863" timestamp="2026-11-03T13:57:58.961187+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]" time="21.521" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]" time="24.180" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]" time="20.666" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]" time="23.655" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardProcessor]" time="21.872" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-before-ImpactWildcardEncode]" time="23.342" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardProcessor]" time="21.851" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[named-after-ImpactWildcardEncode]" time="23.671" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardProcessor]" time="18.454" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-before-ImpactWildcardEncode]" time="19.736" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardProcessor]" time="18.503" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[decrement-after-ImpactWildcardEncode]" time="21.392" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardProcessor]" time="18.665" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-before-ImpactWildcardEncode]" time="20.979" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardProcessor]" time="18.556" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[randomize-after-ImpactWildcardEncode]" time="21.158" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardProcessor]" time="22.131" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[nested-before-ImpactWildcardEncode]" time="22.649" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardProcessor]" time="21.339" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[nested-after-ImpactWildcardEncode]" time="24.133" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]" time="10.496"><failure message="AssertionError: assert {'subgraphs':...c021c', ...}]} == {'subgraphs':...c021c', ...}]}&#10;  &#10;  Differing items:&#10;  {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '50421c87-2cde-46f7-852d-de9df02c021c', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '50421c87-2cde-46f7-852d-de9df02c021c', ...}]}&#10;  &#10;  Full diff:&#10;    {&#10;        'subgraphs': [...&#10;  &#10;  ...Full output truncated (179 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    if promote_mode:
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    ???
+E   AssertionError: assert {'subgraphs':...c021c', ...}]} == {'subgraphs':...c021c', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '50421c87-2cde-46f7-852d-de9df02c021c', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '50421c87-2cde-46f7-852d-de9df02c021c', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (179 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]" time="11.194"><failure message="AssertionError: assert {'subgraphs':...67e69', ...}]} == {'subgraphs':...67e69', ...}]}&#10;  &#10;  Differing items:&#10;  {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '0692661b-497a-467c-af09-f7b4d7967e69', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '0692661b-497a-467c-af09-f7b4d7967e69', ...}]}&#10;  &#10;  Full diff:&#10;    {&#10;        'subgraphs': [...&#10;  &#10;  ...Full output truncated (253 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    if promote_mode:
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    ???
+E   AssertionError: assert {'subgraphs':...67e69', ...}]} == {'subgraphs':...67e69', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '0692661b-497a-467c-af09-f7b4d7967e69', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '0692661b-497a-467c-af09-f7b4d7967e69', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (253 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]" time="9.524"><failure message="AssertionError: assert {'subgraphs':...2eaef', ...}]} == {'subgraphs':...2eaef', ...}]}&#10;  &#10;  Differing items:&#10;  {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '8632a944-3b3c-4ba7-adaa-afcd23e2eaef', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '8632a944-3b3c-4ba7-adaa-afcd23e2eaef', ...}]}&#10;  &#10;  Full diff:&#10;    {&#10;        'subgraphs': [...&#10;  &#10;  ...Full output truncated (179 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    if promote_mode:
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    ???
+E   AssertionError: assert {'subgraphs':...2eaef', ...}]} == {'subgraphs':...2eaef', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '8632a944-3b3c-4ba7-adaa-afcd23e2eaef', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': '8632a944-3b3c-4ba7-adaa-afcd23e2eaef', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (179 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]" time="11.080"><failure message="AssertionError: assert {'subgraphs':...1401e', ...}]} == {'subgraphs':...1401e', ...}]}&#10;  &#10;  Differing items:&#10;  {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': 'cc08d21c-2516-47bb-8201-1e386681401e', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': 'cc08d21c-2516-47bb-8201-1e386681401e', ...}]}&#10;  &#10;  Full diff:&#10;    {&#10;        'subgraphs': [...&#10;  &#10;  ...Full output truncated (253 lines hidden), use '-vv' to show">tests/test_e2e_wildcard_cache.py:396: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    if promote_mode:
+tests/test_e2e_wildcard_cache.py:101: in native_roundtrip
+    ???
+E   AssertionError: assert {'subgraphs':...1401e', ...}]} == {'subgraphs':...1401e', ...}]}
+E     
+E     Differing items:
+E     {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': 'cc08d21c-2516-47bb-8201-1e386681401e', ...}]} != {'subgraphs': [{'config': {}, 'extra': {}, 'groups': [], 'id': 'cc08d21c-2516-47bb-8201-1e386681401e', ...}]}
+E     
+E     Full diff:
+E       {
+E           'subgraphs': [...
+E     
+E     ...Full output truncated (253 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

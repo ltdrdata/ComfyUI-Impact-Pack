@@ -1,0 +1,102 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 78 items / 74 deselected / 4 selected
+
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor] FAILED [ 25%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode] FAILED [ 50%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor] FAILED [ 75%]
+tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor] _
+tests/test_e2e_wildcard_cache.py:412: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    entry = run(ui, preview_id, "blue", f"fixed-{iteration + 1}")
+tests/test_e2e_wildcard_cache.py:60: in run
+    assert entry["outputs"][preview_id]["text"][0] == expected
+E   AssertionError: assert 'green' == 'blue'
+E     
+E     - blue
+E     + green
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (f3f59430-b1c0-4c76-89ec-b1c40ae76872)
+PASS: UI Run completed (3cf19020-c8a1-46fb-b82e-0d6f19616291)
+PASS: UI Run completed (dbbb01ae-aa27-4589-bd36-d9aff8900fec)
+PASS: UI Run completed (1e51e7f2-c0d8-45dd-a6ca-7e132c89aebf)
+PASS: UI Run completed (dfab08ba-b681-4e4e-882e-c8d5e6732bf8)
+PASS: UI Run completed (9d853466-d0b0-4130-82b9-34aad75f2b97)
+PASS: UI Run completed (130f2388-c4e1-436e-baa5-c36493e2010d)
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode] _
+tests/test_e2e_wildcard_cache.py:412: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    entry = run(ui, preview_id, "blue", f"fixed-{iteration + 1}")
+tests/test_e2e_wildcard_cache.py:60: in run
+    assert entry["outputs"][preview_id]["text"][0] == expected
+E   AssertionError: assert 'green' == 'blue'
+E     
+E     - blue
+E     + green
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (7e58217a-aee3-4990-82ec-cd67819a237a)
+PASS: UI Run completed (b1a69be4-e17a-42c6-99bd-4f15f0863080)
+PASS: UI Run completed (b8a7d14c-8400-4ce7-ab51-2e5740e1e2ab)
+PASS: UI Run completed (708e43bb-72cb-4fef-89bc-a11f9ee6c359)
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor] _
+tests/test_e2e_wildcard_cache.py:420: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '3', '... 'value': 6}]} == {'id': '3', '... 'value': 5}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (12 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (34c38a4e-488c-49f1-a4a3-d83ffdbf9199)
+_ test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode] _
+tests/test_e2e_wildcard_cache.py:420: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    assert promoted_widget_state(ui, host) == before
+E   AssertionError: assert {'id': '4', '... 'value': 6}]} == {'id': '4', '... 'value': 5}]}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'widgets': [{'name': 'seed', 'value': 6}]} != {'widgets': [{'name': 'seed', 'value': 5}]}
+E     
+E     Full diff:
+E       {...
+E     
+E     ...Full output truncated (12 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red/test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (414de2c8-5985-434a-961a-6c80b6d1576d)
+=============================== warnings summary ===============================
+test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/final-browser-rgr-red.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardProcessor]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-before-ImpactWildcardEncode]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardProcessor]
+FAILED tests/test_e2e_wildcard_cache.py::test_promoted_fixed_seed_preserves_cache_and_widgets[positional-after-ImpactWildcardEncode]
+================= 4 failed, 74 deselected, 1 warning in 54.70s =================

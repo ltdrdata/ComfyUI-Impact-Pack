@@ -1,0 +1,6 @@
+START final-browser-rgr-red
+END final-browser-rgr-red 1
+START final-browser-rgr-green
+END final-browser-rgr-green 0
+START final-browser-rgr-red-again
+END final-browser-rgr-red-again 1

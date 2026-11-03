@@ -1,0 +1,10 @@
+{
+  "id": "5",
+  "type": "ec2f0f1b-27f4-4bcb-abc6-87bba0a5a882",
+  "widgets": [
+    {
+      "name": "seed",
+      "value": 5
+    }
+  ]
+}

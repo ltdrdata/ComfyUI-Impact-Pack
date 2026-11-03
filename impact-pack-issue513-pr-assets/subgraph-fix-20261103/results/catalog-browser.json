@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_widget_catalog.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/catalog-browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T04:25:45.140304+00:00",
+  "exit_code": 0,
+  "duration_seconds": 380.18,
+  "counts": {
+    "tests": "14",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/subgraph-fix-20261103/latest-wildcard-unit.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+  "started_utc": "2026-11-03T04:51:47.345937+00:00",
+  "exit_code": 0,
+  "duration_seconds": 1.12,
+  "counts": {
+    "tests": "205",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "failures": []
+}

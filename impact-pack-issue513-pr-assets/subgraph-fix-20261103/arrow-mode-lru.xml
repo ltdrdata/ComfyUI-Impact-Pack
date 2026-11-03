@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="106.818" timestamp="2026-11-03T14:11:45.305905+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardProcessor]" time="18.537" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-before-ImpactWildcardEncode]" time="21.117" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardProcessor]" time="17.932" /><testcase classname="test_e2e_wildcard_cache" name="test_promoted_fixed_seed_preserves_cache_and_widgets[promoted-mode-after-ImpactWildcardEncode]" time="49.103"><failure message="playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.">tests/test_e2e_wildcard_cache.py:454: in test_promoted_fixed_seed_preserves_cache_and_widgets
+    ui.page.wait_for_function("""({app, id}) =&gt;
+/home/rho/venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:11599: in wait_for_function
+    self._sync(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_page.py:1110: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:878: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:559: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 30000ms exceeded.</failure></testcase></testsuite></testsuites>
