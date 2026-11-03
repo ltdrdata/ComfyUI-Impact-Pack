@@ -195,6 +195,7 @@ def browser_session(args):
         try:
             page.goto(args.base_url, wait_until="domcontentloaded")
             expect(page.get_by_test_id("queue-button")).to_be_visible(timeout=60000)
+            page.keyboard.press("Escape")  # Close the initial template browser.
             yield ComfyUI(page, args)
         finally:
             already_failed = sys.exc_info()[0] is not None
