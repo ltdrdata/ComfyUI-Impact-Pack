@@ -1,0 +1,19 @@
+{
+  "label": "wildcard-ondemand-ui",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/e2e_wildcards.py",
+    "--base-url",
+    "http://127.0.0.1:18502",
+    "--artifacts",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/wildcard-ondemand-ui"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:32:51.878475+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18502"
+  },
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 7.74
+}

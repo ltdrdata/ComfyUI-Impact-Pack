@@ -1,0 +1,27 @@
+==========================================
+Verify On-Demand Mode Activation
+==========================================
+
+Config set to 0.5MB cache limit
+
+Starting ComfyUI server on port 18505...
+Waiting 70 seconds for server startup...
+  ... 10 seconds
+  ... 20 seconds
+  ... 30 seconds
+  ... 40 seconds
+  ... 50 seconds
+  ... 60 seconds
+  ... 70 seconds
+✓ Server started
+
+Loading mode detected:
+[32m[INFO][0m [Impact Pack] Wildcard total size (0.81 MB) exceeds cache limit (0.50 MB). Using on-demand loading mode (TXT files loaded dynamically).
+
+✅ SUCCESS: On-demand mode activated with 0.5MB limit!
+
+Testing wildcard functionality in on-demand mode...
+  Depth 3 transitive (seed=222): Shrewd Hatchling creature
+  ✅ Transitive wildcard works correctly
+
+Full log saved to: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-isolated/temp/verify_ondemand.log

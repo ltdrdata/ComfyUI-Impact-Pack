@@ -1,0 +1,21 @@
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+WARNING:root:WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+test_file_loading_modes_preserve_seeded_output (__main__.main.<locals>.WildcardCacheTests.test_file_loading_modes_preserve_seeded_output) ... ok
+test_fixed_and_reproduce_keep_dynamic_semantics (__main__.main.<locals>.WildcardCacheTests.test_fixed_and_reproduce_keep_dynamic_semantics) ... ok
+test_linked_seed_is_never_replaced (__main__.main.<locals>.WildcardCacheTests.test_linked_seed_is_never_replaced) ... ok
+test_linked_text_may_create_syntax (__main__.main.<locals>.WildcardCacheTests.test_linked_text_may_create_syntax) ... ok
+test_plain_text_reuses_both_cache_keys (__main__.main.<locals>.WildcardCacheTests.test_plain_text_reuses_both_cache_keys) ... ok
+test_populate_preserves_seeded_output_and_saved_values (__main__.main.<locals>.WildcardCacheTests.test_populate_preserves_seeded_output_and_saved_values) ... ok
+test_populated_cache_follows_result_instead_of_original_seed (__main__.main.<locals>.WildcardCacheTests.test_populated_cache_follows_result_instead_of_original_seed) ... ok
+test_unresolved_syntax_after_population_keeps_seed (__main__.main.<locals>.WildcardCacheTests.test_unresolved_syntax_after_population_keeps_seed) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.039s
+
+OK

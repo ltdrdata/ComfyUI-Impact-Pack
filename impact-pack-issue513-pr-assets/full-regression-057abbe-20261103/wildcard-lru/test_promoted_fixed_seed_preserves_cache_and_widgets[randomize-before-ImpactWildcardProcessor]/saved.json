@@ -1,0 +1,245 @@
+{
+  "id": "c074f499-4771-4958-95a1-5b9ee8c20f6c",
+  "revision": 0,
+  "last_node_id": 3,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        717.8888888888889,
+        405.55555555555554
+      ],
+      "size": [
+        210,
+        122
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 3,
+      "type": "fa50e5fa-d7cf-4046-b17a-329b31c6408a",
+      "pos": [
+        152.8888888888889,
+        231.55555555555554
+      ],
+      "size": [
+        210,
+        58
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "previewExposures": []
+      },
+      "widgets_values": [
+        5
+      ],
+      "widgets_values_named": {
+        "seed": 5
+      }
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      2,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "fa50e5fa-d7cf-4046-b17a-329b31c6408a",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 3,
+          "lastLinkId": 3,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "New Subgraph",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -165.1111111111111,
+            205.55555555555554,
+            128,
+            48
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            482.8888888888889,
+            195.55555555555554,
+            132.345703125,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "8dd4a35c-5b47-4403-8c7f-e3a10a2a2e99",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              3
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "f70dac82-bf5a-4842-bd6b-a7f7f340db5e",
+            "name": "processed text",
+            "type": "STRING",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "processed text",
+            "pos": [
+              24,
+              24
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "ImpactWildcardProcessor",
+            "pos": [
+              22.888888888888914,
+              125.55555555555554
+            ],
+            "size": [
+              400,
+              238
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "seed",
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 3
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "processed text",
+                "name": "processed text",
+                "type": "STRING",
+                "links": [
+                  1
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactWildcardProcessor"
+            },
+            "widgets_values": [
+              "# promoted 8c4bfd507ea84c3cafa61246ffbd653f\n{red|green|blue}",
+              "{red|green|blue}",
+              "fixed",
+              5,
+              "randomize",
+              "Select Wildcard 🟢 Full Cache"
+            ],
+            "widgets_values_named": {
+              "wildcard_text": "# promoted 8c4bfd507ea84c3cafa61246ffbd653f\n{red|green|blue}",
+              "populated_text": "{red|green|blue}",
+              "mode": "fixed",
+              "seed": 5,
+              "control_after_generate": "randomize",
+              "Select to add Wildcard": "Select Wildcard 🟢 Full Cache"
+            }
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        97.11111111111109,
+        -101.55555555555554
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

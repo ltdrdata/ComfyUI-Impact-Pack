@@ -1,0 +1,583 @@
+{
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
+  "entrypoints": {
+    "tests/connection_types.test.mjs": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "javascript",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_animatediff_tutorials.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "animatediff-native",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_conditionings.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "conditioning-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_dd_compat.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "detailer-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_lora_wildcard_inference.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "lora-source-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_regional.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "regional-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_tutorials.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "switch-tutorial-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/e2e_ui.py": {
+      "status": "auxiliary",
+      "reason": "Shared browser interaction library; tested by test_e2e_ui.py."
+    },
+    "tests/e2e_wildcards.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-ondemand-ui",
+          "exit_code": 0
+        },
+        {
+          "label": "wildcard-ui",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/integration_lora_wildcard_tensors.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "lora-source-tensors",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/integration_lora_wildcard_validation.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "input-validation",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/integration_wildcard_cache.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-cache-integration",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/integration_wildcard_cache_tensors.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-cache-tensors",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/integration_wildcard_tutorial_tensors.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-tutorial-tensors",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/legacy_sam.test.mjs": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "javascript",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/lora_wildcard_source.test.mjs": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "javascript",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/restart_test_server.sh": {
+      "status": "auxiliary",
+      "reason": "Server administration helper, not a regression suite."
+    },
+    "tests/test_animatediff_assembly.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "animatediff-assembly",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_config_quotes.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-config_quotes",
+          "exit_code": 0
+        },
+        {
+          "label": "baseline-legacy-config_quotes",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_deep_nesting.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-deep_nesting",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_dynamic_prompts_full.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-api-baseline-test_dynamic_prompts_full",
+          "exit_code": 0
+        },
+        {
+          "label": "legacy-api-candidate-test_dynamic_prompts_full",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_connection_types.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "connection-types",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_legacy_sam.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-browser-api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_lora_wildcard_source.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "lora-source-loading",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_mask_to_segs.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "mask-browser",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_mask_tutorials.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "mask-browser",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_sam_masks.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-browser-api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_sam_tutorials.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-browser-api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_switch_loading.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "switches",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_switches.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "switches",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_ui.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "browser-harness",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_widget_catalog.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "catalog",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_wildcard_cache.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-classic",
+          "exit_code": 0
+        },
+        {
+          "label": "wildcard-lru",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_e2e_wildcard_tutorials.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-classic",
+          "exit_code": 0
+        },
+        {
+          "label": "lbw-tutorial-inference",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_edge_cases.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-edge_cases",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_encoding.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "utf8-api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_error_handling.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-error_handling",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_mask_blur.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "mask-blur",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_mask_to_segs.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-and-mask",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_ondemand_loading.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-ondemand_loading",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_sam_api.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-browser-api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_sam_masks.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "sam-and-mask",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/test_wildcard_cache_artifacts.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "browser-harness",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcard_seed_control.test.mjs": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "javascript",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/find_transitive_wildcards.sh": {
+      "status": "auxiliary",
+      "reason": "Corpus discovery helper, not assertions."
+    },
+    "tests/wildcards/run_quick_test.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-api-candidate-run_quick_test",
+          "exit_code": 0
+        },
+        {
+          "label": "legacy-api-baseline-run_quick_test",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_config.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-unit",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_lazy_load_api.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-lazy_load_api",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_lazy_load_verification.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "baseline-legacy-python-lazy_load_verification",
+          "exit_code": 1
+        },
+        {
+          "label": "legacy-python-lazy_load_verification",
+          "exit_code": 1
+        }
+      ]
+    },
+    "tests/wildcards/test_lora_wildcard_source.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-unit",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_populate_regression.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-unit",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_progressive_loading.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-python-progressive_loading",
+          "exit_code": 1
+        },
+        {
+          "label": "baseline-legacy-python-progressive_loading",
+          "exit_code": 1
+        }
+      ]
+    },
+    "tests/wildcards/test_progressive_ondemand.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-progressive_ondemand",
+          "exit_code": 1
+        },
+        {
+          "label": "baseline-legacy-progressive_ondemand",
+          "exit_code": 1
+        }
+      ]
+    },
+    "tests/wildcards/test_seed_regression.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-unit",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_sequential_loading.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-sequential_loading",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_versatile_prompts.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-versatile_prompts",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_wildcard_consistency.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-wildcard_consistency",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_wildcard_encoding_strict.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "wildcard-unit",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_wildcard_final.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-wildcard_final",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/test_wildcard_lazy_loading.py": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-python-wildcard_lazy_loading",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tests/wildcards/verify_ondemand_mode.sh": {
+      "status": "executed",
+      "invocations": [
+        {
+          "label": "legacy-verify_ondemand_mode",
+          "exit_code": 0
+        }
+      ]
+    }
+  },
+  "executed": 58,
+  "pending": [],
+  "auxiliary": {
+    "tests/e2e_ui.py": "Shared browser interaction library; tested by test_e2e_ui.py.",
+    "tests/restart_test_server.sh": "Server administration helper, not a regression suite.",
+    "tests/wildcards/find_transitive_wildcards.sh": "Corpus discovery helper, not assertions."
+  }
+}

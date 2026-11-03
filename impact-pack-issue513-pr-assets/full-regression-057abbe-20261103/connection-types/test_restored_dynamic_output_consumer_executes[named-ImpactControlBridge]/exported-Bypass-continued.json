@@ -1,0 +1,375 @@
+{
+  "prompt": [
+    57,
+    "9aea3790-8cc8-4527-8cee-54dc6b66c9af",
+    {
+      "1": {
+        "inputs": {
+          "mode": false,
+          "behavior": "Bypass",
+          "value": [
+            "2",
+            1
+          ]
+        },
+        "class_type": "ImpactControlBridge",
+        "_meta": {
+          "title": "Control Bridge"
+        }
+      },
+      "2": {
+        "inputs": {
+          "select": 2,
+          "sel_mode": false,
+          "input": [
+            "3",
+            0
+          ]
+        },
+        "class_type": "ImpactInversedSwitch",
+        "_meta": {
+          "title": "Inversed Switch (Any)"
+        }
+      },
+      "3": {
+        "inputs": {
+          "value": 42
+        },
+        "class_type": "ImpactInt",
+        "_meta": {
+          "title": "ImpactInt"
+        }
+      },
+      "4": {
+        "inputs": {
+          "value": [
+            "2",
+            0
+          ]
+        },
+        "class_type": "ImpactConvertDataType",
+        "_meta": {
+          "title": "ImpactConvertDataType"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "dbc6a843-c430-4632-8228-f6e0d861b081",
+          "revision": 0,
+          "last_node_id": 5,
+          "last_link_id": 4,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactControlBridge",
+              "pos": [
+                560.1111111111112,
+                99.99999999999997
+              ],
+              "size": [
+                270,
+                82
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "value",
+                  "type": "INT",
+                  "link": 3
+                }
+              ],
+              "outputs": [
+                {
+                  "label": "INT",
+                  "name": "value",
+                  "type": "INT",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactControlBridge"
+              },
+              "widgets_values": [
+                false,
+                "Bypass"
+              ],
+              "widgets_values_named": {
+                "mode": false,
+                "behavior": "Bypass"
+              }
+            },
+            {
+              "id": 2,
+              "type": "ImpactInversedSwitch",
+              "pos": [
+                137.88888888888897,
+                288.88888888888886
+              ],
+              "size": [
+                270,
+                122
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "input",
+                  "type": "INT",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "output1",
+                  "type": "INT",
+                  "slot_index": 0,
+                  "links": [
+                    2
+                  ]
+                },
+                {
+                  "name": "output2",
+                  "type": "INT",
+                  "slot_index": 1,
+                  "links": [
+                    3
+                  ]
+                },
+                {
+                  "name": "output3",
+                  "type": "INT",
+                  "slot_index": 2,
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactInversedSwitch"
+              },
+              "widgets_values": [
+                2,
+                false
+              ],
+              "widgets_values_named": {
+                "select": 2,
+                "sel_mode": false
+              }
+            },
+            {
+              "id": 3,
+              "type": "ImpactInt",
+              "pos": [
+                -350.9999999999999,
+                288.88888888888886
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "INT",
+                  "type": "INT",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactInt"
+              },
+              "widgets_values": [
+                42
+              ],
+              "widgets_values_named": {
+                "value": 42
+              }
+            },
+            {
+              "id": 4,
+              "type": "ImpactConvertDataType",
+              "pos": [
+                595.1772243923612,
+                622.2222222222222
+              ],
+              "size": [
+                199.8677734375,
+                86
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "value",
+                  "type": "*",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                },
+                {
+                  "name": "FLOAT",
+                  "type": "FLOAT",
+                  "links": null
+                },
+                {
+                  "name": "INT",
+                  "type": "INT",
+                  "links": null
+                },
+                {
+                  "name": "BOOLEAN",
+                  "type": "BOOLEAN",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactConvertDataType"
+              }
+            },
+            {
+              "id": 5,
+              "type": "PreviewAny",
+              "pos": [
+                1090.1111111111113,
+                177.77777777777774
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 4,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            }
+          ],
+          "links": [
+            [
+              1,
+              3,
+              0,
+              2,
+              0,
+              "INT"
+            ],
+            [
+              2,
+              2,
+              0,
+              4,
+              0,
+              "INT"
+            ],
+            [
+              3,
+              2,
+              1,
+              1,
+              0,
+              "INT"
+            ],
+            [
+              4,
+              1,
+              0,
+              5,
+              0,
+              "INT"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 0.852726063829787,
+              "offset": [
+                -266.9337140594547,
+                52.452256944444564
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {}
+        }
+      },
+      "client_id": "3fbec9a2c9074f88a5a616a0f418b0a9",
+      "workflow_metadata": {
+        "workflow_id": "dbc6a843-c430-4632-8228-f6e0d861b081"
+      },
+      "create_time": 1793708382261
+    },
+    [
+      "1"
+    ]
+  ],
+  "outputs": {},
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "9aea3790-8cc8-4527-8cee-54dc6b66c9af",
+          "timestamp": 1793708382263
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "9aea3790-8cc8-4527-8cee-54dc6b66c9af",
+          "timestamp": 1793708382264
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "9aea3790-8cc8-4527-8cee-54dc6b66c9af",
+          "timestamp": 1793708382264
+        }
+      ]
+    ]
+  },
+  "meta": {}
+}

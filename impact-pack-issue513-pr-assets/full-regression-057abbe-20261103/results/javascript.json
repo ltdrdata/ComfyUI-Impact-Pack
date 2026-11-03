@@ -1,0 +1,19 @@
+{
+  "label": "javascript",
+  "command": [
+    "/home/rho/.nvm/versions/node/v24.12.0/bin/node",
+    "--experimental-vm-modules",
+    "--test-reporter=tap",
+    "--test",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source/tests/connection_types.test.mjs",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source/tests/legacy_sam.test.mjs",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source/tests/lora_wildcard_source.test.mjs",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source/tests/wildcard_seed_control.test.mjs"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:09:16.656646+00:00",
+  "environment_overrides": {},
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 0.22
+}

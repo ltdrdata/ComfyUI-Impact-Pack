@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="0.544" timestamp="2026-11-03T21:16:27.136888+09:00" hostname="hyewon"><testcase classname="wildcards.test_progressive_loading" name="test_early_termination" time="0.348" /><testcase classname="wildcards.test_progressive_loading" name="test_metadata_scan" time="0.001" /><testcase classname="wildcards.test_progressive_loading" name="test_progressive_loading" time="0.003" /><testcase classname="wildcards.test_progressive_loading" name="test_wildcard_list_functions" time="0.004"><failure message="AssertionError: Should return all available wildcards&#10;assert 0 == 5&#10; +  where 0 = len([])">tests/wildcards/test_progressive_loading.py:197: in test_wildcard_list_functions
+    assert len(all_wildcards) == 5, "Should return all available wildcards"
+E   AssertionError: Should return all available wildcards
+E   assert 0 == 5
+E    +  where 0 = len([])</failure></testcase></testsuite></testsuites>

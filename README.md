@@ -9,7 +9,7 @@ Issue [#513](https://github.com/ltdrdata/ComfyUI-Impact-Pack/issues/513): automa
 
 **Boundaries:** independent Inspire GlobalSeed remains external. Promoted populate/before projection bookkeeping remains a [separate frontend issue draft](impact-pack-issue513-frontend-projection-identity-issue-draft.md). Partially addresses #513.
 
-**Verification:** one commit `057abbe` on `Main` `56a34b9`; Node 24.12.0 **62**, Python **373**; Chrome cache/tutorial **62**, promoted **24 classic + 24 LRU**, catalog **14 / 198 records** passed. The coordinate-free mode transition also passed four focused checks. Same 33 seed checks pass before/after refactoring. [Exact results](impact-pack-issue513-pr-assets/review3-20261103/summary.json) · [Source mapping](impact-pack-issue513-pr-assets/review3-20261103/commit.json) · [Review dispositions](impact-pack-issue513-pr-assets/review3-20261103/review-notes.md).
+**Verification:** `057abbe` / Main `56a34b9`: all **29 maintained suites passed** — Node **62**, standalone Python **373**, server/browser pytest **289**, plus real model/tensor/native-workflow scripts. Legacy **six failed checks in five entrypoints** reproduce on Main; their failed logs are retained. [Full report](impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/report.md) · [Exact results](impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/summary.json) · [Source provenance](impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source-provenance.json) · [Review notes](impact-pack-issue513-pr-assets/review3-20261103/review-notes.md).
 
 ```bash
 # Node runtime: tests/README.md#node-unit-tests

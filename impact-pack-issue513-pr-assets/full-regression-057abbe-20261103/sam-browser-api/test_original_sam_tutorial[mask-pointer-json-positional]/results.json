@@ -1,0 +1,204 @@
+{
+  "source": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/workflow/maskpointer.json",
+  "source_sha256": "d7a8b4304433dd82c4f5686d1e0640bee71a45202c55db359d032b17f9e7b8be",
+  "named_restore": false,
+  "input_source": null,
+  "executed": false,
+  "runs": [],
+  "widgets_before": [
+    {
+      "id": "13",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": true
+        },
+        {
+          "name": "crop_factor",
+          "value": 2
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "mask-points"
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "threshold",
+          "value": 0.96
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.9
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "57",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 2
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    }
+  ],
+  "widgets_after": [
+    {
+      "id": "13",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": true
+        },
+        {
+          "name": "crop_factor",
+          "value": 2
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "mask-points"
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "threshold",
+          "value": 0.96
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.9
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "57",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 2
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+{
+  "prompt": [
+    93,
+    "5b59b386-6e37-4e4f-9c39-28546da486c8",
+    {
+      "1": {
+        "inputs": {
+          "wildcard_text": "unused d77b787ca6994e0c9d4593089d762463",
+          "populated_text": [
+            "3",
+            0
+          ],
+          "mode": "fixed",
+          "seed": 2,
+          "Select to add Wildcard": "Select the Wildcard to add to the text"
+        },
+        "class_type": "ImpactWildcardProcessor",
+        "_meta": {
+          "title": "ImpactWildcardProcessor"
+        }
+      },
+      "2": {
+        "inputs": {
+          "source": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "3": {
+        "inputs": {
+          "string_a": "{red|",
+          "string_b": "green|blue} changed",
+          "delimiter": ""
+        },
+        "class_type": "StringConcatenate",
+        "_meta": {
+          "title": "Concatenate Text"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "f9473cb7-f2f9-4b27-8f75-98b2b7634998",
+          "revision": 0,
+          "last_node_id": 3,
+          "last_link_id": 2,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactWildcardProcessor",
+              "pos": [
+                22.888888888888914,
+                125.55555555555554
+              ],
+              "size": [
+                400,
+                238
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "widget": {
+                    "name": "populated_text"
+                  },
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "processed text",
+                  "type": "STRING",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactWildcardProcessor"
+              },
+              "widgets_values": [
+                "unused d77b787ca6994e0c9d4593089d762463",
+                "",
+                "fixed",
+                2,
+                "increment",
+                "Select Wildcard \ud83d\udfe2 Full Cache"
+              ],
+              "widgets_values_named": {
+                "wildcard_text": "unused d77b787ca6994e0c9d4593089d762463",
+                "populated_text": "",
+                "mode": "fixed",
+                "seed": 2,
+                "control_after_generate": "increment",
+                "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewAny",
+              "pos": [
+                717.8888888888889,
+                405.55555555555554
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 3,
+              "type": "StringConcatenate",
+              "pos": [
+                -327.1111111111111,
+                655.5555555555555
+              ],
+              "size": [
+                400,
+                200
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "StringConcatenate"
+              },
+              "widgets_values": [
+                "{red|",
+                "green|blue} changed",
+                ""
+              ],
+              "widgets_values_named": {
+                "string_a": "{red|",
+                "string_b": "green|blue} changed",
+                "delimiter": ""
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "STRING"
+            ],
+            [
+              2,
+              3,
+              0,
+              1,
+              0,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                227.1111111111111,
+                4.444444444444457
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "1": {
+              "seed": 3
+            }
+          }
+        }
+      },
+      "client_id": "58943b7020914a6cbfaa46282d8109de",
+      "workflow_metadata": {
+        "workflow_id": "f9473cb7-f2f9-4b27-8f75-98b2b7634998"
+      },
+      "create_time": 1793708772193
+    },
+    [
+      "2"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "text": [
+        "red changed"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "5b59b386-6e37-4e4f-9c39-28546da486c8",
+          "timestamp": 1793708772194
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "3"
+          ],
+          "prompt_id": "5b59b386-6e37-4e4f-9c39-28546da486c8",
+          "timestamp": 1793708772194
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "5b59b386-6e37-4e4f-9c39-28546da486c8",
+          "timestamp": 1793708772194
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    }
+  }
+}

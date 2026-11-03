@@ -1,0 +1,16 @@
+{
+  "label": "utf8-api",
+  "command": [
+    "bash",
+    "tests/test_encoding.sh",
+    "http://127.0.0.1:18501"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:30:36.218878+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18501"
+  },
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 0.67
+}

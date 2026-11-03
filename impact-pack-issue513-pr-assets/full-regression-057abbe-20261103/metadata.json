@@ -1,0 +1,9 @@
+{
+  "repo": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "worktree": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
+  "created_utc": "2026-11-03T12:09:16.616521+00:00",
+  "source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85",
+  "source_files": 173
+}

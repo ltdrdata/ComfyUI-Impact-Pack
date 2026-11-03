@@ -1,0 +1,90 @@
+[
+  [
+    {
+      "id": "118",
+      "type": "LatentSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "119",
+      "type": "SEGSSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "120",
+      "type": "ImpactSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 3
+        },
+        {
+          "name": "sel_mode",
+          "value": true
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "id": "118",
+      "type": "LatentSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "119",
+      "type": "SEGSSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 1
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "120",
+      "type": "ImpactSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 3
+        },
+        {
+          "name": "sel_mode",
+          "value": true
+        }
+      ]
+    }
+  ]
+]

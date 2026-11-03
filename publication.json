@@ -1,8 +1,6 @@
 {
   "code_head": "057abbe915048910ab2e656f991af6a029747323",
   "base": "56a34b9c439470d07440f9104204a084e5fdb38c",
-  "evidence_before": "c56c16025652baaae977adce6b0f1a80064c46f0",
-  "prepared_utc": "2026-11-03T10:35:50.446519+00:00",
-  "files_copied": 1503,
-  "scope": "Nonblocking review follow-up: one optional API boundary, Escape gesture, shared Node test runtime, refreshed actual render evidence."
+  "evidence_before": "15d41d9b38b3cffe191d78ec90a1f3e87e9d08e4",
+  "scope": "Full regression of the published PR; preserved source, model references, native widget compatibility and baseline-matched legacy failures."
 }

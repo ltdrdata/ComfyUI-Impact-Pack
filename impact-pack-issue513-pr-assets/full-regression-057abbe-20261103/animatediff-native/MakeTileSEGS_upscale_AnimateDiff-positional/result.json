@@ -1,0 +1,187 @@
+{
+  "source": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/workflow/MakeTileSEGS_upscale_AnimateDiff.png",
+  "sha256": "e2db4c77e104813eb6c5be1c6d0c66cc7c6403e37576e61fab7d8e93e93ed615",
+  "restore_by_name": false,
+  "widgets": [
+    {
+      "id": "106",
+      "type": "ImpactMakeTileSEGS",
+      "widgets": [
+        {
+          "name": "bbox_size",
+          "value": 512
+        },
+        {
+          "name": "crop_factor",
+          "value": 1.5
+        },
+        {
+          "name": "min_overlap",
+          "value": 100
+        },
+        {
+          "name": "filter_segs_dilation",
+          "value": 30
+        },
+        {
+          "name": "mask_irregularity",
+          "value": 0.7000000000000001
+        },
+        {
+          "name": "irregular_mask_mode",
+          "value": "Reuse fast"
+        }
+      ]
+    },
+    {
+      "id": "105",
+      "type": "DetailerForEachPipeForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 256
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 615841318308138
+        },
+        {
+          "name": "control_after_generate",
+          "value": "fixed"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 0.8
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "101",
+      "type": "ImpactMakeTileSEGS",
+      "widgets": [
+        {
+          "name": "bbox_size",
+          "value": 512
+        },
+        {
+          "name": "crop_factor",
+          "value": 1.5
+        },
+        {
+          "name": "min_overlap",
+          "value": 100
+        },
+        {
+          "name": "filter_segs_dilation",
+          "value": 30
+        },
+        {
+          "name": "mask_irregularity",
+          "value": 0.7000000000000001
+        },
+        {
+          "name": "irregular_mask_mode",
+          "value": "Reuse fast"
+        }
+      ]
+    },
+    {
+      "id": "107",
+      "type": "DetailerForEachPipeForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 768
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 1024
+        },
+        {
+          "name": "seed",
+          "value": 615841318308138
+        },
+        {
+          "name": "control_after_generate",
+          "value": "fixed"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 0.6
+        },
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    }
+  ],
+  "missing_external_nodes": [],
+  "png_import": true,
+  "native_export_reload": true,
+  "inference": false
+}

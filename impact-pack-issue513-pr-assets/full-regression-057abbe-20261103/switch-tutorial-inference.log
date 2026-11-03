@@ -1,0 +1,34 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/switch-tutorial-inference/switch-simple
+PASS: UI Run completed (e23f7125-ed50-4b8e-9c5c-f3700b8171ce)
+PASS: UI Run completed (f749cfc8-4159-4be0-a560-b1c40d9788e1)
+PASS: UI Run completed (0482c2eb-f463-45fc-92b4-962c709a8d23)
+PASS: UI Run completed (ffa425ba-c1c0-49d6-bd07-0de358fdb2a8)
+PASS: UI Run completed (159344ef-ec3b-4d98-9790-5700243f7a92)
+PASS: UI Run completed (b8c8dddf-24c4-41ea-8ae1-a05872d361ef)
+PASS: UI Run completed (c7eadf5e-21e2-4ad1-af84-b57c132f6a22)
+PASS: switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/switch-tutorial-inference/inversed-switch-simple
+PASS: UI Run completed (c243a31a-21d5-4b6f-a550-a552d2ade8e1)
+PASS: UI Run completed (6100dc70-e241-427a-a76e-2ed43fc0e0f3)
+PASS: UI Run completed (d3cd90de-a7f1-44ab-b0bb-fe500b9b8241)
+PASS: UI Run completed (23d9adca-10c1-46c6-bd14-9d41c621c171)
+PASS: UI Run completed (3a57a813-b2f7-4c92-a7a2-93783989b8f3)
+PASS: UI Run completed (ef289576-b6b3-419d-8104-d5e8b6c223ab)
+PASS: UI Run completed (96abdd2d-ebdf-4354-b859-df81797994d3)
+PASS: inversed-switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/switch-tutorial-inference/select_on_execution
+PASS: UI Run completed (b8db80b3-1cf8-4ec0-8683-40b51a906cf9)
+PASS: UI Run completed (81f3cc53-50c4-4a11-a44d-07b7c2c43965)
+PASS: UI Run completed (90644eeb-47cf-4c9e-8f91-3fef7c6abe55)
+PASS: UI Run completed (672930a0-60f7-4d27-bbeb-53843636fb5f)
+PASS: UI Run completed (ff94dfe4-a0c4-499e-87e5-5e9a4e4c89a1)
+PASS: UI Run completed (2b3d80cb-d6ca-4fa0-b705-d10bba5189ef)
+PASS: select_on_execution, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/switch-tutorial-inference/select_on_prompt
+PASS: UI Run completed (f01e731d-cbdc-423e-a5ce-ac1aaedbe962)
+PASS: UI Run completed (5ead6ad8-7f1f-4c5a-b697-bd4f8e8f0f99)
+PASS: UI Run completed (c21ed1a9-9633-4598-a34e-ece8eb0d4fd8)
+PASS: UI Run completed (ac4fe1d6-cdbd-404f-a29b-0c04a5e9af88)
+PASS: UI Run completed (5346e2d7-e315-4eed-984f-8c843387b8df)
+PASS: UI Run completed (333b7c94-6ee5-4d6f-8c73-7bf68094bec1)
+PASS: select_on_prompt, original PNG, all routes, core-node pixel parity, saved JSON import

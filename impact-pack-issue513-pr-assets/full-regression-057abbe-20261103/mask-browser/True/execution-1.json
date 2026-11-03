@@ -1,0 +1,1083 @@
+{
+  "prompt": [
+    205,
+    "14259d80-79aa-478d-bc06-11ac09b1a8a9",
+    {
+      "base": {
+        "inputs": {
+          "value": 0.0,
+          "width": 64,
+          "height": 64
+        },
+        "class_type": "SolidMask",
+        "_meta": {
+          "title": "Create Solid Mask"
+        }
+      },
+      "patch": {
+        "inputs": {
+          "value": 1.0,
+          "width": 32,
+          "height": 32
+        },
+        "class_type": "SolidMask",
+        "_meta": {
+          "title": "Create Solid Mask"
+        }
+      },
+      "zero": {
+        "inputs": {
+          "value": 0.0,
+          "width": 256,
+          "height": 256
+        },
+        "class_type": "SolidMask",
+        "_meta": {
+          "title": "Create Solid Mask"
+        }
+      },
+      "pattern": {
+        "inputs": {
+          "x": 16,
+          "y": 16,
+          "operation": "add",
+          "destination": [
+            "base",
+            0
+          ],
+          "source": [
+            "patch",
+            0
+          ]
+        },
+        "class_type": "MaskComposite",
+        "_meta": {
+          "title": "Combine Masks"
+        }
+      },
+      "image": {
+        "inputs": {
+          "mask": [
+            "pattern",
+            0
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "scale": {
+        "inputs": {
+          "upscale_method": "bicubic",
+          "scale_by": 3.0,
+          "image": [
+            "image",
+            0
+          ]
+        },
+        "class_type": "ImageScaleBy",
+        "_meta": {
+          "title": "Upscale Image By"
+        }
+      },
+      "mask": {
+        "inputs": {
+          "channel": "red",
+          "image": [
+            "scale",
+            0
+          ]
+        },
+        "class_type": "ImageToMask",
+        "_meta": {
+          "title": "Convert Image to Mask"
+        }
+      },
+      "clamp": {
+        "inputs": {
+          "x": 0,
+          "y": 0,
+          "operation": "add",
+          "destination": [
+            "mask",
+            0
+          ],
+          "source": [
+            "zero",
+            0
+          ]
+        },
+        "class_type": "MaskComposite",
+        "_meta": {
+          "title": "Combine Masks"
+        }
+      },
+      "actual_segs": {
+        "inputs": {
+          "combined": false,
+          "crop_factor": 2.2,
+          "bbox_fill": false,
+          "drop_size": 7,
+          "contour_fill": true,
+          "mask": [
+            "mask",
+            0
+          ]
+        },
+        "class_type": "MaskToSEGS",
+        "_meta": {
+          "title": "MASK to SEGS"
+        }
+      },
+      "reference_segs": {
+        "inputs": {
+          "combined": false,
+          "crop_factor": 2.2,
+          "bbox_fill": false,
+          "drop_size": 7,
+          "contour_fill": true,
+          "mask": [
+            "clamp",
+            0
+          ]
+        },
+        "class_type": "MaskToSEGS",
+        "_meta": {
+          "title": "MASK to SEGS"
+        }
+      },
+      "actual_mask": {
+        "inputs": {
+          "segs": [
+            "actual_segs",
+            0
+          ]
+        },
+        "class_type": "SegsToCombinedMask",
+        "_meta": {
+          "title": "SEGS to MASK (combined)"
+        }
+      },
+      "reference_mask": {
+        "inputs": {
+          "segs": [
+            "reference_segs",
+            0
+          ]
+        },
+        "class_type": "SegsToCombinedMask",
+        "_meta": {
+          "title": "SEGS to MASK (combined)"
+        }
+      },
+      "actual_image": {
+        "inputs": {
+          "mask": [
+            "actual_mask",
+            0
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "reference_image": {
+        "inputs": {
+          "mask": [
+            "reference_mask",
+            0
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "actual_preview": {
+        "inputs": {
+          "images": [
+            "actual_image",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      },
+      "reference_preview": {
+        "inputs": {
+          "images": [
+            "reference_image",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "bea46c6f-7321-402f-8d4e-9e95b9bac695",
+          "revision": 0,
+          "last_node_id": 0,
+          "last_link_id": 15,
+          "nodes": [
+            {
+              "id": "base",
+              "type": "SolidMask",
+              "pos": [
+                100,
+                130
+              ],
+              "size": [
+                270,
+                106
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "SolidMask"
+              },
+              "widgets_values": [
+                0,
+                64,
+                64
+              ],
+              "widgets_values_named": {
+                "value": 0,
+                "width": 64,
+                "height": 64
+              }
+            },
+            {
+              "id": "patch",
+              "type": "SolidMask",
+              "pos": [
+                100,
+                366
+              ],
+              "size": [
+                270,
+                106
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "SolidMask"
+              },
+              "widgets_values": [
+                1,
+                32,
+                32
+              ],
+              "widgets_values_named": {
+                "value": 1,
+                "width": 32,
+                "height": 32
+              }
+            },
+            {
+              "id": "pattern",
+              "type": "MaskComposite",
+              "pos": [
+                470,
+                130
+              ],
+              "size": [
+                270,
+                126
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "destination",
+                  "type": "MASK",
+                  "link": 1
+                },
+                {
+                  "name": "source",
+                  "type": "MASK",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    3
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskComposite"
+              },
+              "widgets_values": [
+                16,
+                16,
+                "add"
+              ],
+              "widgets_values_named": {
+                "x": 16,
+                "y": 16,
+                "operation": "add"
+              }
+            },
+            {
+              "id": "image",
+              "type": "MaskToImage",
+              "pos": [
+                840,
+                130
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 3
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": "scale",
+              "type": "ImageScaleBy",
+              "pos": [
+                1133.2779296875,
+                130
+              ],
+              "size": [
+                270,
+                82
+              ],
+              "flags": {},
+              "order": 5,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "image",
+                  "type": "IMAGE",
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    5
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImageScaleBy"
+              },
+              "widgets_values": [
+                "bicubic",
+                3
+              ],
+              "widgets_values_named": {
+                "upscale_method": "bicubic",
+                "scale_by": 3
+              }
+            },
+            {
+              "id": "mask",
+              "type": "ImageToMask",
+              "pos": [
+                1503.2779296875,
+                130
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 6,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "image",
+                  "type": "IMAGE",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    6,
+                    8
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImageToMask"
+              },
+              "widgets_values": [
+                "red"
+              ],
+              "widgets_values_named": {
+                "channel": "red"
+              }
+            },
+            {
+              "id": "zero",
+              "type": "SolidMask",
+              "pos": [
+                100,
+                602
+              ],
+              "size": [
+                270,
+                106
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    7
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "SolidMask"
+              },
+              "widgets_values": [
+                0,
+                256,
+                256
+              ],
+              "widgets_values_named": {
+                "value": 0,
+                "width": 256,
+                "height": 256
+              }
+            },
+            {
+              "id": "clamp",
+              "type": "MaskComposite",
+              "pos": [
+                1873.2779296875,
+                130
+              ],
+              "size": [
+                270,
+                126
+              ],
+              "flags": {},
+              "order": 7,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "destination",
+                  "type": "MASK",
+                  "link": 6
+                },
+                {
+                  "name": "source",
+                  "type": "MASK",
+                  "link": 7
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    12
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskComposite"
+              },
+              "widgets_values": [
+                0,
+                0,
+                "add"
+              ],
+              "widgets_values_named": {
+                "x": 0,
+                "y": 0,
+                "operation": "add"
+              }
+            },
+            {
+              "id": "actual_segs",
+              "type": "MaskToSEGS",
+              "pos": [
+                1873.2779296875,
+                386
+              ],
+              "size": [
+                270,
+                154
+              ],
+              "flags": {},
+              "order": 8,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 8
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "SEGS",
+                  "type": "SEGS",
+                  "links": [
+                    9
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToSEGS"
+              },
+              "widgets_values": [
+                false,
+                2.2,
+                false,
+                7,
+                true
+              ],
+              "widgets_values_named": {
+                "combined": false,
+                "crop_factor": 2.2,
+                "bbox_fill": false,
+                "drop_size": 7,
+                "contour_fill": true
+              }
+            },
+            {
+              "id": "actual_mask",
+              "type": "SegsToCombinedMask",
+              "pos": [
+                2243.2779296875,
+                414
+              ],
+              "size": [
+                217.7505859375,
+                26
+              ],
+              "flags": {},
+              "order": 10,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "segs",
+                  "type": "SEGS",
+                  "link": 9
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    10
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "SegsToCombinedMask"
+              }
+            },
+            {
+              "id": "actual_image",
+              "type": "MaskToImage",
+              "pos": [
+                2613.2779296875,
+                286
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 12,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 10
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    11
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": "actual_preview",
+              "type": "PreviewImage",
+              "pos": [
+                2931.028515625,
+                286
+              ],
+              "size": [
+                140,
+                26
+              ],
+              "flags": {},
+              "order": 14,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 11
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              }
+            },
+            {
+              "id": "reference_segs",
+              "type": "MaskToSEGS",
+              "pos": [
+                2243.2779296875,
+                130
+              ],
+              "size": [
+                270,
+                154
+              ],
+              "flags": {},
+              "order": 9,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 12
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "SEGS",
+                  "type": "SEGS",
+                  "links": [
+                    13
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToSEGS"
+              },
+              "widgets_values": [
+                false,
+                2.2,
+                false,
+                7,
+                true
+              ],
+              "widgets_values_named": {
+                "combined": false,
+                "crop_factor": 2.2,
+                "bbox_fill": false,
+                "drop_size": 7,
+                "contour_fill": true
+              }
+            },
+            {
+              "id": "reference_mask",
+              "type": "SegsToCombinedMask",
+              "pos": [
+                2613.2779296875,
+                130
+              ],
+              "size": [
+                217.7505859375,
+                26
+              ],
+              "flags": {},
+              "order": 11,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "segs",
+                  "type": "SEGS",
+                  "link": 13
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    14
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "SegsToCombinedMask"
+              }
+            },
+            {
+              "id": "reference_image",
+              "type": "MaskToImage",
+              "pos": [
+                2931.028515625,
+                130
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 13,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 14
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    15
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": "reference_preview",
+              "type": "PreviewImage",
+              "pos": [
+                3224.3064453125003,
+                130
+              ],
+              "size": [
+                140,
+                26
+              ],
+              "flags": {},
+              "order": 15,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 15
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              "base",
+              0,
+              "pattern",
+              0,
+              "MASK"
+            ],
+            [
+              2,
+              "patch",
+              0,
+              "pattern",
+              1,
+              "MASK"
+            ],
+            [
+              3,
+              "pattern",
+              0,
+              "image",
+              0,
+              "MASK"
+            ],
+            [
+              4,
+              "image",
+              0,
+              "scale",
+              0,
+              "IMAGE"
+            ],
+            [
+              5,
+              "scale",
+              0,
+              "mask",
+              0,
+              "IMAGE"
+            ],
+            [
+              6,
+              "mask",
+              0,
+              "clamp",
+              0,
+              "MASK"
+            ],
+            [
+              7,
+              "zero",
+              0,
+              "clamp",
+              1,
+              "MASK"
+            ],
+            [
+              8,
+              "mask",
+              0,
+              "actual_segs",
+              0,
+              "MASK"
+            ],
+            [
+              9,
+              "actual_segs",
+              0,
+              "actual_mask",
+              0,
+              "SEGS"
+            ],
+            [
+              10,
+              "actual_mask",
+              0,
+              "actual_image",
+              0,
+              "MASK"
+            ],
+            [
+              11,
+              "actual_image",
+              0,
+              "actual_preview",
+              0,
+              "IMAGE"
+            ],
+            [
+              12,
+              "clamp",
+              0,
+              "reference_segs",
+              0,
+              "MASK"
+            ],
+            [
+              13,
+              "reference_segs",
+              0,
+              "reference_mask",
+              0,
+              "SEGS"
+            ],
+            [
+              14,
+              "reference_mask",
+              0,
+              "reference_image",
+              0,
+              "MASK"
+            ],
+            [
+              15,
+              "reference_image",
+              0,
+              "reference_preview",
+              0,
+              "IMAGE"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 0.36537394423492064,
+              "offset": [
+                -449.0474541017311,
+                225.79989724233496
+              ]
+            },
+            "frontendVersion": "1.57.6",
+            "VHS_latentpreview": false,
+            "VHS_latentpreviewrate": 0,
+            "VHS_MetadataImage": true,
+            "VHS_KeepIntermediate": true
+          },
+          "version": 0.4,
+          "widget_idx_map": {}
+        }
+      },
+      "client_id": "29fc2238fb714ebf8125ec4b35928faa",
+      "workflow_metadata": {
+        "workflow_id": "bea46c6f-7321-402f-8d4e-9e95b9bac695"
+      },
+      "create_time": 1793708903422
+    },
+    [
+      "reference_preview",
+      "actual_preview"
+    ]
+  ],
+  "outputs": {
+    "reference_preview": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_kjcjd_00001_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 192,
+            "height": 192
+          }
+        }
+      ]
+    },
+    "actual_preview": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_iajdm_00001_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 192,
+            "height": 192
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "14259d80-79aa-478d-bc06-11ac09b1a8a9",
+          "timestamp": 1793708903423
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "14259d80-79aa-478d-bc06-11ac09b1a8a9",
+          "timestamp": 1793708903424
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "14259d80-79aa-478d-bc06-11ac09b1a8a9",
+          "timestamp": 1793708903442
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "reference_preview": {
+      "node_id": "reference_preview",
+      "display_node": "reference_preview",
+      "parent_node": null,
+      "real_node_id": "reference_preview"
+    },
+    "actual_preview": {
+      "node_id": "actual_preview",
+      "display_node": "actual_preview",
+      "parent_node": null,
+      "real_node_id": "actual_preview"
+    }
+  }
+}

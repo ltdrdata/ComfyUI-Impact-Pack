@@ -1,0 +1,26 @@
+{
+  "pid": 2659166,
+  "command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "18501",
+    "--disable-auto-launch",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/runtime-sam",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "comfyui-impact-subpack",
+    "--cpu",
+    "--cache-none"
+  ],
+  "runtime": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/runtime-sam",
+  "source": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "revision": "057abbe915048910ab2e656f991af6a029747323",
+  "source_js_sha256": "bf011f3df5c5467a15d71dd5a57864221c1d9b7d5e02c0ea00035f2145494f85"
+}

@@ -1,0 +1,15 @@
+{
+  "label": "baseline-legacy-config_quotes",
+  "command": [
+    "bash",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_config_quotes.sh"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T12:27:36.019776+00:00",
+  "environment_overrides": {
+    "PATH": "/home/rho/venv/bin:/home/rho/.codex/packages/app-server-daemon/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/rho/.local/bin:/home/rho/bin:/home/rho/.codex/tmp/arg0-linux/codex-arg0n7v0kv:/home/rho/.codex/packages/app-server-daemon/releases/0.166.0-x86_64-unknown-linux-musl/codex-path:/home/rho/.codex/tmp/arg0-linux/codex-arg03wB0ux:/home/rho/.nvm/versions/node/v20.19.5/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/home/rho/.bun/bin:/home/rho/.cargo/bin:/home/rho/.local/share/pnpm:/home/rho/venv/bin:/home/rho/.vscode-server/cli/servers/Stable-2c33b50b16c472efe58357d1d2a8a5414bc23fbf/server/bin/remote-cli:/home/rho/.local/bin:/home/rho/bin:/home/rho/.bun/bin:/home/rho/.cargo/bin:/home/rho/.nvm/versions/node/v20.19.5/bin:/home/rho/.local/share/pnpm:/home/rho/.local/share/pnpm:/home/rho/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/rho/bin:/home/rho/.npm-global/bin:/home/rho/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand:/home/rho/.vscode-server/cli/servers/Stable-2c33b50b16c472efe58357d1d2a8a5414bc23fbf/server/bin/copilot-shim:/home/rho/bin:/home/rho/.npm-global/bin"
+  },
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 46.24
+}

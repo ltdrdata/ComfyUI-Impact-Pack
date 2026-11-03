@@ -1,0 +1,18 @@
+{
+  "label": "animatediff-assembly",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_animatediff_assembly.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/animatediff-assembly.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:09:28.942375+00:00",
+  "environment_overrides": {},
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 6.28
+}

@@ -1,0 +1,328 @@
+{
+  "threshold": 1.0,
+  "passing_candidates": [
+    0,
+    0
+  ],
+  "named_restore": true,
+  "scores": [
+    [
+      0.9485645294189453,
+      0.9496583938598633,
+      0.8954180479049683
+    ],
+    [
+      0.9568751454353333,
+      0.9198070168495178,
+      0.7984507083892822
+    ]
+  ],
+  "runs": [
+    {
+      "phase": "before",
+      "prompt_id": "81182fb9-9c2f-4aee-be21-09315e93b294",
+      "pixel_sha256": {
+        "batch": [
+          "ab9e020c571324e4c1681d2f28681074eca0e77613b6766ab052473e8daf935f",
+          "dee8b781a6bebd78f89a34bb733a09a91668e21ee796a3e914ca3eb835948d4d"
+        ],
+        "segmented_combined": [
+          "52c64ecde8806c80e1ae61274bf890f1b70266c7fffa45ab473eb48244b5ca8f"
+        ],
+        "combined": [
+          "52c64ecde8806c80e1ae61274bf890f1b70266c7fffa45ab473eb48244b5ca8f"
+        ],
+        "per_seg": [
+          "ab9e020c571324e4c1681d2f28681074eca0e77613b6766ab052473e8daf935f",
+          "dee8b781a6bebd78f89a34bb733a09a91668e21ee796a3e914ca3eb835948d4d"
+        ],
+        "combined_segs": [
+          "c7db478fe93620ab7e04b988b5e7e6dcfa30c525fd77b81b99bb1c2a4d2a7ada",
+          "aca591ea7deabc4eac1b4151c57e58860b034a0162e3b7ba582d79db3ea3c2bc"
+        ]
+      },
+      "cached_nodes": []
+    },
+    {
+      "phase": "reloaded",
+      "prompt_id": "d8da653a-4e18-440f-a372-18751cbd76d3",
+      "pixel_sha256": {
+        "batch": [
+          "ab9e020c571324e4c1681d2f28681074eca0e77613b6766ab052473e8daf935f",
+          "dee8b781a6bebd78f89a34bb733a09a91668e21ee796a3e914ca3eb835948d4d"
+        ],
+        "segmented_combined": [
+          "52c64ecde8806c80e1ae61274bf890f1b70266c7fffa45ab473eb48244b5ca8f"
+        ],
+        "combined": [
+          "52c64ecde8806c80e1ae61274bf890f1b70266c7fffa45ab473eb48244b5ca8f"
+        ],
+        "per_seg": [
+          "ab9e020c571324e4c1681d2f28681074eca0e77613b6766ab052473e8daf935f",
+          "dee8b781a6bebd78f89a34bb733a09a91668e21ee796a3e914ca3eb835948d4d"
+        ],
+        "combined_segs": [
+          "c7db478fe93620ab7e04b988b5e7e6dcfa30c525fd77b81b99bb1c2a4d2a7ada",
+          "aca591ea7deabc4eac1b4151c57e58860b034a0162e3b7ba582d79db3ea3c2bc"
+        ]
+      },
+      "cached_nodes": []
+    }
+  ],
+  "widgets_before": [
+    {
+      "id": "2",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 1
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 1
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 1
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 1
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "type": "SAMDetectorSegmented",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 3
+        },
+        {
+          "name": "threshold",
+          "value": 1
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.61
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 3
+        },
+        {
+          "name": "threshold",
+          "value": 1
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.61
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    }
+  ],
+  "widgets_after": [
+    {
+      "id": "2",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 1
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 1
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 1
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 1
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "type": "SAMDetectorSegmented",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 3
+        },
+        {
+          "name": "threshold",
+          "value": 1
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.61
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 3
+        },
+        {
+          "name": "threshold",
+          "value": 1
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.61
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    }
+  ]
+}

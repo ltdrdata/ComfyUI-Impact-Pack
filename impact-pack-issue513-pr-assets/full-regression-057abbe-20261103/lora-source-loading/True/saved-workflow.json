@@ -1,0 +1,112 @@
+{
+  "id": "e78341a3-ad9e-4842-bea7-8fc7edc78c74",
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoraWildcardSource",
+      "pos": [
+        -77.11111111111109,
+        135.55555555555554
+      ],
+      "size": [
+        400,
+        332
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "shape": 6,
+          "type": "MODEL",
+          "links": null
+        },
+        {
+          "name": "clip",
+          "shape": 6,
+          "type": "CLIP",
+          "links": null
+        },
+        {
+          "name": "conditioning",
+          "shape": 6,
+          "type": "CONDITIONING",
+          "links": null
+        },
+        {
+          "name": "text",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "lora_name",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "name",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraWildcardSource"
+      },
+      "widgets_values": [
+        "ink",
+        "Ink second",
+        "fixed",
+        1.25,
+        "saved prompt, __color__",
+        731,
+        "randomize"
+      ],
+      "widgets_values_named": {
+        "category": "ink",
+        "lora_wildcard": "Ink second",
+        "mode": "fixed",
+        "strength": 1.25,
+        "base_prompt": "saved prompt, __color__",
+        "seed": 731,
+        "control_after_generate": "randomize"
+      }
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        327.1111111111111,
+        54.44444444444446
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

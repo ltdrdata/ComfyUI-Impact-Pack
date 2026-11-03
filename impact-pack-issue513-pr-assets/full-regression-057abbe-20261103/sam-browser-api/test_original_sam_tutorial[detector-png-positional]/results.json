@@ -1,0 +1,201 @@
+{
+  "source": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/images/detectors-sam.png",
+  "source_sha256": "ace912b2ee76d735ba96a5aa09f4e394a8b99301ec6f58a76ed8a98e06c729e4",
+  "named_restore": false,
+  "input_source": {
+    "path": "/mnt/teratera/git/ComfyUI/input/ComfyUI_temp_xltgv_00001_.png",
+    "sha256": "af99759ba87eacb2d7b6299504222f1debaac53fc9920d5ecdabba93ad4511ca",
+    "uploaded_name": "ComfyUI_temp_xltgv_00001_.png"
+  },
+  "executed": true,
+  "runs": [
+    {
+      "phase": "before",
+      "prompt_id": "1f2ed232-52b2-4944-a9b7-e3a9e96007c1",
+      "pixel_sha256": {
+        "7": [
+          "56601e374d1f130412c2db6c925ec461d0a62593224fa2eda9f1f93ac134f459"
+        ],
+        "25": [
+          "55bea61eacbc4889b0c9337a7a7d6457899662485b51dc0680b67cb81fde5773"
+        ]
+      }
+    },
+    {
+      "phase": "reloaded",
+      "prompt_id": "014b8960-345f-420f-800b-86dfa51133e6",
+      "pixel_sha256": {
+        "7": [
+          "56601e374d1f130412c2db6c925ec461d0a62593224fa2eda9f1f93ac134f459"
+        ],
+        "25": [
+          "55bea61eacbc4889b0c9337a7a7d6457899662485b51dc0680b67cb81fde5773"
+        ]
+      }
+    }
+  ],
+  "widgets_before": [
+    {
+      "id": "20",
+      "type": "BboxDetectorSEGS",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "labels",
+          "value": "all"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "type": "UltralyticsDetectorProvider",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "bbox/face_yolov8m.pt"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        },
+        {
+          "name": "threshold",
+          "value": 0.93
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    }
+  ],
+  "widgets_after": [
+    {
+      "id": "20",
+      "type": "BboxDetectorSEGS",
+      "widgets": [
+        {
+          "name": "threshold",
+          "value": 0.5
+        },
+        {
+          "name": "dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "labels",
+          "value": "all"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "type": "UltralyticsDetectorProvider",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "bbox/face_yolov8m.pt"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "type": "SAMLoader",
+      "widgets": [
+        {
+          "name": "model_name",
+          "value": "sam_vit_b_01ec64.pth"
+        },
+        {
+          "name": "device_mode",
+          "value": "AUTO"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "type": "SAMDetectorCombined",
+      "widgets": [
+        {
+          "name": "detection_hint",
+          "value": "center-1"
+        },
+        {
+          "name": "dilation",
+          "value": 0
+        },
+        {
+          "name": "threshold",
+          "value": 0.93
+        },
+        {
+          "name": "bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "mask_hint_use_negative",
+          "value": "False"
+        }
+      ]
+    }
+  ]
+}

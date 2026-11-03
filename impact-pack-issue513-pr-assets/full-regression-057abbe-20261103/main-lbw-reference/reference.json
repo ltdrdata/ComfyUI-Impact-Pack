@@ -1,0 +1,10 @@
+{
+  "revision": "56a34b9c439470d07440f9104204a084e5fdb38c",
+  "frontend": "1.57.6",
+  "device": "deterministic CUDA FP32",
+  "workflow_sha256": "50577c44e323720cb4955564ee1c3aba0970093494b10f41df5efdab1205dfe8",
+  "rgb_sha256": "29a6bb31f853d1a3a7380933ca9d0925fafbdcd2e95813144a9646fc1bb0a4eb",
+  "seed": 335485052039321,
+  "prompt_id": "2b27c967-2f02-4266-9845-695a087e90e5",
+  "source_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+}

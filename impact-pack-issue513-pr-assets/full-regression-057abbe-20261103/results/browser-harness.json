@@ -1,0 +1,19 @@
+{
+  "label": "browser-harness",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_ui.py",
+    "tests/test_wildcard_cache_artifacts.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/browser-harness.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:09:35.217719+00:00",
+  "environment_overrides": {},
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 2.97
+}

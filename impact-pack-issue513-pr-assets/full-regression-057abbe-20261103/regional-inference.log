@@ -1,0 +1,7 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/regional-inference
+PASS: UI Run completed (c66b48a9-983e-470e-859e-8669ed6af01b)
+PASS: UI Run completed (60433a44-99d6-426e-8342-af8ce3aa16d5)
+PASS: UI Run completed (54ad3ce4-8e10-4489-ba99-1ff124330e40)
+PASS: UI Run completed (eebd70da-efef-46d6-acb6-c5ae20c77549)
+PASS: UI Run completed (19d2aeb8-36a7-4315-833d-8924d86e6ce3)
+PASS: exact color masks, VAE roundtrip comparison, localized effect of all three prompts, browser pixels {'39': {'inside_mae': 11.260725021362305, 'outside_mae': 0.9055683016777039}, '9': {'inside_mae': 10.82736873626709, 'outside_mae': 1.1778340339660645}, '10': {'inside_mae': 9.979780197143555, 'outside_mae': 1.6449086666107178}}

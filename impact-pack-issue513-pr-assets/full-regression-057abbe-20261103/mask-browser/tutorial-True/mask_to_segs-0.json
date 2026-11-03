@@ -1,0 +1,632 @@
+{
+  "id": "dea2cf0e-4dc4-47fd-b070-d7c1642ca10f",
+  "revision": 0,
+  "last_node_id": 16,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        390,
+        370
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clipspace/clipspace-mask-331151.4000000004.png [input]",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "clipspace/clipspace-mask-331151.4000000004.png [input]",
+        "upload": "image"
+      }
+    },
+    {
+      "id": 12,
+      "type": "Note",
+      "pos": [
+        770,
+        140
+      ],
+      "size": [
+        340.1843566894531,
+        140.7296905517578
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "2.combined",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "The \"combined\" parameter determines whether to combine multiple separate masks into one SEGS or to create separate SEGS for each. \n\nIn combined mode, the bbox represents the minimum size that encompasses all masks.\n"
+      ],
+      "widgets_values_named": {
+        "text": "The \"combined\" parameter determines whether to combine multiple separate masks into one SEGS or to create separate SEGS for each. \n\nIn combined mode, the bbox represents the minimum size that encompasses all masks.\n"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 13,
+      "type": "Note",
+      "pos": [
+        1170,
+        140
+      ],
+      "size": [
+        307.3529052734375,
+        136.2139129638672
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "3.crop_factor",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "The \"crop_factor\" parameter determines how many times the area of the mask should be cropped to create SEGS.\n \nAs the crop_factor increases, the inpainting process takes longer, and the generated images become more natural."
+      ],
+      "widgets_values_named": {
+        "text": "The \"crop_factor\" parameter determines how many times the area of the mask should be cropped to create SEGS.\n \nAs the crop_factor increases, the inpainting process takes longer, and the generated images become more natural."
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 14,
+      "type": "Note",
+      "pos": [
+        390,
+        750
+      ],
+      "size": [
+        354.2882080078125,
+        146.0363311767578
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "4.bbox_fill",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "\"bbox_fill\" fills the entire bbox area with a mask.\n\nbbox_fill is useful when filling a suitable area with a mask and inpainting all areas that fall within that range.\n"
+      ],
+      "widgets_values_named": {
+        "text": "\"bbox_fill\" fills the entire bbox area with a mask.\n\nbbox_fill is useful when filling a suitable area with a mask and inpainting all areas that fall within that range.\n"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 15,
+      "type": "Note",
+      "pos": [
+        780,
+        750
+      ],
+      "size": [
+        340.1843566894531,
+        140.7296905517578
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "5.drop_size",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "\"drop_size\" ignores masks smaller than the specified size, mainly used to exclude unintended noise."
+      ],
+      "widgets_values_named": {
+        "text": "\"drop_size\" ignores masks smaller than the specified size, mainly used to exclude unintended noise."
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 4,
+      "type": "SEGSPreview",
+      "pos": [
+        1171,
+        349
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": 1
+        },
+        {
+          "name": "fallback_image_opt",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "shape": 6,
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SEGSPreview"
+      },
+      "widgets_values": [
+        true,
+        0.2
+      ],
+      "widgets_values_named": {
+        "alpha_mode": true,
+        "min_alpha": 0.2
+      }
+    },
+    {
+      "id": 16,
+      "type": "Note",
+      "pos": [
+        1180,
+        750
+      ],
+      "size": [
+        420,
+        140
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "6.contour_fill",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "\"contour_fill\" determines whether to fill the inside of masks with empty spaces, such as a donut. \n\nIf contour_fill is disabled, the original mask is used as is in SEGS. \n\nIf contour_fill is enabled, the interior is filled based on the borders of separate masks."
+      ],
+      "widgets_values_named": {
+        "text": "\"contour_fill\" determines whether to fill the inside of masks with empty spaces, such as a donut. \n\nIf contour_fill is disabled, the original mask is used as is in SEGS. \n\nIf contour_fill is enabled, the interior is filled based on the borders of separate masks."
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 11,
+      "type": "Note",
+      "pos": [
+        380,
+        140
+      ],
+      "size": [
+        354.2882080078125,
+        146.0363311767578
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "1.Intro",
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "This video explains the parameters of \"MASK to SEGS.\" \nMany parameters are commonly used in other nodes as well.\n\n\"MASK to SEGS\" is a node that converts masks into SEGS."
+      ],
+      "widgets_values_named": {
+        "text": "This video explains the parameters of \"MASK to SEGS.\" \nMany parameters are commonly used in other nodes as well.\n\n\"MASK to SEGS\" is a node that converts masks into SEGS."
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 3,
+      "type": "MaskToSEGS",
+      "pos": [
+        782,
+        499
+      ],
+      "size": [
+        315,
+        154
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MaskToSEGS"
+      },
+      "widgets_values": [
+        false,
+        1,
+        false,
+        50,
+        false
+      ],
+      "widgets_values_named": {
+        "combined": false,
+        "crop_factor": 1,
+        "bbox_fill": false,
+        "drop_size": 50,
+        "contour_fill": false
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      4,
+      0,
+      "SEGS"
+    ],
+    [
+      2,
+      1,
+      1,
+      3,
+      0,
+      "MASK"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "0246.VERSION": [
+      0,
+      0,
+      3
+    ],
+    "groupNodes": {
+      "Impact::MAKE_BASIC_PIPE": {
+        "category": "",
+        "config": {
+          "1": {
+            "input": {
+              "text": {
+                "name": "Positive prompt"
+              }
+            }
+          },
+          "2": {
+            "input": {
+              "text": {
+                "name": "Negative prompt"
+              }
+            }
+          }
+        },
+        "datetime": 1705418802481,
+        "external": [],
+        "links": [
+          [
+            0,
+            1,
+            1,
+            0,
+            1,
+            "CLIP"
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1,
+            "CLIP"
+          ],
+          [
+            0,
+            0,
+            3,
+            0,
+            1,
+            "MODEL"
+          ],
+          [
+            0,
+            1,
+            3,
+            1,
+            1,
+            "CLIP"
+          ],
+          [
+            0,
+            2,
+            3,
+            2,
+            1,
+            "VAE"
+          ],
+          [
+            1,
+            0,
+            3,
+            3,
+            3,
+            "CONDITIONING"
+          ],
+          [
+            2,
+            0,
+            3,
+            4,
+            4,
+            "CONDITIONING"
+          ]
+        ],
+        "nodes": [
+          {
+            "flags": {},
+            "index": 0,
+            "mode": 0,
+            "order": 0,
+            "outputs": [
+              {
+                "links": [],
+                "name": "MODEL",
+                "shape": 3,
+                "slot_index": 0,
+                "type": "MODEL"
+              },
+              {
+                "links": [],
+                "name": "CLIP",
+                "shape": 3,
+                "slot_index": 1,
+                "type": "CLIP"
+              },
+              {
+                "links": [],
+                "name": "VAE",
+                "shape": 3,
+                "slot_index": 2,
+                "type": "VAE"
+              }
+            ],
+            "pos": [
+              550,
+              360
+            ],
+            "properties": {
+              "Node name for S&R": "CheckpointLoaderSimple"
+            },
+            "size": {
+              "0": 315,
+              "1": 98
+            },
+            "type": "CheckpointLoaderSimple",
+            "widgets_values": [
+              "SDXL/sd_xl_base_1.0_0.9vae.safetensors"
+            ]
+          },
+          {
+            "flags": {},
+            "index": 1,
+            "inputs": [
+              {
+                "link": null,
+                "name": "clip",
+                "type": "CLIP"
+              }
+            ],
+            "mode": 0,
+            "order": 1,
+            "outputs": [
+              {
+                "links": [],
+                "name": "CONDITIONING",
+                "shape": 3,
+                "slot_index": 0,
+                "type": "CONDITIONING"
+              }
+            ],
+            "pos": [
+              940,
+              480
+            ],
+            "properties": {
+              "Node name for S&R": "CLIPTextEncode"
+            },
+            "size": {
+              "0": 263,
+              "1": 99
+            },
+            "title": "Positive",
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+              ""
+            ]
+          },
+          {
+            "flags": {},
+            "index": 2,
+            "inputs": [
+              {
+                "link": null,
+                "name": "clip",
+                "type": "CLIP"
+              }
+            ],
+            "mode": 0,
+            "order": 2,
+            "outputs": [
+              {
+                "links": [],
+                "name": "CONDITIONING",
+                "shape": 3,
+                "slot_index": 0,
+                "type": "CONDITIONING"
+              }
+            ],
+            "pos": [
+              940,
+              640
+            ],
+            "properties": {
+              "Node name for S&R": "CLIPTextEncode"
+            },
+            "size": {
+              "0": 263,
+              "1": 99
+            },
+            "title": "Negative",
+            "type": "CLIPTextEncode",
+            "widgets_values": [
+              ""
+            ]
+          },
+          {
+            "flags": {},
+            "index": 3,
+            "inputs": [
+              {
+                "link": null,
+                "name": "model",
+                "type": "MODEL"
+              },
+              {
+                "link": null,
+                "name": "clip",
+                "type": "CLIP"
+              },
+              {
+                "link": null,
+                "name": "vae",
+                "type": "VAE"
+              },
+              {
+                "link": null,
+                "name": "positive",
+                "type": "CONDITIONING"
+              },
+              {
+                "link": null,
+                "name": "negative",
+                "type": "CONDITIONING"
+              }
+            ],
+            "mode": 0,
+            "order": 3,
+            "outputs": [
+              {
+                "links": null,
+                "name": "basic_pipe",
+                "shape": 3,
+                "slot_index": 0,
+                "type": "BASIC_PIPE"
+              }
+            ],
+            "pos": [
+              1320,
+              360
+            ],
+            "properties": {
+              "Node name for S&R": "ToBasicPipe"
+            },
+            "size": {
+              "0": 241.79998779296875,
+              "1": 106
+            },
+            "type": "ToBasicPipe"
+          }
+        ],
+        "packname": "Impact",
+        "version": "1.0"
+      }
+    },
+    "ds": {
+      "scale": 0.9304791496247463,
+      "offset": [
+        -130.2279134114583,
+        34.3393885294596
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

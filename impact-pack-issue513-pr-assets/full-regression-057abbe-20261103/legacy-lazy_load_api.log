@@ -1,0 +1,108 @@
+==========================================
+Wildcard Lazy Load Verification Test
+==========================================
+
+This test verifies that on-demand loading produces
+identical results to full cache mode.
+
+✓ Backed up original config
+
+\033[0;34m=========================================\033[0m
+\033[0;34mTesting: full_cache (limit: 100MB, port: 18505)\033[0m
+\033[0;34m=========================================\033[0m
+
+Cleaning up...
+Waiting for server startup...
+\033[1;33m[32m[INFO][0m [Impact Pack] Wildcard total size (0.95 MB) is within cache limit (100.00 MB). Using full cache mode.\033[0m
+
+📋 Test 1: Get wildcard list
+   Total wildcards: 1513
+   Sample: __samples/jewel__, __samples/flower__, __sleeves_misc__, __legwear_action__, __kor_wizard__, __tree_types__, __hands_where_above_neck__, __sex_acts_penetration_and_insertion__, __panties_and_body_parts_misc__, __comicbooks__
+
+📋 Test 2: Simple wildcard
+   Input:  __samples/flower__
+   Output: chrysanthemum
+
+📋 Test 3: Depth 3 transitive (TXT → TXT → TXT)
+   Input:  __adnd__ creature (depth 3: adnd → dragon → dragon_spirit)
+   Output: Shrewd Hatchling creature
+
+📋 Test 4: YAML transitive
+   Input:  __colors__ (YAML: colors → cold|warm → blue|red|orange|yellow)
+   Output: yellow
+
+📋 Test 5: Get wildcard list (after access)
+   Total wildcards: 1513
+
+
+Cleaning up...
+\033[0;32m✓ full_cache tests completed\033[0m
+
+
+\033[0;34m=========================================\033[0m
+\033[0;34mTesting: on_demand (limit: 1MB, port: 18505)\033[0m
+\033[0;34m=========================================\033[0m
+
+Cleaning up...
+Waiting for server startup...
+\033[1;33m[32m[INFO][0m [Impact Pack] Wildcard total size (0.95 MB) is within cache limit (1.00 MB). Using full cache mode.\033[0m
+
+📋 Test 1: Get wildcard list
+   Total wildcards: 1513
+   Sample: __samples/jewel__, __samples/flower__, __sleeves_misc__, __legwear_action__, __kor_wizard__, __tree_types__, __hands_where_above_neck__, __sex_acts_penetration_and_insertion__, __panties_and_body_parts_misc__, __comicbooks__
+
+📋 Test 2: Simple wildcard
+   Input:  __samples/flower__
+   Output: chrysanthemum
+
+📋 Test 3: Depth 3 transitive (TXT → TXT → TXT)
+   Input:  __adnd__ creature (depth 3: adnd → dragon → dragon_spirit)
+   Output: Shrewd Hatchling creature
+
+📋 Test 4: YAML transitive
+   Input:  __colors__ (YAML: colors → cold|warm → blue|red|orange|yellow)
+   Output: yellow
+
+📋 Test 5: Get wildcard list (after access)
+   Total wildcards: 1513
+
+\033[0;32m✓ Wildcard list unchanged after access (1513 = 1513)\033[0m
+
+
+Cleaning up...
+\033[0;32m✓ on_demand tests completed\033[0m
+
+
+==========================================
+COMPARISON RESULTS
+==========================================
+
+Test: Wildcard List (before access)
+\033[0;32m✓ Results MATCH\033[0m
+
+Test: Simple Wildcard
+\033[0;32m✓ Results MATCH\033[0m
+
+Test: Depth 3 Transitive
+\033[0;32m✓ Results MATCH\033[0m
+
+Test: YAML Transitive
+\033[0;32m✓ Results MATCH\033[0m
+
+Test: Wildcard List (after access)
+\033[0;32m✓ Results MATCH\033[0m
+
+==========================================
+SUMMARY
+==========================================
+
+\033[0;32m🎉 ALL TESTS PASSED\033[0m
+\033[0;32mOn-demand loading produces IDENTICAL results to full cache mode!\033[0m
+
+✓ Restored original config
+
+Cleaning up...
+
+==========================================
+Test Complete
+==========================================

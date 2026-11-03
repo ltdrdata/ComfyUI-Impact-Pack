@@ -1,0 +1,44 @@
+[
+  {
+    "id": "10",
+    "type": "ImpactSwitch",
+    "widgets": [
+      {
+        "name": "select",
+        "value": 2
+      },
+      {
+        "name": "sel_mode",
+        "value": false
+      }
+    ],
+    "links": {
+      "input1": 1,
+      "input3": 3
+    },
+    "text": [
+      "None"
+    ]
+  },
+  {
+    "id": "10",
+    "type": "ImpactSwitch",
+    "widgets": [
+      {
+        "name": "select",
+        "value": 2
+      },
+      {
+        "name": "sel_mode",
+        "value": false
+      }
+    ],
+    "links": {
+      "input1": 1,
+      "input3": 3
+    },
+    "text": [
+      "None"
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/lora-source-inference
+PASS: UI Run completed (d58b17ff-48c3-4584-a79f-8d582df71363)
+PASS: batch, 2 output(s), exact core-node pixel parity
+PASS: UI Run completed (f9579a72-7fa4-4e72-8817-c391109626e9)
+PASS: native-reload, 2 output(s), exact core-node pixel parity
+PASS: UI Run completed (28041952-4951-462c-bd14-e2f85b7195c0)
+PASS: fixed, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (7122cec9-f083-4801-8834-de98bebdfbf5)
+PASS: sequential, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (9e25f2cf-58ae-4b81-aed7-108019dcaa84)
+PASS: random, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (d469b59d-7885-4b38-a08b-33bd706486c5)
+PASS: saved-label, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (fe9e4051-2ea4-4a71-8b11-5f19d869220e)
+PASS: saved-label-positional, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (f9f6016e-d226-4011-8b11-8270b605837c)
+PASS: saved-label-named, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (1a416ff6-97e4-442a-b090-3f2739a345b9)
+PASS: mixed-random, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (9ae918f0-61fb-4715-96d9-77d4c13121b8)
+PASS: mixed-random-positional, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (4d634010-a6e2-4e4f-999d-a8731f37ce5e)
+PASS: mixed-random-named, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (62ddc83b-8f74-4bf4-9753-290aaf3868f6)
+PASS: mixed-sequential, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (2a3890cc-b66b-4e64-a889-0059d93fc399)
+PASS: mixed-sequential-positional, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (520ffa73-e511-404b-aaa4-5c9f819ece18)
+PASS: mixed-sequential-named, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (f1ab560f-b9f3-4ec7-bf73-ed127305b08e)
+PASS: mixed-batch, 2 output(s), exact core-node pixel parity
+PASS: UI Run completed (39d934fc-c7c7-439a-bee9-0f7d78a2218e)
+PASS: mixed-batch-positional, 2 output(s), exact core-node pixel parity
+PASS: UI Run completed (d861160e-7934-432d-af8a-06cab9180a27)
+PASS: mixed-batch-named, 2 output(s), exact core-node pixel parity
+PASS: UI Run completed (7ff9f8f1-8efd-4160-b211-2e1f61e6b58a)
+PASS: legacy-alias, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (e4a284eb-703e-4402-8cec-d5efd538e1a8)
+PASS: legacy-alias-positional, 1 output(s), exact core-node pixel parity
+PASS: UI Run completed (c2589923-a8da-44bc-9977-1a15d326f0d3)
+PASS: legacy-alias-named, 1 output(s), exact core-node pixel parity

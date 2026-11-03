@@ -1,0 +1,56 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 3 items
+
+tests/wildcards/test_lazy_load_verification.py::test_full_cache_mode PASSED [ 33%]
+tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_before_access FAILED [ 66%]
+tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_after_access FAILED [100%]
+
+=================================== FAILURES ===================================
+______________________ test_on_demand_mode_before_access _______________________
+tests/wildcards/test_lazy_load_verification.py:110: in test_on_demand_mode_before_access
+    assert mode, "Should be in On-Demand mode"
+E   AssertionError: Should be in On-Demand mode
+E   assert False
+----------------------------- Captured stdout call -----------------------------
+================================================================================
+TEST 2: On-Demand Mode (Before Access)
+================================================================================
+
+Mode: Full Cache
+_______________________ test_on_demand_mode_after_access _______________________
+tests/wildcards/test_lazy_load_verification.py:140: in test_on_demand_mode_after_access
+    assert mode, "Should still be in On-Demand mode"
+E   AssertionError: Should still be in On-Demand mode
+E   assert False
+----------------------------- Captured stdout call -----------------------------
+================================================================================
+TEST 3: On-Demand Mode (After Access)
+================================================================================
+
+Mode: Full Cache
+=============================== warnings summary ===============================
+wildcards/test_lazy_load_verification.py::test_full_cache_mode
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+wildcards/test_lazy_load_verification.py::test_full_cache_mode
+  /home/rho/venv/lib/python3.12/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but wildcards/test_lazy_load_verification.py::test_full_cache_mode returned {'mode': 'full_cache', 'wildcard_list': [], 'values': {'samples/flower': None, 'samples/jewel': None, 'adnd': None, 'all': None, 'colors': None}}, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-python-lazy_load_verification.xml -
+=========================== short test summary info ============================
+FAILED tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_before_access
+FAILED tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_after_access
+=================== 2 failed, 1 passed, 2 warnings in 0.75s ====================

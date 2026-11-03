@@ -1,0 +1,34 @@
+{
+  "id": "10",
+  "type": "ImpactWildcardEncode",
+  "widgets": [
+    {
+      "name": "wildcard_text",
+      "value": "<lora:SD1.5/cloth/2b leotardV2:1.0:1.0:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, 2b leotard, (covered eyes:1.1), hair over eyes"
+    },
+    {
+      "name": "populated_text",
+      "value": "<lora:SD1.5/cloth/2b leotardV2:1.0:1.0:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, 2b leotard, (covered eyes:1.1), hair over eyes"
+    },
+    {
+      "name": "mode",
+      "value": "fixed"
+    },
+    {
+      "name": "Select to add LoRA",
+      "value": "Select the LoRA to add to the text"
+    },
+    {
+      "name": "Select to add Wildcard",
+      "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+    },
+    {
+      "name": "seed",
+      "value": 335485052039321
+    },
+    {
+      "name": "control_after_generate",
+      "value": "randomize"
+    }
+  ]
+}

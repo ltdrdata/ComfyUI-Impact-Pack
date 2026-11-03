@@ -1,0 +1,4 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/conditioning-inference
+PASS: UI Run completed (415ae6b1-f65d-40aa-9c64-ee46b58e8a1f)
+PASS: UI Run completed (400d4679-3c89-41b9-b3b0-59377e388de7)
+PASS: UI import/Run/reload, core conditioning parity, ordered regional-prompt combination

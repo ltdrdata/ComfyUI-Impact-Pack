@@ -1,0 +1,250 @@
+==========================================
+Versatile Wildcard Prompt Test Suite
+==========================================
+
+Mode: Full cache mode (50MB limit)
+
+Starting ComfyUI server on port 18505...
+Waiting 70 seconds for server startup...
+  ... 10 seconds
+  ... 20 seconds
+  ... 30 seconds
+  ... 40 seconds
+  ... 50 seconds
+  ... 60 seconds
+  ... 70 seconds
+\033[0;32m✓ Server started\033[0m
+
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;34m=== Test 01: Simple Wildcard ===\033[0m
+Description: Basic wildcard substitution
+Raw prompt: \033[1;33m__samples/flower__\033[0m
+Seed: 42
+Populated: \033[0;32mchrysanthemum\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 02: Case Insensitive ===\033[0m
+Description: Wildcard names are case insensitive
+Raw prompt: \033[1;33m__SAMPLES/FLOWER__\033[0m
+Seed: 42
+Populated: \033[0;32mchrysanthemum\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 03: Mixed Case ===\033[0m
+Description: Mixed case should work identically
+Raw prompt: \033[1;33m__SaMpLeS/FlOwEr__\033[0m
+Seed: 42
+Populated: \033[0;32mchrysanthemum\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 04: Dynamic Prompt (Simple) ===\033[0m
+Description: Random selection from pipe-separated options
+Raw prompt: \033[1;33m{red|green|blue} apple\033[0m
+Seed: 100
+Populated: \033[0;32mblue apple\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 05: Dynamic Prompt (Nested) ===\033[0m
+Description: Nested dynamic prompts with inner choices
+Raw prompt: \033[1;33m{a|{d|e|f}|c}\033[0m
+Seed: 100
+Populated: \033[0;32mf\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 06: Dynamic Prompt (Complex) ===\033[0m
+Description: Nested options with multiple levels
+Raw prompt: \033[1;33m{blue apple|red {cherry|berry}|green melon}\033[0m
+Seed: 100
+Populated: \033[0;32mred berry\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 07: Weighted Selection ===\033[0m
+Description: Weighted random selection (5:4:7:1 ratio)
+Raw prompt: \033[1;33m{5::red|4::green|7::blue|black} car\033[0m
+Seed: 100
+Populated: \033[0;32mblue car\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 08: Weighted Complex ===\033[0m
+Description: Multiple weighted selections in one prompt
+Raw prompt: \033[1;33mA {10::beautiful|5::stunning|amazing} {3::sunset|2::sunrise|dawn}\033[0m
+Seed: 100
+Populated: \033[0;32mA stunning sunrise\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 09: Wildcard + Dynamic ===\033[0m
+Description: Mixing wildcard with dynamic prompt
+Raw prompt: \033[1;33m1girl holding {blue pencil|red apple|colorful __samples/flower__}\033[0m
+Seed: 100
+Populated: \033[0;32m1girl holding colorful daisy\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 10: Multiple Wildcards ===\033[0m
+Description: Multiple wildcards in single prompt
+Raw prompt: \033[1;33m__samples/flower__ and __colors__\033[0m
+Seed: 100
+Populated: \033[0;32mdaffodil and red\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 11: Complex Compound ===\033[0m
+Description: Complex nesting with wildcards and dynamics
+Raw prompt: \033[1;33m{1girl holding|1boy riding} {blue|red|__colors__} {pencil|__samples/flower__}\033[0m
+Seed: 100
+Populated: \033[0;32m1boy riding red pencil\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 12: Transitive Depth 1 ===\033[0m
+Description: First level transitive wildcard
+Raw prompt: \033[1;33m__dragon__\033[0m
+Seed: 200
+Populated: \033[0;32mJaded Sell-Sword\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 13: Transitive Depth 2 ===\033[0m
+Description: Second level transitive with suffix
+Raw prompt: \033[1;33m__dragon__ warrior\033[0m
+Seed: 200
+Populated: \033[0;32mJaded Sell-Sword warrior\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 14: Transitive Depth 3 ===\033[0m
+Description: Third level transitive (adnd→dragon→dragon_spirit)
+Raw prompt: \033[1;33m__adnd__ creature\033[0m
+Seed: 222
+Populated: \033[0;32mShrewd Hatchling creature\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 15: Multi-Select (Fixed) ===\033[0m
+Description: Select exactly 2 items with comma separator
+Raw prompt: \033[1;33m{2$$, $$red|green|blue|yellow|purple}\033[0m
+Seed: 100
+Populated: \033[0;32mpurple, blue\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 16: Multi-Select (Range) ===\033[0m
+Description: Select 1-3 items randomly
+Raw prompt: \033[1;33m{1-3$$, $$apple|banana|orange|grape|mango}\033[0m
+Seed: 100
+Populated: \033[0;32morange, banana, apple\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 17: Multi-Select (Custom Sep) ===\033[0m
+Description: Custom separator: 'and' instead of comma
+Raw prompt: \033[1;33m{2$$ and $$cat|dog|bird|fish}\033[0m
+Seed: 100
+Populated: \033[0;32mfish and bird\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 18: Multi-Select (Or Sep) ===\033[0m
+Description: Range with 'or' separator
+Raw prompt: \033[1;33m{2-3$$ or $$happy|sad|excited|calm}\033[0m
+Seed: 100
+Populated: \033[0;32mexcited or sad or happy\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 19: Quantified Wildcard ===\033[0m
+Description: Repeat wildcard 3 times, select 2
+Raw prompt: \033[1;33m{2$$, $$3#__samples/flower__}\033[0m
+Seed: 100
+Populated: \033[0;32miris, rose\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 20: Quantified Complex ===\033[0m
+Description: Select 3 from 5 repeated wildcards
+Raw prompt: \033[1;33mGarden with {3$$, $$5#__samples/flower__}\033[0m
+Seed: 100
+Populated: \033[0;32mGarden with rose, dahlia, daisy\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 21: YAML Simple ===\033[0m
+Description: YAML wildcard file
+Raw prompt: \033[1;33m__colors__\033[0m
+Seed: 333
+Populated: \033[0;32myellow\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 22: YAML in Dynamic ===\033[0m
+Description: YAML wildcard nested in dynamic prompt
+Raw prompt: \033[1;33m{solid|{metallic|pastel} __colors__}\033[0m
+Seed: 100
+Populated: \033[0;32mpastel blue\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 23: Realistic Prompt 1 ===\033[0m
+Description: Realistic character description
+Raw prompt: \033[1;33m1girl, {5::beautiful|3::stunning|gorgeous} __samples/flower__ in hair, {blue|red|__colors__} dress\033[0m
+Seed: 100
+Populated: \033[0;32m1girl, stunning iris in hair, red dress\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 24: Realistic Prompt 2 ===\033[0m
+Description: Complex art prompt with multi-select
+Raw prompt: \033[1;33m{detailed|highly detailed} {portrait|illustration} of {1girl|1boy} with {2$$, $$__samples/flower__|__samples/jewel__|elegant accessories}\033[0m
+Seed: 100
+Populated: \033[0;32mhighly detailed illustration of 1girl with daisy, elegant accessories\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 25: Realistic Prompt 3 ===\033[0m
+Description: Fantasy character with transitive wildcard
+Raw prompt: \033[1;33m__adnd__ {warrior|mage|rogue}, {10::epic|5::legendary|mythical} {armor|robes}, wielding {ancient|magical} weapon\033[0m
+Seed: 100
+Populated: \033[0;32mOgre Zombie rogue, epic armor, wielding ancient weapon\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 26: Empty Dynamic ===\033[0m
+Description: Dynamic with empty option
+Raw prompt: \033[1;33m{|something|nothing}\033[0m
+Seed: 100
+Populated: \033[0;32mnothing\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 27: Single Option ===\033[0m
+Description: Dynamic with single option (no choice)
+Raw prompt: \033[1;33m{only_one}\033[0m
+Seed: 100
+Populated: \033[0;32monly_one\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 28: Deeply Nested ===\033[0m
+Description: Very deep nesting
+Raw prompt: \033[1;33m{a|{b|{c|{d|e}}}}\033[0m
+Seed: 100
+Populated: \033[0;32ma\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 29: Multiple Weights ===\033[0m
+Description: Extreme weight differences
+Raw prompt: \033[1;33m{100::common|10::uncommon|1::rare|super_rare}\033[0m
+Seed: 100
+Populated: \033[0;32mcommon\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+\033[0;34m=== Test 30: Wildcard Only ===\033[0m
+Description: Different seed on same wildcard
+Raw prompt: \033[1;33m__samples/flower__\033[0m
+Seed: 999
+Populated: \033[0;32mdaffodil\033[0m
+Status: \033[0;32m✅ SUCCESS\033[0m
+
+==========================================
+Test Summary
+==========================================
+
+Total tests: 30
+Categories tested:
+  - Simple Wildcards (3 tests)
+  - Dynamic Prompts (3 tests)
+  - Selection Weights (2 tests)
+  - Compound Grammar (3 tests)
+  - Transitive Wildcards (3 tests)
+  - Multi-Select (4 tests)
+  - Quantifying Wildcard (2 tests)
+  - YAML Wildcards (2 tests)
+  - Real-World Scenarios (3 tests)
+  - Edge Cases (5 tests)
+
+Log saved to: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/legacy-isolated/temp/versatile_test.log
+

@@ -1,0 +1,8 @@
+{
+  "original": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/workflow/regional-sampler-img2img.png",
+  "original_sha256": "c83e810036a12bc9aa7937de9a8e9b060e780656d08ce3175f09b15428560b54",
+  "companion": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Inspire-Pack/workflow/regional-conditioning-img2img.png",
+  "companion_sha256": "675f6d22c15fd3318ddc8d4183c939e4418dc883a58d79de8fa3430cd1ec7fb8",
+  "restoration": "Only missing embedded mask pixels at existing widget positions 35:3 and 49:1, from the original companion PNG. Original tutorial files remain unchanged.",
+  "derived_workflow_sha256": "6eba1083e9416bb0b4010cc0a594057bc14509333dd74a8817db29fb764e555c"
+}

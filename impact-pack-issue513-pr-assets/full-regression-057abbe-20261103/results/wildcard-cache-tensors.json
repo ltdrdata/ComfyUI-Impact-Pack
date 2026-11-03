@@ -1,0 +1,17 @@
+{
+  "label": "wildcard-cache-tensors",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/integration_wildcard_cache_tensors.py",
+    "--comfy-root",
+    "/mnt/teratera/git/ComfyUI",
+    "--report",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/wildcard-cache-tensors-report.json"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:11:35.450238+00:00",
+  "environment_overrides": {},
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 16.78
+}

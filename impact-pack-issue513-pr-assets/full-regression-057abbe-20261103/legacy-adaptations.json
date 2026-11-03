@@ -1,0 +1,62 @@
+{
+  "tests/test_error_handling.sh": {
+    "original_sha256": "a5623230828d03d1fda3047b437f4b5db8addf43e106de603324e2ad24383304",
+    "adapted_sha256": "0eefd3d5efbde8ab098ca1d421d16e0a524e729862ff5608d11ff6a6b54bc9c9",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/test_edge_cases.sh": {
+    "original_sha256": "2bb56022e3b95b6d45ffc0df87a7c2f4d922aa7cd85b491b2b80c707ad8d715c",
+    "adapted_sha256": "868cec00dbf556ee8e5e1db38bba89be3a0fefa83c9ed6cec04a25b163f090f6",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/test_deep_nesting.sh": {
+    "original_sha256": "e76f19b01ab0d3badee36f533dd46a9ac1fdedf7f2d0911d619370e1a6066fac",
+    "adapted_sha256": "5407f061c01cc77b742d16db1fa0034a9bec30ce6d28fa1a00ea689c2e813ca0",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/test_ondemand_loading.sh": {
+    "original_sha256": "273a2691a1f2b56802cd2e49cc2b38e7763399d2e594ef89a130904b7c1295c8",
+    "adapted_sha256": "5f03bd38901f29c9fe9e59a728d15c45b6dcb76b3c2c1fbaf36df12b85f08d8e",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/test_config_quotes.sh": {
+    "original_sha256": "f9c6ad1cb862ce499fff4851d24d359ffaee2ab2ee7f7ab14342b83e0c878db2",
+    "adapted_sha256": "d074dd1f85ed6a2ddc80519cf01fa727d9868100c752d52c4543244ed2bcc61e",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_lazy_load_api.sh": {
+    "original_sha256": "b7c5b2ca8f343b864bd5b433dce1932b75d2fa033e544f4dfc3b7fda3db8077e",
+    "adapted_sha256": "19735afb01d9d1c4426296dd7066f751ee69470a9c1e665caf34f393c7314835",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_progressive_ondemand.sh": {
+    "original_sha256": "2e79224bc201981765c260d8924bcaf80fc4a25e685cd4ec24a92e7ad00054f1",
+    "adapted_sha256": "a3a3ce0da316bfec80a6e9a8085913318fa7004b5e4eabb82c297d690f828588",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_sequential_loading.sh": {
+    "original_sha256": "91a8c26d307e303b22ca641629a451e21c9a956fa51b3a9afe7157746d21806b",
+    "adapted_sha256": "e127f5e53e36c145f6d51c902da82d99b4bfe2c04247c9db3abe170d274248b5",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_versatile_prompts.sh": {
+    "original_sha256": "1f9cf7048e1e1fb2b70e736771f88a468fb296b907ffc8c45df688bdbcf6eea6",
+    "adapted_sha256": "581799f82005703463d58f3e3bd0a6bc53ad2c4060c249572a15d81e44705fdd",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_wildcard_consistency.sh": {
+    "original_sha256": "9a2cef04ebc35890f09fc8dc47eab6d388ebaf4078391acbfa0afb19469c0810",
+    "adapted_sha256": "d22f783d2940ee11d8754ea97bd5302fd8f2c29eb483a763ac9fd8c824222ad6",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/verify_ondemand_mode.sh": {
+    "original_sha256": "4864c64ea8372aefd6a7885d7d5982b2cf87f5af13fb0f286dcf4ff15aec0ed9",
+    "adapted_sha256": "adac7fbfd009c010b0c7c8e78f4e573c624af43b163ee008e105ca07d39c9a69",
+    "scope": "Disposable paths, isolated port/temp/config, and owned PID shutdown only; assertions and waits unchanged."
+  },
+  "tests/wildcards/test_wildcard_final.py": {
+    "original_sha256": "42798e3d7202ff683c28b2e812fc3788764e0d7998c6f060922bf1d860954a3c",
+    "adapted_sha256": "1b959f8eef700ddf4771b5ca6d41e07ef7a6f32da180539afb059d8f18aa6f23",
+    "scope": "Only package/server paths and port."
+  }
+}

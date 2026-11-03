@@ -1,0 +1,22 @@
+{
+  "label": "conditioning-inference",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/e2e_conditionings.py",
+    "--base-url",
+    "http://127.0.0.1:18503",
+    "--timeout",
+    "900",
+    "--artifacts",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/conditioning-inference"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/source",
+  "started_utc": "2026-11-03T12:16:59.984997+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18503",
+    "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-057abbe-20261103/main-lbw-reference/output.png"
+  },
+  "head": "057abbe915048910ab2e656f991af6a029747323",
+  "exit_code": 0,
+  "duration_seconds": 11.39
+}

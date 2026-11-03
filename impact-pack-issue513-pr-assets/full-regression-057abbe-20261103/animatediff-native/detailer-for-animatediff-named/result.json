@@ -1,0 +1,219 @@
+{
+  "source": "/mnt/teratera/git/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/workflow/detailer-for-animatediff.png",
+  "sha256": "c0311d04c59a4e0374f1d06f53c1548686f8b087e21303721950631c2366861f",
+  "restore_by_name": true,
+  "widgets": [
+    {
+      "id": "41",
+      "type": "SEGSDetailerForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 256
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 768
+        },
+        {
+          "name": "seed",
+          "value": 615841318308138
+        },
+        {
+          "name": "control_after_generate",
+          "value": "fixed"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 0.8
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "49",
+      "type": "SEGSPaste",
+      "widgets": [
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "alpha",
+          "value": 255
+        }
+      ]
+    },
+    {
+      "id": "63",
+      "type": "MaskToSEGS",
+      "widgets": [
+        {
+          "name": "combined",
+          "value": false
+        },
+        {
+          "name": "crop_factor",
+          "value": 1.5
+        },
+        {
+          "name": "bbox_fill",
+          "value": false
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        },
+        {
+          "name": "contour_fill",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "71",
+      "type": "SEGSDetailerForAnimateDiff",
+      "widgets": [
+        {
+          "name": "guide_size",
+          "value": 256
+        },
+        {
+          "name": "guide_size_for",
+          "value": true
+        },
+        {
+          "name": "max_size",
+          "value": 768
+        },
+        {
+          "name": "seed",
+          "value": 615841318308155
+        },
+        {
+          "name": "control_after_generate",
+          "value": "fixed"
+        },
+        {
+          "name": "steps",
+          "value": 20
+        },
+        {
+          "name": "cfg",
+          "value": 8
+        },
+        {
+          "name": "sampler_name",
+          "value": "euler"
+        },
+        {
+          "name": "scheduler",
+          "value": "normal"
+        },
+        {
+          "name": "denoise",
+          "value": 0.7000000000000001
+        },
+        {
+          "name": "refiner_ratio",
+          "value": 0.2
+        },
+        {
+          "name": "noise_mask_feather",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "72",
+      "type": "SEGSPaste",
+      "widgets": [
+        {
+          "name": "feather",
+          "value": 5
+        },
+        {
+          "name": "alpha",
+          "value": 255
+        }
+      ]
+    },
+    {
+      "id": "74",
+      "type": "ImpactSimpleDetectorSEGS_for_AD",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "bbox_dilation",
+          "value": 10
+        },
+        {
+          "name": "crop_factor",
+          "value": 2.5
+        },
+        {
+          "name": "drop_size",
+          "value": 50
+        },
+        {
+          "name": "sub_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "sub_dilation",
+          "value": 10
+        },
+        {
+          "name": "sub_bbox_expansion",
+          "value": 0
+        },
+        {
+          "name": "sam_mask_hint_threshold",
+          "value": 0.7
+        },
+        {
+          "name": "masking_mode",
+          "value": "Pivot SEGS"
+        },
+        {
+          "name": "segs_pivot",
+          "value": "Combined mask"
+        }
+      ]
+    }
+  ],
+  "missing_external_nodes": [],
+  "png_import": true,
+  "native_export_reload": true,
+  "inference": false
+}
