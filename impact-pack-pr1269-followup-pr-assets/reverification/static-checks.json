@@ -1,0 +1,42 @@
+[
+  {
+    "command": [
+      "/home/rho/venv/bin/ruff",
+      "check",
+      "--select",
+      "F401,F841,F811,F821",
+      "modules/impact/impact_server.py",
+      "modules/impact/wildcards.py",
+      "tests/integration_wildcard_cache.py",
+      "tests/test_e2e_wildcard_cache.py",
+      "tests/wildcards/conftest.py",
+      "tests/wildcards/test_lazy_load_verification.py",
+      "tests/wildcards/test_progressive_loading.py",
+      "tests/wildcards/test_wildcard_final.py",
+      "tests/test_e2e_wildcard_controls.py"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/source",
+    "exit_code": 0,
+    "output": "All checks passed!\n"
+  },
+  {
+    "command": [
+      "bash",
+      "-n",
+      "tests/wildcards/test_progressive_ondemand.sh"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/source",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-pr1269-followup",
+    "exit_code": 0,
+    "output": ""
+  }
+]

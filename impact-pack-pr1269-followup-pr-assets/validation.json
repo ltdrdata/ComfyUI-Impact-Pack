@@ -1,0 +1,144 @@
+{
+  "candidate_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "patch_sha256": "9c9b04fc6fec05ca38eca02642d0e259b57b569bdc9d66005a9ae2d1a17fa4b3",
+  "source_manifest_sha256": "dd9499e3ed296682ffa7f4d0f542ba4ca67de248bc1a23f67a93fd81218e0217",
+  "groups": {
+    "standalone": {
+      "total": 211,
+      "passed": 211,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "reverification/unit.xml"
+    },
+    "browser_harness": {
+      "total": 3,
+      "passed": 3,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "browser-harness.xml"
+    },
+    "classic_cache_controls": {
+      "total": 99,
+      "passed": 97,
+      "failed": [],
+      "errors": [],
+      "xfail": [
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+      ],
+      "skipped": [],
+      "report": "test-review/cache-controls.xml"
+    },
+    "classic_test_isolation_rerun": {
+      "total": 18,
+      "passed": 18,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "verified-classic/cache.xml"
+    },
+    "lru": {
+      "total": 32,
+      "passed": 32,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "verified-lru/cache.xml"
+    },
+    "catalog": {
+      "total": 14,
+      "passed": 14,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/catalog.xml"
+    },
+    "native_tutorials": {
+      "total": 8,
+      "passed": 8,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/tutorial-native.xml"
+    },
+    "switches": {
+      "total": 55,
+      "passed": 55,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/switches.xml"
+    }
+  },
+  "integration_groups": 20,
+  "real_tensor_groups": 5,
+  "gpu_sampling_observations": 5,
+  "baseline_bypass": {
+    "total": 2,
+    "passed": 0,
+    "failed": [],
+    "errors": [],
+    "xfail": [
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+    ],
+    "skipped": []
+  },
+  "baseline_cold": {
+    "total": 1,
+    "passed": 0,
+    "failed": [
+      "test_e2e_wildcard_controls::test_cold_batch_reuses_constant_cache[populated_text-ImpactWildcardProcessor]"
+    ],
+    "errors": [],
+    "xfail": [],
+    "skipped": []
+  },
+  "new_product_failures": [],
+  "test_isolation": {
+    "changed_functions": [
+      "test_constant_text_link_cache_and_native_restore",
+      "test_scalar_runtime_text_still_reuses_learned_seed"
+    ],
+    "reason": "Use a unique text prefix per test case so an identical syntax graph from a prior LRU case cannot satisfy a required cache miss. The expected preview includes that prefix; seed and cache assertions are unchanged. A comment was unsuitable for the single-line PrimitiveString UI and was replaced before final validation.",
+    "production_changed": false
+  },
+  "production_identical_across_initial_and_verified_runs": true,
+  "trusted_catalog": {
+    "nodes": 198,
+    "widgets": 719,
+    "files": {
+      "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+      "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+    }
+  },
+  "scope": "Prior complete repository run, with unchanged production and unchanged unaffected tests, superseded by 211 fresh unit cases and 12 fresh Control cases; six promoted loader pytest cases are new in the total. Actual two-mode HTTP parity and corrected progressive API diagnostic also reran.",
+  "full_regression": {
+    "report": "test-review/validation.json",
+    "report_sha256": "4acf052a3a3b57f095306fde9c2c15590f1792ee6d70f39e1c7b57fbf6684ca4",
+    "previous_full_report": "full-regression/validation.json",
+    "unique_pytest_passed": 576,
+    "existing_xfails": 2,
+    "existing_legacy_diagnostic_failures": []
+  },
+  "fresh_reverification": {
+    "report": "reverification/validation.json",
+    "report_sha256": "56b849e568817e5a8fb4349131c6b874de8a8daa6019ac0d6dd31d9f401cbe36",
+    "unit_passed": 211,
+    "reordered_unit_passed": 211,
+    "control_passed": 10,
+    "control_xfails": 2,
+    "integration_groups": 20,
+    "actual_two_mode_api_cases": 7,
+    "scope": "Fresh targeted revalidation of the current candidate, not a new full 576-case run. The reordered unit run repeats the same 211 cases and is not an additional unique count. Integration uses real hooks/cache/list mapping and a CLIP stand-in for the Encode matrix. Local fault injection is distinct from real Chrome and real two-server API execution."
+  }
+}

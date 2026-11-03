@@ -1,0 +1,75 @@
+[
+  {
+    "type": "execution_start",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce",
+      "timestamp": 1793678978053
+    }
+  },
+  {
+    "type": "execution_cached",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce",
+      "timestamp": 1793678978054
+    }
+  },
+  {
+    "type": "executed",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "node": "2",
+      "display_node": "2",
+      "output": {
+        "text": [
+          "red",
+          "plain"
+        ]
+      },
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce"
+    }
+  },
+  {
+    "type": "progress_state",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce",
+      "nodes": {
+        "2": {
+          "value": 1,
+          "max": 1,
+          "state": "finished",
+          "node_id": "2",
+          "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce",
+          "display_node_id": "2",
+          "parent_node_id": null,
+          "real_node_id": "2"
+        }
+      }
+    }
+  },
+  {
+    "type": "execution_success",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce",
+      "timestamp": 1793678978054
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "529b0ee6-da9d-494b-83ec-87aefab6ac11",
+      "node": null,
+      "prompt_id": "98368b8e-72a7-4dc6-ab2e-845defdb68ce"
+    }
+  }
+]

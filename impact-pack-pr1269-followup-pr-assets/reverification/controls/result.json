@@ -1,0 +1,112 @@
+{
+  "server_command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "49181",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/controls/runtime",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "--disable-auto-launch",
+    "--cpu",
+    "--cache-classic"
+  ],
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/controls-source",
+  "commands": [
+    {
+      "label": "bypass",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "test_control_bridge_mode_change_requeues",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/controls/bypass.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 208.62580585479736
+    }
+  ],
+  "verified_system_stats": {
+    "system": {
+      "os": "linux",
+      "ram_total": 100305424384,
+      "ram_free": 77651259392,
+      "comfyui_version": "0.43.0",
+      "required_frontend_version": "1.57.6",
+      "installed_templates_version": "0.11.100",
+      "required_templates_version": "0.11.100",
+      "comfy_package_versions": [
+        {
+          "name": "comfyui-frontend-package",
+          "installed": "1.57.6",
+          "required": "1.57.6"
+        },
+        {
+          "name": "comfyui-workflow-templates",
+          "installed": "0.11.100",
+          "required": "0.11.100"
+        },
+        {
+          "name": "comfyui-embedded-docs",
+          "installed": "0.5.15",
+          "required": "0.5.15"
+        },
+        {
+          "name": "comfy-aimdo",
+          "installed": "0.6.0",
+          "required": "0.6.0"
+        },
+        {
+          "name": "comfy-kitchen",
+          "installed": "0.2.40",
+          "required": "0.2.40"
+        }
+      ],
+      "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "pytorch_version": "2.10.0+cu128",
+      "embedded_python": false,
+      "deploy_environment": "local-git",
+      "argv": [
+        "main.py",
+        "--listen",
+        "127.0.0.1",
+        "--port",
+        "49181",
+        "--base-directory",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/controls/runtime",
+        "--models-directory",
+        "/mnt/teratera/git/ComfyUI/models",
+        "--disable-all-custom-nodes",
+        "--whitelist-custom-nodes",
+        "comfyui-impact-pack",
+        "--disable-auto-launch",
+        "--cpu",
+        "--cache-classic"
+      ]
+    },
+    "devices": [
+      {
+        "name": "cpu",
+        "type": "cpu",
+        "index": null,
+        "vram_total": 100305424384,
+        "vram_free": 77653524480,
+        "torch_vram_total": 100305424384,
+        "torch_vram_free": 77653524480
+      }
+    ]
+  },
+  "server_stopped": true
+}

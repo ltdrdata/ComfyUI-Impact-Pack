@@ -1,0 +1,939 @@
+{
+  "candidate_tree": "eaacc87ea003683ebcc38055235d4c8a3bf4a195",
+  "patch_sha256": "5405887209f786bd6b9d014ecff428f3a683d475011b6f7161adafb5623e9d06",
+  "completed": true,
+  "unique_pytest_passed": 570,
+  "existing_xfails": [
+    "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+    "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+  ],
+  "groups": {
+    "standalone": {
+      "total": 205,
+      "passed": 205,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "merged-unit.xml"
+    },
+    "browser_harness": {
+      "total": 3,
+      "passed": 3,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "browser-harness.xml"
+    },
+    "classic_cache_controls": {
+      "total": 99,
+      "passed": 97,
+      "failed": [],
+      "errors": [],
+      "xfail": [
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+      ],
+      "skipped": [],
+      "report": "classic/cache-controls.xml"
+    },
+    "catalog": {
+      "total": 14,
+      "passed": 14,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/catalog.xml"
+    },
+    "native_tutorials": {
+      "total": 8,
+      "passed": 8,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/tutorial-native.xml"
+    },
+    "switches": {
+      "total": 55,
+      "passed": 55,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/switches.xml"
+    },
+    "sam_mask_unit": {
+      "passed": 109,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 109,
+      "report": "full-regression/sam-mask-unit.xml"
+    },
+    "animatediff_assembly": {
+      "passed": 44,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 44,
+      "report": "full-regression/animatediff-unit.xml"
+    },
+    "mask_blur": {
+      "passed": 9,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 9,
+      "report": "full-regression/mask-blur.xml"
+    },
+    "mask_native": {
+      "passed": 4,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 4,
+      "report": "full-regression/cpu/mask-native.xml"
+    },
+    "legacy_sam": {
+      "passed": 6,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 6,
+      "report": "full-regression/cpu/legacy-sam.xml"
+    },
+    "sam_native": {
+      "passed": 10,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 10,
+      "report": "full-regression/gpu/sam.xml"
+    },
+    "sam_api": {
+      "passed": 3,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 3,
+      "report": "full-regression/gpu/sam-api.xml"
+    },
+    "lora_source": {
+      "passed": 2,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 2,
+      "report": "full-regression/lora/lora-source.xml"
+    },
+    "lbw_parity": {
+      "passed": 1,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 1,
+      "report": "full-regression/lbw-candidate/lbw-parity.xml"
+    }
+  },
+  "additional_groups": {
+    "sam_mask_unit": {
+      "passed": 109,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 109,
+      "report": "full-regression/sam-mask-unit.xml"
+    },
+    "animatediff_assembly": {
+      "passed": 44,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 44,
+      "report": "full-regression/animatediff-unit.xml"
+    },
+    "mask_blur": {
+      "passed": 9,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 9,
+      "report": "full-regression/mask-blur.xml"
+    },
+    "mask_native": {
+      "passed": 4,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 4,
+      "report": "full-regression/cpu/mask-native.xml"
+    },
+    "legacy_sam": {
+      "passed": 6,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 6,
+      "report": "full-regression/cpu/legacy-sam.xml"
+    },
+    "sam_native": {
+      "passed": 10,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 10,
+      "report": "full-regression/gpu/sam.xml"
+    },
+    "sam_api": {
+      "passed": 3,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 3,
+      "report": "full-regression/gpu/sam-api.xml"
+    },
+    "lora_source": {
+      "passed": 2,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 2,
+      "report": "full-regression/lora/lora-source.xml"
+    },
+    "lbw_parity": {
+      "passed": 1,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "total": 1,
+      "report": "full-regression/lbw-candidate/lbw-parity.xml"
+    }
+  },
+  "reruns_not_double_counted": {
+    "classic": 18,
+    "lru64": 32
+  },
+  "jobs": {
+    "cpu": {
+      "report": "full-regression/cpu/result.json",
+      "commands": [
+        {
+          "label": "mask-native",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_e2e_mask_to_segs.py",
+            "tests/test_e2e_mask_tutorials.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu/mask-native.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 35.433210372924805
+        },
+        {
+          "label": "legacy-sam",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_e2e_legacy_sam.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu/legacy-sam.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 150.61321258544922
+        },
+        {
+          "label": "animatediff-native",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_animatediff_tutorials.py",
+            "--base-url",
+            "http://127.0.0.1:56331",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu/animatediff-native"
+          ],
+          "exit_code": 0,
+          "seconds": 79.8989520072937
+        },
+        {
+          "label": "wildcard-ui",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_wildcards.py",
+            "--base-url",
+            "http://127.0.0.1:56331",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu/wildcard-ui"
+          ],
+          "exit_code": 0,
+          "seconds": 5.984927177429199
+        },
+        {
+          "label": "encoding-api",
+          "command": [
+            "bash",
+            "tests/test_encoding.sh",
+            "http://127.0.0.1:56331"
+          ],
+          "exit_code": 0,
+          "seconds": 0.49855995178222656
+        }
+      ],
+      "server_stopped": true
+    },
+    "gpu": {
+      "report": "full-regression/gpu/result.json",
+      "commands": [
+        {
+          "label": "sam",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_e2e_sam_masks.py",
+            "tests/test_e2e_sam_tutorials.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/sam.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 90.52677607536316
+        },
+        {
+          "label": "sam-api",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_sam_api.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/sam-api.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 1.742356300354004
+        },
+        {
+          "label": "detailer",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_dd_compat.py",
+            "--base-url",
+            "http://127.0.0.1:33255",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/detailer"
+          ],
+          "exit_code": 1,
+          "seconds": 33.17751908302307
+        },
+        {
+          "label": "conditioning",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_conditionings.py",
+            "--base-url",
+            "http://127.0.0.1:33255",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/conditioning"
+          ],
+          "exit_code": 0,
+          "seconds": 7.899989366531372
+        },
+        {
+          "label": "switch-tutorials",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_tutorials.py",
+            "--base-url",
+            "http://127.0.0.1:33255",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/switch-tutorials"
+          ],
+          "exit_code": 1,
+          "seconds": 32.59305143356323
+        },
+        {
+          "label": "regional",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_regional.py",
+            "--base-url",
+            "http://127.0.0.1:33255",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu/regional"
+          ],
+          "exit_code": 0,
+          "seconds": 299.4012095928192
+        }
+      ],
+      "server_stopped": true
+    },
+    "lora": {
+      "report": "full-regression/lora/result.json",
+      "commands": [
+        {
+          "label": "lora-source",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_e2e_lora_wildcard_source.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/lora/lora-source.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 16.422642707824707
+        }
+      ],
+      "server_stopped": true
+    },
+    "ondemand": {
+      "report": "full-regression/ondemand/result.json",
+      "commands": [
+        {
+          "label": "wildcard-ui",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_wildcards.py",
+            "--base-url",
+            "http://127.0.0.1:53531",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/ondemand/wildcard-ui"
+          ],
+          "exit_code": 0,
+          "seconds": 5.987465143203735
+        },
+        {
+          "label": "encoding-api",
+          "command": [
+            "bash",
+            "tests/test_encoding.sh",
+            "http://127.0.0.1:53531"
+          ],
+          "exit_code": 0,
+          "seconds": 0.4962167739868164
+        }
+      ],
+      "server_stopped": true
+    },
+    "inference": {
+      "report": "full-regression/inference/result.json",
+      "commands": [
+        {
+          "label": "lora-inference",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_lora_wildcard_inference.py",
+            "--base-url",
+            "http://127.0.0.1:38591",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/inference/lora-inference"
+          ],
+          "exit_code": 0,
+          "seconds": 262.52168130874634
+        }
+      ],
+      "server_stopped": true
+    },
+    "lbw-baseline": {
+      "report": "full-regression/lbw-baseline/result.json",
+      "commands": [
+        {
+          "label": "reference",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/capture_lbw_reference.py",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/baseline-source",
+            "http://127.0.0.1:50547",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/lbw-baseline/reference"
+          ],
+          "exit_code": 0,
+          "seconds": 8.984182357788086
+        }
+      ],
+      "server_stopped": true
+    },
+    "lbw-candidate": {
+      "report": "full-regression/lbw-candidate/result.json",
+      "commands": [
+        {
+          "label": "lbw-parity",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "tests/pytest.ini",
+            "tests/test_e2e_wildcard_tutorials.py",
+            "-v",
+            "--tb=short",
+            "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/lbw-candidate/lbw-parity.xml",
+            "-k",
+            "inference"
+          ],
+          "exit_code": 0,
+          "seconds": 10.10025668144226
+        }
+      ],
+      "server_stopped": true
+    },
+    "gpu-retry": {
+      "report": "full-regression/gpu-retry/result.json",
+      "commands": [
+        {
+          "label": "detailer",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_dd_compat.py",
+            "--base-url",
+            "http://127.0.0.1:37767",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/detailer"
+          ],
+          "exit_code": 1,
+          "seconds": 33.63342356681824
+        },
+        {
+          "label": "switch-tutorials",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_tutorials.py",
+            "--base-url",
+            "http://127.0.0.1:37767",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials"
+          ],
+          "exit_code": 0,
+          "seconds": 59.82550859451294
+        }
+      ],
+      "server_stopped": true
+    },
+    "detailer-final": {
+      "report": "full-regression/detailer-final/result.json",
+      "commands": [
+        {
+          "label": "detailer",
+          "command": [
+            "/home/rho/venv/bin/python",
+            "tests/e2e_dd_compat.py",
+            "--base-url",
+            "http://127.0.0.1:35611",
+            "--artifacts",
+            "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/detailer-final/detailer"
+          ],
+          "exit_code": 0,
+          "seconds": 11.634249448776245
+        }
+      ],
+      "server_stopped": true
+    }
+  },
+  "unit_and_integration_commands": [
+    {
+      "label": "sam-mask-unit",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/sam-mask-unit.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 5.166468620300293
+    },
+    {
+      "label": "animatediff-unit",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_animatediff_assembly.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/animatediff-unit.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 5.832656383514404
+    },
+    {
+      "label": "mask-blur",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_mask_blur.py",
+        "-q",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/mask-blur.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 3.755549907684326
+    },
+    {
+      "label": "legacy-sam-js",
+      "command": [
+        "node",
+        "--test",
+        "tests/legacy_sam.test.mjs"
+      ],
+      "exit_code": 1,
+      "seconds": 0.07324624061584473
+    },
+    {
+      "label": "lora-source-js",
+      "command": [
+        "node",
+        "--test",
+        "tests/lora_wildcard_source.test.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.07681512832641602
+    },
+    {
+      "label": "lora-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "exit_code": 0,
+      "seconds": 7.222188949584961
+    },
+    {
+      "label": "lora-validation",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_validation.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "exit_code": 0,
+      "seconds": 4.78021502494812
+    },
+    {
+      "label": "tutorial-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_tutorial_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--tutorials-root",
+        "/mnt/teratera/git/ComfyUI-extension-tutorials",
+        "--inspire-root",
+        "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+        "--report",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/tutorial-tensors.json"
+      ],
+      "exit_code": 0,
+      "seconds": 28.137242555618286
+    }
+  ],
+  "legacy_shell": [
+    {
+      "file": "tests/test_config_quotes.sh",
+      "exit_code": 0,
+      "seconds": 36.627177715301514,
+      "port": 46163
+    },
+    {
+      "file": "tests/test_deep_nesting.sh",
+      "exit_code": 0,
+      "seconds": 7.82738995552063,
+      "port": 41087
+    },
+    {
+      "file": "tests/test_edge_cases.sh",
+      "exit_code": 0,
+      "seconds": 7.82657527923584,
+      "port": 57017
+    },
+    {
+      "file": "tests/test_error_handling.sh",
+      "exit_code": 0,
+      "seconds": 7.476222276687622,
+      "port": 52829
+    },
+    {
+      "file": "tests/test_ondemand_loading.sh",
+      "exit_code": 0,
+      "seconds": 59.40976047515869,
+      "port": 60417
+    },
+    {
+      "file": "tests/test_dynamic_prompts_full.sh",
+      "exit_code": 0,
+      "seconds": 29.22036623954773,
+      "port": 34471
+    },
+    {
+      "file": "tests/wildcards/test_progressive_ondemand.sh",
+      "exit_code": 1,
+      "seconds": 17.493770599365234,
+      "port": 54681
+    },
+    {
+      "file": "tests/wildcards/test_sequential_loading.sh",
+      "exit_code": 0,
+      "seconds": 146.96018838882446,
+      "port": 53413
+    },
+    {
+      "file": "tests/wildcards/test_wildcard_consistency.sh",
+      "exit_code": 0,
+      "seconds": 40.83484649658203,
+      "port": 47649
+    },
+    {
+      "file": "tests/wildcards/test_versatile_prompts.sh",
+      "exit_code": 0,
+      "seconds": 74.3560254573822,
+      "port": 47577
+    },
+    {
+      "file": "tests/wildcards/test_lazy_load_api.sh",
+      "exit_code": 0,
+      "seconds": 40.84132480621338,
+      "port": 58255
+    }
+  ],
+  "legacy_python": [
+    {
+      "file": "tests/wildcards/test_wildcard_lazy_loading.py",
+      "exit_code": 0
+    },
+    {
+      "file": "tests/wildcards/test_progressive_loading.py",
+      "exit_code": 1
+    },
+    {
+      "file": "tests/wildcards/test_lazy_load_verification.py",
+      "exit_code": 1
+    }
+  ],
+  "baseline_legacy_python": [
+    {
+      "file": "tests/wildcards/test_wildcard_lazy_loading.py",
+      "exit_code": 0
+    },
+    {
+      "file": "tests/wildcards/test_progressive_loading.py",
+      "exit_code": 1
+    },
+    {
+      "file": "tests/wildcards/test_lazy_load_verification.py",
+      "exit_code": 1
+    }
+  ],
+  "legacy_final": {
+    "command": [
+      "/home/rho/venv/bin/python",
+      "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-final/source/tests/wildcards/test_wildcard_final.py"
+    ],
+    "exit_code": 0,
+    "seconds": 49.15043354034424
+  },
+  "source_integrity": [
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": [
+        "tests/e2e_wildcards.py"
+      ]
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": [
+        "tests/e2e_dd_compat.py"
+      ]
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/lora-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": []
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/inference-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": []
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/ondemand-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": [
+        "tests/e2e_wildcards.py"
+      ]
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-data-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": []
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-samples-source",
+      "files_checked": 170,
+      "production_identical": true,
+      "documented_test_only_deltas": []
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-final/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source",
+      "production_files_checked": 34,
+      "baseline": true,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-with-data/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_config_quotes/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_deep_nesting/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_dynamic_prompts_full/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_edge_cases/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_error_handling/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_lazy_load_api/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_ondemand_loading/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_progressive_ondemand/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_sequential_loading/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_versatile_prompts/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_wildcard_consistency/source",
+      "production_files_checked": 34,
+      "baseline": false,
+      "production_identical": true
+    },
+    {
+      "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-data-baseline/test_progressive_ondemand/source",
+      "production_files_checked": 34,
+      "baseline": true,
+      "production_identical": true
+    }
+  ],
+  "new_product_failures": [],
+  "known_legacy_diagnostics": [
+    "test_progressive_ondemand.sh",
+    "test_progressive_loading.py",
+    "test_lazy_load_verification.py"
+  ],
+  "limitations": [
+    "AnimateDiff: assembly tests with controlled VAE/sampling and native workflow restoration; no video inference claim.",
+    "Legacy diagnostic exit codes are not assertions of all printed checks. See diagnostics.md.",
+    "Legacy final script compares seven outputs but does not establish on-demand mode at its 1 MB threshold. True low-threshold on-demand UI/API tests are recorded separately."
+  ],
+  "environment_retries": [
+    "Legacy SAM JavaScript: requires node --experimental-vm-modules; three cases passed after correcting invocation.",
+    "Detailer and Switch tutorial initial attempts stopped before inference because the isolated input directory lacked referenced images; both reran with installed input fixtures. Detailer also needed the Templates dialog dismissed before Fit View; this is recorded as a test-copy-only Escape keypress.",
+    "Discarded unadapted legacy-final bootstrap invocation; accepted run uses recorded isolated paths and port."
+  ],
+  "inventory_count": 63
+}

@@ -1,0 +1,66 @@
+{
+  "before": {
+    "records_directory": "baseline/cold-before/test_cold_batch_reuses_constant_cache[populated_text-ImpactWildcardProcessor]",
+    "runs": [
+      {
+        "requested_seed": 731,
+        "execution_seed": 731,
+        "constant_text": "cold batch 662fe770d97b47a498a5db59f9eb48fd",
+        "output": [
+          "cold batch 662fe770d97b47a498a5db59f9eb48fd"
+        ],
+        "cached_nodes": [],
+        "wildcard_cached": false,
+        "preview_cached": false,
+        "target_pending_while_blocker_runs": true
+      },
+      {
+        "requested_seed": 732,
+        "execution_seed": 732,
+        "constant_text": "cold batch 662fe770d97b47a498a5db59f9eb48fd",
+        "output": [
+          "cold batch 662fe770d97b47a498a5db59f9eb48fd"
+        ],
+        "cached_nodes": [
+          "3"
+        ],
+        "wildcard_cached": false,
+        "preview_cached": false,
+        "target_pending_while_blocker_runs": true
+      }
+    ]
+  },
+  "after": {
+    "records_directory": "focus/cold-after/test_cold_batch_reuses_constant_cache[populated_text-ImpactWildcardProcessor]",
+    "runs": [
+      {
+        "requested_seed": 731,
+        "execution_seed": 0,
+        "constant_text": "cold batch bd460c0ced3e4fbe9b99a9cb6d54b5ee",
+        "output": [
+          "cold batch bd460c0ced3e4fbe9b99a9cb6d54b5ee"
+        ],
+        "cached_nodes": [],
+        "wildcard_cached": false,
+        "preview_cached": false,
+        "target_pending_while_blocker_runs": true
+      },
+      {
+        "requested_seed": 732,
+        "execution_seed": 0,
+        "constant_text": "cold batch bd460c0ced3e4fbe9b99a9cb6d54b5ee",
+        "output": [
+          "cold batch bd460c0ced3e4fbe9b99a9cb6d54b5ee"
+        ],
+        "cached_nodes": [
+          "1",
+          "2",
+          "3"
+        ],
+        "wildcard_cached": true,
+        "preview_cached": true,
+        "target_pending_while_blocker_runs": true
+      }
+    ]
+  }
+}

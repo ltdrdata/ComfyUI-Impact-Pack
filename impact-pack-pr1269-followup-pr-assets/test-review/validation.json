@@ -1,0 +1,46 @@
+{
+  "candidate_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "patch_sha256": "9c9b04fc6fec05ca38eca02642d0e259b57b569bdc9d66005a9ae2d1a17fa4b3",
+  "completed": true,
+  "production_unchanged": true,
+  "changed_files": [
+    "docs/E2E_TEST_STRATEGY.md",
+    "tests/pytest.ini",
+    "tests/wildcards/README.md",
+    "tests/wildcards/conftest.py",
+    "tests/wildcards/test_lazy_load_verification.py",
+    "tests/wildcards/test_progressive_loading.py",
+    "tests/wildcards/test_progressive_ondemand.sh",
+    "tests/wildcards/test_wildcard_final.py",
+    "tests/test_e2e_wildcard_controls.py"
+  ],
+  "fresh_unit": {
+    "passed": 211,
+    "xfail": 0,
+    "failed": 0
+  },
+  "fresh_control": {
+    "passed": 10,
+    "xfail": 2,
+    "failed": 0
+  },
+  "prior_full_regression": "../full-regression/validation.json",
+  "prior_candidate_tree": "eaacc87ea003683ebcc38055235d4c8a3bf4a195",
+  "unique_pytest_passed": 576,
+  "existing_xfails": [
+    "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+    "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+  ],
+  "remaining_legacy_diagnostic_failures": [],
+  "resolved_legacy_diagnostics": [
+    "test_progressive_ondemand.sh",
+    "test_progressive_loading.py",
+    "test_lazy_load_verification.py"
+  ],
+  "api_cases": 7,
+  "failure_injection_cases": 10,
+  "bypass_guard_cases": 4,
+  "new_product_failures": [],
+  "scope": "Prior complete repository run, with unchanged production and unchanged unaffected tests, superseded by 211 fresh unit cases and 12 fresh Control cases; six promoted loader pytest cases are new in the total. Actual two-mode HTTP parity and corrected progressive API diagnostic also reran.",
+  "invalid_invocation": "unit-invalid-invocation.*: pytest was started outside tests and fell back to broad collection; superseded by the configured run from source/tests."
+}

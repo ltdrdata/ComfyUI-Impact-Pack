@@ -1,0 +1,36 @@
+{
+  "name": "classic",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "cache-controls",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_controls.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/cache-controls.xml"
+      ]
+    },
+    {
+      "label": "mixed-list",
+      "env": {
+        "IMPACT_E2E_ARTIFACTS": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/mixed-list"
+      },
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/mixed-list/capture.py"
+      ]
+    }
+  ],
+  "port": 37359,
+  "source": "/tmp/impact-pr1269-final-5fvql00a/source"
+}

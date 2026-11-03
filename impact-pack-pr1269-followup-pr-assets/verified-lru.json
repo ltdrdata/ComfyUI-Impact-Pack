@@ -1,0 +1,29 @@
+{
+  "name": "verified-lru",
+  "port": 47329,
+  "source": "/tmp/impact-pr1269-final-5fvql00a/verified-source",
+  "server_options": [
+    "--cpu",
+    "--cache-lru",
+    "64"
+  ],
+  "commands": [
+    {
+      "label": "cache",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "constant_text_link_cache or mapped_list or scalar_runtime or cold_batch or plain_text",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/cache.xml"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "controls",
+  "port": 49181,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/controls-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "bypass",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "test_control_bridge_mode_change_requeues",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/bypass.xml"
+      ]
+    }
+  ]
+}

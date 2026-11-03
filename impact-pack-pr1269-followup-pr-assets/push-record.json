@@ -1,0 +1,29 @@
+{
+  "branch": "fix/pr1269-constant-followup",
+  "head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
+  "parent": "609e411e13c6da94fefb07982d63b90417122412",
+  "head_tree": "404232fdb92263c08bf4bb81de79b6e07d941bf8",
+  "reviewed_main": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "reviewed_combined_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "patch_sha256": "9c9b04fc6fec05ca38eca02642d0e259b57b569bdc9d66005a9ae2d1a17fa4b3",
+  "files": [
+    "docs/E2E_TEST_STRATEGY.md",
+    "modules/impact/impact_server.py",
+    "modules/impact/wildcards.py",
+    "tests/integration_wildcard_cache.py",
+    "tests/pytest.ini",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/wildcards/README.md",
+    "tests/wildcards/conftest.py",
+    "tests/wildcards/test_lazy_load_verification.py",
+    "tests/wildcards/test_progressive_loading.py",
+    "tests/wildcards/test_progressive_ondemand.sh",
+    "tests/wildcards/test_wildcard_final.py",
+    "tests/test_e2e_wildcard_controls.py"
+  ],
+  "pushed": true,
+  "verified_remote_head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
+  "verified_at_utc": "2026-11-03T09:42:11.173389+00:00",
+  "remote": "git@github.com:ltdrdata/ComfyUI-Impact-Pack.git",
+  "url": "https://github.com/ltdrdata/ComfyUI-Impact-Pack/tree/fix/pr1269-constant-followup"
+}

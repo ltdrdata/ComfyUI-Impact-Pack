@@ -1,0 +1,62 @@
+--- original/tests/wildcards/test_progressive_ondemand.sh
++++ isolated/tests/wildcards/test_progressive_ondemand.sh
+@@ -6,11 +6,11 @@
+ 
+ # Auto-detect paths
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_PACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+-COMFYUI_DIR="$(cd "$IMPACT_PACK_DIR/../.." && pwd)"
++IMPACT_PACK_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/source"
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/comfy"
+ CONFIG_FILE="$IMPACT_PACK_DIR/impact-pack.ini"
+ BACKUP_CONFIG="$IMPACT_PACK_DIR/impact-pack.ini.backup"
+-PORT=8195
++PORT=34565
+ 
+ GREEN='\033[0;32m'
+ RED='\033[0;31m'
+@@ -37,7 +37,7 @@
+ cleanup() {
+     echo ""
+     echo "Cleaning up..."
+-    pkill -f "python.*main.py.*$PORT" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/runtime 2>/dev/null || true
+     sleep 2
+ }
+ 
+@@ -61,7 +61,7 @@
+ cleanup
+ cd "$COMFYUI_DIR"
+ echo "Starting ComfyUI server on port $PORT..."
+-bash run.sh --listen 127.0.0.1 --port $PORT > /tmp/progressive_test.log 2>&1 &
++bash run.sh --listen 127.0.0.1 --port $PORT > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/tmp/progressive_test.log 2>&1 &
+ COMFYUI_PID=$!
+ 
+ echo "Waiting for server startup..."
+@@ -70,7 +70,7 @@
+ # Check server
+ if ! curl -fsS http://127.0.0.1:$PORT/ > /dev/null; then
+     echo "${RED}✗ Server failed to start${NC}"
+-    cat /tmp/progressive_test.log | grep -i "wildcard\|error" | tail -20
++    cat /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/tmp/progressive_test.log | grep -i "wildcard\|error" | tail -20
+     exit 1
+ fi
+ 
+@@ -78,7 +78,7 @@
+ echo ""
+ 
+ # Check loading mode from log
+-MODE_LOG=$(grep -i "wildcard.*mode" /tmp/progressive_test.log | tail -1)
++MODE_LOG=$(grep -i "wildcard.*mode" /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/tmp/progressive_test.log | tail -1)
+ echo "${YELLOW}$MODE_LOG${NC}"
+ echo ""
+ 
+@@ -238,7 +238,7 @@
+ echo "=========================================="
+ echo "Test Complete"
+ echo "=========================================="
+-echo "Log saved to: /tmp/progressive_test.log"
++echo "Log saved to: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/reverification/progressive/test_progressive_ondemand/tmp/progressive_test.log"
+ echo ""
+ 
+ exit $EXIT_CODE

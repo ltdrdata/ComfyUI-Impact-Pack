@@ -1,0 +1,67 @@
+[
+  {
+    "type": "execution_start",
+    "data": {
+      "workflow_id": "19de0bf2-3f91-46a9-8cd1-44293df4d1a7",
+      "prompt_id": "f4a3f26d-3120-4350-bd85-fadd2db174f0",
+      "timestamp": 1793678842123
+    }
+  },
+  {
+    "type": "execution_cached",
+    "data": {
+      "workflow_id": "19de0bf2-3f91-46a9-8cd1-44293df4d1a7",
+      "nodes": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "prompt_id": "f4a3f26d-3120-4350-bd85-fadd2db174f0",
+      "timestamp": 1793678842124
+    }
+  },
+  {
+    "type": "executed",
+    "data": {
+      "workflow_id": "19de0bf2-3f91-46a9-8cd1-44293df4d1a7",
+      "node": "9",
+      "display_node": "9",
+      "output": {
+        "images": [
+          {
+            "filename": "ComfyUI_00002_.png",
+            "subfolder": "",
+            "type": "output",
+            "metadata": {
+              "kind": "image",
+              "width": 512,
+              "height": 768
+            }
+          }
+        ]
+      },
+      "prompt_id": "f4a3f26d-3120-4350-bd85-fadd2db174f0"
+    }
+  },
+  {
+    "type": "execution_success",
+    "data": {
+      "workflow_id": "19de0bf2-3f91-46a9-8cd1-44293df4d1a7",
+      "prompt_id": "f4a3f26d-3120-4350-bd85-fadd2db174f0",
+      "timestamp": 1793678842124
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "19de0bf2-3f91-46a9-8cd1-44293df4d1a7",
+      "node": null,
+      "prompt_id": "f4a3f26d-3120-4350-bd85-fadd2db174f0"
+    }
+  }
+]

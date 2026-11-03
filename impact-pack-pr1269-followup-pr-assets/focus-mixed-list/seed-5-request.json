@@ -1,0 +1,329 @@
+{
+  "client_id": "d5fa20b7bf0041cd9359ac5e8d3c6fc0",
+  "prompt": {
+    "1": {
+      "inputs": {
+        "wildcard_text": "",
+        "populated_text": [
+          "5",
+          0
+        ],
+        "mode": "fixed",
+        "seed": 5,
+        "Select to add Wildcard": "Select the Wildcard to add to the text"
+      },
+      "class_type": "ImpactWildcardProcessor",
+      "_meta": {
+        "title": "ImpactWildcardProcessor"
+      }
+    },
+    "2": {
+      "inputs": {
+        "source": [
+          "1",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "3": {
+      "inputs": {
+        "value": "{red|green|blue}"
+      },
+      "class_type": "PrimitiveString",
+      "_meta": {
+        "title": "Text"
+      }
+    },
+    "4": {
+      "inputs": {
+        "value": "plain"
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "Text (Multiline)"
+      }
+    },
+    "5": {
+      "inputs": {
+        "value1": [
+          "3",
+          0
+        ],
+        "value2": [
+          "4",
+          0
+        ]
+      },
+      "class_type": "ImpactMakeAnyList",
+      "_meta": {
+        "title": "Make List (Any)"
+      }
+    }
+  },
+  "extra_data": {
+    "comfy_usage_source": "comfyui-frontend",
+    "extra_pnginfo": {
+      "workflow": {
+        "id": "3a915e0f-7e46-4d6d-af2d-63388b0f3ae1",
+        "revision": 0,
+        "last_node_id": 5,
+        "last_link_id": 4,
+        "nodes": [
+          {
+            "id": 1,
+            "type": "ImpactWildcardProcessor",
+            "pos": [
+              462.88882785373266,
+              125.55555555555554
+            ],
+            "size": [
+              400,
+              238
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "populated_text",
+                "type": "STRING",
+                "widget": {
+                  "name": "populated_text"
+                },
+                "link": 4
+              }
+            ],
+            "outputs": [
+              {
+                "name": "processed text",
+                "type": "STRING",
+                "links": [
+                  1
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactWildcardProcessor"
+            },
+            "widgets_values": [
+              "",
+              "",
+              "fixed",
+              5,
+              "fixed",
+              "Select Wildcard \ud83d\udfe2 Full Cache"
+            ],
+            "widgets_values_named": {
+              "wildcard_text": "",
+              "populated_text": "",
+              "mode": "fixed",
+              "seed": 5,
+              "control_after_generate": "fixed",
+              "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+            }
+          },
+          {
+            "id": 2,
+            "type": "PreviewAny",
+            "pos": [
+              962.8888888888889,
+              165.55555555555554
+            ],
+            "size": [
+              210,
+              122
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "*",
+                "link": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PreviewAny"
+            },
+            "widgets_values": [],
+            "widgets_values_named": {}
+          },
+          {
+            "id": 3,
+            "type": "PrimitiveString",
+            "pos": [
+              -327.11117214626734,
+              125.55555555555554
+            ],
+            "size": [
+              270,
+              58
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  2
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveString"
+            },
+            "widgets_values": [
+              "{red|green|blue}"
+            ],
+            "widgets_values_named": {
+              "value": "{red|green|blue}"
+            }
+          },
+          {
+            "id": 4,
+            "type": "PrimitiveStringMultiline",
+            "pos": [
+              -327.11117214626734,
+              425.55555555555554
+            ],
+            "size": [
+              400,
+              200
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  3
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+              "plain"
+            ],
+            "widgets_values_named": {
+              "value": "plain"
+            }
+          },
+          {
+            "id": 5,
+            "type": "ImpactMakeAnyList",
+            "pos": [
+              152.88884006076387,
+              315.55555555555554
+            ],
+            "size": [
+              142.8970703125,
+              66
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value1",
+                "shape": 7,
+                "type": "*",
+                "link": 2
+              },
+              {
+                "name": "value2",
+                "type": "STRING",
+                "link": 3
+              },
+              {
+                "name": "value3",
+                "type": "STRING",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "label": "STRING",
+                "name": "*",
+                "shape": 6,
+                "type": "*",
+                "links": [
+                  4
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactMakeAnyList"
+            }
+          }
+        ],
+        "links": [
+          [
+            1,
+            1,
+            0,
+            2,
+            0,
+            "STRING"
+          ],
+          [
+            2,
+            3,
+            0,
+            5,
+            0,
+            "STRING"
+          ],
+          [
+            3,
+            4,
+            0,
+            5,
+            1,
+            "STRING"
+          ],
+          [
+            4,
+            5,
+            0,
+            1,
+            0,
+            "STRING"
+          ]
+        ],
+        "groups": [],
+        "config": {},
+        "extra": {
+          "ds": {
+            "scale": 1,
+            "offset": [
+              -212.8888583713108,
+              4.444444444444457
+            ]
+          },
+          "frontendVersion": "1.57.6"
+        },
+        "version": 0.4
+      }
+    }
+  }
+}

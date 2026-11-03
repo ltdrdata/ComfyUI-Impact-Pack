@@ -1,0 +1,97 @@
+{
+  "verified_at_utc": "2026-11-03T08:09:38.761136+00:00",
+  "completed": true,
+  "candidate_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "patch_sha256": "9c9b04fc6fec05ca38eca02642d0e259b57b569bdc9d66005a9ae2d1a17fa4b3",
+  "fresh_unit": {
+    "report": "unit.xml",
+    "passed": 211,
+    "xfail": [],
+    "failed": []
+  },
+  "unit_order_repetition": {
+    "report": "unit-reordered.xml",
+    "passed": 211,
+    "xfail": [],
+    "failed": []
+  },
+  "fresh_control": {
+    "report": "controls/bypass.xml",
+    "passed": 10,
+    "xfail": [
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+    ],
+    "failed": []
+  },
+  "integration_groups": 20,
+  "actual_two_mode_api_cases": 7,
+  "fault_injection_cases": 10,
+  "bypass_guard_cases": 4,
+  "progressive_diagnostic_passed": true,
+  "runtime_source_checks": {
+    "source": {
+      "tracked_files_checked": 170,
+      "environment_adaptations": []
+    },
+    "controls-source": {
+      "tracked_files_checked": 170,
+      "environment_adaptations": []
+    },
+    "full-source": {
+      "tracked_files_checked": 170,
+      "environment_adaptations": []
+    },
+    "ondemand-source": {
+      "tracked_files_checked": 170,
+      "environment_adaptations": []
+    },
+    "progressive/test_progressive_ondemand/source": {
+      "tracked_files_checked": 170,
+      "environment_adaptations": [
+        "tests/wildcards/test_progressive_ondemand.sh"
+      ]
+    }
+  },
+  "worktree_followup_files_verified": 13,
+  "server_jobs": {
+    "controls": {
+      "report": "controls/result.json",
+      "server_stopped": true
+    },
+    "full": {
+      "report": "full/result.json",
+      "server_stopped": true
+    },
+    "ondemand": {
+      "report": "ondemand/result.json",
+      "server_stopped": true
+    }
+  },
+  "closed_ports": [
+    34565,
+    49181,
+    60825,
+    49391
+  ],
+  "remaining_owned_servers": [],
+  "evidence_sha256": {
+    "source.json": "df0630c117ec07e73160c8e945610fbe78ae5f9b23f9b291ce2a15f7b662e085",
+    "unit.xml": "87df01b35e09dd06defbbcd640d592e9ddcd89e09f043ce6dd33d46743ea1a19",
+    "unit-reordered.xml": "8f56fbbe1f88a5d2e485234a2a2956f0fac9c90b6f2cb69dcc4fab858ce1f216",
+    "unit-reordered-result.json": "5e1369e7126a019cb165552ca18d43d435c16588f687f5b478a5202ac3696ad4",
+    "controls/bypass.xml": "0cccb4192e6ba9b9ed8022672d23742bd65f249a54b4a49bcd5802cf844f6b30",
+    "integration.json": "094bd3d754aa5cfd5465cdec01980c0904789ae7fc5451766dd8c4fd62197b55",
+    "api-result.json": "f8c30a1370a1d6dd95e90b566aa4a780b3dcb1733355ca548736746952ad1f56",
+    "ondemand/pair.log": "12702de4a40694b6f5cc63bdf6f2ecd64e09b49630ae47cefce4672fa835f5f9",
+    "failure-detection.json": "2ac211f4ab20d15a4d1a63ada897afb018313a26ec700a3236d6d3f324702947",
+    "progressive/results.json": "e0200f119f289b7dffe02cd66784c2b597c410d0d01a6d8398535a1a730422f0",
+    "static-checks.json": "769761631a23a9c29a4c8f01237ec91b93852dd26186dafc4468fda57e8d1226",
+    "progressive/test_progressive_ondemand/environment-adaptation.patch": "a9ed52678426b5d3b9449b2533978f5f93a94faa7f64a78c7e23da70f913a48e",
+    "controls/result.json": "dd3b17c562b6e339a7beb17b73a620b56aa42f819525170964421ba6c894ab49",
+    "full/result.json": "72e62f3f074af5872c4a190c1d39db2cd4e2e40f0103d0cdf4d8d3389d79dd66",
+    "ondemand/result.json": "84263dd6b0f591b408ccee43b223388c7799bf9e4b5d42f3d7e6757104c46bf3"
+  },
+  "new_product_failures": [],
+  "scope": "Fresh targeted revalidation of the current candidate, not a new full 576-case run. The reordered unit run repeats the same 211 cases and is not an additional unique count. Integration uses real hooks/cache/list mapping and a CLIP stand-in for the Encode matrix. Local fault injection is distinct from real Chrome and real two-server API execution."
+}

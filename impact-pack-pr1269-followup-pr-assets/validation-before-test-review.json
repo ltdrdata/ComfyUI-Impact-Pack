@@ -1,0 +1,136 @@
+{
+  "candidate_tree": "eaacc87ea003683ebcc38055235d4c8a3bf4a195",
+  "patch_sha256": "5405887209f786bd6b9d014ecff428f3a683d475011b6f7161adafb5623e9d06",
+  "source_manifest_sha256": "040c76289fc3bc7390a41fa20efeaf0b570745227ac415c83da3d6c7d01d78db",
+  "groups": {
+    "standalone": {
+      "total": 205,
+      "passed": 205,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "merged-unit.xml"
+    },
+    "browser_harness": {
+      "total": 3,
+      "passed": 3,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "browser-harness.xml"
+    },
+    "classic_cache_controls": {
+      "total": 99,
+      "passed": 97,
+      "failed": [],
+      "errors": [],
+      "xfail": [
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+        "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+      ],
+      "skipped": [],
+      "report": "classic/cache-controls.xml"
+    },
+    "classic_test_isolation_rerun": {
+      "total": 18,
+      "passed": 18,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "verified-classic/cache.xml"
+    },
+    "lru": {
+      "total": 32,
+      "passed": 32,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "verified-lru/cache.xml"
+    },
+    "catalog": {
+      "total": 14,
+      "passed": 14,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/catalog.xml"
+    },
+    "native_tutorials": {
+      "total": 8,
+      "passed": 8,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/tutorial-native.xml"
+    },
+    "switches": {
+      "total": 55,
+      "passed": 55,
+      "failed": [],
+      "errors": [],
+      "xfail": [],
+      "skipped": [],
+      "report": "catalog/switches.xml"
+    }
+  },
+  "integration_groups": 20,
+  "real_tensor_groups": 5,
+  "gpu_sampling_observations": 5,
+  "baseline_bypass": {
+    "total": 2,
+    "passed": 0,
+    "failed": [],
+    "errors": [],
+    "xfail": [
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-positional]",
+      "test_e2e_wildcard_controls::test_control_bridge_mode_change_requeues[Bypass-populated-only-ImpactWildcardProcessor-named]"
+    ],
+    "skipped": []
+  },
+  "baseline_cold": {
+    "total": 1,
+    "passed": 0,
+    "failed": [
+      "test_e2e_wildcard_controls::test_cold_batch_reuses_constant_cache[populated_text-ImpactWildcardProcessor]"
+    ],
+    "errors": [],
+    "xfail": [],
+    "skipped": []
+  },
+  "new_product_failures": [],
+  "test_isolation": {
+    "changed_functions": [
+      "test_constant_text_link_cache_and_native_restore",
+      "test_scalar_runtime_text_still_reuses_learned_seed"
+    ],
+    "reason": "Use a unique text prefix per test case so an identical syntax graph from a prior LRU case cannot satisfy a required cache miss. The expected preview includes that prefix; seed and cache assertions are unchanged. A comment was unsuitable for the single-line PrimitiveString UI and was replaced before final validation.",
+    "production_changed": false
+  },
+  "production_identical_across_initial_and_verified_runs": true,
+  "trusted_catalog": {
+    "nodes": 198,
+    "widgets": 719,
+    "files": {
+      "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+      "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+    }
+  },
+  "scope": "Completed full repository regression inventory on the final combined source; see full-regression/README.md for evidence, existing diagnostic failures and inference boundaries.",
+  "full_regression": {
+    "report": "full-regression/validation.json",
+    "report_sha256": "db2a6f1b01b3a028fb2e71abe8360649f7c6f5eab85d377f1f65502b3167e650",
+    "unique_pytest_passed": 570,
+    "existing_xfails": 2,
+    "existing_legacy_diagnostic_failures": [
+      "test_progressive_ondemand.sh",
+      "test_progressive_loading.py",
+      "test_lazy_load_verification.py"
+    ]
+  }
+}

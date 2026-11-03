@@ -1,0 +1,209 @@
+[
+  {
+    "id": "5",
+    "type": "EmptyLatentImage",
+    "pos": [
+      1160.0000228881834,
+      725.1389160156249
+    ],
+    "size": [
+      315,
+      106
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "width",
+        "value": 512
+      },
+      {
+        "name": "height",
+        "value": 768
+      },
+      {
+        "name": "batch_size",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "type": "VAEDecode",
+    "pos": [
+      1519.9537582397459,
+      164.9999999999999
+    ],
+    "size": [
+      210,
+      46
+    ],
+    "scale": 1,
+    "widgets": []
+  },
+  {
+    "id": "4",
+    "type": "CheckpointLoaderSimple",
+    "pos": [
+      100.0000076293943,
+      164.9999999999999
+    ],
+    "size": [
+      315,
+      98
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "ckpt_name",
+        "value": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "type": "CLIPTextEncode",
+    "pos": [
+      580.0000228881834,
+      725.1389160156249
+    ],
+    "size": [
+      425.27801513671875,
+      180.6060791015625
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "text",
+        "value": "text, watermark"
+      }
+    ]
+  },
+  {
+    "id": "10",
+    "type": "ImpactWildcardEncode",
+    "pos": [
+      579.8611068725584,
+      165.09259033203114
+    ],
+    "size": [
+      492.90380859375,
+      350.16204833984375
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "wildcard_text",
+        "value": "<lora:SD1.5/cloth/2b leotardV2:1.0:1.0:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, 2b leotard, (covered eyes:1.1), hair over eyes"
+      },
+      {
+        "name": "populated_text",
+        "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light"
+      },
+      {
+        "name": "mode",
+        "value": "populate"
+      },
+      {
+        "name": "Select to add LoRA",
+        "value": "Select the LoRA to add to the text"
+      },
+      {
+        "name": "Select to add Wildcard",
+        "value": "Select Wildcard \ud83d\udfe2 Full Cache"
+      },
+      {
+        "name": "seed",
+        "value": 732
+      },
+      {
+        "name": "control_after_generate",
+        "value": "increment"
+      }
+    ]
+  },
+  {
+    "id": "9",
+    "type": "SaveImage",
+    "pos": [
+      1769.9537582397459,
+      165.06944274902332
+    ],
+    "size": [
+      344.9357604980469,
+      577.8340454101562
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "filename_prefix",
+        "value": "ComfyUI"
+      },
+      {
+        "name": "$$canvas-image-preview",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "type": "KSampler",
+    "pos": [
+      1160.0694808959959,
+      164.9999999999999
+    ],
+    "size": [
+      320,
+      474
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "seed",
+        "value": 944516346096519
+      },
+      {
+        "name": "control_after_generate",
+        "value": "fixed"
+      },
+      {
+        "name": "steps",
+        "value": 20
+      },
+      {
+        "name": "cfg",
+        "value": 8
+      },
+      {
+        "name": "sampler_name",
+        "value": "euler"
+      },
+      {
+        "name": "scheduler",
+        "value": "normal"
+      },
+      {
+        "name": "denoise",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "type": "PrimitiveStringMultiline",
+    "pos": [
+      100.00000762939453,
+      435.138885498047
+    ],
+    "size": [
+      430,
+      230
+    ],
+    "scale": 1,
+    "widgets": [
+      {
+        "name": "value",
+        "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light"
+      }
+    ]
+  }
+]

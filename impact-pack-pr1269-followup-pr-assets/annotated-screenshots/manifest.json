@@ -1,0 +1,444 @@
+{
+  "method": "Unchanged original screenshot embedded in HTML; separate SVG highlight and HTML note layers rendered in Chrome. No crop, retouching, or generated screenshot content.",
+  "images": [
+    {
+      "id": "list-before",
+      "title": "Main + #1269: seed 5 incorrectly reuses the seed-2 result",
+      "subtitle": "Actual Chrome run · Request seed: 5 · Execution seed: 2 · All five nodes cached",
+      "source": "baseline-mixed-list/seed-5.png",
+      "evidence": [
+        "baseline-mixed-list/seed-5-request.json",
+        "baseline-mixed-list/seed-5-history.json",
+        "baseline-mixed-list/seed-5-events.json",
+        "baseline-mixed-list/observations.json"
+      ],
+      "evidence_labels": [
+        "Submitted request",
+        "Execution history",
+        "Cache and execution events",
+        "Both seed observations"
+      ],
+      "colors": [
+        "#ffbf69",
+        "#67e8f9",
+        "#fb7185"
+      ],
+      "highlights": [
+        [
+          0,
+          [
+            [
+              100,
+              150,
+              270,
+              88
+            ],
+            [
+              100,
+              450,
+              400,
+              230
+            ],
+            [
+              574,
+              337,
+              155,
+              105
+            ]
+          ]
+        ],
+        [
+          1,
+          [
+            [
+              904,
+              343,
+              372,
+              25
+            ]
+          ]
+        ],
+        [
+          2,
+          [
+            [
+              1398,
+              253,
+              194,
+              67
+            ]
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          0,
+          100,
+          715,
+          500,
+          "Mixed list input",
+          "{red|green|blue} is first; plain is last. The first item depends on the seed."
+        ],
+        [
+          1,
+          650,
+          715,
+          500,
+          "Requested seed = 5",
+          "The saved UI seed is 5. The execution history records seed 2 after the PR hook rewrites it."
+        ],
+        [
+          2,
+          1200,
+          715,
+          500,
+          "Incorrect cached result",
+          "The preview stays red / plain. Seed 5 should produce blue / plain."
+        ]
+      ],
+      "source_sha256": "e847608ff972a66cd575897017186c3fe9160906e0c1cb3c336c0c2436bae051",
+      "size": [
+        1800,
+        900
+      ],
+      "annotated_sha256": "dae10c35e69f5b556bf5208a9be869cfa403db85fc4be7ed11cc7f32a791a0d4"
+    },
+    {
+      "id": "list-after",
+      "title": "Follow-up: seed 5 updates the wildcard item and preserves the static item",
+      "subtitle": "Actual Chrome run · Request seed: 5 · Execution seed: 5 · Only the three upstream nodes cached",
+      "source": "focus-mixed-list/seed-5.png",
+      "evidence": [
+        "focus-mixed-list/seed-5-request.json",
+        "focus-mixed-list/seed-5-history.json",
+        "focus-mixed-list/seed-5-events.json",
+        "focus-mixed-list/observations.json"
+      ],
+      "evidence_labels": [
+        "Submitted request",
+        "Execution history",
+        "Cache and execution events",
+        "Both seed observations"
+      ],
+      "colors": [
+        "#ffbf69",
+        "#67e8f9",
+        "#a3e635"
+      ],
+      "highlights": [
+        [
+          0,
+          [
+            [
+              100,
+              150,
+              270,
+              88
+            ],
+            [
+              100,
+              450,
+              400,
+              230
+            ],
+            [
+              574,
+              337,
+              155,
+              105
+            ]
+          ]
+        ],
+        [
+          1,
+          [
+            [
+              904,
+              343,
+              372,
+              25
+            ]
+          ]
+        ],
+        [
+          2,
+          [
+            [
+              1398,
+              253,
+              194,
+              67
+            ]
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          0,
+          100,
+          715,
+          500,
+          "Mixed list input",
+          "{red|green|blue} is first; plain is last. The first item depends on the seed."
+        ],
+        [
+          1,
+          650,
+          715,
+          500,
+          "Requested seed = 5",
+          "The saved UI seed is 5. The execution history records seed 5, as submitted."
+        ],
+        [
+          2,
+          1200,
+          715,
+          500,
+          "Correct updated result",
+          "The preview changes to blue / plain. Wildcard and Preview execute again."
+        ]
+      ],
+      "source_sha256": "0e982ba63aaf816b159d9eac6fb175ef17a6f43276d2f3e9974370462661d9b5",
+      "size": [
+        1800,
+        900
+      ],
+      "annotated_sha256": "66421f2ff06a70e6286959d595b2a89d2573171abd3d737b084e80691ca7c2e5"
+    },
+    {
+      "id": "constant-lora-same",
+      "title": "A changed wildcard seed reuses every node when the constant text is unchanged",
+      "subtitle": "Combined Main + #1269 + follow-up · Request 732; UI shows next seed 733 · Execution seed 0",
+      "source": "constant-lora/same.png",
+      "evidence": [
+        "constant-lora/same-request.json",
+        "constant-lora/same-history.json",
+        "constant-lora/same-events.json",
+        "constant-lora/node-cache-keys.json"
+      ],
+      "highlights": [
+        [
+          0,
+          [
+            [
+              100,
+              405,
+              430,
+              260
+            ]
+          ]
+        ],
+        [
+          1,
+          [
+            [
+              580,
+              135,
+              493,
+              380
+            ],
+            [
+              1160,
+              135,
+              320,
+              504
+            ],
+            [
+              1520,
+              135,
+              210,
+              76
+            ],
+            [
+              1770,
+              135,
+              345,
+              608
+            ]
+          ]
+        ],
+        [
+          2,
+          [
+            [
+              100,
+              135,
+              315,
+              128
+            ],
+            [
+              580,
+              695,
+              425,
+              211
+            ],
+            [
+              1160,
+              695,
+              315,
+              136
+            ]
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          0,
+          100,
+          925,
+          650,
+          "Same source and expansion",
+          "Request 732 uses the exact text from 731. The source link stays connected. No upstream text or populated text changes."
+        ],
+        [
+          1,
+          800,
+          925,
+          650,
+          "Wildcard seed changes only in the UI",
+          "Requested 731 → 732 becomes execution 0 → 0. KSampler keeps seed 944516346096519. All eight execution cache keys stay equal."
+        ],
+        [
+          2,
+          1500,
+          925,
+          650,
+          "Observed cache reuse",
+          "execution_cached lists all eight nodes; no node has an executing event. The displayed image matches request 731 pixel-for-pixel."
+        ]
+      ],
+      "evidence_labels": [
+        "Request 732",
+        "Execution history",
+        "Cache and execution events",
+        "Input and cache-key comparison"
+      ],
+      "colors": [
+        "#a3e635",
+        "#a3e635",
+        "#a3e635"
+      ],
+      "source_sha256": "1f376bd72d9a2359ce5a74f67b3f05244e581368dcf21a0f448014af46e01615",
+      "size": [
+        2200,
+        1100
+      ],
+      "annotated_sha256": "123f12ca3b86553c88c5ec1cd2d1db26b10c02748ef7e695ba2c6948a4d4bc8c"
+    },
+    {
+      "id": "constant-lora-cache",
+      "title": "Text edit invalidates the positive sampling path",
+      "subtitle": "Combined Main + #1269 + follow-up · Request 733; UI shows next seed 734 · Execution seed 0",
+      "source": "constant-lora/changed.png",
+      "evidence": [
+        "constant-lora/changed-request.json",
+        "constant-lora/changed-history.json",
+        "constant-lora/changed-events.json",
+        "constant-lora/node-cache-keys.json"
+      ],
+      "highlights": [
+        [
+          0,
+          [
+            [
+              100,
+              405,
+              430,
+              260
+            ]
+          ]
+        ],
+        [
+          1,
+          [
+            [
+              580,
+              135,
+              493,
+              380
+            ],
+            [
+              1160,
+              135,
+              320,
+              504
+            ],
+            [
+              1520,
+              135,
+              210,
+              76
+            ],
+            [
+              1770,
+              135,
+              345,
+              608
+            ]
+          ]
+        ],
+        [
+          2,
+          [
+            [
+              100,
+              135,
+              315,
+              128
+            ],
+            [
+              580,
+              695,
+              425,
+              211
+            ],
+            [
+              1160,
+              695,
+              315,
+              136
+            ]
+          ]
+        ]
+      ],
+      "notes": [
+        [
+          0,
+          100,
+          925,
+          650,
+          "Direct constant input",
+          "Text #16 supplies add_detail + LBW. Request 733 adds “red flowers beside the door” to that same input."
+        ],
+        [
+          1,
+          800,
+          925,
+          650,
+          "Text-dependent path executes",
+          "Text #16 → Encode #10 → KSampler #3 → Decode #8 → Save #9 executes. The sampling seed stays fixed."
+        ],
+        [
+          2,
+          1500,
+          925,
+          650,
+          "Unchanged branches reuse cache",
+          "Checkpoint #4, latent #5 and negative CLIP #7 have unchanged inputs. Only these three nodes are cached for request 733."
+        ]
+      ],
+      "evidence_labels": [
+        "Request 733",
+        "Execution history",
+        "Cache and execution events",
+        "Input and cache-key comparison"
+      ],
+      "source_sha256": "9d4fbe6b7a8b05a20e495dd1494a68d4c882163c426e93e08073287a25ee9178",
+      "size": [
+        2200,
+        1100
+      ],
+      "annotated_sha256": "4a19244d3e53fa967b3ec861a442f8e9002a8716ffe6b77f0fcc538aaad73753"
+    }
+  ]
+}

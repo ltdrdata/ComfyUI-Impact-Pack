@@ -1,0 +1,2273 @@
+diff --git a/docs/E2E_TEST_STRATEGY.md b/docs/E2E_TEST_STRATEGY.md
+index a100c1b..f0d12c0 100644
+--- a/docs/E2E_TEST_STRATEGY.md
++++ b/docs/E2E_TEST_STRATEGY.md
+@@ -48,6 +48,23 @@ The shell tests using `curl` are API integration tests, not UI E2E tests.
+ `bash tests/test_encoding.sh http://127.0.0.1:18188` uses the same isolated
+ server and samples without modifying its configuration or managing processes.
+ 
++`(cd tests && python -m pytest -c pytest.ini)` includes the isolated loader tests in
++`tests/wildcards/test_progressive_loading.py` and `test_lazy_load_verification.py`.
++They create temporary TXT/YAML data and check metadata, progressive loading,
++YAML preload, cache hits and fresh reloads in both modes.
++
++The API parity diagnostic now uses two already-running isolated servers:
++
++```bash
++python tests/wildcards/test_wildcard_final.py --full-url http://127.0.0.1:18188 --on-demand-url http://127.0.0.1:18189
++```
++
++Both servers must expose the same `samples/flower`, `samples/jewel` and `colors`
++fixtures. The script requires the reported modes to differ as requested, checks
++HTTP status and complete expansion, and compares all seven cases. It does not
++start servers or edit configuration.
++
++
+ ## Prerequisites
+ 
+ - A working ComfyUI installation with dependencies matching its requirements.
+diff --git a/modules/impact/impact_server.py b/modules/impact/impact_server.py
+index d5c542d..8e86967 100644
+--- a/modules/impact/impact_server.py
++++ b/modules/impact/impact_server.py
+@@ -16,6 +16,7 @@ import nodes
+ import numpy as np
+ import torchvision
+ from aiohttp import web
++from comfy_execution.graph_utils import is_link
+ from impact.utils import to_tensor
+ from PIL import Image
+ from segment_anything import SamPredictor, sam_model_registry
+@@ -510,6 +511,19 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
+     return input_val
+ 
+ 
++def _constant_text(value, prompt):
++    """Read literals and direct core string constants without executing upstream nodes."""
++    if isinstance(value, str):
++        return value
++    if not is_link(value) or type(value[1]) is not int or value[1] != 0:
++        return None
++    source = prompt.get(value[0], {})
++    if source.get('class_type') not in ('PrimitiveString', 'PrimitiveStringMultiline'):
++        return None
++    text = source.get('inputs', {}).get('value')
++    return text if isinstance(text, str) else None
++
++
+ def onprompt_populate_wildcards(json_data):
+     prompt = json_data['prompt']
+ 
+@@ -528,17 +542,19 @@ def onprompt_populate_wildcards(json_data):
+                 inputs['mode'] = new_mode
+ 
+             if inputs['mode'] == 'populate' and isinstance(inputs['populated_text'], str):
++                wildcard_text = _constant_text(inputs['wildcard_text'], prompt)
++                if wildcard_text is None:
++                    logging.info("[Impact Pack] Node %s: wildcard_text requires text or a core string constant. "
++                                 "Connect runtime text to populated_text.", k)
++                    continue
++
+                 if isinstance(inputs['seed'], list):
+                     try:
+                         input_node = prompt[inputs['seed'][0]]
+                         if input_node['class_type'] == 'ImpactInt':
+                             input_seed = int(input_node['inputs']['value'])
+-                            if not isinstance(input_seed, int):
+-                                continue
+                         elif input_node['class_type'] == 'Seed (rgthree)':
+                             input_seed = int(input_node['inputs']['seed'])
+-                            if not isinstance(input_seed, int):
+-                                continue
+                         else:
+                             input_seed = find_input_value(input_node, prompt=prompt, input_type=int, input_keys=('int', 'seed', 'value'))
+                             if input_seed is None:
+@@ -549,19 +565,18 @@ def onprompt_populate_wildcards(json_data):
+                 else:
+                     input_seed = int(inputs['seed'])
+ 
+-                inputs['populated_text'] = impact.wildcards.process(inputs['wildcard_text'], input_seed)
++                inputs['populated_text'] = impact.wildcards.process(wildcard_text, input_seed)
+                 inputs['mode'] = 'reproduce'
+ 
+                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
+                 updated_widget_values[k] = inputs['populated_text']
+ 
+-            # Static text can share cache entries; preserve seeds for syntax markers and links.
+-            populated_text = inputs['populated_text']
+-            if isinstance(inputs['seed'], int) and isinstance(populated_text, str):
++            # Static text can share cache entries; preserve seeds for syntax and unknown outputs.
++            populated_text = _constant_text(inputs['populated_text'], prompt)
++            if isinstance(inputs['seed'], int) and populated_text is not None:
+                 if impact.wildcards.is_static_text(populated_text):
+                     inputs['seed'] = 0
+             elif isinstance(inputs['seed'], int):
+-                # Linked text that the last finished run received as static text reuses that run's seed.
+                 seed = impact.wildcards.recorded_static_seed(prompt, k)
+                 if seed is not None:
+                     inputs['seed'] = seed
+@@ -580,6 +595,9 @@ def onprompt_populate_wildcards(json_data):
+                         if key in updated_widget_values:
+                             widgets_values[1] = updated_widget_values[key]
+                             widgets_values[2] = "reproduce"
++                            if "widgets_values_named" in node:
++                                node["widgets_values_named"].update(
++                                    populated_text=updated_widget_values[key], mode="reproduce")
+ 
+ 
+ def onprompt_for_remote(json_data):
+diff --git a/modules/impact/wildcards.py b/modules/impact/wildcards.py
+index 4c577be..089d343 100644
+--- a/modules/impact/wildcards.py
++++ b/modules/impact/wildcards.py
+@@ -10,6 +10,7 @@ import folder_paths
+ import nodes
+ import numpy as np
+ import yaml
++from comfy_execution.graph_utils import is_link
+ from impact import config, utils
+ 
+ wildcards_path = os.path.join(config.pack_root, "wildcards")
+@@ -838,10 +839,6 @@ def _may_change_with_same_inputs(class_def):
+     return hasattr(class_def, 'IS_CHANGED')
+ 
+ 
+-def _is_link(value):
+-    return isinstance(value, list) and len(value) == 2 and isinstance(value[0], str) and isinstance(value[1], int)
+-
+-
+ def _validated_input(value):
+     # The hook sees the prompt before validation, nodes see it after. Validation unwraps
+     # list widgets and casts FLOAT widgets, which JSON sends as 1 for 1.0.
+@@ -856,21 +853,27 @@ def linked_text_fingerprint(prompt, node_id):
+     # Like ComfyUI's cache, equal upstream inputs are trusted to produce equal text unless
+     # an upstream node declares IS_CHANGED/fingerprint_inputs.
+     link = prompt[node_id]['inputs']['populated_text']
+-    if not _is_link(link):
++    if not is_link(link):
+         return None
+ 
+     upstream = {}
+-    pending = [link[0]]
++    pending = [link]
+     while pending:
+-        upstream_id = pending.pop()
+-        if upstream_id in upstream:
+-            continue
++        upstream_id, slot = pending.pop()
+         node = prompt.get(upstream_id)
+         class_def = nodes.NODE_CLASS_MAPPINGS.get(node['class_type']) if node is not None else None
+         if class_def is None or _may_change_with_same_inputs(class_def):
+             return None
++        if type(slot) is not int or slot < 0:
++            return None
++        # One mapped item cannot establish that every text in a list is static.
++        output_is_list = getattr(class_def, 'OUTPUT_IS_LIST', ())
++        if slot < len(output_is_list) and output_is_list[slot]:
++            return None
++        if upstream_id in upstream:
++            continue
+         upstream[upstream_id] = [node['class_type'], {k: _validated_input(v) for k, v in node['inputs'].items()}]
+-        pending += [v[0] for v in node['inputs'].values() if _is_link(v)]
++        pending += [v for v in node['inputs'].values() if is_link(v)]
+ 
+     return hashlib.sha256(json.dumps([link, upstream], sort_keys=True).encode()).hexdigest()
+ 
+diff --git a/tests/integration_wildcard_cache.py b/tests/integration_wildcard_cache.py
+index 794b637..d5c3f18 100644
+--- a/tests/integration_wildcard_cache.py
++++ b/tests/integration_wildcard_cache.py
+@@ -7,6 +7,7 @@ and the CLIP model are substituted; this does not test neural encoding quality.
+ import argparse
+ import asyncio
+ from copy import deepcopy
++from itertools import product
+ import json
+ from pathlib import Path
+ import sys
+@@ -33,15 +34,15 @@ def main():
+         send_sync=lambda event, data: feedback.append((event, data)),
+     )
+     import nodes
+-    from comfy_api.latest import io
+     from comfy_execution.caching import CacheKeySetInputSignature
+     from comfy_execution.graph import DynamicPrompt
++    from comfy_api.latest import io
++    from comfy_extras.nodes_primitive import Float, String, StringMultiline
+     from comfy_extras.nodes_preview_any import PreviewAny
+-    from comfy_extras.nodes_primitive import Float, StringMultiline
+     from comfy_extras.nodes_string import StringConcatenate
+-    from execution import IsChangedCache, validate_prompt
++    from execution import IsChangedCache, _async_map_node_over_list, validate_prompt
+     # Match server startup order; importing impact_pack first creates a cycle.
+-    from impact import impact_server, impact_pack, logics, wildcards
++    from impact import impact_server, impact_pack, logics, util_nodes, wildcards
+ 
+     # Text providers whose output may change while their inputs stay equal, like file loaders.
+     class ChangingTextSource:
+@@ -71,12 +72,16 @@ def main():
+     classes = {name: getattr(impact_pack, name) for name in (
+         "ImpactWildcardProcessor", "ImpactWildcardEncode",
+     )}
+-    nodes.NODE_CLASS_MAPPINGS.update(classes | {
+-        "PreviewAny": PreviewAny, "PrimitiveStringMultiline": StringMultiline, "StringConcatenate": StringConcatenate,
++    constants = {"PrimitiveString": String, "PrimitiveStringMultiline": StringMultiline}
++    nodes.NODE_CLASS_MAPPINGS.update(classes | constants | {
++        "PreviewAny": PreviewAny, "StringConcatenate": StringConcatenate,
+         "ChangingTextSource": ChangingTextSource, "ChangingTextSourceV3": ChangingTextSourceV3,
+         "UndeclaredTextSource": UndeclaredTextSource, "PrimitiveFloat": Float,
+-        "ImpactConvertDataType": logics.ImpactConvertDataType,
++        "ImpactConvertDataType": logics.ImpactConvertDataType, "ImpactMakeAnyList": util_nodes.MakeAnyList,
+     })
++    widget_defaults = {node["type"]: {w["name"]: w["value"] for w in node["widgets"]}
++                       for node in json.loads((root / "tests/workflows/all-impact-nodes.widgets.json").read_text())["nodes"]
++                       if node["type"] in classes}
+     wildcards.wildcard_dict = {"colors": ["red", "green", "blue"]}
+     wildcards._on_demand_mode = False
+ 
+@@ -103,16 +108,13 @@ def main():
+         inputs = dict(wildcard_text=source, populated_text=text, seed=seed, mode=mode)
+         prompt = deepcopy(upstream or {}) | {"1": {"class_type": name, "inputs": inputs}}
+         # The saved native workflow must keep the user's seed and widget slots.
+-        widgets = [source, text, mode]
+-        widgets += ([seed, "increment", "Select the Wildcard to add to the text"]
+-                    if name == "ImpactWildcardProcessor" else [
+-                        "Select the LoRA to add to the text", "Select the Wildcard to add to the text", seed, "increment"])
++        widgets = list(dict(widget_defaults[name], wildcard_text=source, populated_text=text,
++                            mode=mode, seed=seed, control_after_generate="increment").values())
+         workflow_node = {"id": 1, "widgets_values": deepcopy(widgets)}
+         data = {"prompt": prompt, "extra_data": {"extra_pnginfo": {"workflow": {"nodes": [workflow_node]}}}}
+         feedback.clear()
+         impact_server.onprompt_populate_wildcards(data)
+         expected_widgets = deepcopy(widgets)
+-        # Linked populated_text cannot be populated before execution.
+         populated = mode in ("populate", True) and isinstance(text, str)
+         if populated:
+             expected_widgets[1:3] = [inputs["populated_text"], "reproduce"]
+@@ -131,7 +133,6 @@ def main():
+         if name == "ImpactWildcardEncode":
+             values.update(model=object(), clip=Clip())
+         if prompt is not None:
+-            # Hidden inputs supplied by ComfyUI during execution.
+             values.update(prompt=prompt, unique_id="1")
+         return classes[name]().doit(**values)[-1]
+ 
+@@ -149,6 +150,9 @@ def main():
+         return [keys.get_data_key(node) for node in ("1", "2")]
+ 
+     class WildcardCacheTests(unittest.TestCase):
++        def setUp(self):
++            wildcards.static_linked_text_seeds.clear()
++
+         def test_file_loading_modes_preserve_seeded_output(self):
+             # Exercise the real startup loader, lazy TXT lookup and preloaded
+             # YAML through the hook, not just an injected wildcard dictionary.
+@@ -218,37 +222,32 @@ def main():
+                             self.assertEqual(output(name, inputs, combined), selection)
+ 
+         def test_linked_static_text_reuses_learned_seed(self):
+-            sources = (
+-                {"class_type": "PrimitiveStringMultiline", "inputs": {"value": "plain α"}},
+-                {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": "α", "delimiter": " "}},
+-            )
+-            for name in classes:
+-                for mode in ("populate", "fixed", "reproduce"):
+-                    for source in sources:
+-                        with self.subTest(node=name, mode=mode, source=source["class_type"]):
+-                            wildcards.static_linked_text_seeds.clear()
++            source = {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": "α", "delimiter": " "}}
++            for name, mode in product(classes, ("populate", "fixed", "reproduce")):
++                with self.subTest(node=name, mode=mode):
++                    wildcards.static_linked_text_seeds.clear()
+ 
+-                            def linked(seed, upstream=source):
+-                                return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
++                    def linked(seed, upstream=source):
++                        return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
+ 
+-                            # Nothing is known about the text before the first run.
+-                            first = linked(731)
+-                            self.assertEqual(first["1"]["inputs"]["seed"], 731)
+-                            self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
++                    # Nothing is known about the text before the first run.
++                    first = linked(731)
++                    self.assertEqual(first["1"]["inputs"]["seed"], 731)
++                    self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
+ 
+-                            second = linked(732)
+-                            self.assertEqual(second["1"]["inputs"]["seed"], 731)
+-                            self.assertEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(second)))
++                    second = linked(732)
++                    self.assertEqual(second["1"]["inputs"]["seed"], 731)
++                    self.assertEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(second)))
+ 
+-                            changed = deepcopy(source)
+-                            changed["inputs"][next(iter(changed["inputs"]))] = "changed"
+-                            third = linked(733, changed)
+-                            self.assertEqual(third["1"]["inputs"]["seed"], 733)
+-                            self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
++                    changed = deepcopy(source)
++                    changed["inputs"]["string_a"] = "changed"
++                    third = linked(733, changed)
++                    self.assertEqual(third["1"]["inputs"]["seed"], 733)
++                    self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
+ 
+-                            # Only the last run is kept; ComfyUI's cache drops the earlier text too.
+-                            output(name, third["1"]["inputs"], resolve(changed), prompt=third)
+-                            self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
++                    # Only the last run is kept; ComfyUI's cache drops the earlier text too.
++                    output(name, third["1"]["inputs"], resolve(changed), prompt=third)
++                    self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
+ 
+         def test_linked_dynamic_text_keeps_seeds_of_queued_runs(self):
+             sources = (
+@@ -324,6 +323,59 @@ def main():
+                     prompt = prepare(name, 731, ["text", 0], upstream=upstream)
+                     self.assertIsNotNone(wildcards.linked_text_fingerprint(prompt, "1"))
+ 
++        def test_mapped_text_lists_keep_requested_seeds(self):
++            for name, texts in product(classes, (("{red|green|blue}", "plain"),
++                                                 ("plain", "{red|green|blue}"), ("one", "two"))):
++                with self.subTest(node=name, texts=texts):
++                    wildcards.static_linked_text_seeds.clear()
++                    upstream = {"list": {"class_type": "ImpactMakeAnyList", "inputs": {
++                        "value1": texts[0], "value2": texts[1]}}}
++                    mapped_text = util_nodes.MakeAnyList().doit(**upstream["list"]["inputs"])[0]
++                    original = classes[name].doit
++
++                    def execute(instance, **values):
++                        result = original(instance, **values)
++                        # A request may arrive between mapped calls, before the list finishes.
++                        queued = prepare(name, 42, ["list", 0], upstream=upstream)
++                        self.assertEqual(queued["1"]["inputs"]["seed"], 42)
++                        return result
++
++                    for seed, color in ((2, "red"), (5, "blue")):
++                        prompt = prepare(name, seed, ["list", 0], upstream=upstream)
++                        self.assertEqual(prompt["1"]["inputs"]["seed"], seed)
++                        values = {k: [v] for k, v in prompt["1"]["inputs"].items()}
++                        values.update(populated_text=mapped_text, prompt=[prompt], unique_id=["1"])
++                        if name == "ImpactWildcardEncode":
++                            values.update(model=[object()], clip=[Clip()])
++                        with patch.object(classes[name], "doit", execute):
++                            results = asyncio.run(_async_map_node_over_list("test", "1", classes[name](), values, "doit"))
++                        self.assertEqual([result[-1] for result in results],
++                                         [color if text.startswith("{") else text for text in texts])
++                        self.assertEqual(wildcards.static_linked_text_seeds, {})
++
++        def test_list_output_detection_follows_selected_slots_and_ancestors(self):
++            class TextOutputs(io.ComfyNode):
++                @classmethod
++                def define_schema(cls):
++                    return io.Schema(node_id="TextOutputs", outputs=[
++                        io.String.Output(), io.String.Output(is_output_list=True)])
++
++                @classmethod
++                def execute(cls):
++                    return io.NodeOutput("plain", ["plain", "{red|green|blue}"])
++
++            with patch.dict(nodes.NODE_CLASS_MAPPINGS, TextOutputs=TextOutputs):
++                for source_type, slot, allowed in (("ImpactMakeAnyList", 0, False),
++                                                   ("TextOutputs", 1, False), ("TextOutputs", 0, True)):
++                    with self.subTest(source=source_type, slot=slot):
++                        upstream = {
++                            "source": {"class_type": source_type, "inputs": {}},
++                            "text": {"class_type": "StringConcatenate", "inputs": {
++                                "string_a": ["source", slot], "string_b": "plain", "delimiter": " "}},
++                        }
++                        prompt = prepare("ImpactWildcardProcessor", 731, ["text", 0], upstream=upstream)
++                        self.assertEqual(wildcards.linked_text_fingerprint(prompt, "1") is not None, allowed)
++
+         def test_recorded_seed_is_dropped_when_text_gains_syntax(self):
+             upstream = {"text": {"class_type": "UndeclaredTextSource", "inputs": {"path": "prompt.txt"}}}
+             for name in classes:
+@@ -338,14 +390,130 @@ def main():
+                     self.assertEqual(prepare(name, 733, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 733)
+ 
+         def test_linked_seed_is_never_replaced(self):
+-            for name in classes:
++            for name, (source_type, field) in product(classes, (("ImpactInt", "value"), ("Seed (rgthree)", "seed"))):
+                 for mode in ("populate", "fixed", "reproduce"):
+-                    with self.subTest(node=name, mode=mode):
+-                        upstream = {"seed": {"class_type": "ImpactInt", "inputs": {"value": 5}}}
++                    with self.subTest(node=name, mode=mode, source=source_type):
++                        upstream = {"seed": {"class_type": source_type, "inputs": {field: 5}}}
+                         inputs = prepare(name, ["seed", 0], "__colors__", mode, "__colors__", upstream)["1"]["inputs"]
+                         self.assertEqual(inputs["seed"], ["seed", 0])
+                         self.assertEqual(output(name, inputs, resolved_seed=5), "blue")
+ 
++        def test_constant_text_links_reuse_cache(self):
++            cases = (("populated_text", "fixed"), ("populated_text", "populate"),
++                     ("populated_text", "reproduce"), ("wildcard_text", "populate"))
++            for name, source_type, (field, mode), text in product(classes, constants, cases, ("", "plain α")):
++                with self.subTest(node=name, source=source_type, field=field, mode=mode, text=text):
++                    keys = []
++                    for seed, value in ((731, text), (732, text), (733, text + " changed")):
++                        upstream = {"source": {"class_type": source_type, "inputs": {"value": value}}}
++                        link = ["source", 0]
++                        prompt = prepare(name, seed, link if field == "populated_text" else "old",
++                                         mode, link if field == "wildcard_text" else "unused", upstream)
++                        inputs = prompt["1"]["inputs"]
++                        self.assertEqual(inputs[field], link)
++                        self.assertEqual(prompt["source"], upstream["source"])
++                        self.assertEqual(inputs["seed"], 0)
++                        resolved = constants[source_type].execute(value)[0] if field == "populated_text" else None
++                        self.assertEqual(output(name, inputs, resolved), value)
++                        keys.append(asyncio.run(cache_keys(prompt)))
++                    self.assertEqual(keys[0], keys[1])
++                    self.assertNotEqual(keys[0], keys[2])
++
++        def test_constant_text_links_preserve_seeded_output(self):
++            for name, source_type, field, text in product(classes, constants, ("populated_text", "wildcard_text"), selections):
++                with self.subTest(node=name, source=source_type, field=field, text=text):
++                    for seed, selection in zip(seeds, selections[text]):
++                        upstream = {"source": {"class_type": source_type, "inputs": {"value": text}}}
++                        link = ["source", 0]
++                        inputs = prepare(name, seed, link if field == "populated_text" else "old",
++                                         "populate", link if field == "wildcard_text" else "unused", upstream)["1"]["inputs"]
++                        resolved = constants[source_type].execute(text)[0] if field == "populated_text" else None
++                        self.assertEqual(output(name, inputs, resolved), selection)
++                        self.assertEqual(inputs[field], link)
++                        self.assertEqual(inputs["seed"], seed if field == "populated_text" else 0)
++
++            for name, source_type, field, text in product(
++                    classes, constants, ("populated_text", "wildcard_text"), ("plain", "__colors__")):
++                with self.subTest(node=name, source=source_type, field=field, text=text, linked_seed=True):
++                    for seed, expected in ((2, "red"), (5, "blue")):
++                        upstream = {"source": {"class_type": source_type, "inputs": {"value": text}},
++                                    "seed": {"class_type": "ImpactInt", "inputs": {"value": seed}}}
++                        link = ["source", 0]
++                        inputs = prepare(name, ["seed", 0], link if field == "populated_text" else "old",
++                                         "populate", link if field == "wildcard_text" else "unused", upstream)["1"]["inputs"]
++                        self.assertEqual(inputs["seed"], ["seed", 0])
++                        self.assertEqual(inputs[field], link)
++                        resolved = text if field == "populated_text" else None
++                        self.assertEqual(output(name, inputs, resolved, seed), "plain" if text == "plain" else expected)
++
++        def test_only_direct_constant_text_links_are_resolved(self):
++            cases = [
++                (["source", 0], {"class_type": "PrimitiveString", "inputs": {"value": ["literal", 0]}}),
++                (["source", 0], {"class_type": "StringConcatenate", "inputs": {"string_a": "plain", "string_b": " text", "delimiter": ""}}),
++                (["source", 0], {"class_type": "ExternalTextReader", "inputs": {"value": "plain"}}),
++            ]
++            constant = {"class_type": "PrimitiveString", "inputs": {"value": "plain"}}
++            cases += [(link, constant) for link in (
++                ["source", 1], ["source", -1], ["source", False], ["source", 0.0],
++                ["source"], ["source", 0, 1], [1, 0], ["missing", 0])]
++            cases += [(["source", 0], {"class_type": source_type, "inputs": inputs})
++                      for source_type, inputs in product(constants, ({}, {"value": None}, {"value": 0}, {"value": True}))]
++            for name, (link, source), field in product(classes, cases, ("populated_text", "wildcard_text")):
++                with self.subTest(node=name, link=link, source=source, field=field):
++                    data = {"prompt": {
++                        "source": source, "literal": constant,
++                        "1": {"class_type": name, "inputs": {
++                            "populated_text": link if field == "populated_text" else "old",
++                            "wildcard_text": link if field == "wildcard_text" else "unused",
++                            "mode": "populate", "seed": 731,
++                        }},
++                    }}
++                    before = deepcopy(data)
++                    feedback.clear()
++                    impact_server.onprompt_populate_wildcards(data)
++                    self.assertEqual(data, before)
++                    self.assertEqual(feedback, [])
++
++        def test_unsupported_population_does_not_abort_other_nodes_or_hooks(self):
++            for name, named in product(classes, (False, True)):
++                with self.subTest(node=name, named=named):
++                    values = dict(widget_defaults[name], wildcard_text="saved source", populated_text="old",
++                                  mode="populate", seed=2)
++                    saved = [{"id": i, "widgets_values": list(values.values())} for i in (1, 2)]
++                    if named:
++                        for node in saved:
++                            node["widgets_values_named"] = dict(values)
++                    inputs = dict(wildcard_text=["runtime", 0], populated_text="old", mode="populate", seed=2)
++                    data = {"prompt": {
++                        "runtime": {"class_type": "StringConcatenate", "inputs": {
++                            "string_a": "{red|", "string_b": "green|blue}", "delimiter": ""}},
++                        "constant": {"class_type": "PrimitiveString", "inputs": {"value": "{red|green|blue}"}},
++                        "1": {"class_type": name, "inputs": inputs},
++                        "2": {"class_type": name, "inputs": dict(inputs, wildcard_text=["constant", 0])},
++                        "receiver": {"class_type": "ImageReceiver", "inputs": {
++                            "save_to_workflow": True, "image": "previous image"}},
++                    }, "extra_data": {"extra_pnginfo": {"workflow": {"nodes": saved}}}}
++                    skipped = deepcopy(saved[0])
++                    skipped_inputs = deepcopy(inputs)
++                    feedback.clear()
++                    self.assertIs(impact_server.onprompt(data), data)
++                    self.assertEqual(data["prompt"]["1"]["inputs"], skipped_inputs)
++                    self.assertEqual(saved[0], skipped)
++                    self.assertEqual(data["prompt"]["2"]["inputs"], dict(
++                        wildcard_text=["constant", 0], populated_text="red", mode="reproduce", seed=0))
++                    expected = dict(values, populated_text="red", mode="reproduce")
++                    self.assertEqual(saved[1]["widgets_values"], list(expected.values()))
++                    if named:
++                        self.assertEqual(saved[1]["widgets_values_named"], expected)
++                    else:
++                        self.assertNotIn("widgets_values_named", saved[1])
++                    self.assertEqual([(event, item["node_id"], item["widget_name"], item["value"])
++                                      for event, item in feedback], [
++                        ("impact-node-feedback", "2", "populated_text", "red"),
++                        ("impact-node-feedback", "2", "mode", "populate"),
++                    ])
++                    self.assertEqual(data["prompt"]["receiver"]["inputs"]["image"], "#DATA")
++
+         def test_unresolved_syntax_after_population_keeps_seed(self):
+             for name in classes:
+                 with self.subTest(node=name):
+diff --git a/tests/pytest.ini b/tests/pytest.ini
+index 3c4cbea..bc6b03a 100644
+--- a/tests/pytest.ini
++++ b/tests/pytest.ini
+@@ -9,3 +9,5 @@ testpaths =
+     wildcards/test_seed_regression.py
+     wildcards/test_wildcard_encoding_strict.py
+     wildcards/test_lora_wildcard_source.py
++    wildcards/test_progressive_loading.py
++    wildcards/test_lazy_load_verification.py
+diff --git a/tests/test_e2e_wildcard_cache.py b/tests/test_e2e_wildcard_cache.py
+index acc178b..313e6ec 100644
+--- a/tests/test_e2e_wildcard_cache.py
++++ b/tests/test_e2e_wildcard_cache.py
+@@ -49,8 +49,9 @@ def graph(ui, node_type):
+ 
+ 
+ def cached(entry):
+-    return {str(node) for event, data in entry["status"]["messages"]
+-            if event == "execution_cached" for node in data["nodes"]}
++    events = [data["nodes"] for event, data in entry["status"]["messages"] if event == "execution_cached"]
++    assert len(events) == 1, entry["status"]
++    return set(map(str, events[0]))
+ 
+ 
+ def run(ui, preview_id, expected, label):
+@@ -61,32 +62,45 @@ def run(ui, preview_id, expected, label):
+     return entry
+ 
+ 
+-def native_roundtrip(ui, node_id):
++def set_text(ui, node_type, widget, value):
++    ui.page.mouse.dblclick(*ui.point(node_type, widget=widget), delay=100)
++    editor = ui.page.locator("input.value:visible")
++    editor.fill(value)
++    editor.press("Enter")
++
++
++def native_roundtrip(ui, node_id, *other_ids):
+     """Compare rendered widget names/order/values and the native serialization."""
+-    show_node(ui, node_id)
+-    before = widget_state(ui, node_id)
+     trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
+-    reference = next(node for node in trusted["nodes"] if node["type"] == before["type"])
+-    assert [w["name"] for w in before["widgets"]] == [w["name"] for w in reference["widgets"]]
++    states = {}
++    for target_id in (node_id, *other_ids):
++        show_node(ui, target_id)
++        state = widget_state(ui, target_id)
++        reference = next(node for node in trusted["nodes"] if node["type"] == state["type"])
++        assert [w["name"] for w in state["widgets"]] == [w["name"] for w in reference["widgets"]]
++        states[target_id] = state
+     workflow = ui.artifacts / "saved.json"
+     export_workflow(ui, workflow)
+     saved = json.loads(workflow.read_text())
+     ui.new_workflow()
+     ui.load_workflow(workflow, len(saved["nodes"]))
+     full_zoom(ui)
+-    show_node(ui, node_id)
+-    assert widget_state(ui, node_id) == before
++    for target_id, before in states.items():
++        show_node(ui, target_id)
++        assert json.dumps(widget_state(ui, target_id), sort_keys=True) == json.dumps(before, sort_keys=True)
+     roundtrip = ui.artifacts / "roundtrip.json"
+     export_workflow(ui, roundtrip)
+     restored = json.loads(roundtrip.read_text())
+-    assert {str(n["id"]): n.get("widgets_values", []) for n in restored["nodes"]} == {
+-        str(n["id"]): n.get("widgets_values", []) for n in saved["nodes"]}
++    for field, default in (("widgets_values", []), ("widgets_values_named", {})):
++        assert json.dumps({str(n["id"]): n.get(field, default) for n in restored["nodes"]}, sort_keys=True) == json.dumps({
++            str(n["id"]): n.get(field, default) for n in saved["nodes"]}, sort_keys=True)
+     # Native loading can reorder link records; their IDs and endpoints must
+     # remain identical. Widget arrays above deliberately retain their order.
+     assert sorted(restored["links"]) == sorted(saved["links"])
+     assert restored.get("definitions") == saved.get("definitions")
+-    (ui.artifacts / "widget-state.json").write_text(json.dumps(before, indent=2) + "\n")
+-    return before
++    (ui.artifacts / "widget-state.json").write_text(json.dumps(states, indent=2) + "\n")
++    show_node(ui, node_id)
++    return states[node_id]
+ 
+ 
+ def input_slot(ui, node_type, name):
+@@ -177,6 +191,66 @@ def test_populate_reuses_cache_only_for_same_expansion(ui, node_type):
+         assert saved_node["widgets_values"][seed_index] == seed
+ 
+ 
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("syntax_first", [True, False], ids=["syntax-first", "syntax-last"])
++def test_mapped_list_preserves_each_seed(ui, node_type, syntax_first, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "mode", "fixed")
++    text_id = ui.add_node("Text", "PrimitiveString", 100, 650)
++    set_text(ui, "PrimitiveString", "value", "{red|green|blue}")
++    plain = f"plain {uuid4().hex}"
++    other_id = ui.add_node("Text (Multiline)", "PrimitiveStringMultiline", 100, 850)
++    ui.page.get_by_placeholder("value", exact=True).fill(plain)
++    list_id = ui.add_node("Make List (Any)", "ImpactMakeAnyList", 700, 800)
++    sources = ("PrimitiveString", "PrimitiveStringMultiline") if syntax_first else (
++        "PrimitiveStringMultiline", "PrimitiveString")
++    for index, source in enumerate(sources, 1):
++        ui.connect(source, "ImpactMakeAnyList", target_slot=input_slot(ui, "ImpactMakeAnyList", f"value{index}"))
++    ui.connect("ImpactMakeAnyList", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    native_roundtrip(ui, node_id, list_id)
++    for seed, color in ((2, "red"), (5, "blue")):
++        show_node(ui, node_id)
++        ui.set_number(node_type, "seed", seed)
++        entry = ui.run()
++        (ui.artifacts / f"list-{seed}.json").write_text(json.dumps(entry, indent=2) + "\n")
++        expected = [color, plain] if syntax_first else [plain, color]
++        assert entry["outputs"][preview_id]["text"] == expected
++        show_node(ui, preview_id)
++        expect(ui.page.get_by_role("textbox", name="preview_text", exact=True)).to_have_value("\n\n".join(expected))
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == seed
++        assert {node_id, preview_id}.isdisjoint(cached(entry))
++        if seed == 5:
++            assert {text_id, other_id, list_id} <= cached(entry)
++
++
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++def test_scalar_runtime_text_still_reuses_learned_seed(ui, node_type):
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "mode", "fixed")
++    source_id = ui.add_node("Concatenate Text", "StringConcatenate", 100, 650)
++    text = f"learned {uuid4().hex}"
++    ui.page.get_by_placeholder("string_a", exact=True).fill(text)
++    ui.page.get_by_placeholder("string_b", exact=True).fill(" text")
++    ui.connect("StringConcatenate", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    for seed in (731, 732):
++        show_node(ui, node_id)
++        ui.set_number(node_type, "seed", seed)
++        entry = run(ui, preview_id, text + " text", f"learned-{seed}")
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == 731
++        assert (node_id in cached(entry)) is (seed == 732)
++    show_node(ui, source_id)
++    ui.page.get_by_placeholder("string_a", exact=True).fill(f"{text} {{red|")
++    ui.page.get_by_placeholder("string_b", exact=True).fill("green|blue}")
++    for seed, expected in ((2, "red"), (5, "blue")):
++        show_node(ui, node_id)
++        ui.set_number(node_type, "seed", seed)
++        entry = run(ui, preview_id, f"{text} {expected}", f"learned-to-syntax-{seed}")
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == seed
++        assert {node_id, preview_id}.isdisjoint(cached(entry))
++
++
+ @pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+ @pytest.mark.parametrize("node_type", NODE_TYPES)
+ def test_reproduce_native_workflow_then_populate(ui, node_type, restore_by_name):
+@@ -226,6 +300,158 @@ def test_plain_text_reuses_downstream_cache(ui, node_type):
+     assert {node_id, preview_id}.isdisjoint(cached(changed))
+ 
+ 
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("source_type", ["PrimitiveString", "PrimitiveStringMultiline"])
++@pytest.mark.parametrize("field", ["populated_text", "wildcard_text"])
++def test_constant_text_link_cache_and_native_restore(ui, node_type, source_type, field, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "control_after_generate", "increment")
++    ui.set_number(node_type, "seed", 731)
++    title = "Text" if source_type == "PrimitiveString" else "Text (Multiline)"
++    source_id = ui.add_node(title, source_type, 100, 650)
++
++    def set_source_text(value):
++        show_node(ui, source_id)
++        if source_type == "PrimitiveStringMultiline":
++            ui.page.get_by_placeholder("value", exact=True).fill(value)
++        else:
++            set_text(ui, source_type, "value", value)
++
++    text = f"constant prompt {uuid4().hex}"
++    set_source_text(text)
++    show_node(ui, node_id)
++    ui.connect(source_type, node_type, target_slot=input_slot(ui, node_type, field))
++    native_roundtrip(ui, node_id)
++    for index in range(2):
++        entry = run(ui, preview_id, text, f"constant-{index}")
++        inputs = entry["prompt"][2][node_id]["inputs"]
++        assert inputs[field] == [source_id, 0]
++        assert inputs["seed"] == 0
++        if index:
++            assert {node_id, preview_id} <= cached(entry)
++        else:
++            assert {node_id, preview_id}.isdisjoint(cached(entry))
++    assert next(w["value"] for w in widget_state(ui, node_id)["widgets"] if w["name"] == "seed") == 733
++
++    set_source_text(text + " changed")
++    changed = run(ui, preview_id, text + " changed", "constant-changed")
++    assert {node_id, preview_id}.isdisjoint(cached(changed))
++
++    # LRU can retain an identical syntax graph from another parameterized case.
++    syntax = f"{text} {{red|green|blue}}"
++    set_source_text(syntax)
++    show_node(ui, node_id)
++    ui.choose(node_type, "control_after_generate", "fixed")
++    for seed, expected in ((2, "red"), (5, "blue")):
++        ui.set_number(node_type, "seed", seed)
++        entry = run(ui, preview_id, f"{text} {expected}", f"constant-syntax-{seed}")
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == (seed if field == "populated_text" else 0)
++    seed_id = ui.add_node("ImpactInt", "ImpactInt", 850, 650)
++    ui.set_number("ImpactInt", "value", 2)
++    ui.connect("ImpactInt", node_type, target_slot=input_slot(ui, node_type, "seed"))
++    before = native_roundtrip(ui, node_id)
++    for source_text, label in ((syntax, "syntax"), (text + " linked seed", "plain")):
++        set_source_text(source_text)
++        for seed, expected in ((2, "red"), (5, "blue")):
++            show_node(ui, seed_id)
++            ui.set_number("ImpactInt", "value", seed)
++            show_node(ui, node_id)
++            entry = run(ui, preview_id, f"{text} {expected}" if label == "syntax" else source_text, f"linked-seed-{label}-{seed}")
++            inputs = entry["prompt"][2][node_id]["inputs"]
++            assert inputs["seed"] == [seed_id, 0]
++            assert inputs[field] == [source_id, 0]
++            assert {node_id, preview_id}.isdisjoint(cached(entry))
++    show_node(ui, node_id)
++    assert next(w for w in widget_state(ui, node_id)["widgets"] if w["name"] == "seed") == next(
++        w for w in before["widgets"] if w["name"] == "seed")
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++def test_runtime_population_source_preserves_saved_text(ui, node_type, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id = graph(ui, node_type)
++    previous = f"saved text {uuid4().hex}"
++    ui.choose(node_type, "mode", "fixed")
++    ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill(previous)
++    ui.choose(node_type, "mode", "populate")
++    ui.set_number(node_type, "seed", 2)
++    source_id = ui.add_node("Concatenate Text", "StringConcatenate", 100, 650)
++    show_node(ui, source_id)
++    ui.page.get_by_placeholder("string_a", exact=True).fill("{red|")
++    ui.page.get_by_placeholder("string_b", exact=True).fill("green|blue}")
++    show_node(ui, node_id)
++    ui.connect("StringConcatenate", node_type, target_slot=input_slot(ui, node_type, "wildcard_text"))
++    before = native_roundtrip(ui, node_id)
++    entry = run(ui, preview_id, previous, "unsupported-population")
++    inputs = entry["prompt"][2][node_id]["inputs"]
++    assert (inputs["wildcard_text"], inputs["populated_text"], inputs["mode"], inputs["seed"]) == (
++        [source_id, 0], previous, "populate", 2)
++    assert widget_state(ui, node_id) == before
++    native_roundtrip(ui, node_id)
++
++    constant_id = ui.add_node("Text", "PrimitiveString", 850, 750)
++    show_node(ui, constant_id)
++    set_text(ui, "PrimitiveString", "value", "{red|green|blue}")
++    show_node(ui, node_id)
++    ui.connect("PrimitiveString", node_type, target_slot=input_slot(ui, node_type, "wildcard_text"))
++    entry = run(ui, preview_id, "red", "supported-population")
++    inputs = entry["prompt"][2][node_id]["inputs"]
++    assert (inputs["wildcard_text"], inputs["populated_text"], inputs["mode"], inputs["seed"]) == (
++        [constant_id, 0], "red", "reproduce", 0)
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("source_type", [None, "PrimitiveString", "PrimitiveStringMultiline"],
++                         ids=["literal", "string", "multiline"])
++def test_execution_metadata_restores_populated_text(ui, node_type, source_type, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "mode", "fixed")
++    ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill("previous text")
++    ui.choose(node_type, "mode", "populate")
++    ui.set_number(node_type, "seed", 2)
++    if source_type:
++        title = "Text" if source_type == "PrimitiveString" else "Text (Multiline)"
++        source_id = ui.add_node(title, source_type, 100, 650)
++        ui.connect(source_type, node_type, target_slot=input_slot(ui, node_type, "wildcard_text"))
++
++    def set_source(value):
++        show_node(ui, source_id if source_type else node_id)
++        if source_type == "PrimitiveString":
++            set_text(ui, source_type, "value", value)
++        else:
++            placeholder = "value" if source_type else "Wildcard Prompt (User input)"
++            ui.page.get_by_placeholder(placeholder, exact=True).fill(value)
++
++    set_source("{red|green|blue}")
++    show_node(ui, node_id)
++    before = native_roundtrip(ui, node_id)
++    entry = run(ui, preview_id, "red", "generated")
++    # Load the native workflow captured by the server, before UI feedback can
++    # repair stale metadata through another Export.
++    workflow = entry["prompt"][3]["extra_pnginfo"]["workflow"]
++    path = ui.artifacts / "execution-workflow.json"
++    path.write_text(json.dumps(workflow, indent=2) + "\n")
++    ui.new_workflow()
++    ui.load_workflow(path, len(workflow["nodes"]))
++    full_zoom(ui)
++    show_node(ui, node_id)
++    expected = [dict(w, value="red") if w["name"] == "populated_text" else
++                dict(w, value="reproduce") if w["name"] == "mode" else w for w in before["widgets"]]
++    assert widget_state(ui, node_id)["widgets"] == expected
++    saved_node = next(n for n in workflow["nodes"] if str(n["id"]) == node_id)
++    assert saved_node["widgets_values"] == [w["value"] for w in expected]
++    assert saved_node["widgets_values_named"] == {w["name"]: w["value"] for w in expected}
++    set_source("changed after loading")
++    show_node(ui, node_id)
++    run(ui, preview_id, "red", "reproduced")
++    run(ui, preview_id, "changed after loading", "next-populate")
++
++
+ @pytest.mark.parametrize("node_type", NODE_TYPES)
+ @pytest.mark.parametrize("text", ["{red|\ngreen|blue}", "{red|{green}|blue}"], ids=["multiline", "nested"])
+ def test_fixed_syntax_preserves_seed(ui, node_type, text):
+diff --git a/tests/test_e2e_wildcard_controls.py b/tests/test_e2e_wildcard_controls.py
+new file mode 100644
+index 0000000..f1173eb
+--- /dev/null
++++ b/tests/test_e2e_wildcard_controls.py
+@@ -0,0 +1,374 @@
++"""Chrome queue/control interactions for constant-linked wildcard prompts.
++
++Create and edit every graph through the UI; inspect real execution history and
++websocket feedback. Encode cases use the checkpoint from the cache E2E suite.
++"""
++import json
++import time
++from urllib.parse import urlsplit
++from uuid import uuid4
++
++import pytest
++
++from test_e2e_widget_catalog import export_workflow, full_zoom, setting, show_node, widget_state
++from test_e2e_wildcard_cache import (
++    NODE_TYPES, cached, graph, input_slot, native_roundtrip, set_text, run as run_preview,
++)
++from test_e2e_wildcard_cache import ui as ui  # shared Chrome fixture
++
++
++def run(ui, preview_id, expected, label):
++    show_node(ui, preview_id)
++    return run_preview(ui, preview_id, expected, label)
++
++
++def toggle(ui, node_type, widget, value):
++    current = ui.app.evaluate("""(app, {type, widget}) =>
++        app.graph._nodes.find(n => n.type === type).widgets.find(w => w.name === widget).value
++    """, {"type": node_type, "widget": widget})
++    if current != value:
++        ui.page.mouse.click(*ui.point(node_type, widget=widget))
++    ui.page.wait_for_function("""({app, type, widget, value}) =>
++        app.graph._nodes.find(n => n.type === type).widgets.find(w => w.name === widget).value === value
++    """, arg={"app": ui.app, "type": node_type, "widget": widget, "value": value})
++
++
++def constant_graph(ui, node_type, text):
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "mode", "fixed")
++    source_id = ui.add_node("Text", "PrimitiveString", 100, 650)
++    set_text(ui, "PrimitiveString", "value", text)
++    ui.connect("PrimitiveString", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    return node_id, preview_id, source_id
++
++
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("field", ["populated_text", "wildcard_text"])
++def test_cold_batch_reuses_constant_cache(ui, node_type, field):
++    node_id, preview_id = graph(ui, node_type)
++    ui.choose(node_type, "control_after_generate", "increment")
++    ui.set_number(node_type, "seed", 731)
++    text = f"cold batch {uuid4().hex}"
++    ui.add_node("Text (Multiline)", "PrimitiveStringMultiline", 100, 650)
++    ui.page.get_by_placeholder("value", exact=True).fill(text)
++    ui.connect("PrimitiveStringMultiline", node_type, target_slot=input_slot(ui, node_type, field))
++    native_roundtrip(ui, node_id)
++    workflow = ui.artifacts / "saved.json"
++
++    # Occupy the execution worker so both native batch requests arrive cold.
++    ui.new_workflow()
++    full_zoom(ui)
++    ui.add_node("Text", "PrimitiveString", 100, 250)
++    set_text(ui, "PrimitiveString", "value", uuid4().hex)
++    ui.add_node("Sleep", "ImpactSleep", 650, 250)
++    ui.set_number("ImpactSleep", "seconds", 20)
++    ui.connect("PrimitiveString", "ImpactSleep")
++    with ui.page.expect_response(lambda r: urlsplit(r.url).path in ("/prompt", "/api/prompt")
++                                 and r.request.method == "POST") as submitted:
++        ui.page.get_by_test_id("queue-button").click()
++    assert submitted.value.ok
++    blocker = submitted.value.json()["prompt_id"]
++    ui.new_workflow()
++    ui.load_workflow(workflow, len(json.loads(workflow.read_text())["nodes"]))
++    full_zoom(ui)
++    batch = ui.page.get_by_role("textbox", name="Batch Count", exact=True)
++    batch.fill("2")
++    batch.press("Enter")
++    pending = []
++
++    def observe_queue(response):
++        if urlsplit(response.url).path in ("/prompt", "/api/prompt") and response.request.method == "POST":
++            queue = ui.page.request.get(f"{ui.base_url}/queue").json()
++            pending.append({"request": response.request.post_data_json, "queue": queue})
++            assert queue["queue_running"][0][1] == blocker
++            assert response.json()["prompt_id"] in [item[1] for item in queue["queue_pending"]]
++
++    ui.page.on("response", observe_queue)
++    try:
++        entries = queue_runs(ui, 2, "cold-batch")
++    finally:
++        ui.page.remove_listener("response", observe_queue)
++    (ui.artifacts / "cold-queue.json").write_text(json.dumps(pending, indent=2) + "\n")
++    assert len(pending) == 2
++    assert [item["request"]["prompt"][node_id]["inputs"]["seed"] for item in pending] == [731, 732]
++    for entry in entries:
++        assert entry["status"]["status_str"] == "success"
++        assert entry["outputs"][preview_id]["text"] == [text]
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == 0
++    assert {node_id, preview_id}.isdisjoint(cached(entries[0]))
++    assert {node_id, preview_id} <= cached(entries[1])
++    export_workflow(ui, ui.artifacts / "after-batch.json")
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("upstream", [True, False], ids=["before_wildcard", "after_wildcard"])
++def test_control_bridge_stop_with_constant(ui, node_type, upstream, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    text = f"bridge {uuid4().hex}"
++    node_id, preview_id, source_id = constant_graph(ui, node_type, text)
++    ui.choose(node_type, "control_after_generate", "increment")
++    ui.set_number(node_type, "seed", 731)
++    bridge_id = ui.add_node("Control Bridge", "ImpactControlBridge", 950, 700)
++    if upstream:
++        ui.connect("PrimitiveString", "ImpactControlBridge")
++        ui.connect("ImpactControlBridge", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    else:
++        ui.connect(node_type, "ImpactControlBridge", source_slot=3 if node_type == "ImpactWildcardEncode" else 0)
++        ui.connect("ImpactControlBridge", "PreviewAny")
++    native_roundtrip(ui, node_id, bridge_id)
++    for index in range(2):
++        entry = run(ui, preview_id, text, f"active-{index}")
++        inputs = entry["prompt"][2][node_id]["inputs"]
++        assert inputs["seed"] == (731 + index if upstream else 0)
++        assert inputs["populated_text"] == [bridge_id if upstream else source_id, 0]
++        if index:
++            assert (node_id in cached(entry)) is not upstream
++
++    show_node(ui, bridge_id)
++    toggle(ui, "ImpactControlBridge", "mode", False)
++    for label in ("stopped", "stopped-new-text"):
++        if label == "stopped-new-text":
++            show_node(ui, source_id)
++            set_text(ui, "PrimitiveString", "value", text + " changed")
++        entry = ui.run()
++        (ui.artifacts / f"{label}.json").write_text(json.dumps(entry, indent=2) + "\n")
++        assert preview_id not in entry["outputs"]
++        assert preview_id not in cached(entry)
++    native_roundtrip(ui, node_id, bridge_id)
++    show_node(ui, bridge_id)
++    toggle(ui, "ImpactControlBridge", "mode", True)
++    run(ui, preview_id, text + " changed", "reactivated")
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++def test_switch_constant_is_not_folded(ui, node_type, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    text = f"switch {uuid4().hex}"
++    node_id, preview_id, _ = constant_graph(ui, node_type, text)
++    other_id = ui.add_node("Text (Multiline)", "PrimitiveStringMultiline", 100, 850)
++    show_node(ui, other_id)
++    ui.page.get_by_placeholder("value", exact=True).fill("{red|green|blue}")
++    show_node(ui, node_id)
++    switch_id = ui.add_node("Switch (Any)", "ImpactSwitch", 950, 700)
++    ui.connect("PrimitiveString", "ImpactSwitch", target_slot=input_slot(ui, "ImpactSwitch", "input1"))
++    ui.connect("PrimitiveStringMultiline", "ImpactSwitch", target_slot=input_slot(ui, "ImpactSwitch", "input2"))
++    ui.connect("ImpactSwitch", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    for select_on_prompt in (False, True):
++        show_node(ui, switch_id)
++        toggle(ui, "ImpactSwitch", "sel_mode", select_on_prompt)
++        native_roundtrip(ui, node_id, switch_id)
++        for select, seed, expected in ((1, 2, text), (2, 2, "red"), (2, 5, "blue"), (1, 5, text)):
++            show_node(ui, switch_id)
++            ui.set_number("ImpactSwitch", "select", select)
++            show_node(ui, node_id)
++            ui.set_number(node_type, "seed", seed)
++            entry = run(ui, preview_id, expected, f"switch-{select_on_prompt}-{select}-{seed}")
++            assert entry["prompt"][2][node_id]["inputs"]["seed"] == seed
++            assert entry["prompt"][2][node_id]["inputs"]["populated_text"] == [switch_id, 0]
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++def test_remote_seed_precedes_constant_check(ui, node_type, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id, source_id = constant_graph(ui, node_type, "{red|green|blue}")
++    remote_id = ui.add_node("Remote Int (on prompt)", "ImpactRemoteInt", 950, 700)
++    ui.set_number("ImpactRemoteInt", "node_id", int(node_id))
++    set_text(ui, "ImpactRemoteInt", "widget_name", "seed")
++    for seed, expected in ((2, "red"), (5, "blue")):
++        show_node(ui, remote_id)
++        ui.set_number("ImpactRemoteInt", "value", seed)
++        entry = run(ui, preview_id, expected, f"remote-syntax-{seed}")
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == seed
++    text = f"remote {uuid4().hex}"
++    show_node(ui, source_id)
++    set_text(ui, "PrimitiveString", "value", text)
++    native_roundtrip(ui, node_id, remote_id)
++    for index, seed in enumerate((731, 732)):
++        show_node(ui, remote_id)
++        ui.set_number("ImpactRemoteInt", "value", seed)
++        entry = run(ui, preview_id, text, f"remote-plain-{seed}")
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == 0
++        show_node(ui, node_id)
++        assert next(w["value"] for w in widget_state(ui, node_id)["widgets"] if w["name"] == "seed") == seed
++        if index:
++            assert {node_id, preview_id} <= cached(entry)
++
++
++def queue_runs(ui, count, label):
++    """Click Run once and observe the frontend's bounded automatic requeues."""
++    requests = []
++    prompt_ids = []
++    history = {}
++
++    def is_submission(request):
++        return urlsplit(request.url).path in ("/prompt", "/api/prompt") and request.method == "POST"
++
++    def requested(request):
++        if is_submission(request):
++            requests.append(request)
++
++    def submitted(response):
++        if is_submission(response.request):
++            assert response.ok, response.text()
++            prompt_ids.append(response.json()["prompt_id"])
++
++    ui.page.on("request", requested)
++    ui.page.on("response", submitted)
++    try:
++        ui.page.get_by_test_id("queue-button").click()
++        deadline = time.monotonic() + ui.timeout
++        while time.monotonic() < deadline:
++            ui.page.wait_for_timeout(100)
++            for prompt_id in tuple(prompt_ids):
++                if prompt_id not in history:
++                    response = ui.page.request.get(f"{ui.base_url}/history/{prompt_id}")
++                    assert response.ok, response.text()
++                    history.update(response.json())
++            queue = ui.page.request.get(f"{ui.base_url}/queue").json()
++            frontend_idle = ui.app.evaluate("app => app.processingQueue === false && app.queueItems.length === 0")
++            assert len(requests) <= count, f"Expected {count} submissions, observed {len(requests)}"
++            if (len(prompt_ids) == count and all(key in history for key in prompt_ids)
++                    and not any(queue.values()) and frontend_idle):
++                entries = [history[key] for key in prompt_ids]
++                (ui.artifacts / f"{label}.json").write_text(json.dumps(entries, indent=2) + "\n")
++                return entries
++        raise AssertionError(f"Expected {count} completed frontend submissions, got {prompt_ids}")
++    finally:
++        ui.page.remove_listener("request", requested)
++        ui.page.remove_listener("response", submitted)
++
++
++def test_queue_runs_rejects_extra_submission_before_response(ui):
++    ui.add_node("Queue Trigger (Countdown)", "ImpactQueueTriggerCountdown", 400, 300)
++    ui.set_number("ImpactQueueTriggerCountdown", "total", 4)
++    requests = []
++    held = []
++
++    def delay_fourth(route):
++        if route.request.method != "POST":
++            route.continue_()
++            return
++        requests.append(route.request)
++        if len(requests) == 4:
++            held.append(route)
++        else:
++            route.continue_()
++
++    ui.page.route("**/prompt", delay_fourth)
++    try:
++        with pytest.raises(AssertionError, match="Expected 3 submissions, observed 4"):
++            queue_runs(ui, 3, "unexpected-fourth")
++        assert len(held) == 1
++    finally:
++        for route in held:
++            route.abort()
++        ui.page.unroute("**/prompt", delay_fourth)
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++@pytest.mark.parametrize("behavior,node_mode,bypass_input", [
++    pytest.param("Mute", 2, False, id="Mute"),
++    pytest.param("Bypass", 4, False, id="Bypass-populated-only"),
++    pytest.param("Bypass", 4, True, id="Bypass-connected-first-input"),
++])
++def test_control_bridge_mode_change_requeues(ui, node_type, behavior, node_mode, bypass_input, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    node_id, preview_id, _ = constant_graph(ui, node_type, "{red|green|blue}")
++    ui.set_number(node_type, "seed", 2)
++    bridge_id = ui.add_node("Control Bridge", "ImpactControlBridge", 950, 700)
++    ui.choose("ImpactControlBridge", "behavior", behavior)
++    ui.connect("PrimitiveString", "ImpactControlBridge")
++    ui.connect("ImpactControlBridge", node_type, target_slot=input_slot(ui, node_type, "populated_text"))
++    if bypass_input:
++        # Native Bypass forwards the first matching input, wildcard_text.
++        ui.connect("PrimitiveString", node_type, target_slot=input_slot(ui, node_type, "wildcard_text"))
++    native_roundtrip(ui, node_id, bridge_id)
++    run(ui, preview_id, "red", "active")
++    show_node(ui, bridge_id)
++    toggle(ui, "ImpactControlBridge", "mode", False)
++    entries = queue_runs(ui, 2, "deactivate")
++    assert any(event == "execution_interrupted" for event, _ in entries[0]["status"]["messages"])
++    assert entries[1]["status"]["status_str"] == "success"
++    assert node_id not in entries[1]["prompt"][2]
++    assert ui.app.evaluate("(app, id) => app.graph.getNodeById(id).mode", node_id) == node_mode
++    if behavior == "Mute":
++        assert preview_id not in entries[1]["outputs"]
++    else:
++        if (node_type == "ImpactWildcardProcessor" and not bypass_input
++                and entries[1]["prompt"][2][preview_id]["inputs"] == {}
++                and preview_id not in entries[1]["outputs"]):
++            pytest.xfail("Pre-existing on Main + #1269: Processor Bypass drops PreviewAny.source when only populated_text is linked")
++        assert entries[1]["outputs"][preview_id]["text"] == ["{red|green|blue}"]
++    native_roundtrip(ui, node_id, bridge_id)
++    assert ui.app.evaluate("(app, id) => app.graph.getNodeById(id).mode", node_id) == node_mode
++    show_node(ui, bridge_id)
++    toggle(ui, "ImpactControlBridge", "mode", True)
++    entries = queue_runs(ui, 2, "reactivate")
++    assert node_id not in entries[0]["prompt"][2]
++    # With a muted target, the bridge can be the last executable node: the
++    # requeue still happens, but no following node polls the interrupt flag.
++    if entries[0]["status"]["status_str"] != "success":
++        assert any(event == "execution_interrupted" for event, _ in entries[0]["status"]["messages"])
++    assert entries[1]["status"]["status_str"] == "success"
++    assert entries[1]["outputs"][preview_id]["text"] == ["red"]
++    assert entries[1]["prompt"][2][node_id]["inputs"]["seed"] == 2
++    assert ui.app.evaluate("(app, id) => app.graph.getNodeById(id).mode", node_id) == 0
++
++
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++@pytest.mark.parametrize("node_type", NODE_TYPES)
++def test_widget_feedback_and_countdown_requeue(ui, node_type, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    text = f"feedback {uuid4().hex}"
++    node_id, preview_id, source_id = constant_graph(ui, node_type, text)
++    ui.choose(node_type, "control_after_generate", "increment")
++    ui.set_number(node_type, "seed", 731)
++    replacement_id = ui.add_node("Text (Multiline)", "PrimitiveStringMultiline", 100, 850)
++    show_node(ui, replacement_id)
++    ui.page.get_by_placeholder("value", exact=True).fill(text + " changed")
++    show_node(ui, node_id)
++    setter_id = ui.add_node("Set Widget Value", "ImpactSetWidgetValue", 950, 650)
++    ui.set_number("ImpactSetWidgetValue", "node_id", int(source_id))
++    set_text(ui, "ImpactSetWidgetValue", "widget_name", "value")
++    ui.connect(node_type, "ImpactSetWidgetValue", source_slot=3 if node_type == "ImpactWildcardEncode" else 0)
++    ui.connect("PrimitiveStringMultiline", "ImpactSetWidgetValue",
++               target_slot=input_slot(ui, "ImpactSetWidgetValue", "string_value"))
++    countdown_id = ui.add_node("Queue Trigger (Countdown)", "ImpactQueueTriggerCountdown", 1300, 700)
++    ui.set_number("ImpactQueueTriggerCountdown", "total", 3)
++    ui.connect("ImpactSetWidgetValue", "ImpactQueueTriggerCountdown",
++               target_slot=input_slot(ui, "ImpactQueueTriggerCountdown", "signal"))
++    native_roundtrip(ui, node_id, setter_id, countdown_id)
++    entries = queue_runs(ui, 3, "feedback-countdown")
++    for index, (entry, expected) in enumerate(zip(entries, (text, text + " changed", text + " changed"))):
++        assert entry["status"]["status_str"] == "success", entry["status"]
++        assert entry["outputs"][preview_id]["text"] == [expected]
++        assert entry["prompt"][2][source_id]["inputs"]["value"] == expected
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == 0
++        assert entry["prompt"][2][countdown_id]["inputs"]["count"] == index
++        assert (node_id in cached(entry)) == (index == 2)
++        assert (preview_id in cached(entry)) == (index == 2)
++    for target, widget, expected in ((source_id, "value", text + " changed"), (countdown_id, "count", 0)):
++        show_node(ui, target)
++        assert next(w["value"] for w in widget_state(ui, target)["widgets"] if w["name"] == widget) == expected
++
++    # A runtime widget update can introduce wildcard syntax. The next queued
++    # prompt must keep its requested seed instead of reusing the old static key.
++    syntax = text + " {red|green|blue}"
++    show_node(ui, replacement_id)
++    ui.page.get_by_placeholder("value", exact=True).fill(syntax)
++    show_node(ui, node_id)
++    ui.choose(node_type, "control_after_generate", "fixed")
++    ui.set_number(node_type, "seed", 2)
++    entries = queue_runs(ui, 3, "feedback-syntax-countdown")
++    for index, entry in enumerate(entries):
++        assert entry["status"]["status_str"] == "success", entry["status"]
++        assert entry["outputs"][preview_id]["text"] == [text + (" changed" if index == 0 else " red")]
++        assert entry["prompt"][2][source_id]["inputs"]["value"] == (text + " changed" if index == 0 else syntax)
++        assert entry["prompt"][2][node_id]["inputs"]["seed"] == (0 if index == 0 else 2)
++        assert entry["prompt"][2][countdown_id]["inputs"]["count"] == index
++        assert (node_id in cached(entry)) == (index != 1)
++    native_roundtrip(ui, node_id, setter_id, countdown_id)
+diff --git a/tests/wildcards/README.md b/tests/wildcards/README.md
+index adf070c..f791eef 100644
+--- a/tests/wildcards/README.md
++++ b/tests/wildcards/README.md
+@@ -1,5 +1,14 @@
+ # Wildcard System - Complete Test Suite
+ 
++The automated loader regressions run with
++`(cd tests && python -m pytest -c pytest.ini)` from the repository root. This includes
++`test_progressive_loading.py` and `test_lazy_load_verification.py`, which use
++isolated temporary fixtures rather than external wildcard collections.
++`test_wildcard_final.py` requires `--full-url` and `--on-demand-url` for two
++already-running isolated servers; see [current validation commands](../../docs/E2E_TEST_STRATEGY.md).
++The historical diagnostics below are separate from that pytest suite.
++
++
+ Comprehensive testing guide for the ComfyUI Impact Pack wildcard system.
+ 
+ ---
+@@ -516,7 +525,7 @@ ls custom_wildcards/*.txt
+ **Standalone** (no server required):
+ ```bash
+ python3 test_wildcard_lazy_loading.py
+-python3 test_progressive_loading.py
++python3 -m pytest -c ../pytest.ini test_progressive_loading.py
+ ```
+ 
+ **Note**: Requires ComfyUI environment or will show import errors.
+@@ -690,11 +699,11 @@ ModuleNotFoundError: No module named 'modules'
+ ```bash
+ # Option 1: Run from ComfyUI directory
+ cd /path/to/ComfyUI
+-python3 custom_nodes/comfyui-impact-pack/tests/test_progressive_loading.py
++python3 -m pytest -c custom_nodes/comfyui-impact-pack/tests/pytest.ini custom_nodes/comfyui-impact-pack/tests/wildcards/test_progressive_loading.py
+ 
+ # Option 2: Add to PYTHONPATH
+ export PYTHONPATH=/path/to/ComfyUI/custom_nodes/comfyui-impact-pack:$PYTHONPATH
+-python3 test_progressive_loading.py
++python3 -m pytest -c ../pytest.ini test_progressive_loading.py
+ ```
+ 
+ #### 3. On-Demand Mode Not Activating
+diff --git a/tests/wildcards/conftest.py b/tests/wildcards/conftest.py
+index ce7e974..e09942f 100644
+--- a/tests/wildcards/conftest.py
++++ b/tests/wildcards/conftest.py
+@@ -1,6 +1,28 @@
+ """Stub dependencies unused by wildcard parsing; pytest.ini handles import paths."""
+ import sys
+ import types
++from unittest.mock import Mock
++
++import pytest
+ 
+ for name in ("folder_paths", "nodes", "impact.utils"):
+     sys.modules.setdefault(name, types.ModuleType(name))
++
++graph_utils = types.ModuleType("comfy_execution.graph_utils")
++graph_utils.is_link = Mock(side_effect=AssertionError("Run cache tests with real ComfyUI using integration_wildcard_cache.py"))
++sys.modules.setdefault("comfy_execution.graph_utils", graph_utils)
++
++
++from impact import wildcards
++
++
++@pytest.fixture
++def wildcard_loader(tmp_path, monkeypatch):
++    for name in ("wildcard_dict", "available_wildcards", "loaded_wildcards"):
++        monkeypatch.setattr(wildcards, name, {})
++    monkeypatch.setattr(wildcards, "_on_demand_mode", False)
++    monkeypatch.setattr(wildcards, "wildcards_path", str(tmp_path))
++    monkeypatch.setattr(wildcards.config, "cached_config", {
++        "custom_wildcards": "", "wildcard_cache_limit_mb": 50,
++    })
++    return tmp_path
+diff --git a/tests/wildcards/test_lazy_load_verification.py b/tests/wildcards/test_lazy_load_verification.py
+index 0a1142f..f342fb4 100644
+--- a/tests/wildcards/test_lazy_load_verification.py
++++ b/tests/wildcards/test_lazy_load_verification.py
+@@ -1,262 +1,35 @@
+-#!/usr/bin/env python3
+-"""
+-Verify that wildcard lists are identical before and after on-demand loading.
+-
+-This test ensures that LazyWildcardLoader maintains consistency:
+-1. Full cache mode: all data loaded immediately
+-2. On-demand mode (before access): LazyWildcardLoader proxies
+-3. On-demand mode (after access): data loaded on demand
+-
+-All three scenarios should produce identical wildcard lists and values.
+-"""
+-
+-import sys
+-import os
+-
+-# Add parent directory to path
+-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+-
+-from modules.impact import config
+-from modules.impact.wildcards import wildcard_load, wildcard_dict, is_on_demand_mode, process
+-
+-
+-def get_wildcard_list():
+-    """Get list of all wildcard keys"""
+-    return sorted(list(wildcard_dict.keys()))
+-
+-
+-def get_wildcard_sample_values(wildcards_to_test=None):
+-    """Get sample values from specific wildcards"""
+-    if wildcards_to_test is None:
+-        wildcards_to_test = [
+-            'samples/flower',
+-            'samples/jewel',
+-            'adnd',  # Depth 3 transitive
+-            'all',   # Depth 3 transitive
+-            'colors',  # YAML transitive
+-        ]
+-
+-    values = {}
+-    for key in wildcards_to_test:
+-        if key in wildcard_dict:
+-            data = wildcard_dict[key]
+-            # Convert to list if it's a LazyWildcardLoader
+-            if hasattr(data, 'get_data'):
+-                data = data.get_data()
+-            values[key] = list(data) if data else []
+-        else:
+-            values[key] = None
+-
+-    return values
+-
+-
+-def test_full_cache_mode():
+-    """Test with full cache mode (limit = 100 MB)"""
+-    print("=" * 80)
+-    print("TEST 1: Full Cache Mode")
+-    print("=" * 80)
+-    print()
+-
+-    # Set high cache limit to force full cache mode
+-    config.get_config()['wildcard_cache_limit_mb'] = 100
+-
+-    # Reload wildcards
+-    wildcard_load()
+-
+-    # Check mode
+-    mode = is_on_demand_mode()
+-    print(f"Mode: {'On-Demand' if mode else 'Full Cache'}")
+-    assert not mode, "Should be in Full Cache mode"
+-
+-    # Get wildcard list
+-    wc_list = get_wildcard_list()
+-    print(f"Total wildcards: {len(wc_list)}")
+-    print(f"Sample wildcards: {wc_list[:10]}")
+-    print()
+-
+-    # Get sample values
+-    values = get_wildcard_sample_values()
+-    print("Sample values:")
+-    for key, val in values.items():
+-        if val is not None:
+-            print(f"  {key}: {len(val)} items - {val[:3] if len(val) >= 3 else val}")
+-        else:
+-            print(f"  {key}: NOT FOUND")
+-    print()
+-
+-    return {
+-        'mode': 'full_cache',
+-        'wildcard_list': wc_list,
+-        'values': values,
+-    }
+-
+-
+-def test_on_demand_mode_before_access():
+-    """Test with on-demand mode before accessing data"""
+-    print("=" * 80)
+-    print("TEST 2: On-Demand Mode (Before Access)")
+-    print("=" * 80)
+-    print()
+-
+-    # Set low cache limit to force on-demand mode
+-    config.get_config()['wildcard_cache_limit_mb'] = 1
+-
+-    # Reload wildcards
+-    wildcard_load()
+-
+-    # Check mode
+-    mode = is_on_demand_mode()
+-    print(f"Mode: {'On-Demand' if mode else 'Full Cache'}")
+-    assert mode, "Should be in On-Demand mode"
+-
+-    # Get wildcard list (should work even without loading data)
+-    wc_list = get_wildcard_list()
+-    print(f"Total wildcards: {len(wc_list)}")
+-    print(f"Sample wildcards: {wc_list[:10]}")
+-    print()
+-
+-    # Check that wildcards are LazyWildcardLoader instances
+-    lazy_count = sum(1 for k in wc_list if hasattr(wildcard_dict[k], 'get_data'))
+-    print(f"LazyWildcardLoader instances: {lazy_count}/{len(wc_list)}")
+-    print()
+-
+-    return {
+-        'mode': 'on_demand_before',
+-        'wildcard_list': wc_list,
+-        'lazy_count': lazy_count,
+-    }
+-
+-
+-def test_on_demand_mode_after_access():
+-    """Test with on-demand mode after accessing data"""
+-    print("=" * 80)
+-    print("TEST 3: On-Demand Mode (After Access)")
+-    print("=" * 80)
+-    print()
+-
+-    # Mode should still be on-demand from previous test
+-    mode = is_on_demand_mode()
+-    print(f"Mode: {'On-Demand' if mode else 'Full Cache'}")
+-    assert mode, "Should still be in On-Demand mode"
+-
+-    # Get sample values (this will trigger lazy loading)
+-    values = get_wildcard_sample_values()
+-    print("Sample values (after access):")
+-    for key, val in values.items():
+-        if val is not None:
+-            print(f"  {key}: {len(val)} items - {val[:3] if len(val) >= 3 else val}")
+-        else:
+-            print(f"  {key}: NOT FOUND")
+-    print()
+-
+-    # Test deep transitive wildcards
+-    print("Testing deep transitive wildcards:")
+-    test_cases = [
+-        ("__adnd__", 42),  # Depth 3: adnd → dragon → dragon_spirit
+-        ("__all__", 123),  # Depth 3: all → giant → giant_soldier
+-    ]
+-
+-    for wildcard_text, seed in test_cases:
+-        result = process(wildcard_text, seed)
+-        print(f"  {wildcard_text} (seed={seed}): {result}")
+-    print()
+-
+-    return {
+-        'mode': 'on_demand_after',
+-        'wildcard_list': get_wildcard_list(),
+-        'values': values,
+-    }
+-
+-
+-def compare_results(result1, result2, result3):
+-    """Compare results from all three tests"""
+-    print("=" * 80)
+-    print("COMPARISON RESULTS")
+-    print("=" * 80)
+-    print()
+-
+-    # Compare wildcard lists
+-    list1 = result1['wildcard_list']
+-    list2 = result2['wildcard_list']
+-    list3 = result3['wildcard_list']
+-
+-    print("1. Wildcard List Comparison")
+-    print(f"   Full Cache:        {len(list1)} wildcards")
+-    print(f"   On-Demand (before): {len(list2)} wildcards")
+-    print(f"   On-Demand (after):  {len(list3)} wildcards")
+-
+-    if list1 == list2 == list3:
+-        print("   ✅ All lists are IDENTICAL")
+-    else:
+-        print("   ❌ Lists DIFFER")
+-        if list1 != list2:
+-            print(f"      Full Cache vs On-Demand (before): {len(set(list1) - set(list2))} differences")
+-        if list1 != list3:
+-            print(f"      Full Cache vs On-Demand (after): {len(set(list1) - set(list3))} differences")
+-        if list2 != list3:
+-            print(f"      On-Demand (before) vs On-Demand (after): {len(set(list2) - set(list3))} differences")
+-    print()
+-
+-    # Compare sample values
+-    values1 = result1['values']
+-    values3 = result3['values']
+-
+-    print("2. Sample Values Comparison")
+-    all_match = True
+-    for key in values1.keys():
+-        v1 = values1[key]
+-        v3 = values3[key]
+-
+-        if v1 == v3:
+-            status = "✅ MATCH"
+-        else:
+-            status = "❌ DIFFER"
+-            all_match = False
+-
+-        print(f"   {key}: {status}")
+-        if v1 != v3:
+-            print(f"      Full Cache: {len(v1) if v1 else 0} items")
+-            print(f"      On-Demand:  {len(v3) if v3 else 0} items")
+-    print()
+-
+-    if all_match:
+-        print("✅ ALL VALUES MATCH - On-demand loading is CONSISTENT")
+-    else:
+-        print("❌ VALUES DIFFER - On-demand loading has ISSUES")
+-    print()
+-
+-    return list1 == list2 == list3 and all_match
+-
+-
+-def main():
+-    print()
+-    print("=" * 80)
+-    print("WILDCARD LAZY LOAD VERIFICATION TEST")
+-    print("=" * 80)
+-    print()
+-    print("This test verifies that on-demand loading produces identical results")
+-    print("to full cache mode.")
+-    print()
+-
+-    # Run tests
+-    result1 = test_full_cache_mode()
+-    result2 = test_on_demand_mode_before_access()
+-    result3 = test_on_demand_mode_after_access()
+-
+-    # Compare results
+-    success = compare_results(result1, result2, result3)
+-
+-    # Final result
+-    print("=" * 80)
+-    if success:
+-        print("🎉 TEST PASSED - Lazy loading is working correctly!")
+-    else:
+-        print("❌ TEST FAILED - Lazy loading has consistency issues!")
+-    print("=" * 80)
+-    print()
+-
+-    return 0 if success else 1
+-
+-
+-if __name__ == '__main__':
+-    sys.exit(main())
++"""Real loader modes, YAML preload, nested TXT access and fresh reloads."""
++import pytest
++
++from impact import wildcards
++
++
++@pytest.mark.parametrize("on_demand", [False, True], ids=["full-cache", "on-demand"])
++def test_loading_modes_and_reload(wildcard_loader, on_demand):
++    (wildcard_loader / "colors.txt").write_text("red\ngreen\nblue\n")
++    (wildcard_loader / "alias.txt").write_text("__colors__\n")
++    (wildcard_loader / "palette.yaml").write_text("palette:\n  colors: [red, green, blue]\n")
++    wildcards.config.get_config()["wildcard_cache_limit_mb"] = 0 if on_demand else 50
++    wildcards.wildcard_load()
++    assert wildcards.is_on_demand_mode() is on_demand
++    all_keys = {"__colors__", "__alias__", "__palette/colors__"}
++    if on_demand:
++        all_keys.add("__palette__")
++    before = {"__palette__", "__palette/colors__"} if on_demand else all_keys
++    assert set(wildcards.get_wildcard_list()) == set(wildcards.get_loaded_wildcard_list()) == before
++
++    for seed, expected in ((2, "red"), (5, "blue")):
++        assert wildcards.process("__palette/colors__", seed) == expected
++    assert set(wildcards.get_loaded_wildcard_list()) == before
++
++    for seed, expected in ((2, "red"), (5, "blue")):
++        assert wildcards.process("__alias__", seed) == expected
++    assert set(wildcards.get_wildcard_list()) == set(wildcards.get_loaded_wildcard_list()) == all_keys
++
++    (wildcard_loader / "colors.txt").write_text("yellow\n")
++    assert wildcards.process("__colors__", 2) == "red"
++    wildcards.wildcard_load()
++    assert wildcards.is_on_demand_mode() is on_demand
++    assert set(wildcards.get_loaded_wildcard_list()) == before
++    assert wildcards.process("__alias__", 2) == "yellow"
++    assert set(wildcards.get_wildcard_list()) == all_keys
+diff --git a/tests/wildcards/test_progressive_loading.py b/tests/wildcards/test_progressive_loading.py
+index 3b14736..22a926b 100755
+--- a/tests/wildcards/test_progressive_loading.py
++++ b/tests/wildcards/test_progressive_loading.py
+@@ -1,247 +1,50 @@
+-#!/usr/bin/env python3
+-"""
+-Progressive On-Demand Wildcard Loading Unit Tests
+-
+-Tests that wildcard loading happens progressively as wildcards are accessed.
+-"""
+-import sys
+-import os
+-import tempfile
+-
+-# Add parent directory to path
+-test_dir = os.path.dirname(os.path.abspath(__file__))
+-impact_pack_dir = os.path.dirname(test_dir)
+-sys.path.insert(0, impact_pack_dir)
+-
+-from modules.impact import wildcards
+-
+-
+-def test_early_termination():
+-    """Test that calculate_directory_size stops early when limit exceeded"""
+-    print("=" * 60)
+-    print("TEST 1: Early Termination Size Calculation")
+-    print("=" * 60)
+-
+-    # Create temporary directory with test files
+-    with tempfile.TemporaryDirectory() as tmpdir:
+-        # Create files totaling 100 bytes
+-        for i in range(10):
+-            with open(os.path.join(tmpdir, f"test{i}.txt"), 'w') as f:
+-                f.write("x" * 10)  # 10 bytes each
+-
+-        # Test without limit (should scan all)
+-        total_size = wildcards.calculate_directory_size(tmpdir)
+-        print(f"✓ Total size without limit: {total_size} bytes")
+-        assert total_size == 100, f"Expected 100 bytes, got {total_size}"
+-
+-        # Test with limit (should stop early)
+-        limited_size = wildcards.calculate_directory_size(tmpdir, limit=50)
+-        print(f"✓ Size with 50 byte limit: {limited_size} bytes")
+-        assert limited_size >= 50, f"Expected >= 50 bytes, got {limited_size}"
+-        assert limited_size <= total_size, "Limited should not exceed total"
+-
+-        print(f"✓ Early termination working (stopped at {limited_size} bytes)")
+-        print("\n✅ Early termination test PASSED\n")
+-
+-
+-def test_metadata_scan():
+-    """Test that scan_wildcard_metadata only scans file paths, not data"""
+-    print("=" * 60)
+-    print("TEST 2: Metadata-Only Scan")
+-    print("=" * 60)
+-
+-    # Create temporary wildcard directory
+-    with tempfile.TemporaryDirectory() as tmpdir:
+-        # Create test files
+-        test_file1 = os.path.join(tmpdir, "test1.txt")
+-        test_file2 = os.path.join(tmpdir, "test2.txt")
+-        test_yaml = os.path.join(tmpdir, "test3.yaml")
+-
+-        with open(test_file1, 'w') as f:
+-            f.write("option1a\noption1b\noption1c\n")
+-
+-        with open(test_file2, 'w') as f:
+-            f.write("option2a\noption2b\n")
+-
+-        with open(test_yaml, 'w') as f:
+-            f.write("key1:\n  - value1\n  - value2\n")
+-
+-        # Clear globals
+-        wildcards.available_wildcards = {}
+-        wildcards.loaded_wildcards = {}
+-
+-        # Scan metadata only
+-        print(f"✓ Scanning directory: {tmpdir}")
+-        discovered = wildcards.scan_wildcard_metadata(tmpdir)
+-
+-        print(f"✓ Discovered {discovered} wildcards")
+-        assert discovered == 3, f"Expected 3 wildcards, got {discovered}"
+-
+-        print(f"✓ Available wildcards: {list(wildcards.available_wildcards.keys())}")
+-        assert len(wildcards.available_wildcards) == 3
+-
+-        # Verify that data is NOT loaded
+-        assert len(wildcards.loaded_wildcards) == 0, "Data should not be loaded yet"
+-        print("✓ No data loaded (metadata only)")
+-
+-        # Verify file paths are stored
+-        for key in wildcards.available_wildcards.keys():
+-            file_path = wildcards.available_wildcards[key]
+-            assert os.path.exists(file_path), f"File path should exist: {file_path}"
+-            print(f"  - {key} -> {file_path}")
+-
+-        print("\n✅ Metadata scan test PASSED\n")
+-
+-
+-def test_progressive_loading():
+-    """Test that wildcards are loaded progressively on access"""
+-    print("=" * 60)
+-    print("TEST 3: Progressive On-Demand Loading")
+-    print("=" * 60)
+-
+-    # Create temporary wildcard directory
+-    with tempfile.TemporaryDirectory() as tmpdir:
+-        # Create test files
+-        test_file1 = os.path.join(tmpdir, "wildcard1.txt")
+-        test_file2 = os.path.join(tmpdir, "wildcard2.txt")
+-        test_file3 = os.path.join(tmpdir, "wildcard3.txt")
+-
+-        with open(test_file1, 'w') as f:
+-            f.write("option1a\noption1b\n")
+-
+-        with open(test_file2, 'w') as f:
+-            f.write("option2a\noption2b\n")
+-
+-        with open(test_file3, 'w') as f:
+-            f.write("option3a\noption3b\n")
+-
+-        # Clear globals
+-        wildcards.available_wildcards = {}
+-        wildcards.loaded_wildcards = {}
+-        wildcards._on_demand_mode = True
+-
+-        # Scan metadata
+-        discovered = wildcards.scan_wildcard_metadata(tmpdir)
+-        print(f"✓ Discovered {discovered} wildcards")
+-        print(f"✓ Available: {len(wildcards.available_wildcards)}")
+-        print(f"✓ Loaded: {len(wildcards.loaded_wildcards)}")
+-
+-        # Initial state: 3 available, 0 loaded
+-        assert len(wildcards.available_wildcards) == 3
+-        assert len(wildcards.loaded_wildcards) == 0
+-
+-        # Access first wildcard
+-        print("\nAccessing wildcard1...")
+-        data1 = wildcards.get_wildcard_value("wildcard1")
+-        assert data1 is not None, "Should load wildcard1"
+-        assert len(data1) == 2, f"Expected 2 options, got {len(data1)}"
+-        print(f"✓ Loaded wildcard1: {data1}")
+-        print(f"✓ Loaded count: {len(wildcards.loaded_wildcards)}")
+-        assert len(wildcards.loaded_wildcards) == 1, "Should have 1 loaded wildcard"
+-
+-        # Access second wildcard
+-        print("\nAccessing wildcard2...")
+-        data2 = wildcards.get_wildcard_value("wildcard2")
+-        assert data2 is not None, "Should load wildcard2"
+-        print(f"✓ Loaded wildcard2: {data2}")
+-        print(f"✓ Loaded count: {len(wildcards.loaded_wildcards)}")
+-        assert len(wildcards.loaded_wildcards) == 2, "Should have 2 loaded wildcards"
+-
+-        # Re-access first wildcard (should use cache)
+-        print("\nRe-accessing wildcard1 (cached)...")
+-        data1_again = wildcards.get_wildcard_value("wildcard1")
+-        assert data1_again == data1, "Cached data should match"
+-        print("✓ Cache hit, data matches")
+-        print(f"✓ Loaded count: {len(wildcards.loaded_wildcards)}")
+-        assert len(wildcards.loaded_wildcards) == 2, "Count should not increase on cache hit"
+-
+-        # Access third wildcard
+-        print("\nAccessing wildcard3...")
+-        data3 = wildcards.get_wildcard_value("wildcard3")
+-        assert data3 is not None, "Should load wildcard3"
+-        print(f"✓ Loaded wildcard3: {data3}")
+-        print(f"✓ Loaded count: {len(wildcards.loaded_wildcards)}")
+-        assert len(wildcards.loaded_wildcards) == 3, "Should have 3 loaded wildcards"
+-
+-        # Verify all loaded
+-        assert set(wildcards.loaded_wildcards.keys()) == {"wildcard1", "wildcard2", "wildcard3"}
+-        print("✓ All wildcards loaded progressively")
+-
+-        print("\n✅ Progressive loading test PASSED\n")
+-
+-
+-def test_wildcard_list_functions():
+-    """Test get_wildcard_list() and get_loaded_wildcard_list()"""
+-    print("=" * 60)
+-    print("TEST 4: Wildcard List Functions")
+-    print("=" * 60)
+-
+-    # Create temporary wildcard directory
+-    with tempfile.TemporaryDirectory() as tmpdir:
+-        # Create test files
+-        for i in range(5):
+-            with open(os.path.join(tmpdir, f"test{i}.txt"), 'w') as f:
+-                f.write(f"option{i}a\noption{i}b\n")
+-
+-        # Clear globals
+-        wildcards.available_wildcards = {}
+-        wildcards.loaded_wildcards = {}
+-        wildcards._on_demand_mode = True
+-
+-        # Scan metadata
+-        wildcards.scan_wildcard_metadata(tmpdir)
+-
+-        # Test get_wildcard_list (should return all available)
+-        all_wildcards = wildcards.get_wildcard_list()
+-        print(f"✓ get_wildcard_list(): {len(all_wildcards)} wildcards")
+-        assert len(all_wildcards) == 5, "Should return all available wildcards"
+-
+-        # Test get_loaded_wildcard_list (should return 0 initially)
+-        loaded_wildcards_list = wildcards.get_loaded_wildcard_list()
+-        print(f"✓ get_loaded_wildcard_list(): {len(loaded_wildcards_list)} wildcards (initial)")
+-        assert len(loaded_wildcards_list) == 0, "Should return no loaded wildcards initially"
+-
+-        # Load some wildcards
+-        wildcards.get_wildcard_value("test0")
+-        wildcards.get_wildcard_value("test1")
+-
+-        # Test get_loaded_wildcard_list (should return 2 now)
+-        loaded_wildcards_list = wildcards.get_loaded_wildcard_list()
+-        print(f"✓ get_loaded_wildcard_list(): {len(loaded_wildcards_list)} wildcards (after loading 2)")
+-        assert len(loaded_wildcards_list) == 2, "Should return 2 loaded wildcards"
+-
+-        # Verify loaded list is subset of available list
+-        assert set(loaded_wildcards_list).issubset(set(all_wildcards)), "Loaded should be subset of available"
+-        print("✓ Loaded list is subset of available list")
+-
+-        print("\n✅ Wildcard list functions test PASSED\n")
+-
+-
+-def main():
+-    """Run all tests"""
+-    print("\n" + "=" * 60)
+-    print("PROGRESSIVE ON-DEMAND LOADING TEST SUITE")
+-    print("=" * 60 + "\n")
+-
+-    try:
+-        test_early_termination()
+-        test_metadata_scan()
+-        test_progressive_loading()
+-        test_wildcard_list_functions()
+-
+-        print("=" * 60)
+-        print("✅ ALL TESTS PASSED")
+-        print("=" * 60)
+-        return 0
+-
+-    except Exception as e:
+-        print("\n" + "=" * 60)
+-        print(f"❌ TEST FAILED: {e}")
+-        print("=" * 60)
+-        import traceback
+-        traceback.print_exc()
+-        return 1
+-
+-
+-if __name__ == "__main__":
+-    sys.exit(main())
++"""Directory scanning, progressive TXT loading and loaded-list semantics."""
++from impact import wildcards
++
++
++def test_early_termination(tmp_path):
++    for i in range(10):
++        (tmp_path / f"test{i}.txt").write_text("x" * 10)
++    assert wildcards.calculate_directory_size(tmp_path) == 100
++    assert 50 <= wildcards.calculate_directory_size(tmp_path, limit=50) <= 100
++
++
++def test_metadata_scan(wildcard_loader):
++    (wildcard_loader / "first.txt").write_text("one\ntwo\n")
++    (wildcard_loader / "second.txt").write_text("three\n")
++    (wildcard_loader / "palette.yaml").write_text("colors: [red, blue]\n")
++    assert wildcards.scan_wildcard_metadata(wildcard_loader) == 3
++    assert wildcards.available_wildcards == {
++        name: str(wildcard_loader / filename) for name, filename in (
++            ("first", "first.txt"), ("second", "second.txt"), ("palette", "palette.yaml"))
++    }
++    assert wildcards.loaded_wildcards == {}
++    assert wildcards.get_wildcard_dict() == {}
++
++
++def test_progressive_loading(wildcard_loader):
++    for i in range(1, 4):
++        (wildcard_loader / f"wildcard{i}.txt").write_text(f"option{i}a\noption{i}b\n")
++    wildcards._on_demand_mode = True
++    assert wildcards.scan_wildcard_metadata(wildcard_loader) == 3
++    assert wildcards.get_loaded_wildcard_list() == []
++    for i in range(1, 4):
++        assert wildcards.get_wildcard_value(f"wildcard{i}") == [f"option{i}a", f"option{i}b"]
++        assert set(wildcards.get_loaded_wildcard_list()) == {f"__wildcard{j}__" for j in range(1, i + 1)}
++        # A cache hit must not reread the edited file or load another entry.
++        (wildcard_loader / "wildcard1.txt").write_text("edited on disk\n")
++        assert wildcards.get_wildcard_value("wildcard1") == ["option1a", "option1b"]
++        assert len(wildcards.get_loaded_wildcard_list()) == i
++
++
++def test_wildcard_list_functions(wildcard_loader):
++    for i in range(5):
++        (wildcard_loader / f"test{i}.txt").write_text(f"option{i}\n")
++    wildcards._on_demand_mode = True
++    assert wildcards.scan_wildcard_metadata(wildcard_loader) == 5
++    assert set(wildcards.available_wildcards) == {f"test{i}" for i in range(5)}
++    assert wildcards.get_wildcard_list() == wildcards.get_loaded_wildcard_list() == []
++    for i in range(5):
++        assert wildcards.get_wildcard_value(f"test{i}") == [f"option{i}"]
++        expected = {f"__test{j}__" for j in range(i + 1)}
++        assert set(wildcards.get_wildcard_list()) == set(wildcards.get_loaded_wildcard_list()) == expected
+diff --git a/tests/wildcards/test_progressive_ondemand.sh b/tests/wildcards/test_progressive_ondemand.sh
+index aa5a2b5..e95e402 100755
+--- a/tests/wildcards/test_progressive_ondemand.sh
++++ b/tests/wildcards/test_progressive_ondemand.sh
+@@ -68,7 +68,7 @@ echo "Waiting for server startup..."
+ sleep 15
+ 
+ # Check server
+-if ! curl -s http://127.0.0.1:$PORT/ > /dev/null; then
++if ! curl -fsS http://127.0.0.1:$PORT/ > /dev/null; then
+     echo "${RED}✗ Server failed to start${NC}"
+     cat /tmp/progressive_test.log | grep -i "wildcard\|error" | tail -20
+     exit 1
+@@ -90,7 +90,7 @@ echo ""
+ 
+ # Step 1: Initial state (no wildcards accessed)
+ echo "${CYAN}Step 1: Initial state (before any wildcard access)${NC}"
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))" 2>/dev/null || echo "0")
+ ON_DEMAND=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('on_demand_mode', False))" 2>/dev/null || echo "false")
+ TOTAL_AVAILABLE=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('total_available', 0))" 2>/dev/null || echo "0")
+@@ -104,26 +104,25 @@ if [ "$ON_DEMAND" != "True" ]; then
+     exit 1
+ fi
+ 
+-if [ "$LOADED_COUNT" -ne 0 ]; then
+-    echo "${YELLOW}⚠ WARNING: Expected 0 loaded, got $LOADED_COUNT${NC}"
+-fi
++echo "$RESPONSE" | python3 -c 'import sys, json; data=json.load(sys.stdin)["data"]; assert "__colors__" in data, "Expected YAML colors to be preloaded"'
++echo "${GREEN}✓ PASS: YAML colors is preloaded${NC}"
+ echo ""
+ 
+ # Step 2: Access first wildcard
+ echo "${CYAN}Step 2: Access first wildcard (__samples/flower__)${NC}"
+-RESULT1=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
++RESULT1=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"text": "__samples/flower__", "seed": 42}')
+-TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
++TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+ echo "  Result: $TEXT1"
+ 
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT_1=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+ echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_1${NC}"
+ 
+-if [ "$LOADED_COUNT_1" -lt 1 ]; then
+-    echo "${RED}✗ FAIL: Expected at least 1 loaded wildcard${NC}"
++if [ "$LOADED_COUNT_1" -le "$LOADED_COUNT" ]; then
++    echo "${RED}✗ FAIL: First TXT access did not increase the loaded count${NC}"
+     exit 1
+ fi
+ echo "${GREEN}✓ PASS: Wildcard count increased${NC}"
+@@ -131,14 +130,14 @@ echo ""
+ 
+ # Step 3: Access second wildcard (different from first)
+ echo "${CYAN}Step 3: Access second wildcard (__dragon__)${NC}"
+-RESULT2=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
++RESULT2=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"text": "__dragon__", "seed": 200}')
+-TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
++TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+ echo "  Result: $TEXT2"
+ 
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT_2=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+ echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_2${NC}"
+ 
+@@ -151,39 +150,40 @@ echo ""
+ 
+ # Step 4: Access third wildcard (YAML)
+ echo "${CYAN}Step 4: Access third wildcard (__colors__)${NC}"
+-RESULT3=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
++RESULT3=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"text": "__colors__", "seed": 333}')
+-TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
++TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+ echo "  Result: $TEXT3"
+ 
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT_3=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+ LOADED_LIST=$(echo "$RESPONSE" | python3 -c "import sys, json; print(', '.join(json.load(sys.stdin)['data'][:10]))")
+ echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_3${NC}"
+ echo "  Sample loaded: $LOADED_LIST"
+ 
+-if [ "$LOADED_COUNT_3" -le "$LOADED_COUNT_2" ]; then
+-    echo "${RED}✗ FAIL: Expected loaded count to increase (was $LOADED_COUNT_2, now $LOADED_COUNT_3)${NC}"
++if [ "$LOADED_COUNT_3" -ne "$LOADED_COUNT_2" ]; then
++    echo "${RED}✗ FAIL: Preloaded YAML access changed the loaded count${NC}"
+     exit 1
+ fi
+-echo "${GREEN}✓ PASS: Wildcard count increased progressively${NC}"
++echo "${GREEN}✓ PASS: Preloaded YAML access kept the loaded count${NC}"
+ echo ""
+ 
+ # Step 5: Re-access first wildcard (should not increase count)
+ echo "${CYAN}Step 5: Re-access first wildcard (cached)${NC}"
+-RESULT4=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
++RESULT4=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"text": "__samples/flower__", "seed": 42}')
+ 
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT_4=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+ echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_4${NC}"
+ 
+ if [ "$LOADED_COUNT_4" -ne "$LOADED_COUNT_3" ]; then
+-    echo "${YELLOW}⚠ WARNING: Count changed on cache access (was $LOADED_COUNT_3, now $LOADED_COUNT_4)${NC}"
++    echo "${RED}✗ FAIL: Count changed on cache access (was $LOADED_COUNT_3, now $LOADED_COUNT_4)${NC}"
++    exit 1
+ else
+     echo "${GREEN}✓ PASS: Cached access did not change count${NC}"
+ fi
+@@ -191,14 +191,14 @@ echo ""
+ 
+ # Step 6: Deep transitive wildcard (should load multiple wildcards)
+ echo "${CYAN}Step 6: Deep transitive wildcard (__adnd__)${NC}"
+-RESULT5=$(curl -s http://127.0.0.1:$PORT/impact/wildcards \
++RESULT5=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards \
+     -X POST \
+     -H "Content-Type: application/json" \
+     -d '{"text": "__adnd__ creature", "seed": 222}')
+-TEXT5=$(echo "$RESULT5" | python3 -c "import sys, json; print(json.load(sys.stdin).get('text','ERROR'))")
++TEXT5=$(echo "$RESULT5" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+ echo "  Result: $TEXT5"
+ 
+-RESPONSE=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
++RESPONSE=$(curl -fsS http://127.0.0.1:$PORT/impact/wildcards/list/loaded)
+ LOADED_COUNT_5=$(echo "$RESPONSE" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+ echo "  Loaded wildcards: ${YELLOW}$LOADED_COUNT_5${NC}"
+ 
+@@ -224,34 +224,8 @@ echo "  After step 5:  $LOADED_COUNT_4 (cache, no change)"
+ echo "  After step 6:  $LOADED_COUNT_5 (+$(($LOADED_COUNT_5 - $LOADED_COUNT_4)))"
+ echo ""
+ 
+-# Validation
+-ALL_PASSED=true
+-
+-if [ "$LOADED_COUNT_1" -le "$LOADED_COUNT" ]; then
+-    echo "${RED}✗ FAIL: Step 2 did not increase count${NC}"
+-    ALL_PASSED=false
+-fi
+-
+-if [ "$LOADED_COUNT_2" -le "$LOADED_COUNT_1" ]; then
+-    echo "${RED}✗ FAIL: Step 3 did not increase count${NC}"
+-    ALL_PASSED=false
+-fi
+-
+-if [ "$LOADED_COUNT_3" -le "$LOADED_COUNT_2" ]; then
+-    echo "${RED}✗ FAIL: Step 4 did not increase count${NC}"
+-    ALL_PASSED=false
+-fi
+-
+-if [ "$ALL_PASSED" = true ]; then
+-    echo "${GREEN}🎉 ALL TESTS PASSED${NC}"
+-    echo "${GREEN}Progressive on-demand loading verified successfully!${NC}"
+-    EXIT_CODE=0
+-else
+-    echo "${RED}❌ TESTS FAILED${NC}"
+-    echo "${RED}Progressive loading did not work as expected!${NC}"
+-    EXIT_CODE=1
+-fi
+-echo ""
++echo "${GREEN}PASS: TXT loads progressively; YAML and cached TXT access preserve the loaded count${NC}"
++EXIT_CODE=0
+ 
+ # Restore config
+ cleanup
+diff --git a/tests/wildcards/test_wildcard_final.py b/tests/wildcards/test_wildcard_final.py
+index 296f450..04098ae 100644
+--- a/tests/wildcards/test_wildcard_final.py
++++ b/tests/wildcards/test_wildcard_final.py
+@@ -1,165 +1,52 @@
+ #!/usr/bin/env python3
+-"""
+-Final comprehensive wildcard test - validates consistency between full cache and on-demand modes
+-Tests include:
+-1. Simple wildcard substitution
+-2. Nested wildcards (transitive loading)
+-3. Multiple wildcards in single prompt
+-4. Dynamic prompts combined with wildcards
+-5. YAML-based wildcards
+-"""
++"""Compare wildcard API results on isolated full-cache and on-demand servers."""
++import argparse
+ 
+-import subprocess
+-import time
+-import sys
+-from pathlib import Path
++import requests
+ 
+-# Auto-detect paths
+-SCRIPT_DIR = Path(__file__).parent
+-IMPACT_PACK_DIR = SCRIPT_DIR.parent
+-COMFYUI_DIR = IMPACT_PACK_DIR.parent.parent
+-CONFIG_FILE = IMPACT_PACK_DIR / "impact-pack.ini"
+ 
+-def run_test(test_name, cache_limit, test_cases):
+-    """Run tests with specific cache limit"""
+-    print(f"\n{'='*60}")
+-    print(f"Testing: {test_name}")
+-    print(f"Cache Limit: {cache_limit} MB")
+-    print(f"{'='*60}\n")
++CASES = (
++    ("Simple wildcard", "__samples/flower__", 42),
++    ("Multiple wildcards", "a __samples/flower__ and a __samples/jewel__", 123),
++    ("Dynamic prompt", "{red|blue|green} flower", 456),
++    ("Combined", "{beautiful|elegant} __samples/flower__ with {gold|silver} __samples/jewel__", 789),
++    ("Multi-select", "{2$$, $$__samples/flower__|rose|tulip|daisy}", 111),
++    ("Transitive YAML", "__colors__", 222),
++    ("Transitive with context", "a {beautiful|vibrant} __colors__ flower", 333),
++)
+ 
+-    # Update config
+-    config_content = f"""[default]
+-dependency_version = 24
+-mmdet_skip = True
+-sam_editor_cpu = False
+-sam_editor_model = sam_vit_h_4b8939.pth
+-custom_wildcards = {IMPACT_PACK_DIR}/custom_wildcards
+-disable_gpu_opencv = True
+-wildcard_cache_limit_mb = {cache_limit}
+-"""
+ 
+-    with open(CONFIG_FILE, 'w') as f:
+-        f.write(config_content)
+-
+-    # Start ComfyUI
+-    print("Starting ComfyUI...")
+-    proc = subprocess.Popen(
+-        ['bash', 'run.sh', '--listen', '127.0.0.1', '--port', '8191'],
+-        cwd=str(COMFYUI_DIR),
+-        stdout=subprocess.PIPE,
+-        stderr=subprocess.STDOUT,
+-        text=True
+-    )
+-
+-    # Wait for server to start
+-    time.sleep(20)
+-
+-    # Check logs
+-    import requests
+-    try:
+-        response = requests.get('http://127.0.0.1:8191/')
+-        print("✓ Server started successfully\n")
+-    except Exception:
+-        print("✗ Server failed to start")
+-        proc.terminate()
+-        return {}
+-
+-    # Run test cases
++def run_test(base_url, on_demand):
++    base_url = base_url.rstrip("/")
++    response = requests.get(f"{base_url}/impact/wildcards/list/loaded", timeout=10)
++    response.raise_for_status()
++    state = response.json()
++    assert state["on_demand_mode"] is on_demand, state
+     results = {}
+-    for i, (description, text, seed) in enumerate(test_cases, 1):
+-        print(f"Test {i}: {description}")
+-        print(f"  Input:  {text}")
+-
+-        try:
+-            response = requests.post(
+-                'http://127.0.0.1:8191/impact/wildcards',
+-                json={'text': text, 'seed': seed},
+-                timeout=5
+-            )
+-            result = response.json()
+-            output = result.get('text', '')
+-            print(f"  Output: {output}")
+-            results[f"test{i}"] = output
+-        except Exception as e:
+-            print(f"  Error: {e}")
+-            results[f"test{i}"] = f"ERROR: {e}"
+-
+-        print()
+-
+-    # Stop server
+-    proc.terminate()
+-    time.sleep(2)
+-
++    for description, text, seed in CASES:
++        response = requests.post(f"{base_url}/impact/wildcards", json={"text": text, "seed": seed}, timeout=10)
++        response.raise_for_status()
++        output = response.json()["text"]
++        assert isinstance(output, str) and output.strip() and "__" not in output and not output.startswith("ERROR:"), (description, output)
++        results[description] = output
++    assert set(results) == {description for description, _, _ in CASES}
+     return results
+ 
+-def main():
+-    print("\n" + "="*60)
+-    print("WILDCARD COMPREHENSIVE CONSISTENCY TEST")
+-    print("="*60)
+-
+-    # Test cases: (description, wildcard text, seed)
+-    test_cases = [
+-        # Test 1: Simple wildcard
+-        ("Simple wildcard", "__samples/flower__", 42),
+-
+-        # Test 2: Multiple wildcards
+-        ("Multiple wildcards", "a __samples/flower__ and a __samples/jewel__", 123),
+-
+-        # Test 3: Dynamic prompt
+-        ("Dynamic prompt", "{red|blue|green} flower", 456),
+ 
+-        # Test 4: Combined wildcard + dynamic
+-        ("Combined", "{beautiful|elegant} __samples/flower__ with {gold|silver} __samples/jewel__", 789),
+-
+-        # Test 5: Nested selection (multi-select)
+-        ("Multi-select", "{2$$, $$__samples/flower__|rose|tulip|daisy}", 111),
+-
+-        # Test 6: Transitive YAML wildcard (custom_wildcards/test.yaml)
+-        # __colors__ → __cold__|__warm__ → blue|red|orange|yellow
+-        ("Transitive YAML wildcard", "__colors__", 222),
+-
+-        # Test 7: Transitive with text
+-        ("Transitive with context", "a {beautiful|vibrant} __colors__ flower", 333),
+-    ]
+-
+-    # Test with full cache mode
+-    results_full = run_test("Full Cache Mode", 50, test_cases)
+-
+-    time.sleep(5)
+-
+-    # Test with on-demand mode
+-    results_on_demand = run_test("On-Demand Mode", 1, test_cases)
+-
+-    # Compare results
+-    print("\n" + "="*60)
+-    print("RESULTS COMPARISON")
+-    print("="*60 + "\n")
+-
+-    all_match = True
+-    for key in results_full.keys():
+-        full_result = results_full.get(key, "MISSING")
+-        on_demand_result = results_on_demand.get(key, "MISSING")
+-
+-        match = full_result == on_demand_result
+-        all_match = all_match and match
+-
+-        status = "✓ MATCH" if match else "✗ DIFFER"
+-        print(f"{key}: {status}")
+-        if not match:
+-            print(f"  Full cache:  {full_result}")
+-            print(f"  On-demand:   {on_demand_result}")
+-        print()
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--full-url", required=True)
++    parser.add_argument("--on-demand-url", required=True)
++    args = parser.parse_args()
++    results_full = run_test(args.full_url, False)
++    results_on_demand = run_test(args.on_demand_url, True)
++    assert set(results_full) == set(results_on_demand) == {description for description, _, _ in CASES}
++    for description, _, _ in CASES:
++        assert results_full[description] == results_on_demand[description], (
++            description, results_full[description], results_on_demand[description])
++        print(f"PASS: {description}: {results_full[description]}")
++    print(f"PASS: {len(CASES)} matching results; both server modes verified")
+ 
+-    # Final verdict
+-    print("="*60)
+-    if all_match:
+-        print("✅ ALL TESTS PASSED - Results are identical")
+-        print("="*60)
+-        return 0
+-    else:
+-        print("❌ TESTS FAILED - Results differ between modes")
+-        print("="*60)
+-        return 1
+ 
+ if __name__ == "__main__":
+-    sys.exit(main())
++    main()

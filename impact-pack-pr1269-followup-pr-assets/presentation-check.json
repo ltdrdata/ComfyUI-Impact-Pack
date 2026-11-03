@@ -1,0 +1,178 @@
+{
+  "draft_sha256": "2f7dcc032c217e0f158e09cdb012920c1c84d77d1f30757582f3e051e5bd765f",
+  "preview_sha256": "db9697c40ec28b50d0df08ad4f7010f41ea4302d3db38fbade4547bf89350bab",
+  "collapsed_by_default": 2,
+  "images": 4,
+  "source_and_full_resolution_links_clicked": [
+    {
+      "text": "",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/annotated-screenshots/list-before.png"
+    },
+    {
+      "text": "submitted request",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-request.json"
+    },
+    {
+      "text": "history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-history.json"
+    },
+    {
+      "text": "cache/execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-events.json"
+    },
+    {
+      "text": "original capture",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5.png"
+    },
+    {
+      "text": "",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/annotated-screenshots/list-after.png"
+    },
+    {
+      "text": "submitted request",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-request.json"
+    },
+    {
+      "text": "history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-history.json"
+    },
+    {
+      "text": "cache/execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-events.json"
+    },
+    {
+      "text": "original capture",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5.png"
+    },
+    {
+      "text": "",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/annotated-screenshots/constant-lora-same.png"
+    },
+    {
+      "text": "request 732",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-request.json"
+    },
+    {
+      "text": "history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-history.json"
+    },
+    {
+      "text": "cache/execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-events.json"
+    },
+    {
+      "text": "original capture",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same.png"
+    },
+    {
+      "text": "",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/annotated-screenshots/constant-lora-cache.png"
+    },
+    {
+      "text": "request 733",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-request.json"
+    },
+    {
+      "text": "history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-history.json"
+    },
+    {
+      "text": "cache/execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-events.json"
+    },
+    {
+      "text": "original capture",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed.png"
+    },
+    {
+      "text": "input/cache-key comparison",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json"
+    },
+    {
+      "text": "five observations",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/result.json"
+    },
+    {
+      "text": "Original screenshot",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5.png"
+    },
+    {
+      "text": "Submitted request",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-request.json"
+    },
+    {
+      "text": "Execution history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-history.json"
+    },
+    {
+      "text": "Cache and execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/seed-5-events.json"
+    },
+    {
+      "text": "Both seed observations",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/baseline-mixed-list/observations.json"
+    },
+    {
+      "text": "Original screenshot",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5.png"
+    },
+    {
+      "text": "Submitted request",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-request.json"
+    },
+    {
+      "text": "Execution history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-history.json"
+    },
+    {
+      "text": "Cache and execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/seed-5-events.json"
+    },
+    {
+      "text": "Both seed observations",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/focus-mixed-list/observations.json"
+    },
+    {
+      "text": "Original screenshot",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same.png"
+    },
+    {
+      "text": "Request 732",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-request.json"
+    },
+    {
+      "text": "Execution history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-history.json"
+    },
+    {
+      "text": "Cache and execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/same-events.json"
+    },
+    {
+      "text": "Input and cache-key comparison",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json"
+    },
+    {
+      "text": "Original screenshot",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed.png"
+    },
+    {
+      "text": "Request 733",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-request.json"
+    },
+    {
+      "text": "Execution history",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-history.json"
+    },
+    {
+      "text": "Cache and execution events",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/changed-events.json"
+    },
+    {
+      "text": "Input and cache-key comparison",
+      "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json"
+    }
+  ],
+  "local_references_checked": 78,
+  "page_errors": []
+}

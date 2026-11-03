@@ -1,0 +1,113 @@
+{
+  "comfyui_commit": "7c4390a6f70cd8eb41014d6af52969397a752fc4",
+  "frontend_checkout_commit": "940c3b74cb803216987335075ad2873638f42f48",
+  "inspire_commit": "d23db9aa544de9a6d4c609cb7005fa9e0d42031d",
+  "chrome": "Google Chrome 156.0.8078.79",
+  "packages": {
+    "torch": "2.10.0",
+    "numpy": "2.4.4",
+    "playwright": "1.58.0",
+    "comfyui-frontend-package": "1.57.6"
+  },
+  "core_file_hashes": {
+    "execution.py": "40c5306bc8d032aea90b93a7e1ef4ca137e0cf372187132d32b99ae070ba3d87",
+    "server.py": "f0e76068391a1827d361281a599f8043811a6d82fc8ecb3d8d58efb9c348b9d2",
+    "comfy_execution/caching.py": "edc554b1348f4c5dae50c022b061399ab5be5e06872d73c5c1fedca9bba45ce2",
+    "comfy_execution/graph.py": "b78c69dda0718e2c6a44fe54d822470632ff638e467ee8448e2d3fab67dbbf0a",
+    "comfy_execution/graph_utils.py": "dabb3f75952a1398891ed87ad853d4ea9c929f322ce6997d4ea916adbc2f209d",
+    "comfy_api/latest/_io.py": "c2a5aded4895a1adf1acb2df6c011fdfb74e15b0d4fd331ec00ea7562d91d91d",
+    "comfy_extras/nodes_primitive.py": "329963dd20fbf8985539b7b990780291f4b82ee9cfd42b96b571288b77eaa47a"
+  },
+  "core_changed_execution_files": [],
+  "runtime_system_stats": {
+    "system": {
+      "os": "linux",
+      "ram_total": 100305424384,
+      "ram_free": 76223348736,
+      "comfyui_version": "0.43.0",
+      "required_frontend_version": "1.57.6",
+      "installed_templates_version": "0.11.100",
+      "required_templates_version": "0.11.100",
+      "comfy_package_versions": [
+        {
+          "name": "comfyui-frontend-package",
+          "installed": "1.57.6",
+          "required": "1.57.6"
+        },
+        {
+          "name": "comfyui-workflow-templates",
+          "installed": "0.11.100",
+          "required": "0.11.100"
+        },
+        {
+          "name": "comfyui-embedded-docs",
+          "installed": "0.5.15",
+          "required": "0.5.15"
+        },
+        {
+          "name": "comfy-aimdo",
+          "installed": "0.6.0",
+          "required": "0.6.0"
+        },
+        {
+          "name": "comfy-kitchen",
+          "installed": "0.2.40",
+          "required": "0.2.40"
+        }
+      ],
+      "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "pytorch_version": "2.10.0+cu128",
+      "embedded_python": false,
+      "deploy_environment": "local-git",
+      "argv": [
+        "main.py",
+        "--listen",
+        "127.0.0.1",
+        "--port",
+        "33275",
+        "--base-directory",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/gpu/runtime",
+        "--models-directory",
+        "/mnt/teratera/git/ComfyUI/models",
+        "--disable-all-custom-nodes",
+        "--whitelist-custom-nodes",
+        "comfyui-impact-pack",
+        "comfyui-inspire-pack",
+        "--disable-auto-launch",
+        "--cache-classic",
+        "--deterministic",
+        "--force-fp32",
+        "--fp32-vae",
+        "--disable-dynamic-vram",
+        "--use-pytorch-cross-attention"
+      ]
+    },
+    "devices": [
+      {
+        "name": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+        "type": "cuda",
+        "index": 0,
+        "vram_total": 16718168064,
+        "vram_free": 16445145088,
+        "torch_vram_total": 0,
+        "torch_vram_free": 0
+      }
+    ]
+  },
+  "models_used": [
+    "v1-5-pruned-emaonly-fp16.safetensors",
+    "SD1.5/epicrealism_naturalSinRC1VAE.safetensors",
+    "SD1.5/etc/add_detail.safetensors"
+  ],
+  "model_downloads": 0,
+  "trusted_catalog": {
+    "nodes": 198,
+    "widgets": 719,
+    "files": {
+      "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+      "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+    }
+  },
+  "python": "/home/rho/venv/bin/python",
+  "pack_configuration": "Fresh isolated checkout without impact-pack.ini; package defaults, including the 50 MB wildcard cache limit. Baseline and candidate both emitted the existing missing-default-section startup log and continued with those defaults."
+}
