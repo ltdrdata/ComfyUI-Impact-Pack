@@ -1,0 +1,88 @@
+{
+  "head": "1b175f36b3a8b62fa8aa3c539a0bf77e85df44a1",
+  "previous_head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+  "change": "Remove the duplicate Escape from ui; browser_session remains responsible for dismissing the initial template browser.",
+  "product_code_unchanged": true,
+  "production_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+  "tested_e2e_ui_sha256": "8abdc1eaa6695d53d08459174158ee885036d21ab43f9fdf1898269ea8663469",
+  "checks": {
+    "connection-unit": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser-helper": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native-smoke": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "review_disposition": {
+    "wildcard_precedence": "Preserved existing * precedence and late-notification behavior; changing either would broaden the fix.",
+    "duplicate_escape": "Removed from the pytest ui fixture.",
+    "description": "Compressed into the four playbook sections, retaining all existing evidence links and three embedded screenshots.",
+    "reviewer_test_execution": "Ran the requested unit command directly in the isolated PR worktree; all 20 passed."
+  },
+  "scope": "Focused follow-up only. Earlier full regression counts are not increased by these reruns.",
+  "commands": {
+    "native-smoke": {
+      "label": "native-smoke",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+        "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactConditionalBranch]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-followup-20261103T034606Z/native-smoke.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T03:46:13.625549+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18205"
+      },
+      "head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+      "exit_code": 0,
+      "duration_seconds": 24.65
+    },
+    "connection-unit": {
+      "label": "connection-unit",
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "tests/connection_types.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T03:46:06.177590+00:00",
+      "environment_overrides": {},
+      "head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+      "exit_code": 0,
+      "duration_seconds": 0.11
+    },
+    "browser-helper": {
+      "label": "browser-helper",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_ui.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-followup-20261103T034606Z/browser-helper.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T03:46:06.291792+00:00",
+      "environment_overrides": {},
+      "head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+      "exit_code": 0,
+      "duration_seconds": 2.32
+    }
+  }
+}

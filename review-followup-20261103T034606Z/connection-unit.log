@@ -1,0 +1,112 @@
+TAP version 13
+# (node:100803) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactControlBridge: restore the link type while the source node is unavailable
+ok 1 - ImpactControlBridge: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 2.239293
+  ...
+# Subtest: ImpactControlBridge: restore the link type while the source output is unavailable
+ok 2 - ImpactControlBridge: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.991971
+  ...
+# Subtest: ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+ok 3 - ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.98602
+  ...
+# Subtest: ImpactControlBridge: an available source type takes precedence over saved link metadata
+ok 4 - ImpactControlBridge: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.492391
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source node is unavailable
+ok 5 - ImpactConditionalBranch: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.9164
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source output is unavailable
+ok 6 - ImpactConditionalBranch: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.873198
+  ...
+# Subtest: ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+ok 7 - ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.882346
+  ...
+# Subtest: ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+ok 8 - ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.902864
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+ok 9 - ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.975611
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+ok 10 - ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.946838
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+ok 11 - ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.536494
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+ok 12 - ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.960112
+  ...
+# Subtest: ImpactCompare: restore the link type while the source node is unavailable
+ok 13 - ImpactCompare: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.886553
+  ...
+# Subtest: ImpactCompare: restore the link type while the source output is unavailable
+ok 14 - ImpactCompare: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.860796
+  ...
+# Subtest: ImpactCompare: an unknown type stays wildcard and can be resolved later
+ok 15 - ImpactCompare: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.842531
+  ...
+# Subtest: ImpactCompare: an available source type takes precedence over saved link metadata
+ok 16 - ImpactCompare: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.913414
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+ok 17 - ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.919876
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+ok 18 - ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.036246
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+ok 19 - ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.89515
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+ok 20 - ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.893017
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 60.452149
