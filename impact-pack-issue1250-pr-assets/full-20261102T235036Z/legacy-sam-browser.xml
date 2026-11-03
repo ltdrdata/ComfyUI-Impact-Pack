@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="6" time="33.379" timestamp="2026-11-03T09:19:53.933896+09:00" hostname="hyewon"><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_context_menu_and_clipspace_reopen" time="5.413"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:121: in test_legacy_sam_context_menu_and_clipspace_reopen
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_keyboard_cancel_resize_and_change_image" time="6.000"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:151: in test_legacy_sam_keyboard_cancel_resize_and_change_image
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_detect_save_and_native_reload[input-positional]" time="5.935"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:198: in test_legacy_sam_detect_save_and_native_reload
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_detect_save_and_native_reload[input-named]" time="5.922"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:198: in test_legacy_sam_detect_save_and_native_reload
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_detect_save_and_native_reload[output_subfolder-positional]" time="4.463"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:198: in test_legacy_sam_detect_save_and_native_reload
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase><testcase classname="test_e2e_legacy_sam" name="test_legacy_sam_detect_save_and_native_reload[output_subfolder-named]" time="5.465"><failure message="AssertionError: Deprecated UI module was requested&#10;assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]">tests/test_e2e_legacy_sam.py:198: in test_legacy_sam_detect_save_and_native_reload
+    assert_sam_loaded(browser)
+tests/test_e2e_legacy_sam.py:30: in assert_sam_loaded
+    assert "/scripts/ui.js" not in requests, "Deprecated UI module was requested"
+E   AssertionError: Deprecated UI module was requested
+E   assert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]</failure></testcase></testsuite></testsuites>

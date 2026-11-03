@@ -1,0 +1,68 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue1250-connection-types/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge] FAILED [ 50%]
+tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge] _
+tests/test_e2e_connection_types.py:192: in test_restored_dynamic_output_consumer_executes
+    run_and_check(path.stem + "-changed", changed)
+tests/test_e2e_connection_types.py:167: in run_and_check
+    assert actual == ({} if text is None else {preview: [text]})
+E   AssertionError: assert {'5': ['42']} == {}
+E     
+E     Left contains 1 more item:
+E     {'5': ['42']}
+E     
+E     Full diff:
+E     - {}
+E     + {...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-mutant-browser/test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (b883b027-862c-4cba-b466-27f1bb6e07a2)
+PASS: UI Run completed (8f5c9154-cd8a-4311-a412-4cc660e87ddb)
+_ test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList] _
+tests/test_e2e_connection_types.py:177: in test_restored_dynamic_output_consumer_executes
+    run_and_check(path.stem + "-initial", "True" if node_type == "ImpactCompare" else
+tests/test_e2e_connection_types.py:167: in run_and_check
+    assert actual == ({} if text is None else {preview: [text]})
+E   AssertionError: assert {'5': ['42']} == {'5': ['7']}
+E     
+E     Differing items:
+E     {'5': ['42']} != {'5': ['7']}
+E     
+E     Full diff:
+E       {
+E           '5': [...
+E     
+E     ...Full output truncated (6 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-mutant-browser/test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (d2b0522d-d8f4-43da-afe4-5f9f7cbd6fff)
+=============================== warnings summary ===============================
+test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-mutant-browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge]
+FAILED tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList]
+======================== 2 failed, 1 warning in 27.62s =========================

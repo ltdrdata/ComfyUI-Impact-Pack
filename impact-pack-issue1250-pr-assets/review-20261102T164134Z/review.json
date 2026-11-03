@@ -1,0 +1,57 @@
+{
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "previous_reviewed_head": "50741f711324a4268c7f0a8d7c9d68ca16e47914",
+  "findings": [
+    {
+      "priority": "P2",
+      "file": "tests/test_e2e_connection_types.py:93",
+      "finding": "E2E checked only the first data input; a second input left as wildcard passed.",
+      "resolution": "Assert every data input and output type. The same injected defect passes the old E2E and fails the revised E2E.",
+      "evidence": [
+        "old-e2e-mutant-second-input.log",
+        "new-e2e-mutant-second-input.log"
+      ],
+      "status": "resolved"
+    },
+    {
+      "priority": "P2",
+      "file": "tests/test_e2e_connection_types.py:59",
+      "finding": "Runtime before-values were the sole round-trip oracle; unchanged wrong setup or serialization could pass.",
+      "resolution": "Declare widget names/order and non-default values independently; assert them before/after both native loads and in both serialized representations. Control Bridge now uses false/Mute.",
+      "status": "resolved"
+    },
+    {
+      "priority": "P3",
+      "file": "tests/test_e2e_connection_types.py:74",
+      "finding": "The order precondition checked ImpactInt rather than the directly connected Inversed Switch.",
+      "resolution": "Check the saved position of Inversed Switch against its consumer.",
+      "status": "resolved"
+    },
+    {
+      "priority": "P3",
+      "file": "tests/test_e2e_connection_types.py:6",
+      "finding": "The new E2E depended on a switch-specific fixture despite an existing shared browser fixture.",
+      "resolution": "Reuse e2e_ui.ui; continue using the existing native export and widget observation helpers.",
+      "status": "resolved"
+    },
+    {
+      "priority": "P3",
+      "file": "js/impact-pack.js:316",
+      "finding": "Four affected handlers captured previous callbacks that they never used.",
+      "resolution": "Remove four unused bindings; make the unchanged Compare local immutable.",
+      "status": "resolved"
+    },
+    {
+      "priority": "P3",
+      "file": "tests/connection_types.test.mjs:37",
+      "finding": "The harness assumed registration order; some cases checked captured slot references without checking the whole output contract.",
+      "resolution": "Find the named extension and assert actual input/output arrays in all cases, including preservation of the BOOLEAN output.",
+      "status": "resolved"
+    }
+  ],
+  "open_findings": [],
+  "reinvention_assessment": "Node standard test/VM APIs match the existing repository approach; no dependency, generic graph engine, or new shared abstraction is needed. The four one-line fallback expressions stay next to their callbacks.",
+  "test_matrix_assessment": "Retain 20 fast unit cases and 20 browser cases: five registered node types, two serialization orders, and both restoration modes cover distinct contracts.",
+  "validation_adjustment": "A preliminary stricter assertion counted frontend widget-backed inputs as data inputs. It was corrected before the final mutation, baseline, and full regression runs; preliminary artifacts remain marked initial.",
+  "results": "verification.json"
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "type": "console",
+    "messageType": "error",
+    "text": "TypeError: Cannot read properties of undefined (reading 'type')\n    at nodeType.onConnectionsChange (http://127.0.0.1:18206/extensions/ComfyUI-Impact-Pack/impact-pack.js:356:54)\n    at ComfyNode.onConnectionsChange (http://127.0.0.1:18206/assets/executionErrorStore-DU3jtHOO.js:2:57667)\n    at ComfyNode.configure (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:224364)\n    at ComfyNode.configure (http://127.0.0.1:18206/assets/executionErrorStore-DU3jtHOO.js:3:22800)\n    at http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:487111\n    at withGraphIntentSource (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:22508)\n    at LGraph.configure (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:484378)\n    at http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:8036\n    at trackConfiguring (http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:7925)\n    at Rt.configure (http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:8013)",
+    "args": [
+      {
+        "preview": "TypeError: Cannot read properties of undefined (reading 'type')\n    at nodeType.onConnectionsChange (http://127.0.0.1:18206/extensions/ComfyUI-Impact-Pack/impact-pack.js:356:54)\n    at ComfyNode.onConnectionsChange (http://127.0.0.1:18206/assets/executionErrorStore-DU3jtHOO.js:2:57667)\n    at ComfyNode.configure (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:224364)\n    at ComfyNode.configure (http://127.0.0.1:18206/assets/executionErrorStore-DU3jtHOO.js:3:22800)\n    at http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:487111\n    at withGraphIntentSource (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:22508)\n    at LGraph.configure (http://127.0.0.1:18206/assets/nodeDefStore-B2aA5aHF.js:1:484378)\n    at http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:8036\n    at trackConfiguring (http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:7925)\n    at Rt.configure (http://127.0.0.1:18206/assets/app-B03VdYVv.js:26:8013)"
+      }
+    ],
+    "location": {
+      "url": "http://127.0.0.1:18206/assets/app-B03VdYVv.js",
+      "lineNumber": 25,
+      "columnNumber": 12571
+    },
+    "time": 11361.007,
+    "pageId": "page@4f02ba819de585e149e7f189aa90a863"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "classification": "Pre-existing legacy test failures; identical failures and messages reproduced on origin/Main.",
+  "candidate_commit": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "baseline_commit": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "failures": {
+    "test_wildcard_list_functions": "AssertionError: Should return all available wildcards\nassert 0 == 5\n +  where 0 = len([])",
+    "test_on_demand_mode_before_access": "AssertionError: Should be in On-Demand mode\nassert False",
+    "test_on_demand_mode_after_access": "AssertionError: Should still be in On-Demand mode\nassert False"
+  },
+  "notes": [
+    "The list test scans metadata but never populates wildcard_dict, which get_wildcard_list reads.",
+    "The lazy mode tests import modules.impact.config while wildcards imports impact.config. The tests also rely on untracked >1 MB custom wildcard data and a cached imported wildcard_dict that wildcard_load replaces.",
+    "Candidate and Main produce eight passes and the same three failures. No assertions or trusted fixtures were changed."
+  ]
+}

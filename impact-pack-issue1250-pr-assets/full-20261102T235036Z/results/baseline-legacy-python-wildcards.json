@@ -1,0 +1,22 @@
+{
+  "label": "baseline-legacy-python-wildcards",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/wildcards/test_progressive_loading.py",
+    "tests/wildcards/test_wildcard_lazy_loading.py",
+    "tests/wildcards/test_lazy_load_verification.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-legacy-python-wildcards.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T00:16:22.822208+00:00",
+  "environment_overrides": {
+    "PYTHONPATH": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-runtime/custom_nodes/comfyui-impact-pack"
+  },
+  "head": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "exit_code": 1,
+  "duration_seconds": 2.63
+}

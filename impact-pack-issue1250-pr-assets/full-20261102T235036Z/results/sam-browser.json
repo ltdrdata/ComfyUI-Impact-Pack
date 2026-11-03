@@ -1,0 +1,25 @@
+{
+  "label": "sam-browser",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_sam_masks.py",
+    "tests/test_e2e_sam_tutorials.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/sam-browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T00:20:42.779793+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:41809",
+    "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+    "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+    "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+    "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+  },
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 130.77
+}

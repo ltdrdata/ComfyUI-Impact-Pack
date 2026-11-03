@@ -1,0 +1,1230 @@
+{
+  "status": "completed_with_preexisting_failures_and_documented_harness_retries",
+  "head": "4434abda94a42876386146a40e95dc5e9265ea07",
+  "suite_results": {
+    "animatediff-assembly": {
+      "label": "animatediff-assembly",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_animatediff_assembly.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-assembly.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:41.903201+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 4.97
+    },
+    "animatediff-tutorial-browser": {
+      "label": "animatediff-tutorial-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_animatediff_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:18194",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:26:23.472330+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18194"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 88.05
+    },
+    "baseline-legacy-python-wildcards": {
+      "label": "baseline-legacy-python-wildcards",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_progressive_loading.py",
+        "tests/wildcards/test_wildcard_lazy_loading.py",
+        "tests/wildcards/test_lazy_load_verification.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-legacy-python-wildcards.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:16:22.822208+00:00",
+      "environment_overrides": {
+        "PYTHONPATH": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-runtime/custom_nodes/comfyui-impact-pack"
+      },
+      "head": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+      "exit_code": 1,
+      "duration_seconds": 2.63
+    },
+    "browser-harness": {
+      "label": "browser-harness",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_ui.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/browser-harness.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:46.876321+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 2.27
+    },
+    "conditioning-browser": {
+      "label": "conditioning-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_conditionings.py",
+        "--base-url",
+        "http://127.0.0.1:46669",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/conditioning-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:10:26.453431+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 19.33
+    },
+    "core-browser-resumed": {
+      "label": "core-browser-resumed",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-linked]",
+        "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_tail]",
+        "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_middle]",
+        "tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node",
+        "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional]",
+        "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named]",
+        "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider]",
+        "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter]",
+        "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional]",
+        "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror]",
+        "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace]",
+        "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[positional]",
+        "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[named]",
+        "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[positional]",
+        "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[named]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/core-browser-resumed.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:16:00.685533+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18194"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 622.79
+    },
+    "detailer-browser": {
+      "label": "detailer-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_dd_compat.py",
+        "--base-url",
+        "http://127.0.0.1:46669",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/detailer-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:09:40.609055+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 45.83
+    },
+    "encoding-api": {
+      "label": "encoding-api",
+      "command": [
+        "bash",
+        "tests/test_encoding.sh",
+        "http://127.0.0.1:18194"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:27:51.525924+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18194"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 0.56
+    },
+    "input-validation": {
+      "label": "input-validation",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_validation.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:49.144144+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 3.92
+    },
+    "javascript": {
+      "label": "javascript",
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/connection_types.test.mjs",
+        "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/legacy_sam.test.mjs",
+        "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/lora_wildcard_source.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:31.929775+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 0.11
+    },
+    "lbw-inference-parity": {
+      "label": "lbw-inference-parity",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-k",
+        "inference",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lbw-inference-parity.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:27:22.188295+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18204",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lbw-main-reference/reference.png"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 11.08
+    },
+    "lbw-main-reference": {
+      "label": "lbw-main-reference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/capture_lbw.py",
+        "--base-url",
+        "http://127.0.0.1:18204",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lbw-main-reference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:27:04.477937+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18204"
+      },
+      "head": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+      "exit_code": 0,
+      "duration_seconds": 10.39
+    },
+    "legacy-config_quotes": {
+      "label": "legacy-config_quotes",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_config_quotes.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:07:17.567348+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 76.56
+    },
+    "legacy-deep_nesting": {
+      "label": "legacy-deep_nesting",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_deep_nesting.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:04:40.218499+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 19.96
+    },
+    "legacy-dynamic-prompts": {
+      "label": "legacy-dynamic-prompts",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_dynamic_prompts_full.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:08:48.184886+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46637"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 93.87
+    },
+    "legacy-edge_cases": {
+      "label": "legacy-edge_cases",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_edge_cases.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:04:21.634228+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 18.58
+    },
+    "legacy-error_handling": {
+      "label": "legacy-error_handling",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_error_handling.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:04:04.451615+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 17.18
+    },
+    "legacy-ondemand_loading": {
+      "label": "legacy-ondemand_loading",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_ondemand_loading.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:05:00.177515+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 137.39
+    },
+    "legacy-python-wildcards": {
+      "label": "legacy-python-wildcards",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_progressive_loading.py",
+        "tests/wildcards/test_wildcard_lazy_loading.py",
+        "tests/wildcards/test_lazy_load_verification.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-python-wildcards.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:10:22.381367+00:00",
+      "environment_overrides": {
+        "PYTHONPATH": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 1,
+      "duration_seconds": 3.2
+    },
+    "legacy-sam-browser": {
+      "label": "legacy-sam-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_legacy_sam.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-sam-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:19:53.059982+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 1,
+      "duration_seconds": 35.35
+    },
+    "legacy-sam-isolated-browser": {
+      "label": "legacy-sam-isolated-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_legacy_sam.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-sam-isolated-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:21:12.858818+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18203",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 185.6
+    },
+    "lora-inference-browser": {
+      "label": "lora-inference-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_lora_wildcard_inference.py",
+        "--base-url",
+        "http://127.0.0.1:35569",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lora-inference-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:23:45.575154+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:35569"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 133.94
+    },
+    "lora-source-browser": {
+      "label": "lora-source-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_lora_wildcard_source.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lora-source-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:23:17.890940+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:39539"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 20.46
+    },
+    "lora-tensors": {
+      "label": "lora-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:54:14.428541+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 8.98
+    },
+    "mask-blur": {
+      "label": "mask-blur",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_mask_blur.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/mask-blur.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:33.710415+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 3.17
+    },
+    "regional-browser": {
+      "label": "regional-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_regional.py",
+        "--base-url",
+        "http://127.0.0.1:46669",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:14:28.163858+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 324.9
+    },
+    "sam-and-mask": {
+      "label": "sam-and-mask",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/sam-and-mask.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:36.880289+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 5.02
+    },
+    "sam-api": {
+      "label": "sam-api",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_sam_api.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/sam-api.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:20:28.418896+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 3.23
+    },
+    "sam-browser": {
+      "label": "sam-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_sam_masks.py",
+        "tests/test_e2e_sam_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/sam-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:20:42.779793+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:41809",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 130.77
+    },
+    "switch-tutorial-browser": {
+      "label": "switch-tutorial-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:46669",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/switch-tutorial-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:10:45.951970+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 222.21
+    },
+    "tutorial-tensors": {
+      "label": "tutorial-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_tutorial_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--tutorials-root",
+        "/mnt/teratera/git/ComfyUI-extension-tutorials",
+        "--inspire-root",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/runtime/custom_nodes/comfyui-inspire-pack",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/tutorial-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:54:36.753779+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 33.88
+    },
+    "wildcard-cache-browser-retry": {
+      "label": "wildcard-cache-browser-retry",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-browser-retry.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:16:50.681096+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18203"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 40.24
+    },
+    "wildcard-cache-browser": {
+      "label": "wildcard-cache-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:58:08.145652+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 1,
+      "duration_seconds": 553.96
+    },
+    "wildcard-cache-integration": {
+      "label": "wildcard-cache-integration",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-integration-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:51:53.064758+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 4.02
+    },
+    "wildcard-cache-lru-browser": {
+      "label": "wildcard-cache-lru-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "plain_text or populate_reuses",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-lru-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:17:42.764972+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18203"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 69.34
+    },
+    "wildcard-cache-tensors": {
+      "label": "wildcard-cache-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:54:23.411078+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 13.34
+    },
+    "wildcard-native-tutorial-browser": {
+      "label": "wildcard-native-tutorial-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-k",
+        "native",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-native-tutorial-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:07:22.133715+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 138.47
+    },
+    "wildcard-unit": {
+      "label": "wildcard-unit",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests",
+      "started_utc": "2026-11-02T23:51:32.044031+00:00",
+      "environment_overrides": {},
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 1.67
+    },
+    "wildcards-full-cache-browser-corrected": {
+      "label": "wildcards-full-cache-browser-corrected",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:46865",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcards-full-cache-browser-corrected"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:10:56.938261+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46865"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 20.51
+    },
+    "wildcards-full-cache-browser": {
+      "label": "wildcards-full-cache-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:46669",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcards-full-cache-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-02T23:57:30.790127+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 1,
+      "duration_seconds": 37.35
+    },
+    "wildcards-on-demand-browser": {
+      "label": "wildcards-on-demand-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:42201",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcards-on-demand-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+      "started_utc": "2026-11-03T00:23:02.019342+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:42201"
+      },
+      "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+      "exit_code": 0,
+      "duration_seconds": 7.64
+    }
+  },
+  "pytest_results": {
+    "animatediff-assembly": {
+      "total": 44,
+      "passed": 44,
+      "failures": [],
+      "skipped": 0
+    },
+    "baseline-legacy-python-wildcards": {
+      "total": 11,
+      "passed": 8,
+      "failures": [
+        {
+          "name": "wildcards.test_progressive_loading::test_wildcard_list_functions",
+          "message": "AssertionError: Should return all available wildcards\nassert 0 == 5\n +  where 0 = len([])"
+        },
+        {
+          "name": "wildcards.test_lazy_load_verification::test_on_demand_mode_before_access",
+          "message": "AssertionError: Should be in On-Demand mode\nassert False"
+        },
+        {
+          "name": "wildcards.test_lazy_load_verification::test_on_demand_mode_after_access",
+          "message": "AssertionError: Should still be in On-Demand mode\nassert False"
+        }
+      ],
+      "skipped": 0
+    },
+    "browser-harness-corrected": {
+      "total": 3,
+      "passed": 3,
+      "failures": [],
+      "skipped": 0
+    },
+    "browser-harness": {
+      "total": 3,
+      "passed": 3,
+      "failures": [],
+      "skipped": 0
+    },
+    "core-browser-resumed": {
+      "total": 21,
+      "passed": 21,
+      "failures": [],
+      "skipped": 0
+    },
+    "lbw-inference-parity": {
+      "total": 1,
+      "passed": 1,
+      "failures": [],
+      "skipped": 0
+    },
+    "legacy-python-wildcards": {
+      "total": 11,
+      "passed": 8,
+      "failures": [
+        {
+          "name": "wildcards.test_progressive_loading::test_wildcard_list_functions",
+          "message": "AssertionError: Should return all available wildcards\nassert 0 == 5\n +  where 0 = len([])"
+        },
+        {
+          "name": "wildcards.test_lazy_load_verification::test_on_demand_mode_before_access",
+          "message": "AssertionError: Should be in On-Demand mode\nassert False"
+        },
+        {
+          "name": "wildcards.test_lazy_load_verification::test_on_demand_mode_after_access",
+          "message": "AssertionError: Should still be in On-Demand mode\nassert False"
+        }
+      ],
+      "skipped": 0
+    },
+    "legacy-sam-browser": {
+      "total": 6,
+      "passed": 0,
+      "failures": [
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_context_menu_and_clipspace_reopen",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        },
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_keyboard_cancel_resize_and_change_image",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        },
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_detect_save_and_native_reload[input-positional]",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        },
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_detect_save_and_native_reload[input-named]",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        },
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_detect_save_and_native_reload[output_subfolder-positional]",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/index-CqDKM-zt.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        },
+        {
+          "name": "test_e2e_legacy_sam::test_legacy_sam_detect_save_and_native_reload[output_subfolder-named]",
+          "message": "AssertionError: Deprecated UI module was requested\nassert '/scripts/ui.js' not in ['/user.css', '/api/userdata/user.css', '/materialdesignicons.min.css', '/assets/index-CqDKM-zt.js', '/assets/rolldown-runtime-CM1DJQSe.js', '/assets/vendor-datadog-CS-2l-KQ.js', ...]"
+        }
+      ],
+      "skipped": 0
+    },
+    "legacy-sam-isolated-browser": {
+      "total": 6,
+      "passed": 6,
+      "failures": [],
+      "skipped": 0
+    },
+    "lora-source-browser": {
+      "total": 2,
+      "passed": 2,
+      "failures": [],
+      "skipped": 0
+    },
+    "mask-blur": {
+      "total": 9,
+      "passed": 9,
+      "failures": [],
+      "skipped": 0
+    },
+    "sam-and-mask": {
+      "total": 109,
+      "passed": 109,
+      "failures": [],
+      "skipped": 0
+    },
+    "sam-api": {
+      "total": 3,
+      "passed": 3,
+      "failures": [],
+      "skipped": 0
+    },
+    "sam-browser": {
+      "total": 10,
+      "passed": 10,
+      "failures": [],
+      "skipped": 0
+    },
+    "wildcard-cache-browser-retry": {
+      "total": 1,
+      "passed": 1,
+      "failures": [],
+      "skipped": 0
+    },
+    "wildcard-cache-browser": {
+      "total": 20,
+      "passed": 19,
+      "failures": [
+        {
+          "name": "test_e2e_wildcard_cache::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]",
+          "message": "playwright._impl._errors.TimeoutError: Locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for get_by_placeholder(\"Add a node...\", exact=True)"
+        }
+      ],
+      "skipped": 0
+    },
+    "wildcard-cache-lru-browser": {
+      "total": 4,
+      "passed": 4,
+      "failures": [],
+      "skipped": 0
+    },
+    "wildcard-native-tutorial-browser": {
+      "total": 8,
+      "passed": 8,
+      "failures": [],
+      "skipped": 0
+    },
+    "wildcard-unit": {
+      "total": 204,
+      "passed": 204,
+      "failures": [],
+      "skipped": 0
+    }
+  },
+  "core_interruption": {
+    "status": "interrupted",
+    "runner_exit": 143,
+    "cause": "Unknown SIGTERM; no pytest summary was written.",
+    "completed_passes": [
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactControlBridge]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranchSelMode]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactCompare]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactSelectNthItemOfAnyList]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-source-first-ImpactControlBridge]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-source-first-ImpactConditionalBranch]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-source-first-ImpactConditionalBranchSelMode]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-source-first-ImpactCompare]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-source-first-ImpactSelectNthItemOfAnyList]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactControlBridge]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactConditionalBranch]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactConditionalBranchSelMode]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactCompare]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-consumer-first-ImpactSelectNthItemOfAnyList]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-source-first-ImpactControlBridge]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-source-first-ImpactConditionalBranch]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-source-first-ImpactConditionalBranchSelMode]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-source-first-ImpactCompare]",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[named-source-first-ImpactSelectNthItemOfAnyList]",
+      "tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactMakeAnyList]",
+      "tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactMakeAnyList]",
+      "tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactMakeAnyList]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactMakeAnyList]",
+      "tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_keep_selection_when_removing_another_connection[ImpactSwitch-3-inputs]",
+      "tests/test_e2e_switches.py::test_keep_selection_when_removing_another_connection[ImpactInversedSwitch-22-outputs]",
+      "tests/test_e2e_switches.py::test_inversed_switch_keeps_other_outputs_when_reroute_disconnects_during_load",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-LatentSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-SEGSSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-ImpactInversedSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-LatentSwitch]",
+      "tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-SEGSSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-LatentSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-SEGSSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-ImpactSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-LatentSwitch]",
+      "tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-SEGSSwitch]",
+      "tests/test_e2e_switches.py::test_switch_does_not_execute_unselected_input[on_execution]",
+      "tests/test_e2e_switches.py::test_switch_does_not_execute_unselected_input[on_prompt]",
+      "tests/test_e2e_switches.py::test_inversed_switch_disconnected_chain_on_prompt",
+      "tests/test_e2e_switches.py::test_image_previews_follow_current_execution[updated]",
+      "tests/test_e2e_switches.py::test_image_previews_follow_current_execution[blocked]",
+      "tests/test_e2e_switches.py::test_image_previews_follow_current_execution[stale]",
+      "tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeImageList-32]",
+      "tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeImageBatch-32]",
+      "tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskList-32]",
+      "tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskBatch-16]",
+      "tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskBatch-32]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[single]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[same_size]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[downscale_crop]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[upscale_crop]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[height_one]",
+      "tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[width_one]",
+      "tests/test_e2e_switches.py::test_segs_concat_after_loading",
+      "tests/test_e2e_switch_loading.py::test_unconnected_switch_widgets_survive_native_round_trip[positional]",
+      "tests/test_e2e_switch_loading.py::test_unconnected_switch_widgets_survive_native_round_trip[named]",
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-linked]",
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-selected_empty_tail]",
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-selected_empty_middle]"
+    ]
+  },
+  "core_resume_plan": {
+    "total": 93,
+    "completed": 72,
+    "remaining": [
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-linked]",
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_tail]",
+      "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_middle]",
+      "tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node",
+      "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional]",
+      "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named]",
+      "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider]",
+      "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter]",
+      "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional]",
+      "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror]",
+      "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace]",
+      "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[positional]",
+      "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[named]",
+      "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[positional]",
+      "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[named]"
+    ]
+  },
+  "core_counts": {
+    "passed_before_interruption": 72,
+    "remaining_cases": 21,
+    "resumed": {
+      "total": 21,
+      "passed": 21,
+      "failures": [],
+      "skipped": 0
+    }
+  },
+  "legacy_failures": {
+    "classification": "Pre-existing legacy test failures; identical failures and messages reproduced on origin/Main.",
+    "candidate_commit": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+    "baseline_commit": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+    "failures": {
+      "test_wildcard_list_functions": "AssertionError: Should return all available wildcards\nassert 0 == 5\n +  where 0 = len([])",
+      "test_on_demand_mode_before_access": "AssertionError: Should be in On-Demand mode\nassert False",
+      "test_on_demand_mode_after_access": "AssertionError: Should still be in On-Demand mode\nassert False"
+    },
+    "notes": [
+      "The list test scans metadata but never populates wildcard_dict, which get_wildcard_list reads.",
+      "The lazy mode tests import modules.impact.config while wildcards imports impact.config. The tests also rely on untracked >1 MB custom wildcard data and a cached imported wildcard_dict that wildcard_load replaces.",
+      "Candidate and Main produce eight passes and the same three failures. No assertions or trusted fixtures were changed."
+    ]
+  },
+  "legacy_shell_audit": "legacy-shell-audit.json",
+  "source_integrity": {
+    "run_start_commit": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+    "final_commit": "4434abda94a42876386146a40e95dc5e9265ea07",
+    "changed_since_start": [
+      "tests/e2e_ui.py"
+    ],
+    "explanation": "Only shared test browser setup gained Escape to dismiss initial template browser. Production code and both fixed catalog fixtures are byte-identical to the tested snapshot.",
+    "runtime_production_hashes": {
+      "js/impact-pack.js": {
+        "sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+        "runtimes": {
+          "runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+          "model-runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+          "aux-runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+        }
+      },
+      "tests/workflows/all-impact-nodes.json": {
+        "sha256": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+        "runtimes": {
+          "runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+          "model-runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+          "aux-runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be"
+        }
+      },
+      "tests/workflows/all-impact-nodes.widgets.json": {
+        "sha256": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+        "runtimes": {
+          "runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+          "model-runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+          "aux-runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+        }
+      }
+    },
+    "git_status": ""
+  },
+  "triage": [
+    {
+      "suite": "wildcards-full-cache-browser",
+      "initial": "Template browser overlay intercepted new-workflow click.",
+      "resolution": "Shared helper now dismisses the initial overlay; full standalone wildcard script and three shared-helper tests passed. Production files unchanged."
+    },
+    {
+      "suite": "wildcard-cache-browser",
+      "initial": "19 passed, one UI node-search timeout before product assertions in Encode/positional subgraph case.",
+      "resolution": "The same case passed with original coordinates and assertions on an isolated CPU cache-classic server. Named case passed in the original GPU run. No retry or assertion weakening added to tests; timing cause unproven."
+    },
+    {
+      "suite": "core-browser",
+      "initial": "Runner exited with SIGTERM (143) after 72 completed passes, no final pytest XML.",
+      "resolution": "Recorded completed node IDs; resumed exactly the 21 unfinished cases. Cause of SIGTERM unknown."
+    },
+    {
+      "suite": "legacy-python-wildcards",
+      "initial": "Three failures, eight passes.",
+      "resolution": "Same three failures and assertion messages reproduced on Main. Kept as outstanding legacy failures."
+    },
+    {
+      "suite": "legacy-sam-browser",
+      "initial": "Six failures before editor behavior: globally observed deprecated /scripts/ui.js import.",
+      "cause": "Inspire Pack js/regional.js imports ../../scripts/ui.js. This global import check requires an Impact-only server.",
+      "resolution": "Unchanged six-case suite rerun against isolated Impact-only CPU server; see legacy-sam-isolated-browser.xml."
+    }
+  ],
+  "pending_suites": [],
+  "unexpected_suite_failures": [],
+  "limits": [
+    "Full AnimateDiff video inference is not covered; assembly tensors and original tutorial native restoration are covered.",
+    "Only the installed frontend version and current hardware are covered; the merged Main integration tree was not executed.",
+    "The issue report supplied no original workflow; dedicated regression uses the reproduced dynamic-output native-loading path.",
+    "Historical fixture-dependent shell diagnostics are not counted as successful regression assertions.",
+    "Native loading of original wildcard/AnimateDiff tutorials does not imply execution of their unrelated plugins. SDXLPromptStyler and BNK inference were not run."
+  ],
+  "totals": {
+    "maintained_offline_pytest_passed": 369,
+    "maintained_server_workflow_pytest_case_executions_passed": 147,
+    "javascript_passed": 29,
+    "standalone_browser_scripts_passed": 8,
+    "integration_validation_scripts_passed": 5,
+    "encoding_api_cases_passed": 15,
+    "legacy_pytest_passed": 8,
+    "legacy_pytest_failed": 3,
+    "skipped": 0,
+    "counting": "Rerun successes replace failed attempts in maintained pass totals. Four additional LRU executions count separately from classic cache. Three shared-harness tests count once. Baseline runs are excluded. Initial failures and the interrupted run remain in detailed records."
+  },
+  "merge_check": {
+    "base": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+    "head": "4434abda94a42876386146a40e95dc5e9265ea07",
+    "merge_tree": "fc7d5341572fc6a81039ac090cb0895cc3eb6feb",
+    "executed_merged_tree": false
+  },
+  "finished_utc": "2026-11-03T00:28:45Z",
+  "cleanup": {
+    "live_owned_servers": [],
+    "other_sessions_untouched": true
+  },
+  "draft": {
+    "path": "/mnt/teratera/git/impact-pack-issue1250-pr-draft.md",
+    "sha256": "889541537c660a0c0e4b42ea9007204b6efd493bb223b85da2ebbee09fd284df",
+    "language": "English",
+    "embedded_screenshots": 3
+  },
+  "supplemental_screenshot_evidence": {
+    "record": "connection-screenshots/evidence.json",
+    "before": "connection-screenshots/before.png",
+    "after_positional": "connection-screenshots/after-positional.png",
+    "after_named": "connection-screenshots/after-named.png",
+    "validation": "Same baseline workflow loaded, natively exported and reloaded in both restoration modes; expected widgets, INT types and exported links verified. No extra cases added to full regression totals."
+  },
+  "supplemental_execution_report": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-validation.json"
+}

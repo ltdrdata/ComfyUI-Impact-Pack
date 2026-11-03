@@ -1,0 +1,17 @@
+[
+  "/home/rho/venv/bin/python",
+  "main.py",
+  "--cpu",
+  "--listen",
+  "127.0.0.1",
+  "--port",
+  "18194",
+  "--base-directory",
+  "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime",
+  "--user-directory",
+  "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/user",
+  "--disable-all-custom-nodes",
+  "--whitelist-custom-nodes",
+  "comfyui-impact-pack",
+  "--disable-auto-launch"
+]

@@ -1,0 +1,159 @@
+TAP version 13
+# (node:3504897) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactControlBridge: restore the link type while the source node is unavailable
+ok 1 - ImpactControlBridge: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 2.349996
+  ...
+# Subtest: ImpactControlBridge: restore the link type while the source output is unavailable
+ok 2 - ImpactControlBridge: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.006219
+  ...
+# Subtest: ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+ok 3 - ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.050413
+  ...
+# Subtest: ImpactControlBridge: an available source type takes precedence over saved link metadata
+ok 4 - ImpactControlBridge: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.897302
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source node is unavailable
+ok 5 - ImpactConditionalBranch: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.028953
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source output is unavailable
+ok 6 - ImpactConditionalBranch: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.940545
+  ...
+# Subtest: ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+ok 7 - ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.931759
+  ...
+# Subtest: ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+ok 8 - ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.942168
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+ok 9 - ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.083084
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+ok 10 - ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.965543
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+ok 11 - ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.641458
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+ok 12 - ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.962988
+  ...
+# Subtest: ImpactCompare: restore the link type while the source node is unavailable
+ok 13 - ImpactCompare: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.962878
+  ...
+# Subtest: ImpactCompare: restore the link type while the source output is unavailable
+ok 14 - ImpactCompare: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.892745
+  ...
+# Subtest: ImpactCompare: an unknown type stays wildcard and can be resolved later
+ok 15 - ImpactCompare: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.992283
+  ...
+# Subtest: ImpactCompare: an available source type takes precedence over saved link metadata
+ok 16 - ImpactCompare: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.264056
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+ok 17 - ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.946056
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+ok 18 - ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.089136
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+ok 19 - ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.951516
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+ok 20 - ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 0.956355
+  ...
+# (node:3504898) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: resize redraws only the current image (global UI exports)
+ok 21 - resize redraws only the current image (global UI exports)
+  ---
+  duration_ms: 3.157399
+  ...
+# Subtest: resize redraws only the current image (UI module fallback)
+ok 22 - resize redraws only the current image (UI module fallback)
+  ---
+  duration_ms: 1.042037
+  ...
+# Subtest: upload creates missing image metadata for core preview refresh
+ok 23 - upload creates missing image metadata for core preview refresh
+  ---
+  duration_ms: 0.909737
+  ...
+# Subtest: late creation response cannot replace a restored selection
+ok 24 - late creation response cannot replace a restored selection
+  ---
+  duration_ms: 3.763534
+  ...
+# Subtest: only the latest category response can update the dropdown
+ok 25 - only the latest category response can update the dropdown
+  ---
+  duration_ms: 0.981112
+  ...
+# Subtest: returning to a category rejects its older response after a new selection
+ok 26 - returning to a category rejects its older response after a new selection
+  ---
+  duration_ms: 1.902712
+  ...
+# Subtest: missing saved choices survive restoration for backend validation
+ok 27 - missing saved choices survive restoration for backend validation
+  ---
+  duration_ms: 1.189585
+  ...
+# Subtest: category query values are encoded
+ok 28 - category query values are encoded
+  ---
+  duration_ms: 0.916219
+  ...
+# Subtest: existing nodes are not changed or queried
+ok 29 - existing nodes are not changed or queried
+  ---
+  duration_ms: 1.237375
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 62.750083

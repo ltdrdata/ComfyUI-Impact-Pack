@@ -1,0 +1,40 @@
+{
+  "label": "core-browser-resumed",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-linked]",
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_tail]",
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_middle]",
+    "tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node",
+    "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional]",
+    "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named]",
+    "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider]",
+    "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter]",
+    "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional]",
+    "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace]",
+    "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[positional]",
+    "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[named]",
+    "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[positional]",
+    "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[named]",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/core-browser-resumed.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T00:16:00.685533+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18194"
+  },
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 622.79
+}

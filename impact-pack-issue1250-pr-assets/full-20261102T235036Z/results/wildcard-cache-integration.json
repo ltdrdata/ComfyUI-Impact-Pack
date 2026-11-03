@@ -1,0 +1,17 @@
+{
+  "label": "wildcard-cache-integration",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/integration_wildcard_cache.py",
+    "--comfy-root",
+    "/mnt/teratera/git/ComfyUI",
+    "--report",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-integration-report.json"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-02T23:51:53.064758+00:00",
+  "environment_overrides": {},
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 4.02
+}

@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="10.286" timestamp="2026-11-03T09:27:22.721946+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_tutorials" name="test_lbw_tutorial_inference" time="10.238" /></testsuite></testsuites>

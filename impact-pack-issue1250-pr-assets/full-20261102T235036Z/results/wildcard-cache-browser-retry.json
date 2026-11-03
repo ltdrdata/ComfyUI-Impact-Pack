@@ -1,0 +1,20 @@
+{
+  "label": "wildcard-cache-browser-retry",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-browser-retry.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T00:16:50.681096+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18203"
+  },
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 40.24
+}

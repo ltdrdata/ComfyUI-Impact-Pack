@@ -1,0 +1,22 @@
+{
+  "label": "execution-browser",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_connection_types.py",
+    "-k",
+    "consumer_executes",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T02:23:32.331424+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18205"
+  },
+  "head": "4434abda94a42876386146a40e95dc5e9265ea07",
+  "exit_code": 0,
+  "duration_seconds": 159.14
+}

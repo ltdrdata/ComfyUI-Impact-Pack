@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="38.403" timestamp="2026-11-03T09:16:51.776729+09:00" hostname="hyewon"><testcase classname="test_e2e_wildcard_cache" name="test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]" time="38.302" /></testsuite></testsuites>

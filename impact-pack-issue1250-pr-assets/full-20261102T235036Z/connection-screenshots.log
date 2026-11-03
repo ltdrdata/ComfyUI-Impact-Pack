@@ -1,0 +1,5 @@
+SERVER READY connection-screenshot-proof http://127.0.0.1:18205
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/connection-screenshots
+PASS: same baseline workflow, native round trip, positional widgets and INT types
+PASS: same baseline workflow, native round trip, named widgets and INT types
+Screenshot evidence: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/connection-screenshots

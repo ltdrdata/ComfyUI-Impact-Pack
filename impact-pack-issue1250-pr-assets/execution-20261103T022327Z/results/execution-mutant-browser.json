@@ -1,0 +1,21 @@
+{
+  "label": "execution-mutant-browser",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge]",
+    "tests/test_e2e_connection_types.py::test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList]",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-mutant-browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T02:27:48.400454+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18206"
+  },
+  "head": "4434abda94a42876386146a40e95dc5e9265ea07",
+  "exit_code": 1,
+  "duration_seconds": 28.47
+}

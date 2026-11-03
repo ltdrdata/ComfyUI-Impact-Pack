@@ -1,0 +1,30 @@
+{
+  "base": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime",
+  "changes": [
+    {
+      "file": "test_error_handling.sh",
+      "modified_setup_only": true
+    },
+    {
+      "file": "test_edge_cases.sh",
+      "modified_setup_only": true
+    },
+    {
+      "file": "test_deep_nesting.sh",
+      "modified_setup_only": true
+    },
+    {
+      "file": "test_ondemand_loading.sh",
+      "modified_setup_only": true
+    },
+    {
+      "file": "test_config_quotes.sh",
+      "modified_setup_only": true
+    },
+    {
+      "file": "test_dynamic_prompts_full.sh",
+      "modified_setup_only": true
+    }
+  ],
+  "notes": "Only disposable copies are adapted: ComfyUI path, logs/temp paths, and PID-scoped shutdown. Test assertions and prompts are unchanged."
+}

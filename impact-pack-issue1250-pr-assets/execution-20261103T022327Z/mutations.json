@@ -1,0 +1,5 @@
+{
+  "bridge": "Stop incorrectly passes the input through when inactive.",
+  "nth": "Ignores the selected index and always returns the first item.",
+  "scope": "Disposable server copies only."
+}

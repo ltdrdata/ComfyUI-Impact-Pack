@@ -1,0 +1,31 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue1250-connection-types/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 9 items / 1 deselected / 8 selected
+
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[lbw-positional] PASSED [ 12%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[lbw-named] PASSED [ 25%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[styler-positional] PASSED [ 37%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[styler-named] PASSED [ 50%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[sdxl6-positional] PASSED [ 62%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[sdxl6-named] PASSED [ 75%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[a1111-positional] PASSED [ 87%]
+tests/test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[a1111-named] PASSED [100%]
+
+=============================== warnings summary ===============================
+test_e2e_wildcard_tutorials.py::test_native_tutorial_widgets[lbw-positional]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-native-tutorial-browser.xml -
+============ 8 passed, 1 deselected, 1 warning in 136.49s (0:02:16) ============

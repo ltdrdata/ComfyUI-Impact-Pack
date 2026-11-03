@@ -1,0 +1,453 @@
+{
+  "prompt": [
+    71,
+    "a257c547-45d5-4326-9ee7-54304c4760a5",
+    {
+      "1": {
+        "inputs": {
+          "cmp": "a < b",
+          "a": [
+            "2",
+            1
+          ],
+          "b": [
+            "6",
+            0
+          ]
+        },
+        "class_type": "ImpactCompare",
+        "_meta": {
+          "title": "ImpactCompare"
+        }
+      },
+      "2": {
+        "inputs": {
+          "select": 2,
+          "sel_mode": false,
+          "input": [
+            "3",
+            0
+          ]
+        },
+        "class_type": "ImpactInversedSwitch",
+        "_meta": {
+          "title": "Inversed Switch (Any)"
+        }
+      },
+      "3": {
+        "inputs": {
+          "value": 42
+        },
+        "class_type": "ImpactInt",
+        "_meta": {
+          "title": "ImpactInt"
+        }
+      },
+      "4": {
+        "inputs": {
+          "value": [
+            "2",
+            0
+          ]
+        },
+        "class_type": "ImpactConvertDataType",
+        "_meta": {
+          "title": "ImpactConvertDataType"
+        }
+      },
+      "5": {
+        "inputs": {
+          "source": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewAny",
+        "_meta": {
+          "title": "Preview as Text"
+        }
+      },
+      "6": {
+        "inputs": {
+          "value": 7
+        },
+        "class_type": "PrimitiveInt",
+        "_meta": {
+          "title": "Int"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "07fba463-0ac7-4a73-aac0-3b2f0f5d3e46",
+          "revision": 0,
+          "last_node_id": 6,
+          "last_link_id": 5,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "ImpactCompare",
+              "pos": [
+                560.1111111111112,
+                99.99999999999997
+              ],
+              "size": [
+                270,
+                78
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "a",
+                  "type": "INT",
+                  "link": 3
+                },
+                {
+                  "name": "b",
+                  "type": "INT",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "BOOLEAN",
+                  "type": "BOOLEAN",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactCompare"
+              },
+              "widgets_values": [
+                "a < b"
+              ],
+              "widgets_values_named": {
+                "cmp": "a < b"
+              }
+            },
+            {
+              "id": 2,
+              "type": "ImpactInversedSwitch",
+              "pos": [
+                137.88888888888897,
+                288.88888888888886
+              ],
+              "size": [
+                270,
+                122
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "input",
+                  "type": "INT",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "output1",
+                  "type": "INT",
+                  "slot_index": 0,
+                  "links": [
+                    2
+                  ]
+                },
+                {
+                  "name": "output2",
+                  "type": "INT",
+                  "slot_index": 1,
+                  "links": [
+                    3
+                  ]
+                },
+                {
+                  "name": "output3",
+                  "type": "INT",
+                  "slot_index": 2,
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactInversedSwitch"
+              },
+              "widgets_values": [
+                2,
+                false
+              ],
+              "widgets_values_named": {
+                "select": 2,
+                "sel_mode": false
+              }
+            },
+            {
+              "id": 3,
+              "type": "ImpactInt",
+              "pos": [
+                -350.9999999999999,
+                288.88888888888886
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "INT",
+                  "type": "INT",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactInt"
+              },
+              "widgets_values": [
+                42
+              ],
+              "widgets_values_named": {
+                "value": 42
+              }
+            },
+            {
+              "id": 4,
+              "type": "ImpactConvertDataType",
+              "pos": [
+                595.1772243923612,
+                622.2222222222222
+              ],
+              "size": [
+                199.8677734375,
+                86
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "value",
+                  "type": "*",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                },
+                {
+                  "name": "FLOAT",
+                  "type": "FLOAT",
+                  "links": null
+                },
+                {
+                  "name": "INT",
+                  "type": "INT",
+                  "links": null
+                },
+                {
+                  "name": "BOOLEAN",
+                  "type": "BOOLEAN",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactConvertDataType"
+              }
+            },
+            {
+              "id": 5,
+              "type": "PreviewAny",
+              "pos": [
+                1090.1111111111113,
+                177.77777777777774
+              ],
+              "size": [
+                210,
+                122
+              ],
+              "flags": {},
+              "order": 5,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "source",
+                  "type": "*",
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewAny"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 6,
+              "type": "PrimitiveInt",
+              "pos": [
+                -350.9999999999999,
+                622.2222222222222
+              ],
+              "size": [
+                270,
+                82
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "INT",
+                  "type": "INT",
+                  "links": [
+                    5
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveInt"
+              },
+              "widgets_values": [
+                7,
+                "fixed"
+              ],
+              "widgets_values_named": {
+                "value": 7,
+                "control_after_generate": "fixed"
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              3,
+              0,
+              2,
+              0,
+              "INT"
+            ],
+            [
+              2,
+              2,
+              0,
+              4,
+              0,
+              "INT"
+            ],
+            [
+              3,
+              2,
+              1,
+              1,
+              0,
+              "INT"
+            ],
+            [
+              4,
+              1,
+              0,
+              5,
+              0,
+              "BOOLEAN"
+            ],
+            [
+              5,
+              6,
+              0,
+              1,
+              1,
+              "INT"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 0.852726063829787,
+              "offset": [
+                -266.9337140594547,
+                52.452256944444564
+              ]
+            },
+            "frontendVersion": "1.57.6"
+          },
+          "version": 0.4
+        }
+      },
+      "client_id": "bea8153567a746ed8d3537772b96583d",
+      "workflow_metadata": {
+        "workflow_id": "07fba463-0ac7-4a73-aac0-3b2f0f5d3e46"
+      },
+      "create_time": 1793673216694
+    },
+    [
+      "5"
+    ]
+  ],
+  "outputs": {
+    "5": {
+      "text": [
+        "False"
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "a257c547-45d5-4326-9ee7-54304c4760a5",
+          "timestamp": 1793673216695
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "a257c547-45d5-4326-9ee7-54304c4760a5",
+          "timestamp": 1793673216695
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "a257c547-45d5-4326-9ee7-54304c4760a5",
+          "timestamp": 1793673216695
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "5": {
+      "node_id": "5",
+      "display_node": "5",
+      "parent_node": null,
+      "real_node_id": "5"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/cinemagraph-positional
+PASS: cinemagraph-positional, 3 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/cinemagraph-named
+PASS: cinemagraph-named, 3 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/detailer-for-animatediff-positional
+PASS: detailer-for-animatediff-positional, 6 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/detailer-for-animatediff-named
+PASS: detailer-for-animatediff-named, 6 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/MakeTileSEGS_upscale_AnimateDiff-positional
+PASS: MakeTileSEGS_upscale_AnimateDiff-positional, 4 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/MakeTileSEGS_upscale_AnimateDiff-named
+PASS: MakeTileSEGS_upscale_AnimateDiff-named, 4 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/MakeTileSEGS_upscale_AnimateDiff_ControlNet-positional
+PASS: MakeTileSEGS_upscale_AnimateDiff_ControlNet-positional, 7 Impact nodes, original PNG and native JSON reload
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/animatediff-tutorial-browser/MakeTileSEGS_upscale_AnimateDiff_ControlNet-named
+PASS: MakeTileSEGS_upscale_AnimateDiff_ControlNet-named, 7 Impact nodes, original PNG and native JSON reload

@@ -1,0 +1,42 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue1250-connection-types/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch] _
+tests/test_e2e_connection_types.py:93: in test_dynamic_output_type_survives_native_loading
+    assert types["inputs"][:input_count] == ["INT"] * input_count
+E   AssertionError: assert ['INT', '*'] == ['INT', 'INT']
+E     
+E     At index 1 diff: '*' != 'INT'
+E     
+E     Full diff:
+E       [
+E           'INT',
+E     -     'INT',...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/new-e2e-mutant-second-input/test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]
+=============================== warnings summary ===============================
+test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/new-e2e-mutant-second-input.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]
+======================== 1 failed, 1 warning in 10.52s =========================

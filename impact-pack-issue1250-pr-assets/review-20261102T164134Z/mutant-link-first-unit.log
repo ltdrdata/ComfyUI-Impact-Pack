@@ -1,0 +1,234 @@
+TAP version 13
+# (node:2899368) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactControlBridge: restore the link type while the source node is unavailable
+ok 1 - ImpactControlBridge: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 2.984628
+  ...
+# Subtest: ImpactControlBridge: restore the link type while the source output is unavailable
+ok 2 - ImpactControlBridge: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.010323
+  ...
+# Subtest: ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+ok 3 - ImpactControlBridge: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.006024
+  ...
+# Subtest: ImpactControlBridge: an available source type takes precedence over saved link metadata
+not ok 4 - ImpactControlBridge: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 3.315175
+  location: '/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:73:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'STRING'
+    -   'IMAGE'
+      ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'IMAGE'
+  actual:
+    0: 'STRING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    expectTypes (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:47:12)
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:77:5)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source node is unavailable
+ok 5 - ImpactConditionalBranch: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.230779
+  ...
+# Subtest: ImpactConditionalBranch: restore the link type while the source output is unavailable
+ok 6 - ImpactConditionalBranch: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.040379
+  ...
+# Subtest: ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+ok 7 - ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.918929
+  ...
+# Subtest: ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+not ok 8 - ImpactConditionalBranch: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.003971
+  location: '/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:73:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'STRING',
+    +   'STRING'
+    -   'IMAGE',
+    -   'IMAGE'
+      ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'IMAGE'
+    1: 'IMAGE'
+  actual:
+    0: 'STRING'
+    1: 'STRING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    expectTypes (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:47:12)
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:77:5)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+ok 9 - ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.028837
+  ...
+# Subtest: ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+ok 10 - ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 1.12
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+ok 11 - ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.663539
+  ...
+# Subtest: ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+not ok 12 - ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.336079
+  location: '/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:73:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'STRING',
+    +   'STRING'
+    -   'IMAGE',
+    -   'IMAGE'
+      ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'IMAGE'
+    1: 'IMAGE'
+  actual:
+    0: 'STRING'
+    1: 'STRING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    expectTypes (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:47:12)
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:77:5)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactCompare: restore the link type while the source node is unavailable
+ok 13 - ImpactCompare: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 0.977961
+  ...
+# Subtest: ImpactCompare: restore the link type while the source output is unavailable
+ok 14 - ImpactCompare: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.900544
+  ...
+# Subtest: ImpactCompare: an unknown type stays wildcard and can be resolved later
+ok 15 - ImpactCompare: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 0.886828
+  ...
+# Subtest: ImpactCompare: an available source type takes precedence over saved link metadata
+not ok 16 - ImpactCompare: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.09412
+  location: '/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:73:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'STRING',
+    +   'STRING'
+    -   'IMAGE',
+    -   'IMAGE'
+      ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'IMAGE'
+    1: 'IMAGE'
+  actual:
+    0: 'STRING'
+    1: 'STRING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    expectTypes (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:47:12)
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:77:5)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+ok 17 - ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable
+  ---
+  duration_ms: 1.046881
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+ok 18 - ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable
+  ---
+  duration_ms: 0.995114
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+ok 19 - ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later
+  ---
+  duration_ms: 1.090855
+  ...
+# Subtest: ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+not ok 20 - ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata
+  ---
+  duration_ms: 1.205883
+  location: '/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:73:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'STRING'
+    -   'IMAGE'
+      ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'IMAGE'
+  actual:
+    0: 'STRING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    expectTypes (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:47:12)
+    TestContext.<anonymous> (file:///mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack/tests/connection_types.test.mjs:77:5)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 15
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 80.792981

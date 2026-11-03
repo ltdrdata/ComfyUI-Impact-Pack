@@ -1,0 +1,15 @@
+{
+  "label": "legacy-dynamic-prompts",
+  "command": [
+    "bash",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_dynamic_prompts_full.sh"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T00:08:48.184886+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46637"
+  },
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 93.87
+}

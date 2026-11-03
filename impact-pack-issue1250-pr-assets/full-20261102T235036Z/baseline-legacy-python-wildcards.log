@@ -1,0 +1,76 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-runtime/custom_nodes/comfyui-impact-pack/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 11 items
+
+tests/wildcards/test_progressive_loading.py::test_early_termination PASSED [  9%]
+tests/wildcards/test_progressive_loading.py::test_metadata_scan PASSED   [ 18%]
+tests/wildcards/test_progressive_loading.py::test_progressive_loading PASSED [ 27%]
+tests/wildcards/test_progressive_loading.py::test_wildcard_list_functions FAILED [ 36%]
+tests/wildcards/test_wildcard_lazy_loading.py::test_lazy_loader PASSED   [ 45%]
+tests/wildcards/test_wildcard_lazy_loading.py::test_cache_limit_detection PASSED [ 54%]
+tests/wildcards/test_wildcard_lazy_loading.py::test_wildcard_loading PASSED [ 63%]
+tests/wildcards/test_wildcard_lazy_loading.py::test_on_demand_simulation PASSED [ 72%]
+tests/wildcards/test_lazy_load_verification.py::test_full_cache_mode PASSED [ 81%]
+tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_before_access FAILED [ 90%]
+tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_after_access FAILED [100%]
+
+=================================== FAILURES ===================================
+_________________________ test_wildcard_list_functions _________________________
+tests/wildcards/test_progressive_loading.py:197: in test_wildcard_list_functions
+    assert len(all_wildcards) == 5, "Should return all available wildcards"
+E   AssertionError: Should return all available wildcards
+E   assert 0 == 5
+E    +  where 0 = len([])
+----------------------------- Captured stdout call -----------------------------
+============================================================
+TEST 4: Wildcard List Functions
+============================================================
+✓ get_wildcard_list(): 0 wildcards
+______________________ test_on_demand_mode_before_access _______________________
+tests/wildcards/test_lazy_load_verification.py:110: in test_on_demand_mode_before_access
+    assert mode, "Should be in On-Demand mode"
+E   AssertionError: Should be in On-Demand mode
+E   assert False
+----------------------------- Captured stdout call -----------------------------
+================================================================================
+TEST 2: On-Demand Mode (Before Access)
+================================================================================
+
+Mode: Full Cache
+_______________________ test_on_demand_mode_after_access _______________________
+tests/wildcards/test_lazy_load_verification.py:140: in test_on_demand_mode_after_access
+    assert mode, "Should still be in On-Demand mode"
+E   AssertionError: Should still be in On-Demand mode
+E   assert False
+----------------------------- Captured stdout call -----------------------------
+================================================================================
+TEST 3: On-Demand Mode (After Access)
+================================================================================
+
+Mode: Full Cache
+=============================== warnings summary ===============================
+wildcards/test_progressive_loading.py::test_early_termination
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+wildcards/test_lazy_load_verification.py::test_full_cache_mode
+  /home/rho/venv/lib/python3.12/site-packages/_pytest/python.py:163: PytestReturnNotNoneWarning: Expected None, but wildcards/test_lazy_load_verification.py::test_full_cache_mode returned {'mode': 'full_cache', 'wildcard_list': [], 'values': {'samples/flower': None, 'samples/jewel': None, 'adnd': None, 'all': None, 'colors': None}}, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/baseline-legacy-python-wildcards.xml -
+=========================== short test summary info ============================
+FAILED tests/wildcards/test_progressive_loading.py::test_wildcard_list_functions
+FAILED tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_before_access
+FAILED tests/wildcards/test_lazy_load_verification.py::test_on_demand_mode_after_access
+=================== 3 failed, 8 passed, 2 warnings in 0.81s ====================

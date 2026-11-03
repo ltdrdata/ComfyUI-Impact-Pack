@@ -1,0 +1,34 @@
+{
+  "run_start_commit": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "final_commit": "4434abda94a42876386146a40e95dc5e9265ea07",
+  "changed_since_start": [
+    "tests/e2e_ui.py"
+  ],
+  "explanation": "Only shared test browser setup gained Escape to dismiss initial template browser. Production code and both fixed catalog fixtures are byte-identical to the tested snapshot.",
+  "runtime_production_hashes": {
+    "js/impact-pack.js": {
+      "sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+      "runtimes": {
+        "runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+        "model-runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3",
+        "aux-runtime": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+      }
+    },
+    "tests/workflows/all-impact-nodes.json": {
+      "sha256": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+      "runtimes": {
+        "runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+        "model-runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+        "aux-runtime": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be"
+      }
+    },
+    "tests/workflows/all-impact-nodes.widgets.json": {
+      "sha256": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+      "runtimes": {
+        "runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+        "model-runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9",
+        "aux-runtime": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+      }
+    }
+  }
+}

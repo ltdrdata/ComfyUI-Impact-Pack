@@ -1,0 +1,17 @@
+{
+  "label": "javascript",
+  "command": [
+    "node",
+    "--experimental-vm-modules",
+    "--test",
+    "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/connection_types.test.mjs",
+    "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/legacy_sam.test.mjs",
+    "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests/lora_wildcard_source.test.mjs"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-02T23:51:31.929775+00:00",
+  "environment_overrides": {},
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 0.11
+}

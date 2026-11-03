@@ -1,0 +1,17 @@
+{
+  "label": "wildcard-unit",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-unit.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types/tests",
+  "started_utc": "2026-11-02T23:51:32.044031+00:00",
+  "environment_overrides": {},
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 1.67
+}

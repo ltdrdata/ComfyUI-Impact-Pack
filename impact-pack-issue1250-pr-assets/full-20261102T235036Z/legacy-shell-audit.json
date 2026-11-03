@@ -1,0 +1,111 @@
+{
+  "legacy-error_handling": {
+    "process_exit_code": 0,
+    "printed_status_pass": 10,
+    "printed_status_fail": 0,
+    "unexpanded_warnings": 0,
+    "unexpanded_results": [
+      "Result: \\033[0;32m__*/test_error_cases__\\033[0m",
+      "Result: \\033[0;32m__*/test_circular_a__\\033[0m",
+      "Result: \\033[0;32m__*/test_circular_b__\\033[0m",
+      "Result: \\033[0;32m__*/this_file_does_not_exist__\\033[0m",
+      "Result: \\033[0;32mbeautiful __*/test_quantifier__ with __*/nonexistent__\\033[0m",
+      "Result: \\033[0;32m__*/test_circular_a__ and __*/test_circular_b__\\033[0m"
+    ]
+  },
+  "legacy-edge_cases": {
+    "process_exit_code": 0,
+    "printed_status_pass": 20,
+    "printed_status_fail": 0,
+    "unexpanded_warnings": 0,
+    "unexpanded_results": [
+      "Result: \\033[0;32m__*/test_edge_empty_lines__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_whitespace__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_long_lines__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_special_chars__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_special_chars__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_case_insensitive__\\033[0m",
+      "Result: \\033[0;32m__*/TEST_EDGE_CASE_INSENSITIVE__\\033[0m",
+      "Result: \\033[0;32m__*/TeSt_EdGe_CaSe_InSeNsItIvE__\\033[0m",
+      "Result: \\033[0;32m__*/test_comments__\\033[0m",
+      "Result: \\033[0;32m__*/test_pattern_match__\\033[0m",
+      "Result: \\033[0;32m__*/test_pattern_match__\\033[0m",
+      "Result: \\033[0;32m__*/test_quantifier__|__*/test_quantifier__|__*/test_quantifier__\\033[0m",
+      "Result: \\033[0;32m__*/test_quantifier__, __*/test_quantifier__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_special_chars__ with option1\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_empty_lines__ and __*/test_edge_whitespace__ and __*/test_comments__\\033[0m",
+      "Result: \\033[0;32m__*/test_edge_long_lines__\\033[0m",
+      "Result: \\033[0;32mblue __*/test_pattern_match__\\033[0m",
+      "Result: \\033[0;32m__*/test_quantifier__|__*/test_quantifier__\\033[0m",
+      "Result: \\033[0;32m__*/test_quantifier__|__*/test_quantifier__|__*/test_quantifier__ and __*/test_comments__|__*/test_comments__\\033[0m",
+      "Result: \\033[0;32m__*/TEST_PATTERN_MATCH__\\033[0m"
+    ]
+  },
+  "legacy-deep_nesting": {
+    "process_exit_code": 0,
+    "printed_status_pass": 0,
+    "printed_status_fail": 0,
+    "unexpanded_warnings": 17,
+    "unexpanded_results": [
+      "Result: \\033[0;32m__*/test_nesting_level7__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level6__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level5__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level4__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level3__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level2__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__ and __*/test_nesting_level1__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__ with __*/test_nesting_level4__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level2__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__|__*/test_nesting_level1__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level2__, __*/test_nesting_level1__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level5__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__ beautiful 챈메랄드\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level1__, __*/test_nesting_level2__, __*/test_nesting_level3__, __*/test_nesting_level4__, __*/test_nesting_level5__, __*/test_nesting_level6__, __*/test_nesting_level7__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level7__\\033[0m",
+      "Result: \\033[0;32m__*/test_nesting_level4__\\033[0m"
+    ]
+  },
+  "legacy-ondemand_loading": {
+    "process_exit_code": 0,
+    "printed_status_pass": 8,
+    "printed_status_fail": 0,
+    "unexpanded_warnings": 0,
+    "unexpanded_results": []
+  },
+  "legacy-config_quotes": {
+    "process_exit_code": 0,
+    "printed_status_pass": 4,
+    "printed_status_fail": 1,
+    "unexpanded_warnings": 0,
+    "unexpanded_results": [
+      "Result: \\033[0;32m__*/test_nesting_level1__\\033[0m"
+    ]
+  },
+  "legacy-dynamic-prompts": {
+    "process_exit_code": 0,
+    "printed_status_pass": 0,
+    "printed_status_fail": 0,
+    "unexpanded_warnings": 0,
+    "unexpanded_results": []
+  },
+  "interpretation": {
+    "error_handling": "Fixture-dependent cycle and valid/missing checks are inconclusive: fixtures absent. HTTP/no-crash alone does not prove described behavior.",
+    "edge_cases": "All 20 status lines print PASS despite unresolved wildcard output; no valid edge-case coverage credited.",
+    "deep_nesting": "18 warnings for unexpanded wildcards; required nesting fixtures absent. No nesting coverage credited.",
+    "config_quotes": "Four printed passes and one failure. The failing test references missing test_nesting_level1. The supposedly space-containing path has no space in this checkout. Do not claim complete path coverage.",
+    "ondemand_loading": "Script exits zero with its own generated fixtures; raw logs preserved. No per-case count added to assertion-based totals.",
+    "dynamic_prompts": "Script exits zero; raw logs preserved. No per-case count added to assertion-based totals."
+  },
+  "tracked_sample_files": [
+    "tests/wildcards/samples/README.md",
+    "tests/wildcards/samples/test_encoding_emoji.txt",
+    "tests/wildcards/samples/test_encoding_special.txt",
+    "\"tests/wildcards/samples/\\354\\225\\204\\353\\246\\204\\353\\213\\244\\354\\232\\264\\354\\203\\211.txt\""
+  ],
+  "excluded_manual_helpers": [
+    "tests/wildcards/test_wildcard_final.py: assumes private custom_wildcards fixtures and an old directory layout; equality-only comparison can pass for unresolved wildcards. Superseded behavior is checked by asserted integration and Chrome suites.",
+    "tests/wildcards/*.sh: historical server-management diagnostics requiring private datasets/paths, some with broad pkill. Maintained root shell suites executed in disposable copies with PID-scoped cleanup instead.",
+    "tests/restart_test_server.sh, tests/wildcards/find_deep_transitive.py, tests/wildcards/find_transitive_wildcards.sh: server/data diagnostic utilities, not regression assertions."
+  ]
+}

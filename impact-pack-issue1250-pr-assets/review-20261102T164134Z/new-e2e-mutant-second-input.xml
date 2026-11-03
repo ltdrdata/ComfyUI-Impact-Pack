@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="10.518" timestamp="2026-11-03T01:46:48.983923+09:00" hostname="hyewon"><testcase classname="test_e2e_connection_types" name="test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]" time="10.474"><failure message="AssertionError: assert ['INT', '*'] == ['INT', 'INT']&#10;  &#10;  At index 1 diff: '*' != 'INT'&#10;  &#10;  Full diff:&#10;    [&#10;        'INT',&#10;  -     'INT',...&#10;  &#10;  ...Full output truncated (4 lines hidden), use '-vv' to show">tests/test_e2e_connection_types.py:93: in test_dynamic_output_type_survives_native_loading
+    assert types["inputs"][:input_count] == ["INT"] * input_count
+E   AssertionError: assert ['INT', '*'] == ['INT', 'INT']
+E     
+E     At index 1 diff: '*' != 'INT'
+E     
+E     Full diff:
+E       [
+E           'INT',
+E     -     'INT',...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,16 @@
+{
+  "head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+  "workflow": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/execution-20261103T022327Z/execution-final-browser/test_restored_dynamic_output_consumer_executes[named-ImpactConditionalBranch]/exported.json",
+  "workflow_sha256": "bdc4c688d751f2e6e399930f083a2bf3492e401caa96b16b16262ed036b84013",
+  "results": {
+    "true": {
+      "expected": "42",
+      "prompt_id": "f190bcab-a2c4-48cb-bb22-5fcad13c63af"
+    },
+    "false": {
+      "expected": "7",
+      "prompt_id": "42d13a3c-5f61-4ecc-82f7-e33046dbe1f0"
+    }
+  },
+  "capture": "Unedited browser screenshots after real queue execution; caching disabled."
+}

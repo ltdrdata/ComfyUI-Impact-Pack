@@ -1,0 +1,13 @@
+{
+  "label": "legacy-error_handling",
+  "command": [
+    "bash",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack/tests/test_error_handling.sh"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/legacy-runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T00:04:04.451615+00:00",
+  "environment_overrides": {},
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 17.18
+}

@@ -1,0 +1,7 @@
+{
+  "status": "completed_with_preexisting_failures_and_documented_harness_retries",
+  "head": "4434abda94a42876386146a40e95dc5e9265ea07",
+  "finished_utc": "2026-11-03T00:28:45Z",
+  "report": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/full-regression-report.json",
+  "pending": []
+}

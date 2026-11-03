@@ -1,0 +1,191 @@
+[
+  {
+    "label": "baseline-unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/connection_types.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 0.11,
+    "product_js_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb"
+  },
+  {
+    "label": "mutant-no-fallback-unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/connection_types.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 0.11,
+    "product_js_sha256": "87fd9a8227814bfd4e66cbaa671a64ef29736ebac98b0089180b1e7829894d16"
+  },
+  {
+    "label": "mutant-link-first-unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/connection_types.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 0.1,
+    "product_js_sha256": "54eb8efa284b322358a64ba6cb6dfd5ebff5e5c530d1cc140b1a381772492cb3"
+  },
+  {
+    "label": "mutant-second-input-unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/connection_types.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 0.1,
+    "product_js_sha256": "ead0b10e8f45bce83dc8080d170b5cc7fe4f5cfdcd0052b08d648dedcd703e0b"
+  },
+  {
+    "label": "old-e2e-mutant-second-input",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_connection_types_before_review.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/old-e2e-mutant-second-input.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/runtime/custom_nodes/comfyui-impact-pack",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 14.71,
+    "product_js_sha256": "ead0b10e8f45bce83dc8080d170b5cc7fe4f5cfdcd0052b08d648dedcd703e0b"
+  },
+  {
+    "label": "new-e2e-mutant-second-input-initial",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/new-e2e-mutant-second-input.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 12.47,
+    "product_js_sha256": "ead0b10e8f45bce83dc8080d170b5cc7fe4f5cfdcd0052b08d648dedcd703e0b",
+    "note": "Initial assertion included a frontend BOOLEAN widget input in the data-slot count; corrected before final validation."
+  },
+  {
+    "label": "new-e2e-mutant-second-input",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/new-e2e-mutant-second-input.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 11.12,
+    "product_js_sha256": "ead0b10e8f45bce83dc8080d170b5cc7fe4f5cfdcd0052b08d648dedcd703e0b"
+  },
+  {
+    "label": "baseline-chrome",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_connection_types.py::test_dynamic_output_type_survives_native_loading[positional-consumer-first-ImpactConditionalBranch]",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/baseline-chrome.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 1,
+    "expected_exit_code": 1,
+    "duration_seconds": 40.37,
+    "product_js_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb"
+  },
+  {
+    "label": "fixed-unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/connection_types.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 0.08,
+    "product_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+  },
+  {
+    "label": "fixed-chrome",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_connection_types.py",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/fixed-chrome.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 241.17,
+    "product_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+  },
+  {
+    "label": "fixed-catalog",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_widget_catalog.py",
+      "-k",
+      "catalog_contains or all_widgets",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue1250-pr-assets/review-20261102T164134Z/fixed-catalog.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 162.15,
+    "product_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+  },
+  {
+    "label": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "duration_seconds": 0.0,
+    "product_js_sha256": "bb66901cb27a2937923da8bc3324ce44b4d1a3755161a1e9e5a9e52ecfb38ec3"
+  }
+]

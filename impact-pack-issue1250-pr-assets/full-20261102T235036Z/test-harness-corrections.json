@@ -1,0 +1,9 @@
+{
+  "initial_head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "production_files_changed": false,
+  "changes": [
+    "Close initial template browser in the shared Chrome session before standalone UI scripts interact."
+  ],
+  "assertions_changed": false,
+  "investigated_but_reverted": "An initial coordinate hypothesis for one missed node-search double-click was disproved by trace screenshots. Original node coordinates are restored; rerun pending."
+}

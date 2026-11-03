@@ -1,0 +1,110 @@
+[
+  [
+    {
+      "id": "1",
+      "type": "ImpactConditionalBranchSelMode",
+      "widgets": [
+        {
+          "name": "cond",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "type": "ImpactInversedSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 2
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "type": "ImpactInt",
+      "widgets": [
+        {
+          "name": "value",
+          "value": 42
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "id": "1",
+      "type": "ImpactConditionalBranchSelMode",
+      "widgets": [
+        {
+          "name": "cond",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "type": "ImpactInversedSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 2
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "type": "ImpactInt",
+      "widgets": [
+        {
+          "name": "value",
+          "value": 42
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "id": "1",
+      "type": "ImpactConditionalBranchSelMode",
+      "widgets": [
+        {
+          "name": "cond",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "type": "ImpactInversedSwitch",
+      "widgets": [
+        {
+          "name": "select",
+          "value": 2
+        },
+        {
+          "name": "sel_mode",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "type": "ImpactInt",
+      "widgets": [
+        {
+          "name": "value",
+          "value": 42
+        }
+      ]
+    }
+  ]
+]

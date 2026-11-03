@@ -1,0 +1,7 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-browser
+PASS: UI Run completed (8e32a6c5-3c05-4c29-9deb-bd3bebe3ccb7)
+PASS: UI Run completed (24386698-c2fb-499b-8086-76d40f7fad1f)
+PASS: UI Run completed (575082bc-f421-4b04-aca4-82d0ade05634)
+PASS: UI Run completed (62b07034-4dfd-4ac6-b1c7-3ef012af0e9f)
+PASS: UI Run completed (fb9244b1-db2c-4b45-8bd2-63ee0badd708)
+PASS: exact color masks, VAE roundtrip comparison, localized effect of all three prompts, browser pixels {'39': {'inside_mae': 11.260725021362305, 'outside_mae': 0.9055683016777039}, '9': {'inside_mae': 10.82736873626709, 'outside_mae': 1.1778340339660645}, '10': {'inside_mae': 9.979780197143555, 'outside_mae': 1.6449086666107178}}

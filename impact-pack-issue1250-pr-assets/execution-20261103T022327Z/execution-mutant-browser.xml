@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="27.622" timestamp="2026-11-03T11:27:48.849406+09:00" hostname="hyewon"><testcase classname="test_e2e_connection_types" name="test_restored_dynamic_output_consumer_executes[positional-ImpactControlBridge]" time="13.431"><failure message="AssertionError: assert {'5': ['42']} == {}&#10;  &#10;  Left contains 1 more item:&#10;  {'5': ['42']}&#10;  &#10;  Full diff:&#10;  - {}&#10;  + {...&#10;  &#10;  ...Full output truncated (4 lines hidden), use '-vv' to show">tests/test_e2e_connection_types.py:192: in test_restored_dynamic_output_consumer_executes
+    run_and_check(path.stem + "-changed", changed)
+tests/test_e2e_connection_types.py:167: in run_and_check
+    assert actual == ({} if text is None else {preview: [text]})
+E   AssertionError: assert {'5': ['42']} == {}
+E     
+E     Left contains 1 more item:
+E     {'5': ['42']}
+E     
+E     Full diff:
+E     - {}
+E     + {...
+E     
+E     ...Full output truncated (4 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_connection_types" name="test_restored_dynamic_output_consumer_executes[positional-ImpactSelectNthItemOfAnyList]" time="14.145"><failure message="AssertionError: assert {'5': ['42']} == {'5': ['7']}&#10;  &#10;  Differing items:&#10;  {'5': ['42']} != {'5': ['7']}&#10;  &#10;  Full diff:&#10;    {&#10;        '5': [...&#10;  &#10;  ...Full output truncated (6 lines hidden), use '-vv' to show">tests/test_e2e_connection_types.py:177: in test_restored_dynamic_output_consumer_executes
+    run_and_check(path.stem + "-initial", "True" if node_type == "ImpactCompare" else
+tests/test_e2e_connection_types.py:167: in run_and_check
+    assert actual == ({} if text is None else {preview: [text]})
+E   AssertionError: assert {'5': ['42']} == {'5': ['7']}
+E     
+E     Differing items:
+E     {'5': ['42']} != {'5': ['7']}
+E     
+E     Full diff:
+E       {
+E           '5': [...
+E     
+E     ...Full output truncated (6 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

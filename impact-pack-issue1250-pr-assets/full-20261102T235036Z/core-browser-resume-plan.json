@@ -1,0 +1,27 @@
+{
+  "total": 93,
+  "completed": 72,
+  "remaining": [
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-linked]",
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_tail]",
+    "tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_middle]",
+    "tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node",
+    "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional]",
+    "tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named]",
+    "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider]",
+    "tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter]",
+    "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional]",
+    "tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror]",
+    "tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace]",
+    "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[positional]",
+    "tests/test_e2e_mask_to_segs.py::test_bicubic_mask_pixels_and_native_widgets[named]",
+    "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[positional]",
+    "tests/test_e2e_mask_tutorials.py::test_native_mask_tutorial_widgets[named]"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "label": "lora-tensors",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/integration_lora_wildcard_tensors.py",
+    "--comfy-root",
+    "/mnt/teratera/git/ComfyUI"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-02T23:54:14.428541+00:00",
+  "environment_overrides": {},
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 8.98
+}

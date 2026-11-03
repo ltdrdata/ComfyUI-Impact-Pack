@@ -1,0 +1,23 @@
+{
+  "label": "conditioning-browser",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/e2e_conditionings.py",
+    "--base-url",
+    "http://127.0.0.1:46669",
+    "--artifacts",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/conditioning-browser"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T00:10:26.453431+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:46669",
+    "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_00156_.png",
+    "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+    "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/model-runtime/input/ComfyUI_temp_xltgv_00001_.png",
+    "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/regional-restored.json"
+  },
+  "head": "2b96af7df7de760bb54532c81b94c14ccb6311df",
+  "exit_code": 0,
+  "duration_seconds": 19.33
+}

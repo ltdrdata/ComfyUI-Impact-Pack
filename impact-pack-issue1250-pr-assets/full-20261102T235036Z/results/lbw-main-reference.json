@@ -1,0 +1,19 @@
+{
+  "label": "lbw-main-reference",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/capture_lbw.py",
+    "--base-url",
+    "http://127.0.0.1:18204",
+    "--artifacts",
+    "/mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/lbw-main-reference"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue1250-connection-types",
+  "started_utc": "2026-11-03T00:27:04.477937+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18204"
+  },
+  "head": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "exit_code": 0,
+  "duration_seconds": 10.39
+}

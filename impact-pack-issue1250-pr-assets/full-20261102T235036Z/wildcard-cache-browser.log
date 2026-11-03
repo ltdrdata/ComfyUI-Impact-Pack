@@ -1,0 +1,71 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-issue1250-connection-types/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 20 items
+
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-positional] PASSED [  5%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-named] PASSED [ 10%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional] FAILED [ 15%]
+tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named] PASSED [ 20%]
+tests/test_e2e_wildcard_cache.py::test_populate_reuses_cache_only_for_same_expansion[ImpactWildcardProcessor] PASSED [ 25%]
+tests/test_e2e_wildcard_cache.py::test_populate_reuses_cache_only_for_same_expansion[ImpactWildcardEncode] PASSED [ 30%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardProcessor-positional] PASSED [ 35%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardProcessor-named] PASSED [ 40%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardEncode-positional] PASSED [ 45%]
+tests/test_e2e_wildcard_cache.py::test_reproduce_native_workflow_then_populate[ImpactWildcardEncode-named] PASSED [ 50%]
+tests/test_e2e_wildcard_cache.py::test_plain_text_reuses_downstream_cache[ImpactWildcardProcessor] PASSED [ 55%]
+tests/test_e2e_wildcard_cache.py::test_plain_text_reuses_downstream_cache[ImpactWildcardEncode] PASSED [ 60%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[multiline-ImpactWildcardProcessor] PASSED [ 65%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[multiline-ImpactWildcardEncode] PASSED [ 70%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[nested-ImpactWildcardProcessor] PASSED [ 75%]
+tests/test_e2e_wildcard_cache.py::test_fixed_syntax_preserves_seed[nested-ImpactWildcardEncode] PASSED [ 80%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardProcessor-positional] PASSED [ 85%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardProcessor-named] PASSED [ 90%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardEncode-positional] PASSED [ 95%]
+tests/test_e2e_wildcard_cache.py::test_fixed_native_workflow_preserves_widgets[ImpactWildcardEncode-named] PASSED [100%]
+
+=================================== FAILURES ===================================
+_ test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional] _
+tests/test_e2e_wildcard_cache.py:118: in test_linked_inputs_and_subgraph_native_queue
+    seed_id = ui.add_node("ImpactInt", "ImpactInt", 850, 180)
+tests/e2e_ui.py:60: in add_node
+    search.fill(node_type)
+/home/rho/venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py:15983: in fill
+    self._sync(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_locator.py:215: in fill
+    return await self._frame.fill(self._selector, strict=True, **params)
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:607: in fill
+    await self._fill(**locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_frame.py:619: in _fill
+    await self._channel.send("fill", self._timeout, locals_to_params(locals()))
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+/home/rho/venv/lib/python3.12/site-packages/playwright/_impl/_connection.py:559: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.fill: Timeout 30000ms exceeded.
+E   Call log:
+E     - waiting for get_by_placeholder("Add a node...", exact=True)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-browser/test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (4ffedc6c-7f52-44cb-9273-52d129687ff2)
+PASS: UI Run completed (739eb45a-6a46-4de1-9742-49eade197048)
+=============================== warnings summary ===============================
+test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardProcessor-positional]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue1250-pr-assets/full-20261102T235036Z/wildcard-cache-browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-positional]
+============= 1 failed, 19 passed, 1 warning in 551.88s (0:09:11) ==============

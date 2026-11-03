@@ -1,0 +1,21 @@
+{
+  "head": "309aeaff9775f611e32fa3cb58b73f943258060d",
+  "scope": "Complete origin/Main...HEAD PR diff, with additional execution tests reviewed after the full regression.",
+  "findings": [
+    {
+      "priority": "P2",
+      "finding": "Existing connection regression proved native restoration but did not execute all five restored consumers. Broader inference suites did not close this gap.",
+      "resolution": "Add ten actual Chrome/ComfyUI execution cases with two output expectations per consumer, Bridge mode continuation, native reload, fixed widget expectations and independent literal outputs.",
+      "status": "resolved"
+    }
+  ],
+  "open_findings": [],
+  "quality_assessment": [
+    "Production fallback remains four local expressions; four unused callback captures were already removed. No new product dependencies or abstraction layer.",
+    "Reuse shared browser, export and widget observation helpers; use standard Playwright response expectations for the Bridge continuation that ordinary run() cannot handle.",
+    "Tests assert queue outputs, visible text, downstream modes and saved values; caches are disabled and recorded histories confirm consumers were not cached.",
+    "Baseline fails with the original undefined.type exception. Two behavior mutations fail on concrete wrong output assertions.",
+    "No production code, widget definitions or trusted catalog fixtures changed in the execution follow-up."
+  ],
+  "evidence": "execution-validation.json"
+}
