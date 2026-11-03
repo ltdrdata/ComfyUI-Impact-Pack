@@ -314,7 +314,6 @@ app.registerExtension({
 		}
 
 		if(nodeData.name == "ImpactControlBridge") {
-			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				if(index != 0 || !link_info || this.inputs[0].type != '*')
 					return;
@@ -327,7 +326,8 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot]?.type;
+					// An upstream dynamic output may not be restored yet during workflow loading.
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;
@@ -337,7 +337,6 @@ app.registerExtension({
 		}
 
 		if(nodeData.name == "ImpactConditionalBranch" || nodeData.name == "ImpactConditionalBranchSelMode") {
-			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				if(!link_info || this.inputs[0].type != '*')
 					return;
@@ -353,7 +352,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;
@@ -364,14 +363,13 @@ app.registerExtension({
 		}
 
 		if(nodeData.name == "ImpactCompare") {
-			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				if(!link_info || this.inputs[0].type != '*' || type == 2)
 					return;
 
 				// assign type
 				const node = app.graph.getNodeById(link_info.origin_id);
-				let slot_type = node?.outputs[link_info.origin_slot].type;
+				const slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 
 				this.inputs[0].type = slot_type;
 				this.inputs[1].type = slot_type;
@@ -379,7 +377,6 @@ app.registerExtension({
 		}
 
 		if(nodeData.name == "ImpactSelectNthItemOfAnyList") {
-			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				if(!link_info || this.inputs[0].type != '*')
 					return;
@@ -395,7 +392,7 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					slot_type = node?.outputs[link_info.origin_slot].type;
+					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
 				this.inputs[0].type = slot_type;

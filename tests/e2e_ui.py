@@ -37,7 +37,6 @@ def ui(tmp_path, request):
     args = argparse.Namespace(base_url=os.environ.get("IMPACT_E2E_BASE_URL", "http://127.0.0.1:18188"),
                               browser_channel="chrome", headed=False, timeout=180, artifacts=artifacts)
     with browser_session(args) as browser:
-        browser.page.keyboard.press("Escape")
         yield browser, artifacts
 
 
@@ -195,6 +194,7 @@ def browser_session(args):
         try:
             page.goto(args.base_url, wait_until="domcontentloaded")
             expect(page.get_by_test_id("queue-button")).to_be_visible(timeout=60000)
+            page.keyboard.press("Escape")  # Close the initial template browser.
             yield ComfyUI(page, args)
         finally:
             already_failed = sys.exc_info()[0] is not None
