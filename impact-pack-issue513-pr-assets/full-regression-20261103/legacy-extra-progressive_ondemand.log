@@ -1,0 +1,44 @@
+==========================================
+Progressive On-Demand Loading Test
+==========================================
+
+This test verifies that /wildcards/list/loaded
+increases progressively as wildcards are accessed.
+
+✓ Backed up original config
+\033[0;34mSetting up on-demand mode configuration\033[0m
+✓ Configuration: on-demand mode (0.5MB limit)
+
+
+Cleaning up...
+Starting ComfyUI server on port 18210...
+Waiting for server startup...
+\033[0;32m✓ Server started\033[0m
+
+\033[1;33m[32m[INFO][0m [Impact Pack] Wildcard total size (0.81 MB) exceeds cache limit (0.50 MB). Using on-demand loading mode (TXT files loaded dynamically).\033[0m
+
+==========================================
+Progressive Loading Verification
+==========================================
+
+\033[0;36mStep 1: Initial state (before any wildcard access)\033[0m
+  On-demand mode: True
+  Total available wildcards: 1511
+  Loaded wildcards: \033[1;33m3\033[0m
+\033[1;33m⚠ WARNING: Expected 0 loaded, got 3\033[0m
+
+\033[0;36mStep 2: Access first wildcard (__samples/flower__)\033[0m
+  Result: chrysanthemum
+  Loaded wildcards: \033[1;33m4\033[0m
+\033[0;32m✓ PASS: Wildcard count increased\033[0m
+
+\033[0;36mStep 3: Access second wildcard (__dragon__)\033[0m
+  Result: Jaded Sell-Sword
+  Loaded wildcards: \033[1;33m6\033[0m
+\033[0;32m✓ PASS: Wildcard count increased progressively\033[0m
+
+\033[0;36mStep 4: Access third wildcard (__colors__)\033[0m
+  Result: yellow
+  Loaded wildcards: \033[1;33m6\033[0m
+  Sample loaded: __colors__, __cold__, __warm__, __samples/flower__, __dragon__, __dragon/warrior__
+\033[0;31m✗ FAIL: Expected loaded count to increase (was 6, now 6)\033[0m

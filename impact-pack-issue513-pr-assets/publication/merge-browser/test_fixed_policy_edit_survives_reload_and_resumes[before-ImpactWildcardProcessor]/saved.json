@@ -1,0 +1,113 @@
+{
+  "id": "d83572fe-0119-47ab-8561-a6112fa21f32",
+  "revision": 0,
+  "last_node_id": 2,
+  "last_link_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "ImpactWildcardProcessor",
+      "pos": [
+        22.888888888888914,
+        125.55555555555554
+      ],
+      "size": [
+        400,
+        238
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "processed text",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactWildcardProcessor"
+      },
+      "widgets_values": [
+        "resumed 1ce49f2fc3414975aeb6598d732ea04f",
+        "{red|green|blue}",
+        "fixed",
+        5,
+        "decrement",
+        "Select Wildcard 🟢 Full Cache"
+      ],
+      "widgets_values_named": {
+        "wildcard_text": "resumed 1ce49f2fc3414975aeb6598d732ea04f",
+        "populated_text": "{red|green|blue}",
+        "mode": "fixed",
+        "seed": 5,
+        "control_after_generate": "decrement",
+        "Select to add Wildcard": "Select Wildcard 🟢 Full Cache"
+      }
+    },
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        717.8888888888889,
+        405.55555555555554
+      ],
+      "size": [
+        210,
+        122
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        227.1111111111111,
+        4.444444444444457
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

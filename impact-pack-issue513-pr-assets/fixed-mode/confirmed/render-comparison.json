@@ -1,0 +1,18 @@
+{
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "sampling_rerun": true,
+  "width": 512,
+  "height": 768,
+  "different_rgb_pixels": 0,
+  "rgb_sha256": "794c853755b47dad2cc133327397829bbbe109d69569149985513f4a5c669d4e",
+  "reference": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png",
+  "candidate": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/browser/test_lbw_tutorial_inference/output.png",
+  "reference_sha256": "534064aff4952bbf20ff8eb6684f3aa40140c0fc0d44c5b9c5439bab14a5fd57",
+  "candidate_sha256": "534064aff4952bbf20ff8eb6684f3aa40140c0fc0d44c5b9c5439bab14a5fd57",
+  "second_queue_cached": {
+    "ImpactWildcardEncode": true,
+    "KSampler": true,
+    "VAEDecode": true,
+    "SaveImage": true
+  }
+}

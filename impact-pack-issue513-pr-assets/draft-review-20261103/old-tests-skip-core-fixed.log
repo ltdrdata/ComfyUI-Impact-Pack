@@ -1,0 +1,173 @@
+TAP version 13
+# (node:2831769) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks
+not ok 1 - ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks
+  ---
+  duration_ms: 3.414859
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:56:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'fixed',
+    -   'fixed',
+    -   'fixed',
+    -   'fixed'
+    - ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'fixed'
+    1: 'fixed'
+    2: 'fixed'
+    3: 'fixed'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:63:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.311445
+  ...
+# Subtest: ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed
+not ok 3 - ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed
+  ---
+  duration_ms: 1.750246
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:80:5'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'value')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:85:34)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+not ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.199312
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:94:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:98:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+not ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.125713
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:103:5'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'value')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:107:34)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks
+not ok 6 - ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks
+  ---
+  duration_ms: 1.068254
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:56:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'fixed',
+    -   'fixed',
+    -   'fixed',
+    -   'fixed'
+    - ]
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'fixed'
+    1: 'fixed'
+    2: 'fixed'
+    3: 'fixed'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:63:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 7 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.123258
+  ...
+# Subtest: ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed
+not ok 8 - ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed
+  ---
+  duration_ms: 1.066952
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:80:5'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'value')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:85:34)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+not ok 9 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.166811
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:94:5'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:98:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+not ok 10 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.141082
+  location: '/tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:103:5'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'value')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-or1ebefj/tests/wildcard_seed_control.test.mjs:107:34)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: unrelated node types are untouched
+ok 11 - unrelated node types are untouched
+  ---
+  duration_ms: 1.070789
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 3
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 56.991251

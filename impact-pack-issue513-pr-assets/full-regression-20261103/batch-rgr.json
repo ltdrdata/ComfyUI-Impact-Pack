@@ -1,0 +1,46 @@
+{
+  "test_sha256": "c53dc25ce55952f37e06c8de6b678ca51d26d54e3821281c4838501f01ef44ea",
+  "reports": {
+    "red": {
+      "counts": {
+        "tests": 4,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": [
+        "test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardProcessor]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardEncode]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardProcessor]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardEncode]"
+      ],
+      "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb"
+    },
+    "green": {
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": [],
+      "source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd"
+    },
+    "red-again": {
+      "counts": {
+        "tests": 4,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": [
+        "test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardProcessor]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[before-ImpactWildcardEncode]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardProcessor]",
+        "test_fixed_seed_is_preserved_within_one_batched_queue[after-ImpactWildcardEncode]"
+      ],
+      "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb"
+    }
+  },
+  "candidate_restored": true
+}

@@ -1,0 +1,8 @@
+{
+  "test_config_module": "modules.impact.config",
+  "runtime_config_module": "impact.config",
+  "same_module": false,
+  "test_requested_limit": 1,
+  "actual_runtime_limit": 50,
+  "runtime_limit_before_test_edit": 50
+}

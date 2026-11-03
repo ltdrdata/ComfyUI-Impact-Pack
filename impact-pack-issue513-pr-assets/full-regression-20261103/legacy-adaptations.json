@@ -1,0 +1,8 @@
+{
+  "test_error_handling.sh": "Disposable package copy; isolated port/config/log/temp paths; run.sh pins this package; termination targets only the PID owned by this runner. Assertions unchanged.",
+  "test_edge_cases.sh": "Disposable package copy; isolated port/config/log/temp paths; run.sh pins this package; termination targets only the PID owned by this runner. Assertions unchanged.",
+  "test_deep_nesting.sh": "Disposable package copy; isolated port/config/log/temp paths; run.sh pins this package; termination targets only the PID owned by this runner. Assertions unchanged.",
+  "test_ondemand_loading.sh": "Disposable package copy; isolated port/config/log/temp paths; run.sh pins this package; termination targets only the PID owned by this runner. Assertions unchanged.",
+  "test_config_quotes.sh": "Disposable package copy; isolated port/config/log/temp paths; run.sh pins this package; termination targets only the PID owned by this runner. Assertions unchanged.",
+  "test_dynamic_prompts_full.sh": "Only HTTP port and log path changed; statistical assertions unchanged."
+}

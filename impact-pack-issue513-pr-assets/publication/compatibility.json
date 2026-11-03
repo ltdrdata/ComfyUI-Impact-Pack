@@ -1,0 +1,76 @@
+{
+  "head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
+  "target_base": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "merge_tree": "e498b0f91075528458b534e73f752563f8967459",
+  "temporary_merge_commit": "39e87adf81bbc2aafbbd53f3eba8165464722aaa",
+  "merge_conflicts": false,
+  "worktree": "/mnt/teratera/git/impact-pack-issue513-publication-check",
+  "created_utc": "2026-11-03T03:19:40.674331+00:00",
+  "server_stopped": true,
+  "results": {
+    "merge-unit": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/publication/merge-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-publication-check/tests",
+      "exit_code": 0,
+      "duration_seconds": 1.22,
+      "xml_counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "205",
+        "time": "0.633",
+        "timestamp": "2026-11-03T12:20:42.659758+09:00",
+        "hostname": "hyewon"
+      }
+    },
+    "merge-node": {
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "/mnt/teratera/git/impact-pack-issue513-publication-check/tests/legacy_sam.test.mjs",
+        "/mnt/teratera/git/impact-pack-issue513-publication-check/tests/lora_wildcard_source.test.mjs",
+        "/mnt/teratera/git/impact-pack-issue513-publication-check/tests/wildcard_seed_control.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-publication-check",
+      "exit_code": 0,
+      "duration_seconds": 0.11
+    },
+    "merge-browser": {
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "fixed_policy_edit or linked_seed_remains or batched_queue or fixed_native_workflow",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/publication/merge-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-publication-check",
+      "exit_code": 0,
+      "duration_seconds": 157.88,
+      "xml_counts": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "16",
+        "time": "157.327",
+        "timestamp": "2026-11-03T12:20:49.201711+09:00",
+        "hostname": "hyewon"
+      }
+    }
+  },
+  "completed_utc": "2026-11-03T03:23:27.003875+00:00",
+  "production_js_unchanged_from_tested_head": true,
+  "trusted_fixtures_unchanged": true
+}

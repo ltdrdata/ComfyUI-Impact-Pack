@@ -1,0 +1,314 @@
+{
+  "red": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "green": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 0,
+    "counts": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [],
+    "source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "red-again": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "old-tests-drop-fixed-arguments": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 0,
+    "counts": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [],
+    "source_sha256": "db8fec8e2d2e34d90bd1d9d7971777585193b7da186f891620f5c55c7a8978e6",
+    "test_sha256": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b"
+  },
+  "mutation-drop-fixed-arguments": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 9,
+      "fail": 2,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract"
+    ],
+    "source_sha256": "db8fec8e2d2e34d90bd1d9d7971777585193b7da186f891620f5c55c7a8978e6",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "old-tests-drop-fixed-return": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 0,
+    "counts": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [],
+    "source_sha256": "e1cdc5a1acce82183bc77aa60904149ff551e8a113641ca6e2e3cf0e201b94ec",
+    "test_sha256": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b"
+  },
+  "mutation-drop-fixed-return": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 9,
+      "fail": 2,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract"
+    ],
+    "source_sha256": "e1cdc5a1acce82183bc77aa60904149ff551e8a113641ca6e2e3cf0e201b94ec",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "old-tests-wrong-fixed-receiver": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks",
+      "ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks",
+      "ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "392ec6241453021db6ada80cd981b4ab91c0ef2ba5e107bb4701ae522fdbd38f",
+    "test_sha256": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b"
+  },
+  "mutation-wrong-fixed-receiver": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "392ec6241453021db6ada80cd981b4ab91c0ef2ba5e107bb4701ae522fdbd38f",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "old-tests-skip-core-fixed": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks",
+      "ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks",
+      "ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "0f7c860518c927b8740c77786abb45a6c5ad988f44be7516c821e0408e6b7087",
+    "test_sha256": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b"
+  },
+  "mutation-skip-core-fixed": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+    ],
+    "source_sha256": "0f7c860518c927b8740c77786abb45a6c5ad988f44be7516c821e0408e6b7087",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "old-tests-lose-selected-policy": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 0,
+    "counts": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [],
+    "source_sha256": "7155b68ce3ba2848ded79934fe980ecf959450ab23c3db594733b0f6d0171a39",
+    "test_sha256": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b"
+  },
+  "mutation-lose-selected-policy": {
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "exit_code": 1,
+    "counts": {
+      "tests": 11,
+      "pass": 7,
+      "fail": 4,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "failures": [
+      "ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+      "ImpactWildcardEncode: fixed and legacy false preserve the core hook contract",
+      "ImpactWildcardEncode: a core hook error propagates and restores the selected policy"
+    ],
+    "source_sha256": "7155b68ce3ba2848ded79934fe980ecf959450ab23c3db594733b0f6d0171a39",
+    "test_sha256": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  }
+}

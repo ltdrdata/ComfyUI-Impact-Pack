@@ -1,0 +1,10 @@
+{
+  "head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
+  "clean_worktree": true,
+  "commits_over_base": 1,
+  "committed_diff_whitespace": "passed",
+  "draft_local_links": "all resolve",
+  "draft_sha256": "bb1fbf70fed5f1a7114761668874515f0352038573f9a29f06b3242e01381f2e",
+  "source_hashes_verified_against_final_commit": true,
+  "ruff_changed_python": "passed before commit; source bytes unchanged"
+}

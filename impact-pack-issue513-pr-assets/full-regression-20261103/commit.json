@@ -1,0 +1,8 @@
+{
+  "old_head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "final_head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
+  "backup_branch": "backup/issue513-before-full-regression-20261103",
+  "commits_over_base": 1,
+  "clean": true,
+  "tested_source_hashes_verified": true
+}

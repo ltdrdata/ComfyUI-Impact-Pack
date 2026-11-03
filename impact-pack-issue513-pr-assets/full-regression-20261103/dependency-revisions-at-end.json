@@ -1,0 +1,54 @@
+{
+  "ComfyUI": {
+    "head": "7c4390a6f70cd8eb41014d6af52969397a752fc4",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI"
+  },
+  "comfyui-inspire-pack": {
+    "head": "d23db9aa544de9a6d4c609cb7005fa9e0d42031d",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack"
+  },
+  "comfyui-impact-subpack": {
+    "head": "50c7b71a6a224734cc9b21963c6d1926816a97f1",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-impact-subpack"
+  },
+  "comfyui_essentials": {
+    "repository_root": "/mnt/teratera/git/ComfyUI",
+    "containing_repository_head": "7c4390a6f70cd8eb41014d6af52969397a752fc4",
+    "source_sha256": {
+      "__init__.py": "4c3e4377a3a3c62592ddbbc78f24d2fe1171cf560f9eda393c872257320ece14",
+      "carve.py": "0562ebdeb046130833c9ed550d4267a6ebb09853565385c50e4e62116548767e",
+      "conditioning.py": "14a46bd46ff27d1b2891ee566f9eb7e9efe4ffd2bd78f974b556e5b03b27fdc3",
+      "histogram_matching.py": "a6a7ac8c13d71d9e4762ccc1d388a8484b54911fdc9c8e6187e6f9bd59315b60",
+      "image.py": "f31084cd23ff87e8e46e85f7c864e7de9ba398ffaf31f79850d04f48ea28e192",
+      "mask.py": "93af2297598db439249dd6deb4a8f7a90625ad08b70842172c54fd074c440e4c",
+      "misc.py": "33b907bca3e5ed99ad650e509a50ebc55a8c1bc8bd26a42148a79d2d2ddbd3f7",
+      "sampling.py": "91b26100d4257b5698956f207a27888290dd2cfecd3cd30fcb9c031d9a9c8324",
+      "segmentation.py": "ce5b1973c339a18b3bc749ecf70e30e8de18e146df77551b19ede7542b026488",
+      "text.py": "05a59eb7d17bcc426af7a1f4ccc78aad5a6eac57a31d234375502e8fbee97e13",
+      "utils.py": "fbe173d76315952ba8b4170fe71485a8a1b55a584d9fcbbc64f0e2562048eb1a"
+    }
+  },
+  "comfyui_controlnet_aux": {
+    "head": "e8b689a513c3e6b63edc44066560ca5919c0576e",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui_controlnet_aux"
+  },
+  "comfyui-animatediff-evolved": {
+    "head": "d8d163cd90b1111f6227495e3467633676fbb346",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-animatediff-evolved"
+  },
+  "comfyui-videohelpersuite": {
+    "head": "2984ec4c4b93292421888f38db74a5e8802a8ff8",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-videohelpersuite"
+  },
+  "comfyui_ipadapter_plus": {
+    "head": "a0f451a5113cf9becb0847b92884cb10cbdec0ef",
+    "tracked_changes": "",
+    "repository_root": "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui_ipadapter_plus"
+  }
+}

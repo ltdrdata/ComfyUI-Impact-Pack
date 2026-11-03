@@ -1,0 +1,990 @@
+[
+  {
+    "node_type": "ImpactWildcardProcessor",
+    "timing": "before",
+    "cycles": 10,
+    "queues": [
+      {
+        "cycle": 1,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 1,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 1,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 2,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 3,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 4,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 5,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 6,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 7,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 8,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 9,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 10,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      }
+    ]
+  },
+  {
+    "node_type": "ImpactWildcardEncode",
+    "timing": "before",
+    "cycles": 10,
+    "queues": [
+      {
+        "cycle": 1,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 1,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 1,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 2,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 3,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 4,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 5,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 6,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 7,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 8,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 9,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 10,
+        "step": "populate",
+        "output": "green",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      }
+    ]
+  },
+  {
+    "node_type": "ImpactWildcardProcessor",
+    "timing": "after",
+    "cycles": 10,
+    "queues": [
+      {
+        "cycle": 1,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 1,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 1,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 2,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 3,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 4,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 5,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 6,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 7,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 8,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 9,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 10,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      }
+    ]
+  },
+  {
+    "node_type": "ImpactWildcardEncode",
+    "timing": "after",
+    "cycles": 10,
+    "queues": [
+      {
+        "cycle": 1,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 1,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 1,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 2,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 2,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 3,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 3,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 4,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 4,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 5,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 5,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 6,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 6,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 7,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 7,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 8,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 8,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 9,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 9,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "fixed",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": false,
+        "preview_cached": false
+      },
+      {
+        "cycle": 10,
+        "step": "repeat",
+        "output": "blue",
+        "seed": 5,
+        "wildcard_cached": true,
+        "preview_cached": true
+      },
+      {
+        "cycle": 10,
+        "step": "populate",
+        "output": "blue",
+        "seed": 6,
+        "wildcard_cached": false,
+        "preview_cached": false
+      }
+    ]
+  }
+]

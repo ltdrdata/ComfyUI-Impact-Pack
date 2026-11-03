@@ -1,0 +1,59 @@
+{
+  "servers": [
+    {
+      "record": "server-classic-retry.json",
+      "pid": 3760854,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-dropdown.json",
+      "pid": 3611756,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-edge.json",
+      "pid": 3551649,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-general.json",
+      "pid": 3515384,
+      "terminated_now": true,
+      "stopped": true
+    },
+    {
+      "record": "server-lru.json",
+      "pid": 3727539,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-models.json",
+      "pid": 3536056,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-ondemand.json",
+      "pid": 3713916,
+      "terminated_now": false,
+      "stopped": true
+    },
+    {
+      "record": "server-sam.json",
+      "pid": 3530416,
+      "terminated_now": false,
+      "stopped": true
+    }
+  ],
+  "owned_ports_closed": [
+    18196,
+    18197,
+    18198,
+    18199,
+    18210
+  ]
+}

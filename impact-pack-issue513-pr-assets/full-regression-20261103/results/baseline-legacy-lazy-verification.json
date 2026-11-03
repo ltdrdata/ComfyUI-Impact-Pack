@@ -1,0 +1,18 @@
+{
+  "label": "baseline-legacy-lazy-verification",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/wildcards/test_lazy_load_verification.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline-legacy-lazy-verification.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline",
+  "started_utc": "2026-11-03T00:03:27.729173+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 1,
+  "duration_seconds": 2.82
+}

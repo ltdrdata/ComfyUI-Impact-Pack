@@ -1,0 +1,21 @@
+{
+  "trace": "wildcard-browser/test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named]/trace.zip",
+  "events": [
+    {
+      "type": "event",
+      "time": 2343.24,
+      "class": "BrowserContext",
+      "method": "pageError",
+      "params": {
+        "error": {
+          "error": {
+            "message": "Network Error",
+            "stack": "AxiosError: Network Error\n    at XMLHttpRequest.handleError (http://127.0.0.1:18196/assets/vendor-axios-DmKNWuWV.js:3:19871)\n    at Axios.request (http://127.0.0.1:18196/assets/vendor-axios-DmKNWuWV.js:5:2550)\n    at async ComfyApi.getCustomNodesI18n (http://127.0.0.1:18196/assets/api-BIAoi0I5.js:3:15768)\n    at async fetchCustomNodesI18n (http://127.0.0.1:18196/assets/useConflictDetection-58hNLhjo.js:2:4906)\n    at async ze.immediate (http://127.0.0.1:18196/assets/useConflictDetection-58hNLhjo.js:2:5298)\n    at async execute (http://127.0.0.1:18196/assets/vendor-vueuse-C6_JFg54.js:1:16049)",
+            "name": "AxiosError"
+          }
+        }
+      },
+      "pageId": "page@4e52e130b524c9096f2ddd667d7b6492"
+    }
+  ]
+}

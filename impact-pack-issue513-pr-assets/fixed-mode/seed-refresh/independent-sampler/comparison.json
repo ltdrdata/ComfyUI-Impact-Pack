@@ -1,0 +1,223 @@
+{
+  "successful": true,
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "resolution": [
+    512,
+    512
+  ],
+  "workflow": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/two-branch-workflow.json",
+  "workflow_sha256": "803cc001474e468c7dfaf40523d4eb4c15856486baa8f4a29e1e567627c5d4ac",
+  "control_nodes": {
+    "positive": "16",
+    "sampler": "17",
+    "decode": "18",
+    "save": "19"
+  },
+  "independent_initial_seed": 9001,
+  "queues_per_revision": 3,
+  "reports": {
+    "candidate": {
+      "commit": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+      "queues": [
+        {
+          "queue": 1,
+          "prompt_id": "692172a4-78fd-426b-8aac-0780cadf9838",
+          "execution_start_ms": 1793635215291,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9001,
+          "independent_ui_seed_after_queue": 9002,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+          "screenshot_sha256": "24516b31b4a56bc5e13b7c6fd59f09151ab9c8d0c92263cac208a31762b97e64",
+          "highlighted_screenshot_sha256": "7d146f68fc6e25f9cd6c516c2620fc19075811df6d24ffe1dfbcd6bc7b23b633",
+          "history_sha256": "201a8e08b6e9b060a13de3178ae86f19cae018b3a1dba0cd422110d5100532d4",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 2,
+          "prompt_id": "d9c1d9d1-3489-415a-8842-688fe8033a86",
+          "execution_start_ms": 1793635225304,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9002,
+          "independent_ui_seed_after_queue": 9003,
+          "fixed_branch_cached": true,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "10",
+            "16",
+            "3",
+            "4",
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+          "screenshot_sha256": "4601af3f5814a193ceda4ffc8652cd83644fda3115c2e7045bb1e6e606db070a",
+          "highlighted_screenshot_sha256": "21860a4914edb1bf5174f2e19a7fb8633ee601cc248179670a6dd829b69221ed",
+          "history_sha256": "eff27fc2a7db0854ec8989ae16389534b05164e770e2ee58b21a61514e6e04bb",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 3,
+          "prompt_id": "d7bad13b-a736-41f1-b6c7-7b6e0c0e878e",
+          "execution_start_ms": 1793635242403,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 513,
+          "independent_execution_seed": 9003,
+          "independent_ui_seed_after_queue": 9004,
+          "fixed_branch_cached": true,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "10",
+            "16",
+            "3",
+            "4",
+            "5",
+            "7",
+            "8",
+            "9"
+          ],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+          "screenshot_sha256": "565c622fa1f8dff1e8b9173057b2a6ab8138f6b8600fee6b88d2487e518aa347",
+          "highlighted_screenshot_sha256": "51d075a0e2a90e9c2cfbc741eb214cb109046595a8d67910d6011629f037f22e",
+          "history_sha256": "fade40c7ed313949c6a27600f00f2d16bf2806aff9565d4d3fc5f440310d48f5",
+          "native_reload_before_queue": true
+        }
+      ],
+      "native_widget_compatibility": true,
+      "server_stopped": true
+    },
+    "baseline": {
+      "commit": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+      "queues": [
+        {
+          "queue": 1,
+          "prompt_id": "38a49aa2-678e-4db9-b819-274de7785050",
+          "execution_start_ms": 1793635266954,
+          "fixed_execution_seed": 513,
+          "fixed_ui_seed_after_queue": 514,
+          "independent_execution_seed": 9001,
+          "independent_ui_seed_after_queue": 9002,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [],
+          "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
+          "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
+          "screenshot_sha256": "903a8e0a2b07d8f940bf381b2b2bdf8b7a5e28a601ce7b24ca2c219502f142b6",
+          "highlighted_screenshot_sha256": "75db21a22f6fe8749f66bbf0fc442afc3ed65a3a500428003bb9a4d195e6e7aa",
+          "history_sha256": "27a28e57d8d94a421f5ba0443521d46700eee7d1e44e449fe5a886ebb221adac",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 2,
+          "prompt_id": "0f193ad2-5548-4825-a285-9bbdd62f0f19",
+          "execution_start_ms": 1793635277801,
+          "fixed_execution_seed": 514,
+          "fixed_ui_seed_after_queue": 515,
+          "independent_execution_seed": 9002,
+          "independent_ui_seed_after_queue": 9003,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+          "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
+          "screenshot_sha256": "0799dfe1e0af388219e1cfa1e3f4f4a99438e5ed6e1ac953f96a65e2e928b9c4",
+          "highlighted_screenshot_sha256": "f388dac6f86eb5b36f5d8c026108688f47021552a981123ac438ce56fd85a71e",
+          "history_sha256": "27cd9442d6b3a6ebb6d0d4b800c20bc2d4c89f3372f3e9737c2914107b6a05e1",
+          "native_reload_before_queue": false
+        },
+        {
+          "queue": 3,
+          "prompt_id": "2303a5d1-f9f0-4236-a3e1-4ac2bd867408",
+          "execution_start_ms": 1793635296433,
+          "fixed_execution_seed": 515,
+          "fixed_ui_seed_after_queue": 516,
+          "independent_execution_seed": 9003,
+          "independent_ui_seed_after_queue": 9004,
+          "fixed_branch_cached": false,
+          "independent_branch_cached": false,
+          "independent_sampler_ancestors": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "cached_nodes": [
+            "16",
+            "4",
+            "5",
+            "7"
+          ],
+          "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
+          "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
+          "screenshot_sha256": "af6bb347145861868696f6bba7ef8eb10f79bdd8a4ea521f926650f61e428973",
+          "highlighted_screenshot_sha256": "09d45d36ac07f055f5efe6b081cd1f26898dcb532dd4385547c234ab9f1665db",
+          "history_sha256": "b98e4377c59267ad438c6d765eadf67acee10ef109e67044dc845c1276e74e9f",
+          "native_reload_before_queue": true
+        }
+      ],
+      "native_widget_compatibility": true,
+      "server_stopped": true
+    }
+  },
+  "independent_branch_pixel_parity": [
+    {
+      "queue": 1,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    },
+    {
+      "queue": 2,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    },
+    {
+      "queue": 3,
+      "independent_baseline_candidate_different_rgb_pixels": 0
+    }
+  ],
+  "first_fixed_baseline_candidate_different_rgb_pixels": 0,
+  "completed_at_utc": "2026-11-02T16:01:46.994609+00:00"
+}

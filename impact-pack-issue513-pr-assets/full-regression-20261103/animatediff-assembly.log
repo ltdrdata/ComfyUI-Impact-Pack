@@ -1,0 +1,93 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 44 items
+
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0] PASSED [  2%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype1] PASSED [  4%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype2] PASSED [  6%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-2d-dtype0] PASSED [  9%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-2d-dtype1] PASSED [ 11%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-2d-dtype2] PASSED [ 13%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-batch-dtype0] PASSED [ 15%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-batch-dtype1] PASSED [ 18%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-1-batch-dtype2] PASSED [ 20%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-batch-dtype0] PASSED [ 22%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-batch-dtype1] PASSED [ 25%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-batch-dtype2] PASSED [ 27%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-nhwc-dtype0] PASSED [ 29%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-nhwc-dtype1] PASSED [ 31%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-4-nhwc-dtype2] PASSED [ 34%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-2-batch-dtype0] PASSED [ 36%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-2-batch-dtype1] PASSED [ 38%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-2-batch-dtype2] PASSED [ 40%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-6-batch-dtype0] PASSED [ 43%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-6-batch-dtype1] PASSED [ 45%]
+tests/test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[4-6-batch-dtype2] PASSED [ 47%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[masks-4] PASSED [ 50%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[masks-8] PASSED [ 52%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[masks-16] PASSED [ 54%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[latents-4] PASSED [ 56%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[latents-8] PASSED [ 59%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[latents-16] PASSED [ 61%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[both-4] PASSED [ 63%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[both-8] PASSED [ 65%]
+tests/test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[both-16] PASSED [ 68%]
+tests/test_animatediff_assembly.py::test_mismatched_soft_masks_keep_existing_bytewise_union PASSED [ 70%]
+tests/test_animatediff_assembly.py::test_default_feather_preserves_mask_pixels_and_model_selection[False] PASSED [ 72%]
+tests/test_animatediff_assembly.py::test_default_feather_preserves_mask_pixels_and_model_selection[True] PASSED [ 75%]
+tests/test_animatediff_assembly.py::test_callbacks_and_sampler_arguments_are_preserved PASSED [ 77%]
+tests/test_animatediff_assembly.py::test_encode_failure_never_samples_a_partial_batch PASSED [ 79%]
+tests/test_animatediff_assembly.py::test_bbox_guide_clamp_and_force_inpaint[16-96-size0] PASSED [ 81%]
+tests/test_animatediff_assembly.py::test_bbox_guide_clamp_and_force_inpaint[64-72-size1] PASSED [ 84%]
+tests/test_animatediff_assembly.py::test_bbox_guide_clamp_and_force_inpaint[4-64-size2] PASSED [ 86%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[mask] PASSED [ 88%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[Pivot SEGS] PASSED [ 90%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[Don't combine] PASSED [ 93%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[Combine neighboring frames] PASSED [ 95%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[tiles] PASSED [ 97%]
+tests/test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[tiles-control] PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../../home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65
+  /home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+  /home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101: DeprecationWarning: warmup, rep, and use_cuda_graph parameters are deprecated. See https://github.com/triton-lang/triton/pull/4496 for details.
+    warnings.warn(("warmup, rep, and use_cuda_graph parameters are deprecated. See "
+
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+test_animatediff_assembly.py::test_pixels_shapes_order_and_inputs_are_preserved[1-1-2d-dtype0]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+test_animatediff_assembly.py::test_pre_sampling_concatenation_copies_at_most_one_batch[masks-4]
+  /home/rho/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+    _warn_once(
+
+test_animatediff_assembly.py::test_tutorial_segs_to_detailer_to_paste[tiles-control]
+  /mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/modules/impact/core.py:1930: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+    self.control_image = torch.tensor(utils.tensor_crop(self.control_image, crop_region))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/animatediff-assembly.xml -
+======================= 44 passed, 10 warnings in 3.74s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

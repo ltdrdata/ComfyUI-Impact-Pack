@@ -1,0 +1,21 @@
+{
+  "test_groups": 3,
+  "successful": true,
+  "checkpoints": {
+    "lbw": {
+      "original": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors",
+      "selected": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+    },
+    "a1111": {
+      "original": "SDXL/realisticFreedomSFW_alpha.safetensors",
+      "selected": "SDXL/realisticFreedomSFW_alpha.safetensors"
+    },
+    "styler": {
+      "original": "SDXL/MOHAWK_v20BackedVAE.safetensors",
+      "selected": "SDXL/MOHAWK_v20BackedVAE.safetensors"
+    }
+  },
+  "failures": [],
+  "errors": [],
+  "skipped": []
+}

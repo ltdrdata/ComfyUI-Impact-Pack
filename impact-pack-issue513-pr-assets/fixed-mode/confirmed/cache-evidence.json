@@ -1,0 +1,985 @@
+{
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "cases": [
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]/first.json",
+          "history_sha256": "47aae5024455fbb53d794174fde04537707ed52edb974625b730577f9273eef5"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]/second.json",
+          "history_sha256": "509009556bf9752e5de24beaf5101bf598d49d38fc4301e8f6cc833d6419990b"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "469a2b513fd0094e1d0f1969a1b921835080efb99423fa3c6016e9b589e18e39"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "ceef40481edb40308c8e7b2ed921c00a6c108cccdba491f8a75f8b9d5efc8f92"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "188c565c7a3cc27b94b4e4406c60d7a1a71afc3fe97dddd7d5d3661509568f0d"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "5abe846d7823b8c73971daa276b1ceac08d61252157265b809f0595936211ec2"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "08a7425b6b44a64c30c8054d33a177b643a4f6f6b490caa694157d2e02ff79dd"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "decrement",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "240fcfc5d4d41fc94d461dbfe962faca9ac6d80ebfbb78f2d1eee7d318a86ddd"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "ef6c204d60a4f895122ce0617a68b682406794a45695269c82890efb3d7cb342"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "5565c48b903aacb2cda33b0fcf0517e8dff991f66ab2bb62d2a2cba8fc71e342"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "890b41710d7b8c3e21f62f5f842ea28cf539a80bdcfbc0dcf267d60ff9b8d7cb"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "576d8fbab4e60b83ddd3c030b49e4c0672794e9527628fd424c1baea313b197a"
+        },
+        {
+          "phase": "resume-populate",
+          "output": "blue",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/resume-populate.json",
+          "history_sha256": "58e5c22c383b75ce73b8bc5cccf8af343e8b1f701c9b45223dbc52f75e2f5e6b"
+        },
+        {
+          "phase": "next-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 6,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]/next-populate.json",
+          "history_sha256": "c6805f127b847218e36a82cc7f3331730dbc38c544522e088e46fec097c7f834"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "86324d67bc0a0d9bffe4f68e1ceab1133cdd21487313f214980fb1d17dcaab35"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "90bc67928884d20522bfe0cd71899040d33378639f9939a94b855daf8d484f7c"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "25f221f0268e0043ca2f8444ffc88ff4ee282f3bce66edaf58ea1dfadec5a1ff"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "a3e20288895c75c7e7f33dadb6760b6db063413c180b23c10d1b0c5f80847d34"
+        },
+        {
+          "phase": "resume-populate",
+          "output": "blue",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/resume-populate.json",
+          "history_sha256": "48b16f44edfeb416c39e04d556031f8018811974e7d29bfb007b3b98e5575130"
+        },
+        {
+          "phase": "next-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 6,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]/next-populate.json",
+          "history_sha256": "70c75dff61c1065851d4e826046dbcbdef5943e2395645829e660b57aae0c0e4"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/first.json",
+          "history_sha256": "46dde1206c0e2c9bb69dff4b91d3beb6d137a184652c81df6f7423d43f5bc05f"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/second.json",
+          "history_sha256": "4ce5fadaf8e888e57ea8e15c579ea0a6c07f22471dff75e112f18539b44f815c"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "9fa238204e83165a4fa7486d11ae82cf67f0090277deda7917244be26ec34515"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "d5fc9313248ea1899e5e1d8e8d992d3291a30efacf8c8a9a1856ef67c980f023"
+        },
+        {
+          "phase": "resume-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 6,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/resume-populate.json",
+          "history_sha256": "3ec884622564caefd136a569ba2d2c25206d1f3a8ef3aa0ae25736214fa4d8bf"
+        },
+        {
+          "phase": "next-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 7,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardEncode]/next-populate.json",
+          "history_sha256": "ec0620c625dd4522e0dc3cc73d50bd59fd717c0764624ff42be5777076b79c11"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "28b10f2527b805e49f8f05dbbf9c38fd124c35de3b6105056f10bb055ea064d3"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "f8b025d90c67b624eadc44b71c36fac5d9f4b8f3b5aa82b5fdd3965aafa9eca3"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "a3b17afcfc055c5b3fd943f59e5208a7022b51fba2bb37261dd43a4afb958085"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "21a849f2568e006c87c1e24bf224aaadbd3f8bbd982dd6249bddaced322fa1bc"
+        },
+        {
+          "phase": "resume-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 6,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/resume-populate.json",
+          "history_sha256": "067260f48d6ce9a44d421140ea3ec06bc55f295f301a774e4ebad4429fc2feff"
+        },
+        {
+          "phase": "next-populate",
+          "output": "green",
+          "execution_seed": 0,
+          "native_seed": 7,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-before-ImpactWildcardProcessor]/next-populate.json",
+          "history_sha256": "97e5170fd4c3aa95d18106fcd0e6f3fb52b1ea9e06fde180180f975bf42ec724"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode]/first.json",
+          "history_sha256": "f06f68a523e2b6c7eb44d2450661cdebeb0ab044e5c3787d491c43ea44f5bed5"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode]/second.json",
+          "history_sha256": "7bb25846543d0c2113037115b70f9fc50731cb682d92061921114352954b193a"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "f2a291cbf4c47f6278b73b24f3e5c3a71833fea47ef9542030bb46a3e3fa03ee"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "7bb4cb028b7a2f20ed94fd061f29a4c1e473e33d7e6c5ae35496e4386dcee24b"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "b629be0122685cd4049968fb347550e7f89fbdb1f9df6bc3cff6bcdf703e788b"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "db9889c41bf1f04605b7e5a25189d4c7131a9c4eea9605df5a5a13a6cba3c06e"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "f0d0de2f12f59e501c878d09c4d342a9823146ed03cc54ca0ac3de842bb4c48b"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "randomize",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[choice-randomize-before-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "faa748171477b3727e0ce092a272cfa86f96117099e583f8f9a73a1606d5f959"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "4817d5b39711bdf889ba38742cce89b24a7081214d8352bd3fff5f86f2502d53"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "d47b6be1f529ee476c9c3733601aa87bd0244e7ae9178c384723bcf1c0a7bf62"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "869fcc88780ff653c12676178d213a7055c789563c67ce7bc44663aad4ca85bd"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "81804bc58f62e4a31ab306b6d0532630b16fa66cdc07864e3ae4be89199f6a60"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "ee50f1d1a0129ae653553391eb4ca194c4f843cecb5b0738a8dec986434a5ffe"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[comment-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "42ebb5f929a6dfeecbe99a50f0f7cc8b59852a90b51a1bf3ee955b361b6dc232"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "f787f3501da2dee2d43011eccd3f5380371944a07ff18dc01fb74c27a50945fb"
+        },
+        {
+          "phase": "second",
+          "output": "",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "ef659198eb4256f30d15c4017c5b1a7b2804967fcd9a60454ae0c61f51b439d2"
+        },
+        {
+          "phase": "changed",
+          "output": " changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "a6f6d73685a24fc9da02aae9acfe5d19cf97f1607f9022a1464b60f364441161"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "37e2021458e1b7047690664c50f1b8483ed8b7578e5eb99b8edd4953e6afe00b"
+        },
+        {
+          "phase": "second",
+          "output": "",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "891bb0077fb1eafeb4fef49a93419f664cd212d226a22ee33b6adba037478947"
+        },
+        {
+          "phase": "changed",
+          "output": " changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[empty-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "23353cd16fe9e0da6378fa927a0caa39187f722902f803bebe2b4a2da565ecd2"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "e457ab04bf8c7e6a2ae49e698f816a921c0b1cd2e7ac8c7a1b0bfc7bf002d787"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "547be800b3604206fb00fe1bd34dca4ef60d3c0f9bb34cb6fc378be011845930"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "fbe85cbb3476a90272e25e0aa043b09c987527da0518708d0f6f94561ebca284"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "e4af8db721ed3027de0036d263e5532b1779a1aaff75b44b8fa74b34e61e8e21"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "fa8ec9fc13709e06e3f3b8de877c03b0d87e25de45adb0cdf2f29894e9256692"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "954aefe5a668498608e619d508d0417c136c49e093b7bf443b766121e6edee0c"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "3cc23ad5f327cb663db6973c36b10ee4b7bcba92940d2dea95c040498e37b2b6"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "2273542d3c7d9e072c6a0d7b58a3cfbc7cf80eef61f73234f3c34308b3647c4f"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode]/first.json",
+          "history_sha256": "154d3d2341dd86092fd646654d3e3b09763d11f3645c0dde003f5ca4d510bc3a"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode]/second.json",
+          "history_sha256": "ae8f228b675738f2044bbc3bba188e989ccc82b1059515a43a89121484fbc345"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "df2e25575ce2fb29b8c43200806e40d5f559117366ce25573b382dd02a6ae5c3"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardEncode]/manual-seed.json",
+          "history_sha256": "26243bc51b799c38426e11dcebd011145d38a7981483903ea04122d0bf699599"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "434743ff30cab7664639be040818957f07eb4c6070c1a3203ee19d2ef9a06c80"
+        },
+        {
+          "phase": "second",
+          "output": "blue",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "2a7ccd88580f0f0d5869bf842e4994720481d77bbdf09ed5b4fd679c47cae374"
+        },
+        {
+          "phase": "changed",
+          "output": "blue changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "87bc7a6d87458a1838f2ed3cd926e99f7bb6c439a79c6873862104b6668838fa"
+        },
+        {
+          "phase": "manual-seed",
+          "output": "red changed",
+          "execution_seed": 2,
+          "native_seed": 2,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-before-ImpactWildcardProcessor]/manual-seed.json",
+          "history_sha256": "aff3d8045e6955eddcb355dd544190d0c8e225a2d5682a8b1fbadf98edd8c0f7"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "acad00587abd147db0427714daf373fe5a76b23d2dd058d6513eb397afe75dc9"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "7c12f1534e40fa518d410abdaf4639f30c0b5e8bd7572ad2d61d46c53ee1768e"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "925c16d5fc5c5555af63f20311007df40ae7988927a7425ccf719aaa9aa6bb3c"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "8ebfaae7cac095e93dc681ab7334b28749da51e519cadcf0b71366db00c61435"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "8798a205df2d1e58726ab2cafd7ad3c3bfb574455f747c21afeed686128d516f"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 5,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "13a23469d7d2a8286a968f40b36f385c02430fa6b8b1559eab0362c5083dbd1b"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardEncode]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardEncode]/first.json",
+          "history_sha256": "82eb1304a5d8be6e424414ca7d4d5fd8ca59eb3fc79f939ef6a92e76b33e444b"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardEncode]/second.json",
+          "history_sha256": "842b9f74f8446a5e1bf55cd1e534489164020062426c66f1d82bf061f169af78"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardEncode]/changed.json",
+          "history_sha256": "55372a4ee02ca7a44eb39052cbba7a9e02fe2eefda7eac44eac861d3b8e76074"
+        }
+      ]
+    },
+    {
+      "case": "test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardProcessor]",
+      "steps": [
+        {
+          "phase": "first",
+          "output": "ordinary prompt",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardProcessor]/first.json",
+          "history_sha256": "31a664cb71b95a53060e862cb9e4e7da59d87c85d25d302e9a6461ad8c76c59d"
+        },
+        {
+          "phase": "second",
+          "output": "ordinary prompt",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": true,
+          "preview_cached": true,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardProcessor]/second.json",
+          "history_sha256": "176e3fa63f3b8342e20f0d010138a086d8bcf2426b258654620298be73212074"
+        },
+        {
+          "phase": "changed",
+          "output": "ordinary prompt changed",
+          "execution_seed": 0,
+          "native_seed": 5,
+          "selected_control": "increment",
+          "wildcard_cached": false,
+          "preview_cached": false,
+          "history": "fixed-mode/confirmed/check-matrix/test_fixed_mode_suppresses_automatic_seed_changes[plain-increment-after-ImpactWildcardProcessor]/changed.json",
+          "history_sha256": "f6d6df59e1fc70147ff4cf828c8f5cb54df00909d6b18e5444a3e4db98846b4d"
+        }
+      ]
+    }
+  ]
+}

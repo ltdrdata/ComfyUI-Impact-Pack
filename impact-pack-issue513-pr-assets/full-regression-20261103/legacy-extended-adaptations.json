@@ -1,0 +1,8 @@
+{
+  "test_lazy_load_api.sh": "Copied local wildcard corpus; corrected old parent-directory detection to disposable package; replaced ports/logs and broad pkill with owned PID cleanup. Assertions unchanged.",
+  "test_progressive_ondemand.sh": "Copied local wildcard corpus; corrected old parent-directory detection to disposable package; replaced ports/logs and broad pkill with owned PID cleanup. Assertions unchanged.",
+  "test_sequential_loading.sh": "Copied local wildcard corpus; corrected old parent-directory detection to disposable package; replaced ports/logs and broad pkill with owned PID cleanup. Assertions unchanged.",
+  "test_versatile_prompts.sh": "Copied local wildcard corpus; corrected old parent-directory detection to disposable package; replaced ports/logs and broad pkill with owned PID cleanup. Assertions unchanged.",
+  "test_wildcard_consistency.sh": "Copied local wildcard corpus; corrected old parent-directory detection to disposable package; replaced ports/logs and broad pkill with owned PID cleanup. Assertions unchanged.",
+  "test_wildcard_final.py": "Corrected parent-directory detection to disposable package and server shim; isolated port only. Test cases unchanged."
+}

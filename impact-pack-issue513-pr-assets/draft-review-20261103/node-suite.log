@@ -1,0 +1,114 @@
+TAP version 13
+# (node:2831844) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: resize redraws only the current image (global UI exports)
+ok 1 - resize redraws only the current image (global UI exports)
+  ---
+  duration_ms: 3.140831
+  ...
+# Subtest: resize redraws only the current image (UI module fallback)
+ok 2 - resize redraws only the current image (UI module fallback)
+  ---
+  duration_ms: 1.020052
+  ...
+# Subtest: upload creates missing image metadata for core preview refresh
+ok 3 - upload creates missing image metadata for core preview refresh
+  ---
+  duration_ms: 0.814774
+  ...
+# Subtest: late creation response cannot replace a restored selection
+ok 4 - late creation response cannot replace a restored selection
+  ---
+  duration_ms: 3.959632
+  ...
+# Subtest: only the latest category response can update the dropdown
+ok 5 - only the latest category response can update the dropdown
+  ---
+  duration_ms: 0.917148
+  ...
+# Subtest: returning to a category rejects its older response after a new selection
+ok 6 - returning to a category rejects its older response after a new selection
+  ---
+  duration_ms: 1.579162
+  ...
+# Subtest: missing saved choices survive restoration for backend validation
+ok 7 - missing saved choices survive restoration for backend validation
+  ---
+  duration_ms: 0.81249
+  ...
+# Subtest: category query values are encoded
+ok 8 - category query values are encoded
+  ---
+  duration_ms: 0.780749
+  ...
+# Subtest: existing nodes are not changed or queried
+ok 9 - existing nodes are not changed or queried
+  ---
+  duration_ms: 1.055059
+  ...
+# (node:2831851) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+ok 10 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 2.650491
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 11 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.75235
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 12 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.165949
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 13 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.735909
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 14 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.176248
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+ok 15 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.18769
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 16 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.085857
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 17 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.081799
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 18 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.580485
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 19 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.25096
+  ...
+# Subtest: unrelated node types are untouched
+ok 20 - unrelated node types are untouched
+  ---
+  duration_ms: 1.374824
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 54.777737

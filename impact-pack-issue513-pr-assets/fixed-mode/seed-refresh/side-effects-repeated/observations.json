@@ -1,0 +1,228 @@
+[
+  {
+    "phase": "baseline",
+    "kind": "independent",
+    "queues": [
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 6,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 7,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 8,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 9,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 10,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 11,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 12,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 13,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 14,
+        "text": "blue",
+        "cached": false
+      }
+    ],
+    "unrelated_sampler_seed_after_ten_queues": 20
+  },
+  {
+    "phase": "baseline",
+    "kind": "promoted",
+    "queues": [
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 6,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 7,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 8,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 9,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 10,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 11,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 12,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 13,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 14,
+        "text": "blue",
+        "cached": false
+      }
+    ]
+  },
+  {
+    "phase": "candidate",
+    "kind": "independent",
+    "queues": [
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      },
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": true
+      }
+    ],
+    "unrelated_sampler_seed_after_ten_queues": 20
+  },
+  {
+    "phase": "candidate",
+    "kind": "promoted",
+    "queues": [
+      {
+        "seed": 5,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 6,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 7,
+        "text": "green",
+        "cached": false
+      },
+      {
+        "seed": 8,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 9,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 10,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 11,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 12,
+        "text": "red",
+        "cached": false
+      },
+      {
+        "seed": 13,
+        "text": "blue",
+        "cached": false
+      },
+      {
+        "seed": 14,
+        "text": "blue",
+        "cached": false
+      }
+    ]
+  }
+]

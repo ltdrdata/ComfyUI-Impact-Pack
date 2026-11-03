@@ -1,0 +1,17 @@
+{
+  "label": "wildcard-unit",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-unit.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+  "started_utc": "2026-11-02T23:52:00.051851+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 1.22
+}

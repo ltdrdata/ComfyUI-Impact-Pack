@@ -1,0 +1,25 @@
+{
+  "updated_utc": "2026-11-03T02:28:25.820875+00:00",
+  "reference_draft": "/mnt/teratera/git/impact-pack-pr1190-constant-text-pr-draft.md",
+  "current_head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
+  "recorded_candidate_head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "production_source_diff": [],
+  "overlay_count": 6,
+  "unique_original_captures": 6,
+  "unique_prompt_ids": 6,
+  "all_original_hashes_unchanged": true,
+  "checks": [
+    "Source screenshot hashes match original comparison report",
+    "History hashes and prompt IDs match original comparison report",
+    "Visible seed/policy values match captured widget state",
+    "Submitted seed inputs and cache events match annotations",
+    "Actual output RGB hashes match comparison report",
+    "Notes stay above graph content; image loads at original 2400x1800",
+    "Annotation toggle reveals original screenshot",
+    "All overlays visually checked for layout and corresponding states"
+  ],
+  "draft_sha256_before": "bb1fbf70fed5f1a7114761668874515f0352038573f9a29f06b3242e01381f2e",
+  "draft_sha256_after": "d0a71de102ee870ae6a16b9de77ab64d1ff33117332b6c845f3188a18ac01a06",
+  "code_worktree_clean": true,
+  "new_inference_runs": 0
+}

@@ -1,0 +1,17 @@
+{
+  "label": "javascript",
+  "command": [
+    "node",
+    "--experimental-vm-modules",
+    "--test",
+    "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/legacy_sam.test.mjs",
+    "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/lora_wildcard_source.test.mjs",
+    "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/wildcard_seed_control.test.mjs"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-02T23:51:59.937677+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 0.11
+}

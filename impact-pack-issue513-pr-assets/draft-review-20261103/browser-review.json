@@ -1,0 +1,47 @@
+{
+  "server_command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--cpu",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "18195",
+    "--disable-auto-launch",
+    "--cache-classic",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/draft-review-20261103/runtime",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "comfyui-inspire-pack"
+  ],
+  "test_command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/test_e2e_wildcard_tutorials.py",
+    "-k",
+    "not inference",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/draft-review-20261103/browser.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+  "test_sha256": {
+    "tests/test_e2e_wildcard_cache.py": "fcaef88201d78a63074b1eac6f95c8bc24614ebfc2d66ab6cd4ac59168b35d08",
+    "tests/test_e2e_wildcard_tutorials.py": "97dc2f7c52e227cd18e5d2e364f2f968f5bd55ec1dd9cef92d978f36d0629f8f"
+  },
+  "exit_code": 0,
+  "counts": {
+    "tests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "server_stopped": true
+}

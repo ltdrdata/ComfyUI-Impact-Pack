@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="122.502" timestamp="2026-11-03T08:57:00.415689+09:00" hostname="hyewon"><testcase classname="test_e2e_sam_masks" name="test_sam_masks_execute_after_native_reload[filtered-positional]" time="57.257"><failure message="AssertionError: &#10;Arrays are not equal&#10;before: batch[0] pixels&#10;Mismatched elements: 3 / 688128 (0.000436%)&#10;Mismatch at indices:&#10; [325, 39, 0]: 255 (ACTUAL), 0 (DESIRED)&#10; [325, 39, 1]: 255 (ACTUAL), 0 (DESIRED)&#10; [325, 39, 2]: 255 (ACTUAL), 0 (DESIRED)&#10;Max absolute difference among violations: 1&#10;Max relative difference among violations: inf&#10; ACTUAL: array([[[0, 0, 0],&#10;        [0, 0, 0],&#10;        [0, 0, 0],...&#10; DESIRED: array([[[0, 0, 0],&#10;        [0, 0, 0],&#10;        [0, 0, 0],...">tests/test_e2e_sam_masks.py:188: in test_sam_masks_execute_after_native_reload
+    np.testing.assert_array_equal(np.asarray(image), pixels, err_msg=f"{phase}: {name}[{index}] pixels")
+E   AssertionError: 
+E   Arrays are not equal
+E   before: batch[0] pixels
+E   Mismatched elements: 3 / 688128 (0.000436%)
+E   Mismatch at indices:
+E    [325, 39, 0]: 255 (ACTUAL), 0 (DESIRED)
+E    [325, 39, 1]: 255 (ACTUAL), 0 (DESIRED)
+E    [325, 39, 2]: 255 (ACTUAL), 0 (DESIRED)
+E   Max absolute difference among violations: 1
+E   Max relative difference among violations: inf
+E    ACTUAL: array([[[0, 0, 0],
+E           [0, 0, 0],
+E           [0, 0, 0],...
+E    DESIRED: array([[[0, 0, 0],
+E           [0, 0, 0],
+E           [0, 0, 0],...</failure></testcase><testcase time="4.050" /></testsuite></testsuites>

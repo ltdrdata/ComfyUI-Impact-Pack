@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="0.775" timestamp="2026-11-03T09:03:28.925842+09:00" hostname="hyewon"><testcase classname="wildcards.test_lazy_load_verification" name="test_full_cache_mode" time="0.585" /><testcase classname="wildcards.test_lazy_load_verification" name="test_on_demand_mode_before_access" time="0.002"><failure message="AssertionError: Should be in On-Demand mode&#10;assert False">tests/wildcards/test_lazy_load_verification.py:110: in test_on_demand_mode_before_access
+    assert mode, "Should be in On-Demand mode"
+E   AssertionError: Should be in On-Demand mode
+E   assert False</failure></testcase><testcase classname="wildcards.test_lazy_load_verification" name="test_on_demand_mode_after_access" time="0.001"><failure message="AssertionError: Should still be in On-Demand mode&#10;assert False">tests/wildcards/test_lazy_load_verification.py:140: in test_on_demand_mode_after_access
+    assert mode, "Should still be in On-Demand mode"
+E   AssertionError: Should still be in On-Demand mode
+E   assert False</failure></testcase></testsuite></testsuites>

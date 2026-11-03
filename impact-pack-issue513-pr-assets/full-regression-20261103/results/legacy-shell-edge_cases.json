@@ -1,0 +1,13 @@
+{
+  "label": "legacy-shell-edge_cases",
+  "command": [
+    "bash",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_edge_cases.sh"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T00:03:09.680397+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 16.29
+}

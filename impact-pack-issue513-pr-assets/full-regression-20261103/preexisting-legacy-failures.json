@@ -1,0 +1,19 @@
+{
+  "base": "244e93e",
+  "candidate": "6783bc5",
+  "comparisons": {
+    "legacy-progressive": {
+      "same_failure_names_and_messages": true,
+      "failures": {
+        "test_wildcard_list_functions": "AssertionError: Should return all available wildcards\nassert 0 == 5\n +  where 0 = len([])"
+      }
+    },
+    "legacy-lazy-verification": {
+      "same_failure_names_and_messages": true,
+      "failures": {
+        "test_on_demand_mode_before_access": "AssertionError: Should be in On-Demand mode\nassert False",
+        "test_on_demand_mode_after_access": "AssertionError: Should still be in On-Demand mode\nassert False"
+      }
+    }
+  }
+}

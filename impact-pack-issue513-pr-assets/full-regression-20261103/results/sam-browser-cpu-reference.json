@@ -1,0 +1,27 @@
+{
+  "label": "sam-browser-cpu-reference",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_sam_masks.py",
+    "tests/test_e2e_sam_tutorials.py",
+    "tests/test_e2e_legacy_sam.py",
+    "tests/test_sam_api.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/sam-browser-cpu-reference.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-02T23:59:22.310323+00:00",
+  "environment_overrides": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+    "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+    "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+    "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_temp_xltgv_00001_.png"
+  },
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 1,
+  "duration_seconds": 1241.0
+}

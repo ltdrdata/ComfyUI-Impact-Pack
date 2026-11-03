@@ -1,0 +1,23 @@
+{
+  "label": "legacy-sam-isolated",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_e2e_legacy_sam.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-sam-isolated.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T00:24:38.025510+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+    "CUDA_VISIBLE_DEVICES": "",
+    "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+    "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth"
+  },
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 170.33
+}

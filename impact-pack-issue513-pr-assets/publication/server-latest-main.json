@@ -1,0 +1,30 @@
+{
+  "pid": 4010517,
+  "command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "18216",
+    "--disable-auto-launch",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/publication/runtime-latest-main",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "comfyui-inspire-pack",
+    "comfyui-impact-subpack",
+    "comfyui_essentials",
+    "comfyui_controlnet_aux",
+    "comfyui-animatediff-evolved",
+    "comfyui-videohelpersuite",
+    "comfyui_ipadapter_plus",
+    "--cpu",
+    "--cache-classic"
+  ],
+  "runtime": "/mnt/teratera/git/impact-pack-issue513-pr-assets/publication/runtime-latest-main",
+  "source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd"
+}

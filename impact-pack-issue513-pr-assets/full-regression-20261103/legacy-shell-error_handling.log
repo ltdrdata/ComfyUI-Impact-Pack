@@ -1,0 +1,107 @@
+==========================================
+Error Handling Test Suite
+==========================================
+Port: 18210
+Testing: Error handling and edge cases
+
+Killing any existing server on port 18210...
+Setting up configuration...
+Configuration created: custom_wildcards = /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/samples
+
+Starting ComfyUI server on port 18210...
+Server PID: 3561495
+Waiting for server startup...
+  ... 10s elapsed
+✅ Server ready (12s)
+
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;34m=== Test 01: Non-existent wildcard ===\033[0m
+Prompt: \033[1;33m__test_error_cases__\033[0m
+Seed: 42
+Expected: Should handle missing wildcard gracefully
+Result: \033[0;32m__*/test_error_cases__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 02: Circular reference A ===\033[0m
+Prompt: \033[1;33m__test_circular_a__\033[0m
+Seed: 100
+Expected: Should detect cycle and stop at max iterations
+Result: \033[0;32m__*/test_circular_a__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 03: Circular reference B ===\033[0m
+Prompt: \033[1;33m__test_circular_b__\033[0m
+Seed: 200
+Expected: Should detect cycle and stop at max iterations
+Result: \033[0;32m__*/test_circular_b__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 04: Completely missing wildcard ===\033[0m
+Prompt: \033[1;33m__this_file_does_not_exist__\033[0m
+Seed: 42
+Expected: Should leave unexpanded or show error
+Result: \033[0;32m__*/this_file_does_not_exist__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 05: Mixed valid and invalid ===\033[0m
+Prompt: \033[1;33mbeautiful __test_quantifier__ with __nonexistent__\033[0m
+Seed: 42
+Expected: Should expand valid, handle invalid gracefully
+Result: \033[0;32mbeautiful __*/test_quantifier__ with __*/nonexistent__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 06: Empty dynamic option ===\033[0m
+Prompt: \033[1;33m{|something|nothing}\033[0m
+Seed: 42
+Expected: Should handle empty option
+Result: \033[0;32mnothing\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 07: Single option dynamic ===\033[0m
+Prompt: \033[1;33m{only_one}\033[0m
+Seed: 42
+Expected: Should return the single option
+Result: \033[0;32monly_one\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 08: Malformed dynamic prompt ===\033[0m
+Prompt: \033[1;33m{option1|option2\033[0m
+Seed: 42
+Expected: Should handle unclosed bracket gracefully
+Result: \033[0;32m{option1|option2\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 09: Very deep nesting ===\033[0m
+Prompt: \033[1;33m{a|{b|{c|{d|{e|{f|{g|{h|i}}}}}}}\033[0m
+Seed: 42
+Expected: Should handle deep nesting without crash
+Result: \033[0;32m{a|d\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+\033[0;34m=== Test 10: Multiple circular refs ===\033[0m
+Prompt: \033[1;33m__test_circular_a__ and __test_circular_b__\033[0m
+Seed: 42
+Expected: Should handle multiple circular references
+Result: \033[0;32m__*/test_circular_a__ and __*/test_circular_b__\033[0m
+Status: \033[0;32m✅ PASS - No crash, graceful handling\033[0m
+
+
+==========================================
+Summary
+==========================================
+\033[0;32m✅ Error handling tests completed\033[0m
+
+All tests verified graceful error handling:
+  1. Non-existent wildcards handled
+  2. Circular references detected (max 100 iterations)
+  3. Malformed syntax handled gracefully
+  4. Deep nesting processed correctly
+  5. No server crashes occurred
+
+Log file: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/error_handling_test.log
+
+Cleaning up...
+Cleanup complete

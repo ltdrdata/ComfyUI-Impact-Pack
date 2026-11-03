@@ -1,0 +1,19 @@
+{
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "parent_head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "candidate_worktree_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "b299ad9ae2b6f78d10cd48847de0a0cce4964b1b6d4ae3badfa1ddf551abf05e",
+    "js/impact-pack.js": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+    "tests/README.md": "650cf64d433d61926c8cbd2230b600a4b328d483147a63ac213e902891d1f72b",
+    "tests/test_e2e_wildcard_cache.py": "c53dc25ce55952f37e06c8de6b678ca51d26d54e3821281c4838501f01ef44ea",
+    "tests/test_e2e_wildcard_tutorials.py": "97dc2f7c52e227cd18e5d2e364f2f968f5bd55ec1dd9cef92d978f36d0629f8f",
+    "tests/wildcard_seed_control.test.mjs": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a",
+    "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "modified_paths": [
+    " M docs/E2E_TEST_STRATEGY.md",
+    " M tests/README.md",
+    " M tests/test_e2e_wildcard_cache.py"
+  ]
+}

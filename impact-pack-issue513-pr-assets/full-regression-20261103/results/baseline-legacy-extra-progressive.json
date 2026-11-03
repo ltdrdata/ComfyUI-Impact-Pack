@@ -1,0 +1,13 @@
+{
+  "label": "baseline-legacy-extra-progressive",
+  "command": [
+    "bash",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_progressive_ondemand.sh"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+  "started_utc": "2026-11-03T00:25:12.235350+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 1,
+  "duration_seconds": 17.83
+}

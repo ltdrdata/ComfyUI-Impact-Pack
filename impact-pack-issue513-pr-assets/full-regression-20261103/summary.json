@@ -1,0 +1,1835 @@
+{
+  "completed_utc": "2026-11-03T00:39:33.801834+00:00",
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "final_head": "4819ada51eb1e6cac890ae49a8e27c5c54806734",
+  "source_record": "candidate-source.json",
+  "source_verified": true,
+  "tracked_worktree_status": "",
+  "maintained_direct_results": {
+    "javascript": {
+      "label": "javascript",
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/legacy_sam.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/lora_wildcard_source.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/wildcard_seed_control.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:51:59.937677+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 0.11
+    },
+    "wildcard-unit": {
+      "label": "wildcard-unit",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+      "started_utc": "2026-11-02T23:52:00.051851+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 1.22
+    },
+    "mask-blur": {
+      "label": "mask-blur",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_mask_blur.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/mask-blur.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:01.267861+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 3.22
+    },
+    "sam-and-mask": {
+      "label": "sam-and-mask",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/sam-and-mask.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:04.486973+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 5.27
+    },
+    "animatediff-assembly": {
+      "label": "animatediff-assembly",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_animatediff_assembly.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/animatediff-assembly.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:09.759982+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 5.27
+    },
+    "browser-harness": {
+      "label": "browser-harness",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_ui.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/browser-harness.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:15.033354+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 2.37
+    },
+    "input-validation": {
+      "label": "input-validation",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_validation.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:17.401432+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 4.17
+    },
+    "wildcard-cache-integration": {
+      "label": "wildcard-cache-integration",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-cache-integration-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:21.572102+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 4.27
+    },
+    "wildcard-cache-tensors": {
+      "label": "wildcard-cache-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-cache-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:55:03.380157+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 17.04
+    },
+    "wildcard-tutorial-tensors": {
+      "label": "wildcard-tutorial-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_tutorial_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--tutorials-root",
+        "/mnt/teratera/git/ComfyUI-extension-tutorials",
+        "--inspire-root",
+        "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-tutorial-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:55:20.422660+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 45.98
+    },
+    "lora-source-tensors": {
+      "label": "lora-source-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:56:06.400674+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 10.24
+    },
+    "catalog": {
+      "label": "catalog",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_widget_catalog.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/catalog.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:56:30.417064+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 856.36
+    },
+    "wildcard-browser": {
+      "label": "wildcard-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:10:46.825750+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 1292.42
+    },
+    "switch-browser": {
+      "label": "switch-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_switches.py",
+        "tests/test_e2e_switch_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/switch-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:32:19.248169+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 273.82
+    },
+    "mask-browser": {
+      "label": "mask-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_mask_to_segs.py",
+        "tests/test_e2e_mask_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/mask-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:36:53.073891+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 35.12
+    },
+    "animatediff-native": {
+      "label": "animatediff-native",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_animatediff_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:18196",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/animatediff-native"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:37:28.196374+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 85.91
+    },
+    "wildcard-ui": {
+      "label": "wildcard-ui",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:18196",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-ui"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:38:54.110907+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 6.58
+    },
+    "wildcard-ondemand-ui": {
+      "label": "wildcard-ondemand-ui",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:18199",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-ondemand-ui"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:23:13.674604+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 7.78
+    },
+    "utf8-api": {
+      "label": "utf8-api",
+      "command": [
+        "bash",
+        "tests/test_encoding.sh",
+        "http://127.0.0.1:18196"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:39:00.687367+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 0.67
+    },
+    "lora-source-browser": {
+      "label": "lora-source-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_lora_wildcard_source.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/lora-source-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:08:24.643103+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 47.64
+    },
+    "lora-source-inference": {
+      "label": "lora-source-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_lora_wildcard_inference.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/lora-source-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:58:10.000202+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 224.85
+    },
+    "detailer-inference": {
+      "label": "detailer-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_dd_compat.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/detailer-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:01:54.853001+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 25.2
+    },
+    "conditioning-browser": {
+      "label": "conditioning-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_conditionings.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/conditioning-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:02:20.049901+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 20.63
+    },
+    "switch-tutorial-inference": {
+      "label": "switch-tutorial-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/switch-tutorial-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:02:40.679744+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 194.96
+    },
+    "regional-inference": {
+      "label": "regional-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_regional.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/regional-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:05:55.668547+00:00",
+      "environment_overrides": {
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/regional-restored.json"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 362.8
+    },
+    "legacy-sam-isolated": {
+      "label": "legacy-sam-isolated",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_legacy_sam.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-sam-isolated.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:24:38.025510+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+        "CUDA_VISIBLE_DEVICES": "",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 170.33
+    }
+  },
+  "xml_counts": {
+    "wildcard-unit": {
+      "tests": 204,
+      "passed": 204,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-lru-retry-3": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "sam-browser-cpu-reference": {
+      "tests": 19,
+      "passed": 13,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0
+    },
+    "switch-browser": {
+      "tests": 55,
+      "passed": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-classic-retry-2": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser-harness": {
+      "tests": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-progressive": {
+      "tests": 4,
+      "passed": 3,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "animatediff-assembly": {
+      "tests": 44,
+      "passed": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-lru-retry-2": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "baseline-legacy-progressive": {
+      "tests": 4,
+      "passed": 3,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-lazy-verification-with-corpus": {
+      "tests": 3,
+      "passed": 1,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-lazy": {
+      "tests": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-lru-browser": {
+      "tests": 38,
+      "passed": 37,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-classic-retry-3": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-lru-retry-1": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-lazy-verification": {
+      "tests": 3,
+      "passed": 1,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-classic-retry-1": {
+      "tests": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mask-blur": {
+      "tests": 9,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "batch-rgr-green": {
+      "tests": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-sam-isolated": {
+      "tests": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "sam-and-mask": {
+      "tests": 109,
+      "passed": 109,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy-keyboard-diagnostic": {
+      "tests": 1,
+      "passed": 0,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "wildcard-browser": {
+      "tests": 63,
+      "passed": 62,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    "baseline-legacy-lazy-verification": {
+      "tests": 3,
+      "passed": 1,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "batch-rgr-red": {
+      "tests": 4,
+      "passed": 0,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "sam-browser": {
+      "tests": 2,
+      "passed": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "lora-source-browser": {
+      "tests": 2,
+      "passed": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "batch-rgr-red-again": {
+      "tests": 4,
+      "passed": 0,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "catalog": {
+      "tests": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mask-browser": {
+      "tests": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "effective_sam_counts": {
+    "tests": 19,
+    "passed": 19,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "classic": {
+    "first_attempt": {
+      "tests": 63,
+      "passed": 62,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    "unique_cases": 63,
+    "test_bodies_passed": 63,
+    "teardown_network_errors": 1,
+    "unchanged_retry_runs_passed": 3
+  },
+  "lru": {
+    "first_attempt": {
+      "tests": 38,
+      "passed": 37,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "passed_unique_cases_after_unchanged_retries": 38,
+    "retry_runs": 3,
+    "initial_ui_timeout_retained": true
+  },
+  "new_edge_cases": {
+    "cases": 12,
+    "classic": 12,
+    "lru": 12,
+    "rgr": "batch-rgr.json"
+  },
+  "legacy_diagnostics": "triage.md",
+  "all_raw_checks_passed": false,
+  "intentional_red_labels": [
+    "batch-rgr-red",
+    "batch-rgr-red-again"
+  ],
+  "raw_results": {
+    "legacy-extra-versatile_prompts": {
+      "label": "legacy-extra-versatile_prompts",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_versatile_prompts.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:18:28.750129+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 75.92
+    },
+    "lora-source-inference": {
+      "label": "lora-source-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_lora_wildcard_inference.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/lora-source-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:58:10.000202+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 224.85
+    },
+    "wildcard-unit": {
+      "label": "wildcard-unit",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-unit.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests",
+      "started_utc": "2026-11-02T23:52:00.051851+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 1.22
+    },
+    "wildcard-lru-retry-3": {
+      "label": "wildcard-lru-retry-3",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-lru-retry-3.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:25:36.259957+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 14.82
+    },
+    "sam-browser-cpu-reference": {
+      "label": "sam-browser-cpu-reference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_sam_masks.py",
+        "tests/test_e2e_sam_tutorials.py",
+        "tests/test_e2e_legacy_sam.py",
+        "tests/test_sam_api.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/sam-browser-cpu-reference.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:59:22.310323+00:00",
+      "environment_overrides": {
+        "CUDA_VISIBLE_DEVICES": "",
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_temp_xltgv_00001_.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 1241.0
+    },
+    "legacy-extra-progressive_ondemand": {
+      "label": "legacy-extra-progressive_ondemand",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_progressive_ondemand.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:15:41.955037+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 17.92
+    },
+    "switch-browser": {
+      "label": "switch-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_switches.py",
+        "tests/test_e2e_switch_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/switch-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:32:19.248169+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 273.82
+    },
+    "wildcard-classic-retry-2": {
+      "label": "wildcard-classic-retry-2",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-classic-retry-2.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:33:22.108333+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 18.35
+    },
+    "regional-inference": {
+      "label": "regional-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_regional.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/regional-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:05:55.668547+00:00",
+      "environment_overrides": {
+        "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/regional-restored.json"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 362.8
+    },
+    "browser-harness": {
+      "label": "browser-harness",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_ui.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/browser-harness.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:15.033354+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 2.37
+    },
+    "wildcard-ondemand-ui": {
+      "label": "wildcard-ondemand-ui",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:18199",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-ondemand-ui"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:23:13.674604+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 7.78
+    },
+    "legacy-progressive": {
+      "label": "legacy-progressive",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_progressive_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-progressive.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:00:35.985647+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 2.74
+    },
+    "animatediff-assembly": {
+      "label": "animatediff-assembly",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_animatediff_assembly.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/animatediff-assembly.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:09.759982+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 5.27
+    },
+    "wildcard-lru-retry-2": {
+      "label": "wildcard-lru-retry-2",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-lru-retry-2.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:25:20.552229+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 15.71
+    },
+    "baseline-legacy-progressive": {
+      "label": "baseline-legacy-progressive",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_progressive_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline-legacy-progressive.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline",
+      "started_utc": "2026-11-03T00:04:51.281427+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 2.44
+    },
+    "legacy-lazy-verification-with-corpus": {
+      "label": "legacy-lazy-verification-with-corpus",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_lazy_load_verification.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-lazy-verification-with-corpus.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:20:26.518590+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 2.32
+    },
+    "legacy-lazy": {
+      "label": "legacy-lazy",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_wildcard_lazy_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-lazy.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:00:38.727945+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 2.55
+    },
+    "wildcard-lru-browser": {
+      "label": "wildcard-lru-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "fixed_mode_suppresses or fixed_policy_edit or linked_seed_remains or batched_queue or populate_reuses",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-lru-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:09:27.741635+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 817.34
+    },
+    "javascript": {
+      "label": "javascript",
+      "command": [
+        "node",
+        "--experimental-vm-modules",
+        "--test",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/legacy_sam.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/lora_wildcard_source.test.mjs",
+        "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls/tests/wildcard_seed_control.test.mjs"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:51:59.937677+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 0.11
+    },
+    "legacy-shell-config_quotes": {
+      "label": "legacy-shell-config_quotes",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_config_quotes.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:05:55.039826+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 89.81
+    },
+    "wildcard-classic-retry-3": {
+      "label": "wildcard-classic-retry-3",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-classic-retry-3.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:33:40.453753+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 18.49
+    },
+    "legacy-extra-lazy_load_api": {
+      "label": "legacy-extra-lazy_load_api",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_lazy_load_api.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:15:00.153239+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 41.68
+    },
+    "legacy-extra-wildcard_consistency": {
+      "label": "legacy-extra-wildcard_consistency",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_wildcard_consistency.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:19:44.758201+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 41.69
+    },
+    "input-validation": {
+      "label": "input-validation",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_validation.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:17.401432+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 4.17
+    },
+    "wildcard-lru-retry-1": {
+      "label": "wildcard-lru-retry-1",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_fixed_mode_suppresses_automatic_seed_changes[choice-decrement-before-ImpactWildcardEncode]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-lru-retry-1.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:25:02.049047+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 18.5
+    },
+    "legacy-final-cli": {
+      "label": "legacy-final-cli",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_wildcard_final.py"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:20:28.844451+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 49.23
+    },
+    "animatediff-native": {
+      "label": "animatediff-native",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_animatediff_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:18196",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/animatediff-native"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:37:28.196374+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 85.91
+    },
+    "legacy-lazy-verification": {
+      "label": "legacy-lazy-verification",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_lazy_load_verification.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-lazy-verification.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:00:41.275823+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 2.19
+    },
+    "wildcard-classic-retry-1": {
+      "label": "wildcard-classic-retry-1",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py::test_linked_inputs_and_subgraph_native_queue[ImpactWildcardEncode-named]",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-classic-retry-1.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:33:02.360412+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 19.75
+    },
+    "detailer-inference": {
+      "label": "detailer-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_dd_compat.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/detailer-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:01:54.853001+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 25.2
+    },
+    "mask-blur": {
+      "label": "mask-blur",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_mask_blur.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/mask-blur.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:01.267861+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 3.22
+    },
+    "batch-rgr-green": {
+      "label": "batch-rgr-green",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "batched_queue",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/batch-rgr-green.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:03:26.157058+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 100.97
+    },
+    "wildcard-cache-tensors": {
+      "label": "wildcard-cache-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-cache-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:55:03.380157+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 17.04
+    },
+    "legacy-shell-deep_nesting": {
+      "label": "legacy-shell-deep_nesting",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_deep_nesting.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:03:26.061881+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 19.37
+    },
+    "utf8-api": {
+      "label": "utf8-api",
+      "command": [
+        "bash",
+        "tests/test_encoding.sh",
+        "http://127.0.0.1:18196"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:39:00.687367+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 0.67
+    },
+    "legacy-sam-isolated": {
+      "label": "legacy-sam-isolated",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_legacy_sam.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-sam-isolated.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:24:38.025510+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+        "CUDA_VISIBLE_DEVICES": "",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 170.33
+    },
+    "wildcard-tutorial-tensors": {
+      "label": "wildcard-tutorial-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_tutorial_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--tutorials-root",
+        "/mnt/teratera/git/ComfyUI-extension-tutorials",
+        "--inspire-root",
+        "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-tutorial-tensors-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:55:20.422660+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 45.98
+    },
+    "legacy-shell-edge_cases": {
+      "label": "legacy-shell-edge_cases",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_edge_cases.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:03:09.680397+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 16.29
+    },
+    "legacy-shell-dynamic-prompts": {
+      "label": "legacy-shell-dynamic-prompts",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_dynamic_prompts_full.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:07:24.925411+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 85.08
+    },
+    "sam-and-mask": {
+      "label": "sam-and-mask",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_sam_masks.py",
+        "tests/test_mask_to_segs.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/sam-and-mask.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:04.486973+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 5.27
+    },
+    "legacy-keyboard-diagnostic": {
+      "label": "legacy-keyboard-diagnostic",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_legacy_sam.py",
+        "-k",
+        "keyboard_cancel",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-keyboard-diagnostic.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:20:20.422519+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 7.96
+    },
+    "legacy-shell-ondemand_loading": {
+      "label": "legacy-shell-ondemand_loading",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_ondemand_loading.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:03:45.572841+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 129.31
+    },
+    "baseline-legacy-extra-progressive": {
+      "label": "baseline-legacy-extra-progressive",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_progressive_ondemand.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:25:12.235350+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 17.83
+    },
+    "switch-tutorial-inference": {
+      "label": "switch-tutorial-inference",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_tutorials.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/switch-tutorial-inference"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:02:40.679744+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 194.96
+    },
+    "wildcard-cache-integration": {
+      "label": "wildcard-cache-integration",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_wildcard_cache.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI",
+        "--report",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-cache-integration-report.json"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:52:21.572102+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 4.27
+    },
+    "wildcard-browser": {
+      "label": "wildcard-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:10:46.825750+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 1292.42
+    },
+    "baseline-legacy-lazy-verification": {
+      "label": "baseline-legacy-lazy-verification",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/wildcards/test_lazy_load_verification.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline-legacy-lazy-verification.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline",
+      "started_utc": "2026-11-03T00:03:27.729173+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 2.82
+    },
+    "lora-source-tensors": {
+      "label": "lora-source-tensors",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/integration_lora_wildcard_tensors.py",
+        "--comfy-root",
+        "/mnt/teratera/git/ComfyUI"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:56:06.400674+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 10.24
+    },
+    "legacy-extra-sequential_loading": {
+      "label": "legacy-extra-sequential_loading",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/test_sequential_loading.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:16:00.042560+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 148.62
+    },
+    "conditioning-browser": {
+      "label": "conditioning-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_conditionings.py",
+        "--base-url",
+        "http://127.0.0.1:18198",
+        "--timeout",
+        "600",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/conditioning-browser"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:02:20.049901+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 20.63
+    },
+    "batch-rgr-red": {
+      "label": "batch-rgr-red",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "batched_queue",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/batch-rgr-red.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:01:51.735501+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 94.42
+    },
+    "sam-browser": {
+      "label": "sam-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_sam_masks.py",
+        "tests/test_e2e_sam_tutorials.py",
+        "tests/test_e2e_legacy_sam.py",
+        "tests/test_sam_api.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/sam-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:56:59.719661+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18197",
+        "IMPACT_E2E_SAM_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_00156_.png",
+        "IMPACT_E2E_SAM_MODEL": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+        "IMPACT_E2E_TUTORIAL_IMAGE": "/mnt/teratera/git/ComfyUI/input/ComfyUI_temp_xltgv_00001_.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 2,
+      "duration_seconds": 128.37
+    },
+    "lora-source-browser": {
+      "label": "lora-source-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_lora_wildcard_source.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/lora-source-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:08:24.643103+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 47.64
+    },
+    "wildcard-ui": {
+      "label": "wildcard-ui",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "http://127.0.0.1:18196",
+        "--artifacts",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-ui"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:38:54.110907+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 6.58
+    },
+    "batch-rgr-red-again": {
+      "label": "batch-rgr-red-again",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_wildcard_cache.py",
+        "-k",
+        "batched_queue",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/batch-rgr-red-again.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:05:07.127155+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18199"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 1,
+      "duration_seconds": 113.31
+    },
+    "legacy-shell-error_handling": {
+      "label": "legacy-shell-error_handling",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_error_handling.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:02:54.000075+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 15.6
+    },
+    "catalog": {
+      "label": "catalog",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_widget_catalog.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/catalog.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-02T23:56:30.417064+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 856.36
+    },
+    "mask-browser": {
+      "label": "mask-browser",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_e2e_mask_to_segs.py",
+        "tests/test_e2e_mask_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/mask-browser.xml"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+      "started_utc": "2026-11-03T00:36:53.073891+00:00",
+      "environment_overrides": {
+        "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+        "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+      },
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 35.12
+    },
+    "baseline-legacy-extra-quotes": {
+      "label": "baseline-legacy-extra-quotes",
+      "command": [
+        "bash",
+        "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/test_config_quotes.sh"
+      ],
+      "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack",
+      "started_utc": "2026-11-03T00:25:30.152098+00:00",
+      "environment_overrides": {},
+      "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+      "exit_code": 0,
+      "duration_seconds": 47.27
+    }
+  },
+  "maintained_direct_failures": [
+    "wildcard-browser"
+  ],
+  "unresolved_maintained_exit_failures": []
+}

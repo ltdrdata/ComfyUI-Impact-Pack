@@ -1,0 +1,136 @@
+{
+  "successful": true,
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "reports": {
+    "red": {
+      "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb",
+      "unit": {
+        "tests": 11,
+        "pass": 3,
+        "fail": 8,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "unit_failures": [
+        "ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks",
+        "ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed",
+        "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+        "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+        "ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks",
+        "ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed",
+        "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+        "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+      ],
+      "browser": {
+        "tests": 8,
+        "failures": 6,
+        "errors": 0,
+        "skipped": 0
+      },
+      "browser_failures": [
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert {'1', '2'} <= {'3'}\n  \n  Extra items in the left set:\n  '1'\n  '2'"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert {'1', '2'} <= {'3', '4'}\n  \n  Extra items in the left set:\n  '1'\n  '2'"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        }
+      ]
+    },
+    "green": {
+      "source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+      "unit": {
+        "tests": 11,
+        "pass": 11,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "unit_failures": [],
+      "browser": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "browser_failures": []
+    },
+    "red-again": {
+      "source_sha256": "0f0a98aa7aa2520fa173666b33d50835241be38fb8d90bc87122a4bf5c8adbdb",
+      "unit": {
+        "tests": 11,
+        "pass": 3,
+        "fail": 8,
+        "cancelled": 0,
+        "skipped": 0
+      },
+      "unit_failures": [
+        "ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks",
+        "ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed",
+        "ImpactWildcardProcessor: a core hook error propagates and restores the selected policy",
+        "ImpactWildcardProcessor: older controls with only afterQueued remain supported",
+        "ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks",
+        "ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed",
+        "ImpactWildcardEncode: a core hook error propagates and restores the selected policy",
+        "ImpactWildcardEncode: older controls with only afterQueued remain supported"
+      ],
+      "browser": {
+        "tests": 8,
+        "failures": 6,
+        "errors": 0,
+        "skipped": 0
+      },
+      "browser_failures": [
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[choice-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert {'1', '2'} <= {'3'}\n  \n  Extra items in the left set:\n  '1'\n  '2'"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-plain-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert {'1', '2'} <= {'3', '4'}\n  \n  Extra items in the left set:\n  '1'\n  '2'"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardProcessor]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        },
+        {
+          "name": "test_fixed_mode_suppresses_automatic_seed_changes[linked-choice-increment-after-ImpactWildcardEncode]",
+          "message": "AssertionError: assert 'green' == 'blue'\n  \n  - blue\n  + green"
+        }
+      ]
+    }
+  },
+  "test_sha256": {
+    "tests/wildcard_seed_control.test.mjs": "dbcebf3289095050ac3686c27100097ab6ab12bfccca6bfb85636c44d7c61e1b",
+    "tests/test_e2e_wildcard_cache.py": "5003ed0cf6687bab1ccb30132af0cdafbe7ecc95cfb982f43eb555a906d0b71d",
+    "tests/test_e2e_wildcard_tutorials.py": "97dc2f7c52e227cd18e5d2e364f2f968f5bd55ec1dd9cef92d978f36d0629f8f"
+  },
+  "fixed_source_restored": true,
+  "fixed_source_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd"
+}

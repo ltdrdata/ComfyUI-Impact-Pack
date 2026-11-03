@@ -1,0 +1,15 @@
+{
+  "label": "lora-source-tensors",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/integration_lora_wildcard_tensors.py",
+    "--comfy-root",
+    "/mnt/teratera/git/ComfyUI"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-02T23:56:06.400674+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 10.24
+}

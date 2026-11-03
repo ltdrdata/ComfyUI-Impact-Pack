@@ -1,0 +1,203 @@
+{
+  "id": "7538ad8a-1c9f-40d0-8b3a-6a41a50fcda5",
+  "revision": 0,
+  "last_node_id": 3,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "ImpactWildcardEncode",
+      "pos": [
+        22.888888888888914,
+        125.55555555555554
+      ],
+      "size": [
+        400,
+        322
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": null
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "links": null
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": null
+        },
+        {
+          "name": "populated_text",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactWildcardEncode"
+      },
+      "widgets_values": [
+        "unused {red|blue}",
+        "saved plain α",
+        "fixed",
+        "Select the LoRA to add to the text",
+        "Select Wildcard 🟢 Full Cache",
+        731,
+        "increment"
+      ],
+      "widgets_values_named": {
+        "wildcard_text": "unused {red|blue}",
+        "populated_text": "saved plain α",
+        "mode": "fixed",
+        "Select to add LoRA": "Select the LoRA to add to the text",
+        "Select to add Wildcard": "Select Wildcard 🟢 Full Cache",
+        "seed": 731,
+        "control_after_generate": "increment"
+      }
+    },
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        717.8888888888889,
+        405.55555555555554
+      ],
+      "size": [
+        210,
+        122
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 3,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -362.1111111111111,
+        455.55555555555554
+      ],
+      "size": [
+        270,
+        98
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "v1-5-pruned-emaonly-fp16.safetensors"
+      ],
+      "widgets_values_named": {
+        "ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      3,
+      2,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      3,
+      0,
+      1,
+      0,
+      "MODEL"
+    ],
+    [
+      3,
+      3,
+      1,
+      1,
+      1,
+      "CLIP"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        227.1111111111111,
+        4.444444444444457
+      ]
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

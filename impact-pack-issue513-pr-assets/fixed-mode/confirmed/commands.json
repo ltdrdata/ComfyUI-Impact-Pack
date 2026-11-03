@@ -1,0 +1,180 @@
+[
+  {
+    "label": "unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 1,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red/unit.log"
+  },
+  {
+    "label": "browser",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "(fixed_mode_suppresses and (choice-increment-after or linked-plain-increment-after)) or populate_reuses_cache_only_for_same_expansion",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red/browser.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 1,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red/browser.log"
+  },
+  {
+    "label": "unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/green/unit.log"
+  },
+  {
+    "label": "browser",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "(fixed_mode_suppresses and (choice-increment-after or linked-plain-increment-after)) or populate_reuses_cache_only_for_same_expansion",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/green/browser.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/green/browser.log"
+  },
+  {
+    "label": "unit",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/wildcard_seed_control.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 1,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red-again/unit.log"
+  },
+  {
+    "label": "browser",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "-k",
+      "(fixed_mode_suppresses and (choice-increment-after or linked-plain-increment-after)) or populate_reuses_cache_only_for_same_expansion",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red-again/browser.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 1,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/red-again/browser.log"
+  },
+  {
+    "label": "node",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "/mnt/teratera/git/impact-pack-issue513-followup/tests/legacy_sam.test.mjs",
+      "/mnt/teratera/git/impact-pack-issue513-followup/tests/lora_wildcard_source.test.mjs",
+      "/mnt/teratera/git/impact-pack-issue513-followup/tests/wildcard_seed_control.test.mjs"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/node.log"
+  },
+  {
+    "label": "python",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/python.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup/tests",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/python.log"
+  },
+  {
+    "label": "backend",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_cache.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--report",
+      "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/backend.json"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/backend.log"
+  },
+  {
+    "label": "tensors",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_cache_tensors.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--report",
+      "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/tensors.json"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/tensors.log"
+  },
+  {
+    "label": "tutorial-tensors",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_tutorial_tensors.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--tutorials-root",
+      "/mnt/teratera/git/ComfyUI-extension-tutorials",
+      "--inspire-root",
+      "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+      "--report",
+      "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/tutorial-tensors.json"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/tutorial-tensors.log"
+  },
+  {
+    "label": "browser",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_e2e_wildcard_cache.py",
+      "tests/test_e2e_wildcard_tutorials.py",
+      "-k",
+      "not fixed_mode_suppresses",
+      "-v",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/browser.xml"
+    ],
+    "cwd": "/mnt/teratera/git/impact-pack-issue513-followup",
+    "exit_code": 0,
+    "log": "/mnt/teratera/git/impact-pack-issue513-pr-assets/fixed-mode/confirmed/final/browser.log"
+  }
+]

@@ -1,0 +1,427 @@
+[32m[INFO][0m Setting base directory to: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru
+[32m[INFO][0m Setting models directory to: /mnt/teratera/git/ComfyUI/models
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1m[33m[WARNING][0m WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+[32m[INFO][0m Found comfy_kitchen backend triton: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'int8_linear', 'na3d', 'quantize_and_rotate_rowwise', 'quantize_int8_rowwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'rms_adaln', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'w4a8_int8_linear']}
+[32m[INFO][0m Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'convrot_w4a4_linear', 'dequantize_convrot_w4a4_weight', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_embedding', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_mxfp8', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'dequantize_w4a8_int8_weight', 'fp16_conv3d', 'fp16_conv3d_out', 'fp16_linear', 'gemv_awq_w4a16', 'group_norm_silu_pad3d', 'group_norm_silu_pad3d_out', 'group_norm_stats3d', 'int8_linear', 'int8_linear_modulated', 'int8_linear_rms_modulated', 'na3d', 'prepare_int4_weight_for_int8_linear', 'quantize_and_rotate_rowwise', 'quantize_convrot_w4a4_weight', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'quantize_w4a8_int8_weight', 'rms_adaln', 'rms_gated_residual', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'rotate_int8_convrot_weight', 'scaled_mm_mxfp8', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'sol_attn', 'stochastic_rounding_fp8', 'w4a8_int8_linear', 'w4a8_packed_linear']}
+[32m[INFO][0m Found comfy_kitchen backend ascend: {'available': False, 'disabled': False, 'unavailable_reason': "torch-npu is not installed: No module named 'torch_npu'", 'capabilities': []}
+[32m[INFO][0m Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'closest_point_on_mesh', 'connected_components', 'convrot_w4a4_linear', 'delaunay3d', 'dequantize_convrot_w4a4_weight', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'dequantize_w4a8_int8_weight', 'edge_collapse_checks', 'fp16_conv3d', 'fp16_conv3d_out', 'fp16_linear', 'gemv_awq_w4a16', 'group_norm_silu_pad3d', 'group_norm_silu_pad3d_out', 'group_norm_stats3d', 'int8_linear', 'mesh_bvh', 'min_cut', 'na3d', 'prepare_int4_weight_for_int8_linear', 'quantize_and_rotate_rowwise', 'quantize_convrot_w4a4_weight', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'quantize_w4a8_int8_weight', 'rms_adaln', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'rotate_int8_convrot_weight', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'sol_attn', 'stochastic_rounding_fp8', 'w4a8_int8_linear', 'w4a8_packed_linear']}
+[32m[INFO][0m Found comfy_kitchen backend hip: {'available': False, 'disabled': False, 'unavailable_reason': 'PyTorch ROCm/HIP runtime not available', 'capabilities': []}
+[32m[INFO][0m Checkpoint files will always be loaded safely.
+[32m[INFO][0m Total VRAM 95659 MB, total RAM 95659 MB
+[32m[INFO][0m pytorch version: 2.10.0+cu128
+[32m[INFO][0m xformers version: 0.0.35
+[32m[INFO][0m Set vram state to: DISABLED
+[32m[INFO][0m Device: cpu
+[32m[INFO][0m Using sub quadratic optimization for attention, if you have memory or speed issues try using: --use-split-cross-attention
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+[32m[INFO][0m Python version: 3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]
+[32m[INFO][0m ComfyUI version: 0.43.0
+[32m[INFO][0m comfy-aimdo version: 0.6.0
+[32m[INFO][0m comfy-kitchen version: 0.2.40
+[32m[INFO][0m comfyui-frontend-package version: 1.57.6
+[32m[INFO][0m comfyui-workflow-templates version: 0.11.100
+[32m[INFO][0m comfyui-embedded-docs version: 0.5.15
+[32m[INFO][0m comfy-aimdo version: 0.6.0
+[32m[INFO][0m comfy-kitchen version: 0.2.40
+[32m[INFO][0m [Prompt Server] web root: /home/rho/venv/lib/python3.12/site-packages/comfyui_frontend_package/static
+[32m[INFO][0m Asset seeder disabled
+[32m[INFO][0m No OpenGL_accelerate module loaded: Acceleration disabled
+[36;20m[/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_controlnet_aux] | INFO -> Using ckpts path: /mnt/teratera/git/ComfyUI/custom_nodes/comfyui_controlnet_aux/ckpts[0m
+[36;20m[/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_controlnet_aux] | INFO -> Using symlinks: False[0m
+[36;20m[/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_controlnet_aux] | INFO -> Using ort providers: ['CUDAExecutionProvider', 'DirectMLExecutionProvider', 'OpenVINOExecutionProvider', 'ROCMExecutionProvider', 'CPUExecutionProvider', 'CoreMLExecutionProvider'][0m
+/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_controlnet_aux/node_wrappers/dwpose.py:26: UserWarning: DWPose: Onnxruntime not found or doesn't come with acceleration providers, switch to OpenCV with CPU device. DWPose might run very slowly
+  warnings.warn("DWPose: Onnxruntime not found or doesn't come with acceleration providers, switch to OpenCV with CPU device. DWPose might run very slowly")
+[32m[INFO][0m ### Loading: ComfyUI-Impact-Subpack (V1.3.5)
+[32m[INFO][0m [Impact Pack/Subpack] Using folder_paths to determine whitelist path: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/user/default/ComfyUI-Impact-Subpack/model-whitelist.txt
+[32m[INFO][0m [Impact Pack/Subpack] Ensured whitelist directory exists: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/user/default/ComfyUI-Impact-Subpack
+[1m[33m[WARNING][0m [Impact Pack/Subpack] Model whitelist file not found at: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/user/default/ComfyUI-Impact-Subpack/model-whitelist.txt. 
+[1m[33m[WARNING][0m  >> An empty whitelist file will be created.
+[1m[33m[WARNING][0m  >> To allow unsafe loading for specific trusted legacy models (e.g., older .pt),
+[1m[33m[WARNING][0m  >> add their base filenames (one per line) to this file.
+[32m[INFO][0m [Impact Pack/Subpack] Created empty whitelist file: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/user/default/ComfyUI-Impact-Subpack/model-whitelist.txt
+[32m[INFO][0m [Impact Subpack] ultralytics_bbox: /mnt/teratera/git/ComfyUI/models/ultralytics/bbox
+[32m[INFO][0m [Impact Subpack] ultralytics_segm: /mnt/teratera/git/ComfyUI/models/ultralytics/segm
+[32m[INFO][0m ### Loading: ComfyUI-Inspire-Pack (V1.23)
+[32m[INFO][0m ### Loading: ComfyUI-Impact-Pack (V8.30)
+[32m[INFO][0m [Impact Pack] Wildcard total size (0.00 MB) is within cache limit (50.00 MB). Using full cache mode.
+[32m[INFO][0m [Impact Pack] Wildcards loading done.
+[32m[INFO][0m 
+Import times for custom nodes:
+[32m[INFO][0m    0.0 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_essentials
+[32m[INFO][0m    0.0 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui-inspire-pack
+[32m[INFO][0m    0.1 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui-animatediff-evolved
+[32m[INFO][0m    0.1 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui-impact-subpack
+[32m[INFO][0m    0.1 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui-videohelpersuite
+[32m[INFO][0m    0.3 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui-impact-pack
+[32m[INFO][0m    0.3 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_controlnet_aux
+[32m[INFO][0m    1.0 seconds: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/runtime-lru/custom_nodes/comfyui_ipadapter_plus
+[32m[INFO][0m 
+[32m[INFO][0m Using LRU cache
+[32m[INFO][0m ComfyUI is developed by Comfy Org. We also offer commercial products to deploy ComfyUI as scalable cloud endpoints. Visit platform.comfy.org/ascii for more information.
+[32m[INFO][0m Starting server
+
+[32m[INFO][0m To see the GUI go to: http://127.0.0.1:18199
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /extensions/core/widgetInputs.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[1m[33m[WARNING][0m [DEPRECATION WARNING] Detected import of deprecated legacy API: /scripts/ui.js. This is likely caused by a custom node extension using outdated APIs. Please update your extensions or contact the extension author for an updated version.
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m VAE load device: cpu, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m CLIP: [populate cache green]
+[32m[INFO][0m [32mPrompt executed in 10.85 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [populate cache red]
+[32m[INFO][0m [32mPrompt executed in 0.72 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt]
+[32m[INFO][0m [32mPrompt executed in 1.75 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt changed]
+[32m[INFO][0m [32mPrompt executed in 1.32 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt]
+[32m[INFO][0m [32mPrompt executed in 0.79 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt changed]
+[32m[INFO][0m [32mPrompt executed in 4.45 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: []
+[32m[INFO][0m [32mPrompt executed in 1.49 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [changed]
+[32m[INFO][0m [32mPrompt executed in 0.37 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.03 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.85 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m VAE load device: cpu, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 4.18 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.36 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.45 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.36 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [green]
+[32m[INFO][0m [32mPrompt executed in 0.90 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.51 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.29 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.35 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.32 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.27 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.38 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt]
+[32m[INFO][0m [32mPrompt executed in 0.51 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [ordinary prompt changed]
+[32m[INFO][0m [32mPrompt executed in 0.43 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.16 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.19 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.18 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.51 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m VAE load device: cpu, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 2.22 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.26 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.13 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [green]
+[32m[INFO][0m [32mPrompt executed in 0.33 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.21 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m Using split attention in VAE
+[32m[INFO][0m VAE load device: cpu, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 1.42 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.15 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.34 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.01 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.26 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue changed]
+[32m[INFO][0m [32mPrompt executed in 0.17 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red changed]
+[32m[INFO][0m [32mPrompt executed in 0.16 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.12 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [resumed ccb650aae6d140b19056213386c193f1]
+[32m[INFO][0m [32mPrompt executed in 0.12 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.14 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [resumed ce8551c8075045d9bd7a7849129eff8d]
+[32m[INFO][0m [32mPrompt executed in 0.12 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.18 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red]
+[32m[INFO][0m [32mPrompt executed in 0.16 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m [32mPrompt executed in 0.11 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [red]
+[32m[INFO][0m [32mPrompt executed in 0.14 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m got prompt
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.14 seconds[0m
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m CLIP: [blue]
+[32m[INFO][0m got prompt
+[32m[INFO][0m got prompt
+[32m[INFO][0m [32mPrompt executed in 0.12 seconds[0m
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m
+[32m[INFO][0m [32mPrompt executed in 0.00 seconds[0m

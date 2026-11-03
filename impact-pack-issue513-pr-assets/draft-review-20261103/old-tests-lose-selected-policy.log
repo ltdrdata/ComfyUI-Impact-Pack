@@ -1,0 +1,67 @@
+TAP version 13
+# (node:2831810) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks
+ok 1 - ImpactWildcardProcessor: fixed and legacy false pass fixed policy to both core hooks
+  ---
+  duration_ms: 2.395378
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.261299
+  ...
+# Subtest: ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed
+ok 3 - ImpactWildcardProcessor: leaving fixed resumes the selected control without resetting the seed
+  ---
+  duration_ms: 1.560346
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.162001
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.089253
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks
+ok 6 - ImpactWildcardEncode: fixed and legacy false pass fixed policy to both core hooks
+  ---
+  duration_ms: 1.004964
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 7 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.080808
+  ...
+# Subtest: ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed
+ok 8 - ImpactWildcardEncode: leaving fixed resumes the selected control without resetting the seed
+  ---
+  duration_ms: 1.000275
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 9 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.125733
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 10 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.476887
+  ...
+# Subtest: unrelated node types are untouched
+ok 11 - unrelated node types are untouched
+  ---
+  duration_ms: 1.05002
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 51.296411

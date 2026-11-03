@@ -1,0 +1,20 @@
+{
+  "progressive-shell": {
+    "candidate": "legacy-extra-progressive_ondemand.log",
+    "base": "baseline-legacy-extra-progressive.log",
+    "identical_failure_lines": [
+      "\\033[0;31m\u2717 FAIL: Expected loaded count to increase (was 6, now 6)\\033[0m"
+    ],
+    "candidate_exit_code": 1,
+    "base_exit_code": 1
+  },
+  "config-quotes-shell": {
+    "candidate": "legacy-shell-config_quotes.log",
+    "base": "baseline-legacy-extra-quotes.log",
+    "identical_failure_lines": [
+      "Status: \\033[0;31m\u274c FAIL - Path not working\\033[0m"
+    ],
+    "candidate_exit_code": 0,
+    "base_exit_code": 0
+  }
+}

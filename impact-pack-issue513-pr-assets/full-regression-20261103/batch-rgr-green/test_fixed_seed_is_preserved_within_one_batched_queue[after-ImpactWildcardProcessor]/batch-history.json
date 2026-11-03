@@ -1,0 +1,629 @@
+[
+  {
+    "prompt": [
+      18,
+      "89af51f1-1166-4178-bb96-1ea23cf90d65",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+            "populated_text": "{red|green|blue}",
+            "mode": "fixed",
+            "seed": 5,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6",
+            "revision": 0,
+            "last_node_id": 2,
+            "last_link_id": 1,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "{red|green|blue}",
+                  "fixed",
+                  5,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "populated_text": "{red|green|blue}",
+                  "mode": "fixed",
+                  "seed": 5,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.1111111111111,
+                  4.444444444444457
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "e3e8e71a6b224078a51a2dde22ad38a7",
+        "workflow_metadata": {
+          "workflow_id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6"
+        },
+        "create_time": 1793664276977
+      },
+      [
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "blue"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "89af51f1-1166-4178-bb96-1ea23cf90d65",
+            "timestamp": 1793664276978
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "89af51f1-1166-4178-bb96-1ea23cf90d65",
+            "timestamp": 1793664277281
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "89af51f1-1166-4178-bb96-1ea23cf90d65",
+            "timestamp": 1793664277283
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  },
+  {
+    "prompt": [
+      19,
+      "4a98196c-2571-47bd-b30b-b6e06bbc789a",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+            "populated_text": "{red|green|blue}",
+            "mode": "fixed",
+            "seed": 5,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6",
+            "revision": 0,
+            "last_node_id": 2,
+            "last_link_id": 1,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "{red|green|blue}",
+                  "fixed",
+                  5,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "populated_text": "{red|green|blue}",
+                  "mode": "fixed",
+                  "seed": 5,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.1111111111111,
+                  4.444444444444457
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "e3e8e71a6b224078a51a2dde22ad38a7",
+        "workflow_metadata": {
+          "workflow_id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6"
+        },
+        "create_time": 1793664277066
+      },
+      [
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "blue"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "4a98196c-2571-47bd-b30b-b6e06bbc789a",
+            "timestamp": 1793664278290
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [
+              "1",
+              "2"
+            ],
+            "prompt_id": "4a98196c-2571-47bd-b30b-b6e06bbc789a",
+            "timestamp": 1793664278290
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "4a98196c-2571-47bd-b30b-b6e06bbc789a",
+            "timestamp": 1793664278290
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  },
+  {
+    "prompt": [
+      20,
+      "4cfee377-ef3a-428b-aa24-fcde09150c94",
+      {
+        "1": {
+          "inputs": {
+            "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+            "populated_text": "{red|green|blue}",
+            "mode": "fixed",
+            "seed": 5,
+            "Select to add Wildcard": "Select the Wildcard to add to the text"
+          },
+          "class_type": "ImpactWildcardProcessor",
+          "_meta": {
+            "title": "ImpactWildcardProcessor"
+          }
+        },
+        "2": {
+          "inputs": {
+            "source": [
+              "1",
+              0
+            ]
+          },
+          "class_type": "PreviewAny",
+          "_meta": {
+            "title": "Preview as Text"
+          }
+        }
+      },
+      {
+        "comfy_usage_source": "comfyui-frontend",
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6",
+            "revision": 0,
+            "last_node_id": 2,
+            "last_link_id": 1,
+            "nodes": [
+              {
+                "id": 1,
+                "type": "ImpactWildcardProcessor",
+                "pos": [
+                  22.888888888888914,
+                  125.55555555555554
+                ],
+                "size": [
+                  400,
+                  238
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "processed text",
+                    "type": "STRING",
+                    "links": [
+                      1
+                    ]
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "ImpactWildcardProcessor"
+                },
+                "widgets_values": [
+                  "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "{red|green|blue}",
+                  "fixed",
+                  5,
+                  "increment",
+                  "Select Wildcard \ud83d\udfe2 Full Cache"
+                ],
+                "widgets_values_named": {
+                  "wildcard_text": "batch 66fe948f03c14cbb8208b5703140e1c8",
+                  "populated_text": "{red|green|blue}",
+                  "mode": "fixed",
+                  "seed": 5,
+                  "control_after_generate": "increment",
+                  "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache"
+                }
+              },
+              {
+                "id": 2,
+                "type": "PreviewAny",
+                "pos": [
+                  717.8888888888889,
+                  405.55555555555554
+                ],
+                "size": [
+                  210,
+                  122
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "source",
+                    "type": "*",
+                    "link": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "STRING",
+                    "type": "STRING",
+                    "links": null
+                  }
+                ],
+                "properties": {
+                  "Node name for S&R": "PreviewAny"
+                },
+                "widgets_values": [],
+                "widgets_values_named": {}
+              }
+            ],
+            "links": [
+              [
+                1,
+                1,
+                0,
+                2,
+                0,
+                "STRING"
+              ]
+            ],
+            "groups": [],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 1,
+                "offset": [
+                  227.1111111111111,
+                  4.444444444444457
+                ]
+              },
+              "frontendVersion": "1.57.6",
+              "VHS_latentpreview": false,
+              "VHS_latentpreviewrate": 0,
+              "VHS_MetadataImage": true,
+              "VHS_KeepIntermediate": true
+            },
+            "version": 0.4,
+            "widget_idx_map": {
+              "1": {
+                "seed": 3
+              }
+            }
+          }
+        },
+        "client_id": "e3e8e71a6b224078a51a2dde22ad38a7",
+        "workflow_metadata": {
+          "workflow_id": "5c26827e-95a6-4a8d-bfc5-ec24e13f0bd6"
+        },
+        "create_time": 1793664277211
+      },
+      [
+        "2"
+      ]
+    ],
+    "outputs": {
+      "2": {
+        "text": [
+          "blue"
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "4cfee377-ef3a-428b-aa24-fcde09150c94",
+            "timestamp": 1793664278291
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [
+              "1",
+              "2"
+            ],
+            "prompt_id": "4cfee377-ef3a-428b-aa24-fcde09150c94",
+            "timestamp": 1793664278291
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "4cfee377-ef3a-428b-aa24-fcde09150c94",
+            "timestamp": 1793664278295
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "2": {
+        "node_id": "2",
+        "display_node": "2",
+        "parent_node": null,
+        "real_node_id": "2"
+      }
+    }
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "unchanged_from_base": {
+    "modules/impact/impact_server.py": "8e6cbd8a683e6f00d89efcae8916c44d42e1a53c5641294ffcc0ddc8c4f10884",
+    "modules/impact/impact_pack.py": "2bd8dd0ab70f3928f7b53cfa318c04a680f3d9d1bb235032960b869290f7df4d",
+    "modules/impact/wildcards.py": "58a99113734069467b299e5bb486c07dc1b94b83a341b228bf445552362466b0",
+    "__init__.py": "6018a35a9471b674a51763b643cd02f5a80555efdb06fad2b7c53a027bfa12a2",
+    "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "changed_files": [
+    "js/impact-pack.js",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/test_e2e_wildcard_tutorials.py",
+    "tests/wildcard_seed_control.test.mjs"
+  ],
+  "new_registered_nodes": 0,
+  "new_widgets": 0,
+  "commits": 1
+}

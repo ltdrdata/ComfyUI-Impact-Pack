@@ -1,0 +1,6 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/wildcard-ondemand-ui
+PASS: UI Run completed (90fe8a16-357a-4590-a59e-d67a3a3184e3)
+PASS: UI Run completed (f754e077-78bb-4b9e-b452-e1478f009586)
+PASS: UI Run completed (9f49d0a4-fe5e-47b5-8495-0d313d6591fd)
+PASS: UI Run completed (d1379569-6bcd-4a0e-8953-2eb002502fca)
+PASS: UI node creation/linking, populate/fixed/reproduce, UTF-8, and preview updates

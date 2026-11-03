@@ -1,0 +1,18 @@
+{
+  "label": "baseline-legacy-progressive",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/wildcards/test_progressive_loading.py",
+    "-v",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline-legacy-progressive.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/baseline",
+  "started_utc": "2026-11-03T00:04:51.281427+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 1,
+  "duration_seconds": 2.44
+}

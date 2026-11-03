@@ -1,0 +1,4 @@
+Artifacts: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/conditioning-browser
+PASS: UI Run completed (7e3dfd4f-3fa7-4c87-9fe4-8eab22164714)
+PASS: UI Run completed (b8a15d1e-993d-43e2-8c47-7283797ddb97)
+PASS: UI import/Run/reload, core conditioning parity, ordered regional-prompt combination

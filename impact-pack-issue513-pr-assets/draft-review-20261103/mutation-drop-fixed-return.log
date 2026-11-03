@@ -1,0 +1,99 @@
+TAP version 13
+# (node:2831718) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+not ok 1 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 3.2515
+  location: '/tmp/impact-513-unit-snr8zpqg/tests/wildcard_seed_control.test.mjs:58:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - {}
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-snr8zpqg/tests/wildcard_seed_control.test.mjs:67:28)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.279053
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+ok 3 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.666908
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.236202
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.075478
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+not ok 6 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.048256
+  location: '/tmp/impact-513-unit-snr8zpqg/tests/wildcard_seed_control.test.mjs:58:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - {}
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-snr8zpqg/tests/wildcard_seed_control.test.mjs:67:28)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 7 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.084445
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+ok 8 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.000947
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+ok 9 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.1192
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+ok 10 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.53098
+  ...
+# Subtest: unrelated node types are untouched
+ok 11 - unrelated node types are untouched
+  ---
+  duration_ms: 1.153636
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 9
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 56.505139

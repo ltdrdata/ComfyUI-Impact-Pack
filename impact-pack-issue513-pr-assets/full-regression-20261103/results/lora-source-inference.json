@@ -1,0 +1,19 @@
+{
+  "label": "lora-source-inference",
+  "command": [
+    "/home/rho/venv/bin/python",
+    "tests/e2e_lora_wildcard_inference.py",
+    "--base-url",
+    "http://127.0.0.1:18198",
+    "--timeout",
+    "600",
+    "--artifacts",
+    "/mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/lora-source-inference"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-02T23:58:10.000202+00:00",
+  "environment_overrides": {},
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 224.85
+}

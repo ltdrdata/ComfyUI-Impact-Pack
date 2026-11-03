@@ -1,0 +1,102 @@
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+
+============================================================
+WILDCARD COMPREHENSIVE CONSISTENCY TEST
+============================================================
+
+============================================================
+Testing: Full Cache Mode
+Cache Limit: 50 MB
+============================================================
+
+Starting ComfyUI...
+✓ Server started successfully
+
+Test 1: Simple wildcard
+  Input:  __samples/flower__
+  Output: chrysanthemum
+
+Test 2: Multiple wildcards
+  Input:  a __samples/flower__ and a __samples/jewel__
+  Output: a chrysanthemum and a diamond
+
+Test 3: Dynamic prompt
+  Input:  {red|blue|green} flower
+  Output: blue flower
+
+Test 4: Combined
+  Input:  {beautiful|elegant} __samples/flower__ with {gold|silver} __samples/jewel__
+  Output: beautiful daisy with gold emerald
+
+Test 5: Multi-select
+  Input:  {2$$, $$__samples/flower__|rose|tulip|daisy}
+  Output: daisy, tulip
+
+Test 6: Transitive YAML wildcard
+  Input:  __colors__
+  Output: blue
+
+Test 7: Transitive with context
+  Input:  a {beautiful|vibrant} __colors__ flower
+  Output: a vibrant orange flower
+
+
+============================================================
+Testing: On-Demand Mode
+Cache Limit: 1 MB
+============================================================
+
+Starting ComfyUI...
+✓ Server started successfully
+
+Test 1: Simple wildcard
+  Input:  __samples/flower__
+  Output: chrysanthemum
+
+Test 2: Multiple wildcards
+  Input:  a __samples/flower__ and a __samples/jewel__
+  Output: a chrysanthemum and a diamond
+
+Test 3: Dynamic prompt
+  Input:  {red|blue|green} flower
+  Output: blue flower
+
+Test 4: Combined
+  Input:  {beautiful|elegant} __samples/flower__ with {gold|silver} __samples/jewel__
+  Output: beautiful daisy with gold emerald
+
+Test 5: Multi-select
+  Input:  {2$$, $$__samples/flower__|rose|tulip|daisy}
+  Output: daisy, tulip
+
+Test 6: Transitive YAML wildcard
+  Input:  __colors__
+  Output: blue
+
+Test 7: Transitive with context
+  Input:  a {beautiful|vibrant} __colors__ flower
+  Output: a vibrant orange flower
+
+
+============================================================
+RESULTS COMPARISON
+============================================================
+
+test1: ✓ MATCH
+
+test2: ✓ MATCH
+
+test3: ✓ MATCH
+
+test4: ✓ MATCH
+
+test5: ✓ MATCH
+
+test6: ✓ MATCH
+
+test7: ✓ MATCH
+
+============================================================
+✅ ALL TESTS PASSED - Results are identical
+============================================================

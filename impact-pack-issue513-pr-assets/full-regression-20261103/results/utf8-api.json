@@ -1,0 +1,17 @@
+{
+  "label": "utf8-api",
+  "command": [
+    "bash",
+    "tests/test_encoding.sh",
+    "http://127.0.0.1:18196"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "started_utc": "2026-11-03T00:39:00.687367+00:00",
+  "environment_overrides": {
+    "IMPACT_E2E_BASE_URL": "http://127.0.0.1:18196",
+    "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1190-followup-pr-assets/tutorial-audit/baseline-inference/output.png"
+  },
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "exit_code": 0,
+  "duration_seconds": 0.67
+}

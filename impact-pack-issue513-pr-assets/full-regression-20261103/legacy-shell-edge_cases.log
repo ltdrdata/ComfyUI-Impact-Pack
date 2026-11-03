@@ -1,0 +1,161 @@
+==========================================
+Edge Cases Test Suite
+==========================================
+Port: 18210
+Testing: Edge cases and boundary conditions
+
+Killing any existing server on port 18210...
+Setting up configuration...
+Configuration created: custom_wildcards = /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/runtime/custom_nodes/comfyui-impact-pack/tests/wildcards/samples
+
+Starting ComfyUI server on port 18210...
+Server PID: 3564073
+Waiting for server startup...
+  ... 10s elapsed
+✅ Server ready (12s)
+
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;34m=== Test 01: Empty lines handling ===\033[0m
+Prompt: \033[1;33m__test_edge_empty_lines__\033[0m
+Seed: 100
+Result: \033[0;32m__*/test_edge_empty_lines__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 02: Whitespace handling ===\033[0m
+Prompt: \033[1;33m__test_edge_whitespace__\033[0m
+Seed: 200
+Result: \033[0;32m__*/test_edge_whitespace__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 03: Long lines handling ===\033[0m
+Prompt: \033[1;33m__test_edge_long_lines__\033[0m
+Seed: 300
+Result: \033[0;32m__*/test_edge_long_lines__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 04: Special characters in content ===\033[0m
+Prompt: \033[1;33m__test_edge_special_chars__\033[0m
+Seed: 400
+Result: \033[0;32m__*/test_edge_special_chars__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 05: Embedded wildcard syntax ===\033[0m
+Prompt: \033[1;33m__test_edge_special_chars__\033[0m
+Seed: 401
+Result: \033[0;32m__*/test_edge_special_chars__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 06: Lowercase wildcard ===\033[0m
+Prompt: \033[1;33m__test_edge_case_insensitive__\033[0m
+Seed: 500
+Result: \033[0;32m__*/test_edge_case_insensitive__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 07: UPPERCASE wildcard ===\033[0m
+Prompt: \033[1;33m__TEST_EDGE_CASE_INSENSITIVE__\033[0m
+Seed: 500
+Result: \033[0;32m__*/TEST_EDGE_CASE_INSENSITIVE__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 08: MixedCase wildcard ===\033[0m
+Prompt: \033[1;33m__TeSt_EdGe_CaSe_InSeNsItIvE__\033[0m
+Seed: 500
+Result: \033[0;32m__*/TeSt_EdGe_CaSe_InSeNsItIvE__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 09: Comments in wildcard file ===\033[0m
+Prompt: \033[1;33m__test_comments__\033[0m
+Seed: 600
+Result: \033[0;32m__*/test_comments__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 10: Pattern matching __*/name__ ===\033[0m
+Prompt: \033[1;33m__*/test_pattern_match__\033[0m
+Seed: 700
+Result: \033[0;32m__*/test_pattern_match__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 11: Direct pattern match ===\033[0m
+Prompt: \033[1;33m__test_pattern_match__\033[0m
+Seed: 700
+Result: \033[0;32m__*/test_pattern_match__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 12: Quantifier 3# ===\033[0m
+Prompt: \033[1;33m3#__test_quantifier__\033[0m
+Seed: 800
+Result: \033[0;32m__*/test_quantifier__|__*/test_quantifier__|__*/test_quantifier__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 13: Quantifier 5# with dynamic ===\033[0m
+Prompt: \033[1;33m{2$$, $$5#__test_quantifier__}\033[0m
+Seed: 801
+Result: \033[0;32m__*/test_quantifier__, __*/test_quantifier__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 14: Mixed special chars and wildcards ===\033[0m
+Prompt: \033[1;33m__test_edge_special_chars__ with {option1|option2}\033[0m
+Seed: 900
+Result: \033[0;32m__*/test_edge_special_chars__ with option1\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 15: Long prompt with multiple wildcards ===\033[0m
+Prompt: \033[1;33m__test_edge_empty_lines__ and __test_edge_whitespace__ and __test_comments__\033[0m
+Seed: 1000
+Result: \033[0;32m__*/test_edge_empty_lines__ and __*/test_edge_whitespace__ and __*/test_comments__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 16: Very long dynamic prompt ===\033[0m
+Prompt: \033[1;33m{__test_edge_long_lines__|__test_edge_whitespace__|__test_edge_empty_lines__|__test_comments__|__test_edge_special_chars__}\033[0m
+Seed: 1100
+Result: \033[0;32m__*/test_edge_long_lines__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 17: Nested wildcards in dynamic ===\033[0m
+Prompt: \033[1;33m{red __test_quantifier__|blue __test_pattern_match__|green __test_comments__}\033[0m
+Seed: 1200
+Result: \033[0;32mblue __*/test_pattern_match__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 18: Quantifier with case-insensitive ===\033[0m
+Prompt: \033[1;33m2#__TEST_QUANTIFIER__\033[0m
+Seed: 1300
+Result: \033[0;32m__*/test_quantifier__|__*/test_quantifier__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 19: Multiple quantifiers ===\033[0m
+Prompt: \033[1;33m3#__test_quantifier__ and 2#__test_comments__\033[0m
+Seed: 1400
+Result: \033[0;32m__*/test_quantifier__|__*/test_quantifier__|__*/test_quantifier__ and __*/test_comments__|__*/test_comments__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 20: Case insensitive pattern match ===\033[0m
+Prompt: \033[1;33m__*/TEST_PATTERN_MATCH__\033[0m
+Seed: 1500
+Result: \033[0;32m__*/TEST_PATTERN_MATCH__\033[0m
+Status: \033[0;32m✅ PASS\033[0m
+
+
+==========================================
+Summary
+==========================================
+\033[0;32m✅ Edge case tests completed\033[0m
+
+All tests verified edge case handling:
+  1. Empty lines and whitespace ✓
+  2. Very long lines ✓
+  3. Special characters ✓
+  4. Case-insensitive matching ✓
+  5. Comment line filtering ✓
+  6. Pattern matching (__*/name__) ✓
+  7. Quantifiers (N#__wildcard__) ✓
+  8. Complex combinations ✓
+  9. Boundary conditions ✓
+
+Log file: /mnt/teratera/git/impact-pack-issue513-pr-assets/full-regression-20261103/legacy-isolated/edge_cases_test.log
+
+Cleaning up...
+Cleanup complete

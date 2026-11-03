@@ -1,0 +1,70 @@
+{
+  "head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "completed_at_utc": "2026-11-02T14:31:22.862612+00:00",
+  "render": {
+    "resolution": [
+      256,
+      256
+    ],
+    "wildcard_seed": 513,
+    "sampler_seed": 20261102,
+    "cold_sampling_runs": 2,
+    "baseline_candidate_different_rgb_pixels": 0,
+    "cached_repeat_queues": 10,
+    "native_reload_before_repeat": 6
+  },
+  "mode_transitions": {
+    "node_types": 2,
+    "control_timings": 2,
+    "cycles_each": 10,
+    "total_queues": 120,
+    "successful": true
+  },
+  "independent_seed_control": {
+    "baseline_and_candidate_sampler_seed_sequence": [
+      10,
+      20
+    ],
+    "candidate_wildcard_seed": 5,
+    "candidate_queues": 10,
+    "candidate_cache_hits": 9
+  },
+  "known_limitations": [
+    {
+      "case": "subgraph promoted seed",
+      "validation": "10 Chrome queues each on baseline and candidate",
+      "observed_seed_sequence": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "cache_hits": 0,
+      "introduced_by_pr": false,
+      "resolved_by_pr": false
+    },
+    {
+      "case": "Inspire GlobalSeed",
+      "validation": "source inspection only",
+      "observed_code": "prompt_seed_update overwrites numeric seed inputs independently of the node-local control hooks; seed.js reflects server updates",
+      "runtime_validated": false,
+      "resolved_by_pr": false
+    }
+  ],
+  "new_regressions_found_in_exercised_paths": false,
+  "universal_no_side_effects_claim": false,
+  "isolated_servers_stopped": true,
+  "source_sha256": {
+    "/mnt/teratera/git/impact-pack-issue513-followup/js/impact-pack.js": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+    "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack/inspire/inspire_server.py": "7f30f9cc8fb57349fafa1043faae4d66555e50a81875dabcd636a1eec6da1839",
+    "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack/js/seed.js": "ad8a8eb2580b2d7e6e34f30ace416e634031985b06478202bae3d0f91f38d06a",
+    "/home/rho/venv/lib/python3.12/site-packages/comfyui_frontend_package/static/assets/app-B03VdYVv.js": "9e4dfc2f5fc61f3e4153b0a0ca97142a0916259288bb0ee6a696535f44bb3add",
+    "/home/rho/venv/lib/python3.12/site-packages/comfyui_frontend_package/static/assets/executionErrorStore-DU3jtHOO.js": "dd6595f668b727df23b45110528db0fab52ace7badcc4ecbbceedbfa7f989903"
+  }
+}

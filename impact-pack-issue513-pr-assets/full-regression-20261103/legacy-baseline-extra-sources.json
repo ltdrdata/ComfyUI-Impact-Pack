@@ -1,0 +1,7 @@
+{
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "source_replacements": 33,
+  "different_files": [
+    "js/impact-pack.js"
+  ]
+}

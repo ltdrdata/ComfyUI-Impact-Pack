@@ -1,0 +1,199 @@
+TAP version 13
+# (node:2831649) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+not ok 1 - ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 3.612564
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:58:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected ... Lines skipped
+    
+      {
+        args: [
+    ...
+          value: 'increment'
+        },
+    +   value: 'increment'
+    -   value: 'fixed'
+      }
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+ok 2 - ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 1.178132
+  ...
+# Subtest: ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+not ok 3 - ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 1.525119
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:89:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:94:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+not ok 4 - ImpactWildcardProcessor: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.252062
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:103:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:112:24)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardProcessor: older controls with only afterQueued remain supported
+not ok 5 - ImpactWildcardProcessor: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.195034
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:117:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:121:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+not ok 6 - ImpactWildcardEncode: fixed and legacy false preserve the core hook contract
+  ---
+  duration_ms: 1.328487
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:58:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected ... Lines skipped
+    
+      {
+        args: [
+    ...
+          value: 'increment'
+        },
+    +   value: 'increment'
+    -   value: 'fixed'
+      }
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+ok 7 - ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks
+  ---
+  duration_ms: 0.976881
+  ...
+# Subtest: ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+not ok 8 - ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed
+  ---
+  duration_ms: 0.997429
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:89:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:94:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+not ok 9 - ImpactWildcardEncode: a core hook error propagates and restores the selected policy
+  ---
+  duration_ms: 1.460136
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:103:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:112:24)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: ImpactWildcardEncode: older controls with only afterQueued remain supported
+not ok 10 - ImpactWildcardEncode: older controls with only afterQueued remain supported
+  ---
+  duration_ms: 1.053026
+  location: '/tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:117:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'increment'
+    - 'fixed'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'fixed'
+  actual: 'increment'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/impact-513-unit-kkq3snhu/tests/wildcard_seed_control.test.mjs:121:16)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: unrelated node types are untouched
+ok 11 - unrelated node types are untouched
+  ---
+  duration_ms: 0.993943
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 3
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 55.1967

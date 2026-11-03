@@ -1,0 +1,92 @@
+{
+  "head": "6783bc5cf450da16f0880ccac13af9f74c2e8501",
+  "base": "244e93ef9883aaf241d5d0e54ebb57e3b2e840d3",
+  "prior_validated_head": "aaec21a4fbb76e14fa16388ce61d87c2226e5bf0",
+  "worktree": "/mnt/teratera/git/impact-pack-pr-issue513-fixed-seed-controls",
+  "branch": "fix/issue-513-fixed-seed-controls",
+  "completed_at_utc": "2026-11-02T16:38:08.990266+00:00",
+  "production_unchanged_from_prior_validation": true,
+  "production_sha256": "1ce5e6fef93cf9077df68e449535bc6a3b1e206ac2056b8ddba248534e2ac7bd",
+  "trusted_workflow_fixtures_unchanged": true,
+  "commits": 1,
+  "worktree_clean": true,
+  "latest_node_suite": {
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skipped": 0
+  },
+  "latest_chrome_suite": {
+    "tests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "node_rgr": {
+    "red": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "green": {
+      "tests": 11,
+      "pass": 11,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "red-again": {
+      "tests": 11,
+      "pass": 3,
+      "fail": 8,
+      "cancelled": 0,
+      "skipped": 0
+    }
+  },
+  "mutations_detected": 5,
+  "newly_detected_mutations": [
+    "drop-fixed-arguments",
+    "drop-fixed-return",
+    "lose-selected-policy"
+  ],
+  "findings": [
+    {
+      "area": "production",
+      "result": "Keep existing 22-line core-policy wrapper. No custom seed arithmetic, RNG, persistent state, widget layout change or duplicate cache implementation is needed."
+    },
+    {
+      "area": "unit tests",
+      "result": "Fixed-mode forwarding and selected-policy checks missed three deliberately broken variants. Strengthened both hooks, all control policies, legacy false, call count, receiver/arguments/return and exception restoration."
+    },
+    {
+      "area": "unit test scope",
+      "result": "Clarified that spies verify the delegation boundary; actual seed updates and queue bookkeeping are checked by Chrome, not a copied core algorithm."
+    },
+    {
+      "area": "Chrome coverage",
+      "result": "Added after-queue decrement/randomize for both node types; all three policies now exercise both timings. 24 fixed cases plus 18 other cache/native cases and 8 original PNG restorations passed."
+    },
+    {
+      "area": "documentation",
+      "result": "Documented Node test command and boundary; repaired stale pytest selection; removed abandoned-patch history from the PR draft."
+    }
+  ],
+  "retained_limits": [
+    "Subgraph-promoted seed remains outside the node-local guard.",
+    "Inspire GlobalSeed rewrites remain external; prior review is source-only.",
+    "This review did not rerun full catalog or rendering; prior original-image and three-queue independent-sampler evidence has identical production code."
+  ],
+  "validation_paths": {
+    "unit": "unit-review.json",
+    "node": "node-suite.log",
+    "browser": "browser-review.json"
+  },
+  "test_sha256": {
+    "tests/test_e2e_wildcard_cache.py": "fcaef88201d78a63074b1eac6f95c8bc24614ebfc2d66ab6cd4ac59168b35d08",
+    "tests/test_e2e_wildcard_tutorials.py": "97dc2f7c52e227cd18e5d2e364f2f968f5bd55ec1dd9cef92d978f36d0629f8f",
+    "tests/wildcard_seed_control.test.mjs": "02abeaefd8a5d80b966089840f0a1d089bc971de496e7abd484f43d88ceeb50a"
+  },
+  "temporary_server_stopped": true
+}
