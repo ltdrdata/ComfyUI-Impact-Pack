@@ -81,9 +81,52 @@ class PreviewBridge:
         return image, mask.unsqueeze(0), ui_item
 
     @staticmethod
+    def load_mask_from_clipspace(clipspace_path):
+        """Load just the mask from a clipspace file directly from disk.
+
+        This bypasses the preview_bridge_image_id_map lookup, which is needed
+        when we want to restore a mask from clipspace but the path isn't registered yet.
+        This is necessary because ComfyUI v1.34+ broke the JS widget.value setter
+        that used to register clipspace paths via API.
+        """
+        # Remove [input] suffix if present
+        clean_path = clipspace_path.replace(" [input]", "").replace("[input]", "")
+
+        # Try to find the actual clipspace file
+        input_dir = folder_paths.get_input_directory()
+        potential_paths = [
+            clean_path,
+            os.path.join(input_dir, clean_path),
+            os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
+        ]
+
+        actual_file = None
+        for path in potential_paths:
+            if os.path.isfile(path):
+                actual_file = path
+                break
+
+        if actual_file is None:
+            return None
+
+        try:
+            i = Image.open(actual_file)
+            i = ImageOps.exif_transpose(i)
+
+            if 'A' in i.getbands():
+                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                mask = 1. - torch.from_numpy(mask)
+                return mask.unsqueeze(0)
+            else:
+                return None
+        except Exception as e:
+            logging.warning(f"[PreviewBridge] Error loading mask from clipspace: {e}")
+            return None
+
+    @staticmethod
     def register_clipspace_image(clipspace_path, node_id):
         """Register a clipspace image file in the preview bridge system.
-        
+
         This handles the case where ComfyUI's mask editor creates clipspace files
         that need to be integrated with the preview bridge system.
         """
@@ -160,11 +203,24 @@ class PreviewBridge:
             # Exception: when restore_mask is "always", restore even with new images
             # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
             if restore_mask != "never" and (not images_changed or restore_mask in ["always", "if_same_size"]):
-                mask = core.preview_bridge_last_mask_cache.get(unique_id)
+                # Check if widget value points to a clipspace path (user edited mask)
+                # Clipspace paths take priority over cache because they represent the user's latest edit
+                is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
+
+                mask = None
+
+                # Try clipspace FIRST - user's most recent edit takes priority
+                if is_clipspace_path:
+                    clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
+                    if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
+                        mask = clipspace_mask
+
+                # Fall back to cache if clipspace failed or wasn't available
                 if mask is None:
-                    mask = None
-                elif restore_mask == "if_same_size" and mask.shape[1:] != images.shape[1:3]:
-                    # For if_same_size, clear mask if dimensions don't match
+                    mask = core.preview_bridge_last_mask_cache.get(unique_id)
+
+                # Check size compatibility for if_same_size mode
+                if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != images.shape[1:3]:
                     mask = None
                 # For "always", keep the mask regardless of size
             else:
@@ -440,11 +496,24 @@ class PreviewBridgeLatent:
                 # Exception: when restore_mask is "always", restore even with new latents
                 # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
                 if restore_mask != "never" and (not latent_changed or restore_mask in ["always", "if_same_size"]):
-                    mask = core.preview_bridge_last_mask_cache.get(unique_id)
+                    # Check if widget value points to a clipspace path (user edited mask)
+                    # Clipspace paths take priority over cache because they represent the user's latest edit
+                    is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
+
+                    mask = None
+
+                    # Try clipspace FIRST - user's most recent edit takes priority
+                    if is_clipspace_path:
+                        clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
+                        if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
+                            mask = clipspace_mask
+
+                    # Fall back to cache if clipspace failed or wasn't available
                     if mask is None:
-                        mask = None
-                    elif restore_mask == "if_same_size" and mask.shape[1:] != decoded_image.shape[1:3]:
-                        # For if_same_size, clear mask if dimensions don't match
+                        mask = core.preview_bridge_last_mask_cache.get(unique_id)
+
+                    # Check size compatibility for if_same_size mode
+                    if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != decoded_image.shape[1:3]:
                         mask = None
                     # For "always", keep the mask regardless of size
                 else:
