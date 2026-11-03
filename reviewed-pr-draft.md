@@ -53,7 +53,7 @@ KSampler's seed stays `944516346096519`. The requested **wildcard** seed increme
 |---|---|---|---|---|
 | 731 | A | None | All eight | First execution. |
 | 732 | A, unchanged | All eight | None | All execution inputs and cache keys match 731. |
-| 733 | B, edited | Checkpoint #4, Latent #5, Negative CLIP #7 | Text #16, Encode #10, KSampler #3, Decode #8, Save #9 | The positive text changed; only its dependent path has different cache keys. |
+| 733 | B, edited | Checkpoint `#4`, Latent `#5`, Negative CLIP `#7` | Text `#16`, Encode `#10`, KSampler `#3`, Decode `#8`, Save `#9` | The positive text changed; only its dependent path has different cache keys. |
 | 734 | B, positional reload | All eight | None | Reload preserves inputs and links from 733. |
 | 735 | B, named reload | All eight | None | Named restoration preserves the same execution inputs. |
 
@@ -65,7 +65,7 @@ Sources: [request 732](impact-pack-pr1269-followup-pr-assets/constant-lora/same-
 
 Sources: [request 733](impact-pack-pr1269-followup-pr-assets/constant-lora/changed-request.json) · [history](impact-pack-pr1269-followup-pr-assets/constant-lora/changed-history.json) · [cache/execution events](impact-pack-pr1269-followup-pr-assets/constant-lora/changed-events.json) · [original capture](impact-pack-pr1269-followup-pr-assets/constant-lora/changed.png).
 
-The [input/cache-key comparison](impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json) identifies the two direct changes at 733: Text #16 `value` and Encode #10 `populated_text`. It recomputes ComfyUI's actual cache signatures and verifies all four transitions against server events. The [five observations](impact-pack-pr1269-followup-pr-assets/constant-lora/result.json) also record output pixel hashes: 731=732, 733 differs, and 733=734=735. The screenshots display the **next** requested wildcard seed after increment; their annotations identify the completed request.
+The [input/cache-key comparison](impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json) identifies the two direct changes at 733: Text `#16` `value` and Encode `#10` `populated_text`. It recomputes ComfyUI's actual cache signatures and verifies all four transitions against server events. The [five observations](impact-pack-pr1269-followup-pr-assets/constant-lora/result.json) also record output pixel hashes: 731=732, 733 differs, and 733=734=735. The screenshots display the **next** requested wildcard seed after increment; their annotations identify the completed request.
 
 </details>
 
