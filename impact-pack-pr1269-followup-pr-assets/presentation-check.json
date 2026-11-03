@@ -1,6 +1,6 @@
 {
-  "draft_sha256": "29b8a54e683e4bf68d9a6e7a1acef1b413808b89a5e13348e35f398a54d8cfff",
-  "preview_sha256": "e81a2e0635da4ffdd384869a54d0aa263899869bb48c22356f4f92bb37c603e5",
+  "draft_sha256": "bed7638872cdc2309494b354015873973a169b4f53b7feab3d8018f980c9f73e",
+  "preview_sha256": "3a8743fae0bb55c0c48161dfe494c2467300ee57614fbc65aa39b8ab2f626b55",
   "collapsed_by_default": 2,
   "images": 4,
   "source_and_full_resolution_links_clicked": [
@@ -173,6 +173,6 @@
       "url": "file:///mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/constant-lora/node-cache-keys.json"
     }
   ],
-  "local_references_checked": 78,
+  "local_references_checked": 83,
   "page_errors": []
 }

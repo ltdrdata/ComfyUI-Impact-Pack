@@ -1,0 +1,55 @@
+{
+  "old_head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
+  "dependency_head": "609e411e13c6da94fefb07982d63b90417122412",
+  "backup_branch": "backup/pr1269-before-split-432fd24",
+  "worktree": "/mnt/teratera/git/impact-pack-pr1269-split-review",
+  "feature_commit": "d246db9e2736a7ef0edfca50b521113fc021ea2d",
+  "feature_files": [
+    "modules/impact/impact_server.py",
+    "modules/impact/wildcards.py",
+    "tests/integration_wildcard_cache.py",
+    "tests/test_e2e_wildcard_cache.py",
+    "tests/test_e2e_wildcard_controls.py",
+    "tests/wildcards/conftest.py"
+  ],
+  "cleanup_files": [
+    "docs/E2E_TEST_STRATEGY.md",
+    "tests/pytest.ini",
+    "tests/wildcards/README.md",
+    "tests/wildcards/conftest.py",
+    "tests/wildcards/test_lazy_load_verification.py",
+    "tests/wildcards/test_progressive_loading.py",
+    "tests/wildcards/test_progressive_ondemand.sh",
+    "tests/wildcards/test_wildcard_final.py"
+  ],
+  "shared_file_hunks": {
+    "tests/wildcards/conftest.py": {
+      "feature": "Mock the newly imported core graph utility for parsing-only unit tests; fail if cache behavior is called in the stub suite.",
+      "cleanup": "Add the real loader module import and isolated wildcard_loader fixture."
+    }
+  },
+  "cleanup_commit": "63d28f838c8040ade1ef122f8cd8985aef542b34",
+  "final_tree": "404232fdb92263c08bf4bb81de79b6e07d941bf8",
+  "previous_tree": "404232fdb92263c08bf4bb81de79b6e07d941bf8",
+  "reviewed_main": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
+  "combined_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "source_unchanged": true,
+  "feature_unit_passed": 204,
+  "feature_integration_passed": 20,
+  "verified_at_utc": "2026-11-03T11:48:46.244444+00:00",
+  "final_unit_passed": 210,
+  "final_integration_passed": 20,
+  "new_unique_test_cases": 0,
+  "source_tree_identical": true,
+  "reviewed_combined_tree_identical": true,
+  "pr1269_state": "OPEN",
+  "rebase_pending": "After #1269 merges, replay only commits after dependency_head onto current Main and revalidate.",
+  "scope": "Commit organization only. The first commit needs the core-link import stub; loader fixture changes are isolated in the second commit. Final source and reviewed combined tree are identical to the previously tested trees. Existing Chrome/model evidence is retained by tree identity, not reported as rerun.",
+  "preparation_failure": "feature-unit-before-fixture-split.* records a rejected split missing the core import stub; corrected before publication.",
+  "reports": {
+    "feature-unit.xml": "45a8af6f990a4ddfaf739b248564dcd67b6623ac00ce48fe3a3d6fb04666ad7c",
+    "final-unit.xml": "d5b225a3c5d0a275059332d2e27ea6fea7341fe04ab37598d3c1a18c652c754e",
+    "final-integration.json": "094bd3d754aa5cfd5465cdec01980c0904789ae7fc5451766dd8c4fd62197b55"
+  },
+  "temporary_worktree_removed": true
+}

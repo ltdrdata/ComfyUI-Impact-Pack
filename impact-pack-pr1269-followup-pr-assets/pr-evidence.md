@@ -1,6 +1,6 @@
 # Evidence and reproduction
 
-The tested source combines Main `082523b2dbbe0a38282f021ad3a0e33e9f222562`, #1269 `609e411e13c6da94fefb07982d63b90417122412`, and follow-up commit `432fd24ef0e05c42e2f865fb05575b01567097fe`. Its tree is `4897facaf7f842719bf37180fab346ab2fda17ab`. [Source hashes](source.json), [environment and model identifiers](environment.json), [patch](followup.patch), and [remote commit verification](push-record.json) identify the exact inputs.
+The tested source combines Main `082523b2dbbe0a38282f021ad3a0e33e9f222562`, #1269 `609e411e13c6da94fefb07982d63b90417122412`, and follow-up commits `d246db9e2736a7ef0edfca50b521113fc021ea2d` / `63d28f838c8040ade1ef122f8cd8985aef542b34`. Their final file tree is identical to the original reviewed commit `432fd24ef0e05c42e2f865fb05575b01567097fe`; the [split verification](commit-split/validation.json) binds the new history to the existing evidence. The combined tree is `4897facaf7f842719bf37180fab346ab2fda17ab`. [Source hashes](source.json), [environment and model identifiers](environment.json), [patch](followup.patch), and [remote commit verification](push-record.json) identify the exact inputs.
 
 ## What the evidence establishes
 
@@ -12,9 +12,17 @@ The tested source combines Main `082523b2dbbe0a38282f021ad3a0e33e9f222562`, #126
 
 The Processor populated-only Bypass limitation is reproduced in the [baseline JUnit](baseline-controls/bypass.xml). The [fresh Chrome run](reverification/controls/bypass.xml) verifies that Encode and connected-first-input combinations pass. [Fault injection](reverification/failure-detection.json) is separate from real browser/API execution and proves that these tests reject representative wrong results.
 
+## Review follow-up
+
+The behavior commit retains the core-link import stub required by the existing parser tests. The loader fixture and diagnostic rewrites are in the second commit; `conftest.py` is split by those responsibilities. [Behavior-only unit results](commit-split/feature-unit.xml) pass 204 cases; the final branch passes [210 unit cases](commit-split/final-unit.xml) and [20 real-core integration groups](commit-split/final-integration.json). [Collection comparison](incoming-review/unit-count-comparison.json) explains why the reviewed Main combination contains one additional path test and reports 211. The final tree is unchanged, so this is not a new full browser/model regression run.
+
+The [real-core cache-key probe](incoming-review/unique-id-cache-keys.json) shows the inherited effect of #1269's hidden `UNIQUE_ID`: equivalent wildcard nodes with different IDs, and their corresponding downstream consumers, have different cache keys. It computes signatures without inference or timing measurements.
+
+#1269 is still open. After it merges, replay only the commits after its recorded head onto current Main and revalidate before marking this PR ready.
+
 ## Commands
 
-Use an isolated ComfyUI installation with the tested extension source, Google Chrome and Python Playwright. The recorded environment used ComfyUI `0.43.0`, frontend `1.57.6`, Python `3.12.3` and Chrome `156.0.8078.79`. Native catalog tests require the trusted fixtures and fully loaded wildcard categories. See the [committed E2E strategy](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/432fd24ef0e05c42e2f865fb05575b01567097fe/docs/E2E_TEST_STRATEGY.md) for setup.
+Use an isolated ComfyUI installation with the tested extension source, Google Chrome and Python Playwright. The recorded environment used ComfyUI `0.43.0`, frontend `1.57.6`, Python `3.12.3` and Chrome `156.0.8078.79`. Native catalog tests require the trusted fixtures and fully loaded wildcard categories. See the [committed E2E strategy](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/63d28f838c8040ade1ef122f8cd8985aef542b34/docs/E2E_TEST_STRATEGY.md) for setup.
 
 Configured unit suite, from the extension root:
 

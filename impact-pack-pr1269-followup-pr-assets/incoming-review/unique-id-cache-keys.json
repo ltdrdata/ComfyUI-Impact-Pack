@@ -1,0 +1,37 @@
+{
+  "scope": "Actual ComfyUI cache-key computation; no node execution, model loading or timing measurement. Baseline declarations are extracted unchanged from Main; current declarations are imported normally.",
+  "observations": [
+    {
+      "revision": "Main before #1269",
+      "node_type": "ImpactWildcardProcessor",
+      "hidden_unique_id": false,
+      "consumer_has_unique_id": false,
+      "wildcard_siblings_share_key": true,
+      "downstream_siblings_share_key": true
+    },
+    {
+      "revision": "432fd24 including #1269",
+      "node_type": "ImpactWildcardProcessor",
+      "hidden_unique_id": true,
+      "consumer_has_unique_id": false,
+      "wildcard_siblings_share_key": false,
+      "downstream_siblings_share_key": false
+    },
+    {
+      "revision": "Main before #1269",
+      "node_type": "ImpactWildcardEncode",
+      "hidden_unique_id": false,
+      "consumer_has_unique_id": false,
+      "wildcard_siblings_share_key": true,
+      "downstream_siblings_share_key": true
+    },
+    {
+      "revision": "432fd24 including #1269",
+      "node_type": "ImpactWildcardEncode",
+      "hidden_unique_id": true,
+      "consumer_has_unique_id": false,
+      "wildcard_siblings_share_key": false,
+      "downstream_siblings_share_key": false
+    }
+  ]
+}

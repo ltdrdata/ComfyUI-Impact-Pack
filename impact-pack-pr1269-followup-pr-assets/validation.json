@@ -140,5 +140,16 @@
     "integration_groups": 20,
     "actual_two_mode_api_cases": 7,
     "scope": "Fresh targeted revalidation of the current candidate, not a new full 576-case run. The reordered unit run repeats the same 211 cases and is not an additional unique count. Integration uses real hooks/cache/list mapping and a CLIP stand-in for the Encode matrix. Local fault injection is distinct from real Chrome and real two-server API execution."
+  },
+  "commit_split": {
+    "report": "commit-split/validation.json",
+    "report_sha256": "c6ea6b0b224447e102e9feead7b05187cf85b39e13a6489f33775cbe22676810",
+    "head": "63d28f838c8040ade1ef122f8cd8985aef542b34",
+    "feature_commit": "d246db9e2736a7ef0edfca50b521113fc021ea2d",
+    "previous_head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
+    "source_tree_identical": true,
+    "feature_unit_passed": 204,
+    "final_unit_passed": 210,
+    "final_integration_passed": 20
   }
 }

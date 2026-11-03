@@ -1,7 +1,7 @@
 {
   "branch": "fix/pr1269-constant-followup",
-  "head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
-  "parent": "609e411e13c6da94fefb07982d63b90417122412",
+  "head": "63d28f838c8040ade1ef122f8cd8985aef542b34",
+  "parent": "d246db9e2736a7ef0edfca50b521113fc021ea2d",
   "head_tree": "404232fdb92263c08bf4bb81de79b6e07d941bf8",
   "reviewed_main": "082523b2dbbe0a38282f021ad3a0e33e9f222562",
   "reviewed_combined_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
@@ -22,8 +22,10 @@
     "tests/test_e2e_wildcard_controls.py"
   ],
   "pushed": true,
-  "verified_remote_head": "432fd24ef0e05c42e2f865fb05575b01567097fe",
-  "verified_at_utc": "2026-11-03T09:42:11.173389+00:00",
+  "verified_remote_head": "63d28f838c8040ade1ef122f8cd8985aef542b34",
+  "verified_at_utc": "2026-11-03T11:50:21.693866+00:00",
   "remote": "git@github.com:ltdrdata/ComfyUI-Impact-Pack.git",
-  "url": "https://github.com/ltdrdata/ComfyUI-Impact-Pack/tree/fix/pr1269-constant-followup"
+  "url": "https://github.com/ltdrdata/ComfyUI-Impact-Pack/tree/fix/pr1269-constant-followup",
+  "commit_split": "commit-split/validation.json",
+  "previous_head": "432fd24ef0e05c42e2f865fb05575b01567097fe"
 }
