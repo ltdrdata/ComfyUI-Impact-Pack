@@ -123,16 +123,23 @@ class PreviewBridge:
         return True
 
     def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
+        source_image = image
         need_refresh = False
         images_changed = False
+        cached = core.preview_bridge_cache.get(unique_id)
 
         # Check if images have changed (this determines if we start fresh)
-        if unique_id not in core.preview_bridge_cache:
+        if cached is None:
             need_refresh = True
             images_changed = True
-        elif core.preview_bridge_cache[unique_id][0] is not images:
+        elif cached[0] is not images and (
+            cached[0].device != images.device
+            or not torch.equal(cached[0], images)
+        ):
             need_refresh = True
             images_changed = True
+        elif cached[0] is not images:
+            core.preview_bridge_cache[unique_id] = (images, cached[1])
 
         # If images changed, clear the mask cache to ensure fresh start behavior
         # This restores the original behavior where new images start with empty masks
@@ -186,7 +193,6 @@ class PreviewBridge:
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
             core.set_previewbridge_image(unique_id, path, image2[0])
             core.preview_bridge_image_id_map[image] = (path, image2[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
             core.preview_bridge_cache[unique_id] = (images, image2)
 
             image = image2
@@ -206,7 +212,7 @@ class PreviewBridge:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": image},
+            "ui": {"images": image, "source_image": [source_image]},
             "result": result,
         }
 
@@ -413,6 +419,7 @@ class PreviewBridgeLatent:
 
             res_image = [path_item]
         else:
+            res_latent = latent
             decoded_image = decode_latent(latent, preview_method, vae_opt)
 
             if 'noise_mask' in latent:
@@ -454,6 +461,8 @@ class PreviewBridgeLatent:
                     mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
                     res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
                 else:
+                    res_latent = latent.copy()
+                    res_latent['noise_mask'] = mask
                     masked_images = utils.tensor_convert_rgba(decoded_image)
                     resized_mask = utils.resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
                     resized_mask = 1 - resized_mask
@@ -467,10 +476,7 @@ class PreviewBridgeLatent:
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
             core.set_previewbridge_image(unique_id, path, res_image[0])
             core.preview_bridge_image_id_map[image] = (path, res_image[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
             core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
-
-            res_latent = latent
 
         if block and is_empty_mask and core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
@@ -485,6 +491,6 @@ class PreviewBridgeLatent:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": res_image},
+            "ui": {"images": res_image, "source_image": [image]},
             "result": result,
         }

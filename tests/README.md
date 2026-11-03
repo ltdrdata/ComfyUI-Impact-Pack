@@ -198,6 +198,23 @@ results. Set `IMPACT_TUTORIALS_DIR` to the tutorial checkout; see the E2E guide
 for its input images and OpenPose requirements.
 Image checks verify that browser previews contain the current server output,
 including rejecting blocked requests and stale pixels served at a new URL.
+`python3 -m pytest tests/test_e2e_preview_bridge.py -v` checks Preview Bridge
+through Chrome's native MaskEditor: repeated paint/mask editing, new upstream
+images after reopening, Clipspace feedback, downstream compositing, latent mask
+propagation, blocking, and positional/named native workflow restoration. No
+models are required. See [the E2E guide](../docs/E2E_TEST_STRATEGY.md).
+`node --experimental-vm-modules --test tests/preview_bridge.test.mjs` checks native
+widget bindings, awaited registration, failure/retry, queued feedback, image
+paths, and legacy workflow references. `tests/test_preview_bridge_result.py`
+and `tests/test_preview_bridge_latent.py` use real CPU tensors to check execution
+feedback, concurrent registration, recomputed inputs, node-ID reuse, and restored
+latent masks. Run them with the ComfyUI Python environment:
+
+```bash
+PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest \
+  tests/test_preview_bridge_result.py tests/test_preview_bridge_latent.py -q
+```
+
 `python3 tests/e2e_regional.py` checks exact color masks and the localized effect
 of all three regional prompts in the restored regional img2img tutorial.
 Set `IMPACT_REGIONAL_WORKFLOW` to that PNG or JSON; see the E2E guide for assets
