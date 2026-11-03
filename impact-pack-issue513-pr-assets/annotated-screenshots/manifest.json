@@ -105,7 +105,7 @@
       ],
       "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
       "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
-      "annotated_sha256": "7bdbe86bb0cb4f93cfa1408d50423291fb2e12cdf422b942bda04efe6bbbc0b0"
+      "annotated_sha256": "962b38c5849fa3e36c4097cab0a068e576e6e1a816f0aa6e1cc8130bd60b902a"
     },
     {
       "id": "candidate-queue-2",
@@ -208,7 +208,7 @@
       ],
       "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
       "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
-      "annotated_sha256": "b7ae691b20cfd71abb05a5a07f8972735a22543cd266cd572f653f8c8ee222b5"
+      "annotated_sha256": "277abf94fa6f7cc237f3708914713486e1f4cac48720ba8dec4849891fc96541"
     },
     {
       "id": "candidate-queue-3",
@@ -311,7 +311,7 @@
       ],
       "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
       "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
-      "annotated_sha256": "fc1e9a63b9c73a13f57d5614062c4445f7ff8277013b096edb0337fac943b97c"
+      "annotated_sha256": "ca69c3683ed4ec548a2181791530e765c2a3ad890f31a4421a56b6643d0f67e0"
     },
     {
       "id": "baseline-queue-1",
@@ -414,7 +414,7 @@
       ],
       "fixed_rgb_sha256": "454e92d3a52a24a54b203d8c01ab86aa674409caed1d1bbfcf744f6fcc4b3110",
       "independent_rgb_sha256": "f0f3aec4f3c296f511722a8b2443ebba0d8c2982e9fce94f6cb1974392a5272a",
-      "annotated_sha256": "ce8e15638b306cd4613388cf3a512d80ad5ecf1bf7e16c3f75cdc1b57b32f7e5"
+      "annotated_sha256": "7d9f78fa24a0bed659aedeaf4e52c8d85ce106219755c1b79db6ad1572e1d4c4"
     },
     {
       "id": "baseline-queue-2",
@@ -517,7 +517,7 @@
       ],
       "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
       "independent_rgb_sha256": "7fa1c2abc4160dd7dd96b543c2d6650805200842395c7d7fa74014f3f8c83ec3",
-      "annotated_sha256": "21c3aa9e72ac01a482abb5e25d8637c0ae511f752b378fe84301948cce6070ff"
+      "annotated_sha256": "585a332623007e291d5b328c11f3c690f1fe65d73dfcf367e3e2d34704c35d5d"
     },
     {
       "id": "baseline-queue-3",
@@ -620,7 +620,7 @@
       ],
       "fixed_rgb_sha256": "7a344469ed58d3bd0e3887fca8b909b5736f9e2c9ec1bf68ea6ce43fcecbc973",
       "independent_rgb_sha256": "3557cbc06bc3df98c856a9532f7de3dd01000416b6b4bd7d9145cc5192966de2",
-      "annotated_sha256": "d781347cc76f0e57adc92a23293a5449dccdf42110fd6a125074cc6146d04205"
+      "annotated_sha256": "2ecd8d5d12a3eeaa30fc7cb45bcadb2b812c6a25ee66fe1470b92c3014b853d9"
     }
   ]
 }

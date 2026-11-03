@@ -161,39 +161,97 @@ advanced to **9002, 9003, 9004**. The table reports seeds actually submitted for
 execution. Baseline wildcard widgets similarly show 514, 515, 516; patched wildcard
 widgets stay at 513. This is the normal after-queue control timing.
 
-**Queue 1**
+<details>
+<summary>Queue 1/3 — initial render: baseline vs patched screenshots and actual output PNGs</summary>
 
-Baseline · Prompt `38a49aa2` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-1.html)
+**Baseline · Prompt `38a49aa2-678e-4db9-b819-274de7785050`**
 
-![Baseline · Queue 1/3 — seed advances after the first render: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-1.png)
+[![Baseline · Queue 1/3 — seed advances after the first render](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-1.png)](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-1.png)
 
-Patched · Prompt `692172a4` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-1.html)
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-widget-state.json)
 
-![Patched · Queue 1/3 — initial render: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-1.png)
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Baseline queue 1: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-fixed-output.png) | [![Baseline queue 1: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-independent-output.png) |
 
-**Queue 2**
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-1-independent-output.png)
 
-Baseline · Prompt `0f193ad2` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-2.html)
+**Patched · Prompt `692172a4-78fd-426b-8aac-0780cadf9838`**
 
-![Baseline · Queue 2/3 — fixed branch runs again: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-2.png)
+[![Patched · Queue 1/3 — initial render](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-1.png)](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-1.png)
 
-Patched · Prompt `d9c1d9d1` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-2.html)
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-widget-state.json)
 
-![Patched · Queue 2/3 — fixed branch cached: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-2.png)
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Patched queue 1: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-fixed-output.png) | [![Patched queue 1: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-independent-output.png) |
 
-**Queue 3 — after native Export/reload**
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-1-independent-output.png)
 
-Baseline · Prompt `2303a5d1` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-3.html)
+</details>
 
-![Baseline · Queue 3/3 — fixed branch runs again after native reload: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-3.png)
+<details>
+<summary>Queue 2/3 — repeat: baseline vs patched screenshots and actual output PNGs</summary>
 
-Patched · Prompt `d7bad13b` · [Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-history.json) · [Annotation HTML source](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-3.html)
+**Baseline · Prompt `0f193ad2-5548-4825-a285-9bbdd62f0f19`**
 
-![Patched · Queue 3/3 — fixed branch cached after native reload: numbered seed, fixed render and independent sampler annotations](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-3.png)
+[![Baseline · Queue 2/3 — fixed branch runs again](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-2.png)](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-2.png)
+
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-widget-state.json)
+
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Baseline queue 2: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-fixed-output.png) | [![Baseline queue 2: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-independent-output.png) |
+
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-2-independent-output.png)
+
+**Patched · Prompt `d9c1d9d1-3489-415a-8842-688fe8033a86`**
+
+[![Patched · Queue 2/3 — fixed branch cached](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-2.png)](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-2.png)
+
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-widget-state.json)
+
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Patched queue 2: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-fixed-output.png) | [![Patched queue 2: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-independent-output.png) |
+
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-2-independent-output.png)
+
+</details>
+
+<details>
+<summary>Queue 3/3 — after native Export/reload: baseline vs patched screenshots and actual output PNGs</summary>
+
+**Baseline · Prompt `2303a5d1-f9f0-4236-a3e1-4ac2bd867408`**
+
+[![Baseline · Queue 3/3 — fixed branch runs again after native reload](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-3.png)](impact-pack-issue513-pr-assets/annotated-screenshots/baseline-queue-3.png)
+
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-widget-state.json)
+
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Baseline queue 3: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-fixed-output.png) | [![Baseline queue 3: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-independent-output.png) |
+
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/baseline/queue-3-independent-output.png)
+
+**Patched · Prompt `d7bad13b-a736-41f1-b6c7-7b6e0c0e878e`**
+
+[![Patched · Queue 3/3 — fixed branch cached after native reload](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-3.png)](impact-pack-issue513-pr-assets/annotated-screenshots/candidate-queue-3.png)
+
+[Original capture](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-workflow.png) · [Queue history](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-history.json) · [Visible widget values](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-widget-state.json)
+
+| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |
+| --- | --- |
+| [![Patched queue 3: pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-fixed-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-fixed-output.png) | [![Patched queue 3: teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-independent-output.png)](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-independent-output.png) |
+
+[Open full-size pancake PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-fixed-output.png) · [Open full-size teapot PNG](impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-independent-output.png)
+
+</details>
 
 
-These are **six distinct browser captures tied to six distinct prompt IDs**. Every
-row links its screenshot to the raw execution history and unannotated capture.
+These are **six distinct browser captures tied to six distinct prompt IDs**. Each
+queue block includes clickable capture/history/widget links and the actual output
+PNGs. Blocks are collapsed by default; click an output preview to open it at full size.
 The independent output has **three distinct RGB hashes per revision**; the patched
 wildcard output has **one RGB hash across all three queues**. Its queues 2/3 cache
 ImpactWildcardEncode, KSampler, VAEDecode and SaveImage, while the independent
@@ -204,8 +262,10 @@ This verifies that the patch preserves normal seed increments outside its target
 The presentation follows the #1190 constant-text draft: unchanged original Chrome
 screenshots are embedded as images, with separate SVG borders/numbers and English
 HTML note layers rendered in Chrome. The existing captured coordinates locate the
-highlighted controls and outputs. Each HTML source links to its original capture, history, visible widget state and
-rendered outputs. Download the evidence branch to use its annotation toggle locally.
+highlighted controls and outputs. Evidence links are clickable Markdown below each capture. Actual pancake and
+teapot PNGs are embedded directly in the PR body, inside the default-collapsed
+queue blocks. Link-like text and the annotation checkbox are omitted from the
+raster overlays; the HTML source retains its optional annotation toggle.
 The source hashes, six unique prompt IDs, visible/submitted seeds, cache events and
 RGB output hashes were checked again while rendering these overlays. This updates
 the presentation of the recorded `aaec21a` run; it does not add new inference runs.

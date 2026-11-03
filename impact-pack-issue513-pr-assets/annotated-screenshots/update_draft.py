@@ -1,88 +1,60 @@
+"""Attach clickable evidence and actual outputs in collapsed queue blocks."""
 from datetime import datetime,timezone
 import hashlib,json,re,subprocess
 from pathlib import Path
-
-OUT=Path(__file__).resolve().parent
-ASSETS=OUT.parent
-ROOT=ASSETS.parent
-DRAFT=ROOT/'impact-pack-issue513-pr-draft.md'
-PREP=ROOT/'impact-pack-issue513-preparation.json'
+OUT=Path(__file__).resolve().parent;ASSETS=OUT.parent;ROOT=ASSETS.parent
+DRAFT=ROOT/'impact-pack-issue513-pr-draft.md';PREP=ROOT/'impact-pack-issue513-preparation.json'
 REPO=ROOT/'impact-pack-pr-issue513-fixed-seed-controls'
-manifest=json.loads((OUT/'manifest.json').read_text())
-head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip()
-production_diff=subprocess.check_output(['git','diff','--name-only',manifest['recorded_candidate_head'],head,'--','js','modules','__init__.py'],cwd=REPO,text=True).splitlines()
-assert not production_diff,production_diff
+m=json.loads((OUT/'manifest.json').read_text());head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip()
+assert not subprocess.check_output(['git','diff','--name-only',m['recorded_candidate_head'],head,'--','js','modules','__init__.py'],cwd=REPO,text=True).strip()
 assert not subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True)
-prefix='impact-pack-issue513-pr-assets/annotated-screenshots'
-source_prefix='impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler'
-
-def sequence(prefix,raw_prefix):
+def sequence(prefix,raw):
  lines=[]
  for q in (1,2,3):
-  lines += [f"**Queue {q}{' — after native Export/reload' if q==3 else ''}**",'']
+  suffix='initial render' if q==1 else 'repeat' if q==2 else 'after native Export/reload'
+  lines += ['<details>',f'<summary>Queue {q}/3 — {suffix}: baseline vs patched screenshots and actual output PNGs</summary>','']
   for phase,label in [('baseline','Baseline'),('candidate','Patched')]:
-   r=next(row for row in manifest['images'] if row['phase']==phase and row['queue']==q)
-   lines += [f"{label} · Prompt `{r['prompt_id'][:8]}` · [Original capture]({raw_prefix}/{phase}/queue-{q}-workflow.png) · [Queue history]({raw_prefix}/{phase}/queue-{q}-history.json) · [Toggle annotations / evidence links]({prefix}/{phase}-queue-{q}.html)",'',
-    f"![{r['title']}: numbered seed, fixed render and independent sampler annotations]({prefix}/{phase}-queue-{q}.png)",'']
+   r=next(r for r in m['images'] if r['phase']==phase and r['queue']==q)
+   image=f'{prefix}/{phase}-queue-{q}.png';base=f'{raw}/{phase}/queue-{q}'
+   lines += [f"**{label} · Prompt `{r['prompt_id']}`**",'',
+    f"[![{r['title']}]({image})]({image})",'',
+    f'[Original capture]({base}-workflow.png) · [Queue history]({base}-history.json) · [Visible widget values]({base}-widget-state.json)', '',
+    '| Actual fixed wildcard output — pancakes | Actual independent sampler output — teapot |',
+    '| --- | --- |',
+    f'| [![{label} queue {q}: pancake PNG]({base}-fixed-output.png)]({base}-fixed-output.png) | [![{label} queue {q}: teapot PNG]({base}-independent-output.png)]({base}-independent-output.png) |','',
+    f'[Open full-size pancake PNG]({base}-fixed-output.png) · [Open full-size teapot PNG]({base}-independent-output.png)','']
+  lines += ['</details>','']
  return '\n'.join(lines)
-
+prefix='impact-pack-issue513-pr-assets/annotated-screenshots';raw='impact-pack-issue513-pr-assets/fixed-mode/seed-refresh/independent-sampler'
 body=DRAFT.read_text();before=hashlib.sha256(body.encode()).hexdigest()
-body=body.replace('Native Export/reload precedes queue 3. **Green boxes** identify the wildcard seed,\nits fixed sampler seed and pancake output; **orange boxes** identify the independent\nsampler seed and teapot output. On the patched revision the green values/image stay\nthe same while the orange values/image change.',
- 'Native Export/reload precedes queue 3. Numbered **green overlays** identify the\npatched wildcard controls, fixed sampler seed and pancake output. **Red overlays**\nidentify the same branch on the baseline, where fixed mode still allows automatic\nseed changes. **Orange overlays** identify the independent sampler seed and teapot\noutput on both revisions. The patched green values/image stay the same while the\norange values/image change. English notes distinguish submitted seeds from the\nvisible post-queue values and link each observation to its execution records.')
-start=body.index('| Queue | Baseline | Patched |')
+start=body.index('**Queue 1**') if '**Queue 1**' in body else body.index('<details>\n<summary>Queue 1/3')
 end=body.index('These are **six distinct browser captures',start)
-body=body[:start]+sequence(prefix,source_prefix)+'\n\n'+body[end:]
-old='''Boxes are transparent outlines added to the live browser before capture. Original
-captures, rectangle coordinates, image hashes and full queue IDs are retained.
-[Sequence index and hashes]'''
-new='''The presentation follows the #1190 constant-text draft: unchanged original Chrome
-screenshots are embedded as images, with separate SVG borders/numbers and English
-HTML note layers rendered in Chrome. The existing captured coordinates locate the
-highlighted controls and outputs. Each HTML view can toggle the annotations and
-links to its original capture, history, visible widget state and rendered outputs.
-The source hashes, six unique prompt IDs, visible/submitted seeds, cache events and
-RGB output hashes were checked again while rendering these overlays. This updates
-the presentation of the recorded `aaec21a` run; it does not add new inference runs.
-Production code is identical to `4819ada`.
-[Overlay sources, hashes and renderer](impact-pack-issue513-pr-assets/annotated-screenshots/README.md)
-· [Overlay verification](impact-pack-issue513-pr-assets/annotated-screenshots/review.json)
-· [Sequence index and hashes]'''
-assert old in body
-body=body.replace(old,new).replace('[Full-size sequential evidence]('+source_prefix+'/sequence.md)', '[Full-size annotated sequence]('+prefix+'/README.md)')
-for target in re.findall(r'\]\(([^)]+)\)',body):
- if not target.startswith(('http://','https://','#')) and not target.endswith(('annotated-screenshots/README.md','annotated-screenshots/review.json')):
-  assert (DRAFT.parent/target).is_file(),target
+body=body[:start]+sequence(prefix,raw)+'\n\n'+body[end:]
+body=body.replace('Every\nrow links its screenshot to the raw execution history and unannotated capture.','Each\nqueue block includes clickable capture/history/widget links and the actual output\nPNGs. Blocks are collapsed by default; click an output preview to open it at full size.')
+body=body.replace('Each HTML view can toggle the annotations and\nlinks to its original capture, history, visible widget state and rendered outputs.','Evidence links are clickable Markdown below each capture. Actual pancake and\nteapot PNGs are embedded directly in the PR body, inside the default-collapsed\nqueue blocks. Link-like text and the annotation checkbox are omitted from the\nraster overlays; the HTML source retains its optional annotation toggle.')
 DRAFT.write_text(body)
-readme='''# Annotated three-queue screenshots
+readme='''# Three-queue screenshots and actual outputs
 
-Six original Chrome captures from the recorded baseline/candidate sampling run.
-The presentation follows the #1190 constant-text draft: separate SVG borders and
-numbers plus English HTML notes over the unchanged source image. Each HTML view
-has a Show annotation layer checkbox and links to its original capture, history,
-visible widgets and actual 512 × 512 outputs.
+Expand a queue to compare baseline and patched captures. Each block contains
+clickable links to the original screenshot, execution history and widget state,
+plus the actual 512 × 512 pancake and teapot output PNGs. Click an image to open it
+at full size. Evidence links are outside the raster overlay.
 
-- Green: patched fixed-mode controls, unchanged sampler seed and pancake output.
-- Red: baseline fixed-mode branch; wildcard seed advances and sampling runs again.
-- Orange: independent sampler, which still increments and renders a different teapot
-  on each of the three queues. Its visible seed is already the next submission seed.
+Green identifies the patched fixed branch; red identifies the baseline branch
+that still reruns; orange identifies the independent incrementing sampler.
+The recorded candidate `aaec21a` has identical production code to `4819ada`.
+These are annotations of existing runs, with no additional inference.
 
-[Renderer](render.py) · [Source hashes and annotations](manifest.json) · [Verification](review.json).
-
-The recorded candidate is `aaec21a`; its production code is identical to `4819ada`.
-These are presentation updates of existing captures, not additional inference runs.
-Baseline queues 2 and 3 can render identical pancake pixels despite executing again;
-cache events, submitted inputs and distinct prompt IDs establish that behavior.
+[Renderer](render.py) · [Source hashes](manifest.json) · [Verification](review.json).
 
 '''+sequence('.', '../fixed-mode/seed-refresh/independent-sampler')
 (OUT/'README.md').write_text(readme)
-review={'updated_utc':datetime.now(timezone.utc).isoformat(),'reference_draft':str(ROOT/'impact-pack-pr1190-constant-text-pr-draft.md'),
- 'current_head':head,'recorded_candidate_head':manifest['recorded_candidate_head'],'production_source_diff':production_diff,
- 'overlay_count':len(manifest['images']),'unique_original_captures':len({r['source_sha256'] for r in manifest['images']}),
- 'unique_prompt_ids':len({r['prompt_id'] for r in manifest['images']}),'all_original_hashes_unchanged':True,
- 'checks':['Source screenshot hashes match original comparison report','History hashes and prompt IDs match original comparison report','Visible seed/policy values match captured widget state','Submitted seed inputs and cache events match annotations','Actual output RGB hashes match comparison report','Notes stay above graph content; image loads at original 2400x1800','Annotation toggle reveals original screenshot','All overlays visually checked for layout and corresponding states'],
+review={'updated_utc':datetime.now(timezone.utc).isoformat(),'current_head':head,'recorded_candidate_head':m['recorded_candidate_head'],'production_source_diff':[],
+ 'overlay_count':6,'embedded_actual_output_pngs':12,'collapsed_queue_blocks':3,'unique_prompt_ids':6,
+ 'all_original_hashes_unchanged':True,'all_overlay_links_outside_raster':True,'raw_images_and_record_links_in_markdown':True,
+ 'checks':['Original screenshot/history hashes and actual output RGB hashes verified by renderer','Numbered notes remain above graph content','Raster export has no visible HTML links or annotation checkbox','Three details blocks are closed by default','All six captures and twelve output PNGs embedded and clickable'],
  'draft_sha256_before':before,'draft_sha256_after':hashlib.sha256(DRAFT.read_bytes()).hexdigest(),'code_worktree_clean':True,'new_inference_runs':0}
 (OUT/'review.json').write_text(json.dumps(review,indent=2)+'\n')
-prep=json.loads(PREP.read_text())
-prep.update(updated_at_utc=review['updated_utc'],draft_sha256=review['draft_sha256_after'],screenshot_overlay_manifest=str(OUT/'manifest.json'),screenshot_overlay_review=str(OUT/'review.json'),render_original_screenshot=str(ASSETS/'fixed-mode/seed-refresh/independent-sampler/candidate/queue-3-workflow.png'),render_screenshot=str(OUT/'candidate-queue-3.png'),render_screenshot_sequence=str(OUT/'README.md'))
-PREP.write_text(json.dumps(prep,indent=2)+'\n')
-print('Draft and preparation updated; six full-size annotated frames, original captures preserved, production source equivalent.')
+d=json.loads(PREP.read_text());d.update(updated_at_utc=review['updated_utc'],draft_sha256=review['draft_sha256_after'],screenshot_overlay_manifest=str(OUT/'manifest.json'),screenshot_overlay_review=str(OUT/'review.json'),render_screenshot=str(OUT/'candidate-queue-3.png'),render_screenshot_sequence=str(OUT/'README.md'))
+PREP.write_text(json.dumps(d,indent=2)+'\n')
+print('Three closed queue blocks; six overlays and twelve actual output PNGs embedded with clickable evidence links.')

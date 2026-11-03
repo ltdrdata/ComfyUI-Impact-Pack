@@ -32,6 +32,8 @@ padding:16px 20px 20px;border:2px solid;border-radius:10px;font-size:22px;line-h
 .note strong{display:block;font-size:25px;margin-bottom:8px}.note p{margin:0;overflow-wrap:break-word}
 .footer{padding:20px 36px;font-size:19px;line-height:1.6;color:#cbd5e1}.footer a{color:#67e8f9}
 .original-only .annotation{visibility:hidden}
+.export-note{display:none}.export-mode .evidence,.export-mode header label{display:none}
+.export-mode .export-note{display:inline}
 """
 
 
@@ -137,7 +139,7 @@ for phase in ("candidate", "baseline"):
 <article id="{identifier}" style="width:2400px"><header><h1>{html.escape(title)}</h1><p>{html.escape(subtitle)}</p>
 <label><input type="checkbox" checked onchange="document.querySelector('.scene').classList.toggle('original-only',!this.checked)"> Show annotation layer</label></header>
 <div class="scene"><img src="{raw}" width="2400" height="1800" alt="Unchanged original Chrome screenshot"><svg class="annotation" viewBox="0 0 2400 1800" width="2400" height="1800">{svg}</svg>{cards}</div>
-<div class="footer">Original capture unchanged. Numbered borders and English notes are separate SVG/HTML layers. Visible sampler values are after-queue values.<br>{' · '.join(link(path, label) for path, label in evidence)}</div></article></html>'''
+<div class="footer">Original capture unchanged. Numbered borders and English notes are separate SVG/HTML layers. Visible sampler values are after-queue values.<br><span class="evidence">{' · '.join(link(path, label) for path, label in evidence)}</span><span class="export-note">Open the evidence links and full-size output PNGs below this image in the PR.</span></div></article></html>'''
         (OUT / f"{identifier}.html").write_text(page_html)
         records.append({"id": identifier, "phase": phase, "queue": q, "title": title,
                         "prompt_id": row["prompt_id"], "execution_start_utc": stamp,
@@ -160,6 +162,9 @@ with sync_playwright() as p:
         page.get_by_role("checkbox").uncheck()
         assert page.locator(".scene").evaluate("e => e.classList.contains('original-only')")
         page.get_by_role("checkbox").check()
+        page.evaluate("document.body.classList.add('export-mode')")
+        assert page.locator("a:visible").count() == 0
+        assert not page.get_by_role("checkbox").is_visible()
         page.locator("article").screenshot(path=str(OUT / f"{r['id']}.png"))
         assert digest(ASSETS / r["source"]) == r["source_sha256"]
         r["annotated_sha256"] = digest(OUT / f"{r['id']}.png")
