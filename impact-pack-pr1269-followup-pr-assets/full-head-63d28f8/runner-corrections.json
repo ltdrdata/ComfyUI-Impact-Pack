@@ -1,0 +1,32 @@
+{
+  "duplicated_path_prefix_fixed_in": [
+    "full.json",
+    "pair-ondemand.json",
+    "lbw-baseline.json"
+  ],
+  "accepted_api_runs": "full/result.json and pair-ondemand/result.json after rerun",
+  "harness_junit_moved_unchanged": "cpu-source/{root}/browser-harness.xml -> browser-harness.xml",
+  "production_or_test_assertion_changes": false,
+  "inference_fixture": {
+    "failed": "inference/result.json",
+    "cause": "The runner used generic installed wildcards, but this entrypoint explicitly requires tests/wildcards/model_samples. The batch therefore had one entry instead of two.",
+    "retry": "inference-corrected/result.json",
+    "assertions_changed": false
+  },
+  "lora_source_fixture": "tests/wildcards/lora_samples selected before first execution",
+  "wildcard_fixture": {
+    "failed": [
+      "cpu/wildcard-ui.log",
+      "cpu/encoding-api.log",
+      "ondemand/wildcard-ui.log",
+      "ondemand/encoding-api.log"
+    ],
+    "cause": "The full-cache runner used generic wildcards instead of the required tests/wildcards/samples directory.",
+    "retry": [
+      "wildcard-full/result.json",
+      "ondemand-corrected/result.json"
+    ],
+    "assertions_changed": false,
+    "ondemand_config_corrected_before_run": false
+  }
+}

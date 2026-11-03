@@ -1,0 +1,10 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list
+PASS: UI Run completed (a2795fbb-0b47-4ffd-b6fd-0f5095903e47)
+{"requested_seed": 2, "execution_seed": 2, "expected": ["red", "plain"], "actual": ["red", "plain"], "matches_expected": true, "cached_nodes": [], "wildcard_node": "1", "preview_node": "2"}
+PASS: UI Run completed (d3cec52c-24a1-40bc-acf2-213636c04f71)
+{"requested_seed": 5, "execution_seed": 2, "expected": ["blue", "plain"], "actual": ["red", "plain"], "matches_expected": false, "cached_nodes": ["1", "2", "3", "4", "5"], "wildcard_node": "1", "preview_node": "2"}
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/capture.py", line 65, in <module>
+    assert all(o['matches_expected'] for o in observations),observations
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: [{'requested_seed': 2, 'execution_seed': 2, 'expected': ['red', 'plain'], 'actual': ['red', 'plain'], 'matches_expected': True, 'cached_nodes': [], 'wildcard_node': '1', 'preview_node': '2'}, {'requested_seed': 5, 'execution_seed': 2, 'expected': ['blue', 'plain'], 'actual': ['red', 'plain'], 'matches_expected': False, 'cached_nodes': ['1', '2', '3', '4', '5'], 'wildcard_node': '1', 'preview_node': '2'}]

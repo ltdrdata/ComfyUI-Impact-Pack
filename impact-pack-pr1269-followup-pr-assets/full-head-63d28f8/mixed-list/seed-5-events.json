@@ -1,0 +1,168 @@
+[
+  {
+    "type": "execution_start",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "timestamp": 1793709569527
+    }
+  },
+  {
+    "type": "execution_cached",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "nodes": [
+        "3",
+        "4",
+        "5"
+      ],
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "timestamp": 1793709569528
+    }
+  },
+  {
+    "type": "progress_state",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "nodes": {
+        "1": {
+          "value": 0.0,
+          "max": 1.0,
+          "state": "running",
+          "node_id": "1",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "1",
+          "parent_node_id": null,
+          "real_node_id": "1"
+        }
+      }
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "node": "1",
+      "display_node": "1",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b"
+    }
+  },
+  {
+    "type": "progress_state",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "nodes": {
+        "1": {
+          "value": 1.0,
+          "max": 1.0,
+          "state": "finished",
+          "node_id": "1",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "1",
+          "parent_node_id": null,
+          "real_node_id": "1"
+        }
+      }
+    }
+  },
+  {
+    "type": "progress_state",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "nodes": {
+        "1": {
+          "value": 1.0,
+          "max": 1.0,
+          "state": "finished",
+          "node_id": "1",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "1",
+          "parent_node_id": null,
+          "real_node_id": "1"
+        },
+        "2": {
+          "value": 0.0,
+          "max": 1.0,
+          "state": "running",
+          "node_id": "2",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "2",
+          "parent_node_id": null,
+          "real_node_id": "2"
+        }
+      }
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "node": "2",
+      "display_node": "2",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b"
+    }
+  },
+  {
+    "type": "executed",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "node": "2",
+      "display_node": "2",
+      "output": {
+        "text": [
+          "blue",
+          "plain"
+        ]
+      },
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b"
+    }
+  },
+  {
+    "type": "progress_state",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "nodes": {
+        "1": {
+          "value": 1.0,
+          "max": 1.0,
+          "state": "finished",
+          "node_id": "1",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "1",
+          "parent_node_id": null,
+          "real_node_id": "1"
+        },
+        "2": {
+          "value": 1.0,
+          "max": 1.0,
+          "state": "finished",
+          "node_id": "2",
+          "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+          "display_node_id": "2",
+          "parent_node_id": null,
+          "real_node_id": "2"
+        }
+      }
+    }
+  },
+  {
+    "type": "execution_success",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b",
+      "timestamp": 1793709569528
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "ed77a11e-b00e-4712-b854-25e23310e2fb",
+      "node": null,
+      "prompt_id": "ef4fea49-dc78-4fe2-93f9-8ebf64600b2b"
+    }
+  }
+]

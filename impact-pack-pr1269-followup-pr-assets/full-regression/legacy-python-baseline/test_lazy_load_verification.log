@@ -1,0 +1,52 @@
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+WARNING:root:WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+
+================================================================================
+WILDCARD LAZY LOAD VERIFICATION TEST
+================================================================================
+
+This test verifies that on-demand loading produces identical results
+to full cache mode.
+
+================================================================================
+TEST 1: Full Cache Mode
+================================================================================
+
+Mode: Full Cache
+Total wildcards: 0
+Sample wildcards: []
+
+Sample values:
+  samples/flower: NOT FOUND
+  samples/jewel: NOT FOUND
+  adnd: NOT FOUND
+  all: NOT FOUND
+  colors: NOT FOUND
+
+================================================================================
+TEST 2: On-Demand Mode (Before Access)
+================================================================================
+
+Mode: Full Cache
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/bootstrap.py", line 8, in <module>
+    runpy.run_path(str(target),run_name='__main__')
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source/tests/wildcards/test_lazy_load_verification.py", line 262, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source/tests/wildcards/test_lazy_load_verification.py", line 243, in main
+    result2 = test_on_demand_mode_before_access()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source/tests/wildcards/test_lazy_load_verification.py", line 110, in test_on_demand_mode_before_access
+    assert mode, "Should be in On-Demand mode"
+           ^^^^
+AssertionError: Should be in On-Demand mode

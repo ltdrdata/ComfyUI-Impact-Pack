@@ -1,0 +1,107 @@
+[
+  {
+    "type": "execution_start",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6",
+      "timestamp": 1793707331720
+    }
+  },
+  {
+    "type": "execution_cached",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "nodes": [
+        "4",
+        "5",
+        "7"
+      ],
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6",
+      "timestamp": 1793707331723
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "16",
+      "display_node": "16",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "10",
+      "display_node": "10",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "3",
+      "display_node": "3",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "8",
+      "display_node": "8",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "9",
+      "display_node": "9",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "executed",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": "9",
+      "display_node": "9",
+      "output": {
+        "images": [
+          {
+            "filename": "ComfyUI_00002_.png",
+            "subfolder": "",
+            "type": "output",
+            "metadata": {
+              "kind": "image",
+              "width": 512,
+              "height": 768
+            }
+          }
+        ]
+      },
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  },
+  {
+    "type": "execution_success",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6",
+      "timestamp": 1793707336294
+    }
+  },
+  {
+    "type": "executing",
+    "data": {
+      "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+      "node": null,
+      "prompt_id": "b796e1de-07c9-4b91-b598-8c48385a07d6"
+    }
+  }
+]

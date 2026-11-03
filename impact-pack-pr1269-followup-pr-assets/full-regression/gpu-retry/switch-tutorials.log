@@ -1,0 +1,34 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials/switch-simple
+PASS: UI Run completed (715cc356-052b-4566-8460-c9ca5e1ed5ea)
+PASS: UI Run completed (5a64a9a7-8919-4b3c-a500-935ebd586f0b)
+PASS: UI Run completed (cf270872-21df-41aa-b881-102af38d04c8)
+PASS: UI Run completed (11fb5e85-3db9-4c41-bd63-6bb5a02dba3a)
+PASS: UI Run completed (def12482-6251-4545-8370-cca2a7cb63d1)
+PASS: UI Run completed (ea66fdc9-bdf2-4d07-b4be-b8376718c4b1)
+PASS: UI Run completed (1b1b3e49-04e1-4fe1-b2ca-ac3c453efced)
+PASS: switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials/inversed-switch-simple
+PASS: UI Run completed (df93a6a9-4dfb-4b2c-bb70-b15424367194)
+PASS: UI Run completed (11ff2207-6c19-4f05-9b8c-9a1436e4e177)
+PASS: UI Run completed (f36c06a5-24b8-450a-9bc0-3ceb22a1438b)
+PASS: UI Run completed (8680dec8-21bd-4645-a469-f18a955d4270)
+PASS: UI Run completed (95913d34-a1f4-485c-b8ae-e4e6c694a0f9)
+PASS: UI Run completed (ef7b19da-34f2-41e6-a519-66c02152621f)
+PASS: UI Run completed (66bc9d84-04a3-4e20-9658-fc734fbf6962)
+PASS: inversed-switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials/select_on_execution
+PASS: UI Run completed (dab5e7e5-1648-45ef-9833-33480376cb02)
+PASS: UI Run completed (2ce3c93d-9010-45ae-bd5c-b1668e536b80)
+PASS: UI Run completed (049ac5c7-aad6-4147-9247-060e44644d7a)
+PASS: UI Run completed (e7ed3c6b-1acc-43a1-bbc1-89f2e994d34e)
+PASS: UI Run completed (51932855-baea-46bc-af41-aa7f041c54b8)
+PASS: UI Run completed (dbb925ce-2d8b-48c2-b45a-1225233c00fa)
+PASS: select_on_execution, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials/select_on_prompt
+PASS: UI Run completed (762f09d7-5ea9-4505-85f7-4b360cc323d8)
+PASS: UI Run completed (b372ab60-b76f-4269-82b5-30b7741a4059)
+PASS: UI Run completed (688724fc-dc82-4929-abe5-ca4024029af7)
+PASS: UI Run completed (af890e42-29f9-4ec7-a8b4-bfe08a35860d)
+PASS: UI Run completed (e5024cea-a468-4c27-a49c-945e270a3446)
+PASS: UI Run completed (12dd519e-27d8-4c64-b941-07dd87c0af72)
+PASS: select_on_prompt, original PNG, all routes, core-node pixel parity, saved JSON import

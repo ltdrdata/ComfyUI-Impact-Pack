@@ -1,0 +1,7 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/regional
+PASS: UI Run completed (cc71f71f-3c85-4ec6-8aeb-d08f30519105)
+PASS: UI Run completed (b2771204-c6d6-4fab-9af8-7e41bd8feac3)
+PASS: UI Run completed (4249a3a4-7e1f-492f-b894-cf623b5e5a04)
+PASS: UI Run completed (38ba8547-c908-41b7-901a-6db6270fa0f3)
+PASS: UI Run completed (f1113458-a611-4e6d-b169-aad33cd2f832)
+PASS: exact color masks, VAE roundtrip comparison, localized effect of all three prompts, browser pixels {'39': {'inside_mae': 11.260725021362305, 'outside_mae': 0.9055683016777039}, '9': {'inside_mae': 10.82736873626709, 'outside_mae': 1.1778340339660645}, '10': {'inside_mae': 9.979780197143555, 'outside_mae': 1.6449086666107178}}

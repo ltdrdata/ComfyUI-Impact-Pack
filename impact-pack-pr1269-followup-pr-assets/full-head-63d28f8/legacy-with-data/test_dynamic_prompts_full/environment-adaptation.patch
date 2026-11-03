@@ -1,0 +1,20 @@
+--- original/tests/test_dynamic_prompts_full.sh
++++ isolated/tests/test_dynamic_prompts_full.sh
+@@ -2,7 +2,7 @@
+ # Comprehensive Dynamic Prompt Validation Test
+ # Tests all dynamic prompt features with statistical validation
+ 
+-PORT=8188
++PORT=47261
+ 
+ GREEN='\033[0;32m'
+ RED='\033[0;31m'
+@@ -10,7 +10,7 @@
+ BLUE='\033[0;34m'
+ NC='\033[0m'
+ 
+-LOG_FILE="/tmp/dynamic_prompt_full_validation.log"
++LOG_FILE="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_dynamic_prompts_full/tmp/dynamic_prompt_full_validation.log"
+ 
+ exec > >(tee -a "$LOG_FILE")
+ exec 2>&1

@@ -1,0 +1,8 @@
+[
+  {
+    "file": "tests/wildcards/test_progressive_ondemand.sh",
+    "exit_code": 0,
+    "seconds": 19.646706581115723,
+    "port": 58223
+  }
+]

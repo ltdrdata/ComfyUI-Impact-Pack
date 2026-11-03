@@ -1,0 +1,278 @@
+==========================================
+Sequential Multi-Stage Wildcard Loading Test
+==========================================
+
+Mode: Full cache mode (50MB limit)
+
+Starting ComfyUI server on port 53413...
+Waiting 70 seconds for server startup...
+  ... 10 seconds
+  ... 20 seconds
+  ... 30 seconds
+  ... 40 seconds
+  ... 50 seconds
+  ... 60 seconds
+  ... 70 seconds
+\033[0;32m✓ Server started\033[0m
+
+==========================================
+Sequential Loading Test Suite
+==========================================
+
+\033[0;36mTest Category 1: Depth Verification\033[0m
+Testing different transitive depths with stage tracking
+
+\033[0;34m=== Test 01: Depth 1 - Direct wildcard (no transitive) ===\033[0m
+Raw prompt: \033[1;33m__samples/flower__\033[0m
+Seed: 42
+Expected stages: 1
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __samples/flower__
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mchrysanthemum\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 02: Depth 2 - One level transitive ===\033[0m
+Raw prompt: \033[1;33m__dragon__\033[0m
+Seed: 200
+Expected stages: 2
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __dragon__
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mJaded Sell-Sword\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 03: Depth 3 - Two levels with suffix ===\033[0m
+Raw prompt: \033[1;33m__dragon__ warrior\033[0m
+Seed: 200
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __dragon__ warrior
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mJaded Sell-Sword warrior\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 04: Depth 3 - Maximum transitive chain ===\033[0m
+Raw prompt: \033[1;33m__adnd__ creature\033[0m
+Seed: 222
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __adnd__ creature
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mShrewd Hatchling creature\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+
+\033[0;36mTest Category 2: Mixed Transitive Scenarios\033[0m
+Testing wildcards mixed with dynamic prompts
+
+\033[0;34m=== Test 05: Dynamic selection of transitive wildcards ===\033[0m
+Raw prompt: \033[1;33m{__dragon__|__adnd__} in battle\033[0m
+Seed: 100
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     {__dragon__|__adnd__} in battle
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mNylea's Colossus in battle\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 06: Multiple transitive wildcards in one prompt ===\033[0m
+Raw prompt: \033[1;33m__dragon__ fights __adnd__\033[0m
+Seed: 150
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __dragon__ fights __adnd__
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mThe Ur-Dragon fights Swarm of Poisonous Snakes\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 07: Transitive wildcards nested in dynamic prompts ===\033[0m
+Raw prompt: \033[1;33mpowerful {__dragon__|__adnd__|simple warrior}\033[0m
+Seed: 200
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     powerful {__dragon__|__adnd__|simple warrior}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mpowerful Archmage\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+
+\033[0;36mTest Category 3: Complex Sequential Scenarios\033[0m
+Testing complex multi-stage expansions
+
+\033[0;34m=== Test 08: Weighted selection with transitive wildcards ===\033[0m
+Raw prompt: \033[1;33m{5::__dragon__|3::__adnd__|regular warrior}\033[0m
+Seed: 250
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     {5::__dragon__|3::__adnd__|regular warrior}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mTiamat's Fanatics\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 09: Multi-select including transitive wildcards ===\033[0m
+Raw prompt: \033[1;33m{2$$, $$__dragon__|__adnd__|warrior|mage}\033[0m
+Seed: 300
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     {2$$, $$__dragon__|__adnd__|warrior|mage}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mwarrior, Gate Colossus\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 10: Quantified wildcard with transitive expansion ===\033[0m
+Raw prompt: \033[1;33m{2$$, $$3#__dragon__}\033[0m
+Seed: 350
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     {2$$, $$3#__dragon__}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mDragonborn Champion, Dragonborn Champion\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+
+\033[0;36mTest Category 4: Edge Cases\033[0m
+Testing boundary conditions and special cases
+
+\033[0;34m=== Test 11: Compound grammar with mixed transitive depths ===\033[0m
+Raw prompt: \033[1;33m1{girl holding __samples/flower__|boy riding __dragon__}\033[0m
+Seed: 400
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     1{girl holding __samples/flower__|boy riding __dragon__}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32m1girl holding daisy\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 12: Multiple wildcards with varying depths ===\033[0m
+Raw prompt: \033[1;33m__samples/flower__ and __dragon__ with __colors__\033[0m
+Seed: 450
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __samples/flower__ and __dragon__ with __colors__
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mlily and Scion of the Ur-Dragon with orange\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 13: YAML wildcard (depth 1, no transitive) ===\033[0m
+Raw prompt: \033[1;33m__colors__\033[0m
+Seed: 333
+Expected stages: 1
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __colors__
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32myellow\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 14: Combination of transitive and YAML wildcards ===\033[0m
+Raw prompt: \033[1;33m__dragon__ with __colors__ armor\033[0m
+Seed: 500
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __dragon__ with __colors__ armor
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mJaded Sell-Sword with orange armor\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+
+\033[0;36mTest Category 5: On-Demand Mode Verification\033[0m
+Testing sequential loading in on-demand mode
+
+Restarting server in on-demand mode (0.5MB limit)...
+Waiting 70 seconds for server restart...
+  ... 10 seconds
+  ... 20 seconds
+  ... 30 seconds
+  ... 40 seconds
+  ... 50 seconds
+  ... 60 seconds
+  ... 70 seconds
+\033[0;32m✓ Server restarted in on-demand mode\033[0m
+
+\033[0;34m=== Test 15: Depth 3 transitive in on-demand mode (should match full cache) ===\033[0m
+Raw prompt: \033[1;33m__adnd__ creature\033[0m
+Seed: 222
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __adnd__ creature
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mShrewd Hatchling creature\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 16: Complex transitive with dynamic in on-demand mode ===\033[0m
+Raw prompt: \033[1;33m{__dragon__|__adnd__} {warrior|mage}\033[0m
+Seed: 100
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     {__dragon__|__adnd__} {warrior|mage}
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mThe Ur-Dragon mage\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+\033[0;34m=== Test 17: Multiple transitive wildcards in on-demand mode ===\033[0m
+Raw prompt: \033[1;33m__dragon__ and __adnd__ together\033[0m
+Seed: 150
+Expected stages: 3
+
+\033[0;36mStage Analysis:\033[0m
+  Stage 0 (Input):     __dragon__ and __adnd__ together
+  \033[0;32m✓ All wildcards fully expanded\033[0m
+  Final Output:        \033[0;32mThe Ur-Dragon and Swarm of Poisonous Snakes together\033[0m
+
+Status: \033[0;32m✅ SUCCESS - Complete expansion\033[0m
+
+==========================================
+Test Summary
+==========================================
+
+Total tests: 17
+Categories:
+  - Depth Verification (4 tests)
+  - Mixed Transitive Scenarios (3 tests)
+  - Complex Sequential Scenarios (3 tests)
+  - Edge Cases (4 tests)
+  - On-Demand Mode Verification (3 tests)
+
+Test Focus:
+  ✓ Multi-stage transitive wildcard expansion
+  ✓ Sequential loading across different depths
+  ✓ Transitive wildcards in dynamic prompts
+  ✓ Transitive wildcards with weights and multi-select
+  ✓ On-demand mode sequential loading verification
+
+Log saved to:
+  - Full cache mode: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_sequential_loading/tmp/sequential_test.log
+  - On-demand mode: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_sequential_loading/tmp/sequential_ondemand.log
+

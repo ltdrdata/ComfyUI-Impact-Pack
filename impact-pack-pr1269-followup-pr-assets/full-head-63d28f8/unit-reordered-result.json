@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "-m",
+    "pytest",
+    "-c",
+    "pytest.ini",
+    "wildcards/test_lazy_load_verification.py",
+    "wildcards/test_progressive_loading.py",
+    "wildcards/test_config.py",
+    "wildcards/test_populate_regression.py",
+    "wildcards/test_seed_regression.py",
+    "wildcards/test_wildcard_encoding_strict.py",
+    "wildcards/test_lora_wildcard_source.py",
+    "-q",
+    "--tb=short",
+    "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/unit-reordered.xml"
+  ],
+  "cwd": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/source/tests",
+  "exit_code": 0
+}

@@ -1,0 +1,726 @@
+{
+  "prompt": [
+    4,
+    "bc00c6ad-06e3-46c8-a039-0701cee4e1c1",
+    {
+      "3": {
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "class_type": "KSampler",
+        "_meta": {
+          "title": "KSampler"
+        }
+      },
+      "4": {
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "class_type": "CheckpointLoaderSimple",
+        "_meta": {
+          "title": "Load Checkpoint"
+        }
+      },
+      "5": {
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "class_type": "EmptyLatentImage",
+        "_meta": {
+          "title": "Empty Latent Image"
+        }
+      },
+      "7": {
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "class_type": "CLIPTextEncode",
+        "_meta": {
+          "title": "CLIP Text Encode (Prompt)"
+        }
+      },
+      "8": {
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "class_type": "VAEDecode",
+        "_meta": {
+          "title": "VAE Decode"
+        }
+      },
+      "9": {
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "class_type": "SaveImage",
+        "_meta": {
+          "title": "Save Image"
+        }
+      },
+      "10": {
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "class_type": "ImpactWildcardEncode",
+        "_meta": {
+          "title": "ImpactWildcardEncode"
+        }
+      },
+      "16": {
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        },
+        "class_type": "PrimitiveStringMultiline",
+        "_meta": {
+          "title": "Text (Multiline)"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd",
+          "revision": 0,
+          "last_node_id": 16,
+          "last_link_id": 14,
+          "nodes": [
+            {
+              "id": 5,
+              "type": "EmptyLatentImage",
+              "pos": [
+                1310,
+                990
+              ],
+              "size": [
+                315,
+                106
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "slot_index": 0,
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "EmptyLatentImage"
+              },
+              "widgets_values": [
+                512,
+                768,
+                1
+              ],
+              "widgets_values_named": {
+                "width": 512,
+                "height": 768,
+                "batch_size": 1
+              }
+            },
+            {
+              "id": 8,
+              "type": "VAEDecode",
+              "pos": [
+                1670,
+                430
+              ],
+              "size": [
+                210,
+                46
+              ],
+              "flags": {},
+              "order": 6,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "link": 7
+                },
+                {
+                  "name": "vae",
+                  "type": "VAE",
+                  "link": 8
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "slot_index": 0,
+                  "links": [
+                    9
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "VAEDecode"
+              }
+            },
+            {
+              "id": 4,
+              "type": "CheckpointLoaderSimple",
+              "pos": [
+                249.99998474121094,
+                430
+              ],
+              "size": [
+                315,
+                98
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "MODEL",
+                  "type": "MODEL",
+                  "slot_index": 0,
+                  "links": [
+                    10
+                  ]
+                },
+                {
+                  "name": "CLIP",
+                  "type": "CLIP",
+                  "slot_index": 1,
+                  "links": [
+                    5,
+                    11
+                  ]
+                },
+                {
+                  "name": "VAE",
+                  "type": "VAE",
+                  "slot_index": 2,
+                  "links": [
+                    8
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CheckpointLoaderSimple"
+              },
+              "widgets_values": [
+                "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+              ],
+              "widgets_values_named": {
+                "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+              }
+            },
+            {
+              "id": 7,
+              "type": "CLIPTextEncode",
+              "pos": [
+                730,
+                990
+              ],
+              "size": [
+                425.27801513671875,
+                180.6060791015625
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "CONDITIONING",
+                  "type": "CONDITIONING",
+                  "slot_index": 0,
+                  "links": [
+                    6
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "CLIPTextEncode"
+              },
+              "widgets_values": [
+                "text, watermark"
+              ],
+              "widgets_values_named": {
+                "text": "text, watermark"
+              }
+            },
+            {
+              "id": 10,
+              "type": "ImpactWildcardEncode",
+              "pos": [
+                729.9999389648438,
+                430.00001525878906
+              ],
+              "size": [
+                492.90380859375,
+                350.16204833984375
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 10
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "link": 11
+                },
+                {
+                  "name": "wildcard_text",
+                  "type": "STRING",
+                  "widget": {
+                    "name": "wildcard_text"
+                  },
+                  "link": 14
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "slot_index": 0,
+                  "links": [
+                    12
+                  ]
+                },
+                {
+                  "name": "clip",
+                  "type": "CLIP",
+                  "slot_index": 1,
+                  "links": null
+                },
+                {
+                  "name": "conditioning",
+                  "type": "CONDITIONING",
+                  "slot_index": 2,
+                  "links": [
+                    13
+                  ]
+                },
+                {
+                  "name": "populated_text",
+                  "type": "STRING",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImpactWildcardEncode"
+              },
+              "widgets_values": [
+                "<lora:SD1.5/cloth/2b leotardV2:1.0:1.0:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, 2b leotard, (covered eyes:1.1), hair over eyes",
+                "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+                "reproduce",
+                "Select the LoRA to add to the text",
+                "Select Wildcard \ud83d\udfe2 Full Cache",
+                735,
+                "increment"
+              ],
+              "widgets_values_named": {
+                "wildcard_text": "<lora:SD1.5/cloth/2b leotardV2:1.0:1.0:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, 2b leotard, (covered eyes:1.1), hair over eyes",
+                "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+                "mode": "reproduce",
+                "Select to add LoRA": "Select the LoRA to add to the text",
+                "Select to add Wildcard": "Select Wildcard \ud83d\udfe2 Full Cache",
+                "seed": 735,
+                "control_after_generate": "increment"
+              },
+              "color": "#322",
+              "bgcolor": "#533"
+            },
+            {
+              "id": 9,
+              "type": "SaveImage",
+              "pos": [
+                1920,
+                430.00001525878906
+              ],
+              "size": [
+                344.9357604980469,
+                577.8340454101562
+              ],
+              "flags": {},
+              "order": 7,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 9
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {},
+              "widgets_values": [
+                "ComfyUI"
+              ],
+              "widgets_values_named": {
+                "filename_prefix": "ComfyUI"
+              }
+            },
+            {
+              "id": 3,
+              "type": "KSampler",
+              "pos": [
+                1310,
+                430
+              ],
+              "size": [
+                320,
+                474
+              ],
+              "flags": {},
+              "order": 5,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "model",
+                  "type": "MODEL",
+                  "link": 12
+                },
+                {
+                  "name": "positive",
+                  "type": "CONDITIONING",
+                  "link": 13
+                },
+                {
+                  "name": "negative",
+                  "type": "CONDITIONING",
+                  "link": 6
+                },
+                {
+                  "name": "latent_image",
+                  "type": "LATENT",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "slot_index": 0,
+                  "links": [
+                    7
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "KSampler"
+              },
+              "widgets_values": [
+                944516346096519,
+                "fixed",
+                20,
+                8,
+                "euler",
+                "normal",
+                1
+              ],
+              "widgets_values_named": {
+                "seed": 944516346096519,
+                "control_after_generate": "fixed",
+                "steps": 20,
+                "cfg": 8,
+                "sampler_name": "euler",
+                "scheduler": "normal",
+                "denoise": 1
+              }
+            },
+            {
+              "id": 16,
+              "type": "PrimitiveStringMultiline",
+              "pos": [
+                249.99998474121116,
+                700.0000000000002
+              ],
+              "size": [
+                430,
+                230
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "STRING",
+                  "type": "STRING",
+                  "links": [
+                    14
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PrimitiveStringMultiline"
+              },
+              "widgets_values": [
+                "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+              ],
+              "widgets_values_named": {
+                "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+              }
+            }
+          ],
+          "links": [
+            [
+              2,
+              5,
+              0,
+              3,
+              3,
+              "LATENT"
+            ],
+            [
+              5,
+              4,
+              1,
+              7,
+              0,
+              "CLIP"
+            ],
+            [
+              6,
+              7,
+              0,
+              3,
+              2,
+              "CONDITIONING"
+            ],
+            [
+              7,
+              3,
+              0,
+              8,
+              0,
+              "LATENT"
+            ],
+            [
+              8,
+              4,
+              2,
+              8,
+              1,
+              "VAE"
+            ],
+            [
+              9,
+              8,
+              0,
+              9,
+              0,
+              "IMAGE"
+            ],
+            [
+              10,
+              4,
+              0,
+              10,
+              0,
+              "MODEL"
+            ],
+            [
+              11,
+              4,
+              1,
+              10,
+              1,
+              "CLIP"
+            ],
+            [
+              12,
+              10,
+              0,
+              3,
+              0,
+              "MODEL"
+            ],
+            [
+              13,
+              10,
+              2,
+              3,
+              1,
+              "CONDITIONING"
+            ],
+            [
+              14,
+              16,
+              0,
+              10,
+              2,
+              "STRING"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                -149.99997711181663,
+                -265.0000000000001
+              ]
+            },
+            "frontendVersion": "1.57.6"
+          },
+          "version": 0.4,
+          "widget_idx_map": {
+            "3": {
+              "seed": 0,
+              "sampler_name": 4,
+              "scheduler": 5
+            },
+            "10": {
+              "seed": 5
+            }
+          }
+        }
+      },
+      "client_id": "95d87616eb2d48f497f140355af7a41b",
+      "workflow_metadata": {
+        "workflow_id": "d3684d93-f932-4532-a6b8-1ca9e96a3cbd"
+      },
+      "create_time": 1793707380552
+    },
+    [
+      "9"
+    ]
+  ],
+  "outputs": {
+    "9": {
+      "images": [
+        {
+          "filename": "ComfyUI_00002_.png",
+          "subfolder": "",
+          "type": "output",
+          "metadata": {
+            "kind": "image",
+            "width": 512,
+            "height": 768
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "bc00c6ad-06e3-46c8-a039-0701cee4e1c1",
+          "timestamp": 1793707380553
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "3",
+            "4",
+            "5",
+            "7",
+            "8",
+            "9",
+            "10",
+            "16"
+          ],
+          "prompt_id": "bc00c6ad-06e3-46c8-a039-0701cee4e1c1",
+          "timestamp": 1793707380554
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "bc00c6ad-06e3-46c8-a039-0701cee4e1c1",
+          "timestamp": 1793707380554
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    }
+  }
+}

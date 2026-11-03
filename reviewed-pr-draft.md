@@ -4,7 +4,7 @@
 
 Extend [#1269](https://github.com/ltdrdata/ComfyUI-Impact-Pack/pull/1269) for `ImpactWildcardProcessor` and `ImpactWildcardEncode`: accept direct string constants during prompt submission and keep the requested seed for text produced by lists. With #1269 alone, `[{red|green|blue}, plain]` can reuse the seed-2 result when seed 5 is requested, leaving the wildcard item incorrectly unchanged.
 
-This PR depends on #1269. The [follow-up diff](https://github.com/ltdrdata/ComfyUI-Impact-Pack/compare/609e411e13c6da94fefb07982d63b90417122412...63d28f838c8040ade1ef122f8cd8985aef542b34) is split into [behavior and direct regression coverage `d246db9](https://github.com/ltdrdata/ComfyUI-Impact-Pack/commit/d246db9e2736a7ef0edfca50b521113fc021ea2d) and [loader diagnostic cleanup 63d28f8`](https://github.com/ltdrdata/ComfyUI-Impact-Pack/commit/63d28f838c8040ade1ef122f8cd8985aef542b34). The branch also contains #1269's commits while that PR remains open.
+This PR depends on #1269. The [follow-up diff](https://github.com/ltdrdata/ComfyUI-Impact-Pack/compare/609e411e13c6da94fefb07982d63b90417122412...63d28f838c8040ade1ef122f8cd8985aef542b34) is split into [behavior and direct regression coverage `d246db9`](https://github.com/ltdrdata/ComfyUI-Impact-Pack/commit/d246db9e2736a7ef0edfca50b521113fc021ea2d) and [loader diagnostic cleanup `63d28f8`](https://github.com/ltdrdata/ComfyUI-Impact-Pack/commit/63d28f838c8040ade1ef122f8cd8985aef542b34). The branch also contains #1269's commits while that PR remains open.
 
 Population in `on_prompt` supports literal text and direct `PrimitiveString` / `PrimitiveStringMultiline` values. An arbitrary runtime `wildcard_text` input is skipped with a server info log, retaining its existing populated text while other nodes and hooks continue; no UI warning is shown. Connect runtime text to `populated_text`, which retains #1269's eligible scalar cache reuse. Widget names, order, links and serialized values remain compatible.
 
@@ -30,7 +30,7 @@ Chrome builds and connects graphs through the UI, submits real requests, and loa
 | Reuse and invalidate actual sampling correctly | With installed `add_detail` LoRA and the tutorial LBW vector, unchanged text reuses KSampler; edited text executes its dependent path. Core cache signatures agree with server events and image hashes. |
 
 <details>
-<summary>Mixed-list regression: #1269 before and the combined follow-up after</summary>
+<summary>Mixed-list regression: #1269 before and the follow-up after</summary>
 
 The source list is `[{red|green|blue}, plain]`. Seed 2 first produces `[red, plain]`. For seed 5, #1269 rewrites the execution seed to 2 and reuses the old result; the follow-up keeps seed 5 and produces `[blue, plain]`.
 
@@ -73,26 +73,24 @@ The [input/cache-key comparison](impact-pack-pr1269-followup-pr-assets/constant-
 
 ## Results
 
-**576 unique pytest cases passed, with 2 existing Processor Bypass xfails.** The [acceptance report](impact-pack-pr1269-followup-pr-assets/validation.json) combines the full repository run with the corrected tests and targeted reruns; it is not a claim that all 576 cases were rerun after the test cleanup. Production code and unaffected tests match the full run.
+**Fresh full regression at pushed head `63d28f8`: 575 unique pytest cases passed; 2 existing Processor Bypass cases remain xfail.** Every result in this total was rerun from a fresh archive. The [full report](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/README.md), [acceptance data](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/validation.json) and [63-file entry-point inventory](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/test-inventory.md) replace the previous cumulative summary.
 
-The [split-commit verification](impact-pack-pr1269-followup-pr-assets/commit-split/validation.json) passes 204 configured unit cases with the behavior commit alone, then 210 unit cases and 20 real-core integration groups at the final branch head. The combined validation source has **211 rather than 210** unit cases because Main contributes `test_package_paths_have_no_parent_components`; the [case comparison](impact-pack-pr1269-followup-pr-assets/incoming-review/unit-count-comparison.json) identifies that sole difference. Splitting the commits leaves both the final file tree and the reviewed combined tree unchanged, so the existing Chrome/model evidence still applies.
-
-| Pytest coverage | Accepted result |
+| Pytest coverage | Fresh result |
 |---|---|
-| Wildcard/configuration units in the combined source | [211 passed](impact-pack-pr1269-followup-pr-assets/reverification/unit.xml) |
-| Browser harness | [3 passed](impact-pack-pr1269-followup-pr-assets/browser-harness.xml) |
-| Chrome cache and Control combinations, Classic | [97 passed; 2 existing xfails](impact-pack-pr1269-followup-pr-assets/test-review/cache-controls.xml) |
-| Native catalog: 198 nodes, 719 widgets | [14 passed](impact-pack-pr1269-followup-pr-assets/catalog/catalog.xml) |
-| Native wildcard tutorials | [8 passed](impact-pack-pr1269-followup-pr-assets/catalog/tutorial-native.xml) |
-| Switch execution and native restoration | [55 passed](impact-pack-pr1269-followup-pr-assets/catalog/switches.xml) |
-| Additional repository regression | [188 passed](impact-pack-pr1269-followup-pr-assets/full-regression/validation.json) |
+| Wildcard/configuration units | [210 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/configured-unit.xml) |
+| Browser harness | [3 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/browser-harness.xml) |
+| Chrome cache and Control combinations, Classic | [97 passed; 2 existing xfails](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/cache-controls.xml) |
+| Native catalog: 198 nodes, 719 widgets | [14 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/catalog.xml) |
+| Native wildcard tutorials | [8 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/tutorial-native.xml) |
+| Switch execution and native restoration | [55 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/switches.xml) |
+| Remaining repository pytest suites | [188 passed](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/README.md) |
 
-The [combined-source revalidation](impact-pack-pr1269-followup-pr-assets/reverification/validation.json) passed 211 unit cases in both normal and loader-first order, 10 Chrome Control cases with the same 2 xfails, [20 hook/cache/list-mapper groups](impact-pack-pr1269-followup-pr-assets/reverification/integration.json), [7 actual full-cache/on-demand API comparisons](impact-pack-pr1269-followup-pr-assets/reverification/ondemand/pair.log), and the [progressive-loading diagnostic](impact-pack-pr1269-followup-pr-assets/reverification/progressive/results.json). [Fourteen failure probes](impact-pack-pr1269-followup-pr-assets/reverification/failure-detection.json) confirm that missing/error API results and broken Encode Bypass output cannot pass. Repetitions, including the [18 Classic reruns](impact-pack-pr1269-followup-pr-assets/verified-classic/cache.xml) and [32 LRU-64 cases](impact-pack-pr1269-followup-pr-assets/verified-lru/cache.xml), are excluded from the unique total.
+Also passed: [32 LRU-64 cases](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru/cache.xml), [210 units with loader tests first](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/unit-reordered.xml), [20 real-core hook/cache/list groups](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-hook.json), [5 CLIP/LoRA tensor groups](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-tensors.json), [7 actual full-cache/on-demand API pairs](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand/pair.log), and [all 11 loader shell entry points](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/results.json). Repeated configurations are excluded from the unique total. Encode uses a CLIP stand-in in the hook matrix; separate tensor and sampling checks use installed models. AnimateDiff coverage is assembly and native restoration.
 
-Separate model checks passed [5 core CLIP/LoRA tensor comparisons](impact-pack-pr1269-followup-pr-assets/cache-tensors.json) and [5 actual LoRA/LBW sampling observations](impact-pack-pr1269-followup-pr-assets/constant-lora/result.json). The hook/cache matrix uses a CLIP stand-in for Encode; the model checks use installed models. AnimateDiff coverage in the repository total is assembly and native restoration.
+Fresh [sampling observations](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/result.json) and [core cache-key comparisons](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/node-cache-keys.json) confirm the five illustrated transitions again. The full report links their new browser captures, requests/history and events. It also retains the failed setup attempts and successful reruns; none of those setup failures is counted as a pass.
 
-**Existing Bypass limitation:** Processor with only `populated_text` connected loses `PreviewAny.source` when bypassed. Both restoration modes reproduce this on [Main + #1269 before this patch](impact-pack-pr1269-followup-pr-assets/baseline-controls/bypass.xml). Encode with the same connection, and both nodes with their first text input connected, pass Bypass/reactivation. Only those two baseline Processor cases are xfail.
+**Existing Bypass limitation:** Processor with only `populated_text` connected loses `PreviewAny.source` when bypassed. Both restoration modes reproduce on [#1269 without the follow-up](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls/bypass.xml). Encode with the same connection, and both nodes with their first text input connected, pass Bypass/reactivation. Only the two baseline Processor cases are xfail.
 
-**Validated revision:** Main `082523b` + #1269 `609e411` + split branch `63d28f8`. The [commit mapping](impact-pack-pr1269-followup-pr-assets/commit-split/validation.json), [source manifest](impact-pack-pr1269-followup-pr-assets/source.json), [environment](impact-pack-pr1269-followup-pr-assets/environment.json) and [push verification](impact-pack-pr1269-followup-pr-assets/push-record.json) bind the evidence to the unchanged combined tree originally tested as `432fd24`.
+The [source hashes](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/source.json) and [environment](impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/environment.json) identify this exact-head run. It has one fewer unit test than the previous synthetic Main combination, as explained in the full report. The trusted widget fixtures and production branch are unchanged.
 
-**Before merge:** #1269 must land first. Rebase only the two follow-up commits onto current Main and validate the resulting combination, including later changes such as #1270. This PR remains draft until that dependency and validation are complete. [Reproduction commands and evidence guide](impact-pack-pr1269-followup-pr-assets/pr-evidence.md).
+**Before merge:** #1269 must land first. Rebase only the two follow-up commits onto current Main and validate that resulting combination, including #1270. This PR remains draft until that work is complete. [Reproduction and evidence guide](impact-pack-pr1269-followup-pr-assets/pr-evidence.md).

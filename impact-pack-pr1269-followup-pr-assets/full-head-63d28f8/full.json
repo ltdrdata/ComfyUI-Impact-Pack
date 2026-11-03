@@ -1,0 +1,23 @@
+{
+  "name": "full",
+  "port": 46865,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "pair",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair_check.py",
+        "full"
+      ]
+    }
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

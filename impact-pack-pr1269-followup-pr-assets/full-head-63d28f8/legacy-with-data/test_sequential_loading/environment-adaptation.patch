@@ -1,0 +1,65 @@
+--- original/tests/wildcards/test_sequential_loading.sh
++++ isolated/tests/wildcards/test_sequential_loading.sh
+@@ -4,8 +4,8 @@
+ 
+ # Auto-detect paths
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+-PORT=8193
++IMPACT_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/source"
++PORT=58939
+ CONFIG_FILE="$IMPACT_DIR/impact-pack.ini"
+ 
+ GREEN='\033[0;32m'
+@@ -36,14 +36,14 @@
+ echo ""
+ 
+ # Kill existing servers
+-pkill -9 -f "python.*main.py" 2>/dev/null || true
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/runtime 2>/dev/null || true
+ sleep 3
+ 
+ # Start server
+-COMFYUI_DIR="$(cd "$IMPACT_DIR/../.." && pwd)"
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/comfy"
+ cd "$COMFYUI_DIR"
+ echo "Starting ComfyUI server on port $PORT..."
+-bash run.sh --listen 127.0.0.1 --port $PORT > /tmp/sequential_test.log 2>&1 &
++bash run.sh --listen 127.0.0.1 --port $PORT > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/tmp/sequential_test.log 2>&1 &
+ SERVER_PID=$!
+ 
+ # Wait for server
+@@ -253,12 +253,12 @@
+ 
+ # Restart server
+ kill $SERVER_PID 2>/dev/null
+-pkill -9 -f "python.*main.py.*$PORT" 2>/dev/null
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/runtime 2>/dev/null || true
+ sleep 3
+ 
+ echo "Restarting server in on-demand mode (0.5MB limit)..."
+ cd "$COMFYUI_DIR"
+-bash run.sh --listen 127.0.0.1 --port $PORT > /tmp/sequential_ondemand.log 2>&1 &
++bash run.sh --listen 127.0.0.1 --port $PORT > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/tmp/sequential_ondemand.log 2>&1 &
+ SERVER_PID=$!
+ 
+ echo "Waiting 70 seconds for server restart..."
+@@ -300,7 +300,7 @@
+ 
+ # Stop server
+ kill $SERVER_PID 2>/dev/null
+-pkill -9 -f "python.*main.py.*$PORT" 2>/dev/null
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/runtime 2>/dev/null || true
+ 
+ echo "=========================================="
+ echo "Test Summary"
+@@ -322,6 +322,6 @@
+ echo "  ✓ On-demand mode sequential loading verification"
+ echo ""
+ echo "Log saved to:"
+-echo "  - Full cache mode: /tmp/sequential_test.log"
+-echo "  - On-demand mode: /tmp/sequential_ondemand.log"
+-echo ""
++echo "  - Full cache mode: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/tmp/sequential_test.log"
++echo "  - On-demand mode: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/tmp/sequential_ondemand.log"
++echo ""

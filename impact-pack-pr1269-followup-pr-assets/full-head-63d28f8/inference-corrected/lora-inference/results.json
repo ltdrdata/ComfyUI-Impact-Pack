@@ -1,0 +1,192 @@
+[
+  {
+    "case": "batch",
+    "expected_entries": [
+      0,
+      1
+    ],
+    "pixel_sha256": [
+      "66541184e24382af1f9d123e3e9eb3d4eed884dfef70a952e29f06dc57a95143",
+      "da96d0ecf82e5ceaba89c72b4812cc07e88d5a3092feb62e727e800c0fcd853c"
+    ]
+  },
+  {
+    "case": "native-reload",
+    "expected_entries": [
+      0,
+      1
+    ],
+    "pixel_sha256": [
+      "66541184e24382af1f9d123e3e9eb3d4eed884dfef70a952e29f06dc57a95143",
+      "da96d0ecf82e5ceaba89c72b4812cc07e88d5a3092feb62e727e800c0fcd853c"
+    ]
+  },
+  {
+    "case": "fixed",
+    "expected_entries": [
+      1
+    ],
+    "pixel_sha256": [
+      "da96d0ecf82e5ceaba89c72b4812cc07e88d5a3092feb62e727e800c0fcd853c"
+    ]
+  },
+  {
+    "case": "sequential",
+    "expected_entries": [
+      1
+    ],
+    "pixel_sha256": [
+      "da96d0ecf82e5ceaba89c72b4812cc07e88d5a3092feb62e727e800c0fcd853c"
+    ]
+  },
+  {
+    "case": "random",
+    "expected_entries": [
+      0
+    ],
+    "pixel_sha256": [
+      "66541184e24382af1f9d123e3e9eb3d4eed884dfef70a952e29f06dc57a95143"
+    ]
+  },
+  {
+    "case": "saved-label",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "saved-label-positional",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "saved-label-named",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-random",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-random-positional",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-random-named",
+    "expected_entries": [
+      2
+    ],
+    "pixel_sha256": [
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-sequential",
+    "expected_entries": [
+      3
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374"
+    ]
+  },
+  {
+    "case": "mixed-sequential-positional",
+    "expected_entries": [
+      3
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374"
+    ]
+  },
+  {
+    "case": "mixed-sequential-named",
+    "expected_entries": [
+      3
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374"
+    ]
+  },
+  {
+    "case": "mixed-batch",
+    "expected_entries": [
+      3,
+      2
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374",
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-batch-positional",
+    "expected_entries": [
+      3,
+      2
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374",
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "mixed-batch-named",
+    "expected_entries": [
+      3,
+      2
+    ],
+    "pixel_sha256": [
+      "f23f99ba15c9e8d800729fef5c53457f6327415e8447e934ffba188d809c4374",
+      "4577da30cbd7976e3e2418670aeaa0179f1e7686771e24b7b4665c9715ceda0b"
+    ]
+  },
+  {
+    "case": "legacy-alias",
+    "expected_entries": [
+      4
+    ],
+    "pixel_sha256": [
+      "4d48743d47d6ebe8cc429643d078d5c02a9ea37d30426583c1b25b142c7f3c42"
+    ]
+  },
+  {
+    "case": "legacy-alias-positional",
+    "expected_entries": [
+      4
+    ],
+    "pixel_sha256": [
+      "4d48743d47d6ebe8cc429643d078d5c02a9ea37d30426583c1b25b142c7f3c42"
+    ]
+  },
+  {
+    "case": "legacy-alias-named",
+    "expected_entries": [
+      4
+    ],
+    "pixel_sha256": [
+      "4d48743d47d6ebe8cc429643d078d5c02a9ea37d30426583c1b25b142c7f3c42"
+    ]
+  }
+]

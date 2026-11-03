@@ -1,0 +1,10 @@
+[
+  {
+    "job": "classic",
+    "exit_code": 0
+  },
+  {
+    "job": "catalog",
+    "exit_code": 0
+  }
+]

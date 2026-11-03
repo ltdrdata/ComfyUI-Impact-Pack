@@ -1,0 +1,64 @@
+{
+  "core_commit": "7c4390a6f70cd8eb41014d6af52969397a752fc4",
+  "core_tracked_changes": "",
+  "core_file_hashes": {
+    "execution.py": "40c5306bc8d032aea90b93a7e1ef4ca137e0cf372187132d32b99ae070ba3d87",
+    "comfy_execution/caching.py": "edc554b1348f4c5dae50c022b061399ab5be5e06872d73c5c1fedca9bba45ce2",
+    "comfy_execution/graph.py": "b78c69dda0718e2c6a44fe54d822470632ff638e467ee8448e2d3fab67dbbf0a",
+    "comfy_execution/graph_utils.py": "dabb3f75952a1398891ed87ad853d4ea9c929f322ce6997d4ea916adbc2f209d",
+    "nodes.py": "4cfd9be3754f9dc25213febdf96b690d6e32007c2e539d37e799d82226d758c5"
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "packages": {
+    "comfyui-frontend-package": "1.57.6",
+    "torch": "2.10.0",
+    "pytest": "8.3.4",
+    "playwright": "1.58.0",
+    "numpy": "2.4.4"
+  },
+  "chrome": "Google Chrome 156.0.8078.79",
+  "gpu": "NVIDIA GeForce RTX 4080, 16376 MiB",
+  "plugins": {
+    "comfyui-inspire-pack": {
+      "head": "d23db9aa544de9a6d4c609cb7005fa9e0d42031d",
+      "tracked_changes": ""
+    },
+    "comfyui-impact-subpack": {
+      "head": "50c7b71a6a224734cc9b21963c6d1926816a97f1",
+      "tracked_changes": ""
+    },
+    "comfyui_essentials": {
+      "git_checkout": false,
+      "file_hashes": {
+        "__init__.py": "4c3e4377a3a3c62592ddbbc78f24d2fe1171cf560f9eda393c872257320ece14",
+        "segmentation.py": "ce5b1973c339a18b3bc749ecf70e30e8de18e146df77551b19ede7542b026488",
+        "carve.py": "0562ebdeb046130833c9ed550d4267a6ebb09853565385c50e4e62116548767e",
+        "image.py": "f31084cd23ff87e8e46e85f7c864e7de9ba398ffaf31f79850d04f48ea28e192",
+        "sampling.py": "91b26100d4257b5698956f207a27888290dd2cfecd3cd30fcb9c031d9a9c8324",
+        "conditioning.py": "14a46bd46ff27d1b2891ee566f9eb7e9efe4ffd2bd78f974b556e5b03b27fdc3",
+        "workflow_all_nodes.json": "82373e66c7dbb8b72021f97d7bfbea17a9a4f75ea21e902477faae9d49bae441",
+        "misc.py": "33b907bca3e5ed99ad650e509a50ebc55a8c1bc8bd26a42148a79d2d2ddbd3f7",
+        "histogram_matching.py": "a6a7ac8c13d71d9e4762ccc1d388a8484b54911fdc9c8e6187e6f9bd59315b60",
+        "utils.py": "fbe173d76315952ba8b4170fe71485a8a1b55a584d9fcbbc64f0e2562048eb1a",
+        "text.py": "05a59eb7d17bcc426af7a1f4ccc78aad5a6eac57a31d234375502e8fbee97e13",
+        "mask.py": "93af2297598db439249dd6deb4a8f7a90625ad08b70842172c54fd074c440e4c"
+      }
+    },
+    "comfyui_controlnet_aux": {
+      "head": "e8b689a513c3e6b63edc44066560ca5919c0576e",
+      "tracked_changes": ""
+    }
+  },
+  "model_downloads": false,
+  "trusted_catalog": {
+    "all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "primary_sampling_models": [
+    "v1-5-pruned-emaonly-fp16.safetensors",
+    "SD1.5/epicrealism_naturalSinRC1VAE.safetensors",
+    "SD1.5/etc/add_detail.safetensors"
+  ],
+  "sam_model": "/mnt/teratera/git/ComfyUI/models/sams/sam_vit_b_01ec64.pth",
+  "additional_model_paths": "Per-job server logs and tutorial-tensors.json retain model selection for the broader repository suites."
+}

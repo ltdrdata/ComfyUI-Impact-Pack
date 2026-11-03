@@ -1,0 +1,27 @@
+{
+  "name": "baseline-controls",
+  "port": 43029,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "bypass",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_controls.py",
+        "-k",
+        "control_bridge_mode_change and Bypass-populated-only and ImpactWildcardProcessor",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/bypass.xml"
+      ]
+    }
+  ]
+}

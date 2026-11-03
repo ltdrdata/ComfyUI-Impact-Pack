@@ -1,0 +1,34 @@
+{
+  "name": "ondemand-corrected",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "wildcard-ui",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/wildcard-ui"
+      ]
+    },
+    {
+      "label": "encoding-api",
+      "args": [
+        "bash",
+        "tests/test_encoding.sh",
+        "{url}"
+      ]
+    }
+  ],
+  "port": 55193,
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "lora",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "lora-source",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_lora_wildcard_source.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/lora-source.xml"
+      ]
+    }
+  ],
+  "port": 52197,
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

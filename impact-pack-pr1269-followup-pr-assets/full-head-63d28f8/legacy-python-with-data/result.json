@@ -1,0 +1,6 @@
+[
+  {
+    "file": "tests/wildcards/test_wildcard_lazy_loading.py",
+    "exit_code": 0
+  }
+]

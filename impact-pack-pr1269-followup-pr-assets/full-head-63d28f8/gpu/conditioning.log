@@ -1,0 +1,4 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/conditioning
+PASS: UI Run completed (0abb1ec4-ca96-41da-ac49-bcf51eed7e54)
+PASS: UI Run completed (7b439049-7831-4915-b56c-4b983ba7d151)
+PASS: UI import/Run/reload, core conditioning parity, ordered regional-prompt combination

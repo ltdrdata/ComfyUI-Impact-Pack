@@ -1,0 +1,134 @@
+{
+  "classic.json": {
+    "sha256": "ef8c7e9593f3c578bf87a2e2d8eef30217553538bd07d7069a0fb6ecb22a292e",
+    "text": null
+  },
+  "full.json": {
+    "sha256": "43829762e0d068913d67b87bc05446aa65d7679a73b19da3f6b4a6ef409935d7",
+    "text": null
+  },
+  "baseline-mixed-list.json": {
+    "sha256": "a022e281cc75c2ebec28efb863ea8b9bfeff3300aab7ca545527b5610f9573ae",
+    "text": null
+  },
+  "inference.json": {
+    "sha256": "51b9a0b11d952f04c45514c32efb930ef8b3fb10a804e382abdb45dfe32f155b",
+    "text": null
+  },
+  "ondemand.json": {
+    "sha256": "fa4bc572f912cbba840b3a7032dc24802cd40f08a98e29ddfebbdc9a1601b9a0",
+    "text": null
+  },
+  "inference-corrected.json": {
+    "sha256": "a08e0b775315f912ace549961e76e1eef52f4bd428ef7c77eb6d69f75ec1a8cd",
+    "text": null
+  },
+  "pair-ondemand.json": {
+    "sha256": "7f4fb90e29f58d782c8fc684c9ed66d1ef6521a081211a01295cc2765c83db6a",
+    "text": null
+  },
+  "lora.json": {
+    "sha256": "9064d7a397c992f6daa7f1b738f222a73d2deed47ee2ab19af4307ec714dcb13",
+    "text": null
+  },
+  "lbw-baseline.json": {
+    "sha256": "6c35f84a306e3d46fa50594b217ecd77d4a8bfb0c144cac3387d958c2b37506e",
+    "text": null
+  },
+  "verified-lru.json": {
+    "sha256": "041d3a14f3da98fe2284b00394791fc88cc7bb9f51855376ab9fd196079df32a",
+    "text": null
+  },
+  "baseline-controls.json": {
+    "sha256": "14272386d3aa54ee9998ded408ce883b59502f95a03c0f66a84da61ea310f465",
+    "text": null
+  },
+  "constant.json": {
+    "sha256": "ee33f03f3499bf9a81456351f4f3b9af47b98e3c8817aa3df94dda5a556a5a76",
+    "text": null
+  },
+  "ondemand-corrected.json": {
+    "sha256": "d3f07ac03da2d8ab8034ad5389dcffa7cfa459476ed61978425df2af59bbc83a",
+    "text": null
+  },
+  "lbw-candidate.json": {
+    "sha256": "1d882b9ddf68e57f72f01a5de261b5cb943d89bcc12ede1f4f613599827501b3",
+    "text": null
+  },
+  "cpu.json": {
+    "sha256": "362bddd98780a9c51d058c55fb518793df07822ece4a7a0c0e69845adc6f6f5f",
+    "text": null
+  },
+  "catalog.json": {
+    "sha256": "b95d5391eb422d623c7ae581affa4b1c12849098777a05b40dbb5aae786b7abe",
+    "text": null
+  },
+  "gpu.json": {
+    "sha256": "7b48b38f9fbb7445b16bc2282bc3f4be0e93b4653d5c6b0f347fe0b24f05d359",
+    "text": null
+  },
+  "wildcard-full.json": {
+    "sha256": "c2272eb74fa54c68948775647c5ac51a949534b3d30a1ebceeabdd3c1173060e",
+    "text": null
+  },
+  "legacy-data-source/impact-pack.ini": {
+    "sha256": "dfe8969bf86a65a338347519af66c227011e8af6719d1d4856c7b24c1d49b0bf",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-data-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "gpu-source/impact-pack.ini": {
+    "sha256": "2d1d1b8b3295e4bcd84dce621b35876c269ab70e1e75eff2f042b594fdf84346",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "lora-source/impact-pack.ini": {
+    "sha256": "e4bb7ca69edd3320e69ec9bf6807a30a52bd4b3bc7179c832b85f2d5e944f315",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora-source/tests/wildcards/lora_samples\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "lbw-candidate-source/impact-pack.ini": {
+    "sha256": "c9db5cd335dcd01c405aa5e81dc21f67ff0d12c25870894431e5099820119301",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "verified-lru-source/impact-pack.ini": {
+    "sha256": "6d639d84eaa4ab0833176dd83462a6274f8ec51e11dba07c51633cd8972b3f01",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "pair-ondemand-source/impact-pack.ini": {
+    "sha256": "9eba79ea84c80e4303f6d16c7c959d1e02653ff6e628032ac6493ababdc28a83",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand-source/custom_wildcards\nwildcard_cache_limit_mb = 0.0001\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "full-source/impact-pack.ini": {
+    "sha256": "9402b23e73f7a09f1238b13c293a9e7ead9142ae80fbadd329d03d2e69cb7175",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "classic-source/impact-pack.ini": {
+    "sha256": "209500d1881f7615306fbc741d76424942bdf366ed6b8548643ca9d3dc54e0f7",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "cpu-source/impact-pack.ini": {
+    "sha256": "4c38819bd8778de876e1b0cd3755111db0ac5065a585b3d7e5a537baef5b6760",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu-source/tests/wildcards/samples\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "constant-source/impact-pack.ini": {
+    "sha256": "73d0f3de5c6961a511f37f14cee23830e098ce71a58b6193dd027b31c4d85da6",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "catalog-source/impact-pack.ini": {
+    "sha256": "ba83d8630d8cc32ab841eb1800fb3a8f9e7a156f7744776ef8f8468dd287bce1",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "ondemand-source/impact-pack.ini": {
+    "sha256": "06e55582c8444fd710aad43c863745bde3b562e7ce5a894a7dd393efadcee24c",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-source/tests/wildcards/samples\nwildcard_cache_limit_mb = 0.0001\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "baseline-controls-source/impact-pack.ini": {
+    "sha256": "7d4e86d410a2629f49742dc03690174edafcbd54146f32271d33a7edbf130e5b",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "inference-source/impact-pack.ini": {
+    "sha256": "982543293e1165ed52d99e9138b97bbc3a006a729d459b02f933c7315986b1a3",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-source/tests/wildcards/model_samples\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  },
+  "baseline-source/impact-pack.ini": {
+    "sha256": "7d4e86d410a2629f49742dc03690174edafcbd54146f32271d33a7edbf130e5b",
+    "text": "[default]\ncustom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-source/custom_wildcards\nwildcard_cache_limit_mb = 50\nsam_editor_cpu = True\nsam_editor_model = sam_vit_b_01ec64.pth\n"
+  }
+}

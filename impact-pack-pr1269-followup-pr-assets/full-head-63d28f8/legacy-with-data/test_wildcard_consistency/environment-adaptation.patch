@@ -1,0 +1,166 @@
+--- original/tests/wildcards/test_wildcard_consistency.sh
++++ isolated/tests/wildcards/test_wildcard_consistency.sh
+@@ -5,8 +5,8 @@
+ 
+ # Auto-detect paths
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_PACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+-COMFYUI_DIR="$(cd "$IMPACT_PACK_DIR/../.." && pwd)"
++IMPACT_PACK_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/source"
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/comfy"
+ CONFIG_FILE="$IMPACT_PACK_DIR/impact-pack.ini"
+ BACKUP_CONFIG="$IMPACT_PACK_DIR/impact-pack.ini.backup"
+ 
+@@ -29,7 +29,7 @@
+ 
+ # Function to kill ComfyUI
+ cleanup() {
+-    pkill -f "python.*main.py" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/runtime 2>/dev/null || true
+     sleep 2
+ }
+ 
+@@ -57,28 +57,28 @@
+     # Start ComfyUI
+     cleanup
+     cd "$COMFYUI_DIR"
+-    bash run.sh --listen 127.0.0.1 --port 8190 > /tmp/comfyui_${MODE}.log 2>&1 &
++    bash run.sh --listen 127.0.0.1 --port 45317 > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/comfyui_${MODE}.log 2>&1 &
+     COMFYUI_PID=$!
+ 
+     echo "  Waiting for server startup..."
+     sleep 15
+ 
+     # Check if server is running
+-    if ! curl -s http://127.0.0.1:8190/ > /dev/null; then
++    if ! curl -s http://127.0.0.1:45317/ > /dev/null; then
+         echo "${RED}✗ Server failed to start${NC}"
+-        cat /tmp/comfyui_${MODE}.log | grep -i "wildcard\|error" | tail -20
++        cat /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/comfyui_${MODE}.log | grep -i "wildcard\|error" | tail -20
+         cleanup
+         return 1
+     fi
+ 
+     # Check log for mode
+-    MODE_LOG=$(grep -i "wildcard.*mode" /tmp/comfyui_${MODE}.log | tail -1)
++    MODE_LOG=$(grep -i "wildcard.*mode" /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/comfyui_${MODE}.log | tail -1)
+     echo "  $MODE_LOG"
+ 
+     # Test 1: Simple wildcard
+     echo ""
+     echo "  Test 1: Simple wildcard substitution"
+-    RESULT1=$(curl -s http://127.0.0.1:8190/impact/wildcards \
++    RESULT1=$(curl -s http://127.0.0.1:45317/impact/wildcards \
+         -X POST \
+         -H "Content-Type: application/json" \
+         -d '{"text": "__samples/flower__", "seed": 42}')
+@@ -86,12 +86,12 @@
+     TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "    Input:  __samples/flower__"
+     echo "    Output: $TEXT1"
+-    echo "    Result: $RESULT1" > /tmp/result_${MODE}_test1.json
++    echo "    Result: $RESULT1" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_${MODE}_test1.json
+ 
+     # Test 2: Dynamic prompt
+     echo ""
+     echo "  Test 2: Dynamic prompt"
+-    RESULT2=$(curl -s http://127.0.0.1:8190/impact/wildcards \
++    RESULT2=$(curl -s http://127.0.0.1:45317/impact/wildcards \
+         -X POST \
+         -H "Content-Type: application/json" \
+         -d '{"text": "{red|blue|green} flower", "seed": 123}')
+@@ -99,12 +99,12 @@
+     TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "    Input:  {red|blue|green} flower"
+     echo "    Output: $TEXT2"
+-    echo "    Result: $RESULT2" > /tmp/result_${MODE}_test2.json
++    echo "    Result: $RESULT2" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_${MODE}_test2.json
+ 
+     # Test 3: Combined wildcard and dynamic prompt
+     echo ""
+     echo "  Test 3: Combined wildcard + dynamic prompt"
+-    RESULT3=$(curl -s http://127.0.0.1:8190/impact/wildcards \
++    RESULT3=$(curl -s http://127.0.0.1:45317/impact/wildcards \
+         -X POST \
+         -H "Content-Type: application/json" \
+         -d '{"text": "beautiful {red|blue} __samples/flower__ with __samples/jewel__", "seed": 456}')
+@@ -112,12 +112,12 @@
+     TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "    Input:  beautiful {red|blue} __samples/flower__ with __samples/jewel__"
+     echo "    Output: $TEXT3"
+-    echo "    Result: $RESULT3" > /tmp/result_${MODE}_test3.json
++    echo "    Result: $RESULT3" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_${MODE}_test3.json
+ 
+     # Test 4: Transitive YAML wildcard
+     echo ""
+     echo "  Test 4: Transitive YAML wildcard (test.yaml)"
+-    RESULT4=$(curl -s http://127.0.0.1:8190/impact/wildcards \
++    RESULT4=$(curl -s http://127.0.0.1:45317/impact/wildcards \
+         -X POST \
+         -H "Content-Type: application/json" \
+         -d '{"text": "__colors__", "seed": 222}')
+@@ -126,16 +126,16 @@
+     echo "    Input:  __colors__ (transitive: __cold__|__warm__ -> blue|red|orange|yellow)"
+     echo "    Output: $TEXT4"
+     echo "    Expected: blue|red|orange|yellow"
+-    echo "    Result: $RESULT4" > /tmp/result_${MODE}_test4.json
++    echo "    Result: $RESULT4" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_${MODE}_test4.json
+ 
+     # Test 5: Wildcard list
+     echo ""
+     echo "  Test 5: Wildcard list API"
+-    LIST_RESULT=$(curl -s http://127.0.0.1:8190/impact/wildcards/list)
++    LIST_RESULT=$(curl -s http://127.0.0.1:45317/impact/wildcards/list)
+     LIST_COUNT=$(echo "$LIST_RESULT" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+     echo "    Wildcards found: $LIST_COUNT"
+     echo "    Sample: $(echo "$LIST_RESULT" | python3 -c "import sys, json; print(', '.join(json.load(sys.stdin)['data'][:5]))")"
+-    echo "    Result: $LIST_RESULT" > /tmp/result_${MODE}_list.json
++    echo "    Result: $LIST_RESULT" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_${MODE}_list.json
+ 
+     # Stop server
+     cleanup
+@@ -162,7 +162,7 @@
+ 
+ echo ""
+ echo "Test 1: Simple wildcard"
+-DIFF1=$(diff /tmp/result_full_cache_test1.json /tmp/result_on_demand_test1.json || true)
++DIFF1=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_full_cache_test1.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_on_demand_test1.json || true)
+ if [ -z "$DIFF1" ]; then
+     echo "${GREEN}✓ Results match${NC}"
+ else
+@@ -172,7 +172,7 @@
+ 
+ echo ""
+ echo "Test 2: Dynamic prompt"
+-DIFF2=$(diff /tmp/result_full_cache_test2.json /tmp/result_on_demand_test2.json || true)
++DIFF2=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_full_cache_test2.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_on_demand_test2.json || true)
+ if [ -z "$DIFF2" ]; then
+     echo "${GREEN}✓ Results match${NC}"
+ else
+@@ -182,7 +182,7 @@
+ 
+ echo ""
+ echo "Test 3: Combined wildcard + dynamic prompt"
+-DIFF3=$(diff /tmp/result_full_cache_test3.json /tmp/result_on_demand_test3.json || true)
++DIFF3=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_full_cache_test3.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_on_demand_test3.json || true)
+ if [ -z "$DIFF3" ]; then
+     echo "${GREEN}✓ Results match${NC}"
+ else
+@@ -192,7 +192,7 @@
+ 
+ echo ""
+ echo "Test 4: Transitive YAML wildcard"
+-DIFF4=$(diff /tmp/result_full_cache_test4.json /tmp/result_on_demand_test4.json || true)
++DIFF4=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_full_cache_test4.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_on_demand_test4.json || true)
+ if [ -z "$DIFF4" ]; then
+     echo "${GREEN}✓ Results match${NC}"
+ else
+@@ -202,7 +202,7 @@
+ 
+ echo ""
+ echo "Test 5: Wildcard list"
+-DIFF_LIST=$(diff /tmp/result_full_cache_list.json /tmp/result_on_demand_list.json || true)
++DIFF_LIST=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_full_cache_list.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/tmp/result_on_demand_list.json || true)
+ if [ -z "$DIFF_LIST" ]; then
+     echo "${GREEN}✓ Wildcard lists match${NC}"
+ else

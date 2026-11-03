@@ -1,0 +1,48 @@
+--- original/tests/test_ondemand_loading.sh
++++ isolated/tests/test_ondemand_loading.sh
+@@ -4,13 +4,13 @@
+ 
+ set -e
+ 
+-PORT=8193
+-COMFYUI_DIR="/mnt/teratera/git/ComfyUI"
++PORT=38093
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/comfy"
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
++IMPACT_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/source"
+ CONFIG_FILE="$IMPACT_DIR/impact-pack.ini"
+-LOG_FILE="/tmp/ondemand_test.log"
+-TEMP_SAMPLES_DIR="/tmp/ondemand_test_samples"
++LOG_FILE="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/tmp/ondemand_test.log"
++TEMP_SAMPLES_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/tmp/ondemand_test_samples"
+ 
+ GREEN='\033[0;32m'
+ RED='\033[0;31m'
+@@ -29,7 +29,7 @@
+ cleanup() {
+     echo ""
+     echo "Cleaning up..."
+-    pkill -f "python.*main.py.*--port $PORT" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/runtime 2>/dev/null || true
+     rm -f "$CONFIG_FILE"
+     rm -rf "$TEMP_SAMPLES_DIR"
+     echo "Cleanup complete"
+@@ -79,7 +79,7 @@
+ 
+ # Kill any existing server on this port
+ echo "Killing any existing server on port $PORT..."
+-pkill -f "python.*main.py.*--port $PORT" 2>/dev/null || true
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/runtime 2>/dev/null || true
+ sleep 2
+ 
+ # Test function for on-demand mode
+@@ -96,7 +96,7 @@
+     echo "Seed: $SEED"
+ 
+     # Restart server with new cache limit
+-    pkill -f "python.*main.py.*--port $PORT" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/runtime 2>/dev/null || true
+     sleep 2
+ 
+     # Setup configuration with cache limit pointing to temporary samples

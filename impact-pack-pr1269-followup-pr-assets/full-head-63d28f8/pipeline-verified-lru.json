@@ -1,0 +1,18 @@
+[
+  {
+    "job": "verified-lru",
+    "exit_code": 0
+  },
+  {
+    "job": "cpu",
+    "exit_code": 1
+  },
+  {
+    "job": "lora",
+    "exit_code": 0
+  },
+  {
+    "job": "ondemand",
+    "exit_code": 1
+  }
+]

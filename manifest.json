@@ -328,12 +328,12 @@
     "sha256": "db2a6f1b01b3a028fb2e71abe8360649f7c6f5eab85d377f1f65502b3167e650"
   },
   "impact-pack-pr1269-followup-pr-assets/pr-evidence.md": {
-    "bytes": 6012,
-    "sha256": "c44f42d47289903f17fec55cc1a3585bee4c10a2b8e7a7518c7b2e99e77d596c"
+    "bytes": 3782,
+    "sha256": "d8e6710cc029ab8b51defe7468f30dec86363ee89fa3e34a03757ba691fc3347"
   },
   "impact-pack-pr1269-followup-pr-assets/presentation-check.json": {
     "bytes": 7035,
-    "sha256": "14f23da7d5b16ad2e2d3dc19e8a34dbdd9ecfd4c2f6488629e2320c12ce8b962"
+    "sha256": "3b1ef5287b26f733dc298a1881f17b66019b52f7a90825a2216bf38d669c7328"
   },
   "impact-pack-pr1269-followup-pr-assets/push-record.json": {
     "bytes": 1397,
@@ -778,5 +778,1277 @@
   "impact-pack-pr1269-followup-pr-assets/incoming-review/unit-count-comparison.json": {
     "bytes": 182,
     "sha256": "668a2bc7117e686024ad816ccb7fa99a7ae96bcc30641625564fa9a30bc795c4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/README.md": {
+    "bytes": 1420,
+    "sha256": "1d13b6568567214c84f9db005301d19495db21aa83a43c558cc1c534a9603a7a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/classic/cache-controls.xml": {
+    "bytes": 15964,
+    "sha256": "c3d711233558233cc1bc9708cba73b1f4585a5835feb7ca713a566fbb8ac0bd6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/README.md": {
+    "bytes": 9477,
+    "sha256": "a0f137c08735de54bb9122c7f21d8ffa376aa0c8601a7864f0fa844cbbb38434"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/animatediff-unit.log": {
+    "bytes": 3772,
+    "sha256": "5abca6643a55dbbdd90b0c3d3523e79ddd9ad3d8e4ed18593025495cd1f7c53b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/animatediff-unit.xml": {
+    "bytes": 6087,
+    "sha256": "954d5e34e66d1b0e9d8e3aaea360e68affbae39ce52a3c68aca658cf10c63c7e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/api-complete.json": {
+    "bytes": 17,
+    "sha256": "e89df0eae5ec7db81135aed16463968955c578bcc4f2ec43172eff351f080c17"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/api-result.json": {
+    "bytes": 56929,
+    "sha256": "6c0e4692926a72934cb57dffed6e5c06712003dd159d2454ccc413a4148d0ec3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls/bypass.log": {
+    "bytes": 2374,
+    "sha256": "448f0b477699784ea5c9be1f4617c6ea68310289b042bab827b27ed1668e41d3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls/bypass.xml": {
+    "bytes": 872,
+    "sha256": "a415d460d111e1e9cf24000eadffe96a8b4a329c7b99e662b4aaad82a19d3dee"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls/result.json": {
+    "bytes": 3156,
+    "sha256": "f22307f269e02fe03760c6c9a1cfd82c023ff381cfbb514124fab8d09e2b1b45"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls/server.log": {
+    "bytes": 8294,
+    "sha256": "eebd071fe81b977024128621703dfa43fcf594d44feea6177fdb127141ce5681"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls.json": {
+    "bytes": 647,
+    "sha256": "14272386d3aa54ee9998ded408ce883b59502f95a03c0f66a84da61ea310f465"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/capture.log": {
+    "bytes": 1362,
+    "sha256": "1b9f4a83ab7cd927bdb29be97831238c4bb871c7556b647e5aa696935f751425"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/capture.py": {
+    "bytes": 4974,
+    "sha256": "028a135254774d47aae96ee028635e06f98d95862e436efd0200dd9739301125"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/mixed-list-workflow.json": {
+    "bytes": 4492,
+    "sha256": "ee19d1edcea95fba23b5cc2ced6234b00d75569c3604bfff089a8a5ee04ba816"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/observations.json": {
+    "bytes": 594,
+    "sha256": "3190f306d36a2d705d7a8c77d0a99966172d5e300b0edcc99561ae6e4f75b3ba"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/result.json": {
+    "bytes": 2888,
+    "sha256": "c8f68aabf73f9ef10c6c1c81b06f84a5b78f1d44a833b071dd69dfac9d863c39"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/roundtrip.json": {
+    "bytes": 4494,
+    "sha256": "0c3b5a41da8830129938c780bb32cea86e0e3e3e1ed7f925788c4a76c99e3cee"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/saved.json": {
+    "bytes": 4494,
+    "sha256": "b6a73047ea113ed000e7d65edc12f37d53fe14a16651a776bddcefb97c303ae3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-2-events.json": {
+    "bytes": 12985,
+    "sha256": "4c150a53aa80cffa3d289ec4d979890d3fd268299d34eeac13957838f459db15"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-2-history.json": {
+    "bytes": 9108,
+    "sha256": "7d5a61496505f30c764f64f91a4dd5bfef4186279ea901cb3ccdeb5856743aaa"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-2-layout.json": {
+    "bytes": 854,
+    "sha256": "5ce3949bbc17df10f888bca64400928e7acc1a86e7165b57b024005dd8e9bfb8"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-2-request.json": {
+    "bytes": 7408,
+    "sha256": "12f5af688938676a282b77f32845f5aa6ac594f52531467458845b2866e6df1d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-5-events.json": {
+    "bytes": 1725,
+    "sha256": "8ad25ab4552fa0cf426e4bf574ebb7533bcf6b9c1cfb6978c4e8909c72ff8a26"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-5-history.json": {
+    "bytes": 9208,
+    "sha256": "85991d23d6f3725595ab1ba8a5e188012ca8c98ee060856f289caef23b946d48"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-5-layout.json": {
+    "bytes": 782,
+    "sha256": "0e343164b5029e6a2073a1ec27747f8b5f5086c491b2951625180b8a064f9322"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-5-request.json": {
+    "bytes": 7413,
+    "sha256": "329ba43bfcd5ec4adb8ae217e561c7e337532059022ef3dba1eaf3c07c76c4f4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/seed-5.png": {
+    "bytes": 123204,
+    "sha256": "c2a8240b0c0c70f81e49664c7d92585d4645f13f342b3f21a2cd42cccc02721d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/server.log": {
+    "bytes": 7298,
+    "sha256": "5597c746337e3536a8077d8306e2e634be18b39982dd03bc2a4961127f63d247"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/widget-state.json": {
+    "bytes": 642,
+    "sha256": "400845b7758c36c80b1dda2cd0ba23c0429b608a2cb6a44b824ada9c17ff1479"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list.json": {
+    "bytes": 760,
+    "sha256": "a022e281cc75c2ebec28efb863ea8b9bfeff3300aab7ca545527b5610f9573ae"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-test-overlay.json": {
+    "bytes": 1728,
+    "sha256": "46381ceee636ffce4839aa440ecab41396067623becc883959b8fdca61d8bdd1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/browser-harness.log": {
+    "bytes": 1313,
+    "sha256": "981513a13e86fbbfab2ff8edca0e3500dd1bb6c701d0e86c6f49c16c2913a01e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/browser-harness.xml": {
+    "bytes": 555,
+    "sha256": "bf23c8595c19d5dc7ec01f702338f5cc6f4ce340ef393061a682b76c9f5fcc54"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-hook.json": {
+    "bytes": 97,
+    "sha256": "094bd3d754aa5cfd5465cdec01980c0904789ae7fc5451766dd8c4fd62197b55"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-hook.log": {
+    "bytes": 3823,
+    "sha256": "16a75cd238399395197c38df32b97859ae913496ca58ee11c0cc320e0c231897"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-tensors.json": {
+    "bytes": 196,
+    "sha256": "7ee47bcebc0abba3c76572f5f588505a58b1449d46d560de5853222b08d09441"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-tensors.log": {
+    "bytes": 1350,
+    "sha256": "ca5e5807fbe8c1842b668e39ef384ba1a2ceba5b5177b83afd0853913abcd047"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/capture_lbw_reference.py": {
+    "bytes": 899,
+    "sha256": "427ee69280c3e8f9adfebc17e094e65616a5f6da795201e5ffbda2ebe249451f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/catalog.log": {
+    "bytes": 3502,
+    "sha256": "4fe6137244fff3f8955a247b4bc88e2fc5a490f62da540c9f37016522b472073"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/catalog.xml": {
+    "bytes": 2045,
+    "sha256": "765d7df69cc2bf0049d1e6bc807683bc49f83cdd494ba38ae7b62367776386b9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/result.json": {
+    "bytes": 3960,
+    "sha256": "3d41d8b390e78effe791fc504e3f60067a64b2d963165bf6866cea3f6338f09b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/server.log": {
+    "bytes": 31759,
+    "sha256": "d1e6cc12d79898252f060459e4cf37ad7da743e54592103b28abfcb258a88a58"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/switches.log": {
+    "bytes": 8047,
+    "sha256": "0bed25a210d47898f768d050115ede8047bf4baf35a1e3ec76b1fbb59039f8ce"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/switches.xml": {
+    "bytes": 7387,
+    "sha256": "24fdfa6fcc3c4f99461ff9b3b3e3a106ce8d9f15097fd07f12a5ecfe76d79740"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/tutorial-native.log": {
+    "bytes": 2785,
+    "sha256": "a0b930791b5c183704ced1ac33724efc1d18e0e971f4fbdd7a1fbefe8fb2f8fd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/tutorial-native.xml": {
+    "bytes": 1153,
+    "sha256": "7ad015c8d132f6f9874000bd59899c79e511cf596ee99c9c1ff6fff979a4ddfc"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog.json": {
+    "bytes": 1308,
+    "sha256": "b95d5391eb422d623c7ae581affa4b1c12849098777a05b40dbb5aae786b7abe"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/check_failure_detection.py": {
+    "bytes": 4294,
+    "sha256": "7fd803b07ef1190b0e7ea5654ba45c395c6b2f01cc73b806d98e24a7ca976c1c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/cache-controls.log": {
+    "bytes": 15406,
+    "sha256": "068d5f0df16444d896bca0c06e08282dd81b0b7de41c5f943ce43defabcd3c7d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/cache-controls.xml": {
+    "bytes": 16000,
+    "sha256": "e30f158e5d484e8a81ec57ad1d6af5dd72d83d6c4c1b06a0e91b99fdf21371c9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/mixed-list.log": {
+    "bytes": 615,
+    "sha256": "6309921b3e296d5535ebbd3e970acdfeb7bd99a31d6cc292f24cdfbc8eb0eb2c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/result.json": {
+    "bytes": 3341,
+    "sha256": "cc60eba1492817e75c5d077058e854f8be63c35c1dacf08782862c867263a646"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic/server.log": {
+    "bytes": 85164,
+    "sha256": "a036b48090b32eed6622c552cc46039ec5d9ea2820dc326b3a00c3a16954ef67"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic.json": {
+    "bytes": 1008,
+    "sha256": "ef8c7e9593f3c578bf87a2e2d8eef30217553538bd07d7069a0fb6ecb22a292e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cleanup.json": {
+    "bytes": 372,
+    "sha256": "6f81b93a05aee86eb08d53a41ddcf885b95069ebfc6a9d0f5df0793d37ccaa19"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/configured-unit.log": {
+    "bytes": 1463,
+    "sha256": "4e49dbae9e1245be2770502f3c58721edf7246c3d0f29c49a88def94af54f84c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/configured-unit.xml": {
+    "bytes": 28279,
+    "sha256": "7aeb135a2fa1611651276573c72299d52528edb99cdb4a17068ef16dd8b4305c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant/cache-keys.log": {
+    "bytes": 844,
+    "sha256": "4b0b9175fe3ba5547c9b244171e7b5816904dedf9d67c7ea456100b3cd36e486"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant/constant-lora.log": {
+    "bytes": 2893,
+    "sha256": "d27072e9fee00c717ef4e08c32e90b9f5d26347eb23aa42e0846a4ded8f36064"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant/result.json": {
+    "bytes": 3469,
+    "sha256": "61d7e4fd780a8ebeef599b3d540e239fe9e906abf214325c38e5b7bd59e9c01b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant/server.log": {
+    "bytes": 13164,
+    "sha256": "ba6a45b14ce7fe4a124b9e0e9553a243cd87694b37be3fba9180370193eea992"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/capture.py": {
+    "bytes": 7381,
+    "sha256": "bba1e8340d9bde40c741ac99b394f929777ab37173e0bbfea744450c6021e70e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/changed-events.json": {
+    "bytes": 2532,
+    "sha256": "b914c4efa36e55bf51eb474d8249825357ccb761c5f14a62d1d2360ace7d3e21"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/changed-history.json": {
+    "bytes": 18810,
+    "sha256": "8f7f90667c3ec8442ac5392bb9fbd1304dad91af5187a5038baf655cc58399c7"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/changed-request.json": {
+    "bytes": 16100,
+    "sha256": "a1f6355eb5ef48117054b5c8c63eff9cee276ecb05a0386ab83afc8560b3b283"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/changed-state.json": {
+    "bytes": 3942,
+    "sha256": "0613ce5e630e017d6f938e77d47667d76a0ece1640ccfd629eaab1f2c7217e9c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/changed.png": {
+    "bytes": 576531,
+    "sha256": "4667614fff75ddc148010f2ac966a86e8b3a06525c2c9ed5600852db410b163a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/constant-lora-workflow.json": {
+    "bytes": 9729,
+    "sha256": "b3069d9a956aea383560fd7839760efe635b2fdd51e220c28ee6d7a77a1458c9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/first-events.json": {
+    "bytes": 3144,
+    "sha256": "a862d30ff5d16be3b3c087c0c86b5fa0084876d4e4b65011cf5707bd31bf5cd1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/first-history.json": {
+    "bytes": 18574,
+    "sha256": "5d76cf54cc1d1ef8b9d7650d468c307e810885765398e4a77880476994fc58f1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/first-request.json": {
+    "bytes": 15904,
+    "sha256": "32e95125eb6129a9c7457fc9a289d68cef42be3e7d707993f6185d5142b46564"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/first-state.json": {
+    "bytes": 3882,
+    "sha256": "88a01361f7cab2334e76c14ecb9504145e93ad1ebb5f142d58b3bf4109ee446c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/node-cache-keys.json": {
+    "bytes": 21749,
+    "sha256": "7b256ac8b2d28e4df5d2cd31b34845d6fc13cabf472b87f306820fec40cae1b9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-named-events.json": {
+    "bytes": 1500,
+    "sha256": "c969f7fb1d897a0c57cacffa9feeed4a90bba80c914f0f3a2cd429a5f5198915"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-named-history.json": {
+    "bytes": 18830,
+    "sha256": "84a0ba3dcda95c5c8bad09081af45c1772931f619268a9c7973d371da556e582"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-named-request.json": {
+    "bytes": 16120,
+    "sha256": "9235c600f11bb8f85741e19edd6b914f5dcb4d01240a602bf63bb3ffe6c977ea"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-named-state.json": {
+    "bytes": 3939,
+    "sha256": "ae32b91600a9646bbdaf7efcfc50b71261c4905e8c96f18b49acc3bd89f7a347"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-positional-events.json": {
+    "bytes": 1500,
+    "sha256": "fcef4a9efe39845fabc193b627ed063e02bb96e06f0c7775053a516fafff5844"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-positional-history.json": {
+    "bytes": 18882,
+    "sha256": "95a474fa73f105bc06ccba3a5aee9535a65ed5f3f38debe4cee9ec122234b3c2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-positional-request.json": {
+    "bytes": 16172,
+    "sha256": "5f3a3f1610e85261dfebfd4d5e1e3a5846a9efa5beed051ab232816245637fe8"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/restored-positional-state.json": {
+    "bytes": 3898,
+    "sha256": "356ed881cc21c98913ed94b4d5eba8edc3a5a21ce88ad3c158612868549480ca"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/result.json": {
+    "bytes": 4065,
+    "sha256": "5f6802e914a155d02cfe61abf36046e683b12be68ca2edfa4448b18787bc7d18"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/roundtrip.json": {
+    "bytes": 9878,
+    "sha256": "f6dae5ac64cb15238f18e30824170de2b3df2b954d99c12aae4de034c5831c17"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/same-events.json": {
+    "bytes": 1500,
+    "sha256": "f9326bbb95a1abaa2ae9f1030a4524f46597ce719a553829a97b4dba514ed587"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/same-history.json": {
+    "bytes": 18723,
+    "sha256": "57e6ae7ce3a41305815d51290fe70b45a9cc8b5b8429b07bde3e0ecfe7030e1f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/same-request.json": {
+    "bytes": 16013,
+    "sha256": "229dda560e784ae2cf13a4edb3325b07f172e926d801d646217ab604c37e64ad"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/same-state.json": {
+    "bytes": 3884,
+    "sha256": "9145c9cd7c84ea630178e07352cc882bfdb2da04ad4798e6db3808a3966f05c4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/same.png": {
+    "bytes": 569802,
+    "sha256": "c43bee12e06a969bd2d4e41b76137dfe4e0e8c01b467f4e2836d21fabbc4b57d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/saved.json": {
+    "bytes": 9877,
+    "sha256": "b07e950f5fff52b5c04928919ddd9706e63c07f5706889df2db8ae875f398eb9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/verify_cache_keys.py": {
+    "bytes": 4491,
+    "sha256": "0b0a2c7c204c26bcb2e5965b6fc8d13a3dbdfdb35cefa5286ee9b3e18b8f7fd2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/widget-state.json": {
+    "bytes": 1018,
+    "sha256": "6331f8706c3fa27c60a980f29333420425f723207ae20af9d55fecb22daad2ab"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant.json": {
+    "bytes": 903,
+    "sha256": "ee33f03f3499bf9a81456351f4f3b9af47b98e3c8817aa3df94dda5a556a5a76"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/animatediff-native.log": {
+    "bytes": 1928,
+    "sha256": "086d0ddcbc6e47cc58b293230071244d729d6009217ac5952d1adebcc6e92efe"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/encoding-api.log": {
+    "bytes": 4821,
+    "sha256": "9867f48b935bd34adaa46cc31c8c2d24cc55b171745762c4953c27ae8004ec83"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/legacy-sam.log": {
+    "bytes": 2609,
+    "sha256": "69fd5ca2517e2b7f0d870a553a42a23c814282232a8a9f45b4290efd80f67c97"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/legacy-sam.xml": {
+    "bytes": 987,
+    "sha256": "230a92d39d60a0873becafacac42fe031600e9b5cf730a85fcb10831d4039041"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/mask-native.log": {
+    "bytes": 2362,
+    "sha256": "b950eda1a4de184c4b96a90f6429c63f18c1614ac7e29c9b472b4463dc9dd6b8"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/mask-native.xml": {
+    "bytes": 689,
+    "sha256": "e577a65145de9c5bfffde80452884af75e3d0cb3081849e1f061ca3e0ff6bc40"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/result.json": {
+    "bytes": 4466,
+    "sha256": "95730259c7cc69819adfbccdbddbe40eac984d4edeee17d9beb9374f9f8353e5"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/server.log": {
+    "bytes": 10430,
+    "sha256": "49a6a07dc3d1942de51daffeac7bb353a1de47dbb9d7cdccb99ff7974b46ca38"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu/wildcard-ui.log": {
+    "bytes": 864,
+    "sha256": "a1b0a58439fecf8e5a7efe0f5ce0f67e66e16f020ef73caa7dd61d1b7abb1a10"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cpu.json": {
+    "bytes": 1548,
+    "sha256": "362bddd98780a9c51d058c55fb518793df07822ece4a7a0c0e69845adc6f6f5f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/environment.json": {
+    "bytes": 3144,
+    "sha256": "e2fc19f99ac54b9ba2f9476fa34a1af58e92bd5b34978136ab3bba27a78e62de"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/failure-detection.json": {
+    "bytes": 2648,
+    "sha256": "43020e2e14bc7c033096e8b72645e800f8874d989858e5eafe23f2232f20cf38"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/failure-detection.log": {
+    "bytes": 286,
+    "sha256": "bec6ef3924173c79c9b64fb9cfe33bc7884e8b626ca54a25fadcb6ef15841921"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full/pair.log": {
+    "bytes": 211,
+    "sha256": "91969d88a0a10268c386d7a670d2429a5331cca7e7af45716afa0cd4616a2760"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full/result.json": {
+    "bytes": 2842,
+    "sha256": "1d7e5edc07d97f28048b8136f09749fef704c1740e7610157daaed02cc42dd41"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full/server.log": {
+    "bytes": 6849,
+    "sha256": "4e4f3d9aa0fa374847f6298bdc5768a9c1d72f946a6382e499a7078b5c41b5fb"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/full.json": {
+    "bytes": 507,
+    "sha256": "43829762e0d068913d67b87bc05446aa65d7679a73b19da3f6b4a6ef409935d7"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/conditioning.log": {
+    "bytes": 316,
+    "sha256": "f9e9a65456520968989884f0c122ad7bd1a35e1491b42dc1cd93c7c3e1c9e41d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/detailer.log": {
+    "bytes": 234,
+    "sha256": "40f7c02da7432f9be06314fa28feccb7ad13e4455f2422c53bf90c18efb62850"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/regional/regional-effects.json": {
+    "bytes": 272,
+    "sha256": "5f593490b3319fdc5b8cd2a1e9d3f8b5d1229da25953b53712e804795bec4d6b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/regional.log": {
+    "bytes": 742,
+    "sha256": "70e4854dd704e78e235b65f143293a6fd9a4bb69756a3317338e562ef110b58a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/result.json": {
+    "bytes": 5460,
+    "sha256": "d08a175553586447d64184b67754d8b5ee36606c1a5df13c3bbd3aee63e4aed1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/sam-api.log": {
+    "bytes": 2241,
+    "sha256": "54735f13e264cdddd483ba8ec6f3fb0849b571ea7daf976ea07c170c3b5075f6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/sam-api.xml": {
+    "bytes": 561,
+    "sha256": "4e670d1b40007d745d954e196c3dfdf8c3c00af74daf6b999acd5a611957794b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/sam.log": {
+    "bytes": 3426,
+    "sha256": "2c878a61fe0b66c8049cfbfae3ae2687b71b8ebfd1386f58c2d1c74ea23fba82"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/sam.xml": {
+    "bytes": 1465,
+    "sha256": "32fd3634648308e6ef99c4f84aadec726207818a2850641c4d12d55bb76d0583"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/server.log": {
+    "bytes": 167586,
+    "sha256": "94db95732ef1fa48df27ff3fd45362f3c79f5aa3a2bc8e69fd7ae223acd0da2c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/switch-tutorials.log": {
+    "bytes": 2484,
+    "sha256": "587d257804d63f32d34e37093486d2e4bdab63ad94fe548ec0a6f87ca5ffe748"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu.json": {
+    "bytes": 2198,
+    "sha256": "7b48b38f9fbb7445b16bc2282bc3f4be0e93b4653d5c6b0f347fe0b24f05d359"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference/lora-inference.log": {
+    "bytes": 828,
+    "sha256": "c03bda7b44851915cc5b4b8e64848ca3c9cb03e7e372076f768459f99518f282"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference/result.json": {
+    "bytes": 3249,
+    "sha256": "82adbef17f088fd74f7ae0a8eab4d8c88fe46fa5399ff2b017a1bef61caaa2bf"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference/server.log": {
+    "bytes": 11913,
+    "sha256": "dc0faaa58267915b1d2db1b9d8415994a0b411e36ad5913f5af226601fb3409d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/lora-inference/results.json": {
+    "bytes": 4068,
+    "sha256": "0307e4fc38b464a59adff4fdd545b6bf9bef6eee90687050d687c01e8bb33b5e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/lora-inference.log": {
+    "bytes": 2670,
+    "sha256": "a6f4c7a1cea53a6fcb9dc3d6843ba46c17fb1f8006c13121a30d31e39bf07b62"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/result.json": {
+    "bytes": 3279,
+    "sha256": "456e7e066b7a9e51977c91ac79443cabf02c38202b90d1816b8f5dd2e5c1c071"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/server.log": {
+    "bytes": 101821,
+    "sha256": "c8c2286fb9777f68f53e6252f14554d20d9457c70f9f5d3e2d3a09f66de2fb1c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected.json": {
+    "bytes": 676,
+    "sha256": "a08e0b775315f912ace549961e76e1eef52f4bd428ef7c77eb6d69f75ec1a8cd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference.json": {
+    "bytes": 666,
+    "sha256": "51b9a0b11d952f04c45514c32efb930ef8b3fb10a804e382abdb45dfe32f155b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/invocation-errors/full/pair.log": {
+    "bytes": 188,
+    "sha256": "1cec30efde7edec8458b5776820bf01c30750fc9679efe203a5816851665c56f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/invocation-errors/pair-ondemand/pair.log": {
+    "bytes": 188,
+    "sha256": "1cec30efde7edec8458b5776820bf01c30750fc9679efe203a5816851665c56f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline/reference/reference.png": {
+    "bytes": 465727,
+    "sha256": "d575256896b5644253f7b3433a04ba46a40de255e6be67d56adf12d34614bbbd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline/reference.log": {
+    "bytes": 251,
+    "sha256": "18546f28b91a9c975704d9ffee415db33a084223db236e32f1e89780da50b09b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline/result.json": {
+    "bytes": 3424,
+    "sha256": "9eba0b0178677cf23ba3770692f7d7ea42ce28e031a7e47a33aee0595acfcea2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline/server.log": {
+    "bytes": 11166,
+    "sha256": "24147ddbaa331cb6924ddf382bc93b070ee149f1707289a4528ecd92f861d890"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline.json": {
+    "bytes": 823,
+    "sha256": "6c35f84a306e3d46fa50594b217ecd77d4a8bfb0c144cac3387d958c2b37506e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/lbw-parity.log": {
+    "bytes": 2085,
+    "sha256": "56d0f864874c889a81133a76d15830c919152e139cb6eff29dbe03f33fda4146"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/lbw-parity.xml": {
+    "bytes": 324,
+    "sha256": "8093bcbbe574be1faa340ae335977f260982b58e8e818c6d719da9cbda6b8039"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/result.json": {
+    "bytes": 3399,
+    "sha256": "0e6c32520cae0d5ea29a1190cf80366cc1c45c772b0bd2e8202a7563edc8b252"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/server.log": {
+    "bytes": 11169,
+    "sha256": "b43677791ccc65e0e386f5a43139db7584bac8254419d2ef629b8b5cc9209159"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate.json": {
+    "bytes": 959,
+    "sha256": "1d882b9ddf68e57f72f01a5de261b5cb943d89bcc12ede1f4f613599827501b3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-python-with-data/result.json": {
+    "bytes": 92,
+    "sha256": "1b1a7b637abe4c291c140ba15c0a82ceac72231304fc01be9f7bf48dcfbcc81d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-python-with-data/test_wildcard_lazy_loading.log": {
+    "bytes": 3078,
+    "sha256": "fcaedbb08439eefc936d15f016d734c54afe726324e6b88cd0539477b1b06abd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-sam-js.log": {
+    "bytes": 819,
+    "sha256": "4a2545411261172b7262a779fa185f94a16757aa55adacd8234df8dd5f7e1a6e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/results.json": {
+    "bytes": 1451,
+    "sha256": "9dd7c769d5e48890f691181813126694bbb7b456575ca444ed887ec644da591d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_config_quotes/environment-adaptation.patch": {
+    "bytes": 2026,
+    "sha256": "1fb7d3da209706b4beea8349ed925fd09e389228f2c605ca13db0cebbb73c862"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_config_quotes/test.log": {
+    "bytes": 3524,
+    "sha256": "29a5ad311aa3483b3da0879fc4eb47afc0c5fea2498f1414040ccdd6829f02df"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_deep_nesting/environment-adaptation.patch": {
+    "bytes": 1994,
+    "sha256": "d46b12446ed146e97392418f1ba0b82fb5ecf6f9627964170b50a015698b7bac"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_deep_nesting/test.log": {
+    "bytes": 7162,
+    "sha256": "564c3357cb55abe722c65d7a609056a17f01868e0ea6a88789b26e4d1b20a691"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_dynamic_prompts_full/environment-adaptation.patch": {
+    "bytes": 606,
+    "sha256": "0b812cff76480b968a3148755714331872d864250840cd6ba085342cea6e91ac"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_dynamic_prompts_full/test.log": {
+    "bytes": 4312,
+    "sha256": "570cfaf3ba1391a5c43d96cfb98e6bc9bf2e25155d4d47df367009a77f0347a4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/environment-adaptation.patch": {
+    "bytes": 1972,
+    "sha256": "e1de65127aa164d9d636c5ffadb3526c068350e1fb2ed51ed392c49f431e639b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/test.log": {
+    "bytes": 5698,
+    "sha256": "8bc9e905a28e7afe1528a45fb9d2d7133802935b8123e8909f153647db006d75"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_error_handling/environment-adaptation.patch": {
+    "bytes": 2045,
+    "sha256": "a65d482393177976b0176bd5b2aff5d90c33f35f00c7c1fa13d90af24312273c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_error_handling/test.log": {
+    "bytes": 3984,
+    "sha256": "7a6cacf7e05bccc76f05917d552617580066e512fb4e22d02e5eabdd50afc2dd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/environment-adaptation.patch": {
+    "bytes": 6501,
+    "sha256": "723055f75994adccced04bde1af461f01e307ea1c7926f1a505930bf3d1e51fd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/test.log": {
+    "bytes": 3447,
+    "sha256": "dffd86da44f681366b6f7b761ca2de68ebdbf53e94f463e3616442bea784a724"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/environment-adaptation.patch": {
+    "bytes": 2913,
+    "sha256": "97cf126265ad4bbed68438e50444584a2374b82ef25a8e10c7c08c750f0f6b43"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/test.log": {
+    "bytes": 3942,
+    "sha256": "2650fb333f654bfeb555687114079638d6ad1eebd0b6c432834ec622d7131f5f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_progressive_ondemand/environment-adaptation.patch": {
+    "bytes": 2927,
+    "sha256": "3346ca731454969f97edbf17cb0f2f993e2a2c05c8d5d3a354f7cef3578f78da"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_progressive_ondemand/test.log": {
+    "bytes": 2747,
+    "sha256": "83da6649b42ac57f74071e9776bd902556c7dc6099581c6701ab2d151d646f80"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/environment-adaptation.patch": {
+    "bytes": 3706,
+    "sha256": "efa92af3249e9c6341484a627b949f5bcbf226b25935fa847419b8bcbd5ce4ba"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_sequential_loading/test.log": {
+    "bytes": 9587,
+    "sha256": "0e9b63045d46c0fe20db946834c33144d96834f74b5cb06743286c72e9cc61bb"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/environment-adaptation.patch": {
+    "bytes": 2483,
+    "sha256": "971828ae167f43be7dfd23ab0de0672f1d06dc86ed52e1b24eaf769683005037"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/test.log": {
+    "bytes": 9040,
+    "sha256": "3909add4f09ea3f826ef20f38765c43ceec95fd85db1efa371c0f0308e2aa639"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/environment-adaptation.patch": {
+    "bytes": 9413,
+    "sha256": "29a7d6681f9e11ecb9798f83e65e465c078473d4f2b6df049dd29b60fc69e436"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_wildcard_consistency/test.log": {
+    "bytes": 2748,
+    "sha256": "ba9eeb38328616bafbba570932f3af37cf8a1074ed5831931ddf716c7c30c90a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora/lora-source.log": {
+    "bytes": 2253,
+    "sha256": "05769f477d16aad820e5d99fa7a31c526bbb07063292c44e2f9837a437f46afc"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora/lora-source.xml": {
+    "bytes": 511,
+    "sha256": "cf3df8a5f6eb8f928097d2680f4a3e40ddd30bfb9bbed892c4c1071740299b70"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora/result.json": {
+    "bytes": 3010,
+    "sha256": "b4b867e3074eb279cb1559cdf56ad92b5695d02a875170e406ae2780b912191a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora/server.log": {
+    "bytes": 7100,
+    "sha256": "232d2ab325b0893277b40e3817878618d56f26df99ff08ee7a5cef68a1c218b7"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora-source-js.log": {
+    "bytes": 1103,
+    "sha256": "28256ac795a8a248bc982069a6ef4f660e010ffe3107a64ad0018912f95cfe69"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora-tensors.log": {
+    "bytes": 1157,
+    "sha256": "a92ed64f336aa8656bdadee69d4badc38cdbb6d2b016df85d64167de353ab9ed"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora-validation.log": {
+    "bytes": 1104,
+    "sha256": "69bdff7b1d24c2ba5c8f74002bc787b57bd9eb681a078935ac15362113c81ebf"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lora.json": {
+    "bytes": 603,
+    "sha256": "9064d7a397c992f6daa7f1b738f222a73d2deed47ee2ab19af4307ec714dcb13"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mask-blur.log": {
+    "bytes": 1693,
+    "sha256": "5c50e24e35f36d8c3a60743bc19e2042d94fbd2d07fdc4b0fbc1264945bc145d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mask-blur.xml": {
+    "bytes": 1135,
+    "sha256": "9d8abe607fc9b04640bb2782dbc313dc5af3abd7f5058ea0a96c0e7f46ede9af"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/capture.py": {
+    "bytes": 4956,
+    "sha256": "9837b8c869ab29da923fe93d46defd28f997d994282b0b5e6f56e2492b03d67a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/mixed-list-workflow.json": {
+    "bytes": 4492,
+    "sha256": "dc53f3fc90b8dbe017ca6bb53df6c6d07fd8dd669eb7a37ed28dd615a80be171"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/observations.json": {
+    "bytes": 572,
+    "sha256": "482ea5bdd424dff867e2a65b9ae3c803dde86a73da9de3d23728946f8445283f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/roundtrip.json": {
+    "bytes": 4494,
+    "sha256": "57cc7811a1eb3d37dce31c8bda6b90d96520cd2a1df2db2a3cabb82259d4134d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/saved.json": {
+    "bytes": 4494,
+    "sha256": "ff6b08c8955d208749b0bc32391b5744ec889dfb36555a45b25c2731fb3ee620"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-2-events.json": {
+    "bytes": 12577,
+    "sha256": "74c4c854cf2186d59f817cffaabaa9a2671e5408b773175ddb305f6faed6b3c9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-2-history.json": {
+    "bytes": 9110,
+    "sha256": "be90157e03876bcd9711c920b8a483d4ba47a5c904cf8df4490e2db2472cdbfa"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-2-layout.json": {
+    "bytes": 854,
+    "sha256": "5ce3949bbc17df10f888bca64400928e7acc1a86e7165b57b024005dd8e9bfb8"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-2-request.json": {
+    "bytes": 7408,
+    "sha256": "d7b78a4dcd16f0a24ea2aa1a143a43d3662d06700cd950104686ec122e76f365"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-5-events.json": {
+    "bytes": 4199,
+    "sha256": "3f54c9c205c18b7c9266d2d1da9424ee0d836d526aa80c9924ef89c4f928f511"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-5-history.json": {
+    "bytes": 9177,
+    "sha256": "9c590bd56a564572f2fca5d19027d07cb32da0169e8581483b81140d628f5481"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-5-layout.json": {
+    "bytes": 782,
+    "sha256": "0e343164b5029e6a2073a1ec27747f8b5f5086c491b2951625180b8a064f9322"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-5-request.json": {
+    "bytes": 7413,
+    "sha256": "da367414e5d422f73cd4735cdfcd98406196987239cb4204cd253cabb9584fce"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/seed-5.png": {
+    "bytes": 123412,
+    "sha256": "f030c3bf3e9bab29be04166729069b19b939e3c02f2c27ba2fd6e4847c25989d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/widget-state.json": {
+    "bytes": 642,
+    "sha256": "400845b7758c36c80b1dda2cd0ba23c0429b608a2cb6a44b824ada9c17ff1479"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand/encoding-api.log": {
+    "bytes": 4821,
+    "sha256": "8fe388443d56e92adc149c73aff1b598f2e62d4130b19e19d8b245160e119739"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand/result.json": {
+    "bytes": 3177,
+    "sha256": "ad46f710c8ed93620decdd09616d4e8b9132d06bcf847f7051b48c4644c752df"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand/server.log": {
+    "bytes": 7412,
+    "sha256": "ffbf5c6e3f9e087e309ba10e034088c6377cb8e2cd889ac08311f0744e53acfd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand/wildcard-ui.log": {
+    "bytes": 884,
+    "sha256": "97ef4710cae8849ebe3aa647f0425f70797cf7d983d4c018ba69616d91b84fd7"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected/encoding-api.log": {
+    "bytes": 4561,
+    "sha256": "b9e07ca1092514c99720d2156525f8a2c19b49f0cd1b45b9d989b812d564451f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected/result.json": {
+    "bytes": 3207,
+    "sha256": "6b8a94dd784d0da7560a0da69847e9011695ec9e5d676e06bb3328e4e37912ad"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected/server.log": {
+    "bytes": 7682,
+    "sha256": "7dcb36c678f9abf605c68597e4fc3a1d5bc9f6ddb920c9a4b8b5ecfe00ca48cd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected/wildcard-ui.log": {
+    "bytes": 449,
+    "sha256": "8bb6643002199538929238a4c110b1057785a3f52eeef75d80277b0d8a6e3d46"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected.json": {
+    "bytes": 676,
+    "sha256": "d3f07ac03da2d8ab8034ad5389dcffa7cfa459476ed61978425df2af59bbc83a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand.json": {
+    "bytes": 666,
+    "sha256": "fa4bc572f912cbba840b3a7032dc24802cd40f08a98e29ddfebbdc9a1601b9a0"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand/pair.log": {
+    "bytes": 768,
+    "sha256": "12702de4a40694b6f5cc63bdf6f2ecd64e09b49630ae47cefce4672fa835f5f9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand/result.json": {
+    "bytes": 2872,
+    "sha256": "5fd0e01721a9f801ca13b74a47e0b1c5ff4e74a60847cd5ebac56bb679007391"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand/server.log": {
+    "bytes": 7087,
+    "sha256": "da68415199c8ba966c729cbde8c980fba244fd88bde3a0526a7db325f2a608a8"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand.json": {
+    "bytes": 529,
+    "sha256": "7f4fb90e29f58d782c8fc684c9ed66d1ef6521a081211a01295cc2765c83db6a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair_check.py": {
+    "bytes": 1406,
+    "sha256": "b48e5f9fcb551125d370373e4eb5b39f783ca4592e54e873c523789050f24ea2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-baseline-controls.json": {
+    "bytes": 63,
+    "sha256": "01f156a9ebdc4fa276d346f12b50af5d335ea2b7ec6600e2390e80006d9d55e3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-baseline-mixed-list.json": {
+    "bytes": 65,
+    "sha256": "ad1fd1a4ba1e4f6c861aad36f90afcf8af73d0ffe8e1dfec6e51f48305d963f6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-catalog.json": {
+    "bytes": 53,
+    "sha256": "5ce3efc842e6adfeff2d42a5b314a28e45966ab3a8f48b5e74e0a124bdd8abce"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-classic.json": {
+    "bytes": 103,
+    "sha256": "6afa0b4ed5987a0baf743450a79a21deca770f279ca1b0c0be4f2a45ead38f2f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-constant.json": {
+    "bytes": 263,
+    "sha256": "673813219fe3ea654bc1dd648ffe2739fc070aeb7138309f36365331918cdad6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-full.json": {
+    "bytes": 50,
+    "sha256": "f98a5a6c828b201b48343e80de6d9a20705edf96cf7510fb1f8296918e705246"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-inference-corrected.json": {
+    "bytes": 65,
+    "sha256": "3cf2322fc9a534635e1d3626d31905ba37e286a5abe998c9e0c5ed68ed017e8e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-ondemand-corrected.json": {
+    "bytes": 64,
+    "sha256": "736f70de8d01a141c5b2b2a89d7474596a3688178109d788d52bbbab86f01b80"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-pair-ondemand.json": {
+    "bytes": 59,
+    "sha256": "02c11a27056da68f0c2c61a393e77d3982cd8ca8f96f91b42bb1d0b8af7fc7e5"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-verified-lru.json": {
+    "bytes": 202,
+    "sha256": "4abc4e57cfc71e40cd0ab9ca3ce81e3d6f6867472717c5726df31026c0fdfbaa"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pipeline-wildcard-full.json": {
+    "bytes": 59,
+    "sha256": "e0abd1fffd63f5a4dcba357682d265c194be9f104a590ceb641c97a6347943e0"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/regional-sampler-img2img.json": {
+    "bytes": 1660756,
+    "sha256": "6eba1083e9416bb0b4010cc0a594057bc14509333dd74a8817db29fb764e555c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ruff.json": {
+    "bytes": 3284,
+    "sha256": "88034078dcdbebaa2596c308152deef5dfa4e6f4884f7736c645abc9e66f5da5"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_jobs.py": {
+    "bytes": 431,
+    "sha256": "34ccf563a58afc12f702313aeedbcde002730cb9ca3393ad76897ca9c307790a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_legacy.py": {
+    "bytes": 4139,
+    "sha256": "46075cbb2a1dcb2d2aee75e1d965637318048e0214af024e242a582ae0c188a3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_legacy_python.py": {
+    "bytes": 1275,
+    "sha256": "106ad75a0e3a49dec9ba98e61075edd011a9136e0046123669f553cd84e0ec29"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_server_suite.py": {
+    "bytes": 3589,
+    "sha256": "7b146115fd0171befe53252885de114372bbf13c016c330d1a07bb23395e90ca"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_unit_order.py": {
+    "bytes": 749,
+    "sha256": "b5e061e1488ff14d671eac608c5ceec3c9b548c76692cd23d5e932c5573ea6f1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/run_units.py": {
+    "bytes": 2698,
+    "sha256": "9cd298dcb210234335808235db3f9aa865b19240526d3fc07c3a58804570c41b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/runner-config-manifest.json": {
+    "bytes": 7945,
+    "sha256": "13cf56ce186d4b3a44bcffb6f6ceab2c09e5614b536a724f415c4c43caf74a5f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/runner-corrections.json": {
+    "bytes": 1245,
+    "sha256": "3b6c9636272f332d6b90d5b59d65d9a0c90da409f75075eeb775cddc2b5a5d00"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/sam-mask-unit.log": {
+    "bytes": 3694,
+    "sha256": "488247bcfe12c8d716031613b9666871cd1a52be4f0cd7068849a18f889a4dae"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/sam-mask-unit.xml": {
+    "bytes": 13494,
+    "sha256": "6a48d0b780df6496b1eb02299b4b34f51ba1d604c40284e9ad0f6cde7eb0ad0b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/source.json": {
+    "bytes": 208577,
+    "sha256": "5f63f837ae60112c64eae5139ba4bcd39535d82c26d8ad6a932296d6d35c60cc"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/summarize.py": {
+    "bytes": 8086,
+    "sha256": "fb14ff5c6cc3ec0a4d465e5f1f25181e6b7b502eba17d4d7d1b67b63e8c3690d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/test-inventory.json": {
+    "bytes": 10781,
+    "sha256": "46b3e594e5c2ddab40997f17d268eb4705ae8bf2bd702f2118ee3c8508b47acb"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/test-inventory.md": {
+    "bytes": 6347,
+    "sha256": "555ab06d47966acbb4216513347789fc4ff3dea829733ba81de82010b6ce8935"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/tutorial-tensors.json": {
+    "bytes": 561,
+    "sha256": "55a8799206d86418ca081e7aeef51a224e8257cb35f17342553283e24b9e5bb9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/tutorial-tensors.log": {
+    "bytes": 1309,
+    "sha256": "a17d845f8c907108304e36704c16870fd8b3515116719ab6bc8c1b2e605c3642"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/unit-reordered-result.json": {
+    "bytes": 670,
+    "sha256": "4ede432afac074817e7ecfc94ebb77c106379f4d76c13a4a010d42512f06876a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/unit-reordered.log": {
+    "bytes": 1470,
+    "sha256": "375a4fa39e7d9a5ad210683d6fa1e3ce19c39b3e228299da887acff1b1f1f49e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/unit-reordered.xml": {
+    "bytes": 28279,
+    "sha256": "56c451349793c71c2d7b688ed0eb46eaf8a99ab1156739270fbf98d77885170f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/units-result.json": {
+    "bytes": 4400,
+    "sha256": "41b7fa8c4f28c4211c57c4e11b4eea746701771c0399b33c0d95f3507b3f4f3d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/validation.json": {
+    "bytes": 227297,
+    "sha256": "0860c7ffbe7ea776a0f06f74867c4e412ef3849be514dbffc07a32b23cd54dca"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru/cache.log": {
+    "bytes": 6691,
+    "sha256": "37f65d931aec28650e0d817b1d45b2987314a2774dbbf049497bff8508782ae0"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru/cache.xml": {
+    "bytes": 5531,
+    "sha256": "9d5150cbf699d9355ae954dd7c1b20c7c1827e7038b720aed92272a16b7face1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru/result.json": {
+    "bytes": 3198,
+    "sha256": "41ac140f173ef94fd3e73adf8d1623f57fc785e2466e13e5de2ff089151fd30b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru/server.log": {
+    "bytes": 30014,
+    "sha256": "7c3d97c798b1d99bf96e68cdfe90ef5f119ff3eff26583f09a6d6166aeaeaf4c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/verified-lru.json": {
+    "bytes": 765,
+    "sha256": "041d3a14f3da98fe2284b00394791fc88cc7bb9f51855376ab9fd196079df32a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-full/encoding-api.log": {
+    "bytes": 4561,
+    "sha256": "968f6317d7be3228053ed0add7da98a9b024182025832695eebe6f4dbf84e57d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-full/result.json": {
+    "bytes": 3187,
+    "sha256": "7a9ae2e58e0b66adff6e658f1993b9dc183dbc03ec8a94c50c9e4aa4bfc781a2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-full/server.log": {
+    "bytes": 7454,
+    "sha256": "c95b26bd7458cd6b95bbf1c0953208210a40da811fbddbc6e121badb8df85584"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-full/wildcard-ui.log": {
+    "bytes": 444,
+    "sha256": "7337e7b9311583f9d51121c847fa32367d89bfb745800008b5b6965ef3b8e75a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-full.json": {
+    "bytes": 666,
+    "sha256": "c2272eb74fa54c68948775647c5ac51a949534b3d30a1ebceeabdd3c1173060e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/wildcard-ui-modes.json": {
+    "bytes": 499,
+    "sha256": "c3db6e46774ff577c79c55aee35c220464b4dcd29f409f6832a01e94635fa1fa"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/README.md": {
+    "bytes": 8072,
+    "sha256": "988909d0dea2bda5ea0d416eda2b9f477886a7e85ae39017a4d282dc41225451"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/cleanup.json": {
+    "bytes": 2236,
+    "sha256": "bd7af2e158d46fe77259427478a6a56c87dc31d3c177deec0d1843d792a5d7c2"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/cpu/animatediff-native.log": {
+    "bytes": 1912,
+    "sha256": "9b3b01c1f237153f2cc11e171f21baaa54ff623544da9ba4aa2b7e4d55bfd35a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/cpu/encoding-api.log": {
+    "bytes": 4561,
+    "sha256": "f37e9e8c103700b06332cbfcc1d2103acc2309d924db7951f0d63fcb64eb1d62"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/cpu/wildcard-ui.log": {
+    "bytes": 432,
+    "sha256": "a6b47a8e1ecf482e7faab117e793525e28a2fd8d7693551c5bf009d85db0ce25"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/cpu.json": {
+    "bytes": 1471,
+    "sha256": "e2b993f53d7df26337c24e16b33cbc7f93c9fd81e40ae79bceeadc09c7e87322"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/detailer-final/detailer.log": {
+    "bytes": 243,
+    "sha256": "dbe5933354433a12eb417f84729fd053704e066a968335a8417de5cbff0b17aa"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/diagnostics.md": {
+    "bytes": 2836,
+    "sha256": "fcde3f567ce6b97628cf12cff3098a0c0f3c0efb3a6b8e328e91747550a4df6c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/environment-adaptation.patch": {
+    "bytes": 1311,
+    "sha256": "5fa6f651998cd2b430ec76b7cf4d5be35f8c2f8754b78e0d46bcc259718d2b23"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/gpu/conditioning.log": {
+    "bytes": 314,
+    "sha256": "02fcab4a680d992b4ef82b5c9636f2ad74a1ee684c02b3ed374c18fb5161c39d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/gpu/regional/regional-effects.json": {
+    "bytes": 272,
+    "sha256": "5f593490b3319fdc5b8cd2a1e9d3f8b5d1229da25953b53712e804795bec4d6b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/gpu/regional.log": {
+    "bytes": 740,
+    "sha256": "1a2f3d945b99b4c948423dcd4c2e5f9611818c784be49751399c20be33253246"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/gpu-retry/switch-tutorials.log": {
+    "bytes": 2500,
+    "sha256": "356b17d93e88897be601849779d033f64da33b0cc881d055345fa4ad87d10cc0"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/inference/lora-inference.log": {
+    "bytes": 2658,
+    "sha256": "a9df1e233bf08fe708a06dabb72730697b01dee90207953017a4fdc92981896f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/lbw-baseline/reference/reference.png": {
+    "bytes": 465727,
+    "sha256": "d575256896b5644253f7b3433a04ba46a40de255e6be67d56adf12d34614bbbd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-data-baseline/test_progressive_ondemand/test.log": {
+    "bytes": 1661,
+    "sha256": "4ca3b1e2debed5ea2e0a91954e2cee4da5bd5e21c6a9454ecb660b0a16449c75"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-final/result.json": {
+    "bytes": 243,
+    "sha256": "696bfe38d510daa5ed88edb7afdf2c1002078cfcba603e59d7ba4d9bc298f223"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-final/test.log": {
+    "bytes": 2682,
+    "sha256": "608bb425483fa85904da6973904066f7baed29c38de5f0b9652147d168c7a5d6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-marker-review.json": {
+    "bytes": 2117,
+    "sha256": "84fbcdffd245ccf36611b749d74692ea78337b94b09833f0101413e10a4e8e1c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/test_lazy_load_verification.log": {
+    "bytes": 2822,
+    "sha256": "1809fee0808e906808f1f75773e17392063265d2dc3f47675455df8babc5c6e4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/test_progressive_loading.log": {
+    "bytes": 3338,
+    "sha256": "ca742661ee94abee037dc52727b04159c4d50061f970cdeb75b6d81ef4691cb1"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/test_wildcard_lazy_loading.log": {
+    "bytes": 3075,
+    "sha256": "60e6a240efffd70ce1b0dcf8781d623260d7d3536bb30f2abb42b32c8ffa76cd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-with-data/test_lazy_load_verification.log": {
+    "bytes": 2826,
+    "sha256": "3eb01b931568bf5f17855ba695c7227254d53c1463d1524949a61fdf09b4b29b"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-with-data/test_progressive_loading.log": {
+    "bytes": 3340,
+    "sha256": "5fe7439c62525ac7782b25568bc8e79b1ebfd4f6ff2fb991c639f67345af1163"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-with-data/test_wildcard_lazy_loading.log": {
+    "bytes": 3076,
+    "sha256": "8c0373b25435a53e1e9b3b1d6f0ccc0012f7e147074531b4f1acdfb1c74d8330"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-sam-js-rerun.log": {
+    "bytes": 819,
+    "sha256": "97935577a8c72df6ab62a10ad708c48489089feb7c843ea3982280ab6ca5bb4f"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_config_quotes/test.log": {
+    "bytes": 3502,
+    "sha256": "ea0fec3653d24ec2a09439c79a117c95acc36c3019eba8edadafb645165b2eb3"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_deep_nesting/test.log": {
+    "bytes": 7158,
+    "sha256": "2aea7de834b2cffa6bbc7856a0a32f2a20ffe640c505791cb88995fff0de540e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_dynamic_prompts_full/test.log": {
+    "bytes": 4312,
+    "sha256": "570cfaf3ba1391a5c43d96cfb98e6bc9bf2e25155d4d47df367009a77f0347a4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_edge_cases/test.log": {
+    "bytes": 5694,
+    "sha256": "7cca2e1ff4d3621a9a3afdf80a85ea90c99e1b02708e4bd4f29e228abfd1ae0e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_error_handling/test.log": {
+    "bytes": 3980,
+    "sha256": "39ad2e1aae5633c7caf8feed185804c7165632cf605cd00f839770b0ae8dfc75"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_lazy_load_api/test.log": {
+    "bytes": 3447,
+    "sha256": "674793909cf8d784f6d4db4d9b54d261789bf1ca22a37fb6b8182a3b6f948fad"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_ondemand_loading/test.log": {
+    "bytes": 3940,
+    "sha256": "2cf1e38f85f6997bd339c9764676a519f6ae9240266ce76e486f8c24bca36df4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_progressive_ondemand/test.log": {
+    "bytes": 1661,
+    "sha256": "a2ce2327d2c88ad58bbc059aeb5652fb1046f96044b41c433bb78369e0e5eff6"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_sequential_loading/test.log": {
+    "bytes": 9583,
+    "sha256": "711af48ed747bc514bfabce50b61735fff0b6f6410100eee4a8ac24872214cbb"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_versatile_prompts/test.log": {
+    "bytes": 9038,
+    "sha256": "a038912fc87fcf1e1ea04d5d3fbd3c80722604b38f90cd5931710771159cccdd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_wildcard_consistency/test.log": {
+    "bytes": 2748,
+    "sha256": "ba9eeb38328616bafbba570932f3af37cf8a1074ed5831931ddf716c7c30c90a"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/lora-source-js.log": {
+    "bytes": 1102,
+    "sha256": "9ff7cad0c86d27a12ee28955b343eeb188d1081c85f848afd6d876db824dc555"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/lora-tensors.log": {
+    "bytes": 1157,
+    "sha256": "a92ed64f336aa8656bdadee69d4badc38cdbb6d2b016df85d64167de353ab9ed"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/lora-validation.log": {
+    "bytes": 1104,
+    "sha256": "69bdff7b1d24c2ba5c8f74002bc787b57bd9eb681a078935ac15362113c81ebf"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/ondemand/encoding-api.log": {
+    "bytes": 4561,
+    "sha256": "c1613a03be0294e6e921a1c49318848aa1b5be80d28e44a1590001995afa2988"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/ondemand/server.log": {
+    "bytes": 7657,
+    "sha256": "aa583a92ecd571f80f9d4feb99526b2611b672d36a7eb60d55c2228b9f0849c4"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/ondemand/wildcard-ui.log": {
+    "bytes": 437,
+    "sha256": "83045e1fe2e0db47b4430b88baa28f45e78b0d8689e6e09728f5e8c877078432"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/ondemand.json": {
+    "bytes": 589,
+    "sha256": "f25f45237c002e541d1b56a7485397efe160120750491287039f41c056449d0c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/setup.json": {
+    "bytes": 589111,
+    "sha256": "633434db64fe04d5e4cf21da49e50a7c81c413e0fbf4a7a5597df8ce79ca7837"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/test-inventory.md": {
+    "bytes": 6406,
+    "sha256": "18fd2a5126bbf3b068b2fad036c6c31fa87a8bcbf6ab8a139433505d31d59e24"
+  },
+  "impact-pack-pr1269-followup-pr-assets/full-regression/tutorial-tensors.json": {
+    "bytes": 561,
+    "sha256": "55a8799206d86418ca081e7aeef51a224e8257cb35f17342553283e24b9e5bb9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/merged-integration.json": {
+    "bytes": 97,
+    "sha256": "094bd3d754aa5cfd5465cdec01980c0904789ae7fc5451766dd8c4fd62197b55"
+  },
+  "impact-pack-pr1269-followup-pr-assets/merged-unit.xml": {
+    "bytes": 27731,
+    "sha256": "eb8081d4b4e5812d77cc2b85296ee62d6affdb70fab9d80e3e8b6b283c7ccd55"
+  },
+  "impact-pack-pr1269-followup-pr-assets/reverification/README.md": {
+    "bytes": 3918,
+    "sha256": "7c860f7e0b8a9991569f50bacfd17bdeb4eaf58b5dad78cd497b8bc9bbf4dfcd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/reverification/api-result.json": {
+    "bytes": 56926,
+    "sha256": "f8c30a1370a1d6dd95e90b566aa4a780b3dcb1733355ca548736746952ad1f56"
+  },
+  "impact-pack-pr1269-followup-pr-assets/reverification/integration.log": {
+    "bytes": 3823,
+    "sha256": "32eb949e758a7d12a94cfbb12da74e9246b8b0ad20418758140d65606938838d"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/README.md": {
+    "bytes": 4722,
+    "sha256": "d047ecd450c246d8121e22ea5190f73bc7db11f7f533eb58d2463ee07e098c6e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/api-result.json": {
+    "bytes": 56923,
+    "sha256": "59e3cbc224882245d932baa5ce08b289e08087bf112c2cf694bafc371935f684"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/cleanup.json": {
+    "bytes": 32,
+    "sha256": "8c500c58c1845f09be29076d0fa3be3c3cec9cf0948f2c520c9684aedd0a556c"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/controls/bypass.xml": {
+    "bytes": 2501,
+    "sha256": "edcb566fc4b7560e7c989a829b9eb59fe94d6677b55de320b3f24b661ae92bc5"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/failure-detection.json": {
+    "bytes": 2648,
+    "sha256": "c5fc4a2a228608d3b12f6577bccabfe3103d4dec8c456ec8781687143316e767"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/ondemand/pair.log": {
+    "bytes": 768,
+    "sha256": "12702de4a40694b6f5cc63bdf6f2ecd64e09b49630ae47cefce4672fa835f5f9"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/progressive/results.json": {
+    "bytes": 145,
+    "sha256": "3e28f1e97194a96d87deb3eba4a4f1ff4c4d75069490229ff23cc9f09ae291d7"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/progressive/test_progressive_ondemand/test.log": {
+    "bytes": 2736,
+    "sha256": "6ce2737c3612cf473e418ce4199675e94919c34b91ac4e588ff253cd5bc7d3bc"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/runtime-source-check.json": {
+    "bytes": 968,
+    "sha256": "4635f21f504b63f67de8a47cae026450c5a44f264c14cd95cb25053fbf1851cd"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/source-before-review.json": {
+    "bytes": 19819,
+    "sha256": "040c76289fc3bc7390a41fa20efeaf0b570745227ac415c83da3d6c7d01d78db"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/test-inventory.json": {
+    "bytes": 11403,
+    "sha256": "24ab1cd218c7c27ee2ca91e3898299804f943ad5eb6451ba7642a2b72ab4940e"
+  },
+  "impact-pack-pr1269-followup-pr-assets/test-review/unit.xml": {
+    "bytes": 28390,
+    "sha256": "744a11f010bc1fdd3e6348825a03f75c6dcdbb493f108dc426a4dea016ee8c3c"
   }
 }

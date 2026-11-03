@@ -1,0 +1,114 @@
+{
+  "source": {
+    "command": [
+      "/home/rho/venv/bin/ruff",
+      "check",
+      "--select",
+      "F401,F841,F811,F821",
+      "--output-format",
+      "json",
+      "modules/impact/impact_server.py",
+      "modules/impact/wildcards.py",
+      "tests/integration_wildcard_cache.py",
+      "tests/test_e2e_wildcard_cache.py",
+      "tests/test_e2e_wildcard_controls.py",
+      "tests/wildcards/conftest.py",
+      "tests/wildcards/test_lazy_load_verification.py",
+      "tests/wildcards/test_progressive_loading.py",
+      "tests/wildcards/test_wildcard_final.py",
+      "modules/impact/impact_pack.py"
+    ],
+    "exit_code": 1,
+    "findings": [
+      {
+        "cell": null,
+        "code": "F401",
+        "end_location": {
+          "column": 58,
+          "row": 39
+        },
+        "filename": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/source/modules/impact/impact_pack.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "pass",
+              "end_location": {
+                "column": 58,
+                "row": 39
+              },
+              "location": {
+                "column": 5,
+                "row": 39
+              }
+            }
+          ],
+          "message": "Remove unused import: `comfy_extras.nodes_differential_diffusion`"
+        },
+        "location": {
+          "column": 30,
+          "row": 39
+        },
+        "message": "`comfy_extras.nodes_differential_diffusion` imported but unused",
+        "noqa_row": 39,
+        "url": "https://docs.astral.sh/ruff/rules/unused-import"
+      }
+    ]
+  },
+  "baseline-source": {
+    "command": [
+      "/home/rho/venv/bin/ruff",
+      "check",
+      "--select",
+      "F401,F841,F811,F821",
+      "--output-format",
+      "json",
+      "modules/impact/impact_server.py",
+      "modules/impact/wildcards.py",
+      "tests/integration_wildcard_cache.py",
+      "tests/test_e2e_wildcard_cache.py",
+      "tests/wildcards/conftest.py",
+      "tests/wildcards/test_lazy_load_verification.py",
+      "tests/wildcards/test_progressive_loading.py",
+      "tests/wildcards/test_wildcard_final.py",
+      "modules/impact/impact_pack.py"
+    ],
+    "exit_code": 1,
+    "findings": [
+      {
+        "cell": null,
+        "code": "F401",
+        "end_location": {
+          "column": 58,
+          "row": 39
+        },
+        "filename": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-source/modules/impact/impact_pack.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "pass",
+              "end_location": {
+                "column": 58,
+                "row": 39
+              },
+              "location": {
+                "column": 5,
+                "row": 39
+              }
+            }
+          ],
+          "message": "Remove unused import: `comfy_extras.nodes_differential_diffusion`"
+        },
+        "location": {
+          "column": 30,
+          "row": 39
+        },
+        "message": "`comfy_extras.nodes_differential_diffusion` imported but unused",
+        "noqa_row": 39,
+        "url": "https://docs.astral.sh/ruff/rules/unused-import"
+      }
+    ]
+  },
+  "new_findings": []
+}

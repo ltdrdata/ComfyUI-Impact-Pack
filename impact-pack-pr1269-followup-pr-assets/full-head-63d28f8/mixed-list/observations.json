@@ -1,0 +1,38 @@
+[
+  {
+    "requested_seed": 2,
+    "execution_seed": 2,
+    "expected": [
+      "red",
+      "plain"
+    ],
+    "actual": [
+      "red",
+      "plain"
+    ],
+    "matches_expected": true,
+    "cached_nodes": [],
+    "wildcard_node": "1",
+    "preview_node": "2"
+  },
+  {
+    "requested_seed": 5,
+    "execution_seed": 5,
+    "expected": [
+      "blue",
+      "plain"
+    ],
+    "actual": [
+      "blue",
+      "plain"
+    ],
+    "matches_expected": true,
+    "cached_nodes": [
+      "3",
+      "4",
+      "5"
+    ],
+    "wildcard_node": "1",
+    "preview_node": "2"
+  }
+]

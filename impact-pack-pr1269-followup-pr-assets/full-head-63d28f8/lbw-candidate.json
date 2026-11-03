@@ -1,0 +1,39 @@
+{
+  "name": "lbw-candidate",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate-source",
+  "server_options": [
+    "--cache-none",
+    "--deterministic",
+    "--force-fp32",
+    "--fp32-vae",
+    "--disable-dynamic-vram",
+    "--use-pytorch-cross-attention"
+  ],
+  "plugins": [
+    "comfyui-inspire-pack"
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "IMPACT_E2E_REFERENCE_IMAGE": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-baseline/reference/reference.png"
+  },
+  "commands": [
+    {
+      "label": "lbw-parity",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/lbw-parity.xml",
+        "-k",
+        "inference"
+      ]
+    }
+  ],
+  "port": 58035
+}

@@ -1,0 +1,1182 @@
+[32m[INFO][0m Setting base directory to: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/runtime
+[32m[INFO][0m Setting models directory to: /mnt/teratera/git/ComfyUI/models
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[1m[33m[WARNING][0m WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+[32m[INFO][0m Found comfy_kitchen backend eager: {'available': True, 'disabled': False, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'convrot_w4a4_linear', 'dequantize_convrot_w4a4_weight', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_embedding', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_mxfp8', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'dequantize_w4a8_int8_weight', 'fp16_conv3d', 'fp16_conv3d_out', 'fp16_linear', 'gemv_awq_w4a16', 'group_norm_silu_pad3d', 'group_norm_silu_pad3d_out', 'group_norm_stats3d', 'int8_linear', 'int8_linear_modulated', 'int8_linear_rms_modulated', 'na3d', 'prepare_int4_weight_for_int8_linear', 'quantize_and_rotate_rowwise', 'quantize_convrot_w4a4_weight', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'quantize_w4a8_int8_weight', 'rms_adaln', 'rms_gated_residual', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'rotate_int8_convrot_weight', 'scaled_mm_mxfp8', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'sol_attn', 'stochastic_rounding_fp8', 'w4a8_int8_linear', 'w4a8_packed_linear']}
+[32m[INFO][0m Found comfy_kitchen backend hip: {'available': False, 'disabled': False, 'unavailable_reason': 'PyTorch ROCm/HIP runtime not available', 'capabilities': []}
+[32m[INFO][0m Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'closest_point_on_mesh', 'connected_components', 'convrot_w4a4_linear', 'delaunay3d', 'dequantize_convrot_w4a4_weight', 'dequantize_int8_convrot_weight', 'dequantize_int8_convrot_weight_dtype', 'dequantize_int8_simple', 'dequantize_int8_simple_dtype', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'dequantize_w4a8_int8_weight', 'edge_collapse_checks', 'fp16_conv3d', 'fp16_conv3d_out', 'fp16_linear', 'gemv_awq_w4a16', 'group_norm_silu_pad3d', 'group_norm_silu_pad3d_out', 'group_norm_stats3d', 'int8_linear', 'mesh_bvh', 'min_cut', 'na3d', 'prepare_int4_weight_for_int8_linear', 'quantize_and_rotate_rowwise', 'quantize_convrot_w4a4_weight', 'quantize_int8_convrot_weight', 'quantize_int8_rowwise', 'quantize_int8_tensorwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'quantize_svdquant_w4a4', 'quantize_w4a8_int8_weight', 'rms_adaln', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'rotate_int8_convrot_weight', 'scaled_mm_nvfp4', 'scaled_mm_svdquant_w4a4', 'sol_attn', 'stochastic_rounding_fp8', 'w4a8_int8_linear', 'w4a8_packed_linear']}
+[32m[INFO][0m Found comfy_kitchen backend ascend: {'available': False, 'disabled': False, 'unavailable_reason': "torch-npu is not installed: No module named 'torch_npu'", 'capabilities': []}
+[32m[INFO][0m Found comfy_kitchen backend triton: {'available': True, 'disabled': True, 'unavailable_reason': None, 'capabilities': ['adaln', 'apply_rope', 'apply_rope1', 'apply_rope1_', 'apply_rope_', 'apply_rope_split_half', 'apply_rope_split_half1', 'apply_rope_split_half1_', 'apply_rope_split_half_', 'dequantize_nvfp4', 'dequantize_per_tensor_fp8', 'int8_linear', 'na3d', 'quantize_and_rotate_rowwise', 'quantize_int8_rowwise', 'quantize_mxfp8', 'quantize_nvfp4', 'quantize_per_tensor_fp8', 'rms_adaln', 'rms_rope', 'rms_rope1', 'rms_rope1_', 'rms_rope_', 'rms_rope_split_half', 'rms_rope_split_half1', 'rms_rope_split_half1_', 'rms_rope_split_half_', 'w4a8_int8_linear']}
+[32m[INFO][0m Checkpoint files will always be loaded safely.
+[32m[INFO][0m Using deterministic algorithms for pytorch
+[32m[INFO][0m Total VRAM 15944 MB, total RAM 95659 MB
+[32m[INFO][0m pytorch version: 2.10.0+cu128
+[32m[INFO][0m xformers version: 0.0.35
+[32m[INFO][0m Forcing FP32, if this improves things please report it.
+[32m[INFO][0m Set vram state to: NORMAL_VRAM
+[32m[INFO][0m Device: cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync
+[32m[INFO][0m Using async weight offloading with 2 streams
+[32m[INFO][0m Enabled pinned memory 86092.0
+[32m[INFO][0m working around nvidia conv3d memory bug.
+[32m[INFO][0m Using pytorch attention
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+[32m[INFO][0m Python version: 3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]
+[32m[INFO][0m ComfyUI version: 0.43.0
+[32m[INFO][0m comfy-aimdo version: 0.6.0
+[32m[INFO][0m comfy-kitchen version: 0.2.40
+[1m[33m[WARNING][0m Dynamic vram disabled with argument. If you have any issues with dynamic vram enabled please give us a detailed reports as this argument will be removed soon. If you use gguf we recommend keeping dynamic vram enabled and using native ComfyUI model formats instead. ComfyUI native formats like fp8, int8 and w4a8 will be faster even if they are larger than your memory.
+[1m[33m[WARNING][0m ****** User settings have been changed to be stored on the server instead of browser storage. ******
+[1m[33m[WARNING][0m ****** For multi-user setups add the --multi-user CLI argument to enable multiple user profiles. ******
+[32m[INFO][0m comfyui-frontend-package version: 1.57.6
+[32m[INFO][0m comfyui-workflow-templates version: 0.11.100
+[32m[INFO][0m comfyui-embedded-docs version: 0.5.15
+[32m[INFO][0m comfy-aimdo version: 0.6.0
+[32m[INFO][0m comfy-kitchen version: 0.2.40
+[32m[INFO][0m [Prompt Server] web root: /home/rho/venv/lib/python3.12/site-packages/comfyui_frontend_package/static
+[32m[INFO][0m Asset seeder disabled
+[32m[INFO][0m No OpenGL_accelerate module loaded: Acceleration disabled
+[32m[INFO][0m ### Loading: ComfyUI-Impact-Pack (V8.30)
+[32m[INFO][0m 
+Import times for custom nodes:
+[32m[INFO][0m    0.1 seconds: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-corrected/runtime/custom_nodes/comfyui-impact-pack
+[32m[INFO][0m 
+[32m[INFO][0m [Impact Pack] Wildcard total size (0.00 MB) is within cache limit (50.00 MB). Using full cache mode.
+[32m[INFO][0m [Impact Pack] Wildcards loading done.
+[32m[INFO][0m Disabling intermediate node cache.
+[32m[INFO][0m ComfyUI is developed by Comfy Org. We also offer commercial products to deploy ComfyUI as scalable cloud endpoints. Visit platform.comfy.org/ascii for more information.
+[32m[INFO][0m Starting server
+
+[32m[INFO][0m To see the GUI go to: http://127.0.0.1:52483
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=-0.15, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, petals, dew'
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, leaves, mist'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 14164.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:00,  3.74it/s]100%|██████████| 4/4 [00:00<00:00, 10.94it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10817.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.38it/s]100%|██████████| 4/4 [00:00<00:00, 24.28it/s]
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.37it/s]100%|██████████| 4/4 [00:00<00:00, 28.76it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.21it/s]100%|██████████| 4/4 [00:00<00:00, 28.76it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 29.16it/s]100%|██████████| 4/4 [00:00<00:00, 29.08it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 32.25it/s]100%|██████████| 4/4 [00:00<00:00, 32.16it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.88it/s]100%|██████████| 4/4 [00:00<00:00, 28.34it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 13774.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.77it/s]100%|██████████| 4/4 [00:00<00:00, 25.61it/s]
+[32m[INFO][0m [32mPrompt executed in 23.09 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=-0.15, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, petals, dew'
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, leaves, mist'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10127.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.04it/s]100%|██████████| 4/4 [00:00<00:00, 26.33it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 6849.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.56it/s]100%|██████████| 4/4 [00:00<00:00, 27.81it/s]
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 29.89it/s]100%|██████████| 4/4 [00:00<00:00, 29.79it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.97it/s]100%|██████████| 4/4 [00:00<00:00, 29.83it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 30.53it/s]100%|██████████| 4/4 [00:00<00:00, 30.46it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.94it/s]100%|██████████| 4/4 [00:00<00:00, 27.17it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.23it/s]100%|██████████| 4/4 [00:00<00:00, 26.35it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 31.74it/s]100%|██████████| 4/4 [00:00<00:00, 31.62it/s]
+[32m[INFO][0m [32mPrompt executed in 21.75 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, leaves, mist'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.52it/s]100%|██████████| 4/4 [00:00<00:00, 28.39it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.65it/s]100%|██████████| 4/4 [00:00<00:00, 24.17it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.08it/s]100%|██████████| 4/4 [00:00<00:00, 25.94it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.79it/s]100%|██████████| 4/4 [00:00<00:00, 27.50it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 29.44it/s]100%|██████████| 4/4 [00:00<00:00, 29.40it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 37.01it/s]100%|██████████| 4/4 [00:00<00:00, 36.97it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.22it/s]100%|██████████| 4/4 [00:00<00:00, 20.67it/s]
+[32m[INFO][0m [32mPrompt executed in 18.15 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, leaves, mist'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.67it/s]100%|██████████| 4/4 [00:00<00:00, 28.21it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.87it/s]100%|██████████| 4/4 [00:00<00:00, 29.07it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.04it/s]100%|██████████| 4/4 [00:00<00:00, 24.46it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.23it/s]100%|██████████| 4/4 [00:00<00:00, 25.12it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.24it/s]100%|██████████| 4/4 [00:00<00:00, 29.35it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.85it/s]100%|██████████| 4/4 [00:00<00:00, 25.76it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.79it/s]100%|██████████| 4/4 [00:00<00:00, 20.04it/s]
+[32m[INFO][0m [32mPrompt executed in 18.04 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/detailmaker.safetensors (model=-0.15, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, petals, dew'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 30.81it/s]100%|██████████| 4/4 [00:00<00:00, 30.73it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 31.57it/s]100%|██████████| 4/4 [00:00<00:00, 31.52it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 30.69it/s]100%|██████████| 4/4 [00:00<00:00, 30.65it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.57it/s]100%|██████████| 4/4 [00:00<00:00, 23.81it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.25it/s]100%|██████████| 4/4 [00:00<00:00, 29.22it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.41it/s]100%|██████████| 4/4 [00:00<00:00, 22.76it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.96it/s]100%|██████████| 4/4 [00:00<00:00, 28.77it/s]
+[32m[INFO][0m [32mPrompt executed in 17.28 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.30it/s]100%|██████████| 4/4 [00:00<00:00, 29.64it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.47it/s]100%|██████████| 4/4 [00:00<00:00, 30.47it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.08it/s]100%|██████████| 4/4 [00:00<00:00, 26.15it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 15.61it/s]100%|██████████| 4/4 [00:00<00:00, 18.45it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.67it/s]100%|██████████| 4/4 [00:00<00:00, 21.65it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.56it/s]100%|██████████| 4/4 [00:00<00:00, 30.91it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9808.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.00it/s]100%|██████████| 4/4 [00:00<00:00, 29.83it/s]
+[32m[INFO][0m [32mPrompt executed in 18.60 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 30.46it/s]100%|██████████| 4/4 [00:00<00:00, 30.41it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.84it/s]100%|██████████| 4/4 [00:00<00:00, 26.48it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 32.48it/s]100%|██████████| 4/4 [00:00<00:00, 32.44it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.61it/s]100%|██████████| 4/4 [00:00<00:00, 24.25it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.96it/s]100%|██████████| 4/4 [00:00<00:00, 21.41it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.42it/s]100%|██████████| 4/4 [00:00<00:00, 25.71it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.97it/s]100%|██████████| 4/4 [00:00<00:00, 25.12it/s]
+[32m[INFO][0m [32mPrompt executed in 17.68 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.11it/s]100%|██████████| 4/4 [00:00<00:00, 24.50it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 29.77it/s]100%|██████████| 4/4 [00:00<00:00, 30.86it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 32.52it/s]100%|██████████| 4/4 [00:00<00:00, 32.34it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.68it/s]100%|██████████| 4/4 [00:00<00:00, 26.70it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.49it/s]100%|██████████| 4/4 [00:00<00:00, 26.31it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.11it/s]100%|██████████| 4/4 [00:00<00:00, 25.63it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.31it/s]100%|██████████| 4/4 [00:00<00:00, 28.78it/s]
+[32m[INFO][0m [32mPrompt executed in 16.47 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10351.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.38it/s]100%|██████████| 4/4 [00:00<00:00, 21.31it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 7073.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.16it/s]100%|██████████| 4/4 [00:00<00:00, 21.09it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.44it/s]100%|██████████| 4/4 [00:00<00:00, 26.47it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 19.11it/s]100%|██████████| 4/4 [00:00<00:00, 18.44it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.00it/s]100%|██████████| 4/4 [00:00<00:00, 25.62it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.88it/s]100%|██████████| 4/4 [00:00<00:00, 27.67it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.36it/s]100%|██████████| 4/4 [00:00<00:00, 26.78it/s]
+[32m[INFO][0m [32mPrompt executed in 20.08 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 6991.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.47it/s]100%|██████████| 4/4 [00:00<00:00, 24.92it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 6977.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.16it/s]100%|██████████| 4/4 [00:00<00:00, 23.68it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.79it/s]100%|██████████| 4/4 [00:00<00:00, 23.89it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.19it/s]100%|██████████| 4/4 [00:00<00:00, 24.08it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.97it/s]100%|██████████| 4/4 [00:00<00:00, 28.64it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9936.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.92it/s]100%|██████████| 4/4 [00:00<00:00, 23.92it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 10032.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 17.98it/s]100%|██████████| 4/4 [00:00<00:00, 19.89it/s]
+[32m[INFO][0m [32mPrompt executed in 19.59 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13903.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 18.88it/s]100%|██████████| 4/4 [00:00<00:00, 21.38it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10625.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13584.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 29.74it/s]100%|██████████| 4/4 [00:00<00:00, 29.64it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13584.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.17it/s]100%|██████████| 4/4 [00:00<00:00, 24.72it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13584.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.15it/s]100%|██████████| 4/4 [00:00<00:00, 22.51it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13584.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.47it/s]100%|██████████| 4/4 [00:00<00:00, 25.99it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13584.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.63it/s]100%|██████████| 4/4 [00:00<00:00, 25.59it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 13486.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 19.07it/s]100%|██████████| 4/4 [00:00<00:00, 20.49it/s]
+[32m[INFO][0m [32mPrompt executed in 18.65 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13805.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.62it/s]100%|██████████| 4/4 [00:00<00:00, 28.17it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10527.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13486.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.89it/s]100%|██████████| 4/4 [00:00<00:00, 24.36it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.78it/s]100%|██████████| 4/4 [00:00<00:00, 25.60it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.64it/s]100%|██████████| 4/4 [00:00<00:00, 24.98it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.12it/s]100%|██████████| 4/4 [00:00<00:00, 25.42it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.43it/s]100%|██████████| 4/4 [00:00<00:00, 25.05it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.28it/s]100%|██████████| 4/4 [00:00<00:00, 25.14it/s]
+[32m[INFO][0m [32mPrompt executed in 19.36 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13421.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.27it/s]100%|██████████| 4/4 [00:00<00:00, 23.73it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10143.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.16it/s]100%|██████████| 4/4 [00:00<00:00, 25.98it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13006.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.42it/s]100%|██████████| 4/4 [00:00<00:00, 22.65it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.01it/s]100%|██████████| 4/4 [00:00<00:00, 24.20it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13390.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.46it/s]100%|██████████| 4/4 [00:00<00:00, 24.27it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.87it/s]100%|██████████| 4/4 [00:00<00:00, 24.02it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.72it/s]100%|██████████| 4/4 [00:00<00:00, 21.04it/s]
+[32m[INFO][0m [32mPrompt executed in 20.46 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13901.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.59it/s]100%|██████████| 4/4 [00:00<00:00, 25.99it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10623.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.63it/s]100%|██████████| 4/4 [00:00<00:00, 27.03it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13454.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.67it/s]100%|██████████| 4/4 [00:00<00:00, 21.43it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.09it/s]100%|██████████| 4/4 [00:00<00:00, 25.70it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.06it/s]100%|██████████| 4/4 [00:00<00:00, 20.91it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 12878.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 28.01it/s]100%|██████████| 4/4 [00:00<00:00, 26.69it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 12846.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.43it/s]100%|██████████| 4/4 [00:00<00:00, 21.81it/s]
+[32m[INFO][0m [32mPrompt executed in 20.32 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13165.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.82it/s]100%|██████████| 4/4 [00:00<00:00, 23.62it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10623.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.20it/s]100%|██████████| 4/4 [00:00<00:00, 24.19it/s]
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13390.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 19.50it/s]100%|██████████| 4/4 [00:00<00:00, 21.15it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 15.18it/s]100%|██████████| 4/4 [00:00<00:00, 18.32it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 19.43it/s]100%|██████████| 4/4 [00:00<00:00, 19.82it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.58it/s]100%|██████████| 4/4 [00:00<00:00, 24.35it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13102.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 17.94it/s]100%|██████████| 4/4 [00:00<00:00, 20.58it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 12846.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.46it/s]100%|██████████| 4/4 [00:00<00:00, 25.09it/s]
+[32m[INFO][0m [32mPrompt executed in 23.80 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13901.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 27.90it/s]100%|██████████| 4/4 [00:00<00:00, 26.73it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 10623.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.28it/s]100%|██████████| 4/4 [00:00<00:00, 21.67it/s]
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.11it/s]100%|██████████| 4/4 [00:00<00:00, 25.06it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 25.87it/s]100%|██████████| 4/4 [00:00<00:00, 25.64it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 13582.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 12.69it/s]100%|██████████| 4/4 [00:00<00:00, 17.34it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 11854.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.53it/s]100%|██████████| 4/4 [00:00<00:00, 20.69it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9230.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.63it/s]100%|██████████| 4/4 [00:00<00:00, 22.47it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9230.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.89it/s]100%|██████████| 4/4 [00:00<00:00, 22.33it/s]
+[32m[INFO][0m [32mPrompt executed in 27.07 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden,, saved first'
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, saved second'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9517.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.36it/s]100%|██████████| 4/4 [00:00<00:00, 21.05it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 6239.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.21it/s]100%|██████████| 4/4 [00:00<00:00, 21.25it/s]
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.52it/s]100%|██████████| 4/4 [00:00<00:00, 20.66it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.09it/s]100%|██████████| 4/4 [00:00<00:00, 23.08it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.02it/s]100%|██████████| 4/4 [00:00<00:00, 21.10it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.23it/s]100%|██████████| 4/4 [00:00<00:00, 21.46it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 19.56it/s]100%|██████████| 4/4 [00:00<00:00, 19.93it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.56it/s]100%|██████████| 4/4 [00:00<00:00, 20.79it/s]
+[32m[INFO][0m [32mPrompt executed in 37.38 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, alias pose'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 10349.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 18.04it/s]100%|██████████| 4/4 [00:00<00:00, 16.89it/s]100%|██████████| 4/4 [00:00<00:00, 17.02it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 4095.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 7054.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 26.55it/s]100%|██████████| 4/4 [00:00<00:00, 24.55it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 7054.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 19.87it/s]100%|██████████| 4/4 [00:00<00:00, 18.38it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9230.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.41it/s]100%|██████████| 4/4 [00:00<00:00, 21.90it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9230.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.89it/s]100%|██████████| 4/4 [00:00<00:00, 20.83it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.26it/s]100%|██████████| 4/4 [00:00<00:00, 20.98it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 16.04it/s]100%|██████████| 4/4 [00:00<00:00, 17.39it/s]100%|██████████| 4/4 [00:00<00:00, 17.15it/s]
+[32m[INFO][0m [32mPrompt executed in 27.81 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, alias pose'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9517.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.91it/s]100%|██████████| 4/4 [00:00<00:00, 21.19it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 6239.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.31it/s]100%|██████████| 4/4 [00:00<00:00, 20.83it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 23.45it/s]100%|██████████| 4/4 [00:00<00:00, 23.08it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 19.83it/s]100%|██████████| 4/4 [00:00<00:00, 20.42it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.84it/s]100%|██████████| 4/4 [00:00<00:00, 21.26it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.89it/s]100%|██████████| 4/4 [00:00<00:00, 23.69it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 20.72it/s]100%|██████████| 4/4 [00:00<00:00, 20.95it/s]
+[32m[INFO][0m [32mPrompt executed in 33.53 seconds[0m
+[32m[INFO][0m got prompt
+[32m[INFO][0m model weight dtype torch.float32, manual cast: None
+[32m[INFO][0m model_type EPS
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m Using pytorch attention in VAE
+[32m[INFO][0m VAE load device: cuda:0, offload device: cpu, dtype: torch.float32
+[32m[INFO][0m Model storage policy: fast_disk=True paths=['/mnt/teratera/git/ComfyUI/models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors']
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m CLIP/text encoder model load device: cpu, offload device: cpu, current: cpu, dtype: torch.float16
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.1, clip=0.2)
+[32m[INFO][0m [Impact Wildcard] Applying LoRA: SD1.5/etc/add_detail.safetensors (model=0.6, clip=0.6)
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'a {red|blue} flower, __color__,'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m [Impact Wildcard] Encoding prompt: 'garden, alias pose'
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9549.99 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.38it/s]100%|██████████| 4/4 [00:00<00:00, 18.69it/s]
+[32m[INFO][0m Requested to load AutoencoderKL
+[32m[INFO][0m loaded completely; 6239.17 MB usable, 319.11 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 19.58it/s]100%|██████████| 4/4 [00:00<00:00, 21.46it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 50%|█████     | 2/4 [00:00<00:00, 18.59it/s]100%|██████████| 4/4 [00:00<00:00, 19.33it/s]100%|██████████| 4/4 [00:00<00:00, 19.20it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 24.93it/s]100%|██████████| 4/4 [00:00<00:00, 21.87it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.09it/s]100%|██████████| 4/4 [00:00<00:00, 19.79it/s]
+[32m[INFO][0m Requested to load SD1ClipModel
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m Requested to load BaseModel
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 21.63it/s]100%|██████████| 4/4 [00:00<00:00, 21.77it/s]
+[32m[INFO][0m loaded completely;  235.84 MB loaded, full load: True
+[32m[INFO][0m loaded completely; 9198.87 MB usable, 3278.81 MB loaded, full load: True
+  0%|          | 0/4 [00:00<?, ?it/s] 75%|███████▌  | 3/4 [00:00<00:00, 22.63it/s]100%|██████████| 4/4 [00:00<00:00, 22.21it/s]
+[32m[INFO][0m [32mPrompt executed in 32.35 seconds[0m

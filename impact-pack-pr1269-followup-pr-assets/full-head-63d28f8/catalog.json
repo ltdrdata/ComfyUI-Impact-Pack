@@ -1,0 +1,61 @@
+{
+  "name": "catalog",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "catalog",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_widget_catalog.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/catalog.xml"
+      ]
+    },
+    {
+      "label": "tutorial-native",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/tutorial-native.xml",
+        "-k",
+        "native"
+      ]
+    },
+    {
+      "label": "switches",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_switches.py",
+        "tests/test_e2e_switch_loading.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/switches.xml"
+      ]
+    }
+  ],
+  "port": 37409,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog-source",
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "skip_completed_same_run": true
+}

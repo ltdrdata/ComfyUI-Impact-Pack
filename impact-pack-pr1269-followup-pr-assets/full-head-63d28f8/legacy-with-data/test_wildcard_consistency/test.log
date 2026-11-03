@@ -1,0 +1,88 @@
+==========================================
+Wildcard Consistency Test
+==========================================
+
+✓ Backed up original config
+
+Starting consistency tests...
+
+\033[0;34mTesting full_cache mode (cache limit: 50MB)\033[0m
+----------------------------------------
+  Waiting for server startup...
+  [32m[INFO][0m [Impact Pack] Wildcard total size (0.95 MB) is within cache limit (50.00 MB). Using full cache mode.
+
+  Test 1: Simple wildcard substitution
+    Input:  __samples/flower__
+    Output: chrysanthemum
+
+  Test 2: Dynamic prompt
+    Input:  {red|blue|green} flower
+    Output: green flower
+
+  Test 3: Combined wildcard + dynamic prompt
+    Input:  beautiful {red|blue} __samples/flower__ with __samples/jewel__
+    Output: beautiful red lily with emerald
+
+  Test 4: Transitive YAML wildcard (test.yaml)
+    Input:  __colors__ (transitive: __cold__|__warm__ -> blue|red|orange|yellow)
+    Output: blue
+    Expected: blue|red|orange|yellow
+
+  Test 5: Wildcard list API
+    Wildcards found: 1513
+    Sample: __samples/jewel__, __samples/flower__, __sleeves_misc__, __legwear_action__, __kor_wizard__
+
+\033[0;32m✓ full_cache mode tests completed\033[0m
+
+\033[0;34mTesting on_demand mode (cache limit: 1MB)\033[0m
+----------------------------------------
+  Waiting for server startup...
+  [32m[INFO][0m [Impact Pack] Wildcard total size (0.95 MB) is within cache limit (1.00 MB). Using full cache mode.
+
+  Test 1: Simple wildcard substitution
+    Input:  __samples/flower__
+    Output: chrysanthemum
+
+  Test 2: Dynamic prompt
+    Input:  {red|blue|green} flower
+    Output: green flower
+
+  Test 3: Combined wildcard + dynamic prompt
+    Input:  beautiful {red|blue} __samples/flower__ with __samples/jewel__
+    Output: beautiful red lily with emerald
+
+  Test 4: Transitive YAML wildcard (test.yaml)
+    Input:  __colors__ (transitive: __cold__|__warm__ -> blue|red|orange|yellow)
+    Output: blue
+    Expected: blue|red|orange|yellow
+
+  Test 5: Wildcard list API
+    Wildcards found: 1513
+    Sample: __samples/jewel__, __samples/flower__, __sleeves_misc__, __legwear_action__, __kor_wizard__
+
+\033[0;32m✓ on_demand mode tests completed\033[0m
+
+==========================================
+Comparing Results
+==========================================
+
+Test 1: Simple wildcard
+\033[0;32m✓ Results match\033[0m
+
+Test 2: Dynamic prompt
+\033[0;32m✓ Results match\033[0m
+
+Test 3: Combined wildcard + dynamic prompt
+\033[0;32m✓ Results match\033[0m
+
+Test 4: Transitive YAML wildcard
+\033[0;32m✓ Results match\033[0m
+
+Test 5: Wildcard list
+\033[0;32m✓ Wildcard lists match\033[0m
+
+✓ Restored original config
+
+==========================================
+Consistency Test Complete
+==========================================

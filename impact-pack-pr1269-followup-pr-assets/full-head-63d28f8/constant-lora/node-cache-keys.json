@@ -1,0 +1,817 @@
+{
+  "method": "Real CacheKeySetInputSignature, independently recomputed from captured execution prompts; compared with actual cached/executing events",
+  "cases": {
+    "first": {
+      "3": {
+        "class_type": "KSampler",
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "ancestors": [
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "3a48119eeed52bf5bf98ae0d6af2daac90cede803c2472e9a7f356c1e6bee7ed"
+      },
+      "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "ancestors": [],
+        "signature_sha256": "75a7a66f57b33f4d216db67583256f0f6d2a113d4f1e88edfd810d332a347ca6"
+      },
+      "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "ancestors": [],
+        "signature_sha256": "951cea16e1563ea1724afcd0f771dfaf1aa6a1cf21a0beb11c300d06ee6dca9d"
+      },
+      "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4"
+        ],
+        "signature_sha256": "d76abea96948937d537a97fa403c1a00a0cbb07962c4563b846dc19d37dd78fb"
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "ancestors": [
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "2ee8109e9ca8c305d22889839c32d8c8d2ad8234af059b75e4bc9438d1e95076"
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "ancestors": [
+          "8",
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "be59dc01bcb61950d84821383a7ddfa9e06ad3358b5a93c4ed51eda2bce29ecc"
+      },
+      "10": {
+        "class_type": "ImpactWildcardEncode",
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4",
+          "16"
+        ],
+        "signature_sha256": "029c8ac4902c2be2ef33cbea21b6bb4ee4fa621212ea9957928220a98dcece19"
+      },
+      "16": {
+        "class_type": "PrimitiveStringMultiline",
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light"
+        },
+        "ancestors": [],
+        "signature_sha256": "ac536412063b0453d315684aef99887d25a0ae625336a8c64753649c3e478ef9"
+      }
+    },
+    "same": {
+      "3": {
+        "class_type": "KSampler",
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "ancestors": [
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "3a48119eeed52bf5bf98ae0d6af2daac90cede803c2472e9a7f356c1e6bee7ed"
+      },
+      "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "ancestors": [],
+        "signature_sha256": "75a7a66f57b33f4d216db67583256f0f6d2a113d4f1e88edfd810d332a347ca6"
+      },
+      "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "ancestors": [],
+        "signature_sha256": "951cea16e1563ea1724afcd0f771dfaf1aa6a1cf21a0beb11c300d06ee6dca9d"
+      },
+      "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4"
+        ],
+        "signature_sha256": "d76abea96948937d537a97fa403c1a00a0cbb07962c4563b846dc19d37dd78fb"
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "ancestors": [
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "2ee8109e9ca8c305d22889839c32d8c8d2ad8234af059b75e4bc9438d1e95076"
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "ancestors": [
+          "8",
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "be59dc01bcb61950d84821383a7ddfa9e06ad3358b5a93c4ed51eda2bce29ecc"
+      },
+      "10": {
+        "class_type": "ImpactWildcardEncode",
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4",
+          "16"
+        ],
+        "signature_sha256": "029c8ac4902c2be2ef33cbea21b6bb4ee4fa621212ea9957928220a98dcece19"
+      },
+      "16": {
+        "class_type": "PrimitiveStringMultiline",
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light"
+        },
+        "ancestors": [],
+        "signature_sha256": "ac536412063b0453d315684aef99887d25a0ae625336a8c64753649c3e478ef9"
+      }
+    },
+    "changed": {
+      "3": {
+        "class_type": "KSampler",
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "ancestors": [
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "9be9300ccae51a2f49b2c3c55e79010a99d2a3b8b6fc0e054b27f2444b4211f6"
+      },
+      "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "ancestors": [],
+        "signature_sha256": "75a7a66f57b33f4d216db67583256f0f6d2a113d4f1e88edfd810d332a347ca6"
+      },
+      "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "ancestors": [],
+        "signature_sha256": "951cea16e1563ea1724afcd0f771dfaf1aa6a1cf21a0beb11c300d06ee6dca9d"
+      },
+      "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4"
+        ],
+        "signature_sha256": "d76abea96948937d537a97fa403c1a00a0cbb07962c4563b846dc19d37dd78fb"
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "ancestors": [
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "007a2643b3105814ac44f06a7873bd0bcbe55478f622bf3245ae73264046c816"
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "ancestors": [
+          "8",
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "13f07c2e5b4658e2b9ddb15e0efc430ce26c1a9278976aabf4e78f86609580ba"
+      },
+      "10": {
+        "class_type": "ImpactWildcardEncode",
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4",
+          "16"
+        ],
+        "signature_sha256": "029ffa7deefd08efb94ca7153c0857fa710e6c8768319919b1f3b4a17c5c7f9d"
+      },
+      "16": {
+        "class_type": "PrimitiveStringMultiline",
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        },
+        "ancestors": [],
+        "signature_sha256": "633232b4c6c6ab789bc0725c20237bcb57fe4b1b4794fa25da1fa77873c8b9b7"
+      }
+    },
+    "restored-positional": {
+      "3": {
+        "class_type": "KSampler",
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "ancestors": [
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "9be9300ccae51a2f49b2c3c55e79010a99d2a3b8b6fc0e054b27f2444b4211f6"
+      },
+      "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "ancestors": [],
+        "signature_sha256": "75a7a66f57b33f4d216db67583256f0f6d2a113d4f1e88edfd810d332a347ca6"
+      },
+      "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "ancestors": [],
+        "signature_sha256": "951cea16e1563ea1724afcd0f771dfaf1aa6a1cf21a0beb11c300d06ee6dca9d"
+      },
+      "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4"
+        ],
+        "signature_sha256": "d76abea96948937d537a97fa403c1a00a0cbb07962c4563b846dc19d37dd78fb"
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "ancestors": [
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "007a2643b3105814ac44f06a7873bd0bcbe55478f622bf3245ae73264046c816"
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "ancestors": [
+          "8",
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "13f07c2e5b4658e2b9ddb15e0efc430ce26c1a9278976aabf4e78f86609580ba"
+      },
+      "10": {
+        "class_type": "ImpactWildcardEncode",
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4",
+          "16"
+        ],
+        "signature_sha256": "029ffa7deefd08efb94ca7153c0857fa710e6c8768319919b1f3b4a17c5c7f9d"
+      },
+      "16": {
+        "class_type": "PrimitiveStringMultiline",
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        },
+        "ancestors": [],
+        "signature_sha256": "633232b4c6c6ab789bc0725c20237bcb57fe4b1b4794fa25da1fa77873c8b9b7"
+      }
+    },
+    "restored-named": {
+      "3": {
+        "class_type": "KSampler",
+        "inputs": {
+          "seed": 944516346096519,
+          "steps": 20,
+          "cfg": 8.0,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1.0,
+          "model": [
+            "10",
+            0
+          ],
+          "positive": [
+            "10",
+            2
+          ],
+          "negative": [
+            "7",
+            0
+          ],
+          "latent_image": [
+            "5",
+            0
+          ]
+        },
+        "ancestors": [
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "9be9300ccae51a2f49b2c3c55e79010a99d2a3b8b6fc0e054b27f2444b4211f6"
+      },
+      "4": {
+        "class_type": "CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "SD1.5/epicrealism_naturalSinRC1VAE.safetensors"
+        },
+        "ancestors": [],
+        "signature_sha256": "75a7a66f57b33f4d216db67583256f0f6d2a113d4f1e88edfd810d332a347ca6"
+      },
+      "5": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 768,
+          "batch_size": 1
+        },
+        "ancestors": [],
+        "signature_sha256": "951cea16e1563ea1724afcd0f771dfaf1aa6a1cf21a0beb11c300d06ee6dca9d"
+      },
+      "7": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "text, watermark",
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4"
+        ],
+        "signature_sha256": "d76abea96948937d537a97fa403c1a00a0cbb07962c4563b846dc19d37dd78fb"
+      },
+      "8": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            2
+          ]
+        },
+        "ancestors": [
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "007a2643b3105814ac44f06a7873bd0bcbe55478f622bf3245ae73264046c816"
+      },
+      "9": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "ComfyUI",
+          "images": [
+            "8",
+            0
+          ]
+        },
+        "ancestors": [
+          "8",
+          "3",
+          "5",
+          "10",
+          "4",
+          "16",
+          "7"
+        ],
+        "signature_sha256": "13f07c2e5b4658e2b9ddb15e0efc430ce26c1a9278976aabf4e78f86609580ba"
+      },
+      "10": {
+        "class_type": "ImpactWildcardEncode",
+        "inputs": {
+          "wildcard_text": [
+            "16",
+            0
+          ],
+          "populated_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+          "mode": "reproduce",
+          "Select to add LoRA": "Select the LoRA to add to the text",
+          "Select to add Wildcard": "Select the Wildcard to add to the text",
+          "seed": 0,
+          "model": [
+            "4",
+            0
+          ],
+          "clip": [
+            "4",
+            1
+          ]
+        },
+        "ancestors": [
+          "4",
+          "16"
+        ],
+        "signature_sha256": "029ffa7deefd08efb94ca7153c0857fa710e6c8768319919b1f3b4a17c5c7f9d"
+      },
+      "16": {
+        "class_type": "PrimitiveStringMultiline",
+        "inputs": {
+          "value": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        },
+        "ancestors": [],
+        "signature_sha256": "633232b4c6c6ab789bc0725c20237bcb57fe4b1b4794fa25da1fa77873c8b9b7"
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "previous": "first",
+      "current": "same",
+      "input_changes": [],
+      "same_cache_keys": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "changed_cache_keys": []
+    },
+    {
+      "previous": "same",
+      "current": "changed",
+      "input_changes": [
+        {
+          "node": "10",
+          "class_type": "ImpactWildcardEncode",
+          "input": "populated_text",
+          "before": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+          "after": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        },
+        {
+          "node": "16",
+          "class_type": "PrimitiveStringMultiline",
+          "input": "value",
+          "before": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+          "after": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door"
+        }
+      ],
+      "same_cache_keys": [
+        "4",
+        "5",
+        "7"
+      ],
+      "changed_cache_keys": [
+        "3",
+        "8",
+        "9",
+        "10",
+        "16"
+      ]
+    },
+    {
+      "previous": "changed",
+      "current": "restored-positional",
+      "input_changes": [],
+      "same_cache_keys": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "changed_cache_keys": []
+    },
+    {
+      "previous": "restored-positional",
+      "current": "restored-named",
+      "input_changes": [],
+      "same_cache_keys": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "changed_cache_keys": []
+    }
+  ]
+}

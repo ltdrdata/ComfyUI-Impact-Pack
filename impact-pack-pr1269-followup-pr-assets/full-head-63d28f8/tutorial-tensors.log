@@ -1,0 +1,16 @@
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+WARNING:root:WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+test_original_lbw_vector_and_strengths (__main__.main.<locals>.TutorialTensorTests.test_original_lbw_vector_and_strengths) ... ok
+test_sdxl_empty_prompt_passes_model_and_clip_through (__main__.main.<locals>.TutorialTensorTests.test_sdxl_empty_prompt_passes_model_and_clip_through) ... ok
+test_sdxl_seed_changes_selected_lora_and_downstream_clip (__main__.main.<locals>.TutorialTensorTests.test_sdxl_seed_changes_selected_lora_and_downstream_clip) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 25.019s
+
+OK

@@ -1,0 +1,114 @@
+==========================================
+Dynamic Prompt Full Validation Test
+==========================================
+Validating: All dynamic prompt features
+
+==========================================
+MULTISELECT VALIDATION
+==========================================
+
+\033[0;34m=== Test 1: 2-item multiselect ===\033[0m
+Prompt: \033[1;33m{2$$, $$red|blue|green|yellow}\033[0m
+Expected: 2 items per result, separator: ', '
+Testing 20 iterations: .................... Done
+Results: \033[0;32m20 passed\033[0m, \033[0;31m0 failed\033[0m
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 2: 3-item multiselect ===\033[0m
+Prompt: \033[1;33m{3$$ and $$alpha|beta|gamma|delta|epsilon}\033[0m
+Expected: 3 items per result, separator: ' and '
+Testing 20 iterations: .................... Done
+Results: \033[0;32m20 passed\033[0m, \033[0;31m0 failed\033[0m
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 3: Single-item multiselect ===\033[0m
+Prompt: \033[1;33m{1$$ $$one|two|three}\033[0m
+Expected: 1 items per result, separator: ' '
+Testing 20 iterations: .................... Done
+Results: \033[0;32m20 passed\033[0m, \033[0;31m0 failed\033[0m
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 4: Max-item multiselect (all 4) ===\033[0m
+Prompt: \033[1;33m{4$$-$$cat|dog|bird|fish}\033[0m
+Expected: 4 items per result, separator: '-'
+Testing 20 iterations: .................... Done
+Results: \033[0;32m20 passed\033[0m, \033[0;31m0 failed\033[0m
+\033[0;32m✅ PASS\033[0m
+
+==========================================
+WEIGHTED SELECTION VALIDATION
+==========================================
+
+\033[0;34m=== Test 5: Heavy bias 10:1 (100 iterations) ===\033[0m
+Prompt: \033[1;33m{10::common|1::rare}\033[0m
+Testing 100 iterations: .................................................................................................... Done
+Distribution:
+  common: 93 / 100 (93.0%)
+  rare: 7 / 100 (7.0%)
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 6: Equal weights 1:1:1 (60 iterations) ===\033[0m
+Prompt: \033[1;33m{1::alpha|1::beta|1::gamma}\033[0m
+Testing 60 iterations: ............................................................ Done
+Distribution:
+  alpha: 20 / 60 (33.3%)
+  beta: 20 / 60 (33.3%)
+  gamma: 20 / 60 (33.3%)
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 7: Extreme bias 100:1 (100 iterations) ===\033[0m
+Prompt: \033[1;33m{100::very_common|1::very_rare}\033[0m
+Testing 100 iterations: .................................................................................................... Done
+Distribution:
+  very_common: 100 / 100 (100.0%)
+  very_rare: 0 / 100 (0.0%)
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 8: Multi-level weights 5:3:2 (100 iterations) ===\033[0m
+Prompt: \033[1;33m{5::high|3::medium|2::low}\033[0m
+Testing 100 iterations: .................................................................................................... Done
+Distribution:
+  high: 51 / 100 (51.0%)
+  medium: 34 / 100 (34.0%)
+  low: 15 / 100 (15.0%)
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 9: Default weight mixing (100 iterations) ===\033[0m
+Prompt: \033[1;33m{10::weighted|unweighted}\033[0m
+Testing 100 iterations: .................................................................................................... Done
+Distribution:
+  weighted: 100 / 100 (100.0%)
+  unweighted: 0 / 100 (0.0%)
+\033[0;32m✅ PASS\033[0m
+
+==========================================
+BASIC SELECTION VALIDATION
+==========================================
+
+\033[0;34m=== Test 10: Simple random selection (50 iterations) ===\033[0m
+Prompt: \033[1;33m{option_a|option_b|option_c}\033[0m
+Testing 50 iterations: .................................................. Done
+Distribution:
+  option_a: 15 / 50 (30.0%)
+  option_b: 17 / 50 (34.0%)
+  option_c: 18 / 50 (36.0%)
+\033[0;32m✅ PASS\033[0m
+
+\033[0;34m=== Test 11: Nested selection (50 iterations) ===\033[0m
+Prompt: \033[1;33m{outer_{inner1|inner2}|simple}\033[0m
+Testing 50 iterations: .................................................. Done
+Distribution:
+  outer_inner1: 9 / 50 (18.0%)
+  outer_inner2: 17 / 50 (34.0%)
+  simple: 24 / 50 (48.0%)
+\033[0;32m✅ PASS\033[0m
+
+==========================================
+SUMMARY
+==========================================
+
+Total test groups: 11
+\033[0;32mPassed: 11\033[0m
+\033[0;31mFailed: 0\033[0m
+
+\033[0;32m✅ All tests passed\033[0m

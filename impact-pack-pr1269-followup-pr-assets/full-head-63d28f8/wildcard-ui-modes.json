@@ -1,0 +1,12 @@
+{
+  "wildcard-full": {
+    "on_demand_mode": false,
+    "source": "server.log",
+    "confirmation": "[INFO] [Impact Pack] Wildcard total size (0.02 MB) is within cache limit (50.00 MB). Using full cache mode."
+  },
+  "ondemand-corrected": {
+    "on_demand_mode": true,
+    "source": "server.log",
+    "confirmation": "[INFO] [Impact Pack] On-demand mode active. Discovered 32 TXT wildcards (metadata only). Pre-loaded 0 YAML wildcards. TXT wildcard content will be loaded only when accessed."
+  }
+}

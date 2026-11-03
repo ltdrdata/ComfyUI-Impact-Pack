@@ -1,0 +1,30 @@
+[
+  {
+    "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/test-review/controls-source",
+    "files_checked": 170,
+    "production_identical": true,
+    "documented_differences": []
+  },
+  {
+    "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/test-review/full-source",
+    "files_checked": 170,
+    "production_identical": true,
+    "documented_differences": []
+  },
+  {
+    "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/test-review/ondemand-source",
+    "files_checked": 170,
+    "production_identical": true,
+    "documented_differences": []
+  },
+  {
+    "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/test-review/progressive/test_progressive_ondemand/source",
+    "files_checked": 170,
+    "production_identical": true,
+    "documented_differences": [
+      "docs/E2E_TEST_STRATEGY.md",
+      "tests/wildcards/test_progressive_ondemand.sh",
+      "tests/wildcards/README.md"
+    ]
+  }
+]

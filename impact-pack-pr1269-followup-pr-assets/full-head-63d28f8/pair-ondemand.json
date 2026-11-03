@@ -1,0 +1,23 @@
+{
+  "name": "pair-ondemand",
+  "port": 37149,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair-ondemand-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "pair",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/pair_check.py",
+        "ondemand"
+      ]
+    }
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

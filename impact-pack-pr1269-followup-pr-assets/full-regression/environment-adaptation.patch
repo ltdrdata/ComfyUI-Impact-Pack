@@ -1,0 +1,30 @@
+--- candidate/tests/e2e_wildcards.py
++++ cpu/tests/e2e_wildcards.py
+@@ -16,6 +16,7 @@
+     colors = set(samples.read_text(encoding="utf-8").splitlines())
+     with browser_session(args) as ui:
+         page = ui.page
++        page.keyboard.press("Escape")
+         ui.new_workflow()
+         ui.add_node("ImpactWildcardProcessor", "ImpactWildcardProcessor", 350, 250)
+         wildcard = page.get_by_placeholder("Wildcard Prompt (User input)", exact=True)
+--- candidate/tests/e2e_dd_compat.py
++++ gpu/tests/e2e_dd_compat.py
+@@ -127,6 +127,7 @@
+ def main():
+     args = options(__doc__)
+     with browser_session(args) as ui:
++        ui.page.keyboard.press("Escape")
+         # Import the prepared graph through the frontend's file input. The
+         # frontend performs node creation, widget callbacks, and connections.
+         ui.load_workflow({
+--- candidate/tests/e2e_wildcards.py
++++ ondemand/tests/e2e_wildcards.py
+@@ -16,6 +16,7 @@
+     colors = set(samples.read_text(encoding="utf-8").splitlines())
+     with browser_session(args) as ui:
+         page = ui.page
++        page.keyboard.press("Escape")
+         ui.new_workflow()
+         ui.add_node("ImpactWildcardProcessor", "ImpactWildcardProcessor", 350, 250)
+         wildcard = page.get_by_placeholder("Wildcard Prompt (User input)", exact=True)

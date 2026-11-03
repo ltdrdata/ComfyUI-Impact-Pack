@@ -1,0 +1,6 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-corrected/wildcard-ui
+PASS: UI Run completed (8803f9d0-c601-4201-bbf2-fba70cf3cde4)
+PASS: UI Run completed (9a62cea1-316d-466f-a382-312b9d16973f)
+PASS: UI Run completed (e32e5a09-219c-4608-837b-6583026b1eac)
+PASS: UI Run completed (733a79d2-059d-4004-888f-865991e1338a)
+PASS: UI node creation/linking, populate/fixed/reproduce, UTF-8, and preview updates

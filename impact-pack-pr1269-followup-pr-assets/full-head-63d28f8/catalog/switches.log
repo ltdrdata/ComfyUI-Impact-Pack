@@ -1,0 +1,78 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog-source/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 55 items
+
+tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactSwitch] PASSED [  1%]
+tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactMakeAnyList] PASSED [  3%]
+tests/test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactInversedSwitch] PASSED [  5%]
+tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactSwitch] PASSED [  7%]
+tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactMakeAnyList] PASSED [  9%]
+tests/test_e2e_switches.py::test_disconnect_and_reconnect_after_loading[ImpactInversedSwitch] PASSED [ 10%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactSwitch] PASSED [ 12%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactMakeAnyList] PASSED [ 14%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[input_first-ImpactInversedSwitch] PASSED [ 16%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactSwitch] PASSED [ 18%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactMakeAnyList] PASSED [ 20%]
+tests/test_e2e_switches.py::test_wildcard_output_connections_in_native_workflow[output_first-ImpactInversedSwitch] PASSED [ 21%]
+tests/test_e2e_switches.py::test_keep_selection_when_removing_another_connection[ImpactSwitch-3-inputs] PASSED [ 23%]
+tests/test_e2e_switches.py::test_keep_selection_when_removing_another_connection[ImpactInversedSwitch-22-outputs] PASSED [ 25%]
+tests/test_e2e_switches.py::test_inversed_switch_keeps_other_outputs_when_reroute_disconnects_during_load PASSED [ 27%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-ImpactSwitch] PASSED [ 29%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-ImpactInversedSwitch] PASSED [ 30%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-LatentSwitch] PASSED [ 32%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_execution-SEGSSwitch] PASSED [ 34%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-ImpactSwitch] PASSED [ 36%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-ImpactInversedSwitch] PASSED [ 38%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-LatentSwitch] PASSED [ 40%]
+tests/test_e2e_switches.py::test_switch_selection_modes_and_legacy_names[on_prompt-SEGSSwitch] PASSED [ 41%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-ImpactSwitch] PASSED [ 43%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-LatentSwitch] PASSED [ 45%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_execution-SEGSSwitch] PASSED [ 47%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-ImpactSwitch] PASSED [ 49%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-LatentSwitch] PASSED [ 50%]
+tests/test_e2e_switches.py::test_inversed_switch_branches_rejoin[on_prompt-SEGSSwitch] PASSED [ 52%]
+tests/test_e2e_switches.py::test_switch_does_not_execute_unselected_input[on_execution] PASSED [ 54%]
+tests/test_e2e_switches.py::test_switch_does_not_execute_unselected_input[on_prompt] PASSED [ 56%]
+tests/test_e2e_switches.py::test_inversed_switch_disconnected_chain_on_prompt PASSED [ 58%]
+tests/test_e2e_switches.py::test_image_previews_follow_current_execution[updated] PASSED [ 60%]
+tests/test_e2e_switches.py::test_image_previews_follow_current_execution[blocked] PASSED [ 61%]
+tests/test_e2e_switches.py::test_image_previews_follow_current_execution[stale] PASSED [ 63%]
+tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeImageList-32] PASSED [ 65%]
+tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeImageBatch-32] PASSED [ 67%]
+tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskList-32] PASSED [ 69%]
+tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskBatch-16] PASSED [ 70%]
+tests/test_e2e_switches.py::test_image_and_mask_combine_after_loading[ImpactMakeMaskBatch-32] PASSED [ 72%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[single] PASSED [ 74%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[same_size] PASSED [ 76%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[downscale_crop] PASSED [ 78%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[upscale_crop] PASSED [ 80%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[height_one] PASSED [ 81%]
+tests/test_e2e_switches.py::test_mask_batch_preserves_patterns_and_order[width_one] PASSED [ 83%]
+tests/test_e2e_switches.py::test_segs_concat_after_loading PASSED        [ 85%]
+tests/test_e2e_switch_loading.py::test_unconnected_switch_widgets_survive_native_round_trip[positional] PASSED [ 87%]
+tests/test_e2e_switch_loading.py::test_unconnected_switch_widgets_survive_native_round_trip[named] PASSED [ 89%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-linked] PASSED [ 90%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-selected_empty_tail] PASSED [ 92%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[positional-selected_empty_middle] PASSED [ 94%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-linked] PASSED [ 96%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_tail] PASSED [ 98%]
+tests/test_e2e_switch_loading.py::test_unused_switch_inputs_preserve_selection_and_output[named-selected_empty_middle] PASSED [100%]
+
+=============================== warnings summary ===============================
+test_e2e_switches.py::test_workflow_import_and_browser_reload[ImpactSwitch]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/catalog/switches.xml -
+================== 55 passed, 1 warning in 353.45s (0:05:53) ===================

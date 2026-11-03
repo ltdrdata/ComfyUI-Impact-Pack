@@ -1,0 +1,5 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list
+PASS: UI Run completed (9238e22e-d760-42a0-bfa6-81634a63d7fa)
+{"requested_seed": 2, "execution_seed": 2, "expected": ["red", "plain"], "actual": ["red", "plain"], "matches_expected": true, "cached_nodes": [], "wildcard_node": "1", "preview_node": "2"}
+PASS: UI Run completed (ef4fea49-dc78-4fe2-93f9-8ebf64600b2b)
+{"requested_seed": 5, "execution_seed": 5, "expected": ["blue", "plain"], "actual": ["blue", "plain"], "matches_expected": true, "cached_nodes": ["3", "4", "5"], "wildcard_node": "1", "preview_node": "2"}

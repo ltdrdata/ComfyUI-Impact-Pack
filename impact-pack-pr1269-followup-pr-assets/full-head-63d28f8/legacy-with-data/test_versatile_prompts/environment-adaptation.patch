@@ -1,0 +1,48 @@
+--- original/tests/wildcards/test_versatile_prompts.sh
++++ isolated/tests/wildcards/test_versatile_prompts.sh
+@@ -4,8 +4,8 @@
+ 
+ # Auto-detect paths
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+-PORT=8192
++IMPACT_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/source"
++PORT=53243
+ CONFIG_FILE="$IMPACT_DIR/impact-pack.ini"
+ 
+ GREEN='\033[0;32m'
+@@ -35,14 +35,14 @@
+ echo ""
+ 
+ # Kill existing servers
+-pkill -9 -f "python.*main.py" 2>/dev/null || true
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/runtime 2>/dev/null || true
+ sleep 3
+ 
+ # Start server
+-COMFYUI_DIR="$(cd "$IMPACT_DIR/../.." && pwd)"
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/comfy"
+ cd "$COMFYUI_DIR"
+ echo "Starting ComfyUI server on port $PORT..."
+-bash run.sh --listen 127.0.0.1 --port $PORT > /tmp/versatile_test.log 2>&1 &
++bash run.sh --listen 127.0.0.1 --port $PORT > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/tmp/versatile_test.log 2>&1 &
+ SERVER_PID=$!
+ 
+ # Wait for server
+@@ -258,7 +258,7 @@
+ 
+ # Stop server
+ kill $SERVER_PID 2>/dev/null
+-pkill -9 -f "python.*main.py.*$PORT" 2>/dev/null
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/runtime 2>/dev/null || true
+ 
+ echo "=========================================="
+ echo "Test Summary"
+@@ -277,5 +277,5 @@
+ echo "  - Real-World Scenarios (3 tests)"
+ echo "  - Edge Cases (5 tests)"
+ echo ""
+-echo "Log saved to: /tmp/versatile_test.log"
+-echo ""
++echo "Log saved to: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_versatile_prompts/tmp/versatile_test.log"
++echo ""

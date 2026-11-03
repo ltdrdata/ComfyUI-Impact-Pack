@@ -1,0 +1,186 @@
+==========================================
+Deep Nesting Test Suite (7 Levels)
+==========================================
+Port: 41087
+Testing: Transitive wildcard expansion
+
+Killing any existing server on port 41087...
+Setting up configuration...
+Configuration created: custom_wildcards = /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_deep_nesting/source/tests/wildcards/samples
+
+Starting ComfyUI server on port 41087...
+Server PID: 1314545
+Waiting for server startup...
+✅ Server ready (5s)
+
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;36m--- Direct Level Access Tests ---\033[0m
+
+\033[0;34m=== Test 01: Level 7 (Final) ===\033[0m
+Prompt: \033[1;33m__test_nesting_level7__\033[0m
+Seed: 100
+Expected nesting depth: 0
+Result: \033[0;32mlevel7_final\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 02: Level 6 → Level 7 ===\033[0m
+Prompt: \033[1;33m__test_nesting_level6__\033[0m
+Seed: 200
+Expected nesting depth: 1
+Result: \033[0;32mlevel7_option_c\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 03: Level 5 → Level 6 → Level 7 ===\033[0m
+Prompt: \033[1;33m__test_nesting_level5__\033[0m
+Seed: 300
+Expected nesting depth: 2
+Result: \033[0;32mlevel6_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 04: Level 4 → ... → Level 7 ===\033[0m
+Prompt: \033[1;33m__test_nesting_level4__\033[0m
+Seed: 400
+Expected nesting depth: 3
+Result: \033[0;32mlevel4_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 05: Level 3 → ... → Level 7 ===\033[0m
+Prompt: \033[1;33m__test_nesting_level3__\033[0m
+Seed: 500
+Expected nesting depth: 4
+Result: \033[0;32mlevel3_option_a\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 06: Level 2 → ... → Level 7 ===\033[0m
+Prompt: \033[1;33m__test_nesting_level2__\033[0m
+Seed: 600
+Expected nesting depth: 5
+Result: \033[0;32mlevel4_option_a\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 07: Level 1 → ... → Level 7 (Full 7 levels) ===\033[0m
+Prompt: \033[1;33m__test_nesting_level1__\033[0m
+Seed: 700
+Expected nesting depth: 6
+Result: \033[0;32mlevel3_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+
+\033[0;36m--- Multiple Nesting Tests ---\033[0m
+
+\033[0;34m=== Test 08: Two level 1 wildcards ===\033[0m
+Prompt: \033[1;33m__test_nesting_level1__ and __test_nesting_level1__\033[0m
+Seed: 800
+Expected nesting depth: 6
+Result: \033[0;32mlevel2_option_a and level1_option_a\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 09: Mixed depths ===\033[0m
+Prompt: \033[1;33m__test_nesting_level1__ with __test_nesting_level4__\033[0m
+Seed: 900
+Expected nesting depth: 6
+Result: \033[0;32mlevel1_option_a with level5_option_a\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 10: Level 1 in dynamic prompt ===\033[0m
+Prompt: \033[1;33m{__test_nesting_level1__|__test_nesting_level2__|__test_nesting_level3__}\033[0m
+Seed: 1000
+Expected nesting depth: 6
+Result: \033[0;32mlevel2_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+
+\033[0;36m--- Complex Combination Tests ---\033[0m
+
+\033[0;34m=== Test 11: Nesting with quantifier ===\033[0m
+Prompt: \033[1;33m2#__test_nesting_level1__\033[0m
+Seed: 1100
+Expected nesting depth: 6
+Result: \033[0;32mlevel1_option_a|level2_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 12: Nesting with multi-select ===\033[0m
+Prompt: \033[1;33m{2$$, $$__test_nesting_level1__|__test_nesting_level2__|__test_nesting_level3__}\033[0m
+Seed: 1200
+Expected nesting depth: 6
+Result: \033[0;32mlevel2_option_a, level1_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 13: Nesting with weighted selection ===\033[0m
+Prompt: \033[1;33m{5::__test_nesting_level1__|3::__test_nesting_level3__|1::__test_nesting_level5__}\033[0m
+Seed: 1300
+Expected nesting depth: 6
+Result: \033[0;32mlevel5_option_a\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 14: Very deep with other wildcards ===\033[0m
+Prompt: \033[1;33m__test_nesting_level1__ beautiful __아름다운색__\033[0m
+Seed: 1400
+Expected nesting depth: 6
+Result: \033[0;32mlevel2_option_a beautiful 캔디핑크\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 15: All 7 levels in one prompt ===\033[0m
+Prompt: \033[1;33m__test_nesting_level1__, __test_nesting_level2__, __test_nesting_level3__, __test_nesting_level4__, __test_nesting_level5__, __test_nesting_level6__, __test_nesting_level7__\033[0m
+Seed: 1500
+Expected nesting depth: 6
+Result: \033[0;32mlevel3_option_b, level3_option_b, level3_option_a, level5_option_a, level5_option_a, level7_option_a, level7_option_c\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+
+\033[0;36m--- Depth-Agnostic Pattern Matching Tests ---\033[0m
+
+\033[0;34m=== Test 16: Pattern matching __*/test_nesting_level7__ ===\033[0m
+Prompt: \033[1;33m__*/test_nesting_level7__\033[0m
+Seed: 1600
+Expected nesting depth: 0
+Result: \033[0;32mlevel7_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+\033[0;34m=== Test 17: Pattern matching __*/test_nesting_level4__ ===\033[0m
+Prompt: \033[1;33m__*/test_nesting_level4__\033[0m
+Seed: 1700
+Expected nesting depth: 3
+Result: \033[0;32mlevel6_option_b\033[0m
+Status: \033[0;32m✅ PASS - All wildcards fully expanded\033[0m
+
+
+==========================================
+Loaded Wildcards Check
+==========================================
+Loaded wildcards:
+  __level1/test_nesting_level1__
+  __level1/level2/test_nesting_level2__
+  __level1/level2/level3/test_nesting_level3__
+  __level1/level2/level3/level4/test_nesting_level4__
+  __level1/level2/level3/level4/level5/test_nesting_level5__
+  __level1/level2/level3/level4/level5/level6/test_nesting_level6__
+  __level1/level2/level3/level4/level5/level6/level7/test_nesting_level7__
+
+Total nesting wildcards loaded: 7
+\033[0;32m✅ All 7 nesting levels loaded\033[0m
+
+==========================================
+Summary
+==========================================
+\033[0;32m✅ Deep nesting tests completed\033[0m
+
+Test results:
+  1. 7-level transitive expansion tested ✓
+  2. All depth levels (1-7) individually tested ✓
+  3. Mixed depth combinations tested ✓
+  4. Nesting with quantifiers and multi-select ✓
+  5. Nesting with weighted selection ✓
+  6. Depth-agnostic pattern matching (__*/pattern__) ✓
+  7. Complex multi-wildcard prompts ✓
+
+Maximum nesting depth verified: 7 levels
+All wildcards should be fully expanded without crashes
+
+Log file: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-with-data/test_deep_nesting/tmp/deep_nesting_test.log
+
+Cleaning up...
+Cleanup complete

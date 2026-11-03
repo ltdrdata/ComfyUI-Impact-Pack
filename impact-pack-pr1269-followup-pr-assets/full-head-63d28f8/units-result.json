@@ -1,0 +1,176 @@
+[
+  {
+    "label": "configured-unit",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-c",
+      "pytest.ini",
+      "-q",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/configured-unit.xml"
+    ],
+    "exit_code": 0,
+    "seconds": 1.4579565525054932
+  },
+  {
+    "label": "browser-harness",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-c",
+      "tests/pytest.ini",
+      "tests/test_e2e_ui.py",
+      "-q",
+      "--junitxml={root}/browser-harness.xml"
+    ],
+    "exit_code": 0,
+    "seconds": 2.537412643432617
+  },
+  {
+    "label": "cache-hook",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_cache.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--report",
+      "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-hook.json"
+    ],
+    "exit_code": 0,
+    "seconds": 4.750427007675171
+  },
+  {
+    "label": "cache-tensors",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_cache_tensors.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--report",
+      "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/cache-tensors.json"
+    ],
+    "exit_code": 0,
+    "seconds": 11.158485889434814
+  },
+  {
+    "label": "failure-detection",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/check_failure_detection.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.5132863521575928
+  },
+  {
+    "label": "sam-mask-unit",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-c",
+      "tests/pytest.ini",
+      "tests/test_sam_masks.py",
+      "tests/test_mask_to_segs.py",
+      "-q",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/sam-mask-unit.xml"
+    ],
+    "exit_code": 0,
+    "seconds": 6.418785095214844
+  },
+  {
+    "label": "animatediff-unit",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-c",
+      "tests/pytest.ini",
+      "tests/test_animatediff_assembly.py",
+      "-q",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/animatediff-unit.xml"
+    ],
+    "exit_code": 0,
+    "seconds": 7.1696741580963135
+  },
+  {
+    "label": "mask-blur",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "-m",
+      "pytest",
+      "-c",
+      "tests/pytest.ini",
+      "tests/test_mask_blur.py",
+      "-q",
+      "--tb=short",
+      "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mask-blur.xml"
+    ],
+    "exit_code": 0,
+    "seconds": 4.634902000427246
+  },
+  {
+    "label": "legacy-sam-js",
+    "command": [
+      "node",
+      "--experimental-vm-modules",
+      "--test",
+      "tests/legacy_sam.test.mjs"
+    ],
+    "exit_code": 0,
+    "seconds": 0.0649418830871582
+  },
+  {
+    "label": "lora-source-js",
+    "command": [
+      "node",
+      "--test",
+      "tests/lora_wildcard_source.test.mjs"
+    ],
+    "exit_code": 0,
+    "seconds": 0.07677054405212402
+  },
+  {
+    "label": "lora-tensors",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_lora_wildcard_tensors.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI"
+    ],
+    "exit_code": 0,
+    "seconds": 8.268712043762207
+  },
+  {
+    "label": "lora-validation",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_lora_wildcard_validation.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI"
+    ],
+    "exit_code": 0,
+    "seconds": 5.685253858566284
+  },
+  {
+    "label": "tutorial-tensors",
+    "command": [
+      "/home/rho/venv/bin/python",
+      "tests/integration_wildcard_tutorial_tensors.py",
+      "--comfy-root",
+      "/mnt/teratera/git/ComfyUI",
+      "--tutorials-root",
+      "/mnt/teratera/git/ComfyUI-extension-tutorials",
+      "--inspire-root",
+      "/mnt/teratera/git/ComfyUI/custom_nodes/comfyui-inspire-pack",
+      "--report",
+      "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/tutorial-tensors.json"
+    ],
+    "exit_code": 0,
+    "seconds": 31.88542342185974
+  }
+]

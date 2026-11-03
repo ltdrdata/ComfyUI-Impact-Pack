@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: late creation response cannot replace a restored selection
+ok 1 - late creation response cannot replace a restored selection
+  ---
+  duration_ms: 5.347016
+  ...
+# Subtest: only the latest category response can update the dropdown
+ok 2 - only the latest category response can update the dropdown
+  ---
+  duration_ms: 1.140849
+  ...
+# Subtest: returning to a category rejects its older response after a new selection
+ok 3 - returning to a category rejects its older response after a new selection
+  ---
+  duration_ms: 1.435686
+  ...
+# Subtest: missing saved choices survive restoration for backend validation
+ok 4 - missing saved choices survive restoration for backend validation
+  ---
+  duration_ms: 0.872531
+  ...
+# Subtest: category query values are encoded
+ok 5 - category query values are encoded
+  ---
+  duration_ms: 0.839498
+  ...
+# Subtest: existing nodes are not changed or queried
+ok 6 - existing nodes are not changed or queried
+  ---
+  duration_ms: 1.250606
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 49.54343

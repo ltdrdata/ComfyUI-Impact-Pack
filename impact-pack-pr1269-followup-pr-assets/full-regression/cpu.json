@@ -1,0 +1,70 @@
+{
+  "name": "cpu",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/cpu-source",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "mask-native",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_mask_to_segs.py",
+        "tests/test_e2e_mask_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/mask-native.xml"
+      ]
+    },
+    {
+      "label": "legacy-sam",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_legacy_sam.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/legacy-sam.xml"
+      ]
+    },
+    {
+      "label": "animatediff-native",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_animatediff_tutorials.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/animatediff-native"
+      ]
+    },
+    {
+      "label": "wildcard-ui",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_wildcards.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/wildcard-ui"
+      ]
+    },
+    {
+      "label": "encoding-api",
+      "args": [
+        "bash",
+        "tests/test_encoding.sh",
+        "{url}"
+      ]
+    }
+  ],
+  "port": 56331
+}

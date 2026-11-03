@@ -1,0 +1,119 @@
+{
+  "api": [
+    {
+      "scenario": "http-error",
+      "exit_code": 1,
+      "posts": [
+        1,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "requests.exceptions.HTTPError: 503 Server Error: Service Unavailable for url: http://127.0.0.1:46279/impact/wildcards"
+    },
+    {
+      "scenario": "missing-text",
+      "exit_code": 1,
+      "posts": [
+        1,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "KeyError: 'text'"
+    },
+    {
+      "scenario": "empty-text",
+      "exit_code": 1,
+      "posts": [
+        1,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "AssertionError: ('Simple wildcard', '')"
+    },
+    {
+      "scenario": "error-text",
+      "exit_code": 1,
+      "posts": [
+        1,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "AssertionError: ('Simple wildcard', 'ERROR: connection failed')"
+    },
+    {
+      "scenario": "unexpanded",
+      "exit_code": 1,
+      "posts": [
+        1,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "AssertionError: ('Simple wildcard', '__colors__')"
+    },
+    {
+      "scenario": "wrong-mode",
+      "exit_code": 1,
+      "posts": [
+        7,
+        0
+      ],
+      "expected_success": false,
+      "last_line": "AssertionError: {'on_demand_mode': False, 'data': []}"
+    },
+    {
+      "scenario": "unequal-results",
+      "exit_code": 1,
+      "posts": [
+        7,
+        7
+      ],
+      "expected_success": false,
+      "last_line": "AssertionError: ('Simple wildcard', 'red', 'blue')"
+    },
+    {
+      "scenario": "valid-responses",
+      "exit_code": 0,
+      "posts": [
+        7,
+        7
+      ],
+      "expected_success": true,
+      "last_line": "  warnings.warn("
+    },
+    {
+      "scenario": "no-results",
+      "rejected": true
+    },
+    {
+      "scenario": "incomplete-results",
+      "rejected": true
+    }
+  ],
+  "bypass": [
+    {
+      "node": "ImpactWildcardProcessor",
+      "first_input_connected": false,
+      "broken_preview": true,
+      "outcome": "xfail"
+    },
+    {
+      "node": "ImpactWildcardEncode",
+      "first_input_connected": false,
+      "broken_preview": true,
+      "outcome": "failed"
+    },
+    {
+      "node": "ImpactWildcardProcessor",
+      "first_input_connected": true,
+      "broken_preview": true,
+      "outcome": "failed"
+    },
+    {
+      "node": "ImpactWildcardEncode",
+      "first_input_connected": false,
+      "broken_preview": false,
+      "outcome": "passed"
+    }
+  ],
+  "scope": "Local HTTP fault responses and the exact Bypass assertion block; separate from real Chrome executions."
+}

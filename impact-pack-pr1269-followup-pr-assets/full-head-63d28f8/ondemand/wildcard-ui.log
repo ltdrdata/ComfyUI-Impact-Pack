@@ -1,0 +1,11 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand/wildcard-ui
+PASS: UI Run completed (9167a351-5500-49f6-85b6-57cca331b869)
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-source/tests/e2e_wildcards.py", line 57, in <module>
+    main()
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-source/tests/e2e_wildcards.py", line 37, in main
+    check_output(ui.run(), {f"🌸 {color}" for color in colors})
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/ondemand-source/tests/e2e_wildcards.py", line 33, in check_output
+    assert result in expected, f"Unexpected expanded text: {result!r}"
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: Unexpected expanded text: '🌸 __*/아름다운색__'

@@ -1,0 +1,23 @@
+{
+  "name": "baseline-mixed-list",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-controls-source",
+  "port": 59737,
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "capture",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list/capture.py"
+      ],
+      "env": {
+        "IMPACT_E2E_ARTIFACTS": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/baseline-mixed-list"
+      }
+    }
+  ],
+  "expected_exit_code": 1,
+  "expected_failure": "Requested seed 5 incorrectly executes seed 2 and reuses red, plain on #1269 before the fix."
+}

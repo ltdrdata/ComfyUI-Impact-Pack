@@ -1,0 +1,76 @@
+/home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+WARNING:root:WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+WARNING WARNING WARNING
+If you are on nvidia 20 series and above it is required that you update your pytorch to cu130 or higher.
+
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source/tests/wildcards/test_progressive_loading.py", line 230, in main
+    test_wildcard_list_functions()
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-python-baseline/source/tests/wildcards/test_progressive_loading.py", line 197, in test_wildcard_list_functions
+    assert len(all_wildcards) == 5, "Should return all available wildcards"
+           ^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Should return all available wildcards
+
+============================================================
+PROGRESSIVE ON-DEMAND LOADING TEST SUITE
+============================================================
+
+============================================================
+TEST 1: Early Termination Size Calculation
+============================================================
+✓ Total size without limit: 100 bytes
+✓ Size with 50 byte limit: 50 bytes
+✓ Early termination working (stopped at 50 bytes)
+
+✅ Early termination test PASSED
+
+============================================================
+TEST 2: Metadata-Only Scan
+============================================================
+✓ Scanning directory: /tmp/tmphl0dmq21
+✓ Discovered 3 wildcards
+✓ Available wildcards: ['test1', 'test3', 'test2']
+✓ No data loaded (metadata only)
+  - test1 -> /tmp/tmphl0dmq21/test1.txt
+  - test3 -> /tmp/tmphl0dmq21/test3.yaml
+  - test2 -> /tmp/tmphl0dmq21/test2.txt
+
+✅ Metadata scan test PASSED
+
+============================================================
+TEST 3: Progressive On-Demand Loading
+============================================================
+✓ Discovered 3 wildcards
+✓ Available: 3
+✓ Loaded: 0
+
+Accessing wildcard1...
+✓ Loaded wildcard1: ['option1a', 'option1b']
+✓ Loaded count: 1
+
+Accessing wildcard2...
+✓ Loaded wildcard2: ['option2a', 'option2b']
+✓ Loaded count: 2
+
+Re-accessing wildcard1 (cached)...
+✓ Cache hit, data matches
+✓ Loaded count: 2
+
+Accessing wildcard3...
+✓ Loaded wildcard3: ['option3a', 'option3b']
+✓ Loaded count: 3
+✓ All wildcards loaded progressively
+
+✅ Progressive loading test PASSED
+
+============================================================
+TEST 4: Wildcard List Functions
+============================================================
+✓ get_wildcard_list(): 0 wildcards
+
+============================================================
+❌ TEST FAILED: Should return all available wildcards
+============================================================

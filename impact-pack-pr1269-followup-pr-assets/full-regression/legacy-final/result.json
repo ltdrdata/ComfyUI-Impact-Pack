@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/home/rho/venv/bin/python",
+    "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-regression/legacy-final/source/tests/wildcards/test_wildcard_final.py"
+  ],
+  "exit_code": 0,
+  "seconds": 49.15043354034424
+}

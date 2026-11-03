@@ -1,0 +1,77 @@
+[
+  {
+    "script": "tests/test_config_quotes.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_config_quotes/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/test_deep_nesting.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_deep_nesting/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/test_edge_cases.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_edge_cases/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/test_error_handling.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_error_handling/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/test_ondemand_loading.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_ondemand_loading/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/test_dynamic_prompts_full.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_dynamic_prompts_full/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/wildcards/test_progressive_ondemand.sh",
+    "exit_code": 1,
+    "log": "legacy-with-data/test_progressive_ondemand/test.log",
+    "nonpass_markers": [
+      {
+        "line": 28,
+        "text": "\\033[1;33m\u26a0 WARNING: Expected 0 loaded, got 3\\033[0m"
+      },
+      {
+        "line": 44,
+        "text": "\\033[0;31m\u2717 FAIL: Expected loaded count to increase (was 6, now 6)\\033[0m"
+      }
+    ]
+  },
+  {
+    "script": "tests/wildcards/test_sequential_loading.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_sequential_loading/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/wildcards/test_wildcard_consistency.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_wildcard_consistency/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/wildcards/test_versatile_prompts.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_versatile_prompts/test.log",
+    "nonpass_markers": []
+  },
+  {
+    "script": "tests/wildcards/test_lazy_load_api.sh",
+    "exit_code": 0,
+    "log": "legacy-with-data/test_lazy_load_api/test.log",
+    "nonpass_markers": []
+  }
+]

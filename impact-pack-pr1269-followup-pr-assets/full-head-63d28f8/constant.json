@@ -1,0 +1,36 @@
+{
+  "name": "constant",
+  "plugins": [
+    "comfyui-inspire-pack"
+  ],
+  "server_options": [
+    "--cache-classic",
+    "--deterministic",
+    "--force-fp32",
+    "--fp32-vae",
+    "--disable-dynamic-vram",
+    "--use-pytorch-cross-attention"
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "commands": [
+    {
+      "label": "constant-lora",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/capture.py"
+      ]
+    },
+    {
+      "label": "cache-keys",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-lora/verify_cache_keys.py"
+      ]
+    }
+  ],
+  "port": 51505,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/constant-source"
+}

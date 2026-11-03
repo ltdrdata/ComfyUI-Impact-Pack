@@ -1,0 +1,115 @@
+==========================================
+UTF-8 Encoding Test Suite
+==========================================
+Server: http://127.0.0.1:58729
+Testing: Multi-language encoding support
+
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;34m=== Test 01: Korean Hangul (아름다운색) ===\033[0m
+Prompt: \033[1;33m__아름다운색__\033[0m
+Seed: 100
+Result: \033[0;32m블루지니\033[0m
+Status: \033[0;32m✅ PASS - exact match against fixture set\033[0m
+
+\033[0;34m=== Test 02: Korean with emoji ===\033[0m
+Prompt: \033[1;33m🌸 __아름다운색__\033[0m
+Seed: 200
+Result: \033[0;32m🌸 나부키하늘\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 03: Korean in dynamic prompt ===\033[0m
+Prompt: \033[1;33m{붉은|하얀|노란} __아름다운색__\033[0m
+Seed: 300
+Result: \033[0;32m노란 백설민주\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 04: Emoji wildcard ===\033[0m
+Prompt: \033[1;33m__test_encoding_emoji__\033[0m
+Seed: 400
+Result: \033[0;32m🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂\033[0m
+Status: \033[0;32m✅ PASS - exact match against fixture set\033[0m
+
+\033[0;34m=== Test 05: Multiple emojis ===\033[0m
+Prompt: \033[1;33m🌸 beautiful 🌺 garden 🌼\033[0m
+Seed: 500
+Result: \033[0;32m🌸 beautiful 🌺 garden 🌼\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 06: Emoji in dynamic prompt ===\033[0m
+Prompt: \033[1;33m{🌸|🌺|🌼|🌻|🌷}\033[0m
+Seed: 600
+Result: \033[0;32m🌺\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 07: Mathematical symbols ===\033[0m
+Prompt: \033[1;33m__test_encoding_special__\033[0m
+Seed: 700
+Result: \033[0;32m┌─┬─┐\033[0m
+Status: \033[0;32m✅ PASS - exact match against fixture set\033[0m
+
+\033[0;34m=== Test 08: Currency symbols ===\033[0m
+Prompt: \033[1;33mPrice: {$|€|£|¥|₩} 100\033[0m
+Seed: 800
+Result: \033[0;32mPrice: € 100\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 09: Korean wildcard in composite prompt ===\033[0m
+Prompt: \033[1;33m아름다운 __아름다운색__\033[0m
+Seed: 900
+Result: \033[0;32m아름다운 수놓은 별빛\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 10: Korean + Emoji + English ===\033[0m
+Prompt: \033[1;33m🌸 beautiful 아름다운 __아름다운색__\033[0m
+Seed: 1000
+Result: \033[0;32m🌸 beautiful 아름다운 백설민주\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 11: Arabic RTL text ===\033[0m
+Prompt: \033[1;33mزهرة جميلة\033[0m
+Seed: 1100
+Result: \033[0;32mزهرة جميلة\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 12: Korean in quantifier (아름다운색) ===\033[0m
+Prompt: \033[1;33m3#__아름다운색__\033[0m
+Seed: 1200
+Result: \033[0;32m백설민주|벚꽃 핑크|토미베이지\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 13: Korean in multi-select (아름다운색) ===\033[0m
+Prompt: \033[1;33m{2$$, $$__아름다운색__|장미|벚꽃}\033[0m
+Seed: 1300
+Result: \033[0;32m벚꽃, 블루지니\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 14: Mixed UTF-8 in weighted selection ===\033[0m
+Prompt: \033[1;33m{5::🌸|3::장미|2::花}\033[0m
+Seed: 1400
+Result: \033[0;32m🌸\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+\033[0;34m=== Test 15: Very long Korean text (아름다운색) ===\033[0m
+Prompt: \033[1;33m아름다운 {붉은|하얀|노란|분홍|보라} __아름다운색__ 꽃밭에서\033[0m
+Seed: 1500
+Result: \033[0;32m아름다운 붉은 벚꽃 핑크 꽃밭에서\033[0m
+Status: \033[0;32m✅ PASS - non-empty response received\033[0m
+
+
+==========================================
+Summary
+==========================================
+\033[0;32m✅ Encoding tests completed\033[0m
+
+All tests verified UTF-8 encoding support:
+  1. Korean (Hangul) characters — strict set-membership ✓
+  2. Emoji support — strict set-membership ✓
+  3. Arabic (RTL) text — smoke only (non-empty echo; no strict assertion)
+  4. Mathematical and special symbols — strict set-membership ✓
+  5. Mixed multi-language content — smoke ✓
+  6. UTF-8 in dynamic prompts — smoke ✓
+  7. UTF-8 with quantifiers and multi-select — smoke ✓
+

@@ -1,0 +1,40 @@
+{
+  "name": "classic",
+  "server_options": [
+    "--cpu",
+    "--cache-classic"
+  ],
+  "commands": [
+    {
+      "label": "cache-controls",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_cache.py",
+        "tests/test_e2e_wildcard_controls.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/cache-controls.xml"
+      ]
+    },
+    {
+      "label": "mixed-list",
+      "env": {
+        "IMPACT_E2E_ARTIFACTS": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list"
+      },
+      "args": [
+        "/home/rho/venv/bin/python",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/mixed-list/capture.py"
+      ]
+    }
+  ],
+  "port": 50239,
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/classic-source",
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  }
+}

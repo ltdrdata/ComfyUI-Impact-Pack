@@ -1,0 +1,12 @@
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+/home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+  warnings.warn(
+PASS: Simple wildcard: chrysanthemum
+PASS: Multiple wildcards: a chrysanthemum and a diamond
+PASS: Dynamic prompt: blue flower
+PASS: Combined: beautiful daisy with gold emerald
+PASS: Multi-select: daisy, tulip
+PASS: Transitive YAML: blue
+PASS: Transitive with context: a vibrant orange flower
+PASS: 7 matching results; both server modes verified

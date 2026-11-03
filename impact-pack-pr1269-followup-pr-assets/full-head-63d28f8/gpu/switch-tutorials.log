@@ -1,0 +1,34 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/switch-tutorials/switch-simple
+PASS: UI Run completed (e1788542-ca7e-4fe6-be19-462156d67ffb)
+PASS: UI Run completed (d26b94dc-3010-4e9d-887e-1fd9af2f0639)
+PASS: UI Run completed (349b33fa-fcef-4c3e-9708-d8baf3eb4bcd)
+PASS: UI Run completed (81c08551-f966-4ad8-8250-23adae7c1c9c)
+PASS: UI Run completed (0aa116cf-5ff1-4a8b-a7da-dab7446948e9)
+PASS: UI Run completed (20363eb0-3177-49ce-b40e-c7556358e544)
+PASS: UI Run completed (5dddc215-e822-4d9f-a7f1-e52027a12466)
+PASS: switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/switch-tutorials/inversed-switch-simple
+PASS: UI Run completed (a501ccd1-2d0d-4cc1-aebd-18199a18f93c)
+PASS: UI Run completed (26f88a41-40e1-41b2-839d-ed719e40da30)
+PASS: UI Run completed (1ea708f8-2d7f-42d9-8298-9baaf4eae9c8)
+PASS: UI Run completed (0585280f-7726-4adb-a473-7c66c618d679)
+PASS: UI Run completed (034e5fe8-1632-4283-8a15-5088e3a3cb4e)
+PASS: UI Run completed (7df0124d-f61b-48e4-8014-7c0ad4c861b8)
+PASS: UI Run completed (32efd9b1-3c90-44d8-afb9-be0ae7b528d9)
+PASS: inversed-switch-simple, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/switch-tutorials/select_on_execution
+PASS: UI Run completed (86e7d7aa-2df2-4460-8e66-9474107da739)
+PASS: UI Run completed (b0900ce4-8878-40eb-bfa1-b2c401c9d7e8)
+PASS: UI Run completed (cdc28dcc-2dd6-4d1a-9e76-d1eb8d385991)
+PASS: UI Run completed (0cbfe6db-bfb4-4ea9-86dd-477d5d1a8756)
+PASS: UI Run completed (f32618a3-4e25-428d-b3c5-274084d147c3)
+PASS: UI Run completed (4019c776-056b-4b5e-901e-0d04e15e378b)
+PASS: select_on_execution, original PNG, all routes, core-node pixel parity, saved JSON import
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu/switch-tutorials/select_on_prompt
+PASS: UI Run completed (12725543-cf86-455f-9d1c-4278f664dd56)
+PASS: UI Run completed (a5d127b2-388f-437a-b19a-332b75975d60)
+PASS: UI Run completed (cb720faf-cc52-415a-9014-65c5e5fabc48)
+PASS: UI Run completed (3262c511-874b-4044-9c5e-ec40bea9881c)
+PASS: UI Run completed (361b6b1b-1555-43ce-a448-6eea47150267)
+PASS: UI Run completed (5632338e-b2fc-4a8b-a936-3f1376b0877d)
+PASS: select_on_prompt, original PNG, all routes, core-node pixel parity, saved JSON import

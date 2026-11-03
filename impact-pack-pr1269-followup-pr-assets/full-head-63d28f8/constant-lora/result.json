@@ -1,0 +1,122 @@
+{
+  "scope": "Modified LBW tutorial used to exercise direct PrimitiveStringMultiline input, cache reuse, text invalidation and native restoration with real LoRA sampling. Not original-tutorial pixel parity.",
+  "adaptations": [
+    "Character LoRA replaced with installed SD1.5/etc/add_detail.safetensors at 0.7/0.7; original LBW vector retained",
+    "Prompt changed to a cottage landscape",
+    "One PrimitiveStringMultiline added through node search and linked through UI",
+    "Wildcard populate mode, increment policy and seed 731 set through UI; original checkpoint and KSampler settings retained"
+  ],
+  "node_types": {
+    "3": "KSampler",
+    "4": "CheckpointLoaderSimple",
+    "5": "EmptyLatentImage",
+    "7": "CLIPTextEncode (negative)",
+    "8": "VAEDecode",
+    "9": "SaveImage",
+    "10": "ImpactWildcardEncode",
+    "16": "PrimitiveStringMultiline"
+  },
+  "cases": [
+    {
+      "case": "first",
+      "requested_seed": 731,
+      "execution_seed": 0,
+      "source_node": "16",
+      "source_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+      "sampler_seed": 944516346096519,
+      "cached_nodes": [],
+      "executing_nodes": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "pixel_sha256": "26f0a68baddc05423bb11b1c36c2085629ff3831c0c277dbaf1aa52ea1ef2594"
+    },
+    {
+      "case": "same",
+      "requested_seed": 732,
+      "execution_seed": 0,
+      "source_node": "16",
+      "source_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light",
+      "sampler_seed": 944516346096519,
+      "cached_nodes": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "executing_nodes": [],
+      "pixel_sha256": "26f0a68baddc05423bb11b1c36c2085629ff3831c0c277dbaf1aa52ea1ef2594"
+    },
+    {
+      "case": "changed",
+      "requested_seed": 733,
+      "execution_seed": 0,
+      "source_node": "16",
+      "source_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+      "sampler_seed": 944516346096519,
+      "cached_nodes": [
+        "4",
+        "5",
+        "7"
+      ],
+      "executing_nodes": [
+        "3",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "pixel_sha256": "33444a8d3727b687450706e252fcc36d10d8189f55456a79e0ea543915b81780"
+    },
+    {
+      "case": "restored-positional",
+      "requested_seed": 734,
+      "execution_seed": 0,
+      "source_node": "16",
+      "source_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+      "sampler_seed": 944516346096519,
+      "cached_nodes": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "executing_nodes": [],
+      "pixel_sha256": "33444a8d3727b687450706e252fcc36d10d8189f55456a79e0ea543915b81780"
+    },
+    {
+      "case": "restored-named",
+      "requested_seed": 735,
+      "execution_seed": 0,
+      "source_node": "16",
+      "source_text": "<lora:SD1.5/etc/add_detail:0.7:0.7:LBW=0,0,0,0,0,0,0,A,A,B,B,0,0,0,0,0,0;A=2.0;B=1.5>, a detailed photograph of a stone cottage beside a lake, pine trees, soft morning light, red flowers beside the door",
+      "sampler_seed": 944516346096519,
+      "cached_nodes": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10",
+        "16"
+      ],
+      "executing_nodes": [],
+      "pixel_sha256": "33444a8d3727b687450706e252fcc36d10d8189f55456a79e0ea543915b81780"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+--- original/tests/test_edge_cases.sh
++++ isolated/tests/test_edge_cases.sh
+@@ -4,12 +4,12 @@
+ 
+ set -e
+ 
+-PORT=8196
+-COMFYUI_DIR="/mnt/teratera/git/ComfyUI"
++PORT=46631
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/comfy"
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
++IMPACT_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/source"
+ CONFIG_FILE="$IMPACT_DIR/impact-pack.ini"
+-LOG_FILE="/tmp/edge_cases_test.log"
++LOG_FILE="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/tmp/edge_cases_test.log"
+ 
+ GREEN='\033[0;32m'
+ RED='\033[0;31m'
+@@ -28,7 +28,7 @@
+ cleanup() {
+     echo ""
+     echo "Cleaning up..."
+-    pkill -f "python.*main.py.*--port $PORT" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/runtime 2>/dev/null || true
+     rm -f "$CONFIG_FILE"
+     echo "Cleanup complete"
+ }
+@@ -37,7 +37,7 @@
+ 
+ # Kill any existing server on this port
+ echo "Killing any existing server on port $PORT..."
+-pkill -f "python.*main.py.*--port $PORT" 2>/dev/null || true
++/home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_edge_cases/runtime 2>/dev/null || true
+ sleep 2
+ 
+ # Setup configuration

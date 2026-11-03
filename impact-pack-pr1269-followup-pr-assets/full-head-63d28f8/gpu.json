@@ -1,0 +1,99 @@
+{
+  "name": "gpu",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/gpu-source",
+  "server_options": [
+    "--cache-none",
+    "--deterministic",
+    "--force-fp32",
+    "--fp32-vae",
+    "--disable-dynamic-vram",
+    "--use-pytorch-cross-attention"
+  ],
+  "plugins": [
+    "comfyui-impact-subpack",
+    "comfyui-inspire-pack",
+    "comfyui_essentials",
+    "comfyui_controlnet_aux"
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "IMPACT_REGIONAL_WORKFLOW": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/regional-sampler-img2img.json"
+  },
+  "commands": [
+    {
+      "label": "sam",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_sam_masks.py",
+        "tests/test_e2e_sam_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/sam.xml"
+      ]
+    },
+    {
+      "label": "sam-api",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_sam_api.py",
+        "-v",
+        "--tb=short",
+        "--junitxml={out}/sam-api.xml"
+      ]
+    },
+    {
+      "label": "detailer",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_dd_compat.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/detailer"
+      ]
+    },
+    {
+      "label": "conditioning",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_conditionings.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/conditioning"
+      ]
+    },
+    {
+      "label": "switch-tutorials",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_tutorials.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/switch-tutorials"
+      ]
+    },
+    {
+      "label": "regional",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_regional.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/regional"
+      ]
+    }
+  ],
+  "port": 35817
+}

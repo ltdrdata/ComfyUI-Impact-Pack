@@ -1,0 +1,68 @@
+[
+  {
+    "file": "tests/test_config_quotes.sh",
+    "exit_code": 0,
+    "seconds": 41.89772152900696,
+    "port": 44573
+  },
+  {
+    "file": "tests/test_deep_nesting.sh",
+    "exit_code": 0,
+    "seconds": 10.286468982696533,
+    "port": 39009
+  },
+  {
+    "file": "tests/test_edge_cases.sh",
+    "exit_code": 0,
+    "seconds": 9.132972002029419,
+    "port": 46631
+  },
+  {
+    "file": "tests/test_error_handling.sh",
+    "exit_code": 0,
+    "seconds": 8.631113290786743,
+    "port": 49717
+  },
+  {
+    "file": "tests/test_ondemand_loading.sh",
+    "exit_code": 0,
+    "seconds": 63.6794695854187,
+    "port": 38093
+  },
+  {
+    "file": "tests/test_dynamic_prompts_full.sh",
+    "exit_code": 0,
+    "seconds": 33.033119440078735,
+    "port": 47261
+  },
+  {
+    "file": "tests/wildcards/test_progressive_ondemand.sh",
+    "exit_code": 0,
+    "seconds": 19.90028953552246,
+    "port": 40419
+  },
+  {
+    "file": "tests/wildcards/test_sequential_loading.sh",
+    "exit_code": 0,
+    "seconds": 147.08327794075012,
+    "port": 58939
+  },
+  {
+    "file": "tests/wildcards/test_wildcard_consistency.sh",
+    "exit_code": 0,
+    "seconds": 40.788156032562256,
+    "port": 45317
+  },
+  {
+    "file": "tests/wildcards/test_versatile_prompts.sh",
+    "exit_code": 0,
+    "seconds": 74.34430742263794,
+    "port": 53243
+  },
+  {
+    "file": "tests/wildcards/test_lazy_load_api.sh",
+    "exit_code": 0,
+    "seconds": 40.885947942733765,
+    "port": 45589
+  }
+]

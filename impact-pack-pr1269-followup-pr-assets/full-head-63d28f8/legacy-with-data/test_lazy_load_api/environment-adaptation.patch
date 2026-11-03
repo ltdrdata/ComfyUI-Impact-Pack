@@ -1,0 +1,120 @@
+--- original/tests/wildcards/test_lazy_load_api.sh
++++ isolated/tests/wildcards/test_lazy_load_api.sh
+@@ -5,8 +5,8 @@
+ 
+ # Auto-detect paths
+ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-IMPACT_PACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+-COMFYUI_DIR="$(cd "$IMPACT_PACK_DIR/../.." && pwd)"
++IMPACT_PACK_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/source"
++COMFYUI_DIR="/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/comfy"
+ CONFIG_FILE="$IMPACT_PACK_DIR/impact-pack.ini"
+ BACKUP_CONFIG="$IMPACT_PACK_DIR/impact-pack.ini.backup"
+ 
+@@ -34,7 +34,7 @@
+ cleanup() {
+     echo ""
+     echo "Cleaning up..."
+-    pkill -f "python.*main.py" 2>/dev/null || true
++    /home/rho/venv/bin/python /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/stop_owned.py /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/server.pid /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/runtime 2>/dev/null || true
+     sleep 2
+ }
+ 
+@@ -64,7 +64,7 @@
+     # Start server
+     cleanup
+     cd "$COMFYUI_DIR"
+-    bash run.sh --listen 127.0.0.1 --port $PORT > /tmp/comfyui_${MODE}.log 2>&1 &
++    bash run.sh --listen 127.0.0.1 --port $PORT > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/comfyui_${MODE}.log 2>&1 &
+     COMFYUI_PID=$!
+ 
+     echo "Waiting for server startup..."
+@@ -73,12 +73,12 @@
+     # Check server
+     if ! curl -s http://127.0.0.1:$PORT/ > /dev/null; then
+         echo "${RED}✗ Server failed to start${NC}"
+-        cat /tmp/comfyui_${MODE}.log | grep -i "wildcard\|error" | tail -20
++        cat /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/comfyui_${MODE}.log | grep -i "wildcard\|error" | tail -20
+         return 1
+     fi
+ 
+     # Get loading mode from log
+-    MODE_LOG=$(grep -i "wildcard.*mode" /tmp/comfyui_${MODE}.log | tail -1)
++    MODE_LOG=$(grep -i "wildcard.*mode" /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/comfyui_${MODE}.log | tail -1)
+     echo "${YELLOW}$MODE_LOG${NC}"
+     echo ""
+ 
+@@ -88,7 +88,7 @@
+     LIST_COUNT=$(echo "$LIST_RESULT" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+     echo "   Total wildcards: $LIST_COUNT"
+     echo "   Sample: $(echo "$LIST_RESULT" | python3 -c "import sys, json; print(', '.join(json.load(sys.stdin)['data'][:10]))")"
+-    echo "$LIST_RESULT" > /tmp/result_${MODE}_list.json
++    echo "$LIST_RESULT" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_${MODE}_list.json
+     echo ""
+ 
+     # Test 2: Simple wildcard
+@@ -100,7 +100,7 @@
+     TEXT1=$(echo "$RESULT1" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "   Input:  __samples/flower__"
+     echo "   Output: $TEXT1"
+-    echo "$RESULT1" > /tmp/result_${MODE}_simple.json
++    echo "$RESULT1" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_${MODE}_simple.json
+     echo ""
+ 
+     # Test 3: Depth 3 transitive (adnd → dragon → dragon_spirit)
+@@ -112,7 +112,7 @@
+     TEXT2=$(echo "$RESULT2" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "   Input:  __adnd__ creature (depth 3: adnd → dragon → dragon_spirit)"
+     echo "   Output: $TEXT2"
+-    echo "$RESULT2" > /tmp/result_${MODE}_depth3.json
++    echo "$RESULT2" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_${MODE}_depth3.json
+     echo ""
+ 
+     # Test 4: YAML transitive (colors → cold/warm → blue/red/orange/yellow)
+@@ -124,7 +124,7 @@
+     TEXT3=$(echo "$RESULT3" | python3 -c "import sys, json; print(json.load(sys.stdin)['text'])")
+     echo "   Input:  __colors__ (YAML: colors → cold|warm → blue|red|orange|yellow)"
+     echo "   Output: $TEXT3"
+-    echo "$RESULT3" > /tmp/result_${MODE}_yaml.json
++    echo "$RESULT3" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_${MODE}_yaml.json
+     echo ""
+ 
+     # Test 5: Get wildcard list AGAIN (AFTER access in on-demand mode)
+@@ -132,7 +132,7 @@
+     LIST_RESULT2=$(curl -s http://127.0.0.1:$PORT/impact/wildcards/list)
+     LIST_COUNT2=$(echo "$LIST_RESULT2" | python3 -c "import sys, json; print(len(json.load(sys.stdin)['data']))")
+     echo "   Total wildcards: $LIST_COUNT2"
+-    echo "$LIST_RESULT2" > /tmp/result_${MODE}_list_after.json
++    echo "$LIST_RESULT2" > /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_${MODE}_list_after.json
+     echo ""
+ 
+     # Compare before/after list
+@@ -152,8 +152,8 @@
+ }
+ 
+ # Run tests
+-test_mode "full_cache" 100 8190
+-test_mode "on_demand" 1 8191
++test_mode "full_cache" 100 45589
++test_mode "on_demand" 1 45589
+ 
+ # Compare results
+ echo ""
+@@ -167,7 +167,7 @@
+     local FILE_SUFFIX=$2
+ 
+     echo "Test: $TEST_NAME"
+-    DIFF=$(diff /tmp/result_full_cache_${FILE_SUFFIX}.json /tmp/result_on_demand_${FILE_SUFFIX}.json || true)
++    DIFF=$(diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_full_cache_${FILE_SUFFIX}.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_on_demand_${FILE_SUFFIX}.json || true)
+     if [ -z "$DIFF" ]; then
+         echo "${GREEN}✓ Results MATCH${NC}"
+     else
+@@ -192,7 +192,7 @@
+ 
+ ALL_MATCH=true
+ for suffix in list simple depth3 yaml list_after; do
+-    if ! diff /tmp/result_full_cache_${suffix}.json /tmp/result_on_demand_${suffix}.json > /dev/null 2>&1; then
++    if ! diff /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_full_cache_${suffix}.json /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_lazy_load_api/tmp/result_on_demand_${suffix}.json > /dev/null 2>&1; then
+         ALL_MATCH=false
+         break
+     fi

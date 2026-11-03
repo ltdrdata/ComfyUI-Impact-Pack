@@ -1,0 +1,442 @@
+{
+  "candidate_tree": "4897facaf7f842719bf37180fab346ab2fda17ab",
+  "entries": [
+    {
+      "path": "tests/e2e_animatediff_tutorials.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/animatediff-native.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_conditionings.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu/conditioning.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_dd_compat.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/detailer-final/detailer.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_lora_wildcard_inference.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/inference/lora-inference.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_regional.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu/regional.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_tutorials.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu-retry/switch-tutorials.log"
+      ]
+    },
+    {
+      "path": "tests/e2e_ui.py",
+      "classification": "support-module",
+      "evidence": []
+    },
+    {
+      "path": "tests/e2e_wildcards.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/wildcard-ui.log",
+        "../full-regression/ondemand/wildcard-ui.log"
+      ]
+    },
+    {
+      "path": "tests/integration_lora_wildcard_tensors.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/lora-tensors.log"
+      ]
+    },
+    {
+      "path": "tests/integration_lora_wildcard_validation.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/lora-validation.log"
+      ]
+    },
+    {
+      "path": "tests/integration_wildcard_cache.py",
+      "classification": "executed",
+      "evidence": [
+        "../merged-integration.json"
+      ]
+    },
+    {
+      "path": "tests/integration_wildcard_cache_tensors.py",
+      "classification": "executed",
+      "evidence": [
+        "../cache-tensors.json"
+      ]
+    },
+    {
+      "path": "tests/integration_wildcard_tutorial_tensors.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/tutorial-tensors.json"
+      ]
+    },
+    {
+      "path": "tests/legacy_sam.test.mjs",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-sam-js-rerun.log"
+      ]
+    },
+    {
+      "path": "tests/lora_source_case.py",
+      "classification": "support-module",
+      "evidence": []
+    },
+    {
+      "path": "tests/lora_wildcard_source.test.mjs",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/lora-source-js.log"
+      ]
+    },
+    {
+      "path": "tests/restart_test_server.sh",
+      "classification": "manual-utility-not-independent-test",
+      "evidence": []
+    },
+    {
+      "path": "tests/test_animatediff_assembly.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/animatediff-unit.xml"
+      ]
+    },
+    {
+      "path": "tests/test_config_quotes.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_config_quotes/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_deep_nesting.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_deep_nesting/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_dynamic_prompts_full.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_dynamic_prompts_full/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_legacy_sam.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/legacy-sam.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_lora_wildcard_source.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/lora/lora-source.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_mask_to_segs.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/mask-native.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_mask_tutorials.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/mask-native.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_sam_masks.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu/sam.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_sam_tutorials.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu/sam.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_switch_loading.py",
+      "classification": "executed",
+      "evidence": [
+        "../catalog/switches.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_switches.py",
+      "classification": "executed",
+      "evidence": [
+        "../catalog/switches.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_ui.py",
+      "classification": "executed",
+      "evidence": [
+        "../browser-harness.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_widget_catalog.py",
+      "classification": "executed",
+      "evidence": [
+        "../catalog/catalog.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_wildcard_cache.py",
+      "classification": "executed",
+      "evidence": [
+        "../classic/cache-controls.xml",
+        "../verified-classic/cache.xml",
+        "../verified-lru/cache.xml"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_wildcard_controls.py",
+      "classification": "executed",
+      "evidence": [
+        "cache-controls.xml",
+        "case-provenance.json",
+        "failure-detection.json"
+      ]
+    },
+    {
+      "path": "tests/test_e2e_wildcard_tutorials.py",
+      "classification": "executed",
+      "evidence": [
+        "../catalog/tutorial-native.xml",
+        "../full-regression/lbw-candidate/lbw-parity.xml"
+      ]
+    },
+    {
+      "path": "tests/test_edge_cases.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_edge_cases/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_encoding.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/cpu/encoding-api.log",
+        "../full-regression/ondemand/encoding-api.log"
+      ]
+    },
+    {
+      "path": "tests/test_error_handling.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_error_handling/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_mask_blur.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/mask-blur.xml"
+      ]
+    },
+    {
+      "path": "tests/test_mask_to_segs.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/sam-mask-unit.xml"
+      ]
+    },
+    {
+      "path": "tests/test_ondemand_loading.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_ondemand_loading/test.log"
+      ]
+    },
+    {
+      "path": "tests/test_sam_api.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/gpu/sam-api.xml"
+      ]
+    },
+    {
+      "path": "tests/test_sam_masks.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/sam-mask-unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcard_tutorial_cases.py",
+      "classification": "support-module",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/conftest.py",
+      "classification": "support-module",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/find_deep_transitive.py",
+      "classification": "manual-utility-not-independent-test",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/find_transitive_wildcards.sh",
+      "classification": "manual-utility-not-independent-test",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/populate_helpers.py",
+      "classification": "support-module",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/run_quick_test.sh",
+      "classification": "manual-utility-not-independent-test",
+      "evidence": []
+    },
+    {
+      "path": "tests/wildcards/test_config.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_lazy_load_api.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_lazy_load_api/test.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_lazy_load_verification.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_lora_wildcard_source.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_populate_regression.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_progressive_loading.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_progressive_ondemand.sh",
+      "classification": "executed",
+      "evidence": [
+        "progressive/results.json",
+        "progressive/test_progressive_ondemand/test.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_seed_regression.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_sequential_loading.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_sequential_loading/test.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_versatile_prompts.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_versatile_prompts/test.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_wildcard_consistency.sh",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-with-data/test_wildcard_consistency/test.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_wildcard_encoding_strict.py",
+      "classification": "executed",
+      "evidence": [
+        "unit.xml"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_wildcard_final.py",
+      "classification": "executed",
+      "evidence": [
+        "api-result.json",
+        "ondemand/pair.log",
+        "failure-detection.json"
+      ]
+    },
+    {
+      "path": "tests/wildcards/test_wildcard_lazy_loading.py",
+      "classification": "executed",
+      "evidence": [
+        "../full-regression/legacy-python-with-data/test_wildcard_lazy_loading.log",
+        "../full-regression/legacy-python-baseline/test_wildcard_lazy_loading.log"
+      ]
+    },
+    {
+      "path": "tests/wildcards/verify_ondemand_mode.sh",
+      "classification": "manual-utility-not-independent-test",
+      "evidence": []
+    }
+  ],
+  "counts": {
+    "support-module": 5,
+    "executed": 53,
+    "manual-utility-not-independent-test": 5
+  }
+}

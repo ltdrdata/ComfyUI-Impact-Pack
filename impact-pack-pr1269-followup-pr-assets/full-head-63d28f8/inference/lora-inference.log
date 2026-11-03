@@ -1,0 +1,11 @@
+Artifacts: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference/lora-inference
+PASS: UI Run completed (af4ff109-b95e-4c31-8ad6-751ccb9fc429)
+Traceback (most recent call last):
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-source/tests/e2e_lora_wildcard_inference.py", line 169, in <module>
+    main()
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-source/tests/e2e_lora_wildcard_inference.py", line 126, in main
+    check("batch", [0, 1])
+  File "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-source/tests/e2e_lora_wildcard_inference.py", line 94, in check
+    assert len(images[actual]) == len(expected)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

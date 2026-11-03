@@ -1,0 +1,104 @@
+==========================================
+On-Demand Lazy Loading Test Suite
+==========================================
+Port: 38093
+Testing: Progressive on-demand wildcard loading
+
+Creating temporary sample files...
+✅ Created 54 temporary sample files
+
+Killing any existing server on port 38093...
+==========================================
+Test Suite Execution
+==========================================
+
+\033[0;34m=== Test 01: Small cache limit (1MB) - on-demand enabled ===\033[0m
+Cache Limit: \033[1;33m1MB\033[0m
+Prompt: \033[1;33m__아름다운색__\033[0m
+Seed: 100
+Result: \033[0;32m블루지니\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 02: Moderate cache limit (10MB) - progressive loading ===\033[0m
+Cache Limit: \033[1;33m10MB\033[0m
+Prompt: \033[1;33m__large_sample_5__\033[0m
+Seed: 200
+Result: \033[0;32moption_5_65\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 03: Large cache limit (100MB) - eager loading ===\033[0m
+Cache Limit: \033[1;33m100MB\033[0m
+Prompt: \033[1;33m__아름다운색__\033[0m
+Seed: 300
+Result: \033[0;32m토미베이지\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 04: Very small cache (0.5MB) - aggressive lazy loading ===\033[0m
+Cache Limit: \033[1;33m0.5MB\033[0m
+Prompt: \033[1;33m{__아름다운색__|__large_sample_15__|__large_sample_25__}\033[0m
+Seed: 400
+Result: \033[0;32m나부키하늘\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 05: Default cache (50MB) - balanced mode ===\033[0m
+Cache Limit: \033[1;33m50MB\033[0m
+Prompt: \033[1;33m2#__large_sample_30__\033[0m
+Seed: 500
+Result: \033[0;32moption_30_57|option_30_86\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 06: On-demand with 3-level nesting (5MB cache) ===\033[0m
+Cache Limit: \033[1;33m5MB\033[0m
+Prompt: \033[1;33m__level1/test_nesting_level1__\033[0m
+Seed: 600
+Result: \033[0;32moption_10_1\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 07: On-demand with multiple wildcards (2MB cache) ===\033[0m
+Cache Limit: \033[1;33m2MB\033[0m
+Prompt: \033[1;33m__아름다운색__ and __large_sample_1__ in {__large_sample_40__|__large_sample_45__}\033[0m
+Seed: 700
+Result: \033[0;32m옌로우 and option_1_93 in option_40_46\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+\033[0;34m=== Test 08: Cache boundary - exactly at limit (25MB) ===\033[0m
+Cache Limit: \033[1;33m25MB\033[0m
+Prompt: \033[1;33m{22505758,2505758__large_sample_10__|__large_sample_20__|__large_sample_30__}\033[0m
+Seed: 800
+Result: \033[0;32moption_20_2\033[0m
+Loaded wildcards: \033[1;33m56\033[0m
+Status: \033[0;32m✅ PASS - On-demand loading working\033[0m
+
+
+==========================================
+Summary
+==========================================
+\033[0;32m✅ On-demand loading tests completed\033[0m
+
+Test results:
+  1. Small cache (1MB) - on-demand enabled ✓
+  2. Moderate cache (10MB) - progressive loading ✓
+  3. Large cache (100MB) - eager loading ✓
+  4. Aggressive lazy loading (0.5MB) ✓
+  5. Balanced mode (50MB default) ✓
+  6. On-demand with deep nesting ✓
+  7. On-demand with multiple wildcards ✓
+  8. Cache boundary testing ✓
+
+On-demand mode verification:
+  - LazyWildcardLoader initialization ✓
+  - Progressive data loading ✓
+  - Memory-efficient operation ✓
+  - Cache limit enforcement ✓
+
+Log file: /mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/legacy-with-data/test_ondemand_loading/tmp/ondemand_test.log
+
+Cleaning up...
+Cleanup complete

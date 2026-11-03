@@ -1,0 +1,111 @@
+{
+  "owned_comfyui_processes_remaining": [],
+  "ports": [
+    {
+      "job": "cpu",
+      "port": 56331,
+      "listening": false
+    },
+    {
+      "job": "gpu",
+      "port": 33255,
+      "listening": false
+    },
+    {
+      "job": "lora",
+      "port": 45279,
+      "listening": false
+    },
+    {
+      "job": "ondemand",
+      "port": 53531,
+      "listening": false
+    },
+    {
+      "job": "inference",
+      "port": 38591,
+      "listening": false
+    },
+    {
+      "job": "lbw-baseline",
+      "port": 50547,
+      "listening": false
+    },
+    {
+      "job": "lbw-candidate",
+      "port": 43491,
+      "listening": false
+    },
+    {
+      "job": "gpu-retry",
+      "port": 37767,
+      "listening": false
+    },
+    {
+      "job": "detailer-final",
+      "port": 35611,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_config_quotes",
+      "port": 46163,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_deep_nesting",
+      "port": 41087,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_edge_cases",
+      "port": 57017,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_error_handling",
+      "port": 52829,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_ondemand_loading",
+      "port": 60417,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_dynamic_prompts_full",
+      "port": 34471,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_progressive_ondemand",
+      "port": 54681,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_sequential_loading",
+      "port": 53413,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_wildcard_consistency",
+      "port": 47649,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_versatile_prompts",
+      "port": 47577,
+      "listening": false
+    },
+    {
+      "job": "legacy-with-data/test_lazy_load_api",
+      "port": 58255,
+      "listening": false
+    },
+    {
+      "job": "legacy-data-baseline/test_progressive_ondemand",
+      "port": 60241,
+      "listening": false
+    }
+  ],
+  "all_recorded_job_ports_closed": true
+}

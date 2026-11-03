@@ -1,0 +1,30 @@
+{
+  "name": "inference",
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/inference-source",
+  "server_options": [
+    "--cache-none",
+    "--deterministic",
+    "--force-fp32",
+    "--fp32-vae",
+    "--disable-dynamic-vram",
+    "--use-pytorch-cross-attention"
+  ],
+  "env": {
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "commands": [
+    {
+      "label": "lora-inference",
+      "args": [
+        "/home/rho/venv/bin/python",
+        "tests/e2e_lora_wildcard_inference.py",
+        "--base-url",
+        "{url}",
+        "--artifacts",
+        "{out}/lora-inference"
+      ]
+    }
+  ],
+  "port": 52483
+}

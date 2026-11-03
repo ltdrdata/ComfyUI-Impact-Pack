@@ -1,0 +1,122 @@
+{
+  "server_command": [
+    "/home/rho/venv/bin/python",
+    "main.py",
+    "--listen",
+    "127.0.0.1",
+    "--port",
+    "58035",
+    "--base-directory",
+    "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/runtime",
+    "--models-directory",
+    "/mnt/teratera/git/ComfyUI/models",
+    "--disable-all-custom-nodes",
+    "--whitelist-custom-nodes",
+    "comfyui-impact-pack",
+    "comfyui-inspire-pack",
+    "--disable-auto-launch",
+    "--cache-none",
+    "--deterministic",
+    "--force-fp32",
+    "--fp32-vae",
+    "--disable-dynamic-vram",
+    "--use-pytorch-cross-attention"
+  ],
+  "source": "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate-source",
+  "commands": [
+    {
+      "label": "lbw-parity",
+      "command": [
+        "/home/rho/venv/bin/python",
+        "-m",
+        "pytest",
+        "-c",
+        "tests/pytest.ini",
+        "tests/test_e2e_wildcard_tutorials.py",
+        "-v",
+        "--tb=short",
+        "--junitxml=/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/lbw-parity.xml",
+        "-k",
+        "inference"
+      ],
+      "exit_code": 0,
+      "seconds": 11.464169979095459
+    }
+  ],
+  "verified_system_stats": {
+    "system": {
+      "os": "linux",
+      "ram_total": 100305424384,
+      "ram_free": 66048020480,
+      "comfyui_version": "0.43.0",
+      "required_frontend_version": "1.57.6",
+      "installed_templates_version": "0.11.100",
+      "required_templates_version": "0.11.100",
+      "comfy_package_versions": [
+        {
+          "name": "comfyui-frontend-package",
+          "installed": "1.57.6",
+          "required": "1.57.6"
+        },
+        {
+          "name": "comfyui-workflow-templates",
+          "installed": "0.11.100",
+          "required": "0.11.100"
+        },
+        {
+          "name": "comfyui-embedded-docs",
+          "installed": "0.5.15",
+          "required": "0.5.15"
+        },
+        {
+          "name": "comfy-aimdo",
+          "installed": "0.6.0",
+          "required": "0.6.0"
+        },
+        {
+          "name": "comfy-kitchen",
+          "installed": "0.2.40",
+          "required": "0.2.40"
+        }
+      ],
+      "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "pytorch_version": "2.10.0+cu128",
+      "embedded_python": false,
+      "deploy_environment": "local-git",
+      "argv": [
+        "main.py",
+        "--listen",
+        "127.0.0.1",
+        "--port",
+        "58035",
+        "--base-directory",
+        "/mnt/teratera/git/impact-pack-pr1269-followup-pr-assets/full-head-63d28f8/lbw-candidate/runtime",
+        "--models-directory",
+        "/mnt/teratera/git/ComfyUI/models",
+        "--disable-all-custom-nodes",
+        "--whitelist-custom-nodes",
+        "comfyui-impact-pack",
+        "comfyui-inspire-pack",
+        "--disable-auto-launch",
+        "--cache-none",
+        "--deterministic",
+        "--force-fp32",
+        "--fp32-vae",
+        "--disable-dynamic-vram",
+        "--use-pytorch-cross-attention"
+      ]
+    },
+    "devices": [
+      {
+        "name": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+        "type": "cuda",
+        "index": 0,
+        "vram_total": 16718168064,
+        "vram_free": 16445145088,
+        "torch_vram_total": 0,
+        "torch_vram_free": 0
+      }
+    ]
+  },
+  "server_stopped": true
+}

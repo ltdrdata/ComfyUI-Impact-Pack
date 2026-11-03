@@ -1,0 +1,22 @@
+[
+  {
+    "job": "constant",
+    "exit_code": 0
+  },
+  {
+    "job": "lbw-baseline",
+    "exit_code": 0
+  },
+  {
+    "job": "lbw-candidate",
+    "exit_code": 0
+  },
+  {
+    "job": "inference",
+    "exit_code": 1
+  },
+  {
+    "job": "gpu",
+    "exit_code": 0
+  }
+]
