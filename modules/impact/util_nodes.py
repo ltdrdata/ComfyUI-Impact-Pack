@@ -372,23 +372,21 @@ class ImageListToImageBatch:
 
     def doit(self, images):
         if len(images) == 0:
-            return ()
-        if len(images) == 1:
-            img = images[0]
-            if img.ndim == 3:  # add batch dim if missing
-                img = img.unsqueeze(0)
-            return (img,)
+            from comfy_execution.graph import ExecutionBlocker
+            return (ExecutionBlocker(None),)
 
-        # Start with the first image
+        images = [image.unsqueeze(0) if image.ndim == 3 else image for image in images]
+        if len(images) == 1:
+            return (images[0],)
+
         image1 = images[0]
-        if image1.ndim == 3:
-            image1 = image1.unsqueeze(0)
+        if image1.ndim == 4 and all(
+                image.shape[1:] == image1.shape[1:]
+                and image.dtype == image1.dtype and image.device == image1.device
+                for image in images[1:]):
+            return (torch.cat(images, dim=0),)
 
         for image2 in images[1:]:
-            # Ensure batch dim
-            if image2.ndim == 3:
-                image2 = image2.unsqueeze(0)
-
             # Ensure same device
             if image2.device != image1.device:
                 image2 = image2.to(image1.device)
