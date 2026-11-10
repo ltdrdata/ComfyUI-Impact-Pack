@@ -2,7 +2,7 @@
 
 ## Intent and scope
 
-Follow up on #1172 for `PreviewBridge` and `PreviewBridgeLatent`. **Depends on #1172, which is still open.** This PR targets `integration/pr1172-preview-bridge` so its diff contains only the follow-up commit. Merge #1172 into Main first, then rebase this follow-up onto updated Main and retarget the PR before merging it. Fix lost legacy SAM temp masks, stale editor images and restoration of an older mask after a cleared mask was successfully saved. Preserve the edit submitted by each queued prompt, the unedited latent state across repeated queues, and saved input masks after a server restart with the tab retained. Retain #1172's ImageReceiver protection for non-configurable widgets.
+Follow up on #1172 for `PreviewBridge` and `PreviewBridgeLatent`. #1172 is merged into Main as `86e4434`. This PR targets Main and contains only the follow-up commit. Fix lost legacy SAM temp masks, stale editor images and restoration of an older mask after a cleared mask was successfully saved. Preserve the edit submitted by each queued prompt, the unedited latent state across repeated queues, and saved input masks after a server restart with the tab retained. Retain #1172's ImageReceiver protection for non-configurable widgets.
 
 ## Mask restoration and user impact
 
@@ -63,9 +63,9 @@ Both sides show the first save, before a second edit or workflow reload. Box 1 i
 
 Both Red cases lose the saved mask. The black Image Bridge output and white Latent Bridge output represent each node's no-mask state.
 
-![Image Bridge: Red loses the SAM mask; Green matches the 352×512 mask](impact-pack-pr1172-followup-pr-assets/red-green/sam-image.png)
+![Image Bridge: Red loses the SAM mask; Green matches the 352×512 mask](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/sam-image.png)
 
-![Latent Bridge: Red loses the SAM mask and returns its no-mask output; Green preserves the SAM mask](impact-pack-pr1172-followup-pr-assets/red-green/sam-latent.png)
+![Latent Bridge: Red loses the SAM mask and returns its no-mask output; Green preserves the SAM mask](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/sam-latent.png)
 
 </details>
 
@@ -74,9 +74,9 @@ Both Red cases lose the saved mask. The black Image Bridge output and white Late
 
 Both sides show the first execution after MaskEditor Clear/Save and the same source change. Saving succeeded; this comparison checks which mask restoration uses. Red selects the cached mask from before Clear. Green uses the saved empty mask.
 
-![Image Bridge: Clear saved successfully; Red restores the older cached mask, Green restores the saved empty mask](impact-pack-pr1172-followup-pr-assets/red-green/clear-image.png)
+![Image Bridge: Clear saved successfully; Red restores the older cached mask, Green restores the saved empty mask](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/clear-image.png)
 
-![Latent Bridge: Clear saved successfully; Red restores the older cached mask, Green restores the saved empty mask](impact-pack-pr1172-followup-pr-assets/red-green/clear-latent.png)
+![Latent Bridge: Clear saved successfully; Red restores the older cached mask, Green restores the saved empty mask](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/clear-latent.png)
 
 Green repeats the cleared-mask queue three times for each Bridge. Distinct prompt IDs distinguish the executions; later queues may reuse cached output.
 
@@ -88,11 +88,11 @@ Green repeats the cleared-mask queue three times for each Bridge. Distinct promp
 
 </details>
 
-[Original captures and hashes](impact-pack-pr1172-followup-pr-assets/red-green/manifest.json) · [Red execution report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser.xml) · [Green execution report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml)
+[Original captures and hashes](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/manifest.json) · [Red execution report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser.xml) · [Green execution report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml)
 
 The current 68-case Chrome/API run covers repeated Vue edits in `if_same_size`, SAM saves in all three restoration modes, registration failure/retry and the unchanged catalog of 198 nodes and 719 widgets. It also covers downstream mask propagation and latent resize/restoration. API/widget bindings are controlled in JavaScript tests; fault tests control registration failure, WebSocket delivery or the isolated server lifecycle.
 
-Batch preservation is checked separately: 2/3 frames × three restoration modes retain every frame on both #1172 and Green. A control without the single-image guard (`642d877`) returns only one frame and fails all six assertions. [Failing batch assertions](impact-pack-pr1172-followup-pr-assets/review-batch-red.xml) · [Passing backend report](impact-pack-pr1172-followup-pr-assets/cleanup-review/backend.xml)
+Batch preservation is checked separately: 2/3 frames × three restoration modes retain every frame on both #1172 and Green. A control without the single-image guard (`642d877`) returns only one frame and fails all six assertions. [Failing batch assertions](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-batch-red.xml) · [Passing backend report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/cleanup-review/backend.xml)
 
 ## Queued prompts sharing one saved image
 
@@ -111,9 +111,9 @@ The browser comparison saves a 256×256 mask, runs a 512×512 input with `always
 
 Unlike the four #1172 comparisons above, Red here is the follow-up candidate before the queue fix. Both sides show the second execution after releasing its result. Boxes identify the same input size, restoration mode and MASK output. Green uses the same assertion and expected mask bytes as Red.
 
-![Image Bridge: shared registration loses the second mask before the fix and preserves it afterward](impact-pack-pr1172-followup-pr-assets/red-green/shared-image.png)
+![Image Bridge: shared registration loses the second mask before the fix and preserves it afterward](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/shared-image.png)
 
-![Latent Bridge: shared registration returns the no-mask output before the fix and preserves the saved mask afterward](impact-pack-pr1172-followup-pr-assets/red-green/shared-latent.png)
+![Latent Bridge: shared registration returns the no-mask output before the fix and preserves the saved mask afterward](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/shared-latent.png)
 
 | Green stage | Image Bridge prompt ID | Latent Bridge prompt ID | Observed MASK, both |
 |---|---|---|---|
@@ -121,7 +121,7 @@ Unlike the four #1172 comparisons above, Red here is the follow-up candidate bef
 | 256×256 input, `if_same_size`; same submitted ID | `010a957d-1a44-46ce-b60a-66230e5589b5` | `be3161bf-dd3f-490e-b4a9-8e7c42e525b8` | 256×256, 1,678 nonzero pixels |
 | Native export/reload → Run | `e9c2526a-633f-428e-bbda-443c952e010b` | `c99da9d5-ad25-41d3-b379-ec5d6b584754` | 256×256, 1,678 nonzero pixels |
 
-[Actual submitted references, outputs and trace hashes](impact-pack-pr1172-followup-pr-assets/shared-reference-sequence.json) · [Red report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser.xml) · [Green report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml)
+[Actual submitted references, outputs and trace hashes](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/shared-reference-sequence.json) · [Red report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser.xml) · [Green report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml)
 
 </details>
 
@@ -147,13 +147,13 @@ The unedited latent defect also exists in Main + #1172; the retained-tab regress
 
 The repeated-queue panel includes all three actual MASK outputs and distinct prompt IDs. Boxes identify the unchanged input/settings and the differing output. The restart panels compare the first queue after the real restart; tests additionally repeat two more queues and check both restoration modes.
 
-![Latent: three unedited queues preserve the no-mask state after the fix](impact-pack-pr1172-followup-pr-assets/red-green/requeue-latent.png)
+![Latent: three unedited queues preserve the no-mask state after the fix](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/requeue-latent.png)
 
-![Image: a retained tab re-registers the saved mask after server restart](impact-pack-pr1172-followup-pr-assets/red-green/restart-image.png)
+![Image: a retained tab re-registers the saved mask after server restart](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/restart-image.png)
 
-![Latent: a retained tab restores the saved mask after server restart](impact-pack-pr1172-followup-pr-assets/red-green/restart-latent.png)
+![Latent: a retained tab restores the saved mask after server restart](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/restart-latent.png)
 
-[Three-queue records and source hashes](impact-pack-pr1172-followup-pr-assets/red-green/requeue-manifest.json) · [Red execution report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser.xml)
+[Three-queue records and source hashes](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/red-green/requeue-manifest.json) · [Red execution report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser.xml)
 
 </details>
 
@@ -174,11 +174,11 @@ Red is the published follow-up `a5350a6`; Green includes the empty-selection and
 
 Both sides show the first queue after saving the selection, with `block=if_empty_mask` and `restore_mask=always`. Boxes identify the unchanged input/settings and downstream nodes. Queue records determine whether those consumers ran: a blocked node can still display an older preview, which is not an output of the current queue.
 
-![Latent Clear: the saved empty selection now blocks downstream](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/clear.png)
+![Latent Clear: the saved empty selection now blocks downstream](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/clear.png)
 
-![Latent full selection: the full mask now permits downstream execution](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/full.png)
+![Latent full selection: the full mask now permits downstream execution](https://raw.githubusercontent.com/ltdrdata/ComfyUI-Impact-Pack/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/full.png)
 
-[Original captures and three-stage queue records](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/manifest.json)
+[Original captures and three-stage queue records](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/manifest.json)
 
 </details>
 
@@ -202,26 +202,26 @@ Links already configured under input/output/temp are intentionally supported, in
 
 The same **155 backend cases** produce **13 failures / 142 passing controls → 155 passed**. The 13 failures are nine HTTP subfolder escapes and four raw symlink rejection/metadata cases. HTTP tests use the actual handlers and image reads; valid returned IDs are consumed by both Bridges.
 
-A separate real ComfyUI probe checks `/view`, `/upload/image`, registration and queued execution. All six file/directory-symlink configurations across input/output/temp remain viewable, uploadable and registerable. Eight Green prompts produce the saved mask, and six external registration attempts return 400. Raw prompts use different Bridge IDs from registered prompts to prevent the last-mask cache from hiding a failure. [Red observations](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-red/observations.json) · [Green observations and prompt IDs](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/observations.json).
+A separate real ComfyUI probe checks `/view`, `/upload/image`, registration and queued execution. All six file/directory-symlink configurations across input/output/temp remain viewable, uploadable and registerable. Eight Green prompts produce the saved mask, and six external registration attempts return 400. Raw prompts use different Bridge IDs from registered prompts to prevent the last-mask cache from hiding a failure. [Red observations](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-red/observations.json) · [Green observations and prompt IDs](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/observations.json).
 
 ## Validation
 
-Candidate: `30c7678`, one follow-up commit above the separate Main + #1172 integration (`45e5321`). Merge #1172 first, then rebase this follow-up onto updated Main and retarget this PR. [Exact source hashes and results](impact-pack-pr1172-followup-pr-assets/final-state.json).
+Candidate: `04226c7`, one follow-up commit above Main after #1172 (`86e4434`). Its complete Git tree is identical to tested `30c7678`; rebase changed no source or test files. [Rebase source comparison](impact-pack-pr1172-followup-pr-assets/sequential-merge/source-equivalence.json). [Original test source hashes and results](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/final-state.json).
 
 Environment: ComfyUI `61e524bd` (0.44.0), frontend 1.58.5, headless Chrome, Python 3.12, PyTorch 2.10.0+cu128 and Node 24.12.0. Each browser runtime imports its own isolated checkout.
 
 | Suite | Result |
 |---|---:|
 | All JavaScript unit tests | 81 passed |
-| Backend: Bridge, SAM masks, mask-to-SEGS and image batching | 304 passed, including 155 Bridge/registration cases; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-green.xml) |
-| Full current Chrome/API regression | 68 passed: [53 native Bridge/catalog cases](impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-core/browser.xml) + [15 real SAM/API cases](impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-models/browser.xml) |
-| Same 155 backend cases on `fc073de` → current | 13 failures / 142 passing controls → 155 passed; [Red report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red.xml) |
-| Real ComfyUI media-path probe | 1 passed: view/upload/registration of six symlink configurations, eight queued mask outputs and six rejected external registrations; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/browser.xml) |
+| Backend: Bridge, SAM masks, mask-to-SEGS and image batching | 304 passed, including 155 Bridge/registration cases; [report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-green.xml) |
+| Full current Chrome/API regression | 68 passed: [53 native Bridge/catalog cases](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-core/browser.xml) + [15 real SAM/API cases](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-models/browser.xml) |
+| Same 155 backend cases on `fc073de` → current | 13 failures / 142 passing controls → 155 passed; [Red report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red.xml) |
+| Real ComfyUI media-path probe | 1 passed: view/upload/registration of six symlink configurations, eight queued mask outputs and six rejected external registrations; [report](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/browser.xml) |
 | Retained selection comparison: `a5350a6` → selection fix | 2 latent browser failures / 2 passing Image controls → 4 passed; all four rerun in the current full suite |
 
 All current Green checks have zero failures, errors and skips. The two browser groups have no overlapping cases and include four real server restarts and all 14 trusted catalog checks. Runtime and executed browser-test hashes match the committed source. The backend-only HTTP test cleanup was separately rerun on Red and Green with both asyncio-related pytest plugins disabled. Widget definitions and trusted fixture files are unchanged.
 
-Backend and real-server media-path Red/Green runs use the same current test bytes. Backend HTTP tests run the actual registration handlers through aiohttp; only unused PromptServer registration is substituted. The separate ComfyUI probe uses the real /view, upload, registration and prompt endpoints. Existing screenshot comparisons retain their recorded source snapshots; their assertion paths were retained and rerun in the current full regression. Backend coverage includes incoming, reused and restored masks, block on/off, raw saved/missing files, input/output/temp path validation, configured symlinks, metadata, all restoration policies and size mismatches. [Review decisions](impact-pack-pr1172-followup-pr-assets/REREVIEW.md) · [Current run summary](impact-pack-pr1172-followup-pr-assets/review-fix-v4/summary.json).
+Backend and real-server media-path Red/Green runs use the same current test bytes. Backend HTTP tests run the actual registration handlers through aiohttp; only unused PromptServer registration is substituted. The separate ComfyUI probe uses the real /view, upload, registration and prompt endpoints. Existing screenshot comparisons retain their recorded source snapshots; their assertion paths were retained and rerun in the current full regression. Backend coverage includes incoming, reused and restored masks, block on/off, raw saved/missing files, input/output/temp path validation, configured symlinks, metadata, all restoration policies and size mismatches. [Review decisions](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/REREVIEW.md) · [Current run summary](https://github.com/ltdrdata/ComfyUI-Impact-Pack/blob/cde41ab8b8cb55a3d381474664fbf6d9276de8ad/impact-pack-pr1172-followup-pr-assets/review-fix-v4/summary.json).
 
 Reproduce with the isolated server setup in `docs/E2E_TEST_STRATEGY.md`:
 

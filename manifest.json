@@ -2742,5 +2742,9 @@
   "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/01-screen.png": {
     "bytes": 135979,
     "sha256": "02373f80e6bf84c97d88f45c09db376087838efd8bd23251bfb8a99d43758097"
+  },
+  "impact-pack-pr1172-followup-pr-assets/sequential-merge/source-equivalence.json": {
+    "bytes": 956,
+    "sha256": "dfc130195ccc5668f4a759f3eee7a905f9ff742e89212e2e5d80930009a40f6a"
   }
 }

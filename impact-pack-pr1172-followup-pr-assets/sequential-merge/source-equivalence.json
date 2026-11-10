@@ -1,0 +1,23 @@
+{
+  "prior_tested_head": "30c767853d7d75ea19a381a583e4c13306f049dd",
+  "rebased_head": "04226c733de7856da78b8f33ce48b8347c83e9fd",
+  "main_after_pr1172": "86e4434edc405fa624f537577ae60d578a848087",
+  "tested_tree": "96787b285b47e27bf74a81edec629aecd9248573",
+  "rebased_tree": "96787b285b47e27bf74a81edec629aecd9248573",
+  "tree_identical": true,
+  "followup_commit_count": 1,
+  "files_changed": [
+    "docs/E2E_TEST_STRATEGY.md",
+    "js/image-path.js",
+    "js/impact-image-util.js",
+    "js/preview-bridge.js",
+    "modules/impact/bridge_nodes.py",
+    "modules/impact/core.py",
+    "modules/impact/impact_server.py",
+    "tests/README.md",
+    "tests/preview_bridge.test.mjs",
+    "tests/test_e2e_preview_bridge.py",
+    "tests/test_preview_bridge_result.py"
+  ],
+  "validation": "Exact full-tree identity preserves the completed JS 81, backend 304, Chrome/API 68 and real-server media-path probe 1 results; no source or test changes during rebase."
+}
