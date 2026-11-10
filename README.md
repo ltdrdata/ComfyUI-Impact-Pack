@@ -2,7 +2,7 @@
 
 ## Intent and scope
 
-Follow up on #1172 for `PreviewBridge` and `PreviewBridgeLatent`. **Depends on #1172, which is still open.** This Draft PR targets `integration/pr1172-preview-bridge` so its diff contains only the follow-up commit. Merge #1172 into Main first, then rebase this follow-up onto updated Main and retarget the PR before merging it. Fix lost legacy SAM temp masks, stale editor images and restoration of an older mask after a cleared mask was successfully saved. Preserve the edit submitted by each queued prompt, the unedited latent state across repeated queues, and saved input masks after a server restart with the tab retained. Retain #1172's ImageReceiver protection for non-configurable widgets.
+Follow up on #1172 for `PreviewBridge` and `PreviewBridgeLatent`. **Depends on #1172, which is still open.** This PR targets `integration/pr1172-preview-bridge` so its diff contains only the follow-up commit. Merge #1172 into Main first, then rebase this follow-up onto updated Main and retarget the PR before merging it. Fix lost legacy SAM temp masks, stale editor images and restoration of an older mask after a cleared mask was successfully saved. Preserve the edit submitted by each queued prompt, the unedited latent state across repeated queues, and saved input masks after a server restart with the tab retained. Retain #1172's ImageReceiver protection for non-configurable widgets.
 
 ## Mask restoration and user impact
 
@@ -22,6 +22,16 @@ Here, **Clear** means right-clicking either Bridge → **Open in MaskEditor** �
 
 This PR restores from the saved edit, including an explicitly cleared mask, before falling back to the cache. A saved clear therefore stays empty when restoration applies. The `never` / `if_same_size` / `always` conditions above still determine when restoration applies. The Clear evidence tests this restore-source selection with `always`; the SAM evidence separately tests delivery of a saved nonempty mask with `never`.
 
+With `block=if_empty_mask`, the Latent Bridge checks the effective mask after restoration:
+
+| Effective mask | `block=never` | `block=if_empty_mask` |
+|---|---|---|
+| No mask available | No `noise_mask`; white fallback MASK | Skip downstream nodes |
+| Saved Clear / all-zero selection | Preserve the all-zero `noise_mask` and MASK | Skip downstream nodes |
+| Partial or full selection | Preserve the selected mask | Run downstream nodes |
+
+A full white selection is a valid mask. Previously, the latent block check treated it as empty while allowing a saved Clear through. This corrects that existing behavior without changing the `block=never` clear output.
+
 ## Changes
 
 - Register the native filename before prompt submission, preserving filename/subfolder/type metadata. Failed registration blocks submission and permits retry.
@@ -29,10 +39,11 @@ This PR restores from the saved edit, including an explicitly cleared mask, befo
 - Restore the submitted edit's mask, including a successfully saved clear, before consulting older cached masks; propagate latent `noise_mask`. Preserve input samples and incoming mask precedence.
 - Retain edits for identical recomputed single images; recomputed batches keep every frame. Clear incompatible caches on Bridge-type reuse. Distinguish an RGB preview without a mask from an explicitly saved clear.
 - Re-register saved files after the frontend reconnects; ignore previous-connection feedback when updating the saved filename. Ordinary queues still reuse their registration.
+- Preserve raw `clipspace/... [input]` API references on input changes by reusing the existing file registration path. `never` still discards the mask on refresh; `if_same_size` still checks dimensions.
 
 ## Evidence
 
-Red is the local integration of Main + #1172 (`6572207`); Green captures are from `4e7b9c0` plus review fixes, recorded in `feedback-fixes/green-chrome/source.json`. They precede the equivalent branch cleanup verified below. Headless Chrome performs the same UI actions and assertions in separate runtimes. Each pair below uses the **same execution stage and byte-identical expected mask**. SAM uses real ViT-B detection; latent cases use the SD1.5 VAE. The 704×1024 source is resized with `width=0`, `height=512`, `area`, producing 352×512 without changing its aspect ratio. There is no diffusion sampling.
+Red is the local integration of Main + #1172 (`6572207`); Green captures are from `4e7b9c0` plus review fixes, recorded in `feedback-fixes/green-chrome/source.json`. These earlier captures precede the current fixes; the full current regression run rechecks the retained scenarios. The new selection comparisons below use the published follow-up as Red. Headless Chrome performs the same UI actions and assertions in separate runtimes. Each pair below uses the **same execution stage and byte-identical expected mask**. SAM uses real ViT-B detection; latent cases use the SD1.5 VAE. The 704×1024 source is resized with `width=0`, `height=512`, `area`, producing 352×512 without changing its aspect ratio. There is no diffusion sampling.
 
 | Scenario / same comparison stage | Red · `6572207` | Green · `4e7b9c0` + local fixes |
 |---|---|---|
@@ -75,7 +86,7 @@ Green repeats the cleared-mask queue three times for each Bridge. Distinct promp
 
 [Original captures and hashes](impact-pack-pr1172-followup-pr-assets/red-green/manifest.json) · [Red execution report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser.xml) · [Green execution report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml)
 
-The 64-case Chrome/API run covers repeated Vue edits in `if_same_size`, SAM saves in all three restoration modes, registration failure/retry and the unchanged catalog of 198 nodes and 719 widgets. It also covers downstream mask propagation and latent resize/restoration. API/widget bindings are controlled in JavaScript tests; fault tests control registration failure, WebSocket delivery or the isolated server lifecycle.
+The current 68-case Chrome/API run covers repeated Vue edits in `if_same_size`, SAM saves in all three restoration modes, registration failure/retry and the unchanged catalog of 198 nodes and 719 widgets. It also covers downstream mask propagation and latent resize/restoration. API/widget bindings are controlled in JavaScript tests; fault tests control registration failure, WebSocket delivery or the isolated server lifecycle.
 
 Batch preservation is checked separately: 2/3 frames × three restoration modes retain every frame on both #1172 and Green. A control without the single-image guard (`642d877`) returns only one frame and fails all six assertions. [Failing batch assertions](impact-pack-pr1172-followup-pr-assets/review-batch-red.xml) · [Passing backend report](impact-pack-pr1172-followup-pr-assets/cleanup-review/backend.xml)
 
@@ -142,31 +153,58 @@ The repeated-queue panel includes all three actual MASK outputs and distinct pro
 
 </details>
 
+## Empty selection and direct API regression checks
+
+Red is the published follow-up `a5350a6`; Green includes the empty-selection and raw-file compatibility fixes. The backend uses real ComfyUI modules and PNG files. Chrome uses native Clear/Invert/Save, then runs the same input, changes the source and exports/reloads the native workflow before the third queue.
+
+| Scenario | Red | Green |
+|---|---|---|
+| Latent Clear, blocking enabled | Downstream executes with an all-zero `noise_mask` | Both downstream consumers are skipped |
+| Latent full selection, blocking enabled | Valid full selection incorrectly blocks both consumers | Both consumers run; returned MASK is entirely white |
+| Image Bridge controls | Clear blocks; full selection runs | Same behavior |
+| Raw saved file after input changes, `always` / matching `if_same_size` | Image: zero fallback; Latent: white fallback without `noise_mask` | Saved partial mask (127/255) or explicit Clear restored, including latent `noise_mask` |
+| `never`, size mismatch with `if_same_size`, missing file | Fallback behavior | Preserved |
+
+<details>
+<summary>Red / Green captures — Clear and full-selection blocking</summary>
+
+Both sides show the first queue after saving the selection, with `block=if_empty_mask` and `restore_mask=always`. Boxes identify the unchanged input/settings and downstream nodes. Queue records determine whether those consumers ran: a blocked node can still display an older preview, which is not an output of the current queue.
+
+![Latent Clear: the saved empty selection now blocks downstream](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/clear.png)
+
+![Latent full selection: the full mask now permits downstream execution](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/full.png)
+
+[Original captures and three-stage queue records](impact-pack-pr1172-followup-pr-assets/review-fix-v2/overlays/manifest.json)
+
+</details>
+
+Registration errors still prevent prompt submission, with retry after recovery. The existing server filename check rejects names containing `..`, including `my..image.png`; this validation restriction is unchanged. Falling back to an older image ID would silently submit the wrong edit.
+
 ## Validation
 
-Candidate: `a5350a6`, one follow-up commit above the separate local Main + #1172 integration (`45e5321`). After #1172 merges, rebase only this follow-up onto updated Main. Its tree is identical to the validated working copy. [Verified source snapshot and results](impact-pack-pr1172-followup-pr-assets/final-state.json). Environment: ComfyUI `61e524bd` (0.44.0), frontend 1.58.5, Chrome, Python 3.12, PyTorch 2.10.0+cu128 and Node 24.12.0. Each comparison imports its own checkout under an isolated ComfyUI base directory.
+Candidate: `2b0808b`, one follow-up commit above the separate Main + #1172 integration (`45e5321`). Merge #1172 first, then rebase this follow-up onto updated Main and retarget this PR. [Exact source hashes and results](impact-pack-pr1172-followup-pr-assets/final-state.json).
+
+Environment: ComfyUI `61e524bd` (0.44.0), frontend 1.58.5, headless Chrome, Python 3.12, PyTorch 2.10.0+cu128 and Node 24.12.0. Each browser runtime imports its own isolated checkout.
 
 | Suite | Result |
 |---|---:|
-| All JavaScript unit tests, including 19 Bridge/ImageReceiver cases | 81 passed |
-| Backend: Bridge, SAM masks, mask-to-SEGS and image-list batching | 200 passed, including 51 Bridge cases |
-| Latest Chrome: native reload, unedited queues and deferred execution feedback | 12 passed; [report](impact-pack-pr1172-followup-pr-assets/cleanup-review/chrome/browser.xml) |
-| Full Chrome/API before the equivalent branch cleanup | 64 passed; [report](impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml) |
-| Unedited queues and real server restart | 6 intended failures + 2 passing controls → 8 passed |
-| Shared-file regression before/after fix | Backend: 8 intended failures → 8 passed; Chrome: 2 intended failures → 2 passed |
+| All JavaScript unit tests | 81 passed |
+| Backend: Bridge, SAM masks, mask-to-SEGS and image batching | 254 passed, including 105 Bridge cases; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v2/backend-green.xml) |
+| Full current Chrome/API regression | 68 passed: [53 native Bridge/catalog cases](impact-pack-pr1172-followup-pr-assets/review-fix-v2/chrome-green-core/browser.xml) + [15 real SAM/API cases](impact-pack-pr1172-followup-pr-assets/review-fix-v2/chrome-green-models/browser.xml) |
+| Same 105 backend cases on published Red → Green | 20 intended failures / 85 passing controls → 105 passed |
+| New selection browser cases on published Red → Green | 2 latent failures / 2 passing Image controls → 4 passed |
 
-Current checks have zero failures and zero skips. The same 200 backend cases pass before and after simplifying two legacy-file fallback branches; the latest 12 Chrome cases pass in 169 seconds. The preceding full 64-case run, including four real restarts, remains separately recorded. All Red/Green browser comparisons use the unchanged current E2E test file. Clear cases verify the saved file's empty mask before changing the input and checking restoration. Trusted catalog fixtures remain byte-identical to the baseline.
+All current Green checks have zero failures, errors and skips. The two browser groups have no overlapping cases and include four real server restarts and all 14 trusted catalog checks. Both runtime and test-file hashes match the committed source. Widget definitions and trusted fixture files are unchanged.
 
-Backend coverage includes native and legacy references, saved versus missing files, no-alpha versus saved-clear masks, cache-policy transitions and queued edits. [Review findings and validation boundaries](impact-pack-pr1172-followup-pr-assets/REREVIEW.md).
+New selection comparisons run the same current tests on Red and Green. Earlier SAM/Clear/shared/restart captures retain their recorded source snapshots; their existing assertion paths were retained and rerun in the current full regression. Backend coverage includes incoming, reused and restored masks, block on/off, raw saved/missing files, all restoration policies and size mismatches. [Review decisions](impact-pack-pr1172-followup-pr-assets/REREVIEW.md) · [Current run summary](impact-pack-pr1172-followup-pr-assets/review-fix-v2/summary.json).
 
-Reproduce from the branch using the ComfyUI Python environment and the isolated server setup in `docs/E2E_TEST_STRATEGY.md`:
+Reproduce with the isolated server setup in `docs/E2E_TEST_STRATEGY.md`:
 
 ```bash
 node --experimental-vm-modules --test tests/*.test.mjs
 IMPACT_COMFY_ROOT=/path/to/ComfyUI PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest \
   tests/test_preview_bridge_result.py \
   tests/test_sam_masks.py tests/test_mask_to_segs.py tests/test_image_list_batch.py -q
-# Full browser suite; restart command must control only the isolated test server.
 IMPACT_E2E_BASE_URL=http://127.0.0.1:18176 \
 IMPACT_E2E_SAM_IMAGE=/path/to/subject.png \
 IMPACT_E2E_RESTART_COMMAND="/path/to/restart-isolated-server" \
@@ -174,6 +212,6 @@ python -m pytest tests/test_e2e_preview_bridge.py tests/test_e2e_legacy_sam.py \
   tests/test_e2e_widget_catalog.py tests/test_sam_api.py -v
 ```
 
-Not validated: older frontend releases, GPU execution, diffusion sampling or recovery of deleted temporary files. Retained-tab restarts are verified for saved input files with `always` and `if_same_size`; `never` still deliberately discards a mask when the input refreshes. Legacy opaque IDs still require their server mapping and image file.
+Not validated: older frontend releases, Bridge GPU execution, diffusion sampling or recovery of deleted temporary files. Retained-tab restarts cover saved input files with `always` and `if_same_size`; `never` deliberately discards a mask on input refresh. Legacy opaque IDs require their server mapping and image file.
 
-Published evidence includes the embedded comparisons, original captures and output masks, queue records, source manifests and test reports. Browser trace ZIPs, runtime checkouts and model files remain in the local archive.
+Published evidence includes comparisons, original captures and output masks, queue records, source manifests and test reports. Browser trace ZIPs, runtime checkouts and model files remain in the local archive.

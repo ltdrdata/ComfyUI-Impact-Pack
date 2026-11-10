@@ -1,0 +1,10 @@
+{
+  "baseline": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
+  "input_types_unchanged": true,
+  "trusted_fixtures_unchanged": true,
+  "changed_files_sha256": {
+    "modules/impact/bridge_nodes.py": "2e680dbc8c0995c3767e89e90780c2a7f35ce2c7ed178eb532bca9e4d7c170ab",
+    "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
+    "tests/test_preview_bridge_result.py": "c4fdf03dc42e03ccd5d7c4b44819e0839c89e2a9543ef3eae7bd95e5f84186c4"
+  }
+}

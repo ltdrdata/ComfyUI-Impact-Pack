@@ -1,0 +1,58 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1172-followup/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[clear-PreviewBridge] PASSED [ 25%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent] FAILED [ 50%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[full-PreviewBridge] PASSED [ 75%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent] FAILED [100%]
+
+=================================== FAILURES ===================================
+____ test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent] ____
+tests/test_e2e_preview_bridge.py:597: in test_saved_mask_selection_controls_blocking
+    assert record["consumer_ran"] == record["mask_ran"] == (selection == "full"), record
+E   AssertionError: {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '9866c122-ee03-4b7f-a485-b8abae56dfd2', 'stage': 'same-input', ...}
+E   assert True == ('clear' == 'full'
+E     
+E     - full
+E     + clear)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v2/chrome-red/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (ffb30bf3-e814-4e54-9b68-e211550d7737)
+PASS: UI Run completed (ed544f15-3edd-4c9b-8ea0-31455dee7df9)
+PASS: UI Run completed (9866c122-ee03-4b7f-a485-b8abae56dfd2)
+____ test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent] _____
+tests/test_e2e_preview_bridge.py:597: in test_saved_mask_selection_controls_blocking
+    assert record["consumer_ran"] == record["mask_ran"] == (selection == "full"), record
+E   AssertionError: {'consumer_ran': False, 'mask_ran': False, 'prompt_id': '6f4dc9a3-46e6-4163-a805-5cd5b67cde7f', 'stage': 'same-input', ...}
+E   assert False == ('full' == 'full'
+E     
+E       full)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v2/chrome-red/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (241d0706-ef46-4df0-a98b-76f88b08ceb4)
+PASS: UI Run completed (387f392e-6e9d-40a9-a586-5635c95f0dff)
+PASS: UI Run completed (6f4dc9a3-46e6-4163-a805-5cd5b67cde7f)
+=============================== warnings summary ===============================
+test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[clear-PreviewBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v2/chrome-red/browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]
+============== 2 failed, 2 passed, 1 warning in 61.28s (0:01:01) ===============

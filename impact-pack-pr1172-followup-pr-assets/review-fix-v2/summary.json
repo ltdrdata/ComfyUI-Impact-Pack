@@ -1,0 +1,70 @@
+{
+  "candidate": "2b0808bf9040f741f519f825554b8124b5ebfb2b",
+  "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
+  "published_red": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
+  "commit_tree": "c8de3695a97b4bd86f372514b193ff896013df08",
+  "timestamp": "2026-11-10T20:26:20+09:00",
+  "results": {
+    "backend_red": {
+      "tests": 105,
+      "failures": 20,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 254,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_red": {
+      "tests": 4,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_core": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_models": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javascript": {
+      "tests": 81,
+      "pass": 81,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "browser_total_unique_cases": 68,
+  "same_tests_red_green": true,
+  "input_types_unchanged": true,
+  "trusted_fixtures_unchanged": true,
+  "browser_source_hashes_match": true,
+  "followup_commit_count": 1,
+  "changed_files_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "4eb86e837b7217ef10d1d940ca89824e4f4716118e861b0c7b06c96da93bf055",
+    "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
+    "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
+    "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
+    "modules/impact/bridge_nodes.py": "2e680dbc8c0995c3767e89e90780c2a7f35ce2c7ed178eb532bca9e4d7c170ab",
+    "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
+    "tests/README.md": "59f09c146ef18d533b33a389708c7f5b4491ae38c89c161610b4ca74fa1d1fd6",
+    "tests/preview_bridge.test.mjs": "01e828663ee7ff915f9d159a24baea79f6f0c06fb5c3dc4f551a955866d2bf0b",
+    "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
+    "tests/test_preview_bridge_result.py": "c4fdf03dc42e03ccd5d7c4b44819e0839c89e2a9543ef3eae7bd95e5f84186c4"
+  },
+  "notes": "Registration rejection remains intentional; existing filename validation is unchanged. #1172 remains the prerequisite."
+}

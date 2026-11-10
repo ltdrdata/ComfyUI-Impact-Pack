@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="20" skipped="0" tests="105" time="4.727" timestamp="2026-11-10T20:07:38.365147+09:00" hostname="hyewon"><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-always-PreviewBridge]" time="0.264" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-always-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-if_same_size-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-always-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-always-PreviewBridgeLatent]" time="0.005"><failure message="AssertionError: assert False&#10; +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_saved_clear_survives_inpu5')
+node_type = 'PreviewBridgeLatent', restore = 'always', block = True
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_saved_clear_survives_input_refresh(bridge_files, node_type, restore, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "erase", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$initial", **inputs)
+        for filename, alpha in [("painted.png", 128), ("cleared.png", 255)]:
+            path = bridge_files / filename
+            Image.new("RGBA", (64, 64), (0, 0, 0, alpha)).save(path)
+            reference = core.set_previewbridge_image("erase", str(path), {
+                "filename": filename, "subfolder": "", "type": "temp",
+            })
+            if alpha == 255:
+                if node_type == "PreviewBridge":
+                    inputs["images"] = torch.ones_like(inputs["images"])
+                else:
+                    inputs["latent"] = {"samples": torch.ones_like(inputs["latent"]["samples"])}
+            output, mask = node.doit(image=reference, block=block, **inputs)["result"]
+            if block and alpha == 255:
+&gt;               assert isinstance(output, ExecutionBlocker)
+E               AssertionError: assert False
+E                +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)
+
+tests/test_preview_bridge_result.py:41: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-if_same_size-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-if_same_size-PreviewBridgeLatent]" time="0.004"><failure message="AssertionError: assert False&#10; +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_saved_clear_survives_inpu7')
+node_type = 'PreviewBridgeLatent', restore = 'if_same_size', block = True
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_saved_clear_survives_input_refresh(bridge_files, node_type, restore, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "erase", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$initial", **inputs)
+        for filename, alpha in [("painted.png", 128), ("cleared.png", 255)]:
+            path = bridge_files / filename
+            Image.new("RGBA", (64, 64), (0, 0, 0, alpha)).save(path)
+            reference = core.set_previewbridge_image("erase", str(path), {
+                "filename": filename, "subfolder": "", "type": "temp",
+            })
+            if alpha == 255:
+                if node_type == "PreviewBridge":
+                    inputs["images"] = torch.ones_like(inputs["images"])
+                else:
+                    inputs["latent"] = {"samples": torch.ones_like(inputs["latent"]["samples"])}
+            output, mask = node.doit(image=reference, block=block, **inputs)["result"]
+            if block and alpha == 255:
+&gt;               assert isinstance(output, ExecutionBlocker)
+E               AssertionError: assert False
+E                +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)
+
+tests/test_preview_bridge_result.py:41: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-always-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-if_same_size-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-always-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-if_same_size-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-always-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-never-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-never-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-always-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-never-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-never-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_execution_feedback_identifies_the_submitted_image_on_refresh_and_reuse[PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_execution_feedback_identifies_the_submitted_image_on_refresh_and_reuse[PreviewBridgeLatent]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_source_preserves_edits_only_when_pixels_match[0-rgb0-mask_shape0-0.4980392156862745]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_source_preserves_edits_only_when_pixels_match[1-rgb1-mask_shape1-0]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_reusing_a_node_id_for_the_other_bridge_discards_its_cache[PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_reusing_a_node_id_for_the_other_bridge_discards_its_cache[PreviewBridgeLatent]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-never]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-always]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-if_same_size]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-never]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-always]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-if_same_size]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[always-32-True]" time="0.005" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[if_same_size-32-True]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[always-40-True]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[never-32-False]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[never-40-False]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[if_same_size-40-False]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_incoming_noise_mask_takes_priority_over_the_cached_mask" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_unedited_latent_requeue_keeps_no_mask_and_block[False]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_unedited_latent_requeue_keeps_no_mask_and_block[True]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-no-alpha]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-clear]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-painted]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-full]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-clear]" time="0.002"><failure message="AssertionError: assert False&#10; +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],\n          [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont13')
+alpha = 255, route = 'reuse', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+&gt;           assert isinstance(output, ExecutionBlocker)
+E           AssertionError: assert False
+E            +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],\n          [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)
+
+tests/test_preview_bridge_result.py:292: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-full]" time="0.002"><failure message="TypeError: 'ExecutionBlocker' object is not subscriptable">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont15')
+alpha = 0, route = 'reuse', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+            assert isinstance(output, ExecutionBlocker)
+            assert isinstance(mask, ExecutionBlocker)
+        else:
+&gt;           assert output["samples"] is latent["samples"]
+E           TypeError: 'ExecutionBlocker' object is not subscriptable
+
+tests/test_preview_bridge_result.py:295: TypeError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-clear]" time="0.004"><failure message="AssertionError: assert False&#10; +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont17')
+alpha = 255, route = 'refresh', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+&gt;           assert isinstance(output, ExecutionBlocker)
+E           AssertionError: assert False
+E            +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],\n          [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)
+
+tests/test_preview_bridge_result.py:292: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-painted]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-full]" time="0.002"><failure message="TypeError: 'ExecutionBlocker' object is not subscriptable">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont19')
+alpha = 0, route = 'refresh', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+            assert isinstance(output, ExecutionBlocker)
+            assert isinstance(mask, ExecutionBlocker)
+        else:
+&gt;           assert output["samples"] is latent["samples"]
+E           TypeError: 'ExecutionBlocker' object is not subscriptable
+
+tests/test_preview_bridge_result.py:295: TypeError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-clear]" time="0.002"><failure message="AssertionError: assert False&#10; +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],\n          [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont21')
+alpha = 255, route = 'incoming', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+&gt;           assert isinstance(output, ExecutionBlocker)
+E           AssertionError: assert False
+E            +  where False = isinstance({'noise_mask': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,  ..., 0., 0., 0.],\n         [0., 0., 0.,...      [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],\n          [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]]])}, &lt;class 'comfy_execution.graph_utils.ExecutionBlocker'&gt;)
+
+tests/test_preview_bridge_result.py:292: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-full]" time="0.001"><failure message="TypeError: 'ExecutionBlocker' object is not subscriptable">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_latent_mask_presence_cont23')
+alpha = 0, route = 'incoming', block = True
+
+    @pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
+    @pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
+    @pytest.mark.parametrize("block", [False, True])
+    def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
+        from comfy_execution.graph import ExecutionBlocker
+        node = bridge_nodes.PreviewBridgeLatent()
+        latent = {"samples": torch.zeros((1, 4, 8, 12))}
+        image = "$edit-0"
+        if route == "incoming":
+            if alpha is not None:
+                latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
+        else:
+            if route == "reuse":
+                # A saved edit must replace an incoming mask without mutating it.
+                latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
+            node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
+            if route == "refresh":
+                latent = {"samples": torch.ones_like(latent["samples"])}
+            path = bridge_files / "edited.png"
+            Image.new("RGB" if alpha is None else "RGBA", (96, 64),
+                      (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
+            image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
+        before = {key: value.clone() for key, value in latent.items()}
+        output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
+                                 restore_mask="always", block=block)["result"]
+        if block and alpha in (None, 255):
+            assert isinstance(output, ExecutionBlocker)
+            assert isinstance(mask, ExecutionBlocker)
+        else:
+&gt;           assert output["samples"] is latent["samples"]
+E           TypeError: 'ExecutionBlocker' object is not subscriptable
+
+tests/test_preview_bridge_result.py:295: TypeError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_never_refresh_does_not_revive_an_older_cached_mask[PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_never_refresh_does_not_revive_an_older_cached_mask[PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-never-64-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-64-True-PreviewBridge]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7342622b4740&gt;
+node_type = 'PreviewBridge', restore = 'always', size = 64, restored = True
+alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-64-True-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7342622b4680&gt;
+node_type = 'PreviewBridgeLatent', restore = 'always', size = 64
+restored = True, alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-64-True-PreviewBridge]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7342621bc110&gt;
+node_type = 'PreviewBridge', restore = 'if_same_size', size = 64
+restored = True, alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-64-True-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_5')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7342621bc9b0&gt;
+node_type = 'PreviewBridgeLatent', restore = 'if_same_size', size = 64
+restored = True, alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-96-True-PreviewBridge]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_6')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73426213c410&gt;
+node_type = 'PreviewBridge', restore = 'always', size = 96, restored = True
+alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-96-True-PreviewBridgeLatent]" time="0.003"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 12, 12]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_7')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73426213ffe0&gt;
+node_type = 'PreviewBridgeLatent', restore = 'always', size = 96
+restored = True, alpha = 128
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 12, 12]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-96-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-96-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-never-64-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-64-True-PreviewBridge]" time="0.003"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_12')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73426213d8b0&gt;
+node_type = 'PreviewBridge', restore = 'always', size = 64, restored = True
+alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-64-True-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_13')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73426213ecc0&gt;
+node_type = 'PreviewBridgeLatent', restore = 'always', size = 64
+restored = True, alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-64-True-PreviewBridge]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_14')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x734262134230&gt;
+node_type = 'PreviewBridge', restore = 'if_same_size', size = 64
+restored = True, alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-64-True-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_15')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x734262137e60&gt;
+node_type = 'PreviewBridgeLatent', restore = 'if_same_size', size = 64
+restored = True, alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-96-True-PreviewBridge]" time="0.002"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_16')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7342621363f0&gt;
+node_type = 'PreviewBridge', restore = 'always', size = 96, restored = True
+alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-96-True-PreviewBridgeLatent]" time="0.003"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 12, 12]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3718/test_raw_clipspace_mask_obeys_17')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x734262135eb0&gt;
+node_type = 'PreviewBridgeLatent', restore = 'always', size = 96
+restored = True, alpha = 255
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("restore,size,restored", [
+        ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
+        ("always", 96, True), ("if_same_size", 96, False),
+    ])
+    @pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
+    def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+            bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+    
+        def source(size, value):
+            if node_type == "PreviewBridge":
+                return {"images": torch.full((1, size, size, 3), value)}
+            return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
+                    "preview_method": "Latent2RGB-SD15"}
+    
+        node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
+        path = bridge_files / "clipspace" / "raw.png"
+        if alpha is not None:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
+        image = "clipspace/raw.png [input]"
+        assert image not in core.preview_bridge_image_id_map
+        inputs = source(size, 1.0)
+        result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
+        output, mask = result["result"]
+        restored = restored and alpha is not None
+        if restored:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 12, 12]) != torch.Size([1, 64, 64]).
+
+tests/test_preview_bridge_result.py:396: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-96-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-96-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-never-64-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-64-True-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-64-True-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-96-True-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-96-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-96-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-96-False-PreviewBridgeLatent]" time="0.002" /></testsuite></testsuites>

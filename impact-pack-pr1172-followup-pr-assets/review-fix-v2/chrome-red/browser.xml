@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="61.280" timestamp="2026-11-10T20:08:33.182759+09:00" hostname="hyewon"><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_selection_controls_blocking[clear-PreviewBridge]" time="15.675" /><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]" time="13.499"><failure message="AssertionError: {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '9866c122-ee03-4b7f-a485-b8abae56dfd2', 'stage': 'same-input', ...}&#10;assert True == ('clear' == 'full'&#10;  &#10;  - full&#10;  + clear)">tests/test_e2e_preview_bridge.py:597: in test_saved_mask_selection_controls_blocking
+    assert record["consumer_ran"] == record["mask_ran"] == (selection == "full"), record
+E   AssertionError: {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '9866c122-ee03-4b7f-a485-b8abae56dfd2', 'stage': 'same-input', ...}
+E   assert True == ('clear' == 'full'
+E     
+E     - full
+E     + clear)</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_selection_controls_blocking[full-PreviewBridge]" time="17.505" /><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]" time="14.407"><failure message="AssertionError: {'consumer_ran': False, 'mask_ran': False, 'prompt_id': '6f4dc9a3-46e6-4163-a805-5cd5b67cde7f', 'stage': 'same-input', ...}&#10;assert False == ('full' == 'full'&#10;  &#10;    full)">tests/test_e2e_preview_bridge.py:597: in test_saved_mask_selection_controls_blocking
+    assert record["consumer_ran"] == record["mask_ran"] == (selection == "full"), record
+E   AssertionError: {'consumer_ran': False, 'mask_ran': False, 'prompt_id': '6f4dc9a3-46e6-4163-a805-5cd5b67cde7f', 'stage': 'same-input', ...}
+E   assert False == ('full' == 'full'
+E     
+E       full)</failure></testcase></testsuite></testsuites>

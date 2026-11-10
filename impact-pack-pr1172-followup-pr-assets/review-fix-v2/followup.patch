@@ -1,0 +1,2355 @@
+diff --git a/docs/E2E_TEST_STRATEGY.md b/docs/E2E_TEST_STRATEGY.md
+index dec32fc..1dca595 100644
+--- a/docs/E2E_TEST_STRATEGY.md
++++ b/docs/E2E_TEST_STRATEGY.md
+@@ -9,6 +9,28 @@ that setup does not extend the supported import scope.
+ 
+ ## Test coverage
+ 
++Preview Bridge checks run against an isolated server using the candidate Impact
++Pack checkout. Do not replace files in a user's active ComfyUI installation.
++With the server ready:
++
++```bash
++IMPACT_E2E_BASE_URL=http://127.0.0.1:18172 \
++IMPACT_E2E_ARTIFACTS=/tmp/impact-preview-bridge \
++IMPACT_E2E_SAM_IMAGE=/path/to/subject.png \
++python -m pytest tests/test_e2e_preview_bridge.py tests/test_e2e_legacy_sam.py tests/test_e2e_widget_catalog.py tests/test_sam_api.py -v
++```
++
++The Bridge suite creates and wires nodes through Chrome, compares saved and
++displayed pixels, and reloads native workflows in both restoration modes. It
++checks repeated edits, queued results, registration failure/retry, restored latent
++`noise_mask`, and clearing a mask before changing the input. Legacy SAM checks
++use real ViT-B detection, repeat temp-file saves for both Bridge types and all
++three restoration modes, and compare a second latent Bridge's mask downstream.
++These cases require the configured SAM model and the SD1.5 VAE named in
++`tests/README.md`; the other Bridge cases need no model weights.
++Registration-failure and delayed-result tests control only those boundaries.
++SAM responses are captured and forwarded unchanged for pixel comparisons.
++
+ | Script | Setup through the UI | Assertions |
+ | --- | --- | --- |
+ | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |
+diff --git a/js/image-path.js b/js/image-path.js
+new file mode 100644
+index 0000000..871c9ab
+--- /dev/null
++++ b/js/image-path.js
+@@ -0,0 +1,11 @@
++export function getFileItem(baseType, value) {
++    if (typeof value !== "string" || !value) return null;
++    const annotation = /\s*\[(input|output|temp)\]\s*$/i.exec(value);
++    const path = (annotation ? value.slice(0, annotation.index) : value).replaceAll("\\", "/");
++    const slash = path.lastIndexOf("/");
++    return {
++        filename: path.slice(slash + 1),
++        subfolder: path.slice(0, Math.max(slash, 0)),
++        type: annotation ? annotation[1].toLowerCase() : baseType
++    };
++}
+diff --git a/js/impact-image-util.js b/js/impact-image-util.js
+index 402ce15..083a248 100644
+--- a/js/impact-image-util.js
++++ b/js/impact-image-util.js
+@@ -1,159 +1,25 @@
+-import { ComfyApp, app } from "../../scripts/app.js";
++import { app } from "../../scripts/app.js";
+ import { api } from "../../scripts/api.js";
+-
+-function load_image(str) {
+-	let base64String = canvas.toDataURL('image/png');
+-	let img = new Image();
+-	img.src = base64String;
+-}
+-
+-function getFileItem(baseType, path) {
+-	try {
+-		let pathType = baseType;
+-
+-		if (path.endsWith("[output]")) {
+-			pathType = "output";
+-			path = path.slice(0, -9);
+-		} else if (path.endsWith("[input]")) {
+-			pathType = "input";
+-			path = path.slice(0, -8);
+-		} else if (path.endsWith("[temp]")) {
+-			pathType = "temp";
+-			path = path.slice(0, -7);
+-		}
+-
+-		const subfolder = path.substring(0, path.lastIndexOf('/'));
+-		const filename = path.substring(path.lastIndexOf('/') + 1);
+-
+-		return {
+-			filename: filename,
+-			subfolder: subfolder,
+-			type: pathType
+-		};
+-	}
+-	catch(exception) {
+-		return null;
+-	}
+-}
+-
+-async function loadImageFromUrl(image, node_id, v, need_to_load) {
+-	let item = getFileItem('temp', v);
+-
+-	if(item) {
+-		let params = `?node_id=${node_id}&filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+-
+-		let res = await api.fetchApi('/impact/set/pb_id_image'+params, { cache: "no-store" });
+-		if(res.status == 200) {
+-			let pb_id = await res.text();
+-			if(need_to_load) {;
+-				image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
+-			}
+-			return pb_id;
+-		}
+-		else {
+-			return `$${node_id}-0`;
+-		}
+-	}
+-	else {
+-		return `$${node_id}-0`;
+-	}
+-}
+-
+-async function loadImageFromId(image, v) {
+-	let res = await api.fetchApi('/impact/get/pb_id_image?id='+v, { cache: "no-store" });
+-	if(res.status == 200) {
+-		let item = await res.json();
+-		image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
+-		return true;
+-	}
+-
+-	return false;
+-}
++import { isPreviewBridge, setupPreviewBridge, restorePreviewBridge } from "./preview-bridge.js";
++import { getFileItem } from "./image-path.js";
+ 
+ app.registerExtension({
+ 	name: "Comfy.Impact.img",
+ 
+-	nodeCreated(node, app) {
+-		if(node.comfyClass == "PreviewBridge" || node.comfyClass == "PreviewBridgeLatent") {
+-			if (!node.widgets) {
+-				return;
+-			}
+-
+-			let w = node.widgets.find(obj => obj.name === 'image');
+-			if (!w) {
+-				return;
+-			}
+-
+-			node._imgs = [new Image()];
+-			node.imageIndex = 0;
+-
+-			// Hook into onExecuted to reset widget value after each execution
+-			// This replaces the Object.defineProperty approach which fails on
+-			// ComfyUI v1.34+ where widget.value is non-configurable
+-			const origOnExecuted = node.onExecuted;
+-			node.onExecuted = async function(output) {
+-				// Check if we should preserve clipspace path (user-drawn mask)
+-				const outputImage = output?.images?.[0];
+-				const isNewTempFile = outputImage &&
+-				                      outputImage.subfolder === 'PreviewBridge' &&
+-				                      outputImage.type === 'temp';
+-				const isClipspacePath = w.value &&
+-				                        (w.value.includes('clipspace') || w.value.includes('[input]'));
++	loadedGraphNode(node) {
++		if (isPreviewBridge(node)) return restorePreviewBridge(node);
++	},
+ 
+-				// Only update widget if image changed OR not a clipspace path
+-				if (!(isClipspacePath && !isNewTempFile)) {
+-					if (output && output.images && output.images.length > 0) {
+-						const img = output.images[0];
+-						const path = `PreviewBridge/${img.filename} [temp]`;
+-						const pb_id = await loadImageFromUrl(new Image(), node.id, path, false);
+-						w.value = pb_id;
+-					}
+-				}
+-
+-				if (origOnExecuted) {
+-					origOnExecuted.call(this, output);
+-				}
+-			};
+-
+-			Object.defineProperty(node, 'imgs', {
+-				set(v) {
+-					const stackTrace = new Error().stack;
+-					if(v && v.length == 0)
+-						return;
+-					else if(stackTrace.includes('pasteFromClipspace')) {
+-						let sp = new URLSearchParams(v[0].src.split("?")[1]);
+-						let str = "";
+-						if(sp.get('subfolder')) {
+-							str += sp.get('subfolder') + '/';
+-						}
+-						str += `${sp.get("filename")} [${sp.get("type")}]`;
+-
+-						w.value = str;
+-					}
+-
+-					node._imgs = v;
+-				},
+-				get() {
+-					return node._imgs;
+-				}
+-			});
+-		}
++	nodeCreated(node, app) {
++		if (isPreviewBridge(node)) setupPreviewBridge(node);
+ 
+ 		if(node.comfyClass == "ImageReceiver") {
+ 			let path_widget = node.widgets.find(obj => obj.name === 'image');
+ 			let w = node.widgets.find(obj => obj.name === 'image_data');
+ 			let stw_widget = node.widgets.find(obj => obj.name === 'save_to_workflow');
+-
+-			if (!w) {
+-				return;
+-			}
+-
+-			// Check if widget.value is configurable before trying to redefine it
++			if (!w) return;
+ 			const descriptor = Object.getOwnPropertyDescriptor(w, 'value');
+-			if (descriptor && !descriptor.configurable) {
+-				return;
+-			}
+-
++			if (descriptor && !descriptor.configurable) return;
+ 			w._value = "";
+ 
+ 			Object.defineProperty(w, 'value', {
+diff --git a/js/preview-bridge.js b/js/preview-bridge.js
+new file mode 100644
+index 0000000..7a03776
+--- /dev/null
++++ b/js/preview-bridge.js
+@@ -0,0 +1,88 @@
++import { api } from "../../scripts/api.js";
++import { getFileItem } from "./image-path.js";
++
++// Registrations belong to the server process; a retained tab outlives that map.
++let connectionVersion = 0;
++api.addEventListener("reconnected", () => { connectionVersion++; });
++
++export function isPreviewBridge(node) {
++    return node.comfyClass === "PreviewBridge" || node.comfyClass === "PreviewBridgeLatent";
++}
++
++function imageValue(item) {
++    return `${item.subfolder ? item.subfolder + "/" : ""}${item.filename} [${item.type || "temp"}]`;
++}
++
++export function setupPreviewBridge(node) {
++    const widget = node.widgets.find(w => w.name === "image");
++    node.imgs = [new Image()];
++    node.imageIndex = 0;
++
++    // Preserve the legacy initial widget value in workflows saved before a queue.
++    const onAdded = node.onAdded;
++    node.onAdded = function(...args) {
++        const result = onAdded?.apply(this, args);
++        if (!widget.value) widget.value = `$${node.id}-0`;
++        return result;
++    };
++
++    // Keep the native image widget and its Vue value-store binding intact.
++    // Only the API prompt needs an Impact ID; native workflows retain the
++    // editor's filename in the existing image widget's serialized position.
++    let registration;
++    widget.serializeValue = async function() {
++        const value = widget.value || `$${node.id}-0`;
++        if (!registration || value !== registration.value || registration.connectionVersion !== connectionVersion) {
++            const current = { value, displayedValue: value, connectionVersion };
++            registration = current;
++            current.promise = (async () => {
++                if (typeof value === "string" && value.startsWith("$")) return value;
++                const item = getFileItem("input", value);
++                if (!item?.filename) throw new Error("Preview Bridge: no image to register");
++                const params = new URLSearchParams({ node_id: String(node.id), ...item });
++                const response = await api.fetchApi(`/impact/set/pb_id_image?${params}`, { cache: "no-store" });
++                if (!response.ok) throw new Error(`Preview Bridge: image registration failed (${response.status})`);
++                return await response.text();
++            })().then(id => {
++                current.id = id;
++                return id;
++            }).catch(error => {
++                if (registration === current) registration = undefined;
++                throw error;
++            });
++        }
++        return await registration.promise;
++    };
++
++    const onExecuted = node.onExecuted;
++    node.onExecuted = function(message, ...args) {
++        const result = onExecuted?.call(this, message, ...args);
++        const item = message?.images?.[0];
++        if (item && registration?.id && registration.connectionVersion === connectionVersion
++            && message.source_image?.[0] === registration.id
++            && widget.value === registration.displayedValue) {
++            widget.value = imageValue(item);
++            registration.displayedValue = widget.value;
++            node.properties.image = widget.value;
++        }
++        return result;
++    };
++}
++
++export async function restorePreviewBridge(node) {
++    const widget = node.widgets.find(w => w.name === "image");
++    const value = widget.value;
++    let item = getFileItem("input", value);
++    if (typeof value === "string" && value.startsWith("$")) {
++        // Workflows saved before the Vue integration contain opaque IDs.
++        const response = await api.fetchApi(`/impact/get/pb_id_image?${new URLSearchParams({ id: value })}`, { cache: "no-store" });
++        if (!response.ok) return;
++        item = await response.json();
++    }
++    if (!item || widget.value !== value || !node.graph) return;
++    const image = new Image();
++    image.src = api.apiURL(`/view?${new URLSearchParams(item)}`);
++    node.images = [item];
++    node.imgs = [image];
++    node.graph.setDirtyCanvas(true);
++}
+diff --git a/modules/impact/bridge_nodes.py b/modules/impact/bridge_nodes.py
+index 6738c6b..32ffba1 100644
+--- a/modules/impact/bridge_nodes.py
++++ b/modules/impact/bridge_nodes.py
+@@ -40,88 +40,27 @@ class PreviewBridge:
+ 
+     DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a image.\nIf the block is set to 'is_empty_mask', the execution is stopped when the mask is empty."
+ 
+-    def __init__(self):
+-        super().__init__()
+-        self.output_dir = folder_paths.get_temp_directory()
+-        self.type = "temp"
+-        self.prev_hash = None
+-
+     @staticmethod
+     def load_image(pb_id):
+-        is_fail = False
+-        if pb_id not in core.preview_bridge_image_id_map:
+-            is_fail = True
+-
+-        if not is_fail:
+-            image_path, ui_item = core.preview_bridge_image_id_map[pb_id]
+-            if not os.path.isfile(image_path):
+-                is_fail = True
+-
+-        if not is_fail:
+-            i = Image.open(image_path)
+-            i = ImageOps.exif_transpose(i)
++        registered = core.preview_bridge_image_id_map.get(pb_id)
++        if registered is None or not os.path.isfile(registered[0]):
++            return utils.empty_pil_tensor(), None, {
++                "filename": 'empty.png', "subfolder": '', "type": 'temp',
++            }
++
++        image_path, ui_item = registered
++        with Image.open(image_path) as source:
++            i = ImageOps.exif_transpose(source)
+             image = i.convert("RGB")
+             image = np.array(image).astype(np.float32) / 255.0
+             image = torch.from_numpy(image)[None,]
+ 
+             if 'A' in i.getbands():
+                 mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+-                mask = 1. - torch.from_numpy(mask)
++                mask = (1. - torch.from_numpy(mask)).unsqueeze(0)
+             else:
+-                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+-        else:
+-            image = utils.empty_pil_tensor()
+-            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
+-            ui_item = {
+-                "filename": 'empty.png',
+-                "subfolder": '',
+-                "type": 'temp'
+-            }
+-
+-        return image, mask.unsqueeze(0), ui_item
+-
+-    @staticmethod
+-    def load_mask_from_clipspace(clipspace_path):
+-        """Load just the mask from a clipspace file directly from disk.
+-
+-        This bypasses the preview_bridge_image_id_map lookup, which is needed
+-        when we want to restore a mask from clipspace but the path isn't registered yet.
+-        This is necessary because ComfyUI v1.34+ broke the JS widget.value setter
+-        that used to register clipspace paths via API.
+-        """
+-        # Remove [input] suffix if present
+-        clean_path = clipspace_path.replace(" [input]", "").replace("[input]", "")
+-
+-        # Try to find the actual clipspace file
+-        input_dir = folder_paths.get_input_directory()
+-        potential_paths = [
+-            clean_path,
+-            os.path.join(input_dir, clean_path),
+-            os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
+-        ]
+-
+-        actual_file = None
+-        for path in potential_paths:
+-            if os.path.isfile(path):
+-                actual_file = path
+-                break
+-
+-        if actual_file is None:
+-            return None
+-
+-        try:
+-            i = Image.open(actual_file)
+-            i = ImageOps.exif_transpose(i)
+-
+-            if 'A' in i.getbands():
+-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+-                mask = 1. - torch.from_numpy(mask)
+-                return mask.unsqueeze(0)
+-            else:
+-                return None
+-        except Exception as e:
+-            logging.warning(f"[PreviewBridge] Error loading mask from clipspace: {e}")
+-            return None
++                mask = None
++        return image, mask, ui_item
+ 
+     @staticmethod
+     def register_clipspace_image(clipspace_path, node_id):
+@@ -167,62 +106,47 @@ class PreviewBridge:
+ 
+     def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
+         need_refresh = False
+-        images_changed = False
++        cached = core.preview_bridge_cache.get(unique_id)
++        # A different workflow can reuse this ID for the other bridge type.
++        if cached is not None and not isinstance(cached[0], torch.Tensor):
++            core.preview_bridge_cache.pop(unique_id)
++            core.preview_bridge_last_mask_cache.pop(unique_id, None)
++            cached = None
+ 
+         # Check if images have changed (this determines if we start fresh)
+-        if unique_id not in core.preview_bridge_cache:
++        if cached is None:
+             need_refresh = True
+-            images_changed = True
+-        elif core.preview_bridge_cache[unique_id][0] is not images:
++        elif cached[0] is not images and (
++            images.shape[0] != 1
++            or cached[0].device != images.device
++            or not torch.equal(cached[0], images)
++        ):
+             need_refresh = True
+-            images_changed = True
+-
+-        # If images changed, clear the mask cache to ensure fresh start behavior
+-        # This restores the original behavior where new images start with empty masks
+-        # unless restore_mask is set to "always" or "if_same_size"
+-        if images_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
+-            del core.preview_bridge_last_mask_cache[unique_id]
+-
+-        # Handle clipspace files that aren't registered in the preview bridge system
+-        # This only applies when images haven't changed (same image, new mask scenario)
+-        if not need_refresh and image not in core.preview_bridge_image_id_map:
+-            # Check if this is a clipspace file that needs to be registered
++
++        if need_refresh and restore_mask == "never":
++            core.preview_bridge_last_mask_cache.pop(unique_id, None)
++
++        # Keep submitted registrations immutable; reuse this node's refreshed pixels separately.
++        preview_id = cached[2] if not need_refresh and image == cached[1] else image
++        # API prompts can submit a raw saved file without frontend registration.
++        if preview_id not in core.preview_bridge_image_id_map and (not need_refresh or restore_mask != "never"):
+             is_clipspace = image and ("clipspace" in image.lower() or "[input]" in image)
+-            if is_clipspace:
+-                if not PreviewBridge.register_clipspace_image(image, unique_id):
+-                    need_refresh = True
+-            else:
+-                need_refresh = True
++            registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
++            need_refresh = need_refresh or not registered
+ 
+         if not need_refresh:
+-            pixels, mask, path_item = PreviewBridge.load_image(image)
+-            image = [path_item]
++            pixels, mask, path_item = PreviewBridge.load_image(preview_id)
++            if mask is None:
++                mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu")
++            res_image = [path_item]
+         else:
+-            # For new images (images_changed=True), we want to start fresh regardless of restore_mask
+-            # For same image with refresh needed, respect the restore_mask setting
+-            # Exception: when restore_mask is "always", restore even with new images
+-            # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
+-            if restore_mask != "never" and (not images_changed or restore_mask in ["always", "if_same_size"]):
+-                # Check if widget value points to a clipspace path (user edited mask)
+-                # Clipspace paths take priority over cache because they represent the user's latest edit
+-                is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
+-
+-                mask = None
+-
+-                # Try clipspace FIRST - user's most recent edit takes priority
+-                if is_clipspace_path:
+-                    clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
+-                    if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
+-                        mask = clipspace_mask
+-
+-                # Fall back to cache if clipspace failed or wasn't available
++            if restore_mask != "never":
++                # Registrations for later queued edits may already have updated the node cache.
++                mask = core.get_previewbridge_mask(image)
+                 if mask is None:
+                     mask = core.preview_bridge_last_mask_cache.get(unique_id)
+-
+-                # Check size compatibility for if_same_size mode
+                 if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != images.shape[1:3]:
+                     mask = None
+-                # For "always", keep the mask regardless of size
+             else:
+                 mask = None
+ 
+@@ -236,17 +160,13 @@ class PreviewBridge:
+                 utils.tensor_putalpha(masked_images, resized_mask)
+                 res = nodes.PreviewImage().save_images(masked_images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
+ 
+-            image2 = res['ui']['images']
++            res_image = res['ui']['images']
+             pixels = images
+ 
+-            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
+-            core.set_previewbridge_image(unique_id, path, image2[0])
+-            core.preview_bridge_image_id_map[image] = (path, image2[0])
+-            core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
+-            core.preview_bridge_cache[unique_id] = (images, image2)
+-
+-            image = image2
++            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
++            preview_id = core.set_previewbridge_image(unique_id, path, res_image[0])
+ 
++        core.preview_bridge_cache[unique_id] = (images, image, preview_id)
+         is_empty_mask = torch.all(mask == 0)
+ 
+         if block and is_empty_mask and core.is_execution_model_version_supported():
+@@ -262,7 +182,7 @@ class PreviewBridge:
+             core.preview_bridge_last_mask_cache[unique_id] = mask
+ 
+         return {
+-            "ui": {"images": image},
++            "ui": {"images": res_image, "source_image": [image]},
+             "result": result,
+         }
+ 
+@@ -367,45 +287,8 @@ class PreviewBridgeLatent:
+ 
+     def __init__(self):
+         super().__init__()
+-        self.output_dir = folder_paths.get_temp_directory()
+-        self.type = "temp"
+-        self.prev_hash = None
+         self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
+ 
+-    @staticmethod
+-    def load_image(pb_id):
+-        is_fail = False
+-        if pb_id not in core.preview_bridge_image_id_map:
+-            is_fail = True
+-
+-        if not is_fail:
+-            image_path, ui_item = core.preview_bridge_image_id_map[pb_id]
+-            if not os.path.isfile(image_path):
+-                is_fail = True
+-
+-        if not is_fail:
+-            i = Image.open(image_path)
+-            i = ImageOps.exif_transpose(i)
+-            image = i.convert("RGB")
+-            image = np.array(image).astype(np.float32) / 255.0
+-            image = torch.from_numpy(image)[None,]
+-
+-            if 'A' in i.getbands():
+-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+-                mask = 1. - torch.from_numpy(mask)
+-            else:
+-                mask = None
+-        else:
+-            image = utils.empty_pil_tensor()
+-            mask = None
+-            ui_item = {
+-                "filename": 'empty.png',
+-                "subfolder": '',
+-                "type": 'temp'
+-            }
+-
+-        return image, mask, ui_item
+-
+     def doit(self, latent, image, preview_method, vae_opt=None, block=False, unique_id=None, restore_mask='never', prompt=None, extra_pnginfo=None):
+         latent_channels = latent['samples'].shape[1]
+ 
+@@ -421,54 +304,43 @@ class PreviewBridgeLatent:
+             raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
+ 
+         need_refresh = False
+-        latent_changed = False
++        cached = core.preview_bridge_cache.get(unique_id)
++        if cached is not None and not isinstance(cached[0], dict):
++            core.preview_bridge_cache.pop(unique_id)
++            core.preview_bridge_last_mask_cache.pop(unique_id, None)
++            cached = None
+ 
+         # Check if latent has changed
+-        if unique_id not in core.preview_bridge_cache:
++        if cached is None:
+             need_refresh = True
+-            latent_changed = True
+-        elif (core.preview_bridge_cache[unique_id][0] is not latent
+-              or (vae_opt is None and core.preview_bridge_cache[unique_id][2] is not None)
+-              or (vae_opt is None and core.preview_bridge_cache[unique_id][1] != preview_method)
+-              or (vae_opt is not None and core.preview_bridge_cache[unique_id][2] is not vae_opt)):
++        elif (cached[0] is not latent
++              or (vae_opt is None and cached[2] is not None)
++              or (vae_opt is None and cached[1] != preview_method)
++              or (vae_opt is not None and cached[2] is not vae_opt)):
+             need_refresh = True
+-            latent_changed = True
+ 
+-        # If latent changed, clear the mask cache to ensure fresh start behavior
+-        # unless restore_mask is set to "always" or "if_same_size"
+-        if latent_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
+-            del core.preview_bridge_last_mask_cache[unique_id]
++        if need_refresh and restore_mask == "never":
++            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+ 
+-        # Handle clipspace files that aren't registered in the preview bridge system
+-        # This only applies when latent hasn't changed (same latent, new mask scenario)
+-        if not need_refresh and image not in core.preview_bridge_image_id_map:
++        preview_id = cached[4] if not need_refresh and image == cached[3] else image
++        # API prompts can submit a raw saved file without frontend registration.
++        if preview_id not in core.preview_bridge_image_id_map and (not need_refresh or restore_mask != "never"):
+             is_clipspace = image and ("clipspace" in image.lower() or "[input]" in image)
+-            if is_clipspace:
+-                if not PreviewBridge.register_clipspace_image(image, unique_id):
+-                    need_refresh = True
+-            else:
+-                need_refresh = True
++            registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
++            need_refresh = need_refresh or not registered
+ 
+         if not need_refresh:
+-            pixels, mask, path_item = PreviewBridge.load_image(image)
+-
++            _, mask, path_item = PreviewBridge.load_image(preview_id)
++            res_latent = latent.copy()
+             if mask is None:
++                # RGB previews have no edit; an explicit saved clear has alpha.
+                 mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
+-                if 'noise_mask' in latent:
+-                    res_latent = latent.copy()
+-                    del res_latent['noise_mask']
+-                else:
+-                    res_latent = latent
+-
+-                is_empty_mask = True
++                res_latent.pop('noise_mask', None)
+             else:
+-                res_latent = latent.copy()
+                 res_latent['noise_mask'] = mask
+-
+-                is_empty_mask = torch.all(mask == 1)
+-
+             res_image = [path_item]
+         else:
++            res_latent = latent
+             decoded_image = decode_latent(latent, preview_method, vae_opt)
+ 
+             if 'noise_mask' in latent:
+@@ -489,33 +361,13 @@ class PreviewBridgeLatent:
+                                 'type': 'temp',
+                             }]
+ 
+-                is_empty_mask = False
+             else:
+-                # For new latents (latent_changed=True), start fresh regardless of restore_mask
+-                # For same latent with refresh needed, respect the restore_mask setting
+-                # Exception: when restore_mask is "always", restore even with new latents
+-                # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
+-                if restore_mask != "never" and (not latent_changed or restore_mask in ["always", "if_same_size"]):
+-                    # Check if widget value points to a clipspace path (user edited mask)
+-                    # Clipspace paths take priority over cache because they represent the user's latest edit
+-                    is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
+-
+-                    mask = None
+-
+-                    # Try clipspace FIRST - user's most recent edit takes priority
+-                    if is_clipspace_path:
+-                        clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
+-                        if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
+-                            mask = clipspace_mask
+-
+-                    # Fall back to cache if clipspace failed or wasn't available
++                if restore_mask != "never":
++                    mask = core.get_previewbridge_mask(image)
+                     if mask is None:
+                         mask = core.preview_bridge_last_mask_cache.get(unique_id)
+-
+-                    # Check size compatibility for if_same_size mode
+                     if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != decoded_image.shape[1:3]:
+                         mask = None
+-                    # For "always", keep the mask regardless of size
+                 else:
+                     mask = None
+ 
+@@ -523,6 +375,8 @@ class PreviewBridgeLatent:
+                     mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
+                     res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
+                 else:
++                    res_latent = latent.copy()
++                    res_latent['noise_mask'] = mask
+                     masked_images = utils.tensor_convert_rgba(decoded_image)
+                     resized_mask = utils.resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
+                     resized_mask = 1 - resized_mask
+@@ -531,16 +385,12 @@ class PreviewBridgeLatent:
+ 
+                 res_image = res['ui']['images']
+ 
+-            is_empty_mask = torch.all(mask == 1)
+-
+             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
+-            core.set_previewbridge_image(unique_id, path, res_image[0])
+-            core.preview_bridge_image_id_map[image] = (path, res_image[0])
+-            core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
+-            core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
+-
+-            res_latent = latent
++            preview_id = core.set_previewbridge_image(unique_id, path, res_image[0])
+ 
++        core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, image, preview_id)
++        # The white no-mask fallback is distinct from an explicit full selection.
++        is_empty_mask = 'noise_mask' not in res_latent or torch.all(mask == 0)
+         if block and is_empty_mask and core.is_execution_model_version_supported():
+             from comfy_execution.graph import ExecutionBlocker
+             result = ExecutionBlocker(None), ExecutionBlocker(None)
+@@ -554,6 +404,6 @@ class PreviewBridgeLatent:
+             core.preview_bridge_last_mask_cache[unique_id] = mask
+ 
+         return {
+-            "ui": {"images": res_image},
++            "ui": {"images": res_image, "source_image": [image]},
+             "result": result,
+-        }
+\ No newline at end of file
++        }
+diff --git a/modules/impact/core.py b/modules/impact/core.py
+index 012d4c4..30850f0 100644
+--- a/modules/impact/core.py
++++ b/modules/impact/core.py
+@@ -1,4 +1,5 @@
+ import os
++import uuid
+ import warnings
+ 
+ import torch
+@@ -47,9 +48,7 @@ SEG = namedtuple("SEG",
+                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
+                  defaults=[None])
+ 
+-pb_id_cnt = time.time()
+ preview_bridge_image_id_map = {}
+-preview_bridge_image_name_map = {}
+ 
+ preview_bridge_cache = {}
+ preview_bridge_last_mask_cache = {}
+@@ -70,28 +69,26 @@ def is_execution_model_version_supported():
+ 
+ 
+ def set_previewbridge_image(node_id, file, item):
+-    global pb_id_cnt
+-
+-    if file in preview_bridge_image_name_map:
+-        pb_id = preview_bridge_image_name_map[node_id, file]
+-        if pb_id.startswith(f"${node_id}"):
+-            return pb_id
+-
+-    pb_id = f"${node_id}-{pb_id_cnt}"
++    pb_id = f"${node_id}-{uuid.uuid4().hex}"
+     preview_bridge_image_id_map[pb_id] = (file, item)
+-    preview_bridge_image_name_map[node_id, file] = (pb_id, item)
+-    if os.path.isfile(file):
+-        i = Image.open(file)
+-        i = ImageOps.exif_transpose(i)
+-        if 'A' in i.getbands():
+-            mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+-            mask = 1. - torch.from_numpy(mask)
+-            preview_bridge_last_mask_cache[node_id] = mask.unsqueeze(0)
+-    pb_id_cnt += 1
+-
++    mask = get_previewbridge_mask(pb_id)
++    if mask is not None:
++        preview_bridge_last_mask_cache[node_id] = mask
+     return pb_id
+ 
+ 
++def get_previewbridge_mask(pb_id):
++    registered = preview_bridge_image_id_map.get(pb_id)
++    if registered is None or not os.path.isfile(registered[0]):
++        return None
++    with Image.open(registered[0]) as image:
++        image = ImageOps.exif_transpose(image)
++        if 'A' not in image.getbands():
++            return None
++        alpha = np.array(image.getchannel('A')).astype(np.float32) / 255.0
++    return (1. - torch.from_numpy(alpha)).unsqueeze(0)
++
++
+ def erosion_mask(mask, grow_mask_by):
+     mask = utils.make_2d_mask(mask)
+ 
+diff --git a/tests/README.md b/tests/README.md
+index 94973a4..04b5a96 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -15,6 +15,31 @@ node --experimental-vm-modules --test tests/*.test.mjs
+ 
+ ## Standalone regression tests
+ 
++Preview Bridge registration, cache ownership and latent-mask checks use the real
++ComfyUI environment, separately from the wildcard stubs:
++
++```bash
++PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest tests/test_preview_bridge_result.py -q
++```
++
++`tests/preview_bridge.test.mjs` loads the shipped extension with controlled API
++and native-widget bindings. It checks submission ordering, late results, native
++filenames, registration failures, reconnection, restoration races and the retained
++ImageReceiver behavior.
++Backend cases distinguish absent, cleared, partial and full latent masks across
++reuse, restoration and incoming `noise_mask` paths, with blocking enabled and
++disabled. Raw clipspace API references also cover changed input sizes, every
++restoration policy, saved clears and missing files.
++`tests/test_e2e_preview_bridge.py` checks actual editor saves and downstream
++pixels, three unedited queues and empty-mask blocking. Its legacy SAM cases require `IMPACT_E2E_SAM_IMAGE`, SAM ViT-B and
++`vae-ft-mse-840000-ema-pruned.safetensors`; other Bridge cases need no weights.
++Server-restart cases additionally require `IMPACT_E2E_RESTART_COMMAND`: a command
++that restarts only the isolated test server and returns after it is ready. The
++browser tab stays open; the tests wait for the real `reconnected` event and check
++three further queues. Without the command these four cases are skipped. Never
++point this command at a shared interactive server.
++See `docs/E2E_TEST_STRATEGY.md` for the isolated-server setup.
++
+ From the `tests/` directory, run `python3 -m pytest`.
+ Install dependencies with `python3 -m pip install -r tests/requirements.txt`
+ from the repository root. This runs configuration, populate, and strict
+diff --git a/tests/preview_bridge.test.mjs b/tests/preview_bridge.test.mjs
+new file mode 100644
+index 0000000..7e68273
+--- /dev/null
++++ b/tests/preview_bridge.test.mjs
+@@ -0,0 +1,243 @@
++import assert from "node:assert/strict";
++import { readFile } from "node:fs/promises";
++import test from "node:test";
++import { createContext, SourceTextModule, SyntheticModule } from "node:vm";
++
++async function extension(t) {
++    const fetch = t.mock.fn(async () => new Response("$41-1"));
++    const api = Object.assign(new EventTarget(), {
++        fetchApi: fetch,
++        apiURL(url) { return url; }
++    });
++    let registered;
++    const app = { registerExtension(value) { registered = value; } };
++    const context = createContext({ Image: class { src = ""; }, URLSearchParams,
++        document: { createElement: () => ({ getContext: () => ({ drawImage() {} }), toDataURL: () => "data:image/png;base64,saved" }) } });
++    const modules = new Map();
++    async function load(path) {
++        if (!modules.has(path)) {
++            const values = path === "../../scripts/api.js" ? { api }
++                : path === "../../scripts/app.js" ? { app } : null;
++            modules.set(path, values
++                ? new SyntheticModule(Object.keys(values), function() {
++                    for (const [key, value] of Object.entries(values)) this.setExport(key, value);
++                }, { context })
++                : new SourceTextModule(await readFile(new URL(`../js/${path}`, import.meta.url), "utf8"), { context }));
++        }
++        return modules.get(path);
++    }
++    const module = await load("./impact-image-util.js");
++    await module.link(load);
++    await module.evaluate();
++    return { registered, fetch, api };
++}
++
++async function bridge(t, configurable = true) {
++    const { registered, fetch, api } = await extension(t);
++    let storedValue = "";
++    const widget = { name: "image" };
++    Object.defineProperty(widget, "value", {
++        get() { return storedValue; }, set(value) { storedValue = value; }, configurable,
++    });
++    const descriptor = Object.getOwnPropertyDescriptor(widget, "value");
++    const node = { id: 41, comfyClass: "PreviewBridge", widgets: [widget], properties: {}, graph: { setDirtyCanvas() {} } };
++    registered.nodeCreated(node);
++    node.onAdded?.();
++    return { node, widget, descriptor, fetch, api, restore: () => registered.loadedGraphNode?.(node), storeWrite(value) { storedValue = value; } };
++}
++
++test("ImageReceiver retains PR1172's protection for a non-configurable value", async t => {
++    const { registered } = await extension(t);
++    const imageData = { name: "image_data" };
++    Object.defineProperty(imageData, "value", { value: "saved-image-data", writable: true });
++    const widgets = [{ name: "image", value: "saved.png [temp]" }, imageData,
++        { name: "save_to_workflow", value: true }];
++    const before = widgets.map(({ name, value }) => ({ name, value }));
++    registered.nodeCreated({ comfyClass: "ImageReceiver", widgets });
++    assert.deepEqual(widgets.map(({ name, value }) => ({ name, value })), before);
++    assert.equal(Object.getOwnPropertyDescriptor(imageData, "value").configurable, false);
++});
++
++test("ImageReceiver keeps its existing image capture and save switch", async t => {
++    const { registered } = await extension(t);
++    const widgets = [{ name: "image", value: "source.png [temp]" },
++        { name: "image_data", value: "" }, { name: "save_to_workflow", value: false }];
++    const node = { comfyClass: "ImageReceiver", widgets };
++    registered.nodeCreated(node);
++    node.imgs = [{ complete: true, width: 2, height: 2 }];
++    assert.equal(widgets[1].value, "");
++    widgets[2].value = true;
++    assert.equal(widgets[1].value, "data:image/png;base64,saved");
++    widgets[2].value = false;
++    assert.equal(widgets[1].value, "");
++    assert.deepEqual(widgets.map(widget => widget.name), ["image", "image_data", "save_to_workflow"]);
++});
++
++for (const configurable of [true, false]) {
++    test(`Vue store-only saves preserve the native binding (configurable=${configurable})`, async t => {
++        const { node, widget, descriptor, fetch, storeWrite } = await bridge(t, configurable);
++        assert.deepEqual(Object.getOwnPropertyDescriptor(widget, "value"), descriptor);
++        assert.equal(widget.value, "$41-0");
++        // Vue writes the store without invoking a widget callback.
++        const filename = "masks/a & b+#한글.png [input]";
++        storeWrite(filename);
++        assert.equal(fetch.mock.callCount(), 0);
++        assert.equal(await widget.serializeValue(), "$41-1");
++        assert.equal(widget.value, filename);
++        assert.equal(await widget.serializeValue(), "$41-1");
++        assert.equal(fetch.mock.callCount(), 1, "Unchanged files should retain their prompt ID");
++        const params = new URL(fetch.mock.calls[0].arguments[0], "http://localhost").searchParams;
++        assert.equal(params.get("node_id"), "41");
++        assert.equal(params.get("filename"), "a & b+#한글.png");
++        assert.equal(params.get("subfolder"), "masks");
++        assert.equal(params.get("type"), "input");
++        node.onExecuted({ source_image: ["$41-1"], images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
++        assert.equal(widget.value, "PreviewBridge/next.png [temp]", "Editor must reopen the current upstream image");
++    });
++}
++
++for (const [value, item] of [
++    ["plain.png", { filename: "plain.png", subfolder: "", type: "input" }],
++    ["clipspace-mask.png [temp]", { filename: "clipspace-mask.png", subfolder: "", type: "temp" }],
++    ["nested/edited.png [temp]", { filename: "edited.png", subfolder: "nested", type: "temp" }],
++    ["folder\\edited.png [INPUT]", { filename: "edited.png", subfolder: "folder", type: "input" }],
++    ["folder/edited.png[OUTPUT] ", { filename: "edited.png", subfolder: "folder", type: "output" }]
++]) {
++    test(`registration and restoration use the native image reference: ${value}`, async t => {
++        const { node, widget, fetch, restore, storeWrite } = await bridge(t);
++        storeWrite(value);
++        await restore();
++        assert.deepEqual(JSON.parse(JSON.stringify(node.images)), [item]);
++        assert.equal(widget.value, value);
++        assert.equal(fetch.mock.callCount(), 0, "Filename restoration must not register");
++        assert.deepEqual(Object.fromEntries(new URL(node.imgs[0].src, "http://localhost").searchParams), item);
++        await widget.serializeValue();
++        assert.deepEqual(Object.fromEntries(new URL(fetch.mock.calls[0].arguments[0], "http://localhost").searchParams), { node_id: "41", ...item });
++    });
++}
++
++test("queue serialization waits for registration and leaves a newer edit intact", async t => {
++    const { node, widget, fetch, storeWrite } = await bridge(t);
++    let finish;
++    fetch.mock.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
++    storeWrite("first.png [input]");
++    let queued = false;
++    const submission = widget.serializeValue().then(value => { queued = true; return value; });
++    await Promise.resolve();
++    assert.equal(queued, false);
++    storeWrite("second.png [input]");
++    finish(new Response("$41-2"));
++    assert.equal(await submission, "$41-2");
++    node.onExecuted({ source_image: ["$41-2"], images: [{ filename: "first.png", subfolder: "", type: "input" }] });
++    assert.equal(widget.value, "second.png [input]");
++});
++
++test("an earlier queued result cannot overwrite an edit submitted afterward", async t => {
++    const { node, widget, fetch, storeWrite } = await bridge(t);
++    fetch.mock.mockImplementation(async url => new Response(
++        new URL(url, "http://localhost").searchParams.get("filename") === "first.png" ? "$41-first" : "$41-second"));
++    storeWrite("first.png [input]");
++    const first = await widget.serializeValue();
++    storeWrite("second.png [input]");
++    const second = await widget.serializeValue();
++    node.onExecuted({ source_image: [first], images: [{ filename: "first.png", subfolder: "", type: "input" }] });
++    assert.equal(widget.value, "second.png [input]");
++    node.onExecuted({ source_image: [second], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
++    assert.equal(widget.value, "second-output.png [temp]");
++    assert.equal(node.properties.image, "second-output.png [temp]");
++});
++
++test("queued refreshes of the same image advance the editor to the latest output", async t => {
++    const { node, widget, storeWrite, fetch } = await bridge(t);
++    storeWrite("source.png [input]");
++    const first = await widget.serializeValue();
++    const second = await widget.serializeValue();
++    assert.equal(fetch.mock.callCount(), 1);
++    node.onExecuted({ source_image: [first], images: [{ filename: "first-output.png", subfolder: "", type: "temp" }] });
++    node.onExecuted({ source_image: [second], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
++    assert.equal(widget.value, "second-output.png [temp]");
++    await widget.serializeValue();
++    assert.equal(new URL(fetch.mock.calls[1].arguments[0], "http://localhost").searchParams.get("filename"), "second-output.png");
++});
++
++test("out-of-order registrations keep each prompt tied to its own image", async t => {
++    const { node, widget, fetch, storeWrite } = await bridge(t);
++    let finishFirst;
++    fetch.mock.mockImplementationOnce(() => new Promise(resolve => { finishFirst = resolve; }));
++    storeWrite("first.png [input]");
++    const first = widget.serializeValue();
++    assert.equal(typeof finishFirst, "function", "Serialization must start registration before submitting the prompt");
++    storeWrite("second.png [input]");
++    fetch.mock.mockImplementationOnce(async () => new Response("$41-second"));
++    assert.equal(await widget.serializeValue(), "$41-second");
++    finishFirst(new Response("$41-first"));
++    assert.equal(await first, "$41-first");
++    node.onExecuted({ source_image: ["$41-first"], images: [{ filename: "first-output.png", subfolder: "", type: "temp" }] });
++    assert.equal(widget.value, "second.png [input]");
++    node.onExecuted({ source_image: ["$41-second"], images: [{ filename: "second-output.png", subfolder: "", type: "temp" }] });
++    assert.equal(widget.value, "second-output.png [temp]");
++});
++
++test("failed registration rejects submission and can be retried", async t => {
++    const { widget, fetch, storeWrite } = await bridge(t);
++    storeWrite("edited.png [input]");
++    fetch.mock.mockImplementationOnce(async () => new Response("", { status: 400 }));
++    await assert.rejects(widget.serializeValue(), /image registration failed \(400\)/);
++    assert.equal(widget.value, "edited.png [input]");
++    assert.equal(await widget.serializeValue(), "$41-1");
++    assert.equal(fetch.mock.callCount(), 2);
++});
++
++test("native workflow restoration preserves legacy IDs and restores their preview", async t => {
++    const { node, widget, fetch, restore, storeWrite } = await bridge(t);
++    const item = { filename: "old.png", subfolder: "PreviewBridge", type: "temp" };
++    storeWrite("$41-previous");
++    fetch.mock.mockImplementation(async () => Response.json(item));
++    await restore();
++    assert.equal(widget.value, "$41-previous");
++    assert.equal(await widget.serializeValue(), "$41-previous");
++    assert.equal(fetch.mock.callCount(), 1);
++    assert.deepEqual(JSON.parse(JSON.stringify(node.images)), [item]);
++    assert.equal(new URL(node.imgs[0].src, "http://localhost").searchParams.get("filename"), "old.png");
++});
++
++test("reconnection registers the unchanged filename again and ignores old feedback", async t => {
++    const { node, widget, api, fetch, storeWrite } = await bridge(t);
++    storeWrite("clipspace/saved.png [input]");
++    const first = await widget.serializeValue();
++    api.dispatchEvent(new Event("reconnected"));
++    node.onExecuted({ source_image: [first], images: [{ filename: "stale.png", type: "temp" }] });
++    assert.equal(widget.value, "clipspace/saved.png [input]");
++    fetch.mock.mockImplementationOnce(async () => new Response("$41-reconnected"));
++    const second = await widget.serializeValue();
++    assert.equal(second, "$41-reconnected");
++    assert.equal(fetch.mock.callCount(), 2);
++    assert.equal(await widget.serializeValue(), second, "Ordinary queues still reuse the new registration");
++    assert.equal(fetch.mock.callCount(), 2);
++    node.onExecuted({ source_image: [first], images: [{ filename: "stale.png", type: "temp" }] });
++    assert.equal(widget.value, "clipspace/saved.png [input]");
++});
++
++for (const change of ["new edit", "removed node"]) {
++    test(`pending legacy restoration does not overwrite a ${change}`, async t => {
++        const { node, fetch, restore, storeWrite } = await bridge(t);
++        storeWrite("$41-old");
++        let finish;
++        fetch.mock.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
++        const restoring = restore();
++        if (change === "new edit") storeWrite("new.png [input]");
++        else node.graph = null;
++        const images = node.imgs;
++        finish(Response.json({ filename: "old.png", type: "temp", subfolder: "" }));
++        await restoring;
++        assert.equal(node.imgs, images);
++        assert.equal(node.images, undefined);
++    });
++}
++
++test("a malformed filename rejects the queue before sending registration", async t => {
++    const { widget, fetch, storeWrite } = await bridge(t);
++    storeWrite("folder/[input]");
++    await assert.rejects(widget.serializeValue(), /no image to register/);
++    assert.equal(fetch.mock.callCount(), 0);
++});
+diff --git a/tests/test_e2e_preview_bridge.py b/tests/test_e2e_preview_bridge.py
+new file mode 100644
+index 0000000..279e493
+--- /dev/null
++++ b/tests/test_e2e_preview_bridge.py
+@@ -0,0 +1,835 @@
++"""Chrome E2E for the Preview Bridge image/latent tutorial workflows.
++
++Requires an isolated ComfyUI server with Impact Pack, Playwright and Chrome.
++Image compositing and a second latent bridge observe the edited image, MASK
++and latent noise_mask independently. Only the legacy SAM cases require model
++weights (SAM ViT-B and the SD1.5 VAE).
++"""
++from argparse import Namespace
++import base64
++import io
++import json
++import os
++from pathlib import Path
++import re
++import shlex
++import subprocess
++
++import numpy as np
++import pytest
++from PIL import Image, ImageChops, ImageOps
++from playwright.sync_api import expect
++from safetensors.numpy import load as load_safetensors
++
++from e2e_ui import browser_session
++from test_e2e_legacy_sam import upload_image
++from test_e2e_widget_catalog import export_workflow, setting
++
++
++BRIDGES = ["PreviewBridge", "PreviewBridgeLatent"]
++WIDGET_NAMES = {
++    "PreviewBridge": ["image", "block", "restore_mask", "$$canvas-image-preview"],
++    "PreviewBridgeLatent": ["image", "preview_method", "block", "restore_mask", "$$canvas-image-preview"],
++}
++
++
++@pytest.fixture
++def ui(tmp_path, request):
++    artifacts = Path(os.environ.get("IMPACT_E2E_ARTIFACTS", str(tmp_path))) / request.node.name
++    args = Namespace(base_url=os.environ.get("IMPACT_E2E_BASE_URL", "http://127.0.0.1:18188"),
++                     browser_channel="chrome", headed=False, timeout=30, artifacts=artifacts)
++    with browser_session(args) as browser:
++        browser.page.keyboard.press("Escape")
++        browser.page.set_viewport_size({"width": 2200, "height": 1300})
++        browser.page.set_default_timeout(10000)
++        browser.new_workflow()
++        yield browser, args
++
++
++def add_node(ui, node_type, x, y):
++    previous = ui.app.evaluate("app => app.graph._nodes.map(node => node.id)")
++    response = ui.page.request.get(f"{ui.base_url}/object_info/{node_type}")
++    assert response.ok
++    title = response.json()[node_type]["display_name"] or node_type
++    ui.add_node(title, node_type, x, y)
++    return str(ui.app.evaluate("""(app, previous) =>
++        app.graph._nodes.find(node => !previous.includes(node.id)).id
++    """, previous))
++
++
++def point(ui, node_id, *, widget=None, slot=0, is_input=False, menu=False):
++    return ui.app.evaluate("""(app, {id, widget, slot, isInput, menu}) => {
++        const node = app.graph.getNodeById(id);
++        const pos = menu ? [node.pos[0] + node.size[0] / 2, node.pos[1] + 15]
++            : widget ? [node.pos[0] + node.size[0] / 2,
++                        node.pos[1] + node.widgets.find(w => w.name === widget).last_y + 10]
++            : node.getConnectionPos(isInput, slot);
++        return app.canvasPosToClientPos(pos);
++    }""", {"id": node_id, "widget": widget, "slot": slot, "isInput": is_input, "menu": menu})
++
++
++def connect(ui, source, target, source_slot=0, target_slot=0):
++    if isinstance(target_slot, str):
++        target_slot = ui.app.evaluate("""(app, {id, name}) =>
++            app.graph.getNodeById(id).inputs.findIndex(input => input.name === name)
++        """, {"id": target, "name": target_slot})
++        assert target_slot >= 0, "Target input was not found"
++    ui.page.mouse.move(*point(ui, source, slot=source_slot))
++    ui.page.mouse.down()
++    ui.page.mouse.move(*point(ui, target, slot=target_slot, is_input=True), steps=12)
++    ui.page.mouse.up()
++    ui.page.wait_for_function("""({app, source, target, sourceSlot, targetSlot}) => {
++        const input = app.graph.getNodeById(target).inputs[targetSlot];
++        const link = app.graph.links.get(input.link);
++        return link && String(link.origin_id) === source && link.origin_slot === sourceSlot;
++    }""", arg={"app": ui.app, "source": source, "target": target,
++               "sourceSlot": source_slot, "targetSlot": target_slot})
++
++
++def number(ui, node_id, name, value):
++    ui.page.mouse.dblclick(*point(ui, node_id, widget=name), delay=100)
++    editor = ui.page.locator("input.value:visible")
++    editor.fill(str(value))
++    editor.press("Enter")
++    ui.page.wait_for_function("""({app, id, name, value}) =>
++        app.graph.getNodeById(id).widgets.find(w => w.name === name).value === value
++    """, arg={"app": ui.app, "id": node_id, "name": name, "value": value})
++
++
++def choose(ui, node_id, name, value):
++    ui.page.mouse.click(*point(ui, node_id, widget=name))
++    ui.page.get_by_role("menuitem", name=value, exact=True).click()
++
++
++def color(ui, node_id, value):
++    ui.page.mouse.click(*point(ui, node_id, widget="color"))
++    editor = ui.page.locator('input[type="color"], input.value:visible')
++    editor.wait_for(state="attached")
++    if editor.get_attribute("type") == "color":
++        editor.fill(f"#{value:06x}")
++    else:
++        editor.fill(str(value))
++        editor.press("Enter")
++    ui.page.keyboard.press("Escape")
++    ui.page.wait_for_function("""({app, id, value}) =>
++        app.graph.getNodeById(id).widgets.find(w => w.name === 'color').value === value
++    """, arg={"app": ui.app, "id": node_id, "value": value})
++
++
++def context_menu(ui, node_id, name):
++    ui.page.mouse.click(*point(ui, node_id, menu=True), button="right")
++    ui.page.get_by_role("menuitem", name=name).click()
++
++
++def file_bytes(ui, meta):
++    response = ui.page.request.get(f"{ui.base_url}/view", params={
++        key: meta[key] for key in ("filename", "subfolder", "type") if key in meta})
++    assert response.ok, f"Cannot read output: {meta} ({response.status})"
++    return response.body()
++
++
++def pixels_equal(actual, expected, tolerance=0):
++    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
++    difference = np.abs(np.asarray(actual, dtype=np.int16) - np.asarray(expected, dtype=np.int16))
++    assert difference.max() <= tolerance, f"Pixels differ: max error {difference.max()} > {tolerance}"
++
++
++def preview(ui, entry, node_id):
++    meta, = entry["outputs"][node_id]["images"]
++    with Image.open(io.BytesIO(file_bytes(ui, meta))) as image:
++        expected = image.convert("RGBA")
++    ui.page.wait_for_function("""({app, id, meta}) => {
++        const image = app.graph.getNodeById(id)?.imgs?.[0];
++        if (!image?.complete || !image.naturalWidth) return false;
++        const params = new URL(image.src).searchParams;
++        return ['filename', 'subfolder', 'type'].every(key =>
++            (params.get(key) ?? '') === (meta[key] ?? ''));
++    }""", arg={"app": ui.app, "id": node_id, "meta": meta})
++    encoded = ui.app.evaluate("""(app, id) => {
++        const image = app.graph.getNodeById(id).imgs[0];
++        const canvas = document.createElement('canvas');
++        canvas.width = image.naturalWidth;
++        canvas.height = image.naturalHeight;
++        canvas.getContext('2d').drawImage(image, 0, 0);
++        return canvas.toDataURL('image/png').split(',')[1];
++    }""", node_id)
++    with Image.open(io.BytesIO(base64.b64decode(encoded))) as image:
++        displayed = image.convert("RGBA")
++    pixels_equal(displayed.getchannel("A"), expected.getchannel("A"))
++    # Canvas discards RGB beneath zero alpha. Compare visible colors on black.
++    background = Image.new("RGBA", expected.size, (0, 0, 0, 255))
++    pixels_equal(Image.alpha_composite(background, displayed),
++                 Image.alpha_composite(background, expected), tolerance=1)
++    return expected
++
++
++def mask_output(ui, entry, node_id, expected):
++    actual = preview(ui, entry, node_id).convert("L")
++    # MASK float32 -> PNG truncation can lose one 8-bit level.
++    pixels_equal(actual, expected, tolerance=1)
++    return actual
++
++
++def editor_mask(ui):
++    encoded = ui.page.evaluate("""() => document.querySelectorAll(
++        '#maskEditorCanvasContainer canvas')[2].toDataURL('image/png').split(',')[1]
++    """)
++    with Image.open(io.BytesIO(base64.b64decode(encoded))) as image:
++        return image.getchannel("A")
++
++
++def editor_image(ui):
++    layers = ui.page.evaluate("""() => [...document.querySelectorAll(
++        '#maskEditorCanvasContainer canvas')].slice(0, 2)
++        .map(canvas => canvas.toDataURL('image/png').split(',')[1])
++    """)
++    images = []
++    for encoded in layers:
++        with Image.open(io.BytesIO(base64.b64decode(encoded))) as image:
++            images.append(image.convert("RGBA"))
++    return Image.alpha_composite(*images).convert("RGB")
++
++
++def edit_mask(ui, node_id, artifacts, name, *, right=False, existing=None):
++    context_menu(ui, node_id, re.compile(r"^Open in MaskEditor"))
++    expect(ui.page.get_by_test_id("mask-editor-root")).to_be_visible()
++    zone = ui.page.get_by_test_id("pointer-zone")
++    expect(zone).to_be_visible()
++    if existing is not None:
++        ui.page.wait_for_function("""() => {
++            const canvas = document.querySelectorAll('#maskEditorCanvasContainer canvas')[2];
++            const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
++            return data.some((value, index) => index % 4 === 3 && value > 0);
++        }""")
++        pixels_equal(editor_mask(ui), existing, tolerance=1)
++    ui.page.locator('[data-tool="pen"]').click()
++    ui.page.get_by_role("button", name=re.compile(r"Clear$")).click()
++    box = zone.bounding_box()
++    start, end = (0.60, 0.75) if right else (0.25, 0.40)
++    ui.page.mouse.move(box["x"] + box["width"] * start, box["y"] + box["height"] * 0.45)
++    ui.page.mouse.down()
++    ui.page.mouse.move(box["x"] + box["width"] * end, box["y"] + box["height"] * 0.55, steps=12)
++    ui.page.mouse.up()
++    expected = editor_mask(ui)
++    count = np.count_nonzero(np.asarray(expected))
++    assert 0 < count < expected.width * expected.height / 2, "Draw a nonempty, localized mask"
++    expected.save(artifacts / f"{name}-expected-mask.png")
++    ui.page.screenshot(path=str(artifacts / f"{name}-editor.png"))
++    ui.page.get_by_role("button", name=re.compile(r"Save$")).click()
++    expect(zone).not_to_be_visible()
++    return expected
++
++
++def build_bridge(ui, node_type):
++    latent = node_type == "PreviewBridgeLatent"
++    source = add_node(ui, "EmptyLatentImage" if latent else "EmptyImage", 220, 200)
++    number(ui, source, "width", 256)
++    number(ui, source, "height", 256)
++    if not latent:
++        color(ui, source, 0x4080C0)
++    bridge = add_node(ui, node_type, 720, 200)
++    if latent:
++        choose(ui, bridge, "preview_method", "Latent2RGB-SD15")
++    connect(ui, source, bridge)
++    output = add_node(ui, "SaveLatent" if latent else "PreviewImage", 1220, 200)
++    connect(ui, bridge, output)
++    convert = add_node(ui, "MaskToImage", 220, 760)
++    mask = add_node(ui, "PreviewImage", 720, 760)
++    connect(ui, bridge, convert, source_slot=1)
++    connect(ui, convert, mask)
++    return source, bridge, output, mask
++
++
++def latent_samples(ui, entry, node_id):
++    meta, = entry["outputs"][node_id]["latents"]
++    return load_safetensors(file_bytes(ui, meta))["latent_tensor"]
++
++
++def widget_state(ui, ids):
++    return ui.app.evaluate("""(app, ids) => Object.fromEntries(ids.map(id => {
++        const node = app.graph.getNodeById(id);
++        return [id, {type: node.type, widgets: node.widgets.map(w => ({name: w.name, value: w.value}))}];
++    }))""", ids)
++
++
++def reload_workflow(ui, artifacts, ids, restore_by_name):
++    setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
++    before = widget_state(ui, ids)
++    for state in before.values():
++        assert [w["name"] for w in state["widgets"]] == WIDGET_NAMES[state["type"]]
++    path = artifacts / "edited-workflow.json"
++    export_workflow(ui, path)
++    saved = json.loads(path.read_text())
++    ui.new_workflow()
++    ui.load_workflow(path, len(saved["nodes"]))
++    assert widget_state(ui, ids) == before, "Widget names/order/values changed during native import"
++    restored_path = artifacts / "reloaded-workflow.json"
++    export_workflow(ui, restored_path)
++    restored = json.loads(restored_path.read_text())
++    saved_values = {str(n["id"]): n.get("widgets_values", []) for n in saved["nodes"]}
++    restored_values = {str(n["id"]): n.get("widgets_values", []) for n in restored["nodes"]}
++    assert restored_values == saved_values, "Serialized widget positions changed during native import"
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
++def test_edit_mask_repeat_and_native_reload(ui, node_type, restore_by_name):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    choose(browser, bridge, "restore_mask", "if_same_size")
++    initial = browser.run()
++    original = preview(browser, initial, bridge).convert("RGB")
++    latent = node_type == "PreviewBridgeLatent"
++    samples = latent_samples(browser, initial, output) if latent else None
++    previous = None
++    for index in range(2):
++        expected = edit_mask(browser, bridge, args.artifacts, f"edit-{index}", right=bool(index), existing=previous)
++        if previous is not None:
++            assert ImageChops.difference(previous, expected).getbbox(), "Second edit must replace the first mask"
++        entry = browser.run()
++        mask_output(browser, entry, mask, expected)
++        edited_preview = preview(browser, entry, bridge)
++        pixels_equal(ImageOps.invert(edited_preview.getchannel("A")), expected)
++        if latent:
++            np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
++        else:
++            pixels_equal(preview(browser, entry, output).convert("RGB"), original)
++        previous = expected
++    reload_workflow(browser, args.artifacts, [bridge], restore_by_name)
++    entry = browser.run()
++    mask_output(browser, entry, mask, expected)
++    if latent:
++        np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
++    else:
++        pixels_equal(preview(browser, entry, output).convert("RGB"), original)
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("restore", ["always", "if_same_size"])
++def test_clear_mask_then_refresh_keeps_it_empty(ui, node_type, restore):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    choose(browser, bridge, "restore_mask", restore)
++    browser.run()
++    painted = edit_mask(browser, bridge, args.artifacts, "painted")
++    mask_output(browser, browser.run(), mask, painted)
++    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
++    expect(browser.page.get_by_test_id("pointer-zone")).to_be_visible()
++    browser.page.get_by_role("button", name=re.compile(r"Clear$")).click()
++    empty = editor_mask(browser)
++    assert not np.any(np.asarray(empty))
++    browser.page.get_by_role("button", name=re.compile(r"Save$")).click()
++    expect(browser.page.get_by_test_id("pointer-zone")).not_to_be_visible()
++    saved = browser.app.evaluate("""(app, id) => Object.fromEntries(
++        new URL(app.graph.getNodeById(id).imgs[0].src).searchParams
++    )""", bridge)
++    with Image.open(io.BytesIO(file_bytes(browser, saved))) as image:
++        pixels_equal(ImageOps.invert(image.getchannel("A")), empty)
++    if node_type == "PreviewBridge":
++        color(browser, source, 0xC08040)
++    else:
++        # Refresh the latent without changing its image dimensions.
++        number(browser, source, "batch_size", 2)
++    for _ in range(3):
++        mask_output(browser, browser.run(), mask, empty)
++
++
++@pytest.mark.skipif(not os.environ.get("IMPACT_E2E_SAM_IMAGE"), reason="Set IMPACT_E2E_SAM_IMAGE and install SAM ViT-B and the SD1.5 VAE")
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("restore", ["never", "always", "if_same_size"])
++def test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload(ui, node_type, restore):
++    browser, args = ui
++    browser.timeout = 180
++    browser.page.set_viewport_size({"width": 2200, "height": 1600})
++    source = add_node(browser, "LoadImage", 220, 200)
++    upload_image(browser, source, os.environ["IMPACT_E2E_SAM_IMAGE"])
++    scale = add_node(browser, "ImageScale", 220, 650)
++    number(browser, scale, "width", 0)
++    number(browser, scale, "height", 512)
++    choose(browser, scale, "upscale_method", "area")
++    connect(browser, source, scale)
++    bridge = add_node(browser, node_type, 720, 200)
++    choose(browser, bridge, "restore_mask", restore)
++    latent = node_type == "PreviewBridgeLatent"
++    if latent:
++        vae = add_node(browser, "VAELoader", 220, 1050)
++        choose(browser, vae, "vae_name", "vae-ft-mse-840000-ema-pruned.safetensors")
++        encode = add_node(browser, "VAEEncode", 720, 650)
++        connect(browser, scale, encode)
++        connect(browser, vae, encode, target_slot="vae")
++        connect(browser, encode, bridge)
++        connect(browser, vae, bridge, target_slot="vae_opt")
++    else:
++        connect(browser, scale, bridge)
++    output = add_node(browser, "SaveLatent" if latent else "PreviewImage", 1220, 200)
++    connect(browser, bridge, output)
++    convert = add_node(browser, "MaskToImage", 720, 1050)
++    mask = add_node(browser, "PreviewImage", 1220, 1050)
++    connect(browser, bridge, convert, source_slot=1)
++    connect(browser, convert, mask)
++    bridge_ids = [bridge]
++    if latent:
++        second = add_node(browser, "PreviewBridgeLatent", 1700, 200)
++        bridge_ids.append(second)
++        connect(browser, bridge, second)
++        connect(browser, vae, second, target_slot="vae_opt")
++        connect(browser, second, output)
++        second_convert = add_node(browser, "MaskToImage", 1700, 650)
++        second_mask = add_node(browser, "PreviewImage", 1700, 1050)
++        connect(browser, second, second_convert, source_slot=1)
++        connect(browser, second_convert, second_mask)
++    initial = browser.run()
++    original = preview(browser, initial, bridge).convert("RGB")
++    samples = latent_samples(browser, initial, output) if latent else None
++    responses = []
++
++    def capture(route):
++        response = route.fetch(timeout=180000)
++        responses.append(response.body())
++        route.fulfill(response=response)
++
++    browser.page.route("**/sam/detect", capture)
++    for index in range(2):
++        context_menu(browser, bridge, "Open in SAM Detector")
++        canvas = browser.page.locator("#pointsCanvas")
++        expect(canvas).to_be_visible()
++        save = browser.page.get_by_role("button", name="Save to node", exact=True)
++        expect(save).to_be_enabled()
++        box = canvas.bounding_box()
++        browser.page.mouse.click(box["x"] + box["width"] * 0.5, box["y"] + box["height"] * (0.5 if index == 0 else 0.4))
++        browser.page.mouse.click(box["x"] + box["width"] * 0.1, box["y"] + box["height"] * 0.1, button="right")
++        with browser.page.expect_response(lambda response: response.url.endswith("/sam/detect"), timeout=180000) as detected:
++            browser.page.get_by_role("button", name="Detect", exact=True).click()
++        assert detected.value.ok
++        with Image.open(io.BytesIO(responses[-1])) as image:
++            expected = image.convert("L")
++        assert expected.getextrema() == (0, 255)
++        browser.page.wait_for_function("""() => {
++            const canvas = document.getElementById('samEditorMaskCanvas');
++            return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data
++                .some((value, index) => index % 4 === 0 && value > 0);
++        }""")
++        browser.page.screenshot(path=str(args.artifacts / f"legacy-sam-{index}.png"))
++        with browser.page.expect_response(lambda response: response.url.endswith("/upload/mask")) as uploaded:
++            save.click()
++        assert uploaded.value.ok
++        assert uploaded.value.json()["type"] == "temp"
++        expect(canvas).not_to_be_visible()
++        entry = browser.run()
++        mask_output(browser, entry, mask, expected)
++        pixels_equal(ImageOps.invert(preview(browser, entry, bridge).getchannel("A")), expected)
++        if latent:
++            mask_output(browser, entry, second_mask, expected)
++            np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
++        else:
++            pixels_equal(preview(browser, entry, output).convert("RGB"), original)
++    reload_workflow(browser, args.artifacts, bridge_ids, latent)
++    entry = browser.run()
++    mask_output(browser, entry, mask, expected)
++    if latent:
++        mask_output(browser, entry, second_mask, expected)
++
++
++def test_image_clipspace_feedback_for_repeated_edits(ui):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
++    invert = add_node(browser, "ImageInvert", 1700, 200)
++    final = add_node(browser, "PreviewImage", 1700, 760)
++    connect(browser, bridge, invert)
++    connect(browser, invert, final)
++    entry = browser.run()
++    expected = preview(browser, entry, bridge).convert("RGB")
++    for index in range(2):
++        copied = preview(browser, entry, final).convert("RGB")
++        pixels_equal(copied, ImageOps.invert(expected), tolerance=1)
++        context_menu(browser, final, "Copy (Clipspace)")
++        context_menu(browser, bridge, "Paste (Clipspace)")
++        entry = browser.run()
++        pixels_equal(preview(browser, entry, bridge).convert("RGB"), copied)
++        pixels_equal(preview(browser, entry, output).convert("RGB"), copied)
++        expected_mask = edit_mask(browser, bridge, args.artifacts, f"pasted-{index}", right=bool(index))
++        entry = browser.run()
++        mask_output(browser, entry, mask, expected_mask)
++        pixels_equal(preview(browser, entry, output).convert("RGB"), copied)
++        expected = copied
++
++
++def test_vue_paint_and_mask_survive_native_reload(ui):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
++    original = preview(browser, browser.run(), bridge).convert("RGB")
++    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
++    expect(browser.page.get_by_test_id("mask-editor-root")).to_be_visible()
++    zone = browser.page.get_by_test_id("pointer-zone")
++    box = zone.bounding_box()
++    for tool, x in (("pen", 0.25), ("rgbPaint", 0.6)):
++        browser.page.locator(f'[data-tool="{tool}"]').click()
++        browser.page.mouse.move(box["x"] + box["width"] * x, box["y"] + box["height"] * 0.45)
++        browser.page.mouse.down()
++        browser.page.mouse.move(box["x"] + box["width"] * (x + 0.15), box["y"] + box["height"] * 0.55, steps=12)
++        browser.page.mouse.up()
++    expected_image, expected_mask = editor_image(browser), editor_mask(browser)
++    assert ImageChops.difference(original, expected_image).getbbox(), "Paint stroke did not change the image"
++    assert np.count_nonzero(np.asarray(expected_mask)), "Mask stroke is empty"
++    expected_image.save(args.artifacts / "painted-expected-image.png")
++    expected_mask.save(args.artifacts / "painted-expected-mask.png")
++    browser.page.screenshot(path=str(args.artifacts / "painted-editor.png"))
++    browser.page.get_by_role("button", name=re.compile(r"Save$")).click()
++    expect(zone).not_to_be_visible()
++    entry = browser.run()
++    pixels_equal(preview(browser, entry, output).convert("RGB"), expected_image, tolerance=1)
++    mask_output(browser, entry, mask, expected_mask)
++    reload_workflow(browser, args.artifacts, [bridge], False)
++    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
++    expect(zone).to_be_visible()
++    pixels_equal(editor_image(browser), expected_image, tolerance=1)
++    pixels_equal(editor_mask(browser), expected_mask, tolerance=1)
++    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
++
++
++def test_image_mask_controls_downstream_composite(ui):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
++    fill = add_node(browser, "EmptyImage", 1700, 200)
++    number(browser, fill, "width", 256)
++    number(browser, fill, "height", 256)
++    color(browser, fill, 0xE02060)
++    composite = add_node(browser, "ImageCompositeMasked", 1220, 760)
++    final = add_node(browser, "PreviewImage", 1700, 760)
++    connect(browser, bridge, composite)
++    connect(browser, fill, composite, target_slot=1)
++    connect(browser, bridge, composite, source_slot=1, target_slot="mask")
++    connect(browser, composite, final)
++    entry = browser.run()
++    original = preview(browser, entry, output).convert("RGB")
++    pixels_equal(preview(browser, entry, final).convert("RGB"), original)
++    preview(browser, entry, bridge)
++    for index in range(2):
++        expected_mask = edit_mask(browser, bridge, args.artifacts, f"composite-{index}", right=bool(index))
++        entry = browser.run()
++        mask_output(browser, entry, mask, expected_mask)
++        expected = Image.composite(Image.new("RGB", original.size, (224, 32, 96)), original, expected_mask)
++        actual = preview(browser, entry, final).convert("RGB")
++        pixels_equal(actual, expected, tolerance=1)
++        assert ImageChops.difference(actual, original).getbbox(), "Masked consumer did not change the image"
++        outside = np.asarray(expected_mask) == 0
++        np.testing.assert_array_equal(np.asarray(actual)[outside], np.asarray(original)[outside])
++
++
++def test_latent_mask_is_visible_and_editable_in_second_bridge(ui):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridgeLatent")
++    second = add_node(browser, "PreviewBridgeLatent", 1700, 200)
++    choose(browser, second, "preview_method", "Latent2RGB-SD15")
++    connect(browser, bridge, second)
++    connect(browser, second, output)
++    convert = add_node(browser, "MaskToImage", 1220, 760)
++    second_mask = add_node(browser, "PreviewImage", 1700, 760)
++    connect(browser, second, convert, source_slot=1)
++    connect(browser, convert, second_mask)
++    initial = browser.run()
++    samples = latent_samples(browser, initial, output)
++    preview(browser, initial, bridge)
++    first = edit_mask(browser, bridge, args.artifacts, "first-latent")
++    entry = browser.run()
++    mask_output(browser, entry, mask, first)
++    mask_output(browser, entry, second_mask, first)
++    pixels_equal(ImageOps.invert(preview(browser, entry, second).getchannel("A")), first, tolerance=1)
++    edited = edit_mask(browser, second, args.artifacts, "second-latent", right=True, existing=first)
++    assert ImageChops.difference(first, edited).getbbox()
++    entry = browser.run()
++    mask_output(browser, entry, mask, first)
++    mask_output(browser, entry, second_mask, edited)
++    np.testing.assert_array_equal(latent_samples(browser, entry, output), samples)
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++def test_block_waits_for_mask_and_then_allows_downstream(ui, node_type):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    browser.page.mouse.click(*point(browser, bridge, widget="block"))
++    entry = browser.run()
++    preview(browser, entry, bridge)
++    assert output not in entry["outputs"] and mask not in entry["outputs"], "Unmasked bridge did not block its consumers"
++    expected = edit_mask(browser, bridge, args.artifacts, "unblock")
++    entry = browser.run()
++    assert output in entry["outputs"], "Edited bridge did not resume its consumers"
++    mask_output(browser, entry, mask, expected)
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("selection", ["clear", "full"])
++def test_saved_mask_selection_controls_blocking(ui, node_type, selection):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    choose(browser, bridge, "restore_mask", "always")
++    browser.page.mouse.click(*point(browser, bridge, widget="block"))
++    preview(browser, browser.run(), bridge)
++    painted = edit_mask(browser, bridge, args.artifacts, "painted")
++    mask_output(browser, browser.run(), mask, painted)
++    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
++    wait_editor_canvas(browser, painted.size)
++    browser.page.get_by_role("button", name=re.compile(r"Clear$")).click()
++    if selection == "full":
++        browser.page.get_by_role("button", name=re.compile(r"Invert$")).click()
++    expected = editor_mask(browser)
++    assert expected.getextrema() == ((0, 0) if selection == "clear" else (255, 255))
++    expected.save(args.artifacts / "saved-selection.png")
++    browser.page.get_by_role("button", name=re.compile(r"Save$")).click()
++    expect(browser.page.get_by_test_id("pointer-zone")).not_to_be_visible()
++    observed = []
++    for stage in ["same-input", "changed-input", "native-reload"]:
++        if stage == "changed-input":
++            if node_type == "PreviewBridge":
++                color(browser, source, 0xC08040)
++            else:
++                number(browser, source, "batch_size", 2)
++        elif stage == "native-reload":
++            reload_workflow(browser, args.artifacts, [bridge], selection == "full")
++        entry = browser.run()
++        preview(browser, entry, bridge)
++        record = {"stage": stage, "prompt_id": entry["prompt"][1],
++                  "submitted_image": entry["prompt"][2][bridge]["inputs"]["image"],
++                  "consumer_ran": output in entry["outputs"], "mask_ran": mask in entry["outputs"]}
++        observed.append(record)
++        browser.page.screenshot(path=str(args.artifacts / f"{stage}.png"))
++        (args.artifacts / "queues.json").write_text(json.dumps(observed, indent=2))
++        assert record["consumer_ran"] == record["mask_ran"] == (selection == "full"), record
++        if selection == "full":
++            mask_output(browser, entry, mask, expected)
++    assert len({row["prompt_id"] for row in observed}) == 3
++
++
++@pytest.mark.parametrize("restore", ["never", "always", "if_same_size"])
++@pytest.mark.parametrize("resize", [False, True], ids=["same_size", "new_size"])
++def test_new_image_refreshes_preview_and_obeys_restore_mask(ui, restore, resize):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
++    choose(browser, bridge, "restore_mask", restore)
++    preview(browser, browser.run(), bridge)
++    expected = edit_mask(browser, bridge, args.artifacts, "before-refresh")
++    mask_output(browser, browser.run(), mask, expected)
++    color(browser, source, 0xC08040)
++    if resize:
++        number(browser, source, "width", 320)
++    entry = browser.run()
++    size = (320 if resize else 256, 256)
++    pixels_equal(preview(browser, entry, output).convert("RGB"), Image.new("RGB", size, (192, 128, 64)))
++    refreshed = preview(browser, entry, bridge)
++    restore_expected = restore == "always" or (restore == "if_same_size" and not resize)
++    if restore_expected:
++        mask_output(browser, entry, mask, expected)
++        assert np.count_nonzero(np.asarray(ImageOps.invert(refreshed.getchannel("A")))) > 0
++    else:
++        assert preview(browser, entry, mask).convert("L").getextrema() == (0, 0)
++        assert refreshed.getchannel("A").getextrema() == (255, 255)
++    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
++    wait_editor_canvas(browser, size)
++    pixels_equal(editor_image(browser), Image.new("RGB", size, (192, 128, 64)))
++    browser.page.screenshot(path=str(args.artifacts / "reopened-after-upstream-change.png"))
++    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
++
++
++@pytest.mark.parametrize("restore,restored", [("always", True), ("if_same_size", False)],
++                         ids=["restored_after_resize", "discarded_after_resize"])
++def test_restored_latent_mask_reaches_the_next_bridge(ui, restore, restored):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridgeLatent")
++    second = add_node(browser, "PreviewBridgeLatent", 1700, 200)
++    choose(browser, second, "preview_method", "Latent2RGB-SD15")
++    connect(browser, bridge, second)
++    connect(browser, second, output)
++    convert = add_node(browser, "MaskToImage", 1220, 1050)
++    second_mask = add_node(browser, "PreviewImage", 1700, 760)
++    connect(browser, second, convert, source_slot=1)
++    connect(browser, convert, second_mask)
++    choose(browser, bridge, "restore_mask", restore)
++    preview(browser, browser.run(), bridge)
++    expected = edit_mask(browser, bridge, args.artifacts, "before-latent-refresh")
++    entry = browser.run()
++    mask_output(browser, entry, second_mask, expected)
++    number(browser, source, "width", 320)
++    entry = browser.run()
++    samples = latent_samples(browser, entry, output)
++    assert samples.shape == (1, 4, 32, 40)
++    assert not np.any(samples), "Bridge changed latent samples while restoring a mask"
++    if restored:
++        mask_output(browser, entry, mask, expected)
++        mask_output(browser, entry, second_mask, expected)
++    else:
++        for node_id in (mask, second_mask):
++            assert preview(browser, entry, node_id).convert("L").getextrema() == (255, 255)
++        assert preview(browser, entry, second).getchannel("A").getextrema() == (255, 255)
++
++
++def test_registration_failure_blocks_queue_and_recovers(ui):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
++    preview(browser, browser.run(), bridge)
++    requests = []
++    prompts = []
++    browser.page.on("request", lambda request: prompts.append(request.url)
++                    if request.method == "POST" and request.url.endswith("/prompt") else None)
++
++    def reject_registration(route):
++        requests.append(route.request.url)
++        route.fulfill(status=400, body="")
++
++    for index, rejected in enumerate((True, False, True)):
++        if rejected:
++            browser.page.route("**/impact/set/pb_id_image?*", reject_registration)
++        else:
++            browser.page.unroute("**/impact/set/pb_id_image?*", reject_registration)
++        before = len(requests)
++        submitted = len(prompts)
++        expected = edit_mask(browser, bridge, args.artifacts, f"registration-{index}", right=bool(index % 2))
++        if rejected:
++            browser.page.get_by_test_id("queue-button").click()
++            expect(browser.page.get_by_text("Preview Bridge: image registration failed (400)", exact=False).first).to_be_visible()
++            assert len(requests) > before, "Fault injection did not intercept registration"
++            assert len(prompts) == submitted, "An unregistered edit must not queue stale output"
++            browser.page.keyboard.press("Escape")
++            browser.page.get_by_test_id("toast").filter(has_text="image registration failed").get_by_role("button").click()
++        else:
++            entry = browser.run()
++            mask_output(browser, entry, mask, expected)
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("shared_file", [False, True], ids=["new_edit", "shared_file"])
++def test_queued_bridge_results_preserve_the_latest_saved_edit(ui, node_type, shared_file):
++    browser, args = ui
++    pending = []
++    target = None
++    holding = False
++
++    def is_target_result(message):
++        event = json.loads(message) if isinstance(message, str) else {}
++        data = event.get("data", {})
++        return event.get("type") == "executed" and str(data.get("display_node", data.get("node"))) == target
++
++    def delay_results(socket):
++        server = socket.connect_to_server()
++
++        def receive(message):
++            if holding and (pending or is_target_result(message)):
++                pending.append((socket, message))
++            else:
++                socket.send(message)
++
++        server.on_message(receive)
++
++    browser.page.route_web_socket(re.compile(r"/ws(?:\?|$)"), delay_results)
++    browser.app.dispose()
++    browser.page.reload()
++    expect(browser.page.get_by_test_id("queue-button")).to_be_visible(timeout=60000)
++    browser.app = browser.page.evaluate_handle("async () => (await import('/scripts/app.js')).app")
++    browser.new_workflow()
++    source, target, output, mask = build_bridge(browser, node_type)
++    preview(browser, browser.run(), target)
++    expected = edit_mask(browser, target, args.artifacts, "first")
++    if shared_file:
++        choose(browser, target, "restore_mask", "always")
++        number(browser, source, "width", 512)
++        number(browser, source, "height", 512)
++    holding = True
++    first = browser.run()
++    if shared_file:
++        choose(browser, target, "restore_mask", "if_same_size")
++        number(browser, source, "width", 256)
++        number(browser, source, "height", 256)
++    else:
++        expected = edit_mask(browser, target, args.artifacts, "second", right=True)
++    saved = widget_state(browser, [target])
++    second = browser.run()
++    first_reference = first["prompt"][2][target]["inputs"]["image"]
++    second_reference = second["prompt"][2][target]["inputs"]["image"]
++    assert (first_reference == second_reference) == shared_file
++    results = [index for index, (_, message) in enumerate(pending) if is_target_result(message)]
++    assert len(results) == 2, "Both actual execution results must be delayed"
++    first_messages, second_messages = pending[:results[1]], pending[results[1]:]
++    holding = False
++    for socket, message in first_messages:
++        socket.send(message)
++    preview(browser, first, target)
++    if not shared_file:
++        assert widget_state(browser, [target]) == saved, "An earlier queued result must preserve the newer saved edit"
++    for socket, message in second_messages:
++        socket.send(message)
++    preview(browser, second, target)
++    mask_output(browser, second, mask, expected)
++    if not shared_file:
++        assert widget_state(browser, [target]) == saved
++    reload_workflow(browser, args.artifacts, [target], False)
++    mask_output(browser, browser.run(), mask, expected)
++    context_menu(browser, target, re.compile(r"^Open in MaskEditor"))
++    wait_editor_canvas(browser, expected.size)
++    pixels_equal(editor_mask(browser), expected, tolerance=1)
++    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
++
++
++def wait_editor_canvas(browser, size):
++    canvas = browser.page.locator("#maskEditorCanvasContainer canvas").nth(2)
++    expect(canvas).to_be_visible()
++    expect(canvas).to_have_js_property("width", size[0])
++    expect(canvas).to_have_js_property("height", size[1])
++
++
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("block", [False, True], ids=["output", "blocked"])
++def test_unedited_requeue_preserves_no_mask_and_block(ui, node_type, block):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    if block:
++        browser.page.mouse.click(*point(browser, bridge, widget="block"))
++    observed = []
++    for index in range(3):
++        entry = browser.run()
++        preview(browser, entry, bridge)
++        record = {"prompt_id": entry["prompt"][1], "submitted_image": entry["prompt"][2][bridge]["inputs"]["image"],
++                  "consumer_ran": output in entry["outputs"], "mask_ran": mask in entry["outputs"]}
++        if not block:
++            actual = preview(browser, entry, mask).convert("L")
++            actual.save(args.artifacts / f"queue-{index + 1}-mask.png")
++            record.update(size=actual.size, extrema=actual.getextrema())
++        browser.page.screenshot(path=str(args.artifacts / f"queue-{index + 1}.png"))
++        observed.append(record)
++    (args.artifacts / "queues.json").write_text(json.dumps(observed, indent=2))
++    assert len({record["prompt_id"] for record in observed}) == 3
++    if block:
++        assert all(not row["consumer_ran"] and not row["mask_ran"] for row in observed), observed
++    else:
++        size, extrema = ((32, 32), (255, 255)) if node_type == "PreviewBridgeLatent" else ((64, 64), (0, 0))
++        assert all(row["size"] == size and row["extrema"] == extrema for row in observed), observed
++
++
++@pytest.mark.skipif(not os.environ.get("IMPACT_E2E_RESTART_COMMAND"),
++                    reason="Provide a restart command for the isolated test server")
++@pytest.mark.parametrize("node_type", BRIDGES)
++@pytest.mark.parametrize("restore", ["always", "if_same_size"])
++def test_saved_mask_survives_server_restart_without_reloading_tab(ui, node_type, restore):
++    browser, args = ui
++    source, bridge, output, mask = build_bridge(browser, node_type)
++    choose(browser, bridge, "restore_mask", restore)
++    browser.run()
++    expected = edit_mask(browser, bridge, args.artifacts, "before-restart")
++    before = browser.run()
++    mask_output(browser, before, mask, expected)
++    submitted = before["prompt"][2][bridge]["inputs"]["image"]
++    saved, = before["outputs"][bridge]["images"]
++    assert saved["type"] == "input", "Restart must preserve a durable MaskEditor save"
++    saved_bytes = file_bytes(browser, saved)
++    state = widget_state(browser, [bridge])
++    browser.page.evaluate("""async () => {
++        const {api} = await import('/scripts/api.js');
++        window.bridgeReconnects = 0;
++        api.addEventListener('reconnected', () => window.bridgeReconnects++, {once: true});
++    }""")
++    subprocess.run(shlex.split(os.environ["IMPACT_E2E_RESTART_COMMAND"]), check=True, timeout=90)
++    browser.page.wait_for_function("window.bridgeReconnects === 1", timeout=90000)
++    assert widget_state(browser, [bridge]) == state
++    assert file_bytes(browser, saved) == saved_bytes
++    for _ in range(3):
++        entry = browser.run()
++        mask_output(browser, entry, mask, expected)
++        assert entry["prompt"][2][bridge]["inputs"]["image"] != submitted, "Server restart requires a new registration"
+diff --git a/tests/test_preview_bridge_result.py b/tests/test_preview_bridge_result.py
+new file mode 100644
+index 0000000..2e705c4
+--- /dev/null
++++ b/tests/test_preview_bridge_result.py
+@@ -0,0 +1,413 @@
++from PIL import Image
++import pytest
++import torch
++
++from impact import bridge_nodes, core
++
++
++@pytest.fixture
++def bridge_files(tmp_path, monkeypatch):
++    monkeypatch.setattr(bridge_nodes.folder_paths, "temp_directory", str(tmp_path))
++    for name in ("preview_bridge_cache", "preview_bridge_last_mask_cache", "preview_bridge_image_id_map"):
++        monkeypatch.setattr(core, name, {})
++    return tmp_path
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("restore", ["always", "if_same_size"])
++@pytest.mark.parametrize("block", [False, True])
++def test_saved_clear_survives_input_refresh(bridge_files, node_type, restore, block):
++    from comfy_execution.graph import ExecutionBlocker
++    node = getattr(bridge_nodes, node_type)()
++    inputs = {"unique_id": "erase", "restore_mask": restore}
++    if node_type == "PreviewBridge":
++        inputs["images"] = torch.zeros((1, 64, 64, 3))
++    else:
++        inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++    node.doit(image="$initial", **inputs)
++    for filename, alpha in [("painted.png", 128), ("cleared.png", 255)]:
++        path = bridge_files / filename
++        Image.new("RGBA", (64, 64), (0, 0, 0, alpha)).save(path)
++        reference = core.set_previewbridge_image("erase", str(path), {
++            "filename": filename, "subfolder": "", "type": "temp",
++        })
++        if alpha == 255:
++            if node_type == "PreviewBridge":
++                inputs["images"] = torch.ones_like(inputs["images"])
++            else:
++                inputs["latent"] = {"samples": torch.ones_like(inputs["latent"]["samples"])}
++        output, mask = node.doit(image=reference, block=block, **inputs)["result"]
++        if block and alpha == 255:
++            assert isinstance(output, ExecutionBlocker)
++            assert isinstance(mask, ExecutionBlocker)
++            continue
++        torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
++        if node_type == "PreviewBridgeLatent":
++            torch.testing.assert_close(output["noise_mask"], mask)
++            assert "noise_mask" not in inputs["latent"]
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("restore", ["always", "if_same_size"])
++@pytest.mark.parametrize("first_alpha", [191, 255], ids=["painted", "cleared"])
++def test_queued_refresh_uses_its_submitted_mask(bridge_files, node_type, restore, first_alpha):
++    node = getattr(bridge_nodes, node_type)()
++    inputs = {"unique_id": "queued", "restore_mask": restore}
++    if node_type == "PreviewBridge":
++        inputs["images"] = torch.zeros((1, 64, 64, 3))
++    else:
++        inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++    node.doit(image="$initial", **inputs)
++
++    # Both prompts register before either executes; the node cache now holds B.
++    references = []
++    for filename, alpha in [("a.png", first_alpha), ("b.png", 64)]:
++        path = bridge_files / filename
++        Image.new("RGBA", (64, 64), (0, 0, 0, alpha)).save(path)
++        references.append(core.set_previewbridge_image("queued", str(path), {
++            "filename": filename, "subfolder": "", "type": "temp",
++        }))
++
++    for value, reference, alpha in zip([0.25, 0.75], references, [first_alpha, 64]):
++        if node_type == "PreviewBridge":
++            inputs["images"] = torch.full_like(inputs["images"], value)
++        else:
++            inputs["latent"] = {"samples": torch.full_like(inputs["latent"]["samples"], value)}
++        output, mask = node.doit(image=reference, **inputs)["result"]
++        torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
++        if node_type == "PreviewBridgeLatent":
++            torch.testing.assert_close(output["noise_mask"], mask)
++            assert "noise_mask" not in inputs["latent"]
++        else:
++            torch.testing.assert_close(output, inputs["images"])
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("first_restore", ["always", "never"])
++@pytest.mark.parametrize("alpha", [128, 255], ids=["painted", "cleared"])
++def test_shared_registration_preserves_mask_and_refreshed_preview(bridge_files, node_type, first_restore, alpha):
++    node = getattr(bridge_nodes, node_type)()
++
++    def source(size, value):
++        if node_type == "PreviewBridge":
++            return {"images": torch.full((1, size, size, 3), value)}
++        return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
++                "preview_method": "Latent2RGB-SD15"}
++
++    node.doit(image="$shared-0", unique_id="shared", **source(64, 0.0))
++    path = bridge_files / "shared.png"
++    Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
++    reference = core.set_previewbridge_image("shared", str(path), {
++        "filename": path.name, "subfolder": "", "type": "temp",
++    })
++
++    # Both queues use the same saved file, but different input sizes/policies.
++    node.doit(image=reference, unique_id="shared", restore_mask=first_restore, **source(128, 0.25))
++    inputs = source(64, 1.0)
++    expected_mask = torch.full((1, 64, 64), 1 - alpha / 255)
++    refreshed_rgb = None
++    for _ in range(2):
++        # Reuse must keep the refreshed pixels, not reload the original red image.
++        result = node.doit(image=reference, unique_id="shared", restore_mask="if_same_size", **inputs)
++        output, mask = result["result"]
++        item, = result["ui"]["images"]
++        with Image.open(bridge_files / item["subfolder"] / item["filename"]) as preview:
++            rgb = preview.convert("RGB").tobytes()
++        if refreshed_rgb is None:
++            assert rgb != Image.new("RGB", (64, 64), "red").tobytes()
++            refreshed_rgb = rgb
++        else:
++            assert rgb == refreshed_rgb, "Reusing a latent must retain its refreshed preview pixels"
++        torch.testing.assert_close(mask, expected_mask)
++        if node_type == "PreviewBridge":
++            torch.testing.assert_close(output, inputs["images"])
++        else:
++            torch.testing.assert_close(output["noise_mask"], expected_mask)
++            assert output["samples"] is inputs["latent"]["samples"]
++            assert "noise_mask" not in inputs["latent"]
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++def test_execution_feedback_identifies_the_submitted_image_on_refresh_and_reuse(bridge_files, node_type):
++    node = getattr(bridge_nodes, node_type)()
++    inputs = {"image": "$submitted-image", "unique_id": "feedback-test"}
++    if node_type == "PreviewBridge":
++        inputs["images"] = torch.zeros((1, 64, 64, 3))
++    else:
++        inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++    refreshed = node.doit(**inputs)
++    assert refreshed["ui"]["source_image"] == ["$submitted-image"]
++    assert refreshed["ui"]["images"][0]["filename"]
++    reused = node.doit(**inputs)
++    assert reused["ui"]["source_image"] == ["$submitted-image"]
++    assert reused["ui"]["images"] == refreshed["ui"]["images"]
++
++
++@pytest.mark.parametrize("value,rgb,mask_shape,mask_value", [
++    (0, [1, 0, 0], (1, 3, 2), 127 / 255),
++    (1, [1, 1, 1], (64, 64), 0),
++])
++def test_recomputed_source_preserves_edits_only_when_pixels_match(bridge_files, value, rgb, mask_shape, mask_value):
++    node = bridge_nodes.PreviewBridge()
++    source = torch.zeros((1, 3, 2, 3))
++    node.doit(source, "$source", unique_id="recomputed")
++    edited = bridge_files / "edited.png"
++    Image.new("RGBA", (2, 3), (255, 0, 0, 128)).save(edited)
++    reference = core.set_previewbridge_image("recomputed", str(edited), {
++        "filename": edited.name, "subfolder": "", "type": "temp",
++    })
++
++    pixels, mask = node.doit(torch.full_like(source, value), reference, unique_id="recomputed")["result"]
++
++    torch.testing.assert_close(pixels, torch.tensor(rgb, dtype=torch.float32).expand(1, 3, 2, 3))
++    torch.testing.assert_close(mask, torch.full(mask_shape, mask_value, dtype=torch.float32))
++
++
++@pytest.mark.parametrize("first_type", ["PreviewBridge", "PreviewBridgeLatent"])
++def test_reusing_a_node_id_for_the_other_bridge_discards_its_cache(bridge_files, first_type):
++    images = torch.zeros((1, 64, 64, 3))
++    latent = {"samples": torch.zeros((1, 4, 8, 8))}
++
++    def execute(node_type):
++        inputs = {"image": "$reused-id", "unique_id": "reused-id", "restore_mask": "always"}
++        if node_type == "PreviewBridge":
++            inputs["images"] = images
++        else:
++            inputs.update(latent=latent, preview_method="Latent2RGB-SD15")
++        return getattr(bridge_nodes, node_type)().doit(**inputs)
++
++    execute(first_type)
++    # An edited mask from the other node type must not leak into the new node.
++    core.preview_bridge_last_mask_cache["reused-id"] = torch.full((1, 64, 64), 0.5)
++    second_type = "PreviewBridgeLatent" if first_type == "PreviewBridge" else "PreviewBridge"
++    result = execute(second_type)
++    output, mask = result["result"]
++    if second_type == "PreviewBridge":
++        torch.testing.assert_close(output, images)
++        assert torch.all(mask == 0)
++    else:
++        assert output is latent
++        assert "noise_mask" not in output
++        assert torch.all(mask == 1)
++    assert result["ui"]["source_image"] == ["$reused-id"]
++
++
++@pytest.mark.parametrize("restore", ["never", "always", "if_same_size"])
++@pytest.mark.parametrize("batch_size", [2, 3])
++def test_recomputed_image_batch_keeps_every_frame(bridge_files, restore, batch_size):
++    node = bridge_nodes.PreviewBridge()
++    images = torch.linspace(0, 1, batch_size).reshape(batch_size, 1, 1, 1).expand(-1, 64, 64, 3)
++    inputs = {"image": "$batch", "unique_id": "batch", "restore_mask": restore}
++    node.doit(images, **inputs)
++
++    result = node.doit(images.clone(), **inputs)
++
++    torch.testing.assert_close(result["result"][0], images)
++    assert len(result["ui"]["images"]) == batch_size
++
++
++@pytest.mark.parametrize("restore,width,restored", [
++    ("always", 32, True), ("if_same_size", 32, True), ("always", 40, True),
++    ("never", 32, False), ("never", 40, False), ("if_same_size", 40, False),
++])
++def test_latent_refresh_propagates_only_the_applicable_restored_mask(bridge_files, restore, width, restored):
++    mask = torch.zeros((1, 256, 256))
++    mask[:, 48:128, 32:160] = 1
++    core.preview_bridge_last_mask_cache["restore-test"] = mask
++    latent = {"samples": torch.zeros((1, 4, 32, width)), "metadata": "preserve"}
++    result = bridge_nodes.PreviewBridgeLatent().doit(
++        latent, "$restore-test", "Latent2RGB-SD15", unique_id="restore-test", restore_mask=restore)
++    output, returned_mask = result["result"]
++    assert output["samples"] is latent["samples"]
++    assert output["metadata"] == "preserve"
++    assert "noise_mask" not in latent
++    if restored:
++        assert output is not latent
++        torch.testing.assert_close(returned_mask, mask)
++        torch.testing.assert_close(output["noise_mask"], mask)
++    else:
++        assert "noise_mask" not in output
++        assert torch.all(returned_mask == 1)
++
++
++def test_incoming_noise_mask_takes_priority_over_the_cached_mask(bridge_files):
++    core.preview_bridge_last_mask_cache["incoming-test"] = torch.zeros((1, 256, 256))
++    latent = {"samples": torch.zeros((1, 4, 32, 32)), "noise_mask": torch.full((1, 256, 256), 0.5)}
++    result = bridge_nodes.PreviewBridgeLatent().doit(
++        latent, "$incoming-test", "Latent2RGB-SD15", unique_id="incoming-test", restore_mask="always")
++    output, mask = result["result"]
++    assert output is latent
++    torch.testing.assert_close(mask, latent["noise_mask"].squeeze(0))
++
++
++@pytest.mark.parametrize("block", [False, True])
++def test_unedited_latent_requeue_keeps_no_mask_and_block(bridge_files, block):
++    from comfy_execution.graph import ExecutionBlocker
++    node = bridge_nodes.PreviewBridgeLatent()
++    latent = {"samples": torch.zeros((1, 4, 8, 12))}
++    image = "$unedited-0"
++    for queue in range(3):
++        result = node.doit(latent, image, "Latent2RGB-SD15", unique_id="unedited", block=block)
++        output, mask = result["result"]
++        if block:
++            assert isinstance(output, ExecutionBlocker)
++            assert isinstance(mask, ExecutionBlocker)
++        else:
++            assert "noise_mask" not in output
++            assert output["samples"] is latent["samples"]
++            torch.testing.assert_close(mask, torch.ones((1, 8, 12)))
++        if queue == 0:
++            # First feedback changes the filename; the third queue keeps this ID.
++            item, = result["ui"]["images"]
++            image = core.set_previewbridge_image("unedited", str(bridge_files / item["subfolder"] / item["filename"]), item)
++    assert "noise_mask" not in latent
++
++
++@pytest.mark.parametrize("alpha", [None, 255, 128, 0], ids=["no-alpha", "clear", "painted", "full"])
++@pytest.mark.parametrize("route", ["reuse", "refresh", "incoming"])
++@pytest.mark.parametrize("block", [False, True])
++def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, block):
++    from comfy_execution.graph import ExecutionBlocker
++    node = bridge_nodes.PreviewBridgeLatent()
++    latent = {"samples": torch.zeros((1, 4, 8, 12))}
++    image = "$edit-0"
++    if route == "incoming":
++        if alpha is not None:
++            latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
++    else:
++        if route == "reuse":
++            # A saved edit must replace an incoming mask without mutating it.
++            latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
++        node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
++        if route == "refresh":
++            latent = {"samples": torch.ones_like(latent["samples"])}
++        path = bridge_files / "edited.png"
++        Image.new("RGB" if alpha is None else "RGBA", (96, 64),
++                  (0, 0, 0) if alpha is None else (0, 0, 0, alpha)).save(path)
++        image = core.set_previewbridge_image("edit", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
++    before = {key: value.clone() for key, value in latent.items()}
++    output, mask = node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit",
++                             restore_mask="always", block=block)["result"]
++    if block and alpha in (None, 255):
++        assert isinstance(output, ExecutionBlocker)
++        assert isinstance(mask, ExecutionBlocker)
++    else:
++        assert output["samples"] is latent["samples"]
++        if alpha is None:
++            assert "noise_mask" not in output
++            torch.testing.assert_close(mask, torch.ones((1, 8, 12)))
++        else:
++            expected = torch.full((1, 64, 96), 1 - alpha / 255)
++            torch.testing.assert_close(mask, expected.squeeze(0) if route == "incoming" else expected)
++            torch.testing.assert_close(output["noise_mask"], expected)
++    assert latent.keys() == before.keys()
++    for key, value in before.items():
++        torch.testing.assert_close(latent[key], value)
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++def test_never_refresh_does_not_revive_an_older_cached_mask(bridge_files, node_type):
++    node = getattr(bridge_nodes, node_type)()
++    def source(value):
++        if node_type == "PreviewBridge":
++            return {"images": torch.full((1, 64, 64, 3), value)}
++        return {"latent": {"samples": torch.full((1, 4, 8, 8), value)}, "preview_method": "Latent2RGB-SD15"}
++    path = bridge_files / "painted.png"
++    Image.new("RGBA", (64, 64), (0, 0, 0, 128)).save(path)
++    reference = core.set_previewbridge_image("policy", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
++    node.doit(image=reference, unique_id="policy", restore_mask="always", **source(0.0))
++    node.doit(image=reference, unique_id="policy", restore_mask="never", **source(0.5))
++    # A legacy/missing reference has no saved alpha and must use the fallback cache.
++    output, mask = node.doit(image="$unavailable", unique_id="policy", restore_mask="always", **source(1.0))["result"]
++    if node_type == "PreviewBridge":
++        assert torch.all(mask == 0)
++    else:
++        assert torch.all(mask == 1)
++        assert "noise_mask" not in output
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("saved_file", [True, False], ids=["saved", "missing"])
++def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch, node_type, saved_file):
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
++    node = getattr(bridge_nodes, node_type)()
++    inputs = {"unique_id": "legacy"}
++    if node_type == "PreviewBridge":
++        inputs["images"] = torch.zeros((1, 64, 64, 3))
++    else:
++        inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++    node.doit(image="$legacy-0", **inputs)
++    path = bridge_files / "clipspace" / "legacy-edited.png"
++    if saved_file:
++        path.parent.mkdir()
++        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(path)
++    result = node.doit(image="clipspace/legacy-edited.png [input]", **inputs)
++    output, mask = result["result"]
++    if saved_file:
++        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
++        assert result["ui"]["images"] == [{"filename": path.name, "subfolder": "clipspace", "type": "input"}]
++        if node_type == "PreviewBridge":
++            torch.testing.assert_close(output, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
++        else:
++            torch.testing.assert_close(output["noise_mask"], mask)
++    else:
++        item, = result["ui"]["images"]
++        assert item["type"] == "temp"
++        assert (bridge_files / item["subfolder"] / item["filename"]).is_file()
++        assert torch.all(mask == (0 if node_type == "PreviewBridge" else 1))
++        if node_type == "PreviewBridge":
++            torch.testing.assert_close(output, inputs["images"])
++        else:
++            assert "noise_mask" not in output
++    if node_type == "PreviewBridgeLatent":
++        assert output["samples"] is inputs["latent"]["samples"]
++        assert "noise_mask" not in inputs["latent"]
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("restore,size,restored", [
++    ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
++    ("always", 96, True), ("if_same_size", 96, False),
++])
++@pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
++def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
++        bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
++    node = getattr(bridge_nodes, node_type)()
++
++    def source(size, value):
++        if node_type == "PreviewBridge":
++            return {"images": torch.full((1, size, size, 3), value)}
++        return {"latent": {"samples": torch.full((1, 4, size // 8, size // 8), value)},
++                "preview_method": "Latent2RGB-SD15"}
++
++    node.doit(image="$raw-0", unique_id="raw", **source(64, 0.0))
++    path = bridge_files / "clipspace" / "raw.png"
++    if alpha is not None:
++        path.parent.mkdir()
++        Image.new("RGBA", (64, 64), (255, 0, 0, alpha)).save(path)
++    image = "clipspace/raw.png [input]"
++    assert image not in core.preview_bridge_image_id_map
++    inputs = source(size, 1.0)
++    result = node.doit(image=image, unique_id="raw", restore_mask=restore, **inputs)
++    output, mask = result["result"]
++    restored = restored and alpha is not None
++    if restored:
++        torch.testing.assert_close(mask, torch.full((1, 64, 64), 1 - alpha / 255))
++    else:
++        expected = torch.zeros((64, 64)) if node_type == "PreviewBridge" else torch.ones((1, size // 8, size // 8))
++        torch.testing.assert_close(mask, expected)
++    if node_type == "PreviewBridge":
++        torch.testing.assert_close(output, inputs["images"])
++    else:
++        assert output["samples"] is inputs["latent"]["samples"]
++        if restored:
++            torch.testing.assert_close(output["noise_mask"], mask)
++        else:
++            assert "noise_mask" not in output
++        assert "noise_mask" not in inputs["latent"]
++    item, = result["ui"]["images"]
++    with Image.open(bridge_files / item["subfolder"] / item["filename"]) as preview:
++        assert preview.size == (size, size)
++        if restored:
++            assert preview.getchannel("A").getextrema() == (alpha, alpha)

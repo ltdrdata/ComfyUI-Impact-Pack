@@ -1,8 +1,8 @@
 {
-  "recorded_at": "2026-11-10T10:44:29.814881+00:00",
+  "recorded_at": "2026-11-10T20:26:20+09:00",
   "branch": "fix/preview-bridge-after-pr1172",
-  "candidate": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
-  "candidate_label": "a5350a6",
+  "candidate": "2b0808bf9040f741f519f825554b8124b5ebfb2b",
+  "candidate_label": "2b0808b",
   "local_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "worktree_status": "",
   "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
@@ -21,12 +21,12 @@
     "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
     "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
     "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
-    "modules/impact/bridge_nodes.py": "20a7253630fb24a7e158947cd9116c1933fa826d7462244a2ba7d11628d69250",
+    "modules/impact/bridge_nodes.py": "2e680dbc8c0995c3767e89e90780c2a7f35ce2c7ed178eb532bca9e4d7c170ab",
     "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
-    "tests/README.md": "e325c56df8139a0b75d2b0c91797c9d6c1757dfbcc94105443b6645eba485a3f",
+    "tests/README.md": "59f09c146ef18d533b33a389708c7f5b4491ae38c89c161610b4ca74fa1d1fd6",
     "tests/preview_bridge.test.mjs": "01e828663ee7ff915f9d159a24baea79f6f0c06fb5c3dc4f551a955866d2bf0b",
-    "tests/test_e2e_preview_bridge.py": "04008c47f51b7a3b23349a598998025335c4d2aeb934a3d2045fa88faa429fd2",
-    "tests/test_preview_bridge_result.py": "19584145a1769f5f50492ef1471522969acb16cf51d588aa1b9427b174c9419d"
+    "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
+    "tests/test_preview_bridge_result.py": "c4fdf03dc42e03ccd5d7c4b44819e0839c89e2a9543ef3eae7bd95e5f84186c4"
   },
   "final_results": {
     "javascript": {
@@ -36,22 +36,20 @@
       "skipped": 0
     },
     "backend": {
-      "tests": 200,
+      "tests": 254,
       "failures": 0,
       "errors": 0,
-      "skipped": 0,
-      "seconds": 3.873
+      "skipped": 0
     },
-    "focused_browser": {
-      "tests": 12,
+    "browser": {
+      "tests": 68,
       "failures": 0,
       "errors": 0,
-      "skipped": 0,
-      "seconds": 169.189
+      "skipped": 0
     }
   },
-  "runtime_source_manifest": "cleanup-review/chrome/source.json",
-  "local_patch": "retime-prepare/working-tree.patch",
+  "runtime_source_manifest": "review-fix-v2/chrome-green-core/source.json",
+  "local_patch": "review-fix-v2/working-tree.patch",
   "shared_registration_regression": {
     "backend_red": {
       "tests": 8,
@@ -224,24 +222,26 @@
       }
     }
   },
-  "commit_tree": "77e8586448a573e5f946ffe6576c39173b5d7a19",
-  "committed_patch": "retime-prepare/followup.patch",
-  "committed_patch_sha256": "a1822c01e368f53b9dd4913e213561caaced2c32afc3298e9a2613fc849d87d7",
+  "commit_tree": "c8de3695a97b4bd86f372514b193ff896013df08",
+  "committed_patch": "review-fix-v2/followup.patch",
+  "committed_patch_sha256": "fc4cd1af996952ddd02c3a643d6a2a7192abe9cfa2402627d99775f10d53084f",
   "history_rewrite": {
-    "previous_state": "retime-prepare/before-final-state.json",
-    "record": "retime-prepare/rewrite.json",
-    "prepare_and_followup_retimed": true,
-    "prepare_parents_unchanged": true,
-    "both_trees_unchanged": true
+    "previous_head": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
+    "backup_ref": "refs/review/pr1274-before-mask-blocking-fixes",
+    "preparation_unchanged": true,
+    "followup_amended_with_review_fixes": true,
+    "tested_tree_matches_commit": true
   },
   "pr_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
-  "author_date": "2026-11-10T19:43:40+09:00",
-  "committer_date": "2026-11-10T19:43:40+09:00",
+  "author_date": "2026-11-10T20:26:20+09:00",
+  "committer_date": "2026-11-10T20:26:20+09:00",
   "integration_base_role": "Separate Main + #1172 local integration parent. After #1172 merges, rebase only the one follow-up commit onto updated Main.",
   "first_parent_commit_count_from_main": 2,
   "next_integration_step": "After #1172 is merged and origin/Main is updated: git rebase --onto origin/Main refs/review/pr1172-followup-base fix/preview-bridge-after-pr1172",
   "prepare_author_date": "2026-11-10T19:43:40+09:00",
   "prepare_committer_date": "2026-11-10T19:43:40+09:00",
   "prepare_tree": "a8e7fce11cce43930462fcbd4941d00db9d0b97c",
-  "recorded_red_integration_base": "6572207a3057542af6b4c36061677d264e2cda6b"
+  "recorded_red_integration_base": "6572207a3057542af6b4c36061677d264e2cda6b",
+  "additional_runtime_source_manifest": "review-fix-v2/chrome-green-models/source.json",
+  "latest_review": "review-fix-v2/summary.json"
 }
