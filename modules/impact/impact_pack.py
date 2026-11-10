@@ -174,14 +174,8 @@ class SAMLoader:
         else:
             modelname = folder_paths.get_full_path("sams", model_name)
 
-            if 'vit_h' in model_name:
-                model_kind = 'vit_h'
-            elif 'vit_l' in model_name:
-                model_kind = 'vit_l'
-            else:
-                model_kind = 'vit_b'
-
-            sam = core.load_sam(model_kind, modelname)
+            model_kind = 'sam'
+            sam = core.load_sam_model(modelname)
 
         size = os.path.getsize(modelname)
         safe_to = core.SafeToGPU(size)

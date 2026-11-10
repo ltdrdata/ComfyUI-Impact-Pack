@@ -629,6 +629,12 @@ def load_sam(model_kind, model_path):
     return sam
 
 
+def load_sam_model(model_path):
+    filename = os.path.basename(model_path)
+    model_kind = "vit_h" if "vit_h" in filename else "vit_l" if "vit_l" in filename else "vit_b"
+    return load_sam(model_kind, model_path)
+
+
 class SAMWrapper:
     def __init__(self, model, is_auto_mode, safe_to_gpu=None):
         self.model = model
