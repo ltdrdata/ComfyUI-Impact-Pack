@@ -40,189 +40,104 @@ class PreviewBridge:
 
     DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a image.\nIf the block is set to 'is_empty_mask', the execution is stopped when the mask is empty."
 
-    def __init__(self):
-        super().__init__()
-        self.output_dir = folder_paths.get_temp_directory()
-        self.type = "temp"
-        self.prev_hash = None
-
     @staticmethod
     def load_image(pb_id):
-        is_fail = False
-        if pb_id not in core.preview_bridge_image_id_map:
-            is_fail = True
+        registered = core.preview_bridge_image_id_map.get(pb_id)
+        if registered is None or not os.path.isfile(registered[0]):
+            return utils.empty_pil_tensor(), None, {
+                "filename": 'empty.png', "subfolder": '', "type": 'temp',
+            }
 
-        if not is_fail:
-            image_path, ui_item = core.preview_bridge_image_id_map[pb_id]
-            if not os.path.isfile(image_path):
-                is_fail = True
-
-        if not is_fail:
-            i = Image.open(image_path)
-            i = ImageOps.exif_transpose(i)
+        image_path, ui_item = registered
+        with Image.open(image_path) as source:
+            i = ImageOps.exif_transpose(source)
             image = i.convert("RGB")
             image = np.array(image).astype(np.float32) / 255.0
             image = torch.from_numpy(image)[None,]
 
             if 'A' in i.getbands():
                 mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
+                mask = (1. - torch.from_numpy(mask)).unsqueeze(0)
             else:
-                mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-        else:
-            image = utils.empty_pil_tensor()
-            mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-            ui_item = {
-                "filename": 'empty.png',
-                "subfolder": '',
-                "type": 'temp'
-            }
-
-        return image, mask.unsqueeze(0), ui_item
-
-    @staticmethod
-    def load_mask_from_clipspace(clipspace_path):
-        """Load just the mask from a clipspace file directly from disk.
-
-        This bypasses the preview_bridge_image_id_map lookup, which is needed
-        when we want to restore a mask from clipspace but the path isn't registered yet.
-        This is necessary because ComfyUI v1.34+ broke the JS widget.value setter
-        that used to register clipspace paths via API.
-        """
-        # Remove [input] suffix if present
-        clean_path = clipspace_path.replace(" [input]", "").replace("[input]", "")
-
-        # Try to find the actual clipspace file
-        input_dir = folder_paths.get_input_directory()
-        potential_paths = [
-            clean_path,
-            os.path.join(input_dir, clean_path),
-            os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
-        ]
-
-        actual_file = None
-        for path in potential_paths:
-            if os.path.isfile(path):
-                actual_file = path
-                break
-
-        if actual_file is None:
-            return None
-
-        try:
-            i = Image.open(actual_file)
-            i = ImageOps.exif_transpose(i)
-
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-                return mask.unsqueeze(0)
-            else:
-                return None
-        except Exception as e:
-            logging.warning(f"[PreviewBridge] Error loading mask from clipspace: {e}")
-            return None
+                mask = None
+        return image, mask, ui_item
 
     @staticmethod
     def register_clipspace_image(clipspace_path, node_id):
-        """Register a clipspace image file in the preview bridge system.
-
-        This handles the case where ComfyUI's mask editor creates clipspace files
-        that need to be integrated with the preview bridge system.
-        """
-        # Remove [input] suffix if present
-        clean_path = clipspace_path.replace(" [input]", "").replace("[input]", "")
-        
-        # Try to find the actual clipspace file
-        input_dir = folder_paths.get_input_directory()
-        potential_paths = [
-            clean_path,
+        clean_path = clipspace_path.removesuffix(" [input]").removesuffix("[input]")
+        input_dir = os.path.abspath(folder_paths.get_input_directory())
+        candidates = [
             os.path.join(input_dir, clean_path),
             os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
-            os.path.abspath(clean_path),
         ]
-        
-        actual_file = None
-        for path in potential_paths:
-            if os.path.isfile(path):
-                actual_file = path
+        for candidate in candidates:
+            try:
+                # Match /view: allow configured symlinks but reject path traversal.
+                actual_file = os.path.abspath(candidate)
+                if os.path.commonpath((input_dir, actual_file)) != input_dir:
+                    return False
+            except ValueError:
+                # Paths on different Windows drives cannot be inside input_dir.
+                return False
+            if os.path.isfile(actual_file):
                 break
-        
-        if not actual_file:
+        else:
             return False
-            
-        # Create ui_item for the clipspace file
+
+        relative_path = os.path.relpath(actual_file, input_dir)
         ui_item = {
-            'filename': os.path.basename(actual_file),
-            'subfolder': 'clipspace',
+            'filename': os.path.basename(relative_path),
+            'subfolder': os.path.dirname(relative_path),
             'type': 'input'
         }
-        
-        # Register it using the preview bridge system
         core.set_previewbridge_image(node_id, actual_file, ui_item)
         # Also register under the original clipspace path for compatibility
         core.preview_bridge_image_id_map[clipspace_path] = (actual_file, ui_item)
-        
         return True
 
     def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
         need_refresh = False
-        images_changed = False
+        cached = core.preview_bridge_cache.get(unique_id)
+        # A different workflow can reuse this ID for the other bridge type.
+        if cached is not None and not isinstance(cached[0], torch.Tensor):
+            core.preview_bridge_cache.pop(unique_id)
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+            cached = None
 
         # Check if images have changed (this determines if we start fresh)
-        if unique_id not in core.preview_bridge_cache:
+        if cached is None:
             need_refresh = True
-            images_changed = True
-        elif core.preview_bridge_cache[unique_id][0] is not images:
+        elif cached[0] is not images and (
+            images.shape[0] != 1
+            or cached[0].device != images.device
+            or not torch.equal(cached[0], images)
+        ):
             need_refresh = True
-            images_changed = True
 
-        # If images changed, clear the mask cache to ensure fresh start behavior
-        # This restores the original behavior where new images start with empty masks
-        # unless restore_mask is set to "always" or "if_same_size"
-        if images_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
-            del core.preview_bridge_last_mask_cache[unique_id]
+        if need_refresh and restore_mask == "never":
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
 
-        # Handle clipspace files that aren't registered in the preview bridge system
-        # This only applies when images haven't changed (same image, new mask scenario)
-        if not need_refresh and image not in core.preview_bridge_image_id_map:
-            # Check if this is a clipspace file that needs to be registered
+        # Keep submitted registrations immutable; reuse this node's refreshed pixels separately.
+        preview_id = cached[2] if not need_refresh and image == cached[1] else image
+        # API prompts can submit a raw saved file without frontend registration.
+        if preview_id not in core.preview_bridge_image_id_map and (not need_refresh or restore_mask != "never"):
             is_clipspace = image and ("clipspace" in image.lower() or "[input]" in image)
-            if is_clipspace:
-                if not PreviewBridge.register_clipspace_image(image, unique_id):
-                    need_refresh = True
-            else:
-                need_refresh = True
+            registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+            need_refresh = need_refresh or not registered
 
         if not need_refresh:
-            pixels, mask, path_item = PreviewBridge.load_image(image)
-            image = [path_item]
+            pixels, mask, path_item = PreviewBridge.load_image(preview_id)
+            if mask is None:
+                mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu")
+            res_image = [path_item]
         else:
-            # For new images (images_changed=True), we want to start fresh regardless of restore_mask
-            # For same image with refresh needed, respect the restore_mask setting
-            # Exception: when restore_mask is "always", restore even with new images
-            # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
-            if restore_mask != "never" and (not images_changed or restore_mask in ["always", "if_same_size"]):
-                # Check if widget value points to a clipspace path (user edited mask)
-                # Clipspace paths take priority over cache because they represent the user's latest edit
-                is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
-
-                mask = None
-
-                # Try clipspace FIRST - user's most recent edit takes priority
-                if is_clipspace_path:
-                    clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
-                    if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
-                        mask = clipspace_mask
-
-                # Fall back to cache if clipspace failed or wasn't available
+            if restore_mask != "never":
+                # Registrations for later queued edits may already have updated the node cache.
+                mask = core.get_previewbridge_mask(image)
                 if mask is None:
                     mask = core.preview_bridge_last_mask_cache.get(unique_id)
-
-                # Check size compatibility for if_same_size mode
                 if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != images.shape[1:3]:
                     mask = None
-                # For "always", keep the mask regardless of size
             else:
                 mask = None
 
@@ -236,17 +151,13 @@ class PreviewBridge:
                 utils.tensor_putalpha(masked_images, resized_mask)
                 res = nodes.PreviewImage().save_images(masked_images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
 
-            image2 = res['ui']['images']
+            res_image = res['ui']['images']
             pixels = images
 
-            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', image2[0]['filename'])
-            core.set_previewbridge_image(unique_id, path, image2[0])
-            core.preview_bridge_image_id_map[image] = (path, image2[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, image2[0])
-            core.preview_bridge_cache[unique_id] = (images, image2)
+            path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
+            preview_id = core.set_previewbridge_image(unique_id, path, res_image[0])
 
-            image = image2
-
+        core.preview_bridge_cache[unique_id] = (images, image, preview_id)
         is_empty_mask = torch.all(mask == 0)
 
         if block and is_empty_mask and core.is_execution_model_version_supported():
@@ -262,7 +173,7 @@ class PreviewBridge:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": image},
+            "ui": {"images": res_image, "source_image": [image]},
             "result": result,
         }
 
@@ -367,44 +278,7 @@ class PreviewBridgeLatent:
 
     def __init__(self):
         super().__init__()
-        self.output_dir = folder_paths.get_temp_directory()
-        self.type = "temp"
-        self.prev_hash = None
         self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
-
-    @staticmethod
-    def load_image(pb_id):
-        is_fail = False
-        if pb_id not in core.preview_bridge_image_id_map:
-            is_fail = True
-
-        if not is_fail:
-            image_path, ui_item = core.preview_bridge_image_id_map[pb_id]
-            if not os.path.isfile(image_path):
-                is_fail = True
-
-        if not is_fail:
-            i = Image.open(image_path)
-            i = ImageOps.exif_transpose(i)
-            image = i.convert("RGB")
-            image = np.array(image).astype(np.float32) / 255.0
-            image = torch.from_numpy(image)[None,]
-
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = None
-        else:
-            image = utils.empty_pil_tensor()
-            mask = None
-            ui_item = {
-                "filename": 'empty.png',
-                "subfolder": '',
-                "type": 'temp'
-            }
-
-        return image, mask, ui_item
 
     def doit(self, latent, image, preview_method, vae_opt=None, block=False, unique_id=None, restore_mask='never', prompt=None, extra_pnginfo=None):
         latent_channels = latent['samples'].shape[1]
@@ -421,54 +295,43 @@ class PreviewBridgeLatent:
             raise Exception("The version of latent is not compatible with preview_method.<BR>SD3, SD1/SD2, SDXL, SC-Prior, SC-B and FLUX.1 are not compatible with each other.")
 
         need_refresh = False
-        latent_changed = False
+        cached = core.preview_bridge_cache.get(unique_id)
+        if cached is not None and not isinstance(cached[0], dict):
+            core.preview_bridge_cache.pop(unique_id)
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+            cached = None
 
         # Check if latent has changed
-        if unique_id not in core.preview_bridge_cache:
+        if cached is None:
             need_refresh = True
-            latent_changed = True
-        elif (core.preview_bridge_cache[unique_id][0] is not latent
-              or (vae_opt is None and core.preview_bridge_cache[unique_id][2] is not None)
-              or (vae_opt is None and core.preview_bridge_cache[unique_id][1] != preview_method)
-              or (vae_opt is not None and core.preview_bridge_cache[unique_id][2] is not vae_opt)):
+        elif (cached[0] is not latent
+              or (vae_opt is None and cached[2] is not None)
+              or (vae_opt is None and cached[1] != preview_method)
+              or (vae_opt is not None and cached[2] is not vae_opt)):
             need_refresh = True
-            latent_changed = True
 
-        # If latent changed, clear the mask cache to ensure fresh start behavior
-        # unless restore_mask is set to "always" or "if_same_size"
-        if latent_changed and restore_mask not in ["always", "if_same_size"] and unique_id in core.preview_bridge_last_mask_cache:
-            del core.preview_bridge_last_mask_cache[unique_id]
+        if need_refresh and restore_mask == "never":
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
 
-        # Handle clipspace files that aren't registered in the preview bridge system
-        # This only applies when latent hasn't changed (same latent, new mask scenario)
-        if not need_refresh and image not in core.preview_bridge_image_id_map:
+        preview_id = cached[4] if not need_refresh and image == cached[3] else image
+        # API prompts can submit a raw saved file without frontend registration.
+        if preview_id not in core.preview_bridge_image_id_map and (not need_refresh or restore_mask != "never"):
             is_clipspace = image and ("clipspace" in image.lower() or "[input]" in image)
-            if is_clipspace:
-                if not PreviewBridge.register_clipspace_image(image, unique_id):
-                    need_refresh = True
-            else:
-                need_refresh = True
+            registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+            need_refresh = need_refresh or not registered
 
         if not need_refresh:
-            pixels, mask, path_item = PreviewBridge.load_image(image)
-
+            _, mask, path_item = PreviewBridge.load_image(preview_id)
+            res_latent = latent.copy()
             if mask is None:
+                # RGB previews have no edit; an explicit saved clear has alpha.
                 mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
-                if 'noise_mask' in latent:
-                    res_latent = latent.copy()
-                    del res_latent['noise_mask']
-                else:
-                    res_latent = latent
-
-                is_empty_mask = True
+                res_latent.pop('noise_mask', None)
             else:
-                res_latent = latent.copy()
                 res_latent['noise_mask'] = mask
-
-                is_empty_mask = torch.all(mask == 1)
-
             res_image = [path_item]
         else:
+            res_latent = latent
             decoded_image = decode_latent(latent, preview_method, vae_opt)
 
             if 'noise_mask' in latent:
@@ -489,33 +352,13 @@ class PreviewBridgeLatent:
                                 'type': 'temp',
                             }]
 
-                is_empty_mask = False
             else:
-                # For new latents (latent_changed=True), start fresh regardless of restore_mask
-                # For same latent with refresh needed, respect the restore_mask setting
-                # Exception: when restore_mask is "always", restore even with new latents
-                # Exception: when restore_mask is "if_same_size", allow restoration to check size compatibility
-                if restore_mask != "never" and (not latent_changed or restore_mask in ["always", "if_same_size"]):
-                    # Check if widget value points to a clipspace path (user edited mask)
-                    # Clipspace paths take priority over cache because they represent the user's latest edit
-                    is_clipspace_path = image and ("clipspace" in image.lower() or "[input]" in image)
-
-                    mask = None
-
-                    # Try clipspace FIRST - user's most recent edit takes priority
-                    if is_clipspace_path:
-                        clipspace_mask = PreviewBridge.load_mask_from_clipspace(image)
-                        if clipspace_mask is not None and not torch.all(clipspace_mask == 0):
-                            mask = clipspace_mask
-
-                    # Fall back to cache if clipspace failed or wasn't available
+                if restore_mask != "never":
+                    mask = core.get_previewbridge_mask(image)
                     if mask is None:
                         mask = core.preview_bridge_last_mask_cache.get(unique_id)
-
-                    # Check size compatibility for if_same_size mode
                     if mask is not None and restore_mask == "if_same_size" and mask.shape[1:] != decoded_image.shape[1:3]:
                         mask = None
-                    # For "always", keep the mask regardless of size
                 else:
                     mask = None
 
@@ -523,6 +366,8 @@ class PreviewBridgeLatent:
                     mask = torch.ones(latent['samples'].shape[2:], dtype=torch.float32, device="cpu").unsqueeze(0)
                     res = nodes.PreviewImage().save_images(decoded_image, filename_prefix="PreviewBridge/PBL-", prompt=prompt, extra_pnginfo=extra_pnginfo)
                 else:
+                    res_latent = latent.copy()
+                    res_latent['noise_mask'] = mask
                     masked_images = utils.tensor_convert_rgba(decoded_image)
                     resized_mask = utils.resize_mask(mask, (decoded_image.shape[1], decoded_image.shape[2])).unsqueeze(3)
                     resized_mask = 1 - resized_mask
@@ -531,16 +376,12 @@ class PreviewBridgeLatent:
 
                 res_image = res['ui']['images']
 
-            is_empty_mask = torch.all(mask == 1)
-
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
-            core.set_previewbridge_image(unique_id, path, res_image[0])
-            core.preview_bridge_image_id_map[image] = (path, res_image[0])
-            core.preview_bridge_image_name_map[unique_id, path] = (image, res_image[0])
-            core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, res_image)
+            preview_id = core.set_previewbridge_image(unique_id, path, res_image[0])
 
-            res_latent = latent
-
+        core.preview_bridge_cache[unique_id] = (latent, preview_method, vae_opt, image, preview_id)
+        # The white no-mask fallback is distinct from an explicit full selection.
+        is_empty_mask = 'noise_mask' not in res_latent or torch.all(mask == 0)
         if block and is_empty_mask and core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
             result = ExecutionBlocker(None), ExecutionBlocker(None)
@@ -554,6 +395,6 @@ class PreviewBridgeLatent:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": res_image},
+            "ui": {"images": res_image, "source_image": [image]},
             "result": result,
         }

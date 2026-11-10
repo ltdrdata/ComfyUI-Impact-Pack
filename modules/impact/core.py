@@ -1,4 +1,5 @@
 import os
+import uuid
 import warnings
 
 import torch
@@ -47,9 +48,7 @@ SEG = namedtuple("SEG",
                  ['cropped_image', 'cropped_mask', 'confidence', 'crop_region', 'bbox', 'label', 'control_net_wrapper'],
                  defaults=[None])
 
-pb_id_cnt = time.time()
 preview_bridge_image_id_map = {}
-preview_bridge_image_name_map = {}
 
 preview_bridge_cache = {}
 preview_bridge_last_mask_cache = {}
@@ -70,26 +69,24 @@ def is_execution_model_version_supported():
 
 
 def set_previewbridge_image(node_id, file, item):
-    global pb_id_cnt
-
-    if file in preview_bridge_image_name_map:
-        pb_id = preview_bridge_image_name_map[node_id, file]
-        if pb_id.startswith(f"${node_id}"):
-            return pb_id
-
-    pb_id = f"${node_id}-{pb_id_cnt}"
+    pb_id = f"${node_id}-{uuid.uuid4().hex}"
     preview_bridge_image_id_map[pb_id] = (file, item)
-    preview_bridge_image_name_map[node_id, file] = (pb_id, item)
-    if os.path.isfile(file):
-        i = Image.open(file)
-        i = ImageOps.exif_transpose(i)
-        if 'A' in i.getbands():
-            mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-            mask = 1. - torch.from_numpy(mask)
-            preview_bridge_last_mask_cache[node_id] = mask.unsqueeze(0)
-    pb_id_cnt += 1
-
+    mask = get_previewbridge_mask(pb_id)
+    if mask is not None:
+        preview_bridge_last_mask_cache[node_id] = mask
     return pb_id
+
+
+def get_previewbridge_mask(pb_id):
+    registered = preview_bridge_image_id_map.get(pb_id)
+    if registered is None or not os.path.isfile(registered[0]):
+        return None
+    with Image.open(registered[0]) as image:
+        image = ImageOps.exif_transpose(image)
+        if 'A' not in image.getbands():
+            return None
+        alpha = np.array(image.getchannel('A')).astype(np.float32) / 255.0
+    return (1. - torch.from_numpy(alpha)).unsqueeze(0)
 
 
 def erosion_mask(mask, grow_mask_by):

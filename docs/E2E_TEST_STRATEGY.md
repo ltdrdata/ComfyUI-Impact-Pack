@@ -9,6 +9,28 @@ that setup does not extend the supported import scope.
 
 ## Test coverage
 
+Preview Bridge checks run against an isolated server using the candidate Impact
+Pack checkout. Do not replace files in a user's active ComfyUI installation.
+With the server ready:
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18172 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-preview-bridge \
+IMPACT_E2E_SAM_IMAGE=/path/to/subject.png \
+python -m pytest tests/test_e2e_preview_bridge.py tests/test_e2e_legacy_sam.py tests/test_e2e_widget_catalog.py tests/test_sam_api.py -v
+```
+
+The Bridge suite creates and wires nodes through Chrome, compares saved and
+displayed pixels, and reloads native workflows in both restoration modes. It
+checks repeated edits, queued results, registration failure/retry, restored latent
+`noise_mask`, and clearing a mask before changing the input. Legacy SAM checks
+use real ViT-B detection, repeat temp-file saves for both Bridge types and all
+three restoration modes, and compare a second latent Bridge's mask downstream.
+These cases require the configured SAM model and the SD1.5 VAE named in
+`tests/README.md`; the other Bridge cases need no model weights.
+Registration-failure and delayed-result tests control only those boundaries.
+SAM responses are captured and forwarded unchanged for pixel comparisons.
+
 | Script | Setup through the UI | Assertions |
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |

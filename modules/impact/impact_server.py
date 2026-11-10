@@ -290,7 +290,11 @@ async def set_previewbridge_image(request):
                 else:
                     output_dir = folder_paths.get_temp_directory()
 
-            file = os.path.join(output_dir, subfolder, filename)
+            output_dir = os.path.abspath(output_dir)
+            file = os.path.abspath(os.path.join(output_dir, subfolder, filename))
+            if os.path.commonpath((output_dir, file)) != output_dir:
+                return web.Response(status=400)
+
             item = {
                 'filename': filename,
                 'type': path_type,

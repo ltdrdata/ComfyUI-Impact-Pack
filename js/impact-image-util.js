@@ -1,159 +1,25 @@
-import { ComfyApp, app } from "../../scripts/app.js";
+import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
-
-function load_image(str) {
-	let base64String = canvas.toDataURL('image/png');
-	let img = new Image();
-	img.src = base64String;
-}
-
-function getFileItem(baseType, path) {
-	try {
-		let pathType = baseType;
-
-		if (path.endsWith("[output]")) {
-			pathType = "output";
-			path = path.slice(0, -9);
-		} else if (path.endsWith("[input]")) {
-			pathType = "input";
-			path = path.slice(0, -8);
-		} else if (path.endsWith("[temp]")) {
-			pathType = "temp";
-			path = path.slice(0, -7);
-		}
-
-		const subfolder = path.substring(0, path.lastIndexOf('/'));
-		const filename = path.substring(path.lastIndexOf('/') + 1);
-
-		return {
-			filename: filename,
-			subfolder: subfolder,
-			type: pathType
-		};
-	}
-	catch(exception) {
-		return null;
-	}
-}
-
-async function loadImageFromUrl(image, node_id, v, need_to_load) {
-	let item = getFileItem('temp', v);
-
-	if(item) {
-		let params = `?node_id=${node_id}&filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
-
-		let res = await api.fetchApi('/impact/set/pb_id_image'+params, { cache: "no-store" });
-		if(res.status == 200) {
-			let pb_id = await res.text();
-			if(need_to_load) {;
-				image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
-			}
-			return pb_id;
-		}
-		else {
-			return `$${node_id}-0`;
-		}
-	}
-	else {
-		return `$${node_id}-0`;
-	}
-}
-
-async function loadImageFromId(image, v) {
-	let res = await api.fetchApi('/impact/get/pb_id_image?id='+v, { cache: "no-store" });
-	if(res.status == 200) {
-		let item = await res.json();
-		image.src = api.apiURL(`/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`);
-		return true;
-	}
-
-	return false;
-}
+import { isPreviewBridge, setupPreviewBridge, restorePreviewBridge } from "./preview-bridge.js";
+import { getFileItem } from "./image-path.js";
 
 app.registerExtension({
 	name: "Comfy.Impact.img",
 
+	loadedGraphNode(node) {
+		if (isPreviewBridge(node)) return restorePreviewBridge(node);
+	},
+
 	nodeCreated(node, app) {
-		if(node.comfyClass == "PreviewBridge" || node.comfyClass == "PreviewBridgeLatent") {
-			if (!node.widgets) {
-				return;
-			}
-
-			let w = node.widgets.find(obj => obj.name === 'image');
-			if (!w) {
-				return;
-			}
-
-			node._imgs = [new Image()];
-			node.imageIndex = 0;
-
-			// Hook into onExecuted to reset widget value after each execution
-			// This replaces the Object.defineProperty approach which fails on
-			// ComfyUI v1.34+ where widget.value is non-configurable
-			const origOnExecuted = node.onExecuted;
-			node.onExecuted = async function(output) {
-				// Check if we should preserve clipspace path (user-drawn mask)
-				const outputImage = output?.images?.[0];
-				const isNewTempFile = outputImage &&
-				                      outputImage.subfolder === 'PreviewBridge' &&
-				                      outputImage.type === 'temp';
-				const isClipspacePath = w.value &&
-				                        (w.value.includes('clipspace') || w.value.includes('[input]'));
-
-				// Only update widget if image changed OR not a clipspace path
-				if (!(isClipspacePath && !isNewTempFile)) {
-					if (output && output.images && output.images.length > 0) {
-						const img = output.images[0];
-						const path = `PreviewBridge/${img.filename} [temp]`;
-						const pb_id = await loadImageFromUrl(new Image(), node.id, path, false);
-						w.value = pb_id;
-					}
-				}
-
-				if (origOnExecuted) {
-					origOnExecuted.call(this, output);
-				}
-			};
-
-			Object.defineProperty(node, 'imgs', {
-				set(v) {
-					const stackTrace = new Error().stack;
-					if(v && v.length == 0)
-						return;
-					else if(stackTrace.includes('pasteFromClipspace')) {
-						let sp = new URLSearchParams(v[0].src.split("?")[1]);
-						let str = "";
-						if(sp.get('subfolder')) {
-							str += sp.get('subfolder') + '/';
-						}
-						str += `${sp.get("filename")} [${sp.get("type")}]`;
-
-						w.value = str;
-					}
-
-					node._imgs = v;
-				},
-				get() {
-					return node._imgs;
-				}
-			});
-		}
+		if (isPreviewBridge(node)) setupPreviewBridge(node);
 
 		if(node.comfyClass == "ImageReceiver") {
 			let path_widget = node.widgets.find(obj => obj.name === 'image');
 			let w = node.widgets.find(obj => obj.name === 'image_data');
 			let stw_widget = node.widgets.find(obj => obj.name === 'save_to_workflow');
-
-			if (!w) {
-				return;
-			}
-
-			// Check if widget.value is configurable before trying to redefine it
+			if (!w) return;
 			const descriptor = Object.getOwnPropertyDescriptor(w, 'value');
-			if (descriptor && !descriptor.configurable) {
-				return;
-			}
-
+			if (descriptor && !descriptor.configurable) return;
 			w._value = "";
 
 			Object.defineProperty(w, 'value', {
