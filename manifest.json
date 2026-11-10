@@ -16,12 +16,12 @@
     "sha256": "b5b20540460d940d42093d6d1a6af0fe82a32ad0f25b4c4b2bed52f99bce752d"
   },
   "impact-pack-pr1172-followup-pr-assets/EVIDENCE.md": {
-    "bytes": 1629,
-    "sha256": "820c899fc231565abd5fa9a5f70b096e9b3c942c76929c4ec4fcf1557c7e23fe"
+    "bytes": 1571,
+    "sha256": "2f8c0d73953162fb9728b6fb797aafa0e324c326c7f015c007ffe1be8b9a881d"
   },
   "impact-pack-pr1172-followup-pr-assets/REREVIEW.md": {
-    "bytes": 2395,
-    "sha256": "4b40bca79e025c5bc67eeea32c7ff5fbafab50a2a9f95851393779a2cc6be704"
+    "bytes": 2497,
+    "sha256": "dff78583ba0f09ade0ccaca2cc127a4aa88fadc846fc75ddcf2162d7ee5bb624"
   },
   "impact-pack-pr1172-followup-pr-assets/shared-reference-sequence.json": {
     "bytes": 9668,
@@ -32,8 +32,8 @@
     "sha256": "ea2be40c02394cf1fa179440a57e9ef633d047957a747b31cae37c5f8f66f986"
   },
   "impact-pack-pr1172-followup-pr-assets/final-state.json": {
-    "bytes": 8440,
-    "sha256": "ecb23a8d0ecd1c600bd7887bcd7f593f318a6f20d626d5d5f2b64e22a9e48e84"
+    "bytes": 8925,
+    "sha256": "cb204ab2190424c7172a61f3abc988dfabcb46cccab46bd8bed24e909380652d"
   },
   "impact-pack-pr1172-followup-pr-assets/cleanup-review/before-final-state.json": {
     "bytes": 6256,
@@ -174,6 +174,58 @@
   "impact-pack-pr1172-followup-pr-assets/red-green/clear-latent.png": {
     "bytes": 259735,
     "sha256": "3762263993f0cbb63c515ccedb72047965baf9ef45825237b8da32ded9b13a89"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/before-evidence.md": {
+    "bytes": 1629,
+    "sha256": "820c899fc231565abd5fa9a5f70b096e9b3c942c76929c4ec4fcf1557c7e23fe"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/review-fixes.patch": {
+    "bytes": 9858,
+    "sha256": "b6a602492f82581fdd4be0b5a2757a920529353b3d0d12afc8359f96e5d291f1"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/summary.json": {
+    "bytes": 2596,
+    "sha256": "f20af0b67929d86a90757e67aead0afe15ed8676aedce72d44bbc4060c242cc0"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/working-tree.patch": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-green.xml": {
+    "bytes": 38212,
+    "sha256": "050f472b9dd11614f77c8607d98d3a26fb63daa5f0198ea324f92b9ac1a499d2"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red.log": {
+    "bytes": 72085,
+    "sha256": "766f0bb476eb5c5d494b4855a1dcf53cffcd5abb41d1f354c971e05124e21465"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/followup.patch": {
+    "bytes": 121944,
+    "sha256": "884b3beb0f72a0638a31673c15a4b5ad2c66ed9e4d6c5890bc56795e5b4a36d0"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red.xml": {
+    "bytes": 92297,
+    "sha256": "21034576b9789bce347e72d1110d3c5a0276fca900237ad2f28ae86efd6dced4"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red-source.json": {
+    "bytes": 342,
+    "sha256": "8bfbebfe759817f9b7c93410ab3c932a3da6ef2d0dbbef6e83ce82f9c184bb99"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/before-rereview.md": {
+    "bytes": 2395,
+    "sha256": "4b40bca79e025c5bc67eeea32c7ff5fbafab50a2a9f95851393779a2cc6be704"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/mask-policy-confirmed.xml": {
+    "bytes": 3752,
+    "sha256": "31f4e773f76d9b06a9414b31110ab629dfa8c41505fe4f4d80745a2ae3808427"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/node.log": {
+    "bytes": 8500,
+    "sha256": "2bc572ddf4c22074f1fb5648738466bfc4e71c7bc263a1b371a9411836393fd9"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-green.log": {
+    "bytes": 4114,
+    "sha256": "8cb10ce7564e6ee8cf91ef5b4027cfffb2efa8da70ea31b61fce0558e548ba57"
   },
   "impact-pack-pr1172-followup-pr-assets/cleanup-review/chrome/browser.log": {
     "bytes": 3440,
@@ -1846,5 +1898,365 @@
   "impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-screen.png": {
     "bytes": 136354,
     "sha256": "d4a2ac43492c7e3f168b65deff5e99f868eb560339d3a6c502b9410255568c38"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser.log": {
+    "bytes": 8211,
+    "sha256": "b5de1521fe4ab42616815077c6f716e159303369a11a198b689b973c91642433"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser.xml": {
+    "bytes": 7555,
+    "sha256": "8684ea4eb1fc5285e3d354a518d3efe2ac5f5a2f68197d0b8bd2debcd1de9619"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/source.json": {
+    "bytes": 8590,
+    "sha256": "102cf0291ae5e63c5531c1aafa20eab4da638c626db7e8a61c3b3e829c921d7b"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-models/browser.log": {
+    "bytes": 3707,
+    "sha256": "bf203d0ef5fcba8fefe1a40e1facb28cc7855db2a19d16f3d826858f723907ec"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-models/browser.xml": {
+    "bytes": 2264,
+    "sha256": "fed857ac36ed8ae963adb44aae7ef8eef58b7399285c3741a13289816e961f95"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-models/source.json": {
+    "bytes": 8637,
+    "sha256": "94bc9c41b3c0eea711cc472bdb36f1b13a795e772d9fb152159ba3ab7928c341"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/painted-editor.png": {
+    "bytes": 113661,
+    "sha256": "15767ee427261ab0219cff0b998ec7c1d068cd76a939efb4c6694711e1f6fada"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/reloaded-workflow.json": {
+    "bytes": 4422,
+    "sha256": "7bfa1f84d720a52a518c0ad17ab3781949e212ef681eb23ac820f955a19c8d79"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/edited-workflow.json": {
+    "bytes": 4444,
+    "sha256": "bdf76df639c23f7f1931a6d1c5ab7967f15394ee96e8697b913bb5746d9f6806"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/final.png": {
+    "bytes": 153353,
+    "sha256": "babf316ab05afb8fe359b44f3d21bb978dc8ea2bbb5f379875bccb43b6609bd0"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/same-input.png": {
+    "bytes": 137288,
+    "sha256": "37421b6aa6bf6a4feeee060c5fad8f9bd57b893ed0306f332593002ca9c81b12"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/changed-input.png": {
+    "bytes": 137252,
+    "sha256": "a2f42013e7447243fdbbfc4a373ccade82464edf8b0b373f29ae5565cd0f149b"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/native-reload.png": {
+    "bytes": 153340,
+    "sha256": "3bcbaf68dca0ca2ed5c160713b00f9c7747aa8ff760177ce82c946ddb4df276e"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/queues.json": {
+    "bytes": 620,
+    "sha256": "00fc0c2cabbe5b590e57c2307dbf91dbb535528525a56117e38d84c2c3ebdc1e"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/saved-selection.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/painted-editor.png": {
+    "bytes": 119323,
+    "sha256": "eb6738979e8af4f3d362fc8ab87dd92a450a68b5a4a041e784702daa34afef48"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/reloaded-workflow.json": {
+    "bytes": 4144,
+    "sha256": "78f40c761a8b453ef5604fd4fa517e3b1890d34c09a1c7cb2bf9972bff33dc4d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/edited-workflow.json": {
+    "bytes": 4228,
+    "sha256": "94d85a9becd6f43f1e8672d002854f70c5504c8a28686041e086693662b4960d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/final.png": {
+    "bytes": 149331,
+    "sha256": "60c042a21d2d221b714eb22fd9da1f842a0e7bda5b85fee1573809145d945454"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/same-input.png": {
+    "bytes": 133426,
+    "sha256": "b35454e32e456adcc7669bbf3907660026d357f203277547c2563c4b2c36d73a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/changed-input.png": {
+    "bytes": 133422,
+    "sha256": "9a112bb7292f9e0af133276693e6c1d824885c4feee2bc0b8fc67052de51e29d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/native-reload.png": {
+    "bytes": 149320,
+    "sha256": "260fb3df610419df8fd2fd88b900919c346091368b872de05000377b023a248d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/queues.json": {
+    "bytes": 614,
+    "sha256": "ac5ecbc46fcfe1a9034cfe30ecf63d416dd6b1feaa7032d623ff3ec9495d72f1"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/saved-selection.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/painted-editor.png": {
+    "bytes": 113734,
+    "sha256": "a4adf7a38e005a876ee5d3a780081526d5cb3e8f3aed0a58db1e3fdcc8a4a2cf"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/reloaded-workflow.json": {
+    "bytes": 4422,
+    "sha256": "f5af75236e248c82c300a8b8b376cb78a2db67820004ed1e4e47c75cf2b57275"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/edited-workflow.json": {
+    "bytes": 4444,
+    "sha256": "6e3d8d851efff8e1c7c47bf873f56b62e6886a2813cabc92387a22410c06a0aa"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/final.png": {
+    "bytes": 153892,
+    "sha256": "1c0e15a459326b847ba84886ea6eceb26bf835865ce8141830824d53287a8457"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/same-input.png": {
+    "bytes": 135913,
+    "sha256": "2a743b40c53f0a90e5693836467c36b79a4647428e9b8fced1e0a1fd00412ae0"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/changed-input.png": {
+    "bytes": 135786,
+    "sha256": "fe14b125e6f93e768809820297fcc62bfa4479a79346eef6489db62f2cd4f658"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/native-reload.png": {
+    "bytes": 153879,
+    "sha256": "ceda23d100b9b673fa0b4c3a87fdaf74f86949a4c7b9ed61ec02cfb7fec15ac0"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/queues.json": {
+    "bytes": 614,
+    "sha256": "c55365808221a5677063b0b107533381af75c35eb34874b6292d9a018adb0441"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/saved-selection.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/painted-editor.png": {
+    "bytes": 119258,
+    "sha256": "4837b1e6abb912687e4619eade7b61eb887972cfc0caa58dbbb7da240e466a46"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/reloaded-workflow.json": {
+    "bytes": 4144,
+    "sha256": "0cc1034560450bc459aca992cb8758416749f707098e175e8fd4a9d9d0ed195a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/edited-workflow.json": {
+    "bytes": 4228,
+    "sha256": "be4e6df7e4b4d7c7c36ac66a7016f4ad2b956489f679d945cb5ceac085ac6363"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/final.png": {
+    "bytes": 147757,
+    "sha256": "706c82fc1eb87fc093ce88c5d1cacac42b5a86e8fa5a5d8ddd76f3a31c06833d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/same-input.png": {
+    "bytes": 134777,
+    "sha256": "981231a85b0513de872b81225a51459c86ca2d2cd6a18af4a496092dc51fc254"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/changed-input.png": {
+    "bytes": 134893,
+    "sha256": "25bbcbcb26aecde8e0c8c8c8cf69e780664f8fd51a461e5958ea992d3e992ead"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/native-reload.png": {
+    "bytes": 147746,
+    "sha256": "b8291695d088b0a959e10adf4068ae9d232aa8059f7a4c642ffffece77749f7a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/queues.json": {
+    "bytes": 620,
+    "sha256": "10a88e7f3dac8415c770c887851ee4658c50de6ed8b9b9adb54f82dafb385dc9"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/saved-selection.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 3070,
+    "sha256": "a1428e6472de7e058ba591d5248d49848db6f1b8f5549c30f70c9198379c1dbb"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5746,
+    "sha256": "107582013e783d25ca7c98dcac920dfba5446709052b085ea540f01c78bd2810"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10088,
+    "sha256": "67d3c8bc226941e90bf611b1b91eb2e60e5e0923e0a8de31c51dc745b90d4e02"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 138391,
+    "sha256": "614b100675a5d3c491ffe9828e93a165e22b591d9d5a0fcab16ae6f4a5e0e144"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/03-actual.png": {
+    "bytes": 4487,
+    "sha256": "fc68e602a18e233be7cd2ff0d1608607f65b38cae329d711efa9d37a19726d2f"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/04-history.json": {
+    "bytes": 9790,
+    "sha256": "9db1b32ba019e0678a9c24571f512fe1222b1c71d8a321fa80545e36f847054e"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/records.json": {
+    "bytes": 12304,
+    "sha256": "60563e95cd7bc18bd9a4b907a5b82a12dbc2a852584f9b08696dcf8d50ce5ed1"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 133426,
+    "sha256": "b35454e32e456adcc7669bbf3907660026d357f203277547c2563c4b2c36d73a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9920,
+    "sha256": "3533ff75edee9056d1c8013cff872ee2492cfb15b88db720dd10e033b14656e4"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5480,
+    "sha256": "26f3dcfc786d647851fecb4ef37d50d3c27e26bc708f463b6db699d1e2524e0f"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/04-screen.png": {
+    "bytes": 149331,
+    "sha256": "60c042a21d2d221b714eb22fd9da1f842a0e7bda5b85fee1573809145d945454"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/03-screen.png": {
+    "bytes": 133422,
+    "sha256": "9a112bb7292f9e0af133276693e6c1d824885c4feee2bc0b8fc67052de51e29d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/04-actual.png": {
+    "bytes": 4415,
+    "sha256": "f2dbb0b51c6c1c929c0e847b0e49b616c23c4e5ccaa84f5f712005cf7c18dd07"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/04-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/03-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9762,
+    "sha256": "99b442238b7debc4c2eb0cfcd5804a214e6915a9eb6945719e7ef01eaa93412c"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 4484,
+    "sha256": "c63b71789c5429ca1a83502215d7666539f7d3ddf6b6888ef6a9e85ba92a9ba7"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/03-history.json": {
+    "bytes": 9891,
+    "sha256": "01b3238f33ff208cb28877567ecd5128567adab30549b5f9c8ee8502da16847a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 135995,
+    "sha256": "d431a315c85a2d5d16312815d027735dd793e5e3f052be01cdd1f59958aa1307"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/03-actual.png": {
+    "bytes": 4699,
+    "sha256": "57950c7f53552a71144a56a661493513908ed5cf24675e9e174aaab7a35ea9b6"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/04-history.json": {
+    "bytes": 10116,
+    "sha256": "717fc18dc48e8c8b8ec414b5c992c5afb9fd346175323ceec93a6e9341bc641d"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 12466,
+    "sha256": "34a9d57e36a2f398878c4a54206b9420aec674272e8cc70cde4d1b558394b43e"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 135925,
+    "sha256": "0bec1c04baffe021a7a1939b57a016aff72223029dcdf15cae99dfefce6d87f9"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10167,
+    "sha256": "c9753ece41b42618d592c86566f3ce792cb1c69e4d21fa538c3a09a526afe170"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5746,
+    "sha256": "4d27025049989d3ea25fd1d2fc8a6b07576d685a511037f6932fabba4880c143"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/04-screen.png": {
+    "bytes": 153892,
+    "sha256": "1c0e15a459326b847ba84886ea6eceb26bf835865ce8141830824d53287a8457"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/03-screen.png": {
+    "bytes": 135798,
+    "sha256": "e12cb394b6b5019709688658199237d9c0431863ef944e9b2b4d410c837fe16a"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/04-actual.png": {
+    "bytes": 4680,
+    "sha256": "7b2ba1f5631fd0abf6a3df4e14f3ba2550e6750e67460635dcc5924b58ede6e5"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/04-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/03-expected.png": {
+    "bytes": 565,
+    "sha256": "f19e1d8eb9a3e5be118fd10d537b1ac5a9e6fbb7eae5b5ccd49eb51ebf768a44"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10088,
+    "sha256": "b3866f35531517c8ede0bdcc93ac311aedefb1f37b69af1c41cf379968661b16"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 4699,
+    "sha256": "19432a1b18374fbfdc10325f59065468e5d3bc4d5648a5342ccd939c5d01fb40"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/03-history.json": {
+    "bytes": 10136,
+    "sha256": "bd3d96d61e6be3eda7eb2e9ff202d83013612aebec60c5f7462850ed5609acaf"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[full-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 138342,
+    "sha256": "61493a9e6ca78afc73a3c46ad01f87e2db52ed8c73e79a6569906511d82f7625"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/records.json": {
+    "bytes": 3030,
+    "sha256": "ae6c22184de1ec8d3bd892cda5cfe916d7d00cc52f35effa078f33295af7d129"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5480,
+    "sha256": "9ae2fcf66d25470d811062493d0b07ceedd4be608fbf69d8ad95370e98ba4d86"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9762,
+    "sha256": "4e476243056341921ebe79fa2650275f4392e4162184f9790e1bebd3c569858e"
+  },
+  "impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser/test_saved_mask_selection_controls_blocking[clear-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 135979,
+    "sha256": "02373f80e6bf84c97d88f45c09db376087838efd8bd23251bfb8a99d43758097"
   }
 }

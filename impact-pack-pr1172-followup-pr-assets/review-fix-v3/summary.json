@@ -1,0 +1,71 @@
+{
+  "candidate": "fc073def9da8610311666c0b2392491d3c397118",
+  "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
+  "published_red": "2b0808bf9040f741f519f825554b8124b5ebfb2b",
+  "commit_tree": "02e1c7ab1dd0fc0cbc3c1f5056520fbae1a600cc",
+  "timestamp": "2026-11-10T21:04:17+09:00",
+  "results": {
+    "backend_red": {
+      "tests": 128,
+      "failures": 20,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 277,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mask_policy": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_core": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_models": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javascript": {
+      "tests": 81,
+      "pass": 81,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "browser_total_unique_cases": 68,
+  "same_tests_red_green": true,
+  "input_types_unchanged": true,
+  "trusted_fixtures_unchanged": true,
+  "browser_source_hashes_match": true,
+  "followup_commit_count": 1,
+  "changed_files_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "4eb86e837b7217ef10d1d940ca89824e4f4716118e861b0c7b06c96da93bf055",
+    "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
+    "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
+    "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
+    "modules/impact/bridge_nodes.py": "c1910dad71784fe4b5801e13a062d842795c4518051f62ca733c91eb4397e3d9",
+    "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
+    "tests/README.md": "acf5352a4fd3c832c9357e129fb900d83c20070e36a416c6a878340c7ceb938a",
+    "tests/preview_bridge.test.mjs": "01e828663ee7ff915f9d159a24baea79f6f0c06fb5c3dc4f551a955866d2bf0b",
+    "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
+    "tests/test_preview_bridge_result.py": "8b5d696804f1c6dc14eabb78f2ca2500827c3cdea250e441d19e6dc87b07f9bc"
+  },
+  "mask_policy": "Unchanged from 2b0808b: absent or all-zero blocks; explicit full or partial selection passes. block=never preserves the mask.",
+  "scope": "Restrict raw registration to resolved input-directory files; preserve relative preview metadata and legacy basename fallback inside input."
+}

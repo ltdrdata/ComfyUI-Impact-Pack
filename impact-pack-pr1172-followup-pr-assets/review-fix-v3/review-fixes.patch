@@ -1,0 +1,202 @@
+diff --git a/modules/impact/bridge_nodes.py b/modules/impact/bridge_nodes.py
+index 32ffba1..036f6c5 100644
+--- a/modules/impact/bridge_nodes.py
++++ b/modules/impact/bridge_nodes.py
+@@ -64,44 +64,34 @@ class PreviewBridge:
+ 
+     @staticmethod
+     def register_clipspace_image(clipspace_path, node_id):
+-        """Register a clipspace image file in the preview bridge system.
+-
+-        This handles the case where ComfyUI's mask editor creates clipspace files
+-        that need to be integrated with the preview bridge system.
+-        """
+-        # Remove [input] suffix if present
+-        clean_path = clipspace_path.replace(" [input]", "").replace("[input]", "")
+-        
+-        # Try to find the actual clipspace file
+-        input_dir = folder_paths.get_input_directory()
+-        potential_paths = [
+-            clean_path,
++        clean_path = clipspace_path.removesuffix(" [input]").removesuffix("[input]")
++        input_dir = os.path.realpath(folder_paths.get_input_directory())
++        candidates = [
+             os.path.join(input_dir, clean_path),
+             os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
+-            os.path.abspath(clean_path),
+         ]
+-        
+-        actual_file = None
+-        for path in potential_paths:
+-            if os.path.isfile(path):
+-                actual_file = path
++        for candidate in candidates:
++            try:
++                actual_file = os.path.realpath(candidate)
++                if os.path.commonpath((input_dir, actual_file)) != input_dir:
++                    return False
++            except ValueError:
++                # Invalid paths and different Windows drives cannot be input files.
++                return False
++            if os.path.isfile(actual_file):
+                 break
+-        
+-        if not actual_file:
++        else:
+             return False
+-            
+-        # Create ui_item for the clipspace file
++
++        relative_path = os.path.relpath(actual_file, input_dir)
+         ui_item = {
+-            'filename': os.path.basename(actual_file),
+-            'subfolder': 'clipspace',
++            'filename': os.path.basename(relative_path),
++            'subfolder': os.path.dirname(relative_path),
+             'type': 'input'
+         }
+-        
+-        # Register it using the preview bridge system
+         core.set_previewbridge_image(node_id, actual_file, ui_item)
+         # Also register under the original clipspace path for compatibility
+         core.preview_bridge_image_id_map[clipspace_path] = (actual_file, ui_item)
+-        
+         return True
+ 
+     def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
+diff --git a/tests/README.md b/tests/README.md
+index 04b5a96..acf4325 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -29,7 +29,9 @@ ImageReceiver behavior.
+ Backend cases distinguish absent, cleared, partial and full latent masks across
+ reuse, restoration and incoming `noise_mask` paths, with blocking enabled and
+ disabled. Raw clipspace API references also cover changed input sizes, every
+-restoration policy, saved clears and missing files.
++restoration policy, saved clears and missing files. File registration checks
++input-directory containment, external symlinks, traversal, working-directory
++shadows and correct preview metadata for input-root and nested files.
+ `tests/test_e2e_preview_bridge.py` checks actual editor saves and downstream
+ pixels, three unedited queues and empty-mask blocking. Its legacy SAM cases require `IMPACT_E2E_SAM_IMAGE`, SAM ViT-B and
+ `vae-ft-mse-840000-ema-pruned.safetensors`; other Bridge cases need no weights.
+diff --git a/tests/test_preview_bridge_result.py b/tests/test_preview_bridge_result.py
+index 2e705c4..40b42d6 100644
+--- a/tests/test_preview_bridge_result.py
++++ b/tests/test_preview_bridge_result.py
+@@ -411,3 +411,116 @@ def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+         assert preview.size == (size, size)
+         if restored:
+             assert preview.getchannel("A").getextrema() == (alpha, alpha)
++
++
++@pytest.mark.parametrize("kind", [
++    "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
++    "no-space-suffix", "two-dot-filename", "cwd-shadow",
++])
++def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
++    input_dir = bridge_files / "input"
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
++    subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
++        "nested", "absolute-inside", "internal-symlink") else "clipspace"
++    filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
++    saved = input_dir / subfolder / filename
++    saved.parent.mkdir(parents=True, exist_ok=True)
++    Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
++    relative = str(saved.relative_to(input_dir))
++    if kind == "legacy-basename":
++        relative = filename
++    elif kind == "absolute-inside":
++        relative = str(saved)
++    elif kind == "internal-symlink":
++        alias = input_dir / "alias.png"
++        alias.symlink_to(saved)
++        relative = alias.name
++    elif kind == "cwd-shadow":
++        shadow = bridge_files / "working" / "clipspace" / filename
++        shadow.parent.mkdir(parents=True)
++        Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
++        monkeypatch.chdir(shadow.parent.parent)
++    reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
++    assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
++    pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
++    torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
++    torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
++    assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
++    assert (input_dir / item["subfolder"] / item["filename"]).read_bytes() == saved.read_bytes()
++
++
++@pytest.mark.parametrize("kind", [
++    "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
++    "directory-symlink", "fallback-symlink", "null-byte",
++])
++def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
++    input_dir = bridge_files / "input"
++    input_dir.mkdir()
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
++    outside = bridge_files / "input-other" / "mask.png"
++    outside.parent.mkdir()
++    Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
++    (input_dir / "clipspace").mkdir()
++    fallback = input_dir / "clipspace" / "mask.png"
++    if kind == "fallback-symlink":
++        fallback.symlink_to(outside)
++        reference = "mask.png"
++    else:
++        # A rejected external reference must not silently select this other file.
++        Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
++        if kind in ("absolute-outside", "sibling-prefix"):
++            reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
++        elif kind == "parent-traversal":
++            reference = "clipspace/../../input-other/mask.png"
++        elif kind == "file-symlink":
++            (input_dir / "link.png").symlink_to(outside)
++            reference = "link.png"
++        elif kind == "directory-symlink":
++            (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
++            reference = "linked/mask.png"
++        else:
++            reference = "bad\0mask.png"
++
++    def unexpected_open(*args, **kwargs):
++        pytest.fail("Rejected raw references must not read image contents")
++
++    monkeypatch.setattr(Image, "open", unexpected_open)
++    assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
++    assert not core.preview_bridge_image_id_map
++    assert not core.preview_bridge_last_mask_cache
++
++
++@pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
++@pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
++@pytest.mark.parametrize("restore", ["always", "if_same_size"])
++def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
++    input_dir = bridge_files / "input"
++    input_dir.mkdir()
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
++    outside = bridge_files / "outside.png"
++    Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
++    original_open = Image.open
++
++    def checked_open(path, *args, **kwargs):
++        assert str(path) != str(outside), "Bridge opened an external raw file"
++        return original_open(path, *args, **kwargs)
++
++    monkeypatch.setattr(Image, "open", checked_open)
++    node = getattr(bridge_nodes, node_type)()
++    inputs = {"unique_id": "external", "restore_mask": restore}
++    if node_type == "PreviewBridge":
++        inputs["images"] = torch.zeros((1, 64, 64, 3))
++    else:
++        inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++    if reuse:
++        node.doit(image="$external-0", **inputs)
++    reference = str(outside) + " [input]"
++    output, mask = node.doit(image=reference, **inputs)["result"]
++    assert reference not in core.preview_bridge_image_id_map
++    if node_type == "PreviewBridge":
++        torch.testing.assert_close(output, inputs["images"])
++        torch.testing.assert_close(mask, torch.zeros((64, 64)))
++    else:
++        assert output["samples"] is inputs["latent"]["samples"]
++        assert "noise_mask" not in output
++        torch.testing.assert_close(mask, torch.ones((1, 8, 8)))

@@ -1,18 +1,17 @@
 # Current evidence and source boundaries
 
-Current candidate: `2b0808b`. Exact files/results: `final-state.json` and `review-fix-v2/summary.json`.
+Candidate `fc073de`. Exact source: `final-state.json` and `review-fix-v3/summary.json`.
 
 | Check | Result | Record |
 |---|---|---|
-| JavaScript | 81 passed | `review-fix-v2/node.log` |
-| Backend | 254 passed, including 105 Bridge cases | `review-fix-v2/backend-green.xml` |
-| Native Bridge and full widget catalog | 53 passed | `review-fix-v2/chrome-green-core/browser.xml` |
-| Real SAM and API cases | 15 passed | `review-fix-v2/chrome-green-models/browser.xml` |
-| Same backend cases on published Red | 20 intended failures / 85 passing controls | `review-fix-v2/backend-red.xml` |
-| New browser selection cases on published Red | 2 latent failures / 2 passing Image controls | `review-fix-v2/chrome-red/browser.xml` |
+| JavaScript | 81 passed | `review-fix-v3/node.log` |
+| Backend | 277 passed, including 128 Bridge cases | `review-fix-v3/backend-green.xml` |
+| Same 128 cases on published Red | 20 failures / 108 passing controls | `review-fix-v3/backend-red.xml` |
+| Native Bridge and full catalog | 53 passed | `review-fix-v3/chrome-green-core/browser.xml` |
+| Real SAM and API | 15 passed | `review-fix-v3/chrome-green-models/browser.xml` |
 
-The two new paired captures compare the same first queue after saving Clear or a full selection, with matching saved-mask hashes. Green records three distinct queues: same input, changed input, native export/reload. Blocking is checked from execution history; a retained canvas preview is not counted as a current output. Original screenshots are unchanged and annotated separately.
+The raw-file comparison uses the exact same test bytes on published `2b0808b` and current source. It observes file reads, selected pixels, restored masks and preview metadata. External paths are rejected before image contents are opened. Allowed paths still return the saved pixels and mask.
 
-Nine earlier comparisons remain historical captures with their original source manifests. The complete current 68-case Chrome/API run reruns their retained behavior checks, including four server restarts. Older frontend releases, Bridge GPU execution, diffusion sampling and deleted-file recovery remain outside this validation.
+All eleven existing screenshot comparisons retain their original source provenance. The two selection overlays in `review-fix-v2/overlays` compare `a5350a6` with the selection fix; that mask policy remains unchanged. The other nine comparisons retain their earlier manifests. Current full Chrome checks rerun the retained scenarios, including native workflows, SAM, three-stage selections and four real restarts. New raw containment is backend behavior and has a concrete Red/Green table in the PR body.
 
-The #1172 integration parent remains separate. Merge #1172 first, then rebase only the follow-up onto updated Main and retarget #1274.
+Older frontend releases, Bridge GPU execution, diffusion sampling and deleted-file recovery remain outside validation. The separate #1172 preparation parent is unchanged.

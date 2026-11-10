@@ -1,0 +1,1081 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="20" skipped="0" tests="128" time="5.353" timestamp="2026-11-10T20:49:42.453182+09:00" hostname="hyewon"><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-always-PreviewBridge]" time="0.363" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-always-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-if_same_size-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[False-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-always-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-always-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-if_same_size-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_saved_clear_survives_input_refresh[True-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-always-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-if_same_size-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[painted-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-always-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-if_same_size-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_queued_refresh_uses_its_submitted_mask[cleared-if_same_size-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-always-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-always-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-never-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[painted-never-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-always-PreviewBridge]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-always-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-never-PreviewBridge]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_shared_registration_preserves_mask_and_refreshed_preview[cleared-never-PreviewBridgeLatent]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_execution_feedback_identifies_the_submitted_image_on_refresh_and_reuse[PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_execution_feedback_identifies_the_submitted_image_on_refresh_and_reuse[PreviewBridgeLatent]" time="0.009" /><testcase classname="test_preview_bridge_result" name="test_recomputed_source_preserves_edits_only_when_pixels_match[0-rgb0-mask_shape0-0.4980392156862745]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_source_preserves_edits_only_when_pixels_match[1-rgb1-mask_shape1-0]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_reusing_a_node_id_for_the_other_bridge_discards_its_cache[PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_reusing_a_node_id_for_the_other_bridge_discards_its_cache[PreviewBridgeLatent]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-never]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-always]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[2-if_same_size]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-never]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-always]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_recomputed_image_batch_keeps_every_frame[3-if_same_size]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[always-32-True]" time="0.005" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[if_same_size-32-True]" time="0.004" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[always-40-True]" time="0.006" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[never-32-False]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[never-40-False]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_latent_refresh_propagates_only_the_applicable_restored_mask[if_same_size-40-False]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_incoming_noise_mask_takes_priority_over_the_cached_mask" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_unedited_latent_requeue_keeps_no_mask_and_block[False]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_unedited_latent_requeue_keeps_no_mask_and_block[True]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-reuse-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-refresh-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-no-alpha]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-clear]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-painted]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[False-incoming-full]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-reuse-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-no-alpha]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-clear]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-painted]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-refresh-full]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-no-alpha]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-clear]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-painted]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_latent_mask_presence_controls_blocking[True-incoming-full]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_never_refresh_does_not_revive_an_older_cached_mask[PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_never_refresh_does_not_revive_an_older_cached_mask[PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridgeLatent]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-never-64-False-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-64-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-64-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-96-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-always-96-True-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-96-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[painted-if_same_size-96-False-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-never-64-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-64-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-64-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-96-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-always-96-True-PreviewBridgeLatent]" time="0.003" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-96-False-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[clear-if_same_size-96-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-never-64-False-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-never-64-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-64-True-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-64-True-PreviewBridge]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-64-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-96-True-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-always-96-True-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-96-False-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_raw_clipspace_mask_obeys_restoration_on_changed_input[missing-if_same_size-96-False-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[input-root]" time="0.001"><failure message="AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'subfolder': 'clipspace'} != {'subfolder': ''}&#10;  Use -v to get more diff">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa8e7650&gt;
+kind = 'input-root'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+&gt;       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'clipspace'} != {'subfolder': ''}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:448: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[nested]" time="0.002"><failure message="AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}&#10;  Use -v to get more diff">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9ac110&gt;
+kind = 'nested'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+&gt;       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:448: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[legacy-basename]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[absolute-inside]" time="0.002"><failure message="AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}&#10;  Use -v to get more diff">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9ae480&gt;
+kind = 'absolute-inside'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+&gt;       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:448: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[internal-symlink]" time="0.002"><failure message="AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}&#10;  &#10;  Omitting 1 identical items, use -vv to show&#10;  Differing items:&#10;  {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}&#10;  {'filename': 'alias.png'} != {'filename': 'mask.png'}&#10;  Use -v to get more diff">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9aed50&gt;
+kind = 'internal-symlink'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+&gt;       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'clipspace'} != {'subfolder': 'clipspace/edits'}
+E         {'filename': 'alias.png'} != {'filename': 'mask.png'}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:448: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[no-space-suffix]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[two-dot-filename]" time="0.001"><failure message="AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'subfolder': 'clipspace'} != {'subfolder': ''}&#10;  Use -v to get more diff">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta6')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9ada60&gt;
+kind = 'two-dot-filename'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+&gt;       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'clipspace'} != {'subfolder': ''}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:448: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_stays_in_input_and_preserves_metadata[cwd-shadow]" time="0.002"><failure message="AssertionError: Tensor-likes are not close!&#10;&#10;Mismatched elements: 8192 / 12288 (66.7%)&#10;Greatest absolute difference: 1.0 at index (0, 0, 0, 0) (up to 1e-05 allowed)&#10;Greatest relative difference: inf at index (0, 0, 0, 1) (up to 1.3e-06 allowed)">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_sta7')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa8e78f0&gt;
+kind = 'cwd-shadow'
+
+    @pytest.mark.parametrize("kind", [
+        "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
+        "no-space-suffix", "two-dot-filename", "cwd-shadow",
+    ])
+    def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+            "nested", "absolute-inside", "internal-symlink") else "clipspace"
+        filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+        saved = input_dir / subfolder / filename
+        saved.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
+        relative = str(saved.relative_to(input_dir))
+        if kind == "legacy-basename":
+            relative = filename
+        elif kind == "absolute-inside":
+            relative = str(saved)
+        elif kind == "internal-symlink":
+            alias = input_dir / "alias.png"
+            alias.symlink_to(saved)
+            relative = alias.name
+        elif kind == "cwd-shadow":
+            shadow = bridge_files / "working" / "clipspace" / filename
+            shadow.parent.mkdir(parents=True)
+            Image.new("RGBA", (64, 64), (0, 255, 0, 64)).save(shadow)
+            monkeypatch.chdir(shadow.parent.parent)
+        reference = relative + ("[input]" if kind == "no-space-suffix" else " [input]")
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "allowed")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+&gt;       torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+E       AssertionError: Tensor-likes are not close!
+E       
+E       Mismatched elements: 8192 / 12288 (66.7%)
+E       Greatest absolute difference: 1.0 at index (0, 0, 0, 0) (up to 1e-05 allowed)
+E       Greatest relative difference: inf at index (0, 0, 0, 1) (up to 1.3e-06 allowed)
+
+/mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red-source/tests/test_preview_bridge_result.py:446: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[absolute-outside]" time="0.001"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9aedb0&gt;
+kind = 'absolute-outside'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej0/input-other/mask.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[parent-traversal]" time="0.001"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9aec60&gt;
+kind = 'parent-traversal'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej1/input/clipspace/../../input-other/mask.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[sibling-prefix]" time="0.001"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9aeea0&gt;
+kind = 'sibling-prefix'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej2/input/../input-other/mask.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[file-symlink]" time="0.001"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b5370&gt;
+kind = 'file-symlink'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej3/input/link.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[directory-symlink]" time="0.008"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9af8f0&gt;
+kind = 'directory-symlink'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej4/input/linked/mask.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[fallback-symlink]" time="0.001"><failure message="Failed: Rejected raw references must not read image contents">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej5')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9ac710&gt;
+kind = 'fallback-symlink'
+
+    @pytest.mark.parametrize("kind", [
+        "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+        "directory-symlink", "fallback-symlink", "null-byte",
+    ])
+    def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "input-other" / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+        (input_dir / "clipspace").mkdir()
+        fallback = input_dir / "clipspace" / "mask.png"
+        if kind == "fallback-symlink":
+            fallback.symlink_to(outside)
+            reference = "mask.png"
+        else:
+            # A rejected external reference must not silently select this other file.
+            Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+            if kind in ("absolute-outside", "sibling-prefix"):
+                reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+            elif kind == "parent-traversal":
+                reference = "clipspace/../../input-other/mask.png"
+            elif kind == "file-symlink":
+                (input_dir / "link.png").symlink_to(outside)
+                reference = "link.png"
+            elif kind == "directory-symlink":
+                (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+                reference = "linked/mask.png"
+            else:
+                reference = "bad\0mask.png"
+    
+        def unexpected_open(*args, **kwargs):
+            pytest.fail("Rejected raw references must not read image contents")
+    
+        monkeypatch.setattr(Image, "open", unexpected_open)
+&gt;       assert not bridge_nodes.PreviewBridge.register_clipspace_image(reference + " [input]", "rejected")
+
+tests/test_preview_bridge_result.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('/tmp/pytest-of-rho/pytest-3730/test_raw_file_registration_rej5/input/clipspace/mask.png',)
+kwargs = {}
+
+    def unexpected_open(*args, **kwargs):
+&gt;       pytest.fail("Rejected raw references must not read image contents")
+E       Failed: Rejected raw references must not read image contents
+
+tests/test_preview_bridge_result.py:485: Failed</failure></testcase><testcase classname="test_preview_bridge_result" name="test_raw_file_registration_rejects_escape_without_reading[null-byte]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[always-first-run-PreviewBridge]" time="0.001"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b5af0&gt;
+node_type = 'PreviewBridge', reuse = False, restore = 'always'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:134: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no0/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.p...oes_no0/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no0/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[always-first-run-PreviewBridgeLatent]" time="0.001"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b6450&gt;
+node_type = 'PreviewBridgeLatent', reuse = False, restore = 'always'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:329: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no1/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.p...oes_no1/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no1/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[always-reuse-PreviewBridge]" time="0.002"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9af260&gt;
+node_type = 'PreviewBridge', reuse = True, restore = 'always'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:134: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no2/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.p...oes_no2/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no2/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[always-reuse-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b6480&gt;
+node_type = 'PreviewBridgeLatent', reuse = True, restore = 'always'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:329: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no3/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.p...oes_no3/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no3/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[if_same_size-first-run-PreviewBridge]" time="0.001"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b4560&gt;
+node_type = 'PreviewBridge', reuse = False, restore = 'if_same_size'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:134: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no4/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.p...oes_no4/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no4/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[if_same_size-first-run-PreviewBridgeLatent]" time="0.001"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa914680&gt;
+node_type = 'PreviewBridgeLatent', reuse = False, restore = 'if_same_size'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:329: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no5/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.p...oes_no5/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no5/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[if_same_size-reuse-PreviewBridge]" time="0.002"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9b7380&gt;
+node_type = 'PreviewBridge', reuse = True, restore = 'if_same_size'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:134: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no6/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.p...oes_no6/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no6/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_external_raw_file_does_not_reach_either_bridge[if_same_size-reuse-PreviewBridgeLatent]" time="0.002"><failure message="AssertionError: Bridge opened an external raw file&#10;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'&#10; +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png')&#10; +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'))">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7927fa9aff80&gt;
+node_type = 'PreviewBridgeLatent', reuse = True, restore = 'if_same_size'
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+    @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+    def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        outside = bridge_files / "outside.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        original_open = Image.open
+    
+        def checked_open(path, *args, **kwargs):
+            assert str(path) != str(outside), "Bridge opened an external raw file"
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", checked_open)
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "external", "restore_mask": restore}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        if reuse:
+            node.doit(image="$external-0", **inputs)
+        reference = str(outside) + " [input]"
+&gt;       output, mask = node.doit(image=reference, **inputs)["result"]
+
+tests/test_preview_bridge_result.py:518: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+modules/impact/bridge_nodes.py:329: in doit
+    registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
+modules/impact/bridge_nodes.py:101: in register_clipspace_image
+    core.set_previewbridge_image(node_id, actual_file, ui_item)
+modules/impact/core.py:74: in set_previewbridge_image
+    mask = get_previewbridge_mask(pb_id)
+modules/impact/core.py:84: in get_previewbridge_mask
+    with Image.open(registered[0]) as image:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'
+args = (), kwargs = {}
+@py_assert2 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'
+@py_assert7 = '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'
+@py_assert4 = False
+@py_format9 = "'/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'\n{'/tmp/pytest-of-rho/pytest-3730/test_e...oes_no7/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'))\n}"
+@py_format11 = "Bridge opened an external raw file\n&gt;assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.p...oes_no7/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'))\n}"
+
+    def checked_open(path, *args, **kwargs):
+&gt;       assert str(path) != str(outside), "Bridge opened an external raw file"
+E       AssertionError: Bridge opened an external raw file
+E       assert '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' != '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'
+E        +  where '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' = str('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png')
+E        +  and   '/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png' = str(PosixPath('/tmp/pytest-of-rho/pytest-3730/test_external_raw_file_does_no7/outside.png'))
+
+tests/test_preview_bridge_result.py:505: AssertionError</failure></testcase></testsuite></testsuites>
