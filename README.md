@@ -43,11 +43,11 @@ A full white selection is a valid mask and passes this gate. For ordinary sampli
 - Restore the submitted edit's mask, including a successfully saved clear, before consulting older cached masks; propagate latent `noise_mask`. Preserve input samples and incoming mask precedence.
 - Retain edits for identical recomputed single images; recomputed batches keep every frame. Clear incompatible caches on Bridge-type reuse. Distinguish an RGB preview without a mask from an explicitly saved clear.
 - Re-register saved files after the frontend reconnects; ignore previous-connection feedback when updating the saved filename. Ordinary queues still reuse their registration.
-- Preserve raw `clipspace/... [input]` API references on input changes. Resolve raw files inside the input directory, including symlink targets, and return their actual relative subfolder. Reject external paths before opening an image; a same-named fallback cannot bypass rejection. `never` still discards the mask on refresh; `if_same_size` still checks dimensions. Registered temp/output IDs keep their existing behavior.
+- Preserve raw `clipspace/... [input]` references on input changes, retaining restoration policy and size checks. Validate complete HTTP registration paths, including `subfolder`, against their input/output/temp directory before reading. Raw references use the same normalized-path boundary inside input. Keep configured symlinks and their logical metadata, matching `/view` and upload.
 
 ## Evidence
 
-Red is the local integration of Main + #1172 (`6572207`); Green captures are from `4e7b9c0` plus review fixes, recorded in `feedback-fixes/green-chrome/source.json`. These earlier captures precede the current fixes; the full current regression run rechecks the retained scenarios. The selection comparisons below use `a5350a6` as Red; the raw-path comparison uses `2b0808b`. Headless Chrome performs the same UI actions and assertions in separate runtimes. Each pair below uses the **same execution stage and byte-identical expected mask**. SAM uses real ViT-B detection; latent cases use the SD1.5 VAE. The 704×1024 source is resized with `width=0`, `height=512`, `area`, producing 352×512 without changing its aspect ratio. There is no diffusion sampling.
+Red is the local integration of Main + #1172 (`6572207`); Green captures are from `4e7b9c0` plus review fixes, recorded in `feedback-fixes/green-chrome/source.json`. These earlier captures precede the current fixes; the full current regression run rechecks the retained scenarios. The selection comparisons below use `a5350a6` as Red; the current media-path comparison uses `fc073de`. Headless Chrome performs the same UI actions and assertions in separate runtimes. Each pair below uses the **same execution stage and byte-identical expected mask**. SAM uses real ViT-B detection; latent cases use the SD1.5 VAE. The 704×1024 source is resized with `width=0`, `height=512`, `area`, producing 352×512 without changing its aspect ratio. There is no diffusion sampling.
 
 | Scenario / same comparison stage | Red · `6572207` | Green · `4e7b9c0` + local fixes |
 |---|---|---|
@@ -184,37 +184,44 @@ Both sides show the first queue after saving the selection, with `block=if_empty
 
 Registration errors still prevent prompt submission, with retry after recovery. The existing server filename check rejects names containing `..`, including `my..image.png`; this validation restriction is unchanged. Falling back to an older image ID would silently submit the wrong edit.
 
-## Raw input-file containment
+## Media paths and configured symlinks
 
-The same 128 backend cases run on the previously published `2b0808b` and the current candidate: 20 failures / 108 passing controls → 128 passed. The 20 failures all concern file access, file selection or preview metadata; the mask-blocking policy is unchanged from `2b0808b`.
+The registration route and raw fallback now check the **complete normalized path** before reading. Direct absolute paths or `../` paths outside the selected storage directory are rejected. This closes the registration-ID route that previously bypassed the raw-path check.
 
-| Raw reference / observation | Red · `2b0808b` | Green |
+Links already configured under input/output/temp are intentionally supported, including an `input/clipspace` link to another disk. Paths retain their logical filenames and subfolders, matching ComfyUI's `/view` and upload endpoints. This is an `abspath` boundary, not a requirement that a symlink's physical target stay inside the directory. ComfyUI's separate `get_annotated_filepath` helper has a stricter policy; it is not changed by this PR.
+
+| Scenario / same check | Red · `fc073de` | Green |
 |---|---|---|
-| External absolute path, traversal, similarly prefixed sibling directory, external file/directory symlinks | Attempts to open an image outside input | Rejects before `Image.open`; no image or mask registration |
-| External raw file through either Bridge; first run/reuse × `always`/`if_same_size` | Attempts to open the external image in all eight cases | No external read; Image returns zero no-mask fallback, Latent preserves absent `noise_mask` and white fallback |
-| Valid input-root, nested and internal-symlink targets | Preview metadata always says `clipspace`, even when wrong | Metadata names the real input-relative directory and the same saved bytes |
-| Same relative filename in the process working directory | Loads that shadow file (green pixels, alpha 64) | Loads the input file (red pixels, alpha 128; mask 127/255) |
-| Legacy basename, no-space `[input]` suffix, malformed null-byte path | Valid references work; malformed path fails | Same outcomes |
+| HTTP registration: absolute, parent-traversing or similarly prefixed sibling subfolder × input/output/temp | Nine requests return HTTP 200 and register/read the outside PNG | All nine return HTTP 400 before image reads, ID allocation or mask-cache changes |
+| Existing absolute/parent filename rejection × three storage types | Six requests rejected | Same behavior |
+| Nested/annotated names and configured file/directory symlinks × three storage types | Twelve HTTP cases succeed | Same success, metadata and saved mask through both Bridge types |
+| Raw file/directory symlink to another disk, including legacy basename fallback | Registration fails despite the file being visible through `/view` | Registration succeeds; saved mask and logical filename/subfolder retained |
+| Raw symlink whose target stays inside input | Uses the target's filename/subfolder | Preserves the requested alias; same saved pixels and mask |
+| Actual uncached raw-symlink prompt | 8×8 white no-mask fallback, pixel value 255 | Saved 64×64 mask; PNG value 126, within one level of expected 127 after 8-bit saving |
+| Direct raw external paths and working-directory filename shadows | Rejects escapes; selects the input file | Preserved |
 
-Valid absolute paths inside input remain accepted. An external reference cannot silently select a different input file with the same basename. This change is limited to raw-file fallback registration; it does not change the HTTP registration endpoint's filename rule.
+The same **155 backend cases** produce **13 failures / 142 passing controls → 155 passed**. The 13 failures are nine HTTP subfolder escapes and four raw symlink rejection/metadata cases. HTTP tests use the actual handlers and image reads; valid returned IDs are consumed by both Bridges.
+
+A separate real ComfyUI probe checks `/view`, `/upload/image`, registration and queued execution. All six file/directory-symlink configurations across input/output/temp remain viewable, uploadable and registerable. Eight Green prompts produce the saved mask, and six external registration attempts return 400. Raw prompts use different Bridge IDs from registered prompts to prevent the last-mask cache from hiding a failure. [Red observations](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-red/observations.json) · [Green observations and prompt IDs](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/observations.json).
 
 ## Validation
 
-Candidate: `fc073de`, one follow-up commit above the separate Main + #1172 integration (`45e5321`). Merge #1172 first, then rebase this follow-up onto updated Main and retarget this PR. [Exact source hashes and results](impact-pack-pr1172-followup-pr-assets/final-state.json).
+Candidate: `30c7678`, one follow-up commit above the separate Main + #1172 integration (`45e5321`). Merge #1172 first, then rebase this follow-up onto updated Main and retarget this PR. [Exact source hashes and results](impact-pack-pr1172-followup-pr-assets/final-state.json).
 
 Environment: ComfyUI `61e524bd` (0.44.0), frontend 1.58.5, headless Chrome, Python 3.12, PyTorch 2.10.0+cu128 and Node 24.12.0. Each browser runtime imports its own isolated checkout.
 
 | Suite | Result |
 |---|---:|
 | All JavaScript unit tests | 81 passed |
-| Backend: Bridge, SAM masks, mask-to-SEGS and image batching | 277 passed, including 128 Bridge cases; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-green.xml) |
-| Full current Chrome/API regression | 68 passed: [53 native Bridge/catalog cases](impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-core/browser.xml) + [15 real SAM/API cases](impact-pack-pr1172-followup-pr-assets/review-fix-v3/chrome-green-models/browser.xml) |
-| Same 128 backend cases on `2b0808b` → current | 20 failures / 108 passing controls → 128 passed; [Red report](impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red.xml) |
+| Backend: Bridge, SAM masks, mask-to-SEGS and image batching | 304 passed, including 155 Bridge/registration cases; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-green.xml) |
+| Full current Chrome/API regression | 68 passed: [53 native Bridge/catalog cases](impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-core/browser.xml) + [15 real SAM/API cases](impact-pack-pr1172-followup-pr-assets/review-fix-v4/chrome-green-models/browser.xml) |
+| Same 155 backend cases on `fc073de` → current | 13 failures / 142 passing controls → 155 passed; [Red report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red.xml) |
+| Real ComfyUI media-path probe | 1 passed: view/upload/registration of six symlink configurations, eight queued mask outputs and six rejected external registrations; [report](impact-pack-pr1172-followup-pr-assets/review-fix-v4/media-route-probe/browser.xml) |
 | Retained selection comparison: `a5350a6` → selection fix | 2 latent browser failures / 2 passing Image controls → 4 passed; all four rerun in the current full suite |
 
-All current Green checks have zero failures, errors and skips. The two browser groups have no overlapping cases and include four real server restarts and all 14 trusted catalog checks. Both runtime and test-file hashes match the committed source. Widget definitions and trusted fixture files are unchanged.
+All current Green checks have zero failures, errors and skips. The two browser groups have no overlapping cases and include four real server restarts and all 14 trusted catalog checks. Runtime and executed browser-test hashes match the committed source. The backend-only HTTP test cleanup was separately rerun on Red and Green with both asyncio-related pytest plugins disabled. Widget definitions and trusted fixture files are unchanged.
 
-Raw-file Red/Green runs use the same current test bytes. Existing screenshot comparisons retain their recorded source snapshots; their assertion paths were retained and rerun in the current full regression. Backend coverage includes incoming, reused and restored masks, block on/off, raw saved/missing files, input-directory containment, metadata, all restoration policies and size mismatches. [Review decisions](impact-pack-pr1172-followup-pr-assets/REREVIEW.md) · [Current run summary](impact-pack-pr1172-followup-pr-assets/review-fix-v3/summary.json).
+Backend and real-server media-path Red/Green runs use the same current test bytes. Backend HTTP tests run the actual registration handlers through aiohttp; only unused PromptServer registration is substituted. The separate ComfyUI probe uses the real /view, upload, registration and prompt endpoints. Existing screenshot comparisons retain their recorded source snapshots; their assertion paths were retained and rerun in the current full regression. Backend coverage includes incoming, reused and restored masks, block on/off, raw saved/missing files, input/output/temp path validation, configured symlinks, metadata, all restoration policies and size mismatches. [Review decisions](impact-pack-pr1172-followup-pr-assets/REREVIEW.md) · [Current run summary](impact-pack-pr1172-followup-pr-assets/review-fix-v4/summary.json).
 
 Reproduce with the isolated server setup in `docs/E2E_TEST_STRATEGY.md`:
 

@@ -1,0 +1,590 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "8f3dcb72-265f-46d9-beb4-5c1c753ea5fa",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00053_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794314851362.png [input]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "185a1f97f924920e0f2a5bf61779e463eab4b6af450a2eca14f8e9fd4ff06b00",
+    "actual_sha256": "dca7f9c29f4b564973219971d90eccac34b3d9515c277f85927aeb270e71fecc"
+  },
+  {
+    "step": 2,
+    "prompt_id": "0ecf93be-c09d-4399-b660-60a3aa191f70",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00054_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794314852220.png [input]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "86b631fb4b4f7ffc59c8e62e0ccde48f154c93e40fd5810a333df7891f9f3542",
+    "actual_sha256": "83fdcd2f28ec392aa7a8e3004d3883a3f9d30bbd76294ce24e9c0daa667c375d"
+  },
+  {
+    "step": 3,
+    "prompt_id": "f90a5f6b-924e-4ae4-ae7a-d66ee261ce39",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00055_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 2,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PBL-_temp_zonpl_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "03-screen.png",
+    "actual": "03-actual.png",
+    "expected": "03-expected.png",
+    "screen_sha256": "ca56d2d7d4bf35b5fbd5263adbf55a097c4d35c61d0496473de79e6dd37263c6",
+    "actual_sha256": "928ba6f29f6fd5334790c3c809a490713e61bed80a4bd9b9f8ca9a3f4ab78b71"
+  },
+  {
+    "step": 4,
+    "prompt_id": "927f5bd0-862e-4d1a-801d-7cbe30c6c866",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00056_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          366.7443126815101,
+          204.97337850919652,
+          286.6953049370765,
+          112.55445304937078
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 2,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          956.6523475314618,
+          204.97337850919652,
+          286.6953049370765,
+          397.12608906098745
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PBL-_temp_zonpl_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1546.5603823814135,
+          204.97337850919652,
+          286.6953049370765,
+          61.58639883833495
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          407.47738183641013,
+          865.6703775411423,
+          205.22916662727647,
+          27.60769603097774
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          1025.671587608906,
+          865.6703775411423,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "04-screen.png",
+    "actual": "04-actual.png",
+    "expected": "04-expected.png",
+    "screen_sha256": "a8813e798fa4f3fcf8b2484b90a5e52a45f3f2712d2a49726b44884171b542c5",
+    "actual_sha256": "c7abfd39d0a397f3e6e772a9ee7c322b607d81daab723523e446e485836a189c"
+  }
+]

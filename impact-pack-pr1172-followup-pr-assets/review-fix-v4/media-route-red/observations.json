@@ -1,0 +1,52 @@
+{
+  "probe_sha256": "4fd807b3a75b89de79429cd0e6aecd033c6191f32dcde2c093d14f3b95486a1c",
+  "rows": [
+    {
+      "storage": "input",
+      "link": "file",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "input",
+        "subfolder": "probe-file"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "input",
+      "link": "file",
+      "route": "registered",
+      "prompt_id": "2088d988-14e1-4353-8c23-03f1cbd95550",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "e7b2e1701baab4b47ae3f0eeb6a6bc08e49eb7494cd6ff733f2b3d55f1aebe04"
+    },
+    {
+      "storage": "input",
+      "link": "file",
+      "route": "raw",
+      "prompt_id": "a16171da-d94e-4d65-b470-db58863a341f",
+      "bridge_id": "102",
+      "mask_size": [
+        8,
+        8
+      ],
+      "mask_extrema": [
+        255,
+        255
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "1d0c866107bc2f46b4c68234f85cd3be3fd907d4eec424fc53e156f6aa338791"
+    }
+  ]
+}

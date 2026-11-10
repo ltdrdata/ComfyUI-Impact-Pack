@@ -1,0 +1,281 @@
+diff --git a/modules/impact/bridge_nodes.py b/modules/impact/bridge_nodes.py
+index 036f6c5..7b05224 100644
+--- a/modules/impact/bridge_nodes.py
++++ b/modules/impact/bridge_nodes.py
+@@ -65,18 +65,19 @@ class PreviewBridge:
+     @staticmethod
+     def register_clipspace_image(clipspace_path, node_id):
+         clean_path = clipspace_path.removesuffix(" [input]").removesuffix("[input]")
+-        input_dir = os.path.realpath(folder_paths.get_input_directory())
++        input_dir = os.path.abspath(folder_paths.get_input_directory())
+         candidates = [
+             os.path.join(input_dir, clean_path),
+             os.path.join(input_dir, "clipspace", os.path.basename(clean_path)),
+         ]
+         for candidate in candidates:
+             try:
+-                actual_file = os.path.realpath(candidate)
++                # Match /view: allow configured symlinks but reject path traversal.
++                actual_file = os.path.abspath(candidate)
+                 if os.path.commonpath((input_dir, actual_file)) != input_dir:
+                     return False
+             except ValueError:
+-                # Invalid paths and different Windows drives cannot be input files.
++                # Paths on different Windows drives cannot be inside input_dir.
+                 return False
+             if os.path.isfile(actual_file):
+                 break
+diff --git a/modules/impact/impact_server.py b/modules/impact/impact_server.py
+index 8e86967..818be4a 100644
+--- a/modules/impact/impact_server.py
++++ b/modules/impact/impact_server.py
+@@ -290,7 +290,11 @@ async def set_previewbridge_image(request):
+                 else:
+                     output_dir = folder_paths.get_temp_directory()
+ 
+-            file = os.path.join(output_dir, subfolder, filename)
++            output_dir = os.path.abspath(output_dir)
++            file = os.path.abspath(os.path.join(output_dir, subfolder, filename))
++            if os.path.commonpath((output_dir, file)) != output_dir:
++                return web.Response(status=400)
++
+             item = {
+                 'filename': filename,
+                 'type': path_type,
+diff --git a/tests/README.md b/tests/README.md
+index acf4325..8946d26 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -30,8 +30,11 @@ Backend cases distinguish absent, cleared, partial and full latent masks across
+ reuse, restoration and incoming `noise_mask` paths, with blocking enabled and
+ disabled. Raw clipspace API references also cover changed input sizes, every
+ restoration policy, saved clears and missing files. File registration checks
+-input-directory containment, external symlinks, traversal, working-directory
+-shadows and correct preview metadata for input-root and nested files.
++input-directory containment, configured symlinks, traversal, working-directory
++shadows and correct preview metadata for input-root and nested files. HTTP cases
++run the real registration handlers with aiohttp's test client: input/output/temp
++paths reject escapes before reading and keep configured symlinks usable by both
++Bridges. Only unused PromptServer route/onprompt registration is substituted.
+ `tests/test_e2e_preview_bridge.py` checks actual editor saves and downstream
+ pixels, three unedited queues and empty-mask blocking. Its legacy SAM cases require `IMPACT_E2E_SAM_IMAGE`, SAM ViT-B and
+ `vae-ft-mse-840000-ema-pruned.safetensors`; other Bridge cases need no weights.
+diff --git a/tests/test_preview_bridge_result.py b/tests/test_preview_bridge_result.py
+index 40b42d6..279375a 100644
+--- a/tests/test_preview_bridge_result.py
++++ b/tests/test_preview_bridge_result.py
+@@ -1,3 +1,8 @@
++import asyncio
++from types import SimpleNamespace
++
++from aiohttp import web
++from aiohttp.test_utils import TestClient, TestServer
+ from PIL import Image
+ import pytest
+ import torch
+@@ -414,14 +419,14 @@ def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
+ 
+ 
+ @pytest.mark.parametrize("kind", [
+-    "input-root", "nested", "legacy-basename", "absolute-inside", "internal-symlink",
++    "input-root", "nested", "legacy-basename", "absolute-inside",
+     "no-space-suffix", "two-dot-filename", "cwd-shadow",
+ ])
+ def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_files, monkeypatch, kind):
+     input_dir = bridge_files / "input"
+     monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+     subfolder = "" if kind in ("input-root", "two-dot-filename") else "clipspace/edits" if kind in (
+-        "nested", "absolute-inside", "internal-symlink") else "clipspace"
++        "nested", "absolute-inside") else "clipspace"
+     filename = "my..image.png" if kind == "two-dot-filename" else "mask.png"
+     saved = input_dir / subfolder / filename
+     saved.parent.mkdir(parents=True, exist_ok=True)
+@@ -431,10 +436,6 @@ def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_file
+         relative = filename
+     elif kind == "absolute-inside":
+         relative = str(saved)
+-    elif kind == "internal-symlink":
+-        alias = input_dir / "alias.png"
+-        alias.symlink_to(saved)
+-        relative = alias.name
+     elif kind == "cwd-shadow":
+         shadow = bridge_files / "working" / "clipspace" / filename
+         shadow.parent.mkdir(parents=True)
+@@ -450,8 +451,7 @@ def test_raw_file_registration_stays_in_input_and_preserves_metadata(bridge_file
+ 
+ 
+ @pytest.mark.parametrize("kind", [
+-    "absolute-outside", "parent-traversal", "sibling-prefix", "file-symlink",
+-    "directory-symlink", "fallback-symlink", "null-byte",
++    "absolute-outside", "parent-traversal", "sibling-prefix", "null-byte",
+ ])
+ def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monkeypatch, kind):
+     input_dir = bridge_files / "input"
+@@ -462,24 +462,14 @@ def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monk
+     Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
+     (input_dir / "clipspace").mkdir()
+     fallback = input_dir / "clipspace" / "mask.png"
+-    if kind == "fallback-symlink":
+-        fallback.symlink_to(outside)
+-        reference = "mask.png"
++    # A rejected external reference must not silently select this other file.
++    Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
++    if kind in ("absolute-outside", "sibling-prefix"):
++        reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
++    elif kind == "parent-traversal":
++        reference = "clipspace/../../input-other/mask.png"
+     else:
+-        # A rejected external reference must not silently select this other file.
+-        Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
+-        if kind in ("absolute-outside", "sibling-prefix"):
+-            reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
+-        elif kind == "parent-traversal":
+-            reference = "clipspace/../../input-other/mask.png"
+-        elif kind == "file-symlink":
+-            (input_dir / "link.png").symlink_to(outside)
+-            reference = "link.png"
+-        elif kind == "directory-symlink":
+-            (input_dir / "linked").symlink_to(outside.parent, target_is_directory=True)
+-            reference = "linked/mask.png"
+-        else:
+-            reference = "bad\0mask.png"
++        reference = "bad\0mask.png"
+ 
+     def unexpected_open(*args, **kwargs):
+         pytest.fail("Rejected raw references must not read image contents")
+@@ -490,6 +480,33 @@ def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monk
+     assert not core.preview_bridge_last_mask_cache
+ 
+ 
++@pytest.mark.parametrize("kind", ["internal-file", "external-file", "external-directory", "legacy-fallback"])
++def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, monkeypatch, kind):
++    input_dir = bridge_files / "input"
++    input_dir.mkdir()
++    monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
++    target_dir = input_dir / "originals" if kind == "internal-file" else bridge_files / "other-disk"
++    target_dir.mkdir()
++    target = target_dir / "saved.png"
++    Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(target)
++    if kind == "external-directory":
++        (input_dir / "clipspace").symlink_to(target_dir, target_is_directory=True)
++        relative = "clipspace/saved.png"
++        filename, subfolder = "saved.png", "clipspace"
++    else:
++        subfolder = "clipspace" if kind == "legacy-fallback" else ""
++        (input_dir / subfolder).mkdir(exist_ok=True)
++        (input_dir / subfolder / "alias.png").symlink_to(target)
++        relative = filename = "alias.png"
++    reference = relative + " [input]"
++    assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "linked")
++    pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
++    torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
++    torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
++    assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
++    assert (input_dir / subfolder / filename).read_bytes() == target.read_bytes()
++
++
+ @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+ @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
+ @pytest.mark.parametrize("restore", ["always", "if_same_size"])
+@@ -524,3 +541,101 @@ def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatc
+         assert output["samples"] is inputs["latent"]["samples"]
+         assert "noise_mask" not in output
+         torch.testing.assert_close(mask, torch.ones((1, 8, 8)))
++
++
++@pytest.fixture
++def registration_app(bridge_files, monkeypatch):
++    from server import PromptServer
++    monkeypatch.setattr(PromptServer, "instance", SimpleNamespace(
++        routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None), raising=False)
++    from impact import impact_server
++    for path_type in ("input", "output", "temp"):
++        directory = bridge_files / path_type
++        directory.mkdir()
++        monkeypatch.setattr(bridge_nodes.folder_paths, path_type + "_directory", str(directory))
++    app = web.Application()
++    app.router.add_get("/impact/set/pb_id_image", impact_server.set_previewbridge_image)
++    app.router.add_get("/impact/get/pb_id_image", impact_server.get_previewbridge_image)
++    return app
++
++
++@pytest.mark.parametrize("path_type", ["input", "output", "temp"])
++@pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
++                                   "absolute-filename", "parent-filename"])
++def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
++    outside = bridge_files / (path_type + "-other") / "mask.png"
++    outside.parent.mkdir()
++    Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
++    filename, subfolder = outside.name, ""
++    if escape == "absolute-subfolder":
++        subfolder = str(outside.parent)
++    elif escape == "parent-subfolder":
++        subfolder = "clipspace/../../" + outside.parent.name
++        (bridge_files / path_type / "clipspace").mkdir()
++    elif escape == "sibling-subfolder":
++        subfolder = "../" + outside.parent.name
++    elif escape == "absolute-filename":
++        filename = str(outside)
++    else:
++        filename = "../" + outside.parent.name + "/" + outside.name
++    opened = []
++    original_open = Image.open
++
++    def record_open(path, *args, **kwargs):
++        opened.append(str(path))
++        return original_open(path, *args, **kwargs)
++
++    monkeypatch.setattr(Image, "open", record_open)
++    async def register():
++        async with TestClient(TestServer(registration_app)) as client:
++            response = await client.get("/impact/set/pb_id_image", params={
++                "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
++            })
++            return response.status
++
++    status = asyncio.run(register())
++    assert (status, len(opened), len(core.preview_bridge_image_id_map),
++            len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
++
++
++@pytest.mark.parametrize("path_type", ["input", "output", "temp"])
++@pytest.mark.parametrize("kind", ["nested", "annotated", "file-symlink", "directory-symlink"])
++def test_registration_preserves_media_paths_and_masks(registration_app, bridge_files, path_type, kind):
++    root = bridge_files / path_type
++    directory = root / "clipspace" if kind in ("nested", "annotated") else bridge_files / "other-disk"
++    directory.mkdir()
++    saved = directory / "mask.png"
++    Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(saved)
++    if kind == "file-symlink":
++        (root / "clipspace").mkdir()
++        (root / "clipspace" / saved.name).symlink_to(saved)
++    elif kind == "directory-symlink":
++        (root / "clipspace").symlink_to(directory, target_is_directory=True)
++    item = {"filename": saved.name, "subfolder": "clipspace", "type": path_type}
++    filename = saved.name + (f" [{path_type}]" if kind == "annotated" else "")
++    async def register():
++        async with TestClient(TestServer(registration_app)) as client:
++            response = await client.get("/impact/set/pb_id_image", params={
++                **item, "filename": filename, "node_id": "valid",
++            })
++            assert response.status == 200
++            reference = await response.text()
++            metadata = await client.get("/impact/get/pb_id_image", params={"id": reference})
++            assert await metadata.json() == item
++            return reference
++
++    reference = asyncio.run(register())
++    pixels, mask, _ = bridge_nodes.PreviewBridge.load_image(reference)
++    torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
++    expected = torch.full((1, 64, 64), 127 / 255)
++    torch.testing.assert_close(mask, expected)
++    for node_type in ("PreviewBridge", "PreviewBridgeLatent"):
++        inputs = {"image": reference, "unique_id": node_type, "restore_mask": "always"}
++        if node_type == "PreviewBridge":
++            inputs["images"] = torch.zeros((1, 64, 64, 3))
++        else:
++            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
++        output, mask = getattr(bridge_nodes, node_type)().doit(**inputs)["result"]
++        torch.testing.assert_close(mask, expected)
++        if node_type == "PreviewBridgeLatent":
++            torch.testing.assert_close(output["noise_mask"], expected)

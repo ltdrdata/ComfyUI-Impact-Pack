@@ -1,8 +1,8 @@
 {
-  "recorded_at": "2026-11-10T21:04:17+09:00",
+  "recorded_at": "2026-11-10T21:58:05+09:00",
   "branch": "fix/preview-bridge-after-pr1172",
-  "candidate": "fc073def9da8610311666c0b2392491d3c397118",
-  "candidate_label": "fc073de",
+  "candidate": "30c767853d7d75ea19a381a583e4c13306f049dd",
+  "candidate_label": "30c7678",
   "local_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "worktree_status": "",
   "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
@@ -21,12 +21,13 @@
     "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
     "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
     "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
-    "modules/impact/bridge_nodes.py": "c1910dad71784fe4b5801e13a062d842795c4518051f62ca733c91eb4397e3d9",
+    "modules/impact/bridge_nodes.py": "bb36b70fe66b0b514fb4bede66edc4aeb515141614d03400a0b7e63fe5f6e43e",
     "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
-    "tests/README.md": "acf5352a4fd3c832c9357e129fb900d83c20070e36a416c6a878340c7ceb938a",
+    "modules/impact/impact_server.py": "945eb9774b8e3a6f7cf16dee4c8a041a131205030db5dc22e8f3342c3c749f0a",
+    "tests/README.md": "1cae7f7f28304d69371afec78035e2e9ec60a30393a61c6aecc9a4c9b83332a6",
     "tests/preview_bridge.test.mjs": "01e828663ee7ff915f9d159a24baea79f6f0c06fb5c3dc4f551a955866d2bf0b",
     "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
-    "tests/test_preview_bridge_result.py": "8b5d696804f1c6dc14eabb78f2ca2500827c3cdea250e441d19e6dc87b07f9bc"
+    "tests/test_preview_bridge_result.py": "666433f130256bc736e9e2d3463ea2019a5af1d9176a59271f39b8c372ac60cc"
   },
   "final_results": {
     "javascript": {
@@ -36,7 +37,7 @@
       "skipped": 0
     },
     "backend": {
-      "tests": 277,
+      "tests": 304,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -46,10 +47,16 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    "media_probe": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
     }
   },
-  "runtime_source_manifest": "review-fix-v3/chrome-green-core/source.json",
-  "local_patch": "review-fix-v3/working-tree.patch",
+  "runtime_source_manifest": "review-fix-v4/chrome-green-core/source.json",
+  "local_patch": "review-fix-v4/working-tree.patch",
   "shared_registration_regression": {
     "backend_red": {
       "tests": 8,
@@ -222,19 +229,19 @@
       }
     }
   },
-  "commit_tree": "02e1c7ab1dd0fc0cbc3c1f5056520fbae1a600cc",
-  "committed_patch": "review-fix-v3/followup.patch",
-  "committed_patch_sha256": "884b3beb0f72a0638a31673c15a4b5ad2c66ed9e4d6c5890bc56795e5b4a36d0",
+  "commit_tree": "96787b285b47e27bf74a81edec629aecd9248573",
+  "committed_patch": "review-fix-v4/followup.patch",
+  "committed_patch_sha256": "23e07944dfbcbd736568a8b0f1e1851fe8ddfedf660d74c2e937be5149c2fc10",
   "history_rewrite": {
-    "previous_head": "2b0808bf9040f741f519f825554b8124b5ebfb2b",
-    "backup_ref": "refs/review/pr1274-before-input-path-containment",
+    "previous_head": "fc073def9da8610311666c0b2392491d3c397118",
+    "backup_ref": "refs/review/pr1274-before-media-route-validation",
     "preparation_unchanged": true,
     "followup_amended_with_review_fixes": true,
     "tested_tree_matches_commit": true
   },
   "pr_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
-  "author_date": "2026-11-10T21:04:17+09:00",
-  "committer_date": "2026-11-10T21:04:17+09:00",
+  "author_date": "2026-11-10T21:58:05+09:00",
+  "committer_date": "2026-11-10T21:58:05+09:00",
   "integration_base_role": "Separate Main + #1172 local integration parent. After #1172 merges, rebase only the one follow-up commit onto updated Main.",
   "first_parent_commit_count_from_main": 2,
   "next_integration_step": "After #1172 is merged and origin/Main is updated: git rebase --onto origin/Main refs/review/pr1172-followup-base fix/preview-bridge-after-pr1172",
@@ -242,8 +249,8 @@
   "prepare_committer_date": "2026-11-10T19:43:40+09:00",
   "prepare_tree": "a8e7fce11cce43930462fcbd4941d00db9d0b97c",
   "recorded_red_integration_base": "6572207a3057542af6b4c36061677d264e2cda6b",
-  "additional_runtime_source_manifest": "review-fix-v3/chrome-green-models/source.json",
-  "latest_review": "review-fix-v3/summary.json",
+  "additional_runtime_source_manifest": "review-fix-v4/chrome-green-models/source.json",
+  "latest_review": "review-fix-v4/summary.json",
   "raw_path_regression": {
     "baseline": "2b0808bf9040f741f519f825554b8124b5ebfb2b",
     "source_root": "/mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v3/backend-red-source",
@@ -252,6 +259,22 @@
     "results": {
       "tests": 128,
       "failures": 20,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "media_path_regression": {
+    "baseline": "fc073def9da8610311666c0b2392491d3c397118",
+    "source_root": "/mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red-source",
+    "files_sha256": {
+      "modules/impact/bridge_nodes.py": "c1910dad71784fe4b5801e13a062d842795c4518051f62ca733c91eb4397e3d9",
+      "modules/impact/impact_server.py": "482af75fd20d5d4279270bc168a85784d5d443a41fbe7a43d6939057f165ca4d",
+      "tests/test_preview_bridge_result.py": "666433f130256bc736e9e2d3463ea2019a5af1d9176a59271f39b8c372ac60cc"
+    },
+    "execution": "Actual HTTP handlers through aiohttp TestClient; stdlib asyncio.run; pytest asyncio and aiohttp plugins disabled.",
+    "results": {
+      "tests": 155,
+      "failures": 13,
       "errors": 0,
       "skipped": 0
     }

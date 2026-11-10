@@ -1,0 +1,628 @@
+........................................................................ [ 46%]
+............................................FFFF........FFFFFFFFF....... [ 92%]
+...........                                                              [100%]
+=================================== FAILURES ===================================
+__ test_raw_symlinks_preserve_saved_mask_and_logical_metadata[internal-file] ___
+
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_raw_symlinks_preserve_sav0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df22c00>
+kind = 'internal-file'
+
+    @pytest.mark.parametrize("kind", ["internal-file", "external-file", "external-directory", "legacy-fallback"])
+    def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        target_dir = input_dir / "originals" if kind == "internal-file" else bridge_files / "other-disk"
+        target_dir.mkdir()
+        target = target_dir / "saved.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(target)
+        if kind == "external-directory":
+            (input_dir / "clipspace").symlink_to(target_dir, target_is_directory=True)
+            relative = "clipspace/saved.png"
+            filename, subfolder = "saved.png", "clipspace"
+        else:
+            subfolder = "clipspace" if kind == "legacy-fallback" else ""
+            (input_dir / subfolder).mkdir(exist_ok=True)
+            (input_dir / subfolder / "alias.png").symlink_to(target)
+            relative = filename = "alias.png"
+        reference = relative + " [input]"
+        assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "linked")
+        pixels, mask, item = bridge_nodes.PreviewBridge.load_image(reference)
+        torch.testing.assert_close(pixels, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+        torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+>       assert item == {"filename": filename, "subfolder": subfolder, "type": "input"}
+E       AssertionError: assert {'filename': ...ype': 'input'} == {'filename': ...ype': 'input'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'subfolder': 'originals'} != {'subfolder': ''}
+E         {'filename': 'saved.png'} != {'filename': 'alias.png'}
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:506: AssertionError
+__ test_raw_symlinks_preserve_saved_mask_and_logical_metadata[external-file] ___
+
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_raw_symlinks_preserve_sav1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df23650>
+kind = 'external-file'
+
+    @pytest.mark.parametrize("kind", ["internal-file", "external-file", "external-directory", "legacy-fallback"])
+    def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        target_dir = input_dir / "originals" if kind == "internal-file" else bridge_files / "other-disk"
+        target_dir.mkdir()
+        target = target_dir / "saved.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(target)
+        if kind == "external-directory":
+            (input_dir / "clipspace").symlink_to(target_dir, target_is_directory=True)
+            relative = "clipspace/saved.png"
+            filename, subfolder = "saved.png", "clipspace"
+        else:
+            subfolder = "clipspace" if kind == "legacy-fallback" else ""
+            (input_dir / subfolder).mkdir(exist_ok=True)
+            (input_dir / subfolder / "alias.png").symlink_to(target)
+            relative = filename = "alias.png"
+        reference = relative + " [input]"
+>       assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "linked")
+E       AssertionError: assert False
+E        +  where False = <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80>('alias.png [input]', 'linked')
+E        +    where <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80> = <class 'impact.bridge_nodes.PreviewBridge'>.register_clipspace_image
+E        +      where <class 'impact.bridge_nodes.PreviewBridge'> = bridge_nodes.PreviewBridge
+
+tests/test_preview_bridge_result.py:502: AssertionError
+_ test_raw_symlinks_preserve_saved_mask_and_logical_metadata[external-directory] _
+
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_raw_symlinks_preserve_sav2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df741d0>
+kind = 'external-directory'
+
+    @pytest.mark.parametrize("kind", ["internal-file", "external-file", "external-directory", "legacy-fallback"])
+    def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        target_dir = input_dir / "originals" if kind == "internal-file" else bridge_files / "other-disk"
+        target_dir.mkdir()
+        target = target_dir / "saved.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(target)
+        if kind == "external-directory":
+            (input_dir / "clipspace").symlink_to(target_dir, target_is_directory=True)
+            relative = "clipspace/saved.png"
+            filename, subfolder = "saved.png", "clipspace"
+        else:
+            subfolder = "clipspace" if kind == "legacy-fallback" else ""
+            (input_dir / subfolder).mkdir(exist_ok=True)
+            (input_dir / subfolder / "alias.png").symlink_to(target)
+            relative = filename = "alias.png"
+        reference = relative + " [input]"
+>       assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "linked")
+E       AssertionError: assert False
+E        +  where False = <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80>('clipspace/saved.png [input]', 'linked')
+E        +    where <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80> = <class 'impact.bridge_nodes.PreviewBridge'>.register_clipspace_image
+E        +      where <class 'impact.bridge_nodes.PreviewBridge'> = bridge_nodes.PreviewBridge
+
+tests/test_preview_bridge_result.py:502: AssertionError
+_ test_raw_symlinks_preserve_saved_mask_and_logical_metadata[legacy-fallback] __
+
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_raw_symlinks_preserve_sav3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df748c0>
+kind = 'legacy-fallback'
+
+    @pytest.mark.parametrize("kind", ["internal-file", "external-file", "external-directory", "legacy-fallback"])
+    def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, monkeypatch, kind):
+        input_dir = bridge_files / "input"
+        input_dir.mkdir()
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(input_dir))
+        target_dir = input_dir / "originals" if kind == "internal-file" else bridge_files / "other-disk"
+        target_dir.mkdir()
+        target = target_dir / "saved.png"
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(target)
+        if kind == "external-directory":
+            (input_dir / "clipspace").symlink_to(target_dir, target_is_directory=True)
+            relative = "clipspace/saved.png"
+            filename, subfolder = "saved.png", "clipspace"
+        else:
+            subfolder = "clipspace" if kind == "legacy-fallback" else ""
+            (input_dir / subfolder).mkdir(exist_ok=True)
+            (input_dir / subfolder / "alias.png").symlink_to(target)
+            relative = filename = "alias.png"
+        reference = relative + " [input]"
+>       assert bridge_nodes.PreviewBridge.register_clipspace_image(reference, "linked")
+E       AssertionError: assert False
+E        +  where False = <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80>('alias.png [input]', 'linked')
+E        +    where <function PreviewBridge.register_clipspace_image at 0x76410e0c4b80> = <class 'impact.bridge_nodes.PreviewBridge'>.register_clipspace_image
+E        +      where <class 'impact.bridge_nodes.PreviewBridge'> = bridge_nodes.PreviewBridge
+
+tests/test_preview_bridge_result.py:502: AssertionError
+__ test_registration_rejects_escape_before_reading[absolute-subfolder-input] ___
+
+registration_app = <Application 0x76410df75e80>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df75fa0>
+path_type = 'input', escape = 'absolute-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+__ test_registration_rejects_escape_before_reading[absolute-subfolder-output] __
+
+registration_app = <Application 0x76410df662a0>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df678f0>
+path_type = 'output', escape = 'absolute-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+___ test_registration_rejects_escape_before_reading[absolute-subfolder-temp] ___
+
+registration_app = <Application 0x76410df66900>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410df66ea0>
+path_type = 'temp', escape = 'absolute-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+___ test_registration_rejects_escape_before_reading[parent-subfolder-input] ____
+
+registration_app = <Application 0x76410dfb2960>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfb3770>
+path_type = 'input', escape = 'parent-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+___ test_registration_rejects_escape_before_reading[parent-subfolder-output] ___
+
+registration_app = <Application 0x76410dfb2540>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfb1550>
+path_type = 'output', escape = 'parent-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+____ test_registration_rejects_escape_before_reading[parent-subfolder-temp] ____
+
+registration_app = <Application 0x76410dfb3f20>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfb04a0>
+path_type = 'temp', escape = 'parent-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+___ test_registration_rejects_escape_before_reading[sibling-subfolder-input] ___
+
+registration_app = <Application 0x76410dfb32c0>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfb3590>
+path_type = 'input', escape = 'sibling-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+__ test_registration_rejects_escape_before_reading[sibling-subfolder-output] ___
+
+registration_app = <Application 0x76410dfaeb40>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca7')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfafb00>
+path_type = 'output', escape = 'sibling-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+___ test_registration_rejects_escape_before_reading[sibling-subfolder-temp] ____
+
+registration_app = <Application 0x76410dfad670>
+bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3737/test_registration_rejects_esca8')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76410dfaf590>
+path_type = 'temp', escape = 'sibling-subfolder'
+
+    @pytest.mark.parametrize("path_type", ["input", "output", "temp"])
+    @pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
+                                       "absolute-filename", "parent-filename"])
+    def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
+        outside = bridge_files / (path_type + "-other") / "mask.png"
+        outside.parent.mkdir()
+        Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(outside)
+        filename, subfolder = outside.name, ""
+        if escape == "absolute-subfolder":
+            subfolder = str(outside.parent)
+        elif escape == "parent-subfolder":
+            subfolder = "clipspace/../../" + outside.parent.name
+            (bridge_files / path_type / "clipspace").mkdir()
+        elif escape == "sibling-subfolder":
+            subfolder = "../" + outside.parent.name
+        elif escape == "absolute-filename":
+            filename = str(outside)
+        else:
+            filename = "../" + outside.parent.name + "/" + outside.name
+        opened = []
+        original_open = Image.open
+    
+        def record_open(path, *args, **kwargs):
+            opened.append(str(path))
+            return original_open(path, *args, **kwargs)
+    
+        monkeypatch.setattr(Image, "open", record_open)
+        async def register():
+            async with TestClient(TestServer(registration_app)) as client:
+                response = await client.get("/impact/set/pb_id_image", params={
+                    "node_id": "escape", "filename": filename, "subfolder": subfolder, "type": path_type,
+                })
+                return response.status
+    
+        status = asyncio.run(register())
+>       assert (status, len(opened), len(core.preview_bridge_image_id_map),
+                len(core.preview_bridge_last_mask_cache)) == (400, 0, 0, 0)
+E       assert (200, 1, 1, 1) == (400, 0, 0, 0)
+E         
+E         At index 0 diff: 200 != 400
+E         Use -v to get more diff
+
+tests/test_preview_bridge_result.py:597: AssertionError
+=============================== warnings summary ===============================
+../../../../../../home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65
+  /home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+../../../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+  /home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101: DeprecationWarning: warmup, rep, and use_cuda_graph parameters are deprecated. See https://github.com/triton-lang/triton/pull/4496 for details.
+    warnings.warn(("warmup, rep, and use_cuda_graph parameters are deprecated. See "
+
+../../../../../../home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red.xml -
+=========================== short test summary info ============================
+FAILED tests/test_preview_bridge_result.py::test_raw_symlinks_preserve_saved_mask_and_logical_metadata[internal-file]
+FAILED tests/test_preview_bridge_result.py::test_raw_symlinks_preserve_saved_mask_and_logical_metadata[external-file]
+FAILED tests/test_preview_bridge_result.py::test_raw_symlinks_preserve_saved_mask_and_logical_metadata[external-directory]
+FAILED tests/test_preview_bridge_result.py::test_raw_symlinks_preserve_saved_mask_and_logical_metadata[legacy-fallback]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[absolute-subfolder-input]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[absolute-subfolder-output]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[absolute-subfolder-temp]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[parent-subfolder-input]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[parent-subfolder-output]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[parent-subfolder-temp]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[sibling-subfolder-input]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[sibling-subfolder-output]
+FAILED tests/test_preview_bridge_result.py::test_registration_rejects_escape_before_reading[sibling-subfolder-temp]
+13 failed, 142 passed, 8 warnings in 4.59s

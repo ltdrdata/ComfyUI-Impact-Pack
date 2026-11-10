@@ -1,0 +1,23 @@
+[
+  {
+    "stage": "same-input",
+    "prompt_id": "7901cce0-0e90-4622-92d1-7364967b1fd0",
+    "submitted_image": "$2-3b9342a7d10e4b52ba25df2496e0a195",
+    "consumer_ran": false,
+    "mask_ran": false
+  },
+  {
+    "stage": "changed-input",
+    "prompt_id": "be909602-f195-4c74-af57-13279255bb55",
+    "submitted_image": "$2-3b9342a7d10e4b52ba25df2496e0a195",
+    "consumer_ran": false,
+    "mask_ran": false
+  },
+  {
+    "stage": "native-reload",
+    "prompt_id": "a38db13a-a421-4b86-896f-d6655d809e95",
+    "submitted_image": "$2-f46c5291f23f4ea9a665d1c2224204f6",
+    "consumer_ran": false,
+    "mask_ran": false
+  }
+]

@@ -1,0 +1,249 @@
+{
+  "probe_sha256": "4fd807b3a75b89de79429cd0e6aecd033c6191f32dcde2c093d14f3b95486a1c",
+  "rows": [
+    {
+      "storage": "input",
+      "link": "file",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "input",
+        "subfolder": "probe-file"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "input",
+      "link": "file",
+      "route": "registered",
+      "prompt_id": "c6d327fb-66af-45a7-9ced-a90e1b8d835f",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "88b6b82b1c274c91a02fd6df4c68821d0b069fcb62e4eb7b18d426ca8402bf53"
+    },
+    {
+      "storage": "input",
+      "link": "file",
+      "route": "raw",
+      "prompt_id": "db3d3d21-907b-4d1c-a4ec-f277c6152bad",
+      "bridge_id": "102",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "f513c58ec0cfdfe343f2b96c39e994d50a3aab54c95970730382d5aed83807e7"
+    },
+    {
+      "storage": "input",
+      "link": "directory",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "input",
+        "subfolder": "probe-directory"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "input",
+      "link": "directory",
+      "route": "registered",
+      "prompt_id": "32100dd9-f70a-4d90-817d-388a455d61fd",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "208b9bc2497ee5b2bf89e7bec909648f7552a286c38ef9e2e940413b159b3fd9"
+    },
+    {
+      "storage": "input",
+      "link": "directory",
+      "route": "raw",
+      "prompt_id": "7cc0a2f6-a1d6-4259-a147-4ead9262f340",
+      "bridge_id": "105",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "7923ba5d1dda0ddee949c68d646e0238c0ff2c3c11ff73be50c7328b19cbc467"
+    },
+    {
+      "storage": "input",
+      "escape": "absolute",
+      "registration_status": 400
+    },
+    {
+      "storage": "input",
+      "escape": "parent",
+      "registration_status": 400
+    },
+    {
+      "storage": "output",
+      "link": "file",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "output",
+        "subfolder": "probe-file"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "output",
+      "link": "file",
+      "route": "registered",
+      "prompt_id": "f7f67b5b-c53b-475d-9c22-ce7cac511bdc",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "d2dffcd4a6a74120de6d13de6a74af5b906ef81764f0bc2fe3cded69452fd7a0"
+    },
+    {
+      "storage": "output",
+      "link": "directory",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "output",
+        "subfolder": "probe-directory"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "output",
+      "link": "directory",
+      "route": "registered",
+      "prompt_id": "91ea5f66-b1f8-4910-a007-4c2aafd727ab",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "3bba51a19bda96c06abdb4b840f656b85720e75ebf7a55d0a11aae332febb360"
+    },
+    {
+      "storage": "output",
+      "escape": "absolute",
+      "registration_status": 400
+    },
+    {
+      "storage": "output",
+      "escape": "parent",
+      "registration_status": 400
+    },
+    {
+      "storage": "temp",
+      "link": "file",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "temp",
+        "subfolder": "probe-file"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "temp",
+      "link": "file",
+      "route": "registered",
+      "prompt_id": "54c3d8ec-1516-4109-b78a-b91b8d53eddd",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "b7f3dd46bde1f1b516ab6ccd345cb1e88a08292dda155c2fd8bb28396941ada3"
+    },
+    {
+      "storage": "temp",
+      "link": "directory",
+      "view_status": 200,
+      "upload_status": 200,
+      "registration_status": 200,
+      "metadata": {
+        "filename": "mask.png",
+        "type": "temp",
+        "subfolder": "probe-directory"
+      },
+      "file_sha256": "96a58f46170495888020c71fc6a2d5203e0ccdec5286a32b08772b113a553a5a"
+    },
+    {
+      "storage": "temp",
+      "link": "directory",
+      "route": "registered",
+      "prompt_id": "44daf88e-1f44-4130-b1a9-8406749ff94b",
+      "bridge_id": "2",
+      "mask_size": [
+        64,
+        64
+      ],
+      "mask_extrema": [
+        126,
+        126
+      ],
+      "expected_mask_value": 127,
+      "output_sha256": "4c245b4c9aa0faf2bab001684a4027beacfb113209d98d9cd0df52e2f40bb2f5"
+    },
+    {
+      "storage": "temp",
+      "escape": "absolute",
+      "registration_status": 400
+    },
+    {
+      "storage": "temp",
+      "escape": "parent",
+      "registration_status": 400
+    }
+  ]
+}

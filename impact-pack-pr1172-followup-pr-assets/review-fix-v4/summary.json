@@ -1,0 +1,79 @@
+{
+  "candidate": "30c767853d7d75ea19a381a583e4c13306f049dd",
+  "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
+  "published_red": "fc073def9da8610311666c0b2392491d3c397118",
+  "commit_tree": "96787b285b47e27bf74a81edec629aecd9248573",
+  "timestamp": "2026-11-10T21:58:05+09:00",
+  "results": {
+    "backend_red": {
+      "tests": 155,
+      "failures": 13,
+      "errors": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 304,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "media_probe": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "media_probe_red": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_core": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_models": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javascript": {
+      "tests": 81,
+      "pass": 81,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "browser_total_unique_cases": 68,
+  "same_tests_red_green": true,
+  "input_types_unchanged": true,
+  "trusted_fixtures_unchanged": true,
+  "browser_source_hashes_match": true,
+  "followup_commit_count": 1,
+  "browser_test_scope": "Runtime and executed browser tests match. The unexecuted backend test file in browser snapshots predates its stdlib asyncio cleanup; current backend Red/Green uses the same final test bytes with both asyncio-related pytest plugins disabled.",
+  "changed_files_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "4eb86e837b7217ef10d1d940ca89824e4f4716118e861b0c7b06c96da93bf055",
+    "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
+    "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
+    "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
+    "modules/impact/bridge_nodes.py": "bb36b70fe66b0b514fb4bede66edc4aeb515141614d03400a0b7e63fe5f6e43e",
+    "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
+    "modules/impact/impact_server.py": "945eb9774b8e3a6f7cf16dee4c8a041a131205030db5dc22e8f3342c3c749f0a",
+    "tests/README.md": "1cae7f7f28304d69371afec78035e2e9ec60a30393a61c6aecc9a4c9b83332a6",
+    "tests/preview_bridge.test.mjs": "01e828663ee7ff915f9d159a24baea79f6f0c06fb5c3dc4f551a955866d2bf0b",
+    "tests/test_e2e_preview_bridge.py": "a086d15a6aa96dafd99e155debc3e539e4077eb09fc6e3897ad5cfba9fdec853",
+    "tests/test_preview_bridge_result.py": "666433f130256bc736e9e2d3463ea2019a5af1d9176a59271f39b8c372ac60cc"
+  },
+  "mask_policy": "Unchanged from 2b0808b: absent or all-zero blocks; explicit full or partial selection passes. block=never preserves the mask.",
+  "scope": "Validate complete HTTP registration paths before reads; align raw and HTTP media paths with /view and upload abspath boundaries while preserving configured symlinks and logical metadata."
+}

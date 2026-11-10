@@ -1,17 +1,15 @@
-# Review after input-path containment
+# Review after media-route validation
 
-Candidate `fc073de` remains one follow-up commit above the unchanged #1172 integration `45e5321`. PR #1274 stays ready for review; #1172 must merge first, followed by rebase/retarget.
+Candidate `30c7678` remains one follow-up commit above `45e5321`. #1274 stays ready for review and depends on #1172 merging first.
 
 | Finding | Resolution | Verification |
 |---|---|---|
-| Upstream zero-mask impact was insufficiently explained | The PR body explicitly states that incoming zero masks now block when blocking is enabled. | Incoming/reuse/restore × absent/zero/partial/full × block on/off; 24 cases plus two repeated no-mask cases. |
-| Confusion between sampler semantics and Bridge blocking | Retain the published condition: no available mask or zero selection blocks; an explicit full mask passes. `block=never` preserves zero masks. No new block-policy code change. | The 26 focused cases pass; four native Clear/full-selection cases repeat same input, changed input and native reload. |
-| Raw fallback could open outside input | Resolve candidate and input root, check containment before reading, and reject escapes before basename fallback. Use the actual relative directory in preview metadata. | 23 new cases cover valid roots/nesting/inside symlinks, legacy references, CWD shadows, malformed paths, traversal, external symlinks and both Bridge call paths. |
+| HTTP registration accepted absolute or escaping subfolders | Check the normalized complete filename against its input/output/temp root before registration or image reads. | Nine malicious subfolder cases change from HTTP 200 to 400; no read, ID or mask-cache entry. Six filename rejection controls remain passing. |
+| Raw registration rejected media-directory symlinks | Match /view and upload: normalize with abspath, preserve aliases and allow links configured below the media root. | Four raw link cases preserve actual pixels, mask and logical metadata; twelve HTTP allowed-path cases retain masks in both Bridges. |
+| Core policy was described too broadly | State that this matches /view and upload, not the stricter get_annotated_filepath helper. | Checked installed ComfyUI source and actual view/upload/registration/prompt execution. |
 
-Validation: JavaScript **81 passed**; backend **277 passed**, including **128 Bridge cases**; Chrome/API **68 passed** (53 native Bridge/catalog + 15 real SAM/API). Green has no failures, errors or skips. All 14 trusted catalog cases and four real isolated-server restarts pass. Runtime and test hashes match the final source; widget definitions and trusted fixtures are unchanged.
+The same 155 backend cases give **13 failures / 142 passes** on `fc073de` and **155 passes** on current source. Failures are nine subfolder escapes and four raw symlink rejection/metadata cases. The same isolated-server probe gives an 8×8 white fallback for an uncached raw symlink on Red and the saved 64×64 mask on Green. It uses distinct node IDs to exclude registered-node mask-cache fallback.
 
-The same 128 backend cases on published `2b0808b` produce **20 failures / 108 passes**. Failures are six file-selection/metadata cases, six forbidden-read cases and eight actual Bridge external-read cases. They are not import or setup failures. Current source passes all 128.
+Validation: JavaScript **81 passed**, backend **304 passed** (Bridge/registration 155), Chrome/API **68 passed** (53+15), plus **one real-server media-path probe** covering eight prompt executions, six linked-file view/upload/registration cases and six rejected external registrations. Green has no failures, errors or skips. Four real server restarts and all 14 trusted catalog cases pass. Source/test hashes, unchanged widget definitions and unchanged trusted fixtures are verified.
 
-The temporary proposal to block full masks was withdrawn before any production edit or push. Its local test run is excluded from Red/Green evidence. The authoritative Red run uses the corrected unchanged mask expectations on `2b0808b`.
-
-No new node, widget, dependency or helper module was added. The existing raw registration function owns containment. Existing frontend registration and registered temp/output IDs retain their behavior. Earlier screenshot comparisons remain valid historical evidence; all retained scenarios were rerun on the current source.
+Only the existing raw registration function and HTTP registration boundary changed. No new helper module, node, widget or dependency was added. Mask blocking remains unchanged. Configured filesystem symlinks are intentionally trusted, including links to another disk; direct request paths outside a media root remain rejected. Existing screenshot comparisons retain their recorded provenance and their scenarios were rerun.

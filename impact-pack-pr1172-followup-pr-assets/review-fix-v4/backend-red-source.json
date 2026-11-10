@@ -1,0 +1,10 @@
+{
+  "baseline": "fc073def9da8610311666c0b2392491d3c397118",
+  "source_root": "/mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/review-fix-v4/backend-red-source",
+  "files_sha256": {
+    "modules/impact/bridge_nodes.py": "c1910dad71784fe4b5801e13a062d842795c4518051f62ca733c91eb4397e3d9",
+    "modules/impact/impact_server.py": "482af75fd20d5d4279270bc168a85784d5d443a41fbe7a43d6939057f165ca4d",
+    "tests/test_preview_bridge_result.py": "666433f130256bc736e9e2d3463ea2019a5af1d9176a59271f39b8c372ac60cc"
+  },
+  "execution": "Actual HTTP handlers through aiohttp TestClient; stdlib asyncio.run; pytest asyncio and aiohttp plugins disabled."
+}

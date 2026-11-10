@@ -1,17 +1,16 @@
 # Current evidence and source boundaries
 
-Candidate `fc073de`. Exact source: `final-state.json` and `review-fix-v3/summary.json`.
+Candidate `30c7678`. Exact source: `final-state.json` and `review-fix-v4/summary.json`.
 
 | Check | Result | Record |
 |---|---|---|
-| JavaScript | 81 passed | `review-fix-v3/node.log` |
-| Backend | 277 passed, including 128 Bridge cases | `review-fix-v3/backend-green.xml` |
-| Same 128 cases on published Red | 20 failures / 108 passing controls | `review-fix-v3/backend-red.xml` |
-| Native Bridge and full catalog | 53 passed | `review-fix-v3/chrome-green-core/browser.xml` |
-| Real SAM and API | 15 passed | `review-fix-v3/chrome-green-models/browser.xml` |
+| JavaScript | 81 passed | `review-fix-v4/node.log` |
+| Backend | 304 passed, including 155 Bridge/registration cases | `review-fix-v4/backend-green.xml` |
+| Same 155 cases on `fc073de` | 13 failures / 142 passing controls | `review-fix-v4/backend-red.xml` |
+| Native Bridge and full catalog | 53 passed | `review-fix-v4/chrome-green-core/browser.xml` |
+| Real SAM and API | 15 passed | `review-fix-v4/chrome-green-models/browser.xml` |
+| Same real-server media probe | Red fails at raw symlink restoration; Green passes | `review-fix-v4/media-route-red/observations.json`, `review-fix-v4/media-route-probe/observations.json` |
 
-The raw-file comparison uses the exact same test bytes on published `2b0808b` and current source. It observes file reads, selected pixels, restored masks and preview metadata. External paths are rejected before image contents are opened. Allowed paths still return the saved pixels and mask.
+Backend HTTP cases use actual aiohttp HTTP requests and the actual registration handlers. Only unused PromptServer route/onprompt registration is substituted. The additional isolated ComfyUI probe exercises its real /view, /upload/image, registration and /prompt endpoints. Green records eight prompt IDs and saved MASK outputs. Raw prompts use fresh Bridge IDs, so their output cannot come from a registered node's last-mask cache.
 
-All eleven existing screenshot comparisons retain their original source provenance. The two selection overlays in `review-fix-v2/overlays` compare `a5350a6` with the selection fix; that mask policy remains unchanged. The other nine comparisons retain their earlier manifests. Current full Chrome checks rerun the retained scenarios, including native workflows, SAM, three-stage selections and four real restarts. New raw containment is backend behavior and has a concrete Red/Green table in the PR body.
-
-Older frontend releases, Bridge GPU execution, diffusion sampling and deleted-file recovery remain outside validation. The separate #1172 preparation parent is unchanged.
+Eleven existing annotated screenshots retain their original source provenance. New media-path changes are documented with actual HTTP statuses, image-read/cache effects, mask sizes and pixel values in the PR's comparison table. All retained browser scenarios were rerun on current source. Older frontend versions, Bridge GPU execution, diffusion sampling and deleted-file recovery remain outside validation.

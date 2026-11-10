@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.614" timestamp="2026-11-10T21:48:51.645902+09:00" hostname="hyewon"><testcase classname="impact-pack-pr1172-followup-pr-assets.review-fix-v4.test_media_routes_probe" name="test_view_upload_registration_and_raw_masks_agree" time="0.508"><failure message="AssertionError: (8, 8)&#10;assert (8, 8) == (64, 64)&#10;  &#10;  At index 0 diff: 8 != 64&#10;  &#10;  Full diff:&#10;    (&#10;  -     64,&#10;  ?     ^^...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">../impact-pack-pr1172-followup-pr-assets/review-fix-v4/test_media_routes_probe.py:104: in test_view_upload_registration_and_raw_masks_agree
+    assert size == (64, 64), size
+E   AssertionError: (8, 8)
+E   assert (8, 8) == (64, 64)
+E     
+E     At index 0 diff: 8 != 64
+E     
+E     Full diff:
+E       (
+E     -     64,
+E     ?     ^^...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

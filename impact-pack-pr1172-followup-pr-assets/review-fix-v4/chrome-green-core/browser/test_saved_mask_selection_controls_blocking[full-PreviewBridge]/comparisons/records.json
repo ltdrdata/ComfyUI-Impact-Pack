@@ -1,0 +1,590 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "b545b215-5b4a-4ad3-9194-abb4a182fc3f",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00049_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794314835263.png [input]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "3bffc3a3f3dacd54c5acb4347589171f47c046c32e6594aa6020fe661c7fdb56",
+    "actual_sha256": "44550951beea23c4f413325ae8bf20afaaf304e2932a538075f3a0e82f0cd328"
+  },
+  {
+    "step": 2,
+    "prompt_id": "016a2b8a-9063-4873-b8ab-caf9576a2494",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00050_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794314836327.png [input]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "f460feba5c64bed125d6a58ce8734c86042ce9139eb8079dc04256927a3818d9",
+    "actual_sha256": "8b4937db831d277f6f6dea4d898032298f75d879152d45582f240c9f67a62138"
+  },
+  {
+    "step": 3,
+    "prompt_id": "47fc2039-27cb-480b-86ff-01bce1e1c316",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00051_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 12615744,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_ipjso_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "03-screen.png",
+    "actual": "03-actual.png",
+    "expected": "03-expected.png",
+    "screen_sha256": "a815c9b7a3ea6b1f464554af17855d2fdd034bb26ac69c86a5d6119754c62f11",
+    "actual_sha256": "be56762e217eecf9c53757ec01e88a5547e558b16a41378b700d3c124cc3f29f"
+  },
+  {
+    "step": 4,
+    "prompt_id": "fda33d9e-2879-4f32-9440-08a5ebfdca74",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 65536,
+    "expected_nonzero": 65536,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_eszlb_00052_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          401.2539327202323,
+          204.97337850919652,
+          286.6953049370765,
+          138.0384801548887
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 12615744,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          991.161967570184,
+          204.97337850919652,
+          286.6953049370765,
+          371.64206195546956
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_ipjso_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": true,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1650.08924249758,
+          204.97337850919652,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          441.9870018751323,
+          865.6703775411423,
+          205.22916662727647,
+          27.60769603097774
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          1060.1812076476283,
+          865.6703775411423,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "04-screen.png",
+    "actual": "04-actual.png",
+    "expected": "04-expected.png",
+    "screen_sha256": "8580b9f16c4471831accf49525ad0a03c0c37ee663f2a8076495dd2065208525",
+    "actual_sha256": "bc22a72a19bf7ee8983291674d665382b9ea0370637d313405a707e2ae111126"
+  }
+]

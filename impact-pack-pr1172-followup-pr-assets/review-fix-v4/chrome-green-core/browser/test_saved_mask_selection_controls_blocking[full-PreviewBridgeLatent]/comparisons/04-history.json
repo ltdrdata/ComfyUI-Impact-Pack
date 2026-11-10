@@ -1,0 +1,434 @@
+{
+  "prompt": [
+    72,
+    "927f5bd0-862e-4d1a-801d-7cbe30c6c866",
+    {
+      "1": {
+        "inputs": {
+          "width": 256,
+          "height": 256,
+          "batch_size": 2
+        },
+        "class_type": "EmptyLatentImage",
+        "_meta": {
+          "title": "Empty Latent Image"
+        }
+      },
+      "2": {
+        "inputs": {
+          "image": "$2-fc7b82b7fd844cc3859b6a8679cac731",
+          "preview_method": "Latent2RGB-SD15",
+          "block": true,
+          "restore_mask": "always",
+          "latent": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewBridgeLatent",
+        "_meta": {
+          "title": "Preview Bridge (Latent)"
+        }
+      },
+      "3": {
+        "inputs": {
+          "filename_prefix": "latents/ComfyUI",
+          "samples": [
+            "2",
+            0
+          ]
+        },
+        "class_type": "SaveLatent",
+        "_meta": {
+          "title": "Save Latent"
+        }
+      },
+      "4": {
+        "inputs": {
+          "mask": [
+            "2",
+            1
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "5": {
+        "inputs": {
+          "images": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "2b9ba9f7-df2e-454b-9275-218fc569d3e7",
+          "revision": 0,
+          "last_node_id": 5,
+          "last_link_id": 4,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "EmptyLatentImage",
+              "pos": [
+                -306.55555555555566,
+                122.22222222222223
+              ],
+              "size": [
+                270,
+                106
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "EmptyLatentImage"
+              },
+              "widgets_values": [
+                256,
+                256,
+                2
+              ],
+              "widgets_values_named": {
+                "width": 256,
+                "height": 256,
+                "batch_size": 2
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewBridgeLatent",
+              "pos": [
+                248.9999999999999,
+                122.22222222222223
+              ],
+              "size": [
+                270,
+                374
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "latent",
+                  "type": "LATENT",
+                  "link": 1
+                },
+                {
+                  "name": "vae_opt",
+                  "shape": 7,
+                  "type": "VAE",
+                  "link": null
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    2
+                  ]
+                },
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    3
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewBridgeLatent",
+                "image": "PreviewBridge/PBL-_temp_zonpl_00001_.png [temp]"
+              },
+              "widgets_values": [
+                "PreviewBridge/PBL-_temp_zonpl_00001_.png [temp]",
+                "Latent2RGB-SD15",
+                true,
+                "always"
+              ],
+              "widgets_values_named": {
+                "image": "PreviewBridge/PBL-_temp_zonpl_00001_.png [temp]",
+                "preview_method": "Latent2RGB-SD15",
+                "block": true,
+                "restore_mask": "always"
+              }
+            },
+            {
+              "id": 3,
+              "type": "SaveLatent",
+              "pos": [
+                804.5555555555554,
+                122.22222222222223
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "links": null
+                }
+              ],
+              "properties": {},
+              "widgets_values": [
+                "latents/ComfyUI"
+              ],
+              "widgets_values_named": {
+                "filename_prefix": "latents/ComfyUI"
+              }
+            },
+            {
+              "id": 4,
+              "type": "MaskToImage",
+              "pos": [
+                -268.1945203993057,
+                744.4444444444445
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 3
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": 5,
+              "type": "PreviewImage",
+              "pos": [
+                313.9999999999999,
+                744.4444444444445
+              ],
+              "size": [
+                140,
+                246
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              }
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "LATENT"
+            ],
+            [
+              2,
+              2,
+              0,
+              3,
+              0,
+              "LATENT"
+            ],
+            [
+              3,
+              2,
+              1,
+              4,
+              0,
+              "MASK"
+            ],
+            [
+              4,
+              4,
+              0,
+              5,
+              0,
+              "IMAGE"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1.061834462729913,
+              "offset": [
+                651.94301994302,
+                70.81481481481478
+              ]
+            },
+            "frontendVersion": "1.58.5"
+          },
+          "version": 0.4
+        }
+      },
+      "client_id": "ed84d83106a44a78aa09952144477bff",
+      "workflow_metadata": {
+        "workflow_id": "2b9ba9f7-df2e-454b-9275-218fc569d3e7"
+      },
+      "create_time": 1794314855079
+    },
+    [
+      "5",
+      "2",
+      "3"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "images": [
+        {
+          "filename": "PBL-_temp_zonpl_00001_.png",
+          "type": "temp",
+          "subfolder": "PreviewBridge",
+          "metadata": {
+            "kind": "image",
+            "width": 256,
+            "height": 256
+          }
+        }
+      ],
+      "source_image": [
+        "$2-fc7b82b7fd844cc3859b6a8679cac731"
+      ]
+    },
+    "3": {
+      "latents": [
+        {
+          "filename": "ComfyUI_00025_.latent",
+          "subfolder": "latents",
+          "type": "output"
+        }
+      ]
+    },
+    "5": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_eszlb_00056_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "927f5bd0-862e-4d1a-801d-7cbe30c6c866",
+          "timestamp": 1794314855079
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1"
+          ],
+          "prompt_id": "927f5bd0-862e-4d1a-801d-7cbe30c6c866",
+          "timestamp": 1794314855080
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "927f5bd0-862e-4d1a-801d-7cbe30c6c866",
+          "timestamp": 1794314855083
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    },
+    "3": {
+      "node_id": "3",
+      "display_node": "3",
+      "parent_node": null,
+      "real_node_id": "3"
+    },
+    "5": {
+      "node_id": "5",
+      "display_node": "5",
+      "parent_node": null,
+      "real_node_id": "5"
+    }
+  }
+}

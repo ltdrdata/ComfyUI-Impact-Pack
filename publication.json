@@ -1,9 +1,10 @@
 {
-  "code_head": "fc073def9da8610311666c0b2392491d3c397118",
-  "evidence_tag": "evidence/pr1274-input-paths",
-  "files": 565,
-  "bytes": 33888881,
+  "code_head": "30c767853d7d75ea19a381a583e4c13306f049dd",
+  "evidence_tag": "evidence/pr1274-media-paths",
+  "files": 686,
+  "bytes": 38644544,
   "browser_cases": 68,
+  "media_probe_cases": 1,
   "embedded_images": 11,
   "collapsed_sections": 5
 }
