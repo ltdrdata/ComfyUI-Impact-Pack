@@ -1,0 +1,100 @@
+(node:996670) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ ImpactControlBridge: restore the link type while the source node is unavailable (2.385581ms)
+✔ ImpactControlBridge: restore the link type while the source output is unavailable (1.01765ms)
+✔ ImpactControlBridge: an unknown type stays wildcard and can be resolved later (4.850662ms)
+✔ ImpactControlBridge: an available source type takes precedence over saved link metadata (1.187901ms)
+✔ ImpactConditionalBranch: restore the link type while the source node is unavailable (0.968637ms)
+✔ ImpactConditionalBranch: restore the link type while the source output is unavailable (0.874921ms)
+✔ ImpactConditionalBranch: an unknown type stays wildcard and can be resolved later (0.872316ms)
+✔ ImpactConditionalBranch: an available source type takes precedence over saved link metadata (0.902122ms)
+✔ ImpactConditionalBranchSelMode: restore the link type while the source node is unavailable (1.006469ms)
+✔ ImpactConditionalBranchSelMode: restore the link type while the source output is unavailable (1.014073ms)
+✔ ImpactConditionalBranchSelMode: an unknown type stays wildcard and can be resolved later (0.93281ms)
+✔ ImpactConditionalBranchSelMode: an available source type takes precedence over saved link metadata (0.841858ms)
+✔ ImpactCompare: restore the link type while the source node is unavailable (0.846548ms)
+✔ ImpactCompare: restore the link type while the source output is unavailable (1.113581ms)
+✔ ImpactCompare: an unknown type stays wildcard and can be resolved later (0.906019ms)
+✔ ImpactCompare: an available source type takes precedence over saved link metadata (0.859652ms)
+✔ ImpactSelectNthItemOfAnyList: restore the link type while the source node is unavailable (0.877797ms)
+✔ ImpactSelectNthItemOfAnyList: restore the link type while the source output is unavailable (1.061253ms)
+✔ ImpactSelectNthItemOfAnyList: an unknown type stays wildcard and can be resolved later (0.874379ms)
+✔ ImpactSelectNthItemOfAnyList: an available source type takes precedence over saved link metadata (0.903625ms)
+(node:996671) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ resize redraws only the current image (global UI exports) (2.687872ms)
+✔ resize redraws only the current image (UI module fallback) (1.11309ms)
+✔ upload creates missing image metadata for core preview refresh (0.872196ms)
+✔ late creation response cannot replace a restored selection (3.936217ms)
+✔ only the latest category response can update the dropdown (0.971904ms)
+✔ returning to a category rejects its older response after a new selection (4.525279ms)
+✔ missing saved choices survive restoration for backend validation (0.731731ms)
+✔ category query values are encoded (0.625511ms)
+✔ existing nodes are not changed or queried (0.87966ms)
+file:///mnt/teratera/git/impact-pack-pr1172-followup/tests/preview_bridge.test.mjs:192
+    const { node, widget, fetch, restore, storeWrite, fetch } = await bridge(t);
+                                                      ^
+
+SyntaxError: Identifier 'fetch' has already been declared
+    at compileSourceTextModule (node:internal/modules/esm/utils:318:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:111:18)
+    at #translate (node:internal/modules/esm/loader:473:20)
+    at afterLoad (node:internal/modules/esm/loader:529:29)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:534:12)
+    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:571:36)
+    at afterResolve (node:internal/modules/esm/loader:624:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:630:12)
+    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:649:32)
+    at TracingChannel.tracePromise (node:diagnostics_channel:350:14)
+
+Node.js v24.12.0
+✖ tests/preview_bridge.test.mjs (26.735026ms)
+(node:996694) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ ImpactWildcardProcessor: fixed and legacy false preserve the core hook contract (3.595785ms)
+✔ ImpactWildcardProcessor: populate and reproduce delegate unchanged to core hooks (1.275597ms)
+✔ ImpactWildcardProcessor: each call uses the current mode and preserves a manually edited seed (1.186518ms)
+✔ ImpactWildcardProcessor: a core hook error propagates and restores the selected policy (1.522202ms)
+✔ ImpactWildcardProcessor: older controls with only afterQueued remain supported (1.422474ms)
+✔ ImpactWildcardProcessor: promoted controls pause through the host phase and restore before serialization (1.338686ms)
+✔ ImpactWildcardProcessor: unavailable host mode restores an already paused shared policy (1.284273ms)
+✔ ImpactWildcardProcessor: a missing promoted mode does not imply the interior fixed mode (1.395183ms)
+✔ ImpactWildcardProcessor: promoted pending controls resume the selected policy on a mode change (1.648571ms)
+✔ ImpactWildcardProcessor: shared hosts use their own promoted modes (1.419568ms)
+✔ ImpactWildcardProcessor: native promoted projections keep their own identity and frozen values (1.252974ms)
+✔ ImpactWildcardProcessor: native promoted widget errors propagate unchanged (1.133458ms)
+✔ ImpactWildcardProcessor: API drift declines promotion without breaking the queue (14.523435ms)
+✔ ImpactWildcardProcessor: after-phase restoration redraws the selected policy (1.1558ms)
+✔ ImpactWildcardProcessor: nested promoted modes are resolved through the host chain (1.19759ms)
+✔ ImpactWildcardProcessor: serialization errors preserve the policy and propagate unchanged (1.215664ms)
+✔ ImpactWildcardEncode: fixed and legacy false preserve the core hook contract (1.062485ms)
+✔ ImpactWildcardEncode: populate and reproduce delegate unchanged to core hooks (1.064308ms)
+✔ ImpactWildcardEncode: each call uses the current mode and preserves a manually edited seed (1.018812ms)
+✔ ImpactWildcardEncode: a core hook error propagates and restores the selected policy (1.050453ms)
+✔ ImpactWildcardEncode: older controls with only afterQueued remain supported (0.998444ms)
+✔ ImpactWildcardEncode: promoted controls pause through the host phase and restore before serialization (1.158647ms)
+✔ ImpactWildcardEncode: unavailable host mode restores an already paused shared policy (1.20319ms)
+✔ ImpactWildcardEncode: a missing promoted mode does not imply the interior fixed mode (1.88634ms)
+✔ ImpactWildcardEncode: promoted pending controls resume the selected policy on a mode change (1.162022ms)
+✔ ImpactWildcardEncode: shared hosts use their own promoted modes (1.210955ms)
+✔ ImpactWildcardEncode: native promoted projections keep their own identity and frozen values (1.132748ms)
+✔ ImpactWildcardEncode: native promoted widget errors propagate unchanged (1.059278ms)
+✔ ImpactWildcardEncode: API drift declines promotion without breaking the queue (14.173013ms)
+✔ ImpactWildcardEncode: after-phase restoration redraws the selected policy (1.081852ms)
+✔ ImpactWildcardEncode: nested promoted modes are resolved through the host chain (1.109674ms)
+✔ ImpactWildcardEncode: serialization errors preserve the policy and propagate unchanged (1.139381ms)
+✔ unrelated node types are untouched (1.883383ms)
+ℹ tests 63
+ℹ suites 0
+ℹ pass 62
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 124.186527
+
+✖ failing tests:
+
+test at tests/preview_bridge.test.mjs:1:1
+✖ tests/preview_bridge.test.mjs (26.735026ms)
+  'test failed'

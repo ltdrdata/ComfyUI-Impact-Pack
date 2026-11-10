@@ -1,0 +1,81 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1172-followup/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge] FAILED [ 50%]
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge] _
+tests/test_e2e_preview_bridge.py:717: in test_queued_bridge_results_preserve_the_latest_saved_edit
+    mask_output(browser, second, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (5f3aa1fa-c65b-4eb3-b637-d694c2058aa3)
+PASS: UI Run completed (e2810f78-6b9f-4a9a-acd7-0d516150c55c)
+PASS: UI Run completed (b74481d1-eaed-4a69-8956-486bf15b38ac)
+_ test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:717: in test_queued_bridge_results_preserve_the_latest_saved_edit
+    mask_output(browser, second, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (7adef9b8-43f8-43da-a299-61205cc5b556)
+PASS: UI Run completed (5347248a-c43f-4ec0-a9be-919cc2d3d2fb)
+PASS: UI Run completed (60930107-a35f-4991-92c7-2defb7889c75)
+=============================== warnings summary ===============================
+test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-shared/browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]
+FAILED tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]
+======================== 2 failed, 1 warning in 32.86s =========================

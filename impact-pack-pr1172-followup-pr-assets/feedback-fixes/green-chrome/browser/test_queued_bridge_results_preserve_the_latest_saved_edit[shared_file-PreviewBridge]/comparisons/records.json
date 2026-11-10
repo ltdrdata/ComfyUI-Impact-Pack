@@ -1,0 +1,296 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "010a957d-1a44-46ce-b60a-66230e5589b5",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_ydmuz_00051_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_okxct_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "if_same_size",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "728bf5f81c4947ddddf434d41cb42053e6c19696a31c26850eac3d52d2722da4",
+    "actual_sha256": "d3662d7ff177daa6b303faa9daa9b5e2abb750585679528ad90ffd1802791b03"
+  },
+  {
+    "step": 2,
+    "prompt_id": "e9c2526a-633f-428e-bbda-443c952e010b",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_ydmuz_00052_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          401.2539327202323,
+          204.97337850919652,
+          286.6953049370765,
+          138.0384801548887
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          991.161967570184,
+          204.97337850919652,
+          286.6953049370765,
+          371.64206195546956
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_okxct_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "if_same_size",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1650.08924249758,
+          204.97337850919652,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          441.9870018751323,
+          865.6703775411423,
+          205.22916662727647,
+          27.60769603097774
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          1060.1812076476283,
+          865.6703775411423,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "db0f557e151cf6da8fb794dc9b1562f418baaaf0dfb7485c4a601bf67e0f12a9",
+    "actual_sha256": "70aa0d6a0ec1a7bb869c68cc252334918d7e4b006408e6fb9445e9482a1f8889"
+  }
+]

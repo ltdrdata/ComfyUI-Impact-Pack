@@ -1,0 +1,296 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "be3161bf-dd3f-490e-b4a9-8e7c42e525b8",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_ydmuz_00055_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PBL-_temp_tjbbp_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "if_same_size",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "25ba486aeb1eb657839247708b49514e4906e11f0aeef287525de9d27313617c",
+    "actual_sha256": "79b261681b515dc4f7b2dda06e7dacf841be45b8fb9fa86e56263dae7578a8b3"
+  },
+  {
+    "step": 2,
+    "prompt_id": "c99da9d5-ad25-41d3-b379-ec5d6b584754",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_ydmuz_00056_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          366.7443126815101,
+          204.97337850919652,
+          286.6953049370765,
+          112.55445304937078
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          956.6523475314618,
+          204.97337850919652,
+          286.6953049370765,
+          397.12608906098745
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PBL-_temp_tjbbp_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "if_same_size",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1546.5603823814135,
+          204.97337850919652,
+          286.6953049370765,
+          61.58639883833495
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          407.47738183641013,
+          865.6703775411423,
+          205.22916662727647,
+          27.60769603097774
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          1025.671587608906,
+          865.6703775411423,
+          148.6568247821878,
+          261.2112778315586
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "83f1f72d9244db2e0a62e956ba4b5dca284173a4e1ae335322f6678ec631e046",
+    "actual_sha256": "c2ed5717479512410ea01184da7f825ee3cb333485aa39c4d0d7f0d2047a2fd2"
+  }
+]

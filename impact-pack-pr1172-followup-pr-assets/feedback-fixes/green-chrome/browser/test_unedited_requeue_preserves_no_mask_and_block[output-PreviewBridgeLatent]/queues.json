@@ -1,0 +1,44 @@
+[
+  {
+    "prompt_id": "c9f80282-6bf7-414f-8a02-ec7c8e7d390a",
+    "submitted_image": "$2-0",
+    "consumer_ran": true,
+    "mask_ran": true,
+    "size": [
+      32,
+      32
+    ],
+    "extrema": [
+      255,
+      255
+    ]
+  },
+  {
+    "prompt_id": "f356ff6e-2f5f-44f4-8756-d1e6e3c4bbbf",
+    "submitted_image": "$2-f3474fd27c0c4112aff15877f43f0262",
+    "consumer_ran": true,
+    "mask_ran": true,
+    "size": [
+      32,
+      32
+    ],
+    "extrema": [
+      255,
+      255
+    ]
+  },
+  {
+    "prompt_id": "b7b19b5e-a8b7-43f2-835a-9cff1868eba4",
+    "submitted_image": "$2-f3474fd27c0c4112aff15877f43f0262",
+    "consumer_ran": true,
+    "mask_ran": true,
+    "size": [
+      32,
+      32
+    ],
+    "extrema": [
+      255,
+      255
+    ]
+  }
+]

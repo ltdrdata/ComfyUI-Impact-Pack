@@ -1,0 +1,590 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "fadeaafa-aa23-4b05-adbc-d67d133309bc",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_iapsi_00004_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794304651903.png [input]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "2636e79185d6c23ffe2d3d8289bba2dcaef834ed2b691c89608f27e0b3cbfba5",
+    "actual_sha256": "a3fd70cf485a21e88efb64c747ce5e7fc887be71cb2025bf3e37b011eb311989"
+  },
+  {
+    "step": 2,
+    "prompt_id": "8887a596-64e7-46ed-8868-28439e11f55c",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_bjpuj_00001_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_godta_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "2de9ef645518a8ed254c1660420391907761621af1ed7ddf36ea7bdbc17aed3f",
+    "actual_sha256": "c895c4c90398a203f6d45fa1004fc57dbb8eaecd0d1bcda90fcc67f021824ad5"
+  },
+  {
+    "step": 3,
+    "prompt_id": "72d5c485-2fbe-440f-a688-ce75c67a72b1",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_bjpuj_00002_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_godta_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "03-screen.png",
+    "actual": "03-actual.png",
+    "expected": "03-expected.png",
+    "screen_sha256": "85e306ec560409aaa146e990331365ba0fbc5767db3dd58e7209955f1cff3aeb",
+    "actual_sha256": "d026bfcb4d5bdb25e6dd1a4d834a953f76cc0befc3fd36c2648e792a5d8f181c"
+  },
+  {
+    "step": 4,
+    "prompt_id": "b7c42d74-fa2f-4b8f-b529-27349ba911bc",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_bjpuj_00002_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_godta_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          209,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "04-screen.png",
+    "actual": "04-actual.png",
+    "expected": "04-expected.png",
+    "screen_sha256": "4c41ff80db3dc138e262212e2045be3c477ccae202af8239a3f94860ca018d25",
+    "actual_sha256": "d026bfcb4d5bdb25e6dd1a4d834a953f76cc0befc3fd36c2648e792a5d8f181c"
+  }
+]

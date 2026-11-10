@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="3.946" timestamp="2026-11-10T19:24:07.594692+09:00" hostname="hyewon"><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridge]" time="0.270" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridgeLatent]" time="0.002" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridge]" time="0.001"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = ((PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc2') / '') / 'empty.png').is_file">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7001cc3d5640&gt;
+node_type = 'PreviewBridge', saved_file = False
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("saved_file", [True, False], ids=["saved", "missing"])
+    def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch, node_type, saved_file):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "legacy"}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$legacy-0", **inputs)
+        path = bridge_files / "clipspace" / "legacy-edited.png"
+        if saved_file:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(path)
+        result = node.doit(image="clipspace/legacy-edited.png [input]", **inputs)
+        output, mask = result["result"]
+        if saved_file:
+            torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+            assert result["ui"]["images"] == [{"filename": path.name, "subfolder": "clipspace", "type": "input"}]
+            if node_type == "PreviewBridge":
+                torch.testing.assert_close(output, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+            else:
+                torch.testing.assert_close(output["noise_mask"], mask)
+        else:
+            item, = result["ui"]["images"]
+            assert item["type"] == "temp"
+&gt;           assert (bridge_files / item["subfolder"] / item["filename"]).is_file()
+E           AssertionError: assert False
+E            +  where False = is_file()
+E            +    where is_file = ((PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc2') / '') / 'empty.png').is_file
+
+../impact-pack-pr1172-followup-pr-assets/cleanup-review/mutations/missing-file-success/tests/test_preview_bridge_result.py:328: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridgeLatent]" time="0.001"><failure message="AssertionError: assert False&#10; +  where False = is_file()&#10; +    where is_file = ((PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc3') / '') / 'empty.png').is_file">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7001cc3d76b0&gt;
+node_type = 'PreviewBridgeLatent', saved_file = False
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("saved_file", [True, False], ids=["saved", "missing"])
+    def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch, node_type, saved_file):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "legacy"}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$legacy-0", **inputs)
+        path = bridge_files / "clipspace" / "legacy-edited.png"
+        if saved_file:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(path)
+        result = node.doit(image="clipspace/legacy-edited.png [input]", **inputs)
+        output, mask = result["result"]
+        if saved_file:
+            torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+            assert result["ui"]["images"] == [{"filename": path.name, "subfolder": "clipspace", "type": "input"}]
+            if node_type == "PreviewBridge":
+                torch.testing.assert_close(output, torch.tensor([1., 0., 0.]).expand(1, 64, 64, 3))
+            else:
+                torch.testing.assert_close(output["noise_mask"], mask)
+        else:
+            item, = result["ui"]["images"]
+            assert item["type"] == "temp"
+&gt;           assert (bridge_files / item["subfolder"] / item["filename"]).is_file()
+E           AssertionError: assert False
+E            +  where False = is_file()
+E            +    where is_file = ((PosixPath('/tmp/pytest-of-rho/pytest-3716/test_legacy_clipspace_referenc3') / '') / 'empty.png').is_file
+
+../impact-pack-pr1172-followup-pr-assets/cleanup-review/mutations/missing-file-success/tests/test_preview_bridge_result.py:328: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,524 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "d96cfaf8-8a80-43c5-872b-fb2672b69d08",
+    "node_id": "6",
+    "assertion_passed": true,
+    "actual_size": [
+      352,
+      512
+    ],
+    "expected_size": [
+      352,
+      512
+    ],
+    "actual_nonzero": 48408,
+    "expected_nonzero": 48408,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_ayhty_00002_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 352,
+        "height": 512
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "LoadImage",
+        "bounds": [
+          92.74052734374992,
+          208.99999999999997,
+          254.5189453125,
+          282.6
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "interactive-sam-original.png",
+            "y": 46
+          },
+          {
+            "name": "upload",
+            "value": "image",
+            "y": 70
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 94
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "ImageScale",
+        "bounds": [
+          98.49999999999991,
+          659,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "upscale_method",
+            "value": "area",
+            "y": 26
+          },
+          {
+            "name": "width",
+            "value": 0,
+            "y": 50
+          },
+          {
+            "name": "height",
+            "value": 512,
+            "y": 74
+          },
+          {
+            "name": "crop",
+            "value": "disabled",
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          208.99999999999997,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-mask-18389.5.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "never",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          208.99999999999997,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "type": "MaskToImage",
+        "bounds": [
+          633.0249316406249,
+          1059,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "6",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          1059,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1600
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "b9fbc34ff857f3b72c3cbb61a15f5ab298ec6ba7cc715071f396cd36a779b0d9",
+    "actual_sha256": "944202f507dbeaf36b477b700a208bdd36a6adf85f3139c63cc41e7d0a392e8f"
+  },
+  {
+    "step": 2,
+    "prompt_id": "d5bbd6d7-0607-41c1-b877-0d70f5d494da",
+    "node_id": "6",
+    "assertion_passed": true,
+    "actual_size": [
+      352,
+      512
+    ],
+    "expected_size": [
+      352,
+      512
+    ],
+    "actual_nonzero": 57189,
+    "expected_nonzero": 57189,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_ayhty_00003_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 352,
+        "height": 512
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "LoadImage",
+        "bounds": [
+          92.74052734374992,
+          208.99999999999997,
+          254.5189453125,
+          282.6
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "interactive-sam-original.png",
+            "y": 46
+          },
+          {
+            "name": "upload",
+            "value": "image",
+            "y": 70
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 94
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "ImageScale",
+        "bounds": [
+          98.49999999999991,
+          659,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "upscale_method",
+            "value": "area",
+            "y": 26
+          },
+          {
+            "name": "width",
+            "value": 0,
+            "y": 50
+          },
+          {
+            "name": "height",
+            "value": 512,
+            "y": 74
+          },
+          {
+            "name": "crop",
+            "value": "disabled",
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          208.99999999999997,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-mask-25118.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "never",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          208.99999999999997,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "type": "MaskToImage",
+        "bounds": [
+          633.0249316406249,
+          1059,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "6",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          1059,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1600
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "a5dc9cd31660951ee8efadae1997ebcfe708e417bde31e9ceb4b16969577d95c",
+    "actual_sha256": "cbccef5e3fae3e5094d73968ace3a6c7bb11401949ed1bd88ebc11b485bd7157"
+  },
+  {
+    "step": 3,
+    "prompt_id": "1476ca11-1fa4-44af-8e3f-c24cfa44ce22",
+    "node_id": "6",
+    "assertion_passed": true,
+    "actual_size": [
+      352,
+      512
+    ],
+    "expected_size": [
+      352,
+      512
+    ],
+    "actual_nonzero": 57189,
+    "expected_nonzero": 57189,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_ayhty_00004_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 352,
+        "height": 512
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "LoadImage",
+        "bounds": [
+          460.3048337569418,
+          238.6958079541383,
+          273.5782285695091,
+          303.7620924399856
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "interactive-sam-original.png",
+            "y": 46
+          },
+          {
+            "name": "upload",
+            "value": "image",
+            "y": 70
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 94
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "ImageScale",
+        "bounds": [
+          466.4955961964796,
+          722.3934073808671,
+          261.19670369043354,
+          125.76137585094948
+        ],
+        "widgets": [
+          {
+            "name": "upscale_method",
+            "value": "area",
+            "y": 26
+          },
+          {
+            "name": "width",
+            "value": 0,
+            "y": 50
+          },
+          {
+            "name": "height",
+            "value": 512,
+            "y": 74
+          },
+          {
+            "name": "crop",
+            "value": "disabled",
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewBridge",
+        "bounds": [
+          1003.9373733372893,
+          238.6958079541383,
+          261.19670369043354,
+          338.58831959871014
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-mask-25118.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "never",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "PreviewImage",
+        "bounds": [
+          1604.259838403574,
+          238.6958079541383,
+          135.43532783948405,
+          237.97921891795053
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "type": "MaskToImage",
+        "bounds": [
+          1041.0476545704942,
+          1152.3468290935148,
+          186.97614122402365,
+          25.152275170189895
+        ],
+        "widgets": []
+      },
+      {
+        "id": "6",
+        "type": "PreviewImage",
+        "bounds": [
+          1604.259838403574,
+          1152.3468290935148,
+          135.43532783948405,
+          237.97921891795053
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1600
+    },
+    "screen": "03-screen.png",
+    "actual": "03-actual.png",
+    "expected": "03-expected.png",
+    "screen_sha256": "78849b1cd70d17dd8d14d7143efa3a4c2f635f1bf20e6fc9eee8b4aaf6b95179",
+    "actual_sha256": "2a90d3b13b2f19307183ca2869c110044a79629ec29c3d7eb26fa7e6daaec78d"
+  }
+]

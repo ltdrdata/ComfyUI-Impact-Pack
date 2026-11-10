@@ -1,0 +1,1278 @@
+{
+  "EVIDENCE.md": {
+    "bytes": 3067,
+    "sha256": "737d70f4068105b100b16b8def84802ab8287f9c6cdfb22729161a94d425b0c0"
+  },
+  "REREVIEW.md": {
+    "bytes": 4483,
+    "sha256": "219ebabf3113c1c770b2bc2beac5b29c7afac4a547573ca2cb71fcd63d703f09"
+  },
+  "browser_checks.py": {
+    "bytes": 6007,
+    "sha256": "458d4ff38bc4faedcbd0afff72508e08e92789042220e108d9faaf7e4fd3ea0d"
+  },
+  "cleanup-review/backend.log": {
+    "bytes": 4029,
+    "sha256": "fa489109378039fee697065e4575ce0edf4e66b57213b06eac5a30e7ceed28df"
+  },
+  "cleanup-review/backend.xml": {
+    "bytes": 26216,
+    "sha256": "0da0756aff9146f0a7f4edc6e961917c618cab8861f6d612ce6c59aa69034364"
+  },
+  "cleanup-review/before-backend.log": {
+    "bytes": 4076,
+    "sha256": "77e62310de847c203b0d7915adc2439ba3c892058e3e6fefb34e2457c0b666dd"
+  },
+  "cleanup-review/before-backend.xml": {
+    "bytes": 26216,
+    "sha256": "f2be73b78d6f525d4d06e7d4ea399c26df4afa0d5107fa675eebb1668972f801"
+  },
+  "cleanup-review/before-final-state.json": {
+    "bytes": 6256,
+    "sha256": "df1cdfcfc0160eb3b8f1a27d1a4d1107cd7c4e9745f4a7457454d69d83befb1e"
+  },
+  "cleanup-review/chrome/browser.log": {
+    "bytes": 3440,
+    "sha256": "91043882bea0a9b24e348af8771468eed69f11ce748b85485a7f1895c70d2efe"
+  },
+  "cleanup-review/chrome/browser.xml": {
+    "bytes": 1967,
+    "sha256": "9f7b9b15048b5428544bd4bc290fdcafa344c24a81de42afd5c553f65d72bb0e"
+  },
+  "cleanup-review/chrome/server.log": {
+    "bytes": 12386,
+    "sha256": "de80a2e18fd61ed861132de94eecd291d9a27ea85f37302a216e5162c90bc86f"
+  },
+  "cleanup-review/chrome/source.json": {
+    "bytes": 8729,
+    "sha256": "5dc7c0a211e9d43f4d5cf8ac69fb0d302dcdfb0a5c1bb6d20f65c847e6910d09"
+  },
+  "cleanup-review/final.patch": {
+    "bytes": 57160,
+    "sha256": "d2bb2145de9bd3e89964f8caa8ef4bd8d9275ff072076c6939569e7376340e6d"
+  },
+  "cleanup-review/mutations/missing-file-success.log": {
+    "bytes": 7956,
+    "sha256": "92b2e2e3948bf8ec2324a98b657712bc211e23cf69eb4d04c615eedb30bab259"
+  },
+  "cleanup-review/mutations/missing-file-success.xml": {
+    "bytes": 5802,
+    "sha256": "61d5d6ae523be2e986918438823a5191df8df46fa94d98ea949861d404b701a4"
+  },
+  "cleanup-review/mutations/no-legacy-registration.log": {
+    "bytes": 6703,
+    "sha256": "8d1c833dca490a739288528c0961e99d36e6672e95d2941a9dd70a7eb19fa5a7"
+  },
+  "cleanup-review/mutations/no-legacy-registration.xml": {
+    "bytes": 4386,
+    "sha256": "8ae6d2d636ccf0df271f7a8c32b2a9a56019107938b04da027b00528498edcb9"
+  },
+  "cleanup-review/node-initial-helper-edit.log": {
+    "bytes": 7832,
+    "sha256": "171460694b9cb0f5cb0d75cd4ea339232a997cfffec924196aa3f24b5e45176b"
+  },
+  "cleanup-review/node.log": {
+    "bytes": 8489,
+    "sha256": "03a33d875702c623b70ed3ff20d3d004d8d905dc7fbd13b33f6179a8c061a796"
+  },
+  "evidence_capture.py": {
+    "bytes": 2951,
+    "sha256": "3ed5a93a0f8c86ac5cefb06f8202eee599dcc9c46541d3b0059a6338683cb6b1"
+  },
+  "extract_queue_evidence.py": {
+    "bytes": 3397,
+    "sha256": "b5b20540460d940d42093d6d1a6af0fe82a32ad0f25b4c4b2bed52f99bce752d"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5800,
+    "sha256": "685f19446b3dbfdaed988233e80c56b6820406a8312a1f1830b6306781d6c4cf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10169,
+    "sha256": "d799c18b6c82e6d3613fda2b3db9a0ec4dfc0a91d0b9e8f9d07ddb2d98e13f9b"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 137891,
+    "sha256": "a6c4aa16b86db823eca2df2ef83aea7c03f920d5a2f51db76ead535127b90cb0"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 4323,
+    "sha256": "f5b97b7141c22a0c427c4740bb8a8e25397a515e7808b189fd181921537fe9b9"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10138,
+    "sha256": "5f1ce8d8ae8bedb7f08476294e642c0c5ece7788be4fbb9e2372307976a75756"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 135039,
+    "sha256": "7507bbd677f8068b4f8a5798767e25b2afc517238b2ba60716c26c3f9b4afb10"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/03-actual.png": {
+    "bytes": 4314,
+    "sha256": "d58f5902f41ca2a6e360ba8521585f4f925c3de05f8cf493c9446a9622661d5c"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/03-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/03-history.json": {
+    "bytes": 10156,
+    "sha256": "b2318847fcb989fb9f0058c07d5dbd30d9ccaf2c88649e0d9b6748e78de944ef"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/03-screen.png": {
+    "bytes": 135020,
+    "sha256": "692de1425d4ee7ab499d897d497a7855c02e040f0bce22061c0d469ce0467c96"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/04-actual.png": {
+    "bytes": 4314,
+    "sha256": "d58f5902f41ca2a6e360ba8521585f4f925c3de05f8cf493c9446a9622661d5c"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/04-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/04-history.json": {
+    "bytes": 10224,
+    "sha256": "f6f8beb77172860d26a362b07b579a0504cf8c5a3228b380e380bc1a7a9f6ca4"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/04-screen.png": {
+    "bytes": 135064,
+    "sha256": "c13bf85c39f86ac1fa1313f76657cdc211b6cf419cd46c0be38f44f1f3f97587"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 12248,
+    "sha256": "6562ede20e8c46463bebb935f0cb823081bcf6c71b81a19489719271cc7933b4"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/final.png": {
+    "bytes": 135064,
+    "sha256": "c13bf85c39f86ac1fa1313f76657cdc211b6cf419cd46c0be38f44f1f3f97587"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/painted-editor.png": {
+    "bytes": 113773,
+    "sha256": "ebf64d0174db0b5ffde15eb6eda6968da39706527c48e44a7d9885c7756efd02"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5448,
+    "sha256": "98168b092b043f7d66ca50ae5eefee74c29a71d5af4896daa6c739d0b1db3ba6"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9785,
+    "sha256": "c965dcb91596f25da15664fb798ee050e5cb77c050ec60545bd9194c0c8ff8d3"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 136911,
+    "sha256": "e26e8fd7d0775e465347435e906d62524e5d27fba08496a0051c4d2543cbdb37"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 3974,
+    "sha256": "dd3c7b9376897dab676ca7ed225ecef0f2d4d180b5f241b762a2c26b469e11bd"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9756,
+    "sha256": "d70ff21ff37d5528843b3f63c12d0971e7e481131461632d2a74cef8c26309a6"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 133984,
+    "sha256": "a6d6421214c1c83442c3b450c401b178fcbbd03caaf63810b3e5c7508895ad17"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/03-actual.png": {
+    "bytes": 3962,
+    "sha256": "3f77f0b9fcfa6ab5ba39649fc75d320e9c0dbc5fdb7067526b6ceb38892d06ae"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/03-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/03-history.json": {
+    "bytes": 9771,
+    "sha256": "8c559eb2a362b26ba8134dabe3b0431fd0f50a36953c709040da2dba75437364"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/03-screen.png": {
+    "bytes": 134028,
+    "sha256": "3c016f78faacccad39b83f1d8bda80f0cfcb2be908ed5c8dd3fbdd38dbb5f3fa"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/04-actual.png": {
+    "bytes": 3962,
+    "sha256": "3f77f0b9fcfa6ab5ba39649fc75d320e9c0dbc5fdb7067526b6ceb38892d06ae"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/04-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/04-history.json": {
+    "bytes": 9839,
+    "sha256": "7cf16abad38e58e9afb40a8e7f54aee1c2ed33b552388f25143edf63f3b66d82"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/04-screen.png": {
+    "bytes": 133938,
+    "sha256": "9e5e0641b2b7dcd1a24791578138e5087c351ba34544087562c873126ed1444e"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/records.json": {
+    "bytes": 11824,
+    "sha256": "32e85d04034f74328297a9a4679ef40dd7d3c51bfd732274fa0400ee1522a8b5"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/final.png": {
+    "bytes": 133938,
+    "sha256": "9e5e0641b2b7dcd1a24791578138e5087c351ba34544087562c873126ed1444e"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/painted-editor.png": {
+    "bytes": 122484,
+    "sha256": "123504eaf9c47c7c2972013fe8789740f4ad7735d753419dd0ec681b02da05e0"
+  },
+  "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 17518,
+    "sha256": "48535f52f113370c618c00d44dfd7e892e8a3d04a435e0d9abe749ba3b9d5651"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 4514,
+    "sha256": "d43a06be5f8c6284887be4e910485d0740b067c399e511552320625fefb481a8"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 20801,
+    "sha256": "0bceeddef58c162ebcd68473f6b3e4cb67a4af4d45869c8812add0638ed3f081"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 361522,
+    "sha256": "6939d3187c195dae95741ef200d1e92dbad9aced82f905a50740bf885c37b1ad"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 17518,
+    "sha256": "48535f52f113370c618c00d44dfd7e892e8a3d04a435e0d9abe749ba3b9d5651"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 4514,
+    "sha256": "d43a06be5f8c6284887be4e910485d0740b067c399e511552320625fefb481a8"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 20801,
+    "sha256": "0bceeddef58c162ebcd68473f6b3e4cb67a4af4d45869c8812add0638ed3f081"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 361450,
+    "sha256": "f79c98dfc89ddfcf012e5f14e41e95d09b84c08db3d094838f099ea6058f3399"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/03-actual.png": {
+    "bytes": 15893,
+    "sha256": "6379bd5e43f2a79707fe413f8b5797ccd47a20e35e76088461e97b600f074abd"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/03-expected.png": {
+    "bytes": 3804,
+    "sha256": "191faceb2ffa9895f1ef9a2e97ab7b3bb9ecb124347b6cc9d24bd67f69cb9cbf"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/03-history.json": {
+    "bytes": 20781,
+    "sha256": "82117897e8140c1f0e36f1af8e823049ea1dc7a4bca5ca560eac7cfd83bb7976"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/03-screen.png": {
+    "bytes": 352312,
+    "sha256": "cc4f20a8faab81d3743679411be943199869ea7d2832c30d096e609693e79592"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/04-actual.png": {
+    "bytes": 15893,
+    "sha256": "6379bd5e43f2a79707fe413f8b5797ccd47a20e35e76088461e97b600f074abd"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/04-expected.png": {
+    "bytes": 3804,
+    "sha256": "191faceb2ffa9895f1ef9a2e97ab7b3bb9ecb124347b6cc9d24bd67f69cb9cbf"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/04-history.json": {
+    "bytes": 20781,
+    "sha256": "82117897e8140c1f0e36f1af8e823049ea1dc7a4bca5ca560eac7cfd83bb7976"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/04-screen.png": {
+    "bytes": 352268,
+    "sha256": "e1f2637cf6a7272605a6b5a8da3a6964fd9410e9c2e4f20bae6fa6f60a43b7e9"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/05-actual.png": {
+    "bytes": 15837,
+    "sha256": "5f010977c0ee7c167cd1934a38ee98d9e4380689b06238719a04803013bb22f8"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/05-expected.png": {
+    "bytes": 3804,
+    "sha256": "191faceb2ffa9895f1ef9a2e97ab7b3bb9ecb124347b6cc9d24bd67f69cb9cbf"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/05-history.json": {
+    "bytes": 20669,
+    "sha256": "2fecbf60c9cd6a4c393ecdfe5c0a1c4215fc2289db5917f2bae2f67521f9be07"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/05-screen.png": {
+    "bytes": 386809,
+    "sha256": "cac073742bd069babfcbf39d6e4e50b28782226848ae648254b555bf1531e6a6"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/06-actual.png": {
+    "bytes": 15837,
+    "sha256": "5f010977c0ee7c167cd1934a38ee98d9e4380689b06238719a04803013bb22f8"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/06-expected.png": {
+    "bytes": 3804,
+    "sha256": "191faceb2ffa9895f1ef9a2e97ab7b3bb9ecb124347b6cc9d24bd67f69cb9cbf"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/06-history.json": {
+    "bytes": 20669,
+    "sha256": "2fecbf60c9cd6a4c393ecdfe5c0a1c4215fc2289db5917f2bae2f67521f9be07"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/06-screen.png": {
+    "bytes": 386809,
+    "sha256": "cac073742bd069babfcbf39d6e4e50b28782226848ae648254b555bf1531e6a6"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 34712,
+    "sha256": "b2f54839d0908160dcf48d2d300de92ca189c26274deb1e26e7e8274e440b9d6"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/edited-workflow.json": {
+    "bytes": 9798,
+    "sha256": "b56b71d184e0a021939576bc66ecdfd4622faa4bb923446cc3a1a4e3df3331d5"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/final.png": {
+    "bytes": 386809,
+    "sha256": "cac073742bd069babfcbf39d6e4e50b28782226848ae648254b555bf1531e6a6"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/legacy-sam-0.png": {
+    "bytes": 460206,
+    "sha256": "b6a0eac959a67d79b65d963a4db14dd7c756516d7bdc41960fa87d04741bdea7"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/legacy-sam-1.png": {
+    "bytes": 458251,
+    "sha256": "49675837eab2400314c97ea532a2ccc7b910cf4ca67d1b02a58bafa9c6ba8f6d"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/reloaded-workflow.json": {
+    "bytes": 9718,
+    "sha256": "5917e8eeb86982220e1db2f13c223d764fb17ae144fe16ecc52b3f20c4e4ab3c"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 15714,
+    "sha256": "944202f507dbeaf36b477b700a208bdd36a6adf85f3139c63cc41e7d0a392e8f"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 5347,
+    "sha256": "3e18a3b28232d08a8188a085ebaf589a6f6dd97af1ef40e7256cae0c86888fe6"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 11579,
+    "sha256": "3b184b97e1378f83065f4962af4d84b88295e419eabc841efc87487f96cb4473"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 327600,
+    "sha256": "b9fbc34ff857f3b72c3cbb61a15f5ab298ec6ba7cc715071f396cd36a779b0d9"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 13060,
+    "sha256": "cbccef5e3fae3e5094d73968ace3a6c7bb11401949ed1bd88ebc11b485bd7157"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 4109,
+    "sha256": "5a86c562033d6b759fd5e529434d0a92486e1323e8fde14d922a468d16f32734"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 11560,
+    "sha256": "8fe180c5b8f8859439eff422a343c643fe39fe1e06e67cc76968649418bf1937"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 320266,
+    "sha256": "a5dc9cd31660951ee8efadae1997ebcfe708e417bde31e9ceb4b16969577d95c"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/03-actual.png": {
+    "bytes": 13001,
+    "sha256": "2a90d3b13b2f19307183ca2869c110044a79629ec29c3d7eb26fa7e6daaec78d"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/03-expected.png": {
+    "bytes": 4109,
+    "sha256": "5a86c562033d6b759fd5e529434d0a92486e1323e8fde14d922a468d16f32734"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/03-history.json": {
+    "bytes": 11445,
+    "sha256": "ebe75eda9e6a88870451131784ed653fc8beb1a6de7a2774b97a9a7345201a8e"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/03-screen.png": {
+    "bytes": 356482,
+    "sha256": "78849b1cd70d17dd8d14d7143efa3a4c2f635f1bf20e6fc9eee8b4aaf6b95179"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/records.json": {
+    "bytes": 11040,
+    "sha256": "ceef01e0b95db278ff72a7eac5e00f4e96099f98478611626dadae8799382878"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/edited-workflow.json": {
+    "bytes": 5163,
+    "sha256": "b285ecc4af6cdf09ca9c80fbbe27b0fdc247b0e2de7c31df9834c1d251c0617b"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/final.png": {
+    "bytes": 356482,
+    "sha256": "78849b1cd70d17dd8d14d7143efa3a4c2f635f1bf20e6fc9eee8b4aaf6b95179"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/legacy-sam-0.png": {
+    "bytes": 457113,
+    "sha256": "d1fb8c4589b1ddbef70026e8effbf27ac18673d54527d4824dddb0b632a0ec21"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/legacy-sam-1.png": {
+    "bytes": 453951,
+    "sha256": "99135570693c67c0c8606a00511aa653f2642720846118965486757ed7a6bb18"
+  },
+  "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/reloaded-workflow.json": {
+    "bytes": 5082,
+    "sha256": "60a39aedf61a8e8abf8f3bd88b8246d6e26533f8b6dbd4b32c33903ddd1eb0f1"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5818,
+    "sha256": "79b261681b515dc4f7b2dda06e7dacf841be45b8fb9fa86e56263dae7578a8b3"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10158,
+    "sha256": "847147160fee6e05a67ae88b4396c887bb11ca93957918895ea54f898d26b895"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 139797,
+    "sha256": "25ba486aeb1eb657839247708b49514e4906e11f0aeef287525de9d27313617c"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 5754,
+    "sha256": "c2ed5717479512410ea01184da7f825ee3cb333485aa39c4d0d7f0d2047a2fd2"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10138,
+    "sha256": "4458931c8813b87f004a8c9cd84560d59f41e5c6ec8f7a4dee88604f32bf9d90"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 156886,
+    "sha256": "83f1f72d9244db2e0a62e956ba4b5dca284173a4e1ae335322f6678ec631e046"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 6340,
+    "sha256": "37b1aab7a802480e845068a63ba5e8913dcc8925d26056c38c9752f3686591cc"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/edited-workflow.json": {
+    "bytes": 4458,
+    "sha256": "793f8b2913959d31fd35f48efac309a58feb75542d321a02d5ef4b1598e7ef63"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/final.png": {
+    "bytes": 164707,
+    "sha256": "9588bfc81c61fcdf48d0995055134732ac2a87db751f7239f6354164d4e6238c"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/first-editor.png": {
+    "bytes": 115530,
+    "sha256": "ee27cbda4ed87b0657362f7ab7c79545653f4ea226b68f00b859d02bc371f409"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/first-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/reloaded-workflow.json": {
+    "bytes": 4436,
+    "sha256": "a7ba4d99576bd137a352621caa1875b8e3041294ef9e0789209c9b84a68b2bee"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5603,
+    "sha256": "d3662d7ff177daa6b303faa9daa9b5e2abb750585679528ad90ffd1802791b03"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9909,
+    "sha256": "5f26d2480a312abe39f975a04ba436c768ff78b0770db028687de2d362377ec7"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 137702,
+    "sha256": "728bf5f81c4947ddddf434d41cb42053e6c19696a31c26850eac3d52d2722da4"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 5486,
+    "sha256": "70aa0d6a0ec1a7bb869c68cc252334918d7e4b006408e6fb9445e9482a1f8889"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9808,
+    "sha256": "71cbe3a89c4c2b77975101a17eb4c9ffb7a0f8f359cf52de6d614766dbe980ae"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 152475,
+    "sha256": "db0f557e151cf6da8fb794dc9b1562f418baaaf0dfb7485c4a601bf67e0f12a9"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/records.json": {
+    "bytes": 6256,
+    "sha256": "c8778bf46c4302721800970d10ffd31fccd03249bcc5750785ec56a7aabdd76a"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/edited-workflow.json": {
+    "bytes": 4240,
+    "sha256": "2d61951e8d72b713b1a8383cd56ff4a057fb5d482f81cbae2213351612a3d649"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/final.png": {
+    "bytes": 160548,
+    "sha256": "f3713cd0b7149bf10f9e580d4d473c06c07f5e48005167c828b0ad14380b520c"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/first-editor.png": {
+    "bytes": 120953,
+    "sha256": "bb69e5c0b176ebe44000fffb7e32a54f6e7ffa4b097b16175f7ddd14d5f1299b"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/first-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/reloaded-workflow.json": {
+    "bytes": 4156,
+    "sha256": "5a84f19243ab9f97866a5b86a278e86f271664a36677a456e1e59b5b961a3c0c"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/before-restart-editor.png": {
+    "bytes": 113799,
+    "sha256": "1e2dc8719b396f5a7f336aedf6d3f31a673d51e76e2aba67235290e26035e59b"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/before-restart-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5800,
+    "sha256": "f07fc6f78f34b74287ba6dd014846ff5824be8a70453068885480641c756e0cf"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10169,
+    "sha256": "0fec83c102d940f50e8b04f086dca545d34653b37171bcec55ba06392a701008"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 137809,
+    "sha256": "8ac0d6f5e15e4b4b591cff3d41347384ad729d2833497b406a5f39c199a58d4d"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 5800,
+    "sha256": "c41f20199fce14f1b5d9bfb047b63b3ab77cc8f2e13ed6bae678d938ca2ff7d3"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10138,
+    "sha256": "eaad90c55f9c746c7e3ef2e0e4fc675c17471aac26a4d6a911465f72a9317b94"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 141423,
+    "sha256": "a987b4f3d08341e2b5b67ba816e2f87162e46acef3ba191a775f9eca382c3a11"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/03-actual.png": {
+    "bytes": 5746,
+    "sha256": "df3b671e00941483cc0bfc52f78e14b7f379a2300416ab6c624261f4cc25a5c7"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/03-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/03-history.json": {
+    "bytes": 10156,
+    "sha256": "3cfa432f55c97a1c01b0ca477d0901096db8e5fb7101d6d87b872c1a6fb538f0"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/03-screen.png": {
+    "bytes": 141188,
+    "sha256": "979e674faa498c666e6ff45558e4cb488919a9264695286fd1964887403e5032"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/04-actual.png": {
+    "bytes": 5746,
+    "sha256": "df3b671e00941483cc0bfc52f78e14b7f379a2300416ab6c624261f4cc25a5c7"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/04-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/04-history.json": {
+    "bytes": 10224,
+    "sha256": "fefa131444d82df4d156ebea2437de4282a5d5ae22decb2aa503c2c3ee00a64d"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/04-screen.png": {
+    "bytes": 141271,
+    "sha256": "a5705aa6e9d3f21ea50df792435576255f2354c0e48dd9b4905b5550e53e76fc"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 12266,
+    "sha256": "ed97f51f93a3c8fd1cd815d0103999af58f72502545e672fc3db8531abc710d5"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/final.png": {
+    "bytes": 141271,
+    "sha256": "a5705aa6e9d3f21ea50df792435576255f2354c0e48dd9b4905b5550e53e76fc"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/before-restart-editor.png": {
+    "bytes": 119252,
+    "sha256": "6e3e61dd317e1b0f855406ad46b6ad4941c72e36b2550bb0f6867599683f9b57"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/before-restart-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5585,
+    "sha256": "a3fd70cf485a21e88efb64c747ce5e7fc887be71cb2025bf3e37b011eb311989"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9923,
+    "sha256": "903899738ee70db8c937404ae94f6de0c8d1b6a91025d89ae0db476b8f6a3283"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 135380,
+    "sha256": "2636e79185d6c23ffe2d3d8289bba2dcaef834ed2b691c89608f27e0b3cbfba5"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 5585,
+    "sha256": "c895c4c90398a203f6d45fa1004fc57dbb8eaecd0d1bcda90fcc67f021824ad5"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9890,
+    "sha256": "2575c5b8c95fd8cbaf855297b5abeb2aa8c2155944b207914fbd9da7c6f553e3"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 139099,
+    "sha256": "2de9ef645518a8ed254c1660420391907761621af1ed7ddf36ea7bdbc17aed3f"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/03-actual.png": {
+    "bytes": 5528,
+    "sha256": "d026bfcb4d5bdb25e6dd1a4d834a953f76cc0befc3fd36c2648e792a5d8f181c"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/03-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/03-history.json": {
+    "bytes": 9905,
+    "sha256": "6d0efae0e0bc97ab07fafae22711f0c4074e69c2fba168f93f298adec270fc2e"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/03-screen.png": {
+    "bytes": 138906,
+    "sha256": "85e306ec560409aaa146e990331365ba0fbc5767db3dd58e7209955f1cff3aeb"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/04-actual.png": {
+    "bytes": 5528,
+    "sha256": "d026bfcb4d5bdb25e6dd1a4d834a953f76cc0befc3fd36c2648e792a5d8f181c"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/04-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/04-history.json": {
+    "bytes": 9973,
+    "sha256": "60b9d593bf424be927e5dbe24258e92e2ecb8c5945b929a86053fd666b5c47d3"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/04-screen.png": {
+    "bytes": 138985,
+    "sha256": "4c41ff80db3dc138e262212e2045be3c477ccae202af8239a3f94860ca018d25"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/records.json": {
+    "bytes": 12103,
+    "sha256": "9d7a2a5af061fca6ec12cb48b847db6d3ba10fd50354852a2cd44f78e870aedb"
+  },
+  "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/final.png": {
+    "bytes": 138985,
+    "sha256": "4c41ff80db3dc138e262212e2045be3c477ccae202af8239a3f94860ca018d25"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/final.png": {
+    "bytes": 133887,
+    "sha256": "9d299f5c77cef0c6dd619feb1e078f6f93d553ce75b39c8d480ac1127fd20ed1"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-1-mask.png": {
+    "bytes": 82,
+    "sha256": "e7bdc527afd649f51950b4524b0c15aecaf7f484448a6cdfcdc2ecd9bba0f5a7"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-1.png": {
+    "bytes": 133991,
+    "sha256": "312432dbc6c030e52e5a0e0a5dea703f86b2cdcdaa75c1be8d8cc28f1edbcc40"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-2-mask.png": {
+    "bytes": 82,
+    "sha256": "e7bdc527afd649f51950b4524b0c15aecaf7f484448a6cdfcdc2ecd9bba0f5a7"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-2.png": {
+    "bytes": 133826,
+    "sha256": "a491dad16dc0910b67775e55bea9b15844dfb4e55ec1cf1ba5e4d08268435d79"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-3-mask.png": {
+    "bytes": 82,
+    "sha256": "e7bdc527afd649f51950b4524b0c15aecaf7f484448a6cdfcdc2ecd9bba0f5a7"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-3.png": {
+    "bytes": 133887,
+    "sha256": "9d299f5c77cef0c6dd619feb1e078f6f93d553ce75b39c8d480ac1127fd20ed1"
+  },
+  "feedback-fixes/green-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queues.json": {
+    "bytes": 751,
+    "sha256": "21f00b0d893185e5342b0433233aed15cdf60f72226dee0414b8ad3a6a4da91b"
+  },
+  "feedback-fixes/green-chrome/browser.log": {
+    "bytes": 9496,
+    "sha256": "d309a3041fce2fe6369a3c82ffccd33181d44af0de5fdb953cf9175bf089c8d6"
+  },
+  "feedback-fixes/green-chrome/browser.xml": {
+    "bytes": 9048,
+    "sha256": "4e8ca10dd645cd192477c09c2295487919b1ced3edc7ce87bd9d96e294fc4083"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00049_.png": {
+    "bytes": 3012,
+    "sha256": "6d782dc03d3734a4b244325bec0548a4395af2190d6e22b0bf7dd682acfcca86"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00050_.png": {
+    "bytes": 5585,
+    "sha256": "ba613ecc45ffe9bd9ada0a9eb74aa7500cf9c77cc2d66785afec08e91a8deae9"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00051_.png": {
+    "bytes": 5603,
+    "sha256": "d3662d7ff177daa6b303faa9daa9b5e2abb750585679528ad90ffd1802791b03"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00052_.png": {
+    "bytes": 5486,
+    "sha256": "70aa0d6a0ec1a7bb869c68cc252334918d7e4b006408e6fb9445e9482a1f8889"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00053_.png": {
+    "bytes": 3265,
+    "sha256": "1b0e5161b85ad38a7d1c5ef8ff9a96c3d6861c0f6b751b7ea820ffedaf91aede"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00054_.png": {
+    "bytes": 5800,
+    "sha256": "d082f9f442d00a1c4d42f59ae3d8c94b1598db93f46ab90e31175b561e9a16d3"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00055_.png": {
+    "bytes": 5818,
+    "sha256": "79b261681b515dc4f7b2dda06e7dacf841be45b8fb9fa86e56263dae7578a8b3"
+  },
+  "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00056_.png": {
+    "bytes": 5754,
+    "sha256": "c2ed5717479512410ea01184da7f825ee3cb333485aa39c4d0d7f0d2047a2fd2"
+  },
+  "feedback-fixes/green-chrome/server.log": {
+    "bytes": 60362,
+    "sha256": "f785a6a43fb6da1cb35cd63717e8d6fc423ce7edd44500332f4c85a273706c50"
+  },
+  "feedback-fixes/green-chrome/source.json": {
+    "bytes": 8631,
+    "sha256": "014ed5c287289a39020e48ede51912479bef9ea33f57b0183ea9026b4ac13755"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/before-restart-editor.png": {
+    "bytes": 113782,
+    "sha256": "0a6c5801e9b2e70d41de868d840f99d7db08516cbf8c33c4484343c5bbab8a45"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/before-restart-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5800,
+    "sha256": "39b11a162331f628065670e7c5635be7f68e85ea68277a35666716e659ff7394"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10169,
+    "sha256": "162f8dee33488651aa9de60f95b5167660b6638877d45f57efcd573e637a5371"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 137909,
+    "sha256": "45730e2dbc3c1c31bc7c32bed79052e6352e2174bb34a739686ae34a7fdf534c"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 3505,
+    "sha256": "29b6a9c25c27da89cf95173eead0570df0c3b439f5c433e40fb3b520775aafcd"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10136,
+    "sha256": "855a4340929ae2af8bc26a484a821f052508db908f9ee0f45eb66a318cb14a4e"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 138949,
+    "sha256": "3e4237c20146b91125f4a367bd0aeabc9e493b67ca94dfaf23a055a96ea042c3"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 6136,
+    "sha256": "21af220d9d1cd444b960a817798abf7645bc43cbe180eba225f69e0398c9e21b"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/final.png": {
+    "bytes": 138877,
+    "sha256": "9184a7e76c4c849e8833e904d8fa9e8565862a0ce6b32bb2e207a60c58d51d0a"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/before-restart-editor.png": {
+    "bytes": 119372,
+    "sha256": "17417cab9ee6401fcd1fafd0159af170f50c53a4271aa8c56d3e67f7027afab5"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/before-restart-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5585,
+    "sha256": "ea5ec5828a9969620017d330ae8e8cd9a1118b8c371234722deee269b7869a1d"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9923,
+    "sha256": "04f0e129f99ec48c44df247432cb9fcd3f1ad9379199b3f0564192b5279e3419"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 135440,
+    "sha256": "d201903bec0142e79fd1ba06c69c2bade7d88b1a0510894a881ce981c886ea21"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 3303,
+    "sha256": "0e1eb2d3779a4d65f38967924d15c1995909bdc8a94c2a101c9f9ddd8518d8d9"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9888,
+    "sha256": "e837f848ccb1ff12187f89a8bb89e5332ee0dc7dbdb33d1e58074d6bda5e9e76"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 136133,
+    "sha256": "3c373da0b648ffe1dddc3d36933d54de8111609c92ed0625fc3e302eb93cb8cb"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/records.json": {
+    "bytes": 6052,
+    "sha256": "6db1b2198d576911fb738f5e2fcea4360364af905f896862e99e9f625048f08f"
+  },
+  "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/final.png": {
+    "bytes": 136059,
+    "sha256": "6dca1828d34ef9ac6f3f17a92039db4529dd05eb722f3773dc31cf655d2a149f"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/final.png": {
+    "bytes": 133943,
+    "sha256": "a898911cea91bfbeae8bc2b1d0dad13adc4bc9063361903e21d9fa8b06cca735"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-1-mask.png": {
+    "bytes": 82,
+    "sha256": "e7bdc527afd649f51950b4524b0c15aecaf7f484448a6cdfcdc2ecd9bba0f5a7"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-1.png": {
+    "bytes": 134024,
+    "sha256": "3715cf641562d905db6d15217aef479570f515cd3242722171058255325e8409"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-2-mask.png": {
+    "bytes": 84,
+    "sha256": "7373d93c0cc4bf540ee0e6279ba16a8694eb8bffd10a83bcbaaaf02af9dc7716"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-2.png": {
+    "bytes": 133942,
+    "sha256": "78e78a158a1b20302fb4d46479e0b08b6de74c43f7e9d56e3163c51d7516a6f6"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-3-mask.png": {
+    "bytes": 84,
+    "sha256": "7373d93c0cc4bf540ee0e6279ba16a8694eb8bffd10a83bcbaaaf02af9dc7716"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queue-3.png": {
+    "bytes": 133943,
+    "sha256": "a898911cea91bfbeae8bc2b1d0dad13adc4bc9063361903e21d9fa8b06cca735"
+  },
+  "feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]/queues.json": {
+    "bytes": 743,
+    "sha256": "a800fe91775f0151718aff9bff8e6dd195cfd5b79130888717b65aa8612a2154"
+  },
+  "feedback-fixes/red-chrome/browser.log": {
+    "bytes": 12437,
+    "sha256": "d2cc936efef94030e96adc2360e413a7d3b7d8190192c1a01343d7afb87d3d58"
+  },
+  "feedback-fixes/red-chrome/browser.xml": {
+    "bytes": 8718,
+    "sha256": "c23691d2f2cb20a0fb786835d2ad4d1ce7c6a37daf97704961d637bcb4c4b312"
+  },
+  "feedback-fixes/red-chrome/server.log": {
+    "bytes": 42690,
+    "sha256": "f55dac730629f75d2c402e63e39a1a507d1f44da77d154e49f41bbecde7d9d2b"
+  },
+  "feedback-fixes/red-chrome/source.json": {
+    "bytes": 8791,
+    "sha256": "793c66d22df5e2ec740ecca126c0dc3decccbc0d2d2f1053f76c912eff1f6420"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 5815,
+    "sha256": "3903e0dd4d6279a220b4de17d1d40ed92578b97d037be87cd15f8802018c977e"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 9996,
+    "sha256": "bc596a691b9d8eef4a915c0c49797340ad4eb6dbf49e4b02c9495eb3b0a69e99"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 137782,
+    "sha256": "c1da168feac87dfa103d5c16b0c87d9db1daef34d4866dd5db63a79ec123f200"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-actual.png": {
+    "bytes": 5815,
+    "sha256": "7ff4a345d59ab4c9f576efe2df84a0ee26b80d6a1ac71edbae3738a05aaaeecd"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-history.json": {
+    "bytes": 10074,
+    "sha256": "737ef4328dc4dd627e7f226ae1c3cf166b017c1757a68563e21eb0a9e8f1ffc9"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-screen.png": {
+    "bytes": 138018,
+    "sha256": "a445b3e16eb52dca53790dc5bd0652af559e43f33309a447894955ee63683122"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 6110,
+    "sha256": "a79c4221139954278e59ef58ec50ae80d27bd826f61ba8626832012c0b6701b6"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/final.png": {
+    "bytes": 138018,
+    "sha256": "a445b3e16eb52dca53790dc5bd0652af559e43f33309a447894955ee63683122"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/painted-editor.png": {
+    "bytes": 113723,
+    "sha256": "e92456eded6b25ca059ffcd9bc03a51cca8fc0a10cb5317cbf16dcacf61a9288"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 5463,
+    "sha256": "e9c95cb22be67fabeb9bfba8e8e00961032422de9352adcdf1a683bfffa4d09d"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9612,
+    "sha256": "bbfca9e61a7d8de6ec961625d69f32c8092b79365522cecffd10f2ed54c1720b"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 136965,
+    "sha256": "bdd3919bf2b567e3c88fb1e396fc1cb0ffecb46ab05de2ac689d2fdd8d79b242"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-actual.png": {
+    "bytes": 5466,
+    "sha256": "a2309ee420552b995825588b065dc588a265d91be5809f030463628231a2a790"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-expected.png": {
+    "bytes": 141,
+    "sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-history.json": {
+    "bytes": 9692,
+    "sha256": "811d087dc301bcb683ffb1df82a18d6b4c7ac139b1339c5b81263122e66b6e95"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-screen.png": {
+    "bytes": 136680,
+    "sha256": "2facbebf5bde5b8dd01e27e7cde5181011446d5cb98886fdd3e72c6a03f52963"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/records.json": {
+    "bytes": 5899,
+    "sha256": "dd8bca7734660375c3a43f5c02b0ebdb900c943fb83894628e8c0f68e20692ce"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/final.png": {
+    "bytes": 136680,
+    "sha256": "2facbebf5bde5b8dd01e27e7cde5181011446d5cb98886fdd3e72c6a03f52963"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/painted-editor.png": {
+    "bytes": 122405,
+    "sha256": "627cc5ce206269ab08c869fab2c308a04b190a4fbbfb2a785d47288bfb56aee1"
+  },
+  "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/painted-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 7354,
+    "sha256": "ea82179436d7a56c012d385639f845b1678f5c27aa53a6783a39126c75f106fb"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 4514,
+    "sha256": "d43a06be5f8c6284887be4e910485d0740b067c399e511552320625fefb481a8"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 20442,
+    "sha256": "8d5cc4334ad9032d0073a36c96da27ea33dc4ce78851b6037775fd80c1db2731"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 360746,
+    "sha256": "e7fe62bc74b847ed3006236648d2bafd6fd7b0bbfd26321a4d48f53f8f2bef7d"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 5625,
+    "sha256": "4a05daf36b7a1a507684ed3db1e9e80972f479930a5032ae3707ba1203757241"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/final.png": {
+    "bytes": 360559,
+    "sha256": "df1a400cd7989bd83eb0d06ee9b8cbdccbdaa124696aa4d3b66174d99c7bfa58"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/legacy-sam-0.png": {
+    "bytes": 460332,
+    "sha256": "179584f564d3aab9610c7520fd595efc344043d355fc38461c17f68a55ceae69"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 4027,
+    "sha256": "ac412c684bd04fa2adcede4259f4b9afb77fd6ce349c011ae413b313861b5c45"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 5347,
+    "sha256": "3e18a3b28232d08a8188a085ebaf589a6f6dd97af1ef40e7256cae0c86888fe6"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 11465,
+    "sha256": "c9b3cd4f55bf470d9f682fb527438f311092e7944db0e06bce7bab601b361227"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 326174,
+    "sha256": "96fffb0ded5dc4ad639c5f8004d6cd6565a8a534972e7179664476aacc27f499"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/records.json": {
+    "bytes": 3601,
+    "sha256": "2d01663900c3db9506fa0beca927f2d88143627a8ae9a150f8f4bbe337480d06"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/final.png": {
+    "bytes": 326174,
+    "sha256": "96fffb0ded5dc4ad639c5f8004d6cd6565a8a534972e7179664476aacc27f499"
+  },
+  "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/legacy-sam-0.png": {
+    "bytes": 457113,
+    "sha256": "d1fb8c4589b1ddbef70026e8effbf27ac18673d54527d4824dddb0b632a0ec21"
+  },
+  "feedback-fixes/red-pr1172/browser.log": {
+    "bytes": 9097,
+    "sha256": "38999df05dc16e3a3028227cb6cf99932ff2c398752639104a172680ddc9ee9b"
+  },
+  "feedback-fixes/red-pr1172/browser.xml": {
+    "bytes": 6291,
+    "sha256": "ea00bc4fc43b7edb6858c0943fa4ce2906bd6923fe8ab7bc3a793ac18d206e3c"
+  },
+  "feedback-fixes/red-pr1172/server.log": {
+    "bytes": 10304,
+    "sha256": "e99936d7d3d5a2510c065beeb4077004c56f57581834697cfa1dd5f4cd10e580"
+  },
+  "feedback-fixes/red-pr1172/source.json": {
+    "bytes": 8776,
+    "sha256": "258b85dc58ff6fdac7826ada98e4d8bb7d687c92ddb00e16c23adbcb9d589b65"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-actual.png": {
+    "bytes": 3523,
+    "sha256": "c2916a1f0b20c64465a14ed1c79dcbb511a8ed5960f4fa380f0a833e612cfec6"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-history.json": {
+    "bytes": 10154,
+    "sha256": "14482215e311824ddc716a780d7f69a1e742ac398bb2811df69a63d4f4f65ebf"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-screen.png": {
+    "bytes": 137294,
+    "sha256": "27fa3475e1cbd3ce0dd2a3908af55956c951347b3c3954b29f3daafa7f662eee"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/records.json": {
+    "bytes": 3074,
+    "sha256": "3ebbf61369e69d83e649863cb438fba3ca55e3cc17e712abe0acab8b47d722d2"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/final.png": {
+    "bytes": 137292,
+    "sha256": "2ab5fcbdb39d540b7930d2f3690962c92d8ef4a576c3ebe2cb506b6011c7bb98"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/first-editor.png": {
+    "bytes": 115597,
+    "sha256": "c934a5ba443b72d917671e2ea5ffc1760967b8c21050ea4cb926d090b0edc741"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/first-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-actual.png": {
+    "bytes": 3184,
+    "sha256": "54343f64c3cf6dd039b7aad3182531a4a5c1c00fe011acd275ae8376884682e0"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-expected.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-history.json": {
+    "bytes": 9769,
+    "sha256": "0d6e77f1774727496d806a4645e875ac237e264e54e70af4a6e4c9ca7402b5eb"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-screen.png": {
+    "bytes": 136354,
+    "sha256": "d4a2ac43492c7e3f168b65deff5e99f868eb560339d3a6c502b9410255568c38"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/records.json": {
+    "bytes": 2964,
+    "sha256": "2521b5ba93c649fc1f51430a06870d443301bd4f0ce4349421e95a61cb5bda30"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/final.png": {
+    "bytes": 136350,
+    "sha256": "e6ac0159e01d3bcfb8402a34bea5f4f77627b1c4a8faf1a61c62969cd20fadd1"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/first-editor.png": {
+    "bytes": 124245,
+    "sha256": "36730d5230328b98f19d3c020f31132a020e89661a3b3a0ff6592508f52e0a9a"
+  },
+  "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/first-expected-mask.png": {
+    "bytes": 922,
+    "sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065"
+  },
+  "feedback-fixes/red-shared/browser.log": {
+    "bytes": 5541,
+    "sha256": "440366a5abaef240621e0f7ce257ae9876890fe496a73608cb5800ca47ab836a"
+  },
+  "feedback-fixes/red-shared/browser.xml": {
+    "bytes": 2783,
+    "sha256": "099adf6ef235e8aaf1cff8a9d7a70db8dbecd49f2521a7bd0e0a2155154c800e"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00001_.png": {
+    "bytes": 2875,
+    "sha256": "dadd63285444a6ccd36e57c754c41d8ffd682c3c8cd4fb5842bad1c006f00edc"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00002_.png": {
+    "bytes": 5448,
+    "sha256": "8c970bed396f5b1a8182909c5d7318b6550997c33f50d52289f7e3bd594cf84e"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00003_.png": {
+    "bytes": 3184,
+    "sha256": "54343f64c3cf6dd039b7aad3182531a4a5c1c00fe011acd275ae8376884682e0"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00004_.png": {
+    "bytes": 3265,
+    "sha256": "b8578118dadca1b882661c2214563627ec65b0cb8c5b090edb53ca8265e427af"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00005_.png": {
+    "bytes": 5800,
+    "sha256": "378a16612cc59d575e3d3e4d5a202aa37c18985f123823036e001d296d767400"
+  },
+  "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00006_.png": {
+    "bytes": 3523,
+    "sha256": "c2916a1f0b20c64465a14ed1c79dcbb511a8ed5960f4fa380f0a833e612cfec6"
+  },
+  "feedback-fixes/red-shared/server.log": {
+    "bytes": 9222,
+    "sha256": "90358bff8132dcc354f1ea464141c09493c62d63bf8aba8db1d75004dc0ad8b9"
+  },
+  "feedback-fixes/red-shared/source.json": {
+    "bytes": 8841,
+    "sha256": "f34d9ff87da127a09be4dac6079cecffed2384484a71b378e55c330de541cf0a"
+  },
+  "final-state.json": {
+    "bytes": 8328,
+    "sha256": "d293d51d02257f07ac98f45e3f336e538d9778736b271f32e5e9a13febf05c2c"
+  },
+  "red-green/clear-image.png": {
+    "bytes": 250426,
+    "sha256": "d31bdcaf1f279019b94d9b6a74f370aacc5e63fa7a1ec5d5c20018a215bd010a"
+  },
+  "red-green/clear-latent.png": {
+    "bytes": 259735,
+    "sha256": "3762263993f0cbb63c515ccedb72047965baf9ef45825237b8da32ded9b13a89"
+  },
+  "red-green/manifest.json": {
+    "bytes": 18952,
+    "sha256": "066fc327f5fc287acb2b6eaa626f59e6b01fb600ab95eb19945f9b7446a934f4"
+  },
+  "red-green/requeue-latent.png": {
+    "bytes": 264837,
+    "sha256": "5e82130c7a188375186f433de8269b050bb874a81214dfed95afc19f9551b02f"
+  },
+  "red-green/requeue-manifest.json": {
+    "bytes": 15192,
+    "sha256": "fbcf1c10ace06db70055fc9ccdaf77d1311749a47d0ccc36639c56775860113c"
+  },
+  "red-green/restart-image.png": {
+    "bytes": 269294,
+    "sha256": "c93e1b996521037f1bd766033834f4dc6382e7f1ad5c9bcf4b77b8717c3fa41d"
+  },
+  "red-green/restart-latent.png": {
+    "bytes": 270430,
+    "sha256": "7bbd19181e443cd2d52c02f80351521c1c54280c031f0bb479c5abd20f4fd05b"
+  },
+  "red-green/sam-image.png": {
+    "bytes": 355513,
+    "sha256": "b98f735cb50a95f64d76e4b8654cb12138c612dcf006738833c51b1780f2107c"
+  },
+  "red-green/sam-latent.png": {
+    "bytes": 398440,
+    "sha256": "a283ede5429d614d10452d19a2ef1d5faec17650954591678b3e27014bc16767"
+  },
+  "red-green/shared-image.png": {
+    "bytes": 330553,
+    "sha256": "69936b6c70f11be81813452b03de173f58506f47aef686961b1bf16b2d318704"
+  },
+  "red-green/shared-latent.png": {
+    "bytes": 274235,
+    "sha256": "7a58bf0a7f11eb289d5b7f6e41a692ca6bae90136f0305355359d793291da30b"
+  },
+  "render_review_evidence.py": {
+    "bytes": 12140,
+    "sha256": "0bb2fb2879863a7de6b78e291d1630b9fa0579b7f71b22d7206be45ffdf39462"
+  },
+  "retime-prepare/followup.patch": {
+    "bytes": 106878,
+    "sha256": "a1822c01e368f53b9dd4913e213561caaced2c32afc3298e9a2613fc849d87d7"
+  },
+  "retime-prepare/rewrite.json": {
+    "bytes": 756,
+    "sha256": "e1b6955d6a52ee9fbf1140b847ef06644dc82711d03cab5afc636f7ae39613cb"
+  },
+  "retime-prepare/working-tree.patch": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "review-batch-red.xml": {
+    "bytes": 3592,
+    "sha256": "ea2be40c02394cf1fa179440a57e9ef633d047957a747b31cae37c5f8f66f986"
+  },
+  "shared-reference-sequence.json": {
+    "bytes": 9668,
+    "sha256": "f5f4f41ef1697cc3ff9dfc682edb0de80ee03aa68e203fb2ae28cf4282e5c3ea"
+  }
+}

@@ -1,0 +1,88 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1172-followup/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 64 items
+run-last-failure: rerun previous 10 failures first
+
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge] PASSED [  1%]
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent] PASSED [  3%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge] PASSED [  4%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent] PASSED [  6%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent] PASSED [  7%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent] PASSED [  9%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge] PASSED [ 10%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent] PASSED [ 12%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge] PASSED [ 14%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent] PASSED [ 15%]
+tests/test_e2e_preview_bridge.py::test_edit_mask_repeat_and_native_reload[positional-PreviewBridge] PASSED [ 17%]
+tests/test_e2e_preview_bridge.py::test_edit_mask_repeat_and_native_reload[positional-PreviewBridgeLatent] PASSED [ 18%]
+tests/test_e2e_preview_bridge.py::test_edit_mask_repeat_and_native_reload[named-PreviewBridge] PASSED [ 20%]
+tests/test_e2e_preview_bridge.py::test_edit_mask_repeat_and_native_reload[named-PreviewBridgeLatent] PASSED [ 21%]
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[if_same_size-PreviewBridge] PASSED [ 23%]
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[if_same_size-PreviewBridgeLatent] PASSED [ 25%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[always-PreviewBridge] PASSED [ 26%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[always-PreviewBridgeLatent] PASSED [ 28%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[if_same_size-PreviewBridge] PASSED [ 29%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[if_same_size-PreviewBridgeLatent] PASSED [ 31%]
+tests/test_e2e_preview_bridge.py::test_image_clipspace_feedback_for_repeated_edits PASSED [ 32%]
+tests/test_e2e_preview_bridge.py::test_vue_paint_and_mask_survive_native_reload PASSED [ 34%]
+tests/test_e2e_preview_bridge.py::test_image_mask_controls_downstream_composite PASSED [ 35%]
+tests/test_e2e_preview_bridge.py::test_latent_mask_is_visible_and_editable_in_second_bridge PASSED [ 37%]
+tests/test_e2e_preview_bridge.py::test_block_waits_for_mask_and_then_allows_downstream[PreviewBridge] PASSED [ 39%]
+tests/test_e2e_preview_bridge.py::test_block_waits_for_mask_and_then_allows_downstream[PreviewBridgeLatent] PASSED [ 40%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[same_size-never] PASSED [ 42%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[same_size-always] PASSED [ 43%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[same_size-if_same_size] PASSED [ 45%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[new_size-never] PASSED [ 46%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[new_size-always] PASSED [ 48%]
+tests/test_e2e_preview_bridge.py::test_new_image_refreshes_preview_and_obeys_restore_mask[new_size-if_same_size] PASSED [ 50%]
+tests/test_e2e_preview_bridge.py::test_restored_latent_mask_reaches_the_next_bridge[restored_after_resize] PASSED [ 51%]
+tests/test_e2e_preview_bridge.py::test_restored_latent_mask_reaches_the_next_bridge[discarded_after_resize] PASSED [ 53%]
+tests/test_e2e_preview_bridge.py::test_registration_failure_blocks_queue_and_recovers PASSED [ 54%]
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[new_edit-PreviewBridge] PASSED [ 56%]
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[new_edit-PreviewBridgeLatent] PASSED [ 57%]
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge] PASSED [ 59%]
+tests/test_e2e_preview_bridge.py::test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent] PASSED [ 60%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridge] PASSED [ 62%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridge] PASSED [ 64%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_context_menu_and_clipspace_reopen PASSED [ 65%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_keyboard_cancel_resize_and_change_image PASSED [ 67%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_detect_save_and_native_reload[input-positional] PASSED [ 68%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_detect_save_and_native_reload[input-named] PASSED [ 70%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_detect_save_and_native_reload[output_subfolder-positional] PASSED [ 71%]
+tests/test_e2e_legacy_sam.py::test_legacy_sam_detect_save_and_native_reload[output_subfolder-named] PASSED [ 73%]
+tests/test_e2e_widget_catalog.py::test_catalog_contains_every_registered_node PASSED [ 75%]
+tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[positional] PASSED [ 76%]
+tests/test_e2e_widget_catalog.py::test_all_widgets_survive_native_workflow_load[named] PASSED [ 78%]
+tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[SEGSLabelFilterDetailerHookProvider] PASSED [ 79%]
+tests/test_e2e_widget_catalog.py::test_label_preset_initial_value_and_selection[ImpactSEGSLabelFilter] PASSED [ 81%]
+tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[positional] PASSED [ 82%]
+tests/test_e2e_widget_catalog.py::test_label_filter_hook_executes_after_native_load[named] PASSED [ 84%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[name] PASSED [ 85%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[order] PASSED [ 87%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value] PASSED [ 89%]
+tests/test_e2e_widget_catalog.py::test_recorder_preserves_trusted_fixtures_on_failure[value_type] PASSED [ 90%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[success] PASSED [ 92%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[pageerror] PASSED [ 93%]
+tests/test_e2e_widget_catalog.py::test_recorder_publishes_only_after_successful_session[trace] PASSED [ 95%]
+tests/test_sam_api.py::test_sam_rejects_invalid_path_on_retry[unknown-type] PASSED [ 96%]
+tests/test_sam_api.py::test_sam_rejects_invalid_path_on_retry[filename-escape] PASSED [ 98%]
+tests/test_sam_api.py::test_sam_rejects_invalid_path_on_retry[subfolder-escape] PASSED [100%]
+
+=============================== warnings summary ===============================
+test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/green-chrome/browser.xml -
+================== 64 passed, 1 warning in 1179.93s (0:19:39) ==================

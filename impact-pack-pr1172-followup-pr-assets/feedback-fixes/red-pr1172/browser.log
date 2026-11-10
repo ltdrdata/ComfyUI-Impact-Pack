@@ -1,0 +1,121 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1172-followup/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge] FAILED [ 25%]
+tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent] FAILED [ 50%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge] FAILED [ 75%]
+tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent] FAILED [100%]
+
+=================================== FAILURES ===================================
+______ test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge] _______
+tests/test_e2e_preview_bridge.py:334: in test_clear_mask_then_refresh_keeps_it_empty
+    mask_output(browser, browser.run(), mask, empty)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:134: in pixels_equal
+    assert difference.max() <= tolerance, f"Pixels differ: max error {difference.max()} > {tolerance}"
+E   AssertionError: Pixels differ: max error 255 > 1
+E   assert np.int16(255) <= 1
+E    +  where np.int16(255) = <built-in method max of numpy.ndarray object at 0x7543f1446f70>()
+E    +    where <built-in method max of numpy.ndarray object at 0x7543f1446f70> = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (354fd05f-0cbb-4bd7-b44b-5d3eece9d031)
+PASS: UI Run completed (a3813d92-805b-4b91-bf1b-64e805d004f9)
+PASS: UI Run completed (9d824752-69b0-4431-a3c4-dddbb6aaf5b4)
+___ test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent] ____
+tests/test_e2e_preview_bridge.py:334: in test_clear_mask_then_refresh_keeps_it_empty
+    mask_output(browser, browser.run(), mask, empty)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:134: in pixels_equal
+    assert difference.max() <= tolerance, f"Pixels differ: max error {difference.max()} > {tolerance}"
+E   AssertionError: Pixels differ: max error 255 > 1
+E   assert np.int16(255) <= 1
+E    +  where np.int16(255) = <built-in method max of numpy.ndarray object at 0x7543f1447330>()
+E    +    where <built-in method max of numpy.ndarray object at 0x7543f1447330> = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (746a8512-d1f8-470f-992d-1fe5b5832cb7)
+PASS: UI Run completed (2b87d379-c3a0-45da-8964-e1362f57a117)
+PASS: UI Run completed (f09c42cd-f9ca-425c-bf57-6ba36dcf04b3)
+_ test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge] _
+tests/test_e2e_preview_bridge.py:419: in test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (352, 512)
+E   assert (64, 64) == (352, 512)
+E     
+E     At index 0 diff: 64 != 352
+E     
+E     Full diff:
+E       (
+E     -     352,
+E     -     512,...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (fbb6fbc3-d00c-43d5-bb66-ea11def98a36)
+PASS: UI Run completed (9e552ff0-a7e6-4ddd-95b3-34654e2fd917)
+_ test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:419: in test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (44, 64) != (352, 512)
+E   assert (44, 64) == (352, 512)
+E     
+E     At index 0 diff: 44 != 352
+E     
+E     Full diff:
+E       (
+E     -     352,
+E     -     512,...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (dbca11f2-f7f4-42f9-a988-29c0c6a5d062)
+PASS: UI Run completed (0ed77141-8e5e-4b72-9b2f-c7346ccdb7a6)
+=============================== warnings summary ===============================
+test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-pr1172/browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]
+FAILED tests/test_e2e_preview_bridge.py::test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]
+FAILED tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]
+FAILED tests/test_e2e_preview_bridge.py::test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]
+=================== 4 failed, 1 warning in 90.85s (0:01:30) ====================

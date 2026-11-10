@@ -1,0 +1,296 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "49f6705a-ffce-472d-ab7a-ec70f5145930",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_pticb_00003_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794304458867.png [input]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "45730e2dbc3c1c31bc7c32bed79052e6352e2174bb34a739686ae34a7fdf534c",
+    "actual_sha256": "39b11a162331f628065670e7c5635be7f68e85ea68277a35666716e659ff7394"
+  },
+  {
+    "step": 2,
+    "prompt_id": "f0b8fd24-4895-4f1e-b3f6-658d6d5df7c7",
+    "node_id": "5",
+    "assertion_passed": false,
+    "actual_size": [
+      32,
+      32
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1024,
+    "expected_nonzero": 1682,
+    "max_error": null,
+    "output": {
+      "filename": "ComfyUI_temp_mtelt_00001_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 32,
+        "height": 32
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyLatentImage",
+        "bounds": [
+          98.49999999999991,
+          209,
+          243,
+          95.4
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridgeLatent",
+        "bounds": [
+          598.4999999999999,
+          209,
+          243,
+          325.8
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PBL-_temp_zbvoh_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "preview_method",
+            "value": "Latent2RGB-SD15",
+            "y": 70
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 94
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 118
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 142
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "SaveLatent",
+        "bounds": [
+          1098.5,
+          209,
+          243,
+          52.2
+        ],
+        "widgets": [
+          {
+            "name": "filename_prefix",
+            "value": "latents/ComfyUI",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          133.02493164062489,
+          769,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          656.9999999999999,
+          769,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "3e4237c20146b91125f4a367bd0aeabc9e493b67ca94dfaf23a055a96ea042c3",
+    "actual_sha256": "29b6a9c25c27da89cf95173eead0570df0c3b439f5c433e40fb3b520775aafcd"
+  }
+]

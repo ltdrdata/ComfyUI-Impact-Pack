@@ -1,0 +1,590 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "60eb2210-aaaa-401f-9644-3e4ff324079d",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 1678,
+    "expected_nonzero": 1682,
+    "max_error": 1,
+    "output": {
+      "filename": "ComfyUI_temp_zsilr_00002_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          85,
+          210,
+          270,
+          130
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          585,
+          210,
+          270,
+          338
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "clipspace-painted-masked-1794304517458.png [input]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1150,
+          210,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          123.36103515624995,
+          770,
+          193.2779296875,
+          26
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          650,
+          770,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "e26e8fd7d0775e465347435e906d62524e5d27fba08496a0051c4d2543cbdb37",
+    "actual_sha256": "98168b092b043f7d66ca50ae5eefee74c29a71d5af4896daa6c739d0b1db3ba6"
+  },
+  {
+    "step": 2,
+    "prompt_id": "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 0,
+    "expected_nonzero": 0,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_zsilr_00003_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          85,
+          210,
+          270,
+          130
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 12615744,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          585,
+          210,
+          270,
+          338
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_dghnd_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1150,
+          210,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          123.36103515624995,
+          770,
+          193.2779296875,
+          26
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          650,
+          770,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "02-screen.png",
+    "actual": "02-actual.png",
+    "expected": "02-expected.png",
+    "screen_sha256": "a6d6421214c1c83442c3b450c401b178fcbbd03caaf63810b3e5c7508895ad17",
+    "actual_sha256": "dd3c7b9376897dab676ca7ed225ecef0f2d4d180b5f241b762a2c26b469e11bd"
+  },
+  {
+    "step": 3,
+    "prompt_id": "7ef4e586-ed4f-49a3-a59d-4ccf9c16253f",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 0,
+    "expected_nonzero": 0,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_zsilr_00004_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          85,
+          210,
+          270,
+          130
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 12615744,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          585,
+          210,
+          270,
+          338
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_dghnd_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1150,
+          210,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          123.36103515624995,
+          770,
+          193.2779296875,
+          26
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          650,
+          770,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "03-screen.png",
+    "actual": "03-actual.png",
+    "expected": "03-expected.png",
+    "screen_sha256": "3c016f78faacccad39b83f1d8bda80f0cfcb2be908ed5c8dd3fbdd38dbb5f3fa",
+    "actual_sha256": "3f77f0b9fcfa6ab5ba39649fc75d320e9c0dbc5fdb7067526b6ceb38892d06ae"
+  },
+  {
+    "step": 4,
+    "prompt_id": "1d470b09-9a76-461c-9d0a-952c540c51fa",
+    "node_id": "5",
+    "assertion_passed": true,
+    "actual_size": [
+      256,
+      256
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 0,
+    "expected_nonzero": 0,
+    "max_error": 0,
+    "output": {
+      "filename": "ComfyUI_temp_zsilr_00004_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 256,
+        "height": 256
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          85,
+          210,
+          270,
+          130
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 12615744,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          585,
+          210,
+          270,
+          338
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_dghnd_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "always",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1150,
+          210,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          123.36103515624995,
+          770,
+          193.2779296875,
+          26
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          650,
+          770,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "04-screen.png",
+    "actual": "04-actual.png",
+    "expected": "04-expected.png",
+    "screen_sha256": "9e5e0641b2b7dcd1a24791578138e5087c351ba34544087562c873126ed1444e",
+    "actual_sha256": "3f77f0b9fcfa6ab5ba39649fc75d320e9c0dbc5fdb7067526b6ceb38892d06ae"
+  }
+]

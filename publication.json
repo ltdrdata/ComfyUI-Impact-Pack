@@ -1,0 +1,12 @@
+{
+  "prepared_at": "2026-11-10T10:48:30.219314+00:00",
+  "code_head": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
+  "integration_base": "45e53215474746c4d1e4997a1c8b63af273244dd",
+  "base_branch": "integration/pr1172-preview-bridge",
+  "head_branch": "fix/preview-bridge-after-pr1172",
+  "evidence_branch": "evidence/pr1172-preview-bridge-followup",
+  "files": 319,
+  "bytes": 20823117,
+  "source_hashes_verified": true,
+  "scope": "Linked comparisons, original PNGs, output masks, queue records, source manifests and reports. Trace ZIPs, runtime checkouts and models excluded."
+}

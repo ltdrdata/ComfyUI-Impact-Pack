@@ -1,0 +1,44 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 36%]
+........................................................................ [ 72%]
+........................................................                 [100%]
+=============================== warnings summary ===============================
+../../../../home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65
+  /home/rho/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:65: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+../../../../home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101
+  /home/rho/venv/lib/python3.12/site-packages/triton/runtime/autotuner.py:101: DeprecationWarning: warmup, rep, and use_cuda_graph parameters are deprecated. See https://github.com/triton-lang/triton/pull/4496 for details.
+    warnings.warn(("warmup, rep, and use_cuda_graph parameters are deprecated. See "
+
+../../../../home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+test_sam_masks.py::test_single_candidate_wrapper_keeps_each_detection[boolean]
+test_sam_masks.py::test_single_candidate_wrapper_keeps_each_detection[boolean]
+test_sam_masks.py::test_single_candidate_wrapper_keeps_each_detection[byte-mask]
+test_sam_masks.py::test_single_candidate_wrapper_keeps_each_detection[byte-mask]
+  /mnt/teratera/git/impact-pack-pr1172-followup/tests/../modules/impact/utils.py:326: DeprecationWarning: __array__ implementation doesn't accept a copy keyword, so passing copy=False failed. __array__ must implement 'dtype' and 'copy' keyword arguments. To learn more, see the migration guide https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword
+    initial_cv2_mask = np.array(masks[0]).astype(np.uint8)
+
+test_image_list_batch.py::test_uniform_frames_allocate_at_most_one_concatenated_batch[4-frames]
+  /home/rho/venv/lib/python3.12/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+    _warn_once(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/cleanup-review/backend.xml -
+200 passed, 13 warnings in 3.87s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

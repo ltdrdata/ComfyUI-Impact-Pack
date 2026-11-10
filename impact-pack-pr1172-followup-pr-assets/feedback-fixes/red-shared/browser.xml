@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="32.866" timestamp="2026-11-10T19:00:11.495757+09:00" hostname="hyewon"><testcase classname="test_e2e_preview_bridge" name="test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]" time="16.622"><failure message="AssertionError: Image size differs: (64, 64) != (256, 256)&#10;assert (64, 64) == (256, 256)&#10;  &#10;  At index 0 diff: 64 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?     --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:717: in test_queued_bridge_results_preserve_the_latest_saved_edit
+    mask_output(browser, second, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]" time="16.069"><failure message="AssertionError: Image size differs: (32, 32) != (256, 256)&#10;assert (32, 32) == (256, 256)&#10;  &#10;  At index 0 diff: 32 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?      --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:717: in test_queued_bridge_results_preserve_the_latest_saved_edit
+    mask_output(browser, second, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

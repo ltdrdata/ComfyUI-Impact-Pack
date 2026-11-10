@@ -1,0 +1,176 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "9e552ff0-a7e6-4ddd-95b3-34654e2fd917",
+    "node_id": "6",
+    "assertion_passed": false,
+    "actual_size": [
+      64,
+      64
+    ],
+    "expected_size": [
+      352,
+      512
+    ],
+    "actual_nonzero": 0,
+    "expected_nonzero": 48408,
+    "max_error": null,
+    "output": {
+      "filename": "ComfyUI_temp_uruyn_00002_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 64,
+        "height": 64
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "LoadImage",
+        "bounds": [
+          92.74052734374992,
+          208.99999999999997,
+          254.5189453125,
+          282.6
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "interactive-sam-original.png",
+            "y": 46
+          },
+          {
+            "name": "upload",
+            "value": "image",
+            "y": 70
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 94
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "ImageScale",
+        "bounds": [
+          98.49999999999991,
+          659,
+          243,
+          117
+        ],
+        "widgets": [
+          {
+            "name": "upscale_method",
+            "value": "area",
+            "y": 26
+          },
+          {
+            "name": "width",
+            "value": 0,
+            "y": 50
+          },
+          {
+            "name": "height",
+            "value": 512,
+            "y": 74
+          },
+          {
+            "name": "crop",
+            "value": "disabled",
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewBridge",
+        "bounds": [
+          598.4999999999999,
+          208.99999999999997,
+          243,
+          304.2
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "$3-1794304629.7601283",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "never",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          208.99999999999997,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "type": "MaskToImage",
+        "bounds": [
+          633.0249316406249,
+          1059,
+          173.95013671875,
+          23.400000000000002
+        ],
+        "widgets": []
+      },
+      {
+        "id": "6",
+        "type": "PreviewImage",
+        "bounds": [
+          1157,
+          1059,
+          126,
+          221.4
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1600
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "96fffb0ded5dc4ad639c5f8004d6cd6565a8a534972e7179664476aacc27f499",
+    "actual_sha256": "ac412c684bd04fa2adcede4259f4b9afb77fd6ce349c011ae413b313861b5c45"
+  }
+]

@@ -1,0 +1,149 @@
+[
+  {
+    "step": 1,
+    "prompt_id": "b74481d1-eaed-4a69-8956-486bf15b38ac",
+    "node_id": "5",
+    "assertion_passed": false,
+    "actual_size": [
+      64,
+      64
+    ],
+    "expected_size": [
+      256,
+      256
+    ],
+    "actual_nonzero": 0,
+    "expected_nonzero": 1682,
+    "max_error": null,
+    "output": {
+      "filename": "ComfyUI_temp_msunc_00003_.png",
+      "subfolder": "",
+      "type": "temp",
+      "metadata": {
+        "kind": "image",
+        "width": 64,
+        "height": 64
+      }
+    },
+    "graph": [
+      {
+        "id": "1",
+        "type": "EmptyImage",
+        "bounds": [
+          85,
+          210,
+          270,
+          130
+        ],
+        "widgets": [
+          {
+            "name": "width",
+            "value": 256,
+            "y": 26
+          },
+          {
+            "name": "height",
+            "value": 256,
+            "y": 50
+          },
+          {
+            "name": "batch_size",
+            "value": 1,
+            "y": 74
+          },
+          {
+            "name": "color",
+            "value": 4227264,
+            "y": 98
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "type": "PreviewBridge",
+        "bounds": [
+          585,
+          210,
+          270,
+          338
+        ],
+        "widgets": [
+          {
+            "name": "image",
+            "value": "PreviewBridge/PB-_temp_qtsys_00001_.png [temp]",
+            "y": 46
+          },
+          {
+            "name": "block",
+            "value": false,
+            "y": 70
+          },
+          {
+            "name": "restore_mask",
+            "value": "if_same_size",
+            "y": 94
+          },
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 118
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "type": "PreviewImage",
+        "bounds": [
+          1150,
+          210,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "type": "MaskToImage",
+        "bounds": [
+          123.36103515624995,
+          770,
+          193.2779296875,
+          26
+        ],
+        "widgets": []
+      },
+      {
+        "id": "5",
+        "type": "PreviewImage",
+        "bounds": [
+          650,
+          770,
+          140,
+          246
+        ],
+        "widgets": [
+          {
+            "name": "$$canvas-image-preview",
+            "value": "",
+            "y": 26
+          }
+        ]
+      }
+    ],
+    "viewport": {
+      "width": 2200,
+      "height": 1300
+    },
+    "screen": "01-screen.png",
+    "actual": "01-actual.png",
+    "expected": "01-expected.png",
+    "screen_sha256": "d4a2ac43492c7e3f168b65deff5e99f868eb560339d3a6c502b9410255568c38",
+    "actual_sha256": "54343f64c3cf6dd039b7aad3182531a4a5c1c00fe011acd275ae8376884682e0"
+  }
+]

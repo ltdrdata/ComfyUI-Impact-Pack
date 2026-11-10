@@ -1,0 +1,275 @@
+{
+  "method": "Read-only extraction of actual HTTP history responses from Playwright traces. Bridge execution feedback is held until both prompts finish. Executions themselves remain sequential.",
+  "comparisons": [
+    {
+      "run": "feedback-fixes/red-shared",
+      "node": "PreviewBridge",
+      "trace": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/trace.zip",
+      "trace_sha256": "1a92aaec4bf4120ec37865a564670de43be3497c5f6a47dfea98a0aba27ca781",
+      "stages": [
+        {
+          "prompt_id": "5f3aa1fa-c65b-4eb3-b637-d694c2058aa3",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "never",
+          "image_reference": "$2-0",
+          "mask_size": [
+            64,
+            64
+          ],
+          "mask_nonzero": 0,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00001_.png",
+          "output_sha256": "dadd63285444a6ccd36e57c754c41d8ffd682c3c8cd4fb5842bad1c006f00edc"
+        },
+        {
+          "prompt_id": "e2810f78-6b9f-4a9a-acd7-0d516150c55c",
+          "input_size": [
+            512,
+            512
+          ],
+          "restore_mask": "always",
+          "image_reference": "$2-543c1c2013674e89b02ceb87ceaddc64",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00002_.png",
+          "output_sha256": "8c970bed396f5b1a8182909c5d7318b6550997c33f50d52289f7e3bd594cf84e"
+        },
+        {
+          "prompt_id": "b74481d1-eaed-4a69-8956-486bf15b38ac",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-543c1c2013674e89b02ceb87ceaddc64",
+          "mask_size": [
+            64,
+            64
+          ],
+          "mask_nonzero": 0,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00003_.png",
+          "output_sha256": "54343f64c3cf6dd039b7aad3182531a4a5c1c00fe011acd275ae8376884682e0"
+        }
+      ]
+    },
+    {
+      "run": "feedback-fixes/red-shared",
+      "node": "PreviewBridgeLatent",
+      "trace": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/trace.zip",
+      "trace_sha256": "6c97f55cc50473571959b061b324704ce037b4843103d65a71e5d806d2f1d013",
+      "stages": [
+        {
+          "prompt_id": "7adef9b8-43f8-43da-a299-61205cc5b556",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "never",
+          "image_reference": "$2-0",
+          "mask_size": [
+            32,
+            32
+          ],
+          "mask_nonzero": 1024,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00004_.png",
+          "output_sha256": "b8578118dadca1b882661c2214563627ec65b0cb8c5b090edb53ca8265e427af"
+        },
+        {
+          "prompt_id": "5347248a-c43f-4ec0-a9be-919cc2d3d2fb",
+          "input_size": [
+            512,
+            512
+          ],
+          "restore_mask": "always",
+          "image_reference": "$2-0c37a793a5ed499cafae368265119876",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00005_.png",
+          "output_sha256": "378a16612cc59d575e3d3e4d5a202aa37c18985f123823036e001d296d767400"
+        },
+        {
+          "prompt_id": "60930107-a35f-4991-92c7-2defb7889c75",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-0c37a793a5ed499cafae368265119876",
+          "mask_size": [
+            32,
+            32
+          ],
+          "mask_nonzero": 1024,
+          "status": "success",
+          "output": "feedback-fixes/red-shared/runtime/temp/ComfyUI_temp_msunc_00006_.png",
+          "output_sha256": "c2916a1f0b20c64465a14ed1c79dcbb511a8ed5960f4fa380f0a833e612cfec6"
+        }
+      ]
+    },
+    {
+      "run": "feedback-fixes/green-chrome",
+      "node": "PreviewBridge",
+      "trace": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/trace.zip",
+      "trace_sha256": "9abf00c69c752e08eef08a1af1c7d75afbeba7fee6ff97c53c2290a1a357bfc6",
+      "stages": [
+        {
+          "prompt_id": "42cebe0e-5f98-434c-b72d-ebfd5f8d183d",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "never",
+          "image_reference": "$2-0",
+          "mask_size": [
+            64,
+            64
+          ],
+          "mask_nonzero": 0,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00049_.png",
+          "output_sha256": "6d782dc03d3734a4b244325bec0548a4395af2190d6e22b0bf7dd682acfcca86"
+        },
+        {
+          "prompt_id": "1b58e4bc-7b21-4074-a347-7914a50789bc",
+          "input_size": [
+            512,
+            512
+          ],
+          "restore_mask": "always",
+          "image_reference": "$2-f52f90346ca446a194e13c8cfb0e4019",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00050_.png",
+          "output_sha256": "ba613ecc45ffe9bd9ada0a9eb74aa7500cf9c77cc2d66785afec08e91a8deae9"
+        },
+        {
+          "prompt_id": "010a957d-1a44-46ce-b60a-66230e5589b5",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-f52f90346ca446a194e13c8cfb0e4019",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00051_.png",
+          "output_sha256": "d3662d7ff177daa6b303faa9daa9b5e2abb750585679528ad90ffd1802791b03"
+        },
+        {
+          "prompt_id": "e9c2526a-633f-428e-bbda-443c952e010b",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-b6b56a592bd64d2fb93f61439ae73fb1",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00052_.png",
+          "output_sha256": "70aa0d6a0ec1a7bb869c68cc252334918d7e4b006408e6fb9445e9482a1f8889"
+        }
+      ]
+    },
+    {
+      "run": "feedback-fixes/green-chrome",
+      "node": "PreviewBridgeLatent",
+      "trace": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/trace.zip",
+      "trace_sha256": "e637421bb15144ddabb56749fa7d78c6488d65cc1205b09f4d1cb116d3d6d9c1",
+      "stages": [
+        {
+          "prompt_id": "938fdf2f-9505-4000-b527-3065fa4cac5b",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "never",
+          "image_reference": "$2-0",
+          "mask_size": [
+            32,
+            32
+          ],
+          "mask_nonzero": 1024,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00053_.png",
+          "output_sha256": "1b0e5161b85ad38a7d1c5ef8ff9a96c3d6861c0f6b751b7ea820ffedaf91aede"
+        },
+        {
+          "prompt_id": "c41e55d7-2dd9-435c-9dda-3aea359e2581",
+          "input_size": [
+            512,
+            512
+          ],
+          "restore_mask": "always",
+          "image_reference": "$2-9f48b85c31c143a094b148f6e1c4dc75",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00054_.png",
+          "output_sha256": "d082f9f442d00a1c4d42f59ae3d8c94b1598db93f46ab90e31175b561e9a16d3"
+        },
+        {
+          "prompt_id": "be3161bf-dd3f-490e-b4a9-8e7c42e525b8",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-9f48b85c31c143a094b148f6e1c4dc75",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00055_.png",
+          "output_sha256": "79b261681b515dc4f7b2dda06e7dacf841be45b8fb9fa86e56263dae7578a8b3"
+        },
+        {
+          "prompt_id": "c99da9d5-ad25-41d3-b379-ec5d6b584754",
+          "input_size": [
+            256,
+            256
+          ],
+          "restore_mask": "if_same_size",
+          "image_reference": "$2-32ee320b550b41cab8b17e85fd1b0344",
+          "mask_size": [
+            256,
+            256
+          ],
+          "mask_nonzero": 1678,
+          "status": "success",
+          "output": "feedback-fixes/green-chrome/runtime/temp/ComfyUI_temp_ydmuz_00056_.png",
+          "output_sha256": "c2ed5717479512410ea01184da7f825ee3cb333485aa39c4d0d7f0d2047a2fd2"
+        }
+      ]
+    }
+  ]
+}

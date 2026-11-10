@@ -1,0 +1,430 @@
+{
+  "prompt": [
+    2,
+    "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+    {
+      "1": {
+        "inputs": {
+          "width": 256,
+          "height": 256,
+          "batch_size": 1,
+          "color": 12615744
+        },
+        "class_type": "EmptyImage",
+        "_meta": {
+          "title": "Empty Image"
+        }
+      },
+      "2": {
+        "inputs": {
+          "image": "$2-837695f3acdf43fba2c9019a907ff004",
+          "block": false,
+          "restore_mask": "always",
+          "images": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "PreviewBridge",
+        "_meta": {
+          "title": "Preview Bridge (Image)"
+        }
+      },
+      "3": {
+        "inputs": {
+          "images": [
+            "2",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      },
+      "4": {
+        "inputs": {
+          "mask": [
+            "2",
+            1
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "5": {
+        "inputs": {
+          "images": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "c3271e9c-55b1-4805-91b9-6c9e444d9124",
+          "revision": 0,
+          "last_node_id": 5,
+          "last_link_id": 4,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "EmptyImage",
+              "pos": [
+                85,
+                210
+              ],
+              "size": [
+                270,
+                130
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    1
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "EmptyImage"
+              },
+              "widgets_values": [
+                256,
+                256,
+                1,
+                12615744
+              ],
+              "widgets_values_named": {
+                "width": 256,
+                "height": 256,
+                "batch_size": 1,
+                "color": 12615744
+              }
+            },
+            {
+              "id": 2,
+              "type": "PreviewBridge",
+              "pos": [
+                585,
+                210
+              ],
+              "size": [
+                270,
+                338
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    2
+                  ]
+                },
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    3
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewBridge",
+                "image": "clipspace-painted-masked-1794304518140.png [input]"
+              },
+              "widgets_values": [
+                "clipspace-painted-masked-1794304518140.png [input]",
+                false,
+                "always"
+              ],
+              "widgets_values_named": {
+                "image": "clipspace-painted-masked-1794304518140.png [input]",
+                "block": false,
+                "restore_mask": "always"
+              }
+            },
+            {
+              "id": 3,
+              "type": "PreviewImage",
+              "pos": [
+                1150,
+                210
+              ],
+              "size": [
+                140,
+                246
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 2
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 4,
+              "type": "MaskToImage",
+              "pos": [
+                123.36103515624995,
+                770
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 3
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": 5,
+              "type": "PreviewImage",
+              "pos": [
+                650,
+                770
+              ],
+              "size": [
+                140,
+                246
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 4
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "IMAGE"
+            ],
+            [
+              2,
+              2,
+              0,
+              3,
+              0,
+              "IMAGE"
+            ],
+            [
+              3,
+              2,
+              1,
+              4,
+              0,
+              "MASK"
+            ],
+            [
+              4,
+              4,
+              0,
+              5,
+              0,
+              "IMAGE"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 1,
+              "offset": [
+                0,
+                0
+              ]
+            },
+            "frontendVersion": "1.58.5"
+          },
+          "version": 0.4
+        }
+      },
+      "client_id": "c51f65e4c569444d997d3d6e86098ff7",
+      "workflow_metadata": {
+        "workflow_id": "c3271e9c-55b1-4805-91b9-6c9e444d9124"
+      },
+      "create_time": 1794304518391
+    },
+    [
+      "3",
+      "2",
+      "5"
+    ]
+  ],
+  "outputs": {
+    "2": {
+      "images": [
+        {
+          "filename": "PB-_temp_dghnd_00001_.png",
+          "subfolder": "PreviewBridge",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 256,
+            "height": 256
+          }
+        }
+      ],
+      "source_image": [
+        "$2-837695f3acdf43fba2c9019a907ff004"
+      ]
+    },
+    "3": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_gfccj_00003_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    "5": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_zsilr_00003_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+          "timestamp": 1794304518392
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [],
+          "prompt_id": "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+          "timestamp": 1794304518393
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+          "timestamp": 1794304518399
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "2": {
+      "node_id": "2",
+      "display_node": "2",
+      "parent_node": null,
+      "real_node_id": "2"
+    },
+    "3": {
+      "node_id": "3",
+      "display_node": "3",
+      "parent_node": null,
+      "real_node_id": "3"
+    },
+    "5": {
+      "node_id": "5",
+      "display_node": "5",
+      "parent_node": null,
+      "real_node_id": "5"
+    }
+  }
+}

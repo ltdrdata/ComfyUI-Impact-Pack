@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="3.942" timestamp="2026-11-10T19:24:07.592795+09:00" hostname="hyewon"><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridge]" time="0.264"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3715/test_legacy_clipspace_referenc0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c017b475460&gt;
+node_type = 'PreviewBridge', saved_file = True
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("saved_file", [True, False], ids=["saved", "missing"])
+    def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch, node_type, saved_file):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "legacy"}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$legacy-0", **inputs)
+        path = bridge_files / "clipspace" / "legacy-edited.png"
+        if saved_file:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(path)
+        result = node.doit(image="clipspace/legacy-edited.png [input]", **inputs)
+        output, mask = result["result"]
+        if saved_file:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([64, 64]) != torch.Size([1, 64, 64]).
+
+../impact-pack-pr1172-followup-pr-assets/cleanup-review/mutations/no-legacy-registration/tests/test_preview_bridge_result.py:319: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[saved-PreviewBridgeLatent]" time="0.003"><failure message="AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).">bridge_files = PosixPath('/tmp/pytest-of-rho/pytest-3715/test_legacy_clipspace_referenc1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c017b2ce7e0&gt;
+node_type = 'PreviewBridgeLatent', saved_file = True
+
+    @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
+    @pytest.mark.parametrize("saved_file", [True, False], ids=["saved", "missing"])
+    def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch, node_type, saved_file):
+        monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
+        node = getattr(bridge_nodes, node_type)()
+        inputs = {"unique_id": "legacy"}
+        if node_type == "PreviewBridge":
+            inputs["images"] = torch.zeros((1, 64, 64, 3))
+        else:
+            inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
+        node.doit(image="$legacy-0", **inputs)
+        path = bridge_files / "clipspace" / "legacy-edited.png"
+        if saved_file:
+            path.parent.mkdir()
+            Image.new("RGBA", (64, 64), (255, 0, 0, 128)).save(path)
+        result = node.doit(image="clipspace/legacy-edited.png [input]", **inputs)
+        output, mask = result["result"]
+        if saved_file:
+&gt;           torch.testing.assert_close(mask, torch.full((1, 64, 64), 127 / 255))
+E           AssertionError: The values for attribute 'shape' do not match: torch.Size([1, 8, 8]) != torch.Size([1, 64, 64]).
+
+../impact-pack-pr1172-followup-pr-assets/cleanup-review/mutations/no-legacy-registration/tests/test_preview_bridge_result.py:319: AssertionError</failure></testcase><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridge]" time="0.001" /><testcase classname="test_preview_bridge_result" name="test_legacy_clipspace_reference_loads_or_refreshes[missing-PreviewBridgeLatent]" time="0.001" /></testsuite></testsuites>

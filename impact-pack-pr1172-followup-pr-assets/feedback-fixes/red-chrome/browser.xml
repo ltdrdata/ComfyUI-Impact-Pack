@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="8" time="112.444" timestamp="2026-11-10T18:53:08.185878+09:00" hostname="hyewon"><testcase classname="test_e2e_preview_bridge" name="test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridge]" time="11.092" /><testcase classname="test_e2e_preview_bridge" name="test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]" time="10.177"><failure message="AssertionError: [{'consumer_ran': True, 'extrema': (255, 255), 'mask_ran': True, 'prompt_id': 'c518169b-ec4e-4e2e-a81d-d289a10d9c00', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '47958a1c-5dfb-45cc-8c4e-a99534107a82', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '5c6b5924-532a-4e36-bf33-218237c8ca04', ...}]&#10;assert False&#10; +  where False = all(&lt;generator object test_unedited_requeue_preserves_no_mask_and_block.&lt;locals&gt;.&lt;genexpr&gt; at 0x7cdcb954af80&gt;)">tests/test_e2e_preview_bridge.py:760: in test_unedited_requeue_preserves_no_mask_and_block
+    assert all(row["size"] == size and row["extrema"] == extrema for row in observed), observed
+E   AssertionError: [{'consumer_ran': True, 'extrema': (255, 255), 'mask_ran': True, 'prompt_id': 'c518169b-ec4e-4e2e-a81d-d289a10d9c00', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '47958a1c-5dfb-45cc-8c4e-a99534107a82', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '5c6b5924-532a-4e36-bf33-218237c8ca04', ...}]
+E   assert False
+E    +  where False = all(&lt;generator object test_unedited_requeue_preserves_no_mask_and_block.&lt;locals&gt;.&lt;genexpr&gt; at 0x7cdcb954af80&gt;)</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridge]" time="10.225" /><testcase classname="test_e2e_preview_bridge" name="test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent]" time="11.127"><failure message="AssertionError: [{'consumer_ran': False, 'mask_ran': False, 'prompt_id': '66a21996-684f-4bf8-8c3e-0e94d1a9d49c', 'submitted_image': '$2-0'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '90195ff5-17d3-4580-8eaa-cb0ed5730fc5', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': 'ed0fd06b-a78d-4424-8894-c6045eccb75a', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}]&#10;assert False&#10; +  where False = all(&lt;generator object test_unedited_requeue_preserves_no_mask_and_block.&lt;locals&gt;.&lt;genexpr&gt; at 0x7cdcb959ec20&gt;)">tests/test_e2e_preview_bridge.py:757: in test_unedited_requeue_preserves_no_mask_and_block
+    assert all(not row["consumer_ran"] and not row["mask_ran"] for row in observed), observed
+E   AssertionError: [{'consumer_ran': False, 'mask_ran': False, 'prompt_id': '66a21996-684f-4bf8-8c3e-0e94d1a9d49c', 'submitted_image': '$2-0'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '90195ff5-17d3-4580-8eaa-cb0ed5730fc5', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': 'ed0fd06b-a78d-4424-8894-c6045eccb75a', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}]
+E   assert False
+E    +  where False = all(&lt;generator object test_unedited_requeue_preserves_no_mask_and_block.&lt;locals&gt;.&lt;genexpr&gt; at 0x7cdcb959ec20&gt;)</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]" time="17.193"><failure message="AssertionError: Image size differs: (64, 64) != (256, 256)&#10;assert (64, 64) == (256, 256)&#10;  &#10;  At index 0 diff: 64 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?     --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]" time="17.500"><failure message="AssertionError: Image size differs: (32, 32) != (256, 256)&#10;assert (32, 32) == (256, 256)&#10;  &#10;  At index 0 diff: 32 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?      --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge]" time="17.740"><failure message="AssertionError: Image size differs: (64, 64) != (256, 256)&#10;assert (64, 64) == (256, 256)&#10;  &#10;  At index 0 diff: 64 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?     --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent]" time="17.198"><failure message="AssertionError: Image size differs: (32, 32) != (256, 256)&#10;assert (32, 32) == (256, 256)&#10;  &#10;  At index 0 diff: 32 != 256&#10;  &#10;  Full diff:&#10;    (&#10;  -     256,&#10;  ?      --...&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,392 @@
+{
+  "candidate": "4e7b9c0 + local fixes",
+  "feedback_fixes": true,
+  "source_manifest": "feedback-fixes/green-chrome/source.json",
+  "method": "Original PNGs embedded unchanged; separate HTML/SVG annotation layers. Both sides use the same assertion stage and identical expected mask bytes.",
+  "comparisons": [
+    {
+      "id": "restart-image",
+      "case": "test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]",
+      "step": 2,
+      "stage": "MaskEditor Save \u2192 Run \u2192 restart the isolated server without reloading the tab \u2192 first Run. restore_mask = always.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-chrome/source.json",
+          "records": "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-screen.png",
+          "source_sha256": "3c373da0b648ffe1dddc3d36933d54de8111609c92ed0625fc3e302eb93cb8cb",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "e3a686b4-5d61-45ce-8159-26eb5072767c",
+          "actual_size": [
+            64,
+            64
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 0,
+          "expected_nonzero": 1682,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]/comparisons/02-screen.png",
+          "source_sha256": "2de9ef645518a8ed254c1660420391907761621af1ed7ddf36ea7bdbc17aed3f",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "8887a596-64e7-46ed-8868-28439e11f55c",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 1682,
+          "max_error": 1
+        }
+      },
+      "comparison": "red-green/restart-image.png",
+      "comparison_sha256": "c93e1b996521037f1bd766033834f4dc6382e7f1ad5c9bcf4b77b8717c3fa41d"
+    },
+    {
+      "id": "restart-latent",
+      "case": "test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]",
+      "step": 2,
+      "stage": "MaskEditor Save \u2192 Run \u2192 restart the isolated server without reloading the tab \u2192 first Run. restore_mask = always.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-chrome/source.json",
+          "records": "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-screen.png",
+          "source_sha256": "3e4237c20146b91125f4a367bd0aeabc9e493b67ca94dfaf23a055a96ea042c3",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "f0b8fd24-4895-4f1e-b3f6-658d6d5df7c7",
+          "actual_size": [
+            32,
+            32
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1024,
+          "expected_nonzero": 1682,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]/comparisons/02-screen.png",
+          "source_sha256": "a987b4f3d08341e2b5b67ba816e2f87162e46acef3ba191a775f9eca382c3a11",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "125ec0d0-efaf-4e17-906c-3f95641348f5",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 1682,
+          "max_error": 1
+        }
+      },
+      "comparison": "red-green/restart-latent.png",
+      "comparison_sha256": "7bbd19181e443cd2d52c02f80351521c1c54280c031f0bb479c5abd20f4fd05b"
+    },
+    {
+      "id": "sam-image",
+      "case": "test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]",
+      "step": 1,
+      "stage": "First Detect \u2192 Save to node \u2192 Run. Aspect-preserving resize: width = 0, height = 512; restore_mask = never.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-pr1172/source.json",
+          "records": "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-screen.png",
+          "source_sha256": "96fffb0ded5dc4ad639c5f8004d6cd6565a8a534972e7179664476aacc27f499",
+          "expected_sha256": "3e18a3b28232d08a8188a085ebaf589a6f6dd97af1ef40e7256cae0c86888fe6",
+          "prompt_id": "9e552ff0-a7e6-4ddd-95b3-34654e2fd917",
+          "actual_size": [
+            64,
+            64
+          ],
+          "expected_size": [
+            352,
+            512
+          ],
+          "actual_nonzero": 0,
+          "expected_nonzero": 48408,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]/comparisons/01-screen.png",
+          "source_sha256": "b9fbc34ff857f3b72c3cbb61a15f5ab298ec6ba7cc715071f396cd36a779b0d9",
+          "expected_sha256": "3e18a3b28232d08a8188a085ebaf589a6f6dd97af1ef40e7256cae0c86888fe6",
+          "prompt_id": "d96cfaf8-8a80-43c5-872b-fb2672b69d08",
+          "actual_size": [
+            352,
+            512
+          ],
+          "expected_size": [
+            352,
+            512
+          ],
+          "actual_nonzero": 48408,
+          "expected_nonzero": 48408,
+          "max_error": 0
+        }
+      },
+      "comparison": "red-green/sam-image.png",
+      "comparison_sha256": "b98f735cb50a95f64d76e4b8654cb12138c612dcf006738833c51b1780f2107c"
+    },
+    {
+      "id": "sam-latent",
+      "case": "test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]",
+      "step": 1,
+      "stage": "First Detect \u2192 Save to node \u2192 Run. Same VAE; aspect-preserving resize: width = 0, height = 512; restore_mask = never.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-pr1172/source.json",
+          "records": "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/red-pr1172/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-screen.png",
+          "source_sha256": "e7fe62bc74b847ed3006236648d2bafd6fd7b0bbfd26321a4d48f53f8f2bef7d",
+          "expected_sha256": "d43a06be5f8c6284887be4e910485d0740b067c399e511552320625fefb481a8",
+          "prompt_id": "0ed77141-8e5e-4b72-9b2f-c7346ccdb7a6",
+          "actual_size": [
+            44,
+            64
+          ],
+          "expected_size": [
+            352,
+            512
+          ],
+          "actual_nonzero": 2816,
+          "expected_nonzero": 37653,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]/comparisons/01-screen.png",
+          "source_sha256": "6939d3187c195dae95741ef200d1e92dbad9aced82f905a50740bf885c37b1ad",
+          "expected_sha256": "d43a06be5f8c6284887be4e910485d0740b067c399e511552320625fefb481a8",
+          "prompt_id": "53c18a6f-3556-4bf6-9061-f69c1486b7c8",
+          "actual_size": [
+            352,
+            512
+          ],
+          "expected_size": [
+            352,
+            512
+          ],
+          "actual_nonzero": 37653,
+          "expected_nonzero": 37653,
+          "max_error": 0
+        }
+      },
+      "comparison": "red-green/sam-latent.png",
+      "comparison_sha256": "a283ede5429d614d10452d19a2ef1d5faec17650954591678b3e27014bc16767"
+    },
+    {
+      "id": "clear-image",
+      "case": "test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]",
+      "step": 2,
+      "stage": "MaskEditor Clear / Save \u2192 change input color to #c08040 \u2192 first Run. restore_mask = always.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-pr1172/source.json",
+          "records": "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-screen.png",
+          "source_sha256": "2facbebf5bde5b8dd01e27e7cde5181011446d5cb98886fdd3e72c6a03f52963",
+          "expected_sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf",
+          "prompt_id": "9d824752-69b0-4431-a3c4-dddbb6aaf5b4",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 0,
+          "max_error": 255
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]/comparisons/02-screen.png",
+          "source_sha256": "a6d6421214c1c83442c3b450c401b178fcbbd03caaf63810b3e5c7508895ad17",
+          "expected_sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf",
+          "prompt_id": "a60ba04a-468e-46ce-b8d8-e85a05f02910",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 0,
+          "expected_nonzero": 0,
+          "max_error": 0
+        }
+      },
+      "comparison": "red-green/clear-image.png",
+      "comparison_sha256": "d31bdcaf1f279019b94d9b6a74f370aacc5e63fa7a1ec5d5c20018a215bd010a"
+    },
+    {
+      "id": "clear-latent",
+      "case": "test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]",
+      "step": 2,
+      "stage": "MaskEditor Clear / Save \u2192 change latent batch_size to 2 \u2192 first Run. restore_mask = always.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-pr1172/source.json",
+          "records": "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/red-pr1172/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-screen.png",
+          "source_sha256": "a445b3e16eb52dca53790dc5bd0652af559e43f33309a447894955ee63683122",
+          "expected_sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf",
+          "prompt_id": "f09c42cd-f9ca-425c-bf57-6ba36dcf04b3",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 0,
+          "max_error": 255
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]/comparisons/02-screen.png",
+          "source_sha256": "7507bbd677f8068b4f8a5798767e25b2afc517238b2ba60716c26c3f9b4afb10",
+          "expected_sha256": "39962cd5bc9f4f0446341d3e6e0c6c37336ddeb2e026a17a3d06bb6cb3266daf",
+          "prompt_id": "b002278d-efc5-4e87-8edc-a08d8457cd30",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 0,
+          "expected_nonzero": 0,
+          "max_error": 0
+        }
+      },
+      "comparison": "red-green/clear-latent.png",
+      "comparison_sha256": "3762263993f0cbb63c515ccedb72047965baf9ef45825237b8da32ded9b13a89"
+    },
+    {
+      "id": "shared-image",
+      "case": "test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]",
+      "step": 1,
+      "stage": "Same saved 256\u00d7256 mask: first input 512\u00d7512 / always, then 256\u00d7256 / if_same_size. Both results held until the second execution ends.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-shared/source.json",
+          "records": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-screen.png",
+          "source_sha256": "d4a2ac43492c7e3f168b65deff5e99f868eb560339d3a6c502b9410255568c38",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "b74481d1-eaed-4a69-8956-486bf15b38ac",
+          "actual_size": [
+            64,
+            64
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 0,
+          "expected_nonzero": 1682,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridge]/comparisons/01-screen.png",
+          "source_sha256": "728bf5f81c4947ddddf434d41cb42053e6c19696a31c26850eac3d52d2722da4",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "010a957d-1a44-46ce-b60a-66230e5589b5",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 1682,
+          "max_error": 1
+        }
+      },
+      "comparison": "red-green/shared-image.png",
+      "comparison_sha256": "69936b6c70f11be81813452b03de173f58506f47aef686961b1bf16b2d318704"
+    },
+    {
+      "id": "shared-latent",
+      "case": "test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]",
+      "step": 1,
+      "stage": "Same saved 256\u00d7256 mask: first input 512\u00d7512 / always, then 256\u00d7256 / if_same_size. Both results held until the second execution ends.",
+      "sides": {
+        "red": {
+          "source_manifest": "feedback-fixes/red-shared/source.json",
+          "records": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/red-shared/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-screen.png",
+          "source_sha256": "27fa3475e1cbd3ce0dd2a3908af55956c951347b3c3954b29f3daafa7f662eee",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "60930107-a35f-4991-92c7-2defb7889c75",
+          "actual_size": [
+            32,
+            32
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1024,
+          "expected_nonzero": 1682,
+          "max_error": null
+        },
+        "green": {
+          "source_manifest": "feedback-fixes/green-chrome/source.json",
+          "records": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/records.json",
+          "screen": "feedback-fixes/green-chrome/browser/test_queued_bridge_results_preserve_the_latest_saved_edit[shared_file-PreviewBridgeLatent]/comparisons/01-screen.png",
+          "source_sha256": "25ba486aeb1eb657839247708b49514e4906e11f0aeef287525de9d27313617c",
+          "expected_sha256": "1f91a859a1419eb7fab95e37f315452fb6e73caa89fed9fa683c66d158240065",
+          "prompt_id": "be3161bf-dd3f-490e-b4a9-8e7c42e525b8",
+          "actual_size": [
+            256,
+            256
+          ],
+          "expected_size": [
+            256,
+            256
+          ],
+          "actual_nonzero": 1678,
+          "expected_nonzero": 1682,
+          "max_error": 1
+        }
+      },
+      "comparison": "red-green/shared-latent.png",
+      "comparison_sha256": "7a58bf0a7f11eb289d5b7f6e41a692ca6bae90136f0305355359d793291da30b"
+    }
+  ]
+}

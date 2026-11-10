@@ -1,0 +1,887 @@
+{
+  "prompt": [
+    16,
+    "4dbe8a43-b81c-430f-8720-b9ac92f3408d",
+    {
+      "1": {
+        "inputs": {
+          "image": "interactive-sam-original.png"
+        },
+        "class_type": "LoadImage",
+        "_meta": {
+          "title": "Load Image"
+        }
+      },
+      "2": {
+        "inputs": {
+          "upscale_method": "area",
+          "width": 0,
+          "height": 512,
+          "crop": "disabled",
+          "image": [
+            "1",
+            0
+          ]
+        },
+        "class_type": "ImageScale",
+        "_meta": {
+          "title": "Upscale Image"
+        }
+      },
+      "3": {
+        "inputs": {
+          "image": "$3-815afa17d05c4f97a85d684bfebd3412",
+          "preview_method": "Latent2RGB-FLUX.1",
+          "block": false,
+          "restore_mask": "never",
+          "latent": [
+            "5",
+            0
+          ],
+          "vae_opt": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "PreviewBridgeLatent",
+        "_meta": {
+          "title": "Preview Bridge (Latent)"
+        }
+      },
+      "4": {
+        "inputs": {
+          "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
+        },
+        "class_type": "VAELoader",
+        "_meta": {
+          "title": "Load VAE"
+        }
+      },
+      "5": {
+        "inputs": {
+          "pixels": [
+            "2",
+            0
+          ],
+          "vae": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "VAEEncode",
+        "_meta": {
+          "title": "VAE Encode"
+        }
+      },
+      "6": {
+        "inputs": {
+          "filename_prefix": "latents/ComfyUI",
+          "samples": [
+            "9",
+            0
+          ]
+        },
+        "class_type": "SaveLatent",
+        "_meta": {
+          "title": "Save Latent"
+        }
+      },
+      "7": {
+        "inputs": {
+          "mask": [
+            "3",
+            1
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "8": {
+        "inputs": {
+          "images": [
+            "7",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      },
+      "9": {
+        "inputs": {
+          "image": "$9-43b6f852bc2c47aeb7ca6edc995fb37c",
+          "preview_method": "Latent2RGB-FLUX.1",
+          "block": false,
+          "restore_mask": "never",
+          "latent": [
+            "3",
+            0
+          ],
+          "vae_opt": [
+            "4",
+            0
+          ]
+        },
+        "class_type": "PreviewBridgeLatent",
+        "_meta": {
+          "title": "Preview Bridge (Latent)"
+        }
+      },
+      "10": {
+        "inputs": {
+          "mask": [
+            "9",
+            1
+          ]
+        },
+        "class_type": "MaskToImage",
+        "_meta": {
+          "title": "Convert Mask to Image"
+        }
+      },
+      "11": {
+        "inputs": {
+          "images": [
+            "10",
+            0
+          ]
+        },
+        "class_type": "PreviewImage",
+        "_meta": {
+          "title": "Preview Image"
+        }
+      }
+    },
+    {
+      "comfy_usage_source": "comfyui-frontend",
+      "extra_pnginfo": {
+        "workflow": {
+          "id": "97fdf9a8-6acf-4d45-88d1-09eae053a822",
+          "revision": 0,
+          "last_node_id": 11,
+          "last_link_id": 13,
+          "nodes": [
+            {
+              "id": 1,
+              "type": "LoadImage",
+              "pos": [
+                -312.95496961805566,
+                122.22222222222217
+              ],
+              "size": [
+                282.798828125,
+                314
+              ],
+              "flags": {},
+              "order": 0,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    1
+                  ]
+                },
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "LoadImage"
+              },
+              "widgets_values": [
+                "interactive-sam-original.png",
+                "image"
+              ],
+              "widgets_values_named": {
+                "image": "interactive-sam-original.png",
+                "upload": "image"
+              }
+            },
+            {
+              "id": 2,
+              "type": "ImageScale",
+              "pos": [
+                -306.55555555555566,
+                622.2222222222222
+              ],
+              "size": [
+                270,
+                130
+              ],
+              "flags": {},
+              "order": 2,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "image",
+                  "type": "IMAGE",
+                  "link": 1
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    2
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "ImageScale"
+              },
+              "widgets_values": [
+                "area",
+                0,
+                512,
+                "disabled"
+              ],
+              "widgets_values_named": {
+                "upscale_method": "area",
+                "width": 0,
+                "height": 512,
+                "crop": "disabled"
+              }
+            },
+            {
+              "id": 3,
+              "type": "PreviewBridgeLatent",
+              "pos": [
+                248.9999999999999,
+                122.22222222222217
+              ],
+              "size": [
+                270,
+                362
+              ],
+              "flags": {},
+              "order": 4,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "latent",
+                  "type": "LATENT",
+                  "link": 4
+                },
+                {
+                  "name": "vae_opt",
+                  "shape": 7,
+                  "type": "VAE",
+                  "link": 5
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    9
+                  ]
+                },
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    7
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewBridgeLatent",
+                "image": "clipspace-mask-35079.2000002861.png [temp]"
+              },
+              "widgets_values": [
+                "clipspace-mask-45894.2000002861.png [temp]",
+                "Latent2RGB-FLUX.1",
+                false,
+                "never"
+              ],
+              "widgets_values_named": {
+                "image": "clipspace-mask-45894.2000002861.png [temp]",
+                "preview_method": "Latent2RGB-FLUX.1",
+                "block": false,
+                "restore_mask": "never"
+              }
+            },
+            {
+              "id": 4,
+              "type": "VAELoader",
+              "pos": [
+                -306.55555555555566,
+                1066.6666666666665
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 1,
+              "mode": 0,
+              "inputs": [],
+              "outputs": [
+                {
+                  "name": "VAE",
+                  "type": "VAE",
+                  "links": [
+                    3,
+                    5,
+                    10
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "VAELoader"
+              },
+              "widgets_values": [
+                "vae-ft-mse-840000-ema-pruned.safetensors"
+              ],
+              "widgets_values_named": {
+                "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
+              }
+            },
+            {
+              "id": 5,
+              "type": "VAEEncode",
+              "pos": [
+                313.9999999999999,
+                622.2222222222222
+              ],
+              "size": [
+                140,
+                46
+              ],
+              "flags": {},
+              "order": 3,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "pixels",
+                  "type": "IMAGE",
+                  "link": 2
+                },
+                {
+                  "name": "vae",
+                  "type": "VAE",
+                  "link": 3
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    4
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "VAEEncode"
+              }
+            },
+            {
+              "id": 6,
+              "type": "SaveLatent",
+              "pos": [
+                804.5555555555554,
+                122.22222222222217
+              ],
+              "size": [
+                270,
+                58
+              ],
+              "flags": {},
+              "order": 7,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "link": 11
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "samples",
+                  "type": "LATENT",
+                  "links": null
+                }
+              ],
+              "properties": {},
+              "widgets_values": [
+                "latents/ComfyUI"
+              ],
+              "widgets_values_named": {
+                "filename_prefix": "latents/ComfyUI"
+              }
+            },
+            {
+              "id": 7,
+              "type": "MaskToImage",
+              "pos": [
+                287.36103515624984,
+                1066.6666666666665
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 6,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 7
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    8
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": 8,
+              "type": "PreviewImage",
+              "pos": [
+                869.5555555555554,
+                1066.6666666666665
+              ],
+              "size": [
+                140,
+                246
+              ],
+              "flags": {},
+              "order": 9,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 8
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            },
+            {
+              "id": 9,
+              "type": "PreviewBridgeLatent",
+              "pos": [
+                1337.8888888888887,
+                122.22222222222217
+              ],
+              "size": [
+                270,
+                362
+              ],
+              "flags": {},
+              "order": 5,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "latent",
+                  "type": "LATENT",
+                  "link": 9
+                },
+                {
+                  "name": "vae_opt",
+                  "shape": 7,
+                  "type": "VAE",
+                  "link": 10
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "LATENT",
+                  "type": "LATENT",
+                  "links": [
+                    11
+                  ]
+                },
+                {
+                  "name": "MASK",
+                  "type": "MASK",
+                  "links": [
+                    12
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewBridgeLatent",
+                "image": "PreviewBridge/PBL-_temp_bvtki_1.png [temp]"
+              },
+              "widgets_values": [
+                "PreviewBridge/PBL-_temp_bvtki_1.png [temp]",
+                "Latent2RGB-FLUX.1",
+                false,
+                "never"
+              ],
+              "widgets_values_named": {
+                "image": "PreviewBridge/PBL-_temp_bvtki_1.png [temp]",
+                "preview_method": "Latent2RGB-FLUX.1",
+                "block": false,
+                "restore_mask": "never"
+              }
+            },
+            {
+              "id": 10,
+              "type": "MaskToImage",
+              "pos": [
+                1376.2499240451389,
+                622.2222222222222
+              ],
+              "size": [
+                193.2779296875,
+                26
+              ],
+              "flags": {},
+              "order": 8,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "mask",
+                  "type": "MASK",
+                  "link": 12
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "IMAGE",
+                  "type": "IMAGE",
+                  "links": [
+                    13
+                  ]
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "MaskToImage"
+              }
+            },
+            {
+              "id": 11,
+              "type": "PreviewImage",
+              "pos": [
+                1402.8888888888887,
+                1066.6666666666665
+              ],
+              "size": [
+                140,
+                246
+              ],
+              "flags": {},
+              "order": 10,
+              "mode": 0,
+              "inputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "link": 13
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "images",
+                  "type": "IMAGE",
+                  "links": null
+                }
+              ],
+              "properties": {
+                "Node name for S&R": "PreviewImage"
+              },
+              "widgets_values": [],
+              "widgets_values_named": {}
+            }
+          ],
+          "links": [
+            [
+              1,
+              1,
+              0,
+              2,
+              0,
+              "IMAGE"
+            ],
+            [
+              2,
+              2,
+              0,
+              5,
+              0,
+              "IMAGE"
+            ],
+            [
+              3,
+              4,
+              0,
+              5,
+              1,
+              "VAE"
+            ],
+            [
+              4,
+              5,
+              0,
+              3,
+              0,
+              "LATENT"
+            ],
+            [
+              5,
+              4,
+              0,
+              3,
+              1,
+              "VAE"
+            ],
+            [
+              7,
+              3,
+              1,
+              7,
+              0,
+              "MASK"
+            ],
+            [
+              8,
+              7,
+              0,
+              8,
+              0,
+              "IMAGE"
+            ],
+            [
+              9,
+              3,
+              0,
+              9,
+              0,
+              "LATENT"
+            ],
+            [
+              10,
+              4,
+              0,
+              9,
+              1,
+              "VAE"
+            ],
+            [
+              11,
+              9,
+              0,
+              6,
+              0,
+              "LATENT"
+            ],
+            [
+              12,
+              9,
+              1,
+              10,
+              0,
+              "MASK"
+            ],
+            [
+              13,
+              10,
+              0,
+              11,
+              0,
+              "IMAGE"
+            ]
+          ],
+          "groups": [],
+          "config": {},
+          "extra": {
+            "ds": {
+              "scale": 0.9,
+              "offset": [
+                416,
+                110
+              ]
+            },
+            "frontendVersion": "1.58.5"
+          },
+          "version": 0.4
+        }
+      },
+      "client_id": "ef0eec045f944519aa25360c37a4ce04",
+      "workflow_metadata": {
+        "workflow_id": "97fdf9a8-6acf-4d45-88d1-09eae053a822"
+      },
+      "create_time": 1794304606525
+    },
+    [
+      "3",
+      "11",
+      "9",
+      "6",
+      "8"
+    ]
+  ],
+  "outputs": {
+    "3": {
+      "images": [
+        {
+          "filename": "clipspace-mask-45894.2000002861.png",
+          "type": "temp",
+          "subfolder": "",
+          "metadata": {
+            "kind": "image",
+            "width": 352,
+            "height": 512
+          }
+        }
+      ],
+      "source_image": [
+        "$3-815afa17d05c4f97a85d684bfebd3412"
+      ]
+    },
+    "9": {
+      "images": [
+        {
+          "filename": "PBL-_temp_bvtki_2.png",
+          "subfolder": "PreviewBridge",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 352,
+            "height": 512
+          }
+        }
+      ],
+      "source_image": [
+        "$9-43b6f852bc2c47aeb7ca6edc995fb37c"
+      ]
+    },
+    "6": {
+      "latents": [
+        {
+          "filename": "ComfyUI_00007_.latent",
+          "subfolder": "latents",
+          "type": "output"
+        }
+      ]
+    },
+    "11": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_hhbbu_00003_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 352,
+            "height": 512
+          }
+        }
+      ]
+    },
+    "8": {
+      "images": [
+        {
+          "filename": "ComfyUI_temp_aaohm_00003_.png",
+          "subfolder": "",
+          "type": "temp",
+          "metadata": {
+            "kind": "image",
+            "width": 352,
+            "height": 512
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "status_str": "success",
+    "completed": true,
+    "messages": [
+      [
+        "execution_start",
+        {
+          "prompt_id": "4dbe8a43-b81c-430f-8720-b9ac92f3408d",
+          "timestamp": 1794304606526
+        }
+      ],
+      [
+        "execution_cached",
+        {
+          "nodes": [
+            "1",
+            "2",
+            "4",
+            "5"
+          ],
+          "prompt_id": "4dbe8a43-b81c-430f-8720-b9ac92f3408d",
+          "timestamp": 1794304606528
+        }
+      ],
+      [
+        "execution_success",
+        {
+          "prompt_id": "4dbe8a43-b81c-430f-8720-b9ac92f3408d",
+          "timestamp": 1794304610701
+        }
+      ]
+    ]
+  },
+  "meta": {
+    "3": {
+      "node_id": "3",
+      "display_node": "3",
+      "parent_node": null,
+      "real_node_id": "3"
+    },
+    "9": {
+      "node_id": "9",
+      "display_node": "9",
+      "parent_node": null,
+      "real_node_id": "9"
+    },
+    "6": {
+      "node_id": "6",
+      "display_node": "6",
+      "parent_node": null,
+      "real_node_id": "6"
+    },
+    "11": {
+      "node_id": "11",
+      "display_node": "11",
+      "parent_node": null,
+      "real_node_id": "11"
+    },
+    "8": {
+      "node_id": "8",
+      "display_node": "8",
+      "parent_node": null,
+      "real_node_id": "8"
+    }
+  }
+}

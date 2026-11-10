@@ -1,0 +1,190 @@
+{
+  "recorded_at": "2026-11-10T10:14:47.562543+00:00",
+  "branch": "fix/preview-bridge-after-pr1172",
+  "candidate": "4e7b9c089e07fdfb4cdfc705a0d2f62dce1fdf29",
+  "candidate_label": "4e7b9c0 + queue, cleanup and review fixes",
+  "local_patch_sha256": "d4e3f64fbe5949d68e6b29e1883a7d556d0211430ba5011b593b65e2b0768bb3",
+  "worktree_status": " M js/preview-bridge.js\n M modules/impact/bridge_nodes.py\n M tests/README.md\n M tests/preview_bridge.test.mjs\n M tests/test_e2e_preview_bridge.py\n D tests/test_preview_bridge_latent.py\n M tests/test_preview_bridge_result.py",
+  "integration_base": "6572207a3057542af6b4c36061677d264e2cda6b",
+  "main": "eae979f4efe43464521508ec9cf62bf695a7a93e",
+  "pr1172": "072a5e976b08407a7977fcebb9bd0af8b5e0c389",
+  "followup_commit_count": 1,
+  "worktree_clean": false,
+  "production_matches_browser_runtime": true,
+  "input_types_unchanged": true,
+  "trusted_fixtures_sha256": {
+    "tests/workflows/all-impact-nodes.json": "a711b1eb0b2b4c62801a91ffc1dfae2d38d37b3adb587325e2da3f08aa08f7be",
+    "tests/workflows/all-impact-nodes.widgets.json": "2cae64fdad3e82209eacb9a237b6fcdbad47968d1b7d516e6cddec1e4b44b3e9"
+  },
+  "changed_files_sha256": {
+    "docs/E2E_TEST_STRATEGY.md": "4eb86e837b7217ef10d1d940ca89824e4f4716118e861b0c7b06c96da93bf055",
+    "js/image-path.js": "3f202bc064c1edbff7cc271f423741b77784a660a4c300539457c016e2afcf41",
+    "js/impact-image-util.js": "df5411f854710e5afeda653090aeba84155762c0ff36e2afbf5a2db710ab5c98",
+    "js/preview-bridge.js": "05595a7f89ed84cb4005e4908cf43b8da4e05daafc84efe7c8115c30bbfe3a0c",
+    "modules/impact/bridge_nodes.py": "0c4580e206e50e61f12890cff3cec6ffcb73e9c25c0c6ec03a1ad49bf3f634d9",
+    "modules/impact/core.py": "154f062289e52dee5a0891f93f7bba2c65e29ace5756c020f93078a2f833d68a",
+    "tests/README.md": "e325c56df8139a0b75d2b0c91797c9d6c1757dfbcc94105443b6645eba485a3f",
+    "tests/preview_bridge.test.mjs": "06bcd8d5279f270bf91a4a2cdb9a89750f70dbe46b19b0efcb1105768c4d28dc",
+    "tests/test_e2e_preview_bridge.py": "04008c47f51b7a3b23349a598998025335c4d2aeb934a3d2045fa88faa429fd2",
+    "tests/test_preview_bridge_result.py": "9843a14d5282b6f18ed44138503dec941b6035d42a36efd792959c8bef80f4a4"
+  },
+  "final_results": {
+    "javascript": {
+      "tests": 81,
+      "pass": 81,
+      "fail": 0,
+      "skipped": 0
+    },
+    "backend": {
+      "tests": 197,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.111
+    },
+    "full_browser": {
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1179.929
+    }
+  },
+  "runtime_source_manifest": "feedback-fixes/green-chrome/source.json",
+  "local_patch": "feedback-fixes/final.patch",
+  "shared_registration_regression": {
+    "backend_red": {
+      "tests": 8,
+      "failures": 8,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_red": {
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_green": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "same_tests": true,
+    "production_change": "modules/impact/bridge_nodes.py",
+    "sequence": "shared-reference-sequence.json"
+  },
+  "refactor_control": {
+    "python": {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "javascript_log": "rereview-before-units/node.log",
+    "same_tests_before_and_after": true
+  },
+  "previous_full_browser": {
+    "candidate_label": "4e7b9c0 + local fixes",
+    "results": {
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "source_manifest": "review-final-green/source.json",
+    "note": "Before this behavior-preserving cleanup; not a full run of the final source."
+  },
+  "baseline_results": {
+    "main_browser": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "pr1172_browser": {
+      "tests": 4,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "pr1172_backend": {
+      "tests": 32,
+      "failures": 19,
+      "errors": 0,
+      "skipped": 0
+    },
+    "queued_mask_before_fix": {
+      "tests": 8,
+      "failures": 8,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "batch_regression_before_guard": {
+    "tests": 6,
+    "failures": 6,
+    "errors": 0,
+    "skipped": 0
+  },
+  "capture_plugin_sha256": "3ed5a93a0f8c86ac5cefb06f8202eee599dcc9c46541d3b0059a6338683cb6b1",
+  "comparison_manifest": "red-green/manifest.json",
+  "comfy_head": "61e524bdba7a4e193b45c2697f1af83c1beb86d6",
+  "environment": {
+    "comfy_version": "0.44.0",
+    "frontend": "1.58.5",
+    "node": "24.12.0",
+    "python": "3.12.3",
+    "torch": "2.10.0+cu128",
+    "execution": "CPU",
+    "browser": "headless Chrome"
+  },
+  "test_quality_check": {
+    "mutation": "Latent reuse reads the original file rather than the refreshed preview.",
+    "original_tests": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "strengthened_tests": {
+      "tests": 4,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "production_behavior_changed": false
+  },
+  "review_record": "REREVIEW.md",
+  "review_feedback": {
+    "F1": "No-alpha latent reuse preserves the no-mask state and block through three queues.",
+    "F2": "A real isolated-server restart with the browser tab retained preserves input-file masks in both restoration modes and both Bridges.",
+    "F3": "Policy transition, restoration races and malformed filenames are tested; legacy pre-queue widget initialization retained.",
+    "F4": "Final-source full run and all six prior Red cases rerun with the current E2E file.",
+    "red_browser": {
+      "tests": 8,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 112.444
+    },
+    "original_pr_red": {
+      "tests": 4,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 90.854
+    },
+    "shared_registration_red": {
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 32.866
+    },
+    "prior_review": "local-review-20261110-181636-822523",
+    "before_manifest": "feedback-fixes/before-final-state.json",
+    "requeue_comparison": "red-green/requeue-manifest.json"
+  }
+}

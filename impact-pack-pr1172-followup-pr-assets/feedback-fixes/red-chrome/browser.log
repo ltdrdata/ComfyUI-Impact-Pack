@@ -1,0 +1,167 @@
+/home/rho/venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:247: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.4, pluggy-1.5.0 -- /home/rho/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/teratera/git/impact-pack-pr1172-followup/tests
+configfile: pytest.ini
+plugins: aiohttp-1.1.0, anyio-4.12.1, xdist-3.8.0, hypothesis-6.136.6, schemathesis-4.0.15, split-0.10.0, timeout-2.4.0, typeguard-4.4.4, subtests-0.14.2, asyncio-1.3.0, cov-7.0.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 8 items
+
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridge] PASSED [ 12%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent] FAILED [ 25%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridge] PASSED [ 37%]
+tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent] FAILED [ 50%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge] FAILED [ 62%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent] FAILED [ 75%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge] FAILED [ 87%]
+tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:760: in test_unedited_requeue_preserves_no_mask_and_block
+    assert all(row["size"] == size and row["extrema"] == extrema for row in observed), observed
+E   AssertionError: [{'consumer_ran': True, 'extrema': (255, 255), 'mask_ran': True, 'prompt_id': 'c518169b-ec4e-4e2e-a81d-d289a10d9c00', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '47958a1c-5dfb-45cc-8c4e-a99534107a82', ...}, {'consumer_ran': True, 'extrema': (0, 0), 'mask_ran': True, 'prompt_id': '5c6b5924-532a-4e36-bf33-218237c8ca04', ...}]
+E   assert False
+E    +  where False = all(<generator object test_unedited_requeue_preserves_no_mask_and_block.<locals>.<genexpr> at 0x7cdcb954af80>)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (c518169b-ec4e-4e2e-a81d-d289a10d9c00)
+PASS: UI Run completed (47958a1c-5dfb-45cc-8c4e-a99534107a82)
+PASS: UI Run completed (5c6b5924-532a-4e36-bf33-218237c8ca04)
+_ test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:757: in test_unedited_requeue_preserves_no_mask_and_block
+    assert all(not row["consumer_ran"] and not row["mask_ran"] for row in observed), observed
+E   AssertionError: [{'consumer_ran': False, 'mask_ran': False, 'prompt_id': '66a21996-684f-4bf8-8c3e-0e94d1a9d49c', 'submitted_image': '$2-0'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': '90195ff5-17d3-4580-8eaa-cb0ed5730fc5', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}, {'consumer_ran': True, 'mask_ran': True, 'prompt_id': 'ed0fd06b-a78d-4424-8894-c6045eccb75a', 'submitted_image': '$2-afae642d4bc945768155612978cbd8b3'}]
+E   assert False
+E    +  where False = all(<generator object test_unedited_requeue_preserves_no_mask_and_block.<locals>.<genexpr> at 0x7cdcb959ec20>)
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (66a21996-684f-4bf8-8c3e-0e94d1a9d49c)
+PASS: UI Run completed (90195ff5-17d3-4580-8eaa-cb0ed5730fc5)
+PASS: UI Run completed (ed0fd06b-a78d-4424-8894-c6045eccb75a)
+_ test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge] _
+tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (f3dd19c3-f881-4ff1-91e2-51fa22571f44)
+PASS: UI Run completed (d969893c-20b9-4eba-812b-c5a546c9818c)
+PASS: UI Run completed (e3a686b4-5d61-45ce-8159-26eb5072767c)
+_ test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (090e9e3e-9bfa-42cc-8aec-02caf35051ea)
+PASS: UI Run completed (49f6705a-ffce-472d-ab7a-ec70f5145930)
+PASS: UI Run completed (f0b8fd24-4895-4f1e-b3f6-658d6d5df7c7)
+_ test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge] _
+tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (256, 256)
+E   assert (64, 64) == (256, 256)
+E     
+E     At index 0 diff: 64 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?     --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (891f1183-5c8c-42e3-b8be-08d1881d6d76)
+PASS: UI Run completed (de5b5fa8-0eae-480a-9611-a4b57a890fea)
+PASS: UI Run completed (61375da5-8ae2-48a3-a3a3-934e4b0c9bfe)
+_ test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent] _
+tests/test_e2e_preview_bridge.py:791: in test_saved_mask_survives_server_restart_without_reloading_tab
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (32, 32) != (256, 256)
+E   assert (32, 32) == (256, 256)
+E     
+E     At index 0 diff: 32 != 256
+E     
+E     Full diff:
+E       (
+E     -     256,
+E     ?      --...
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show
+---------------------------- Captured stdout setup -----------------------------
+Artifacts: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser/test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent]
+----------------------------- Captured stdout call -----------------------------
+PASS: UI Run completed (d6e02578-60b5-4e98-b12e-1a40189051b7)
+PASS: UI Run completed (77b7a4a5-79ae-4cce-aa05-1f9f35d5ee18)
+PASS: UI Run completed (fc387c3d-a523-48e7-a377-0123de186cef)
+=============================== warnings summary ===============================
+test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridge]
+  /home/rho/venv/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.1.0)/charset_normalizer (3.4.5) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/teratera/git/impact-pack-pr1172-followup-pr-assets/feedback-fixes/red-chrome/browser.xml -
+=========================== short test summary info ============================
+FAILED tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[output-PreviewBridgeLatent]
+FAILED tests/test_e2e_preview_bridge.py::test_unedited_requeue_preserves_no_mask_and_block[blocked-PreviewBridgeLatent]
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridge]
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[always-PreviewBridgeLatent]
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridge]
+FAILED tests/test_e2e_preview_bridge.py::test_saved_mask_survives_server_restart_without_reloading_tab[if_same_size-PreviewBridgeLatent]
+============== 6 failed, 2 passed, 1 warning in 112.44s (0:01:52) ==============

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="90.854" timestamp="2026-11-10T18:56:58.055815+09:00" hostname="hyewon"><testcase classname="test_e2e_preview_bridge" name="test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridge]" time="13.638"><failure message="AssertionError: Pixels differ: max error 255 &gt; 1&#10;assert np.int16(255) &lt;= 1&#10; +  where np.int16(255) = &lt;built-in method max of numpy.ndarray object at 0x7543f1446f70&gt;()&#10; +    where &lt;built-in method max of numpy.ndarray object at 0x7543f1446f70&gt; = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max">tests/test_e2e_preview_bridge.py:334: in test_clear_mask_then_refresh_keeps_it_empty
+    mask_output(browser, browser.run(), mask, empty)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:134: in pixels_equal
+    assert difference.max() &lt;= tolerance, f"Pixels differ: max error {difference.max()} &gt; {tolerance}"
+E   AssertionError: Pixels differ: max error 255 &gt; 1
+E   assert np.int16(255) &lt;= 1
+E    +  where np.int16(255) = &lt;built-in method max of numpy.ndarray object at 0x7543f1446f70&gt;()
+E    +    where &lt;built-in method max of numpy.ndarray object at 0x7543f1446f70&gt; = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_clear_mask_then_refresh_keeps_it_empty[always-PreviewBridgeLatent]" time="12.892"><failure message="AssertionError: Pixels differ: max error 255 &gt; 1&#10;assert np.int16(255) &lt;= 1&#10; +  where np.int16(255) = &lt;built-in method max of numpy.ndarray object at 0x7543f1447330&gt;()&#10; +    where &lt;built-in method max of numpy.ndarray object at 0x7543f1447330&gt; = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max">tests/test_e2e_preview_bridge.py:334: in test_clear_mask_then_refresh_keeps_it_empty
+    mask_output(browser, browser.run(), mask, empty)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:134: in pixels_equal
+    assert difference.max() &lt;= tolerance, f"Pixels differ: max error {difference.max()} &gt; {tolerance}"
+E   AssertionError: Pixels differ: max error 255 &gt; 1
+E   assert np.int16(255) &lt;= 1
+E    +  where np.int16(255) = &lt;built-in method max of numpy.ndarray object at 0x7543f1447330&gt;()
+E    +    where &lt;built-in method max of numpy.ndarray object at 0x7543f1447330&gt; = array([[0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       ...,\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0],\n       [0, 0, 0, ..., 0, 0, 0]], shape=(256, 256), dtype=int16).max</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridge]" time="20.511"><failure message="AssertionError: Image size differs: (64, 64) != (352, 512)&#10;assert (64, 64) == (352, 512)&#10;  &#10;  At index 0 diff: 64 != 352&#10;  &#10;  Full diff:&#10;    (&#10;  -     352,&#10;  -     512,...&#10;  &#10;  ...Full output truncated (3 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:419: in test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (64, 64) != (352, 512)
+E   assert (64, 64) == (352, 512)
+E     
+E     At index 0 diff: 64 != 352
+E     
+E     Full diff:
+E       (
+E     -     352,
+E     -     512,...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show</failure></testcase><testcase classname="test_e2e_preview_bridge" name="test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload[never-PreviewBridgeLatent]" time="43.632"><failure message="AssertionError: Image size differs: (44, 64) != (352, 512)&#10;assert (44, 64) == (352, 512)&#10;  &#10;  At index 0 diff: 44 != 352&#10;  &#10;  Full diff:&#10;    (&#10;  -     352,&#10;  -     512,...&#10;  &#10;  ...Full output truncated (3 lines hidden), use '-vv' to show">tests/test_e2e_preview_bridge.py:419: in test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload
+    mask_output(browser, entry, mask, expected)
+../impact-pack-pr1172-followup-pr-assets/evidence_capture.py:28: in recorded
+    result = original(ui, entry, node_id, expected)
+tests/test_e2e_preview_bridge.py:169: in mask_output
+    pixels_equal(actual, expected, tolerance=1)
+tests/test_e2e_preview_bridge.py:132: in pixels_equal
+    assert actual.size == expected.size, f"Image size differs: {actual.size} != {expected.size}"
+E   AssertionError: Image size differs: (44, 64) != (352, 512)
+E   assert (44, 64) == (352, 512)
+E     
+E     At index 0 diff: 44 != 352
+E     
+E     Full diff:
+E       (
+E     -     352,
+E     -     512,...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show</failure></testcase></testsuite></testsuites>

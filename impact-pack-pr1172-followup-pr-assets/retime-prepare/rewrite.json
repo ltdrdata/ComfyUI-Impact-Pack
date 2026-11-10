@@ -1,0 +1,16 @@
+{
+  "old_prepare": "6572207a3057542af6b4c36061677d264e2cda6b",
+  "old_followup": "6427b5de1d9a8d17a64daad109aa4f909847032e",
+  "prepare": "45e53215474746c4d1e4997a1c8b63af273244dd",
+  "followup": "a5350a6fc8d15b9cd21a14578c556081abd5b727",
+  "prepare_parents": [
+    "eae979f4efe43464521508ec9cf62bf695a7a93e",
+    "072a5e976b08407a7977fcebb9bd0af8b5e0c389"
+  ],
+  "prepare_tree": "a8e7fce11cce43930462fcbd4941d00db9d0b97c",
+  "followup_tree": "77e8586448a573e5f946ffe6576c39173b5d7a19",
+  "author_date": "2026-11-10T19:43:40+09:00",
+  "committer_date": "2026-11-10T19:43:40+09:00",
+  "backup_prepare_ref": "refs/review/pr1172-prepare-before-retime-20261110T104340Z",
+  "backup_followup_ref": "refs/review/pr1172-followup-before-retime-20261110T104340Z"
+}
