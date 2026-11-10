@@ -15,6 +15,36 @@ node --experimental-vm-modules --test tests/*.test.mjs
 
 ## Standalone regression tests
 
+Preview Bridge registration, cache ownership and latent-mask checks use the real
+ComfyUI environment, separately from the wildcard stubs:
+
+```bash
+PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest tests/test_preview_bridge_result.py -q
+```
+
+`tests/preview_bridge.test.mjs` loads the shipped extension with controlled API
+and native-widget bindings. It checks submission ordering, late results, native
+filenames, registration failures, reconnection, restoration races and the retained
+ImageReceiver behavior.
+Backend cases distinguish absent, cleared, partial and full latent masks across
+reuse, restoration and incoming `noise_mask` paths, with blocking enabled and
+disabled. Raw clipspace API references also cover changed input sizes, every
+restoration policy, saved clears and missing files. File registration checks
+input-directory containment, configured symlinks, traversal, working-directory
+shadows and correct preview metadata for input-root and nested files. HTTP cases
+run the real registration handlers with aiohttp's test client: input/output/temp
+paths reject escapes before reading and keep configured symlinks usable by both
+Bridges. Only unused PromptServer route/onprompt registration is substituted.
+`tests/test_e2e_preview_bridge.py` checks actual editor saves and downstream
+pixels, three unedited queues and empty-mask blocking. Its legacy SAM cases require `IMPACT_E2E_SAM_IMAGE`, SAM ViT-B and
+`vae-ft-mse-840000-ema-pruned.safetensors`; other Bridge cases need no weights.
+Server-restart cases additionally require `IMPACT_E2E_RESTART_COMMAND`: a command
+that restarts only the isolated test server and returns after it is ready. The
+browser tab stays open; the tests wait for the real `reconnected` event and check
+three further queues. Without the command these four cases are skipped. Never
+point this command at a shared interactive server.
+See `docs/E2E_TEST_STRATEGY.md` for the isolated-server setup.
+
 From the `tests/` directory, run `python3 -m pytest`.
 Install dependencies with `python3 -m pip install -r tests/requirements.txt`
 from the repository root. This runs configuration, populate, and strict
