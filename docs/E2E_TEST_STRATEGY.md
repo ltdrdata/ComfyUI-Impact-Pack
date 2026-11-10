@@ -50,6 +50,7 @@ SAM responses are captured and forwarded unchanged for pixel comparisons.
 | `tests/e2e_lora_wildcard_inference.py` | Import a prepared graph, choose modes, Run, native Export and reload | Real SD1.5 LoRA loading and BREAK conditioning match core-node reference images pixel-for-pixel; four modes preserve output count/order/text and native saved widgets |
 | `tests/test_e2e_legacy_sam.py` | Open the legacy SAM dialog from a node and Clipspace, detect twice, save/paste, export and reload | No removed imports, one Clipspace button after reopening/refresh, real detector pixels in saved masks, unchanged RGB, widget names/order/values in both restoration modes |
 | `tests/test_sam_api.py` | Upload an image and send preparation requests over HTTP, without launching Chrome | Valid requests succeed before/after repeated invalid type/path rejection; rejected requests are not cached as successful |
+| `tests/test_e2e_sam_mask_editor.py` | Open SAM inside the native MaskEditor, detect, paint, save, and reload | Real SAM masks, stale-result protection, transformed coordinates, legacy parity, and downstream latent masks |
 | `tests/e2e_tutorials.py` | Import the original Switch tutorial PNGs, change selection widgets, save and reimport JSON | Every selected branch and final output matches direct core-node image results; both selection modes retain the final preview |
 | `tests/e2e_regional.py` | Import the regional img2img tutorial and prepared variants, click Run | Exact color masks, output differs from a VAE roundtrip, each regional prompt affects its own region more than distant pixels, browser previews match server images |
 | `tests/e2e_conditionings.py` | Import conditioning and regional-prompt graphs, click Run, save and reimport through the file input | Combine/Concat results match core ComfyUI nodes; regional prompts retain both items in order; dynamic slots and links survive loading |
@@ -564,6 +565,31 @@ creates missing image metadata for core preview refresh. It loads the shipped
 SAM module with controlled UI exports and canvas/event objects, exercising both
 global UI exports and the dynamic UI-module fallback. This checks those import
 contracts; it does not substitute for browser testing an older frontend release.
+
+For Interactive SAM, serve a frontend exposing the MaskEditor tool API,
+install the model configured by `sam_editor_model` in the test server's
+`impact-pack.ini`, and provide an image containing a subject. The latent SAM
+case also uses `vae-ft-mse-840000-ema-pruned.safetensors` to encode that image.
+See [SAM setup](SAM_MASK_EDITOR.md).
+
+```bash
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+IMPACT_E2E_SAM_IMAGE=/path/to/ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/images/interactive-sam-original.png \
+python -m pytest tests/test_e2e_sam_mask_editor.py -v
+```
+
+These cases upload the image through the UI, select SAM inside the native
+MaskEditor, place positive and negative points, and click Detect and Save.
+They compare the bridge's MASK with the real detector response, preserve paint
+and RGB through manual editing and redetection, and verify rotated snapshots,
+latent samples, downstream noise masks, and both native widget restoration modes.
+They cover an actual HTTP error followed by a UI retry, cancellation with a real
+response held across editing/tool changes/reopening, and legacy HTTP detection
+parity with snapshot inference, including release and re-preparation. Request
+coordinates are checked against the expected image pixels.
+They skip only when `IMPACT_E2E_SAM_IMAGE` is unset; missing models, the extension
+API or failed detection are test failures. Tests do not download models or
+change server configuration.
 
 The all-node catalog requires **Full Cache mode** because the trusted snapshot
 includes wildcard picker values displaying `Select Wildcard 🟢 Full Cache`.
