@@ -98,6 +98,28 @@ modes. Also run the catalog suite with its trusted fixtures and Full Cache setup
 from [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md); these browser checks
 validate widget names/order/values, not inference.
 
+## Image list batching
+
+Run the real tensor and API compatibility checks separately from the wildcard stubs:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_image_list_batch.py -v
+```
+
+The suite bounds concatenation allocations for matching image sizes, including
+3D frames, 4D batches, mixed ranks and unequal sub-batch lengths. It checks all four
+3D/4D input pairings on CPU and available CUDA, including batch counts, pixels,
+frame order and input immutability. All four pairings also cover mismatched image
+sizes, preserving the first image's size, center cropping and Lanczos pixels from
+Main. Empty lists must block downstream execution through ComfyUI's output
+handling and recover when images arrive. Other cases cover channels, dtype
+promotion, mixed devices and existing API inputs.
+Against an isolated server, `python -m pytest tests/test_e2e_image_list_batch.py -v`
+checks displayed pixels and native Export/reload in both restoration modes, then
+edits an input and checks fresh output. Empty-list scenarios also check that an
+independent output still executes and that connecting an image restores the blocked
+preview. Server setup follows the E2E guide below.
+
 ## Chrome UI E2E
 
 `python3 tests/e2e_wildcards.py` creates and connects nodes, edits widgets,
