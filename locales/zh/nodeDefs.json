@@ -8,7 +8,7 @@
             },
             "model": {
                 "name": "模型",
-                "tooltip": "如果连接 `ImpactDummyInput`，则跳过修复步骤。"
+                "tooltip": "如果将 `ImpactDummyInput` 连接到模型，则跳过推理阶段。"
             },
             "clip": {
                 "name": "clip"
@@ -94,11 +94,11 @@
             },
             "sam_mask_hint_threshold": {
                 "name": "SAM 遮罩提示阈值",
-                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 mask-hint 模式下使用，将遮罩中大于此大小的点遮罩用作 SAM 的提示。"
+                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 SAM 检测提示为 mask-area 时使用。仅将遮罩中亮度值大于或等于此阈值的区域用作 SAM 的提示。"
             },
             "sam_mask_hint_use_negative": {
                 "name": "在SAM遮罩提示中使用排除提示",
-                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 mask-hint 模式下使用，将小于 SAM 遮罩提示阈值的点遮罩用作 SAM 的排除提示。"
+                "tooltip": "[实验性功能] 一个较旧的实验性功能，使用 SAM 检测时按如下方式应用负向提示：\nSmall: 当 SEGS 的尺寸小于 10 像素时\nOutter: 以固定间隔对 SEGS 区域之外的图像区域进行采样"
             },
             "drop_size": {
                 "name": "最小检测尺寸",
@@ -253,11 +253,11 @@
             },
             "sam_mask_hint_threshold": {
                 "name": "SAM 遮罩提示阈值",
-                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 mask-hint 模式下使用，将遮罩中大于此大小的点遮罩用作 SAM 的提示。"
+                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 SAM 检测提示为 mask-area 时使用。仅将遮罩中亮度值大于或等于此阈值的区域用作 SAM 的提示。"
             },
             "sam_mask_hint_use_negative": {
                 "name": "在SAM遮罩提示中使用排除提示",
-                "tooltip": "[实验性功能] 一个较旧的实验性功能，仅在 mask-hint 模式下使用，将小于 SAM 遮罩提示阈值的点遮罩用作 SAM 的排除提示。"
+                "tooltip": "[实验性功能] 一个较旧的实验性功能，使用 SAM 检测时按如下方式应用负向提示：\nSmall: 当 SEGS 的尺寸小于 10 像素时\nOutter: 以固定间隔对 SEGS 区域之外的图像区域进行采样"
             },
             "drop_size": {
                 "name": "最小检测尺寸",
@@ -326,7 +326,7 @@
             },
             "model": {
                 "name": "模型",
-                "tooltip": "如果连接 `ImpactDummyInput`，则跳过修复步骤。"
+                "tooltip": "如果将 `ImpactDummyInput` 连接到模型，则跳过推理阶段。"
             },
             "clip": {
                 "name": "clip"
@@ -546,7 +546,7 @@
             },
             "model": {
                 "name": "模型",
-                "tooltip": "如果连接 `ImpactDummyInput`，则跳过修复步骤。"
+                "tooltip": "如果将 `ImpactDummyInput` 连接到模型，则跳过推理阶段。"
             },
             "clip": {
                 "name": "clip"
@@ -1080,7 +1080,7 @@
             },
             "drop_size": {
                 "name": "最小检测尺寸",
-                "tooltip": "如果边界框（bbox）检测器检测到的尺寸小于此设定值，则忽略。"
+                "tooltip": "如果从遮罩中检测到的区域尺寸小于此设定值，则忽略。"
             },
             "refiner_ratio": {
                 "name": "Refiner 应用比例",
@@ -1399,13 +1399,16 @@
         "display_name": "SAM 检测器 (合并)",
         "inputs": {
             "sam_model": {
-                "name": "SAM 模型"
+                "name": "SAM 模型",
+                "tooltip": "用于轮廓检测的 Segment Anything 模型。\n请务必使用通过“SAM 加载器 (Impact)”节点加载的 SAM_MODEL 作为输入。"
             },
             "segs": {
-                "name": "segs"
+                "name": "segs",
+                "tooltip": "这是检测器检测到的分割信息。\n对 SEGS 指向的所有区域，通过 SAM（Segment Anything）检测器细化遮罩，并将所有遮罩合并为单个遮罩返回。"
             },
             "image": {
-                "name": "图像"
+                "name": "图像",
+                "tooltip": "假定 segs 仅包含检测区域的信息，而不包含图像。SAM（Segment Anything）将参考此图像进行处理。"
             },
             "detection_hint": {
                 "name": "检测提示",
@@ -1424,10 +1427,12 @@
                 "tooltip": "在 SEGS 区域内执行 SAM（Segment Anything）检测时，将 SEGS 的矩形区域扩张后用作提示。"
             },
             "mask_hint_threshold": {
-                "name": "遮罩提示阈值"
+                "name": "遮罩提示阈值",
+                "tooltip": "当 detection_hint 为 mask-area 时，SEGS 的遮罩将用作 SAM（Segment Anything）的点提示。\n此时，仅将遮罩中亮度值大于或等于 mask_hint_threshold 的区域用作提示。"
             },
             "mask_hint_use_negative": {
-                "name": "使用负面遮罩提示"
+                "name": "使用负面遮罩提示",
+                "tooltip": "使用 SAM（Segment Anything）检测时，负向提示按如下方式应用：\nSmall: 当 SEGS 的尺寸小于 10 像素时\nOutter: 以固定间隔对 SEGS 区域之外的图像区域进行采样"
             }
         },
         "outputs": {
@@ -1441,31 +1446,39 @@
         "display_name": "SAM 检测器 (分段)",
         "inputs": {
             "sam_model": {
-                "name": "SAM 模型"
+                "name": "SAM 模型",
+                "tooltip": "用于轮廓检测的 Segment Anything 模型。\n请务必使用通过“SAM 加载器 (Impact)”节点加载的 SAM_MODEL 作为输入。"
             },
             "segs": {
-                "name": "segs"
+                "name": "segs",
+                "tooltip": "这是检测器检测到的分割信息。\n对于 SEGS 区域，将 SAM（Segment Anything）检测到的遮罩生成为一个合并遮罩和一批独立遮罩。"
             },
             "image": {
-                "name": "图像"
+                "name": "图像",
+                "tooltip": "假定 segs 仅包含检测区域的信息，而不包含图像。SAM（Segment Anything）将参考此图像进行处理。"
             },
             "detection_hint": {
-                "name": "检测提示"
+                "name": "检测提示",
+                "tooltip": "建议仅使用 center-1。\n使用 SAM（Segment Anything）模型细化 SEGS 的遮罩时，center-1 仅将 SEGS 的矩形区域和正中心的一个点用作提示。\n其他选项是在实验阶段添加的，效果不佳。"
             },
             "dilation": {
-                "name": "扩张"
+                "name": "扩张",
+                "tooltip": "设置结果遮罩的扩张值。如果为负值，则腐蚀（收缩）遮罩。"
             },
             "threshold": {
                 "name": "阈值"
             },
             "bbox_expansion": {
-                "name": "边界框扩张"
+                "name": "边界框扩张",
+                "tooltip": "在 SEGS 区域内执行 SAM（Segment Anything）检测时，将 SEGS 的矩形区域扩张后用作提示。"
             },
             "mask_hint_threshold": {
-                "name": "遮罩提示阈值"
+                "name": "遮罩提示阈值",
+                "tooltip": "当 detection_hint 为 mask-area 时，SEGS 的遮罩将用作 SAM（Segment Anything）的点提示。\n此时，仅将遮罩中亮度值大于或等于 mask_hint_threshold 的区域用作提示。"
             },
             "mask_hint_use_negative": {
-                "name": "使用负面遮罩提示"
+                "name": "使用负面遮罩提示",
+                "tooltip": "使用 SAM（Segment Anything）检测时，负向提示按如下方式应用：\nSmall: 当 SEGS 的尺寸小于 10 像素时\nOutter: 以固定间隔对 SEGS 区域之外的图像区域进行采样"
             }
         },
         "outputs": {
@@ -1515,7 +1528,8 @@
                 "name": "后置膨胀"
             },
             "sam_model_opt": {
-                "name": "SAM 模型"
+                "name": "SAM 模型",
+                "tooltip": "[可选]\n用于轮廓检测的 Segment Anything 模型。\n请务必使用通过“SAM 加载器 (Impact)”节点加载的 SAM_MODEL 作为输入。\n提供此输入后，将通过 SAM 把 BBOX_DETECTOR 检测到的矩形区域细化为轮廓形状。\nsam_model_opt 优先于 segm_detector_opt。"
             },
             "segm_detector_opt": {
                 "name": "segm 检测器"
@@ -1845,24 +1859,29 @@
         "inputs": {
             "select": {
                 "name": "选择",
-                "tooltip": "选择要输出的输入索引。"
+                "tooltip": "要在各输入中输出的输入编号"
             },
             "sel_mode": {
-                "name": "选择模式"
+                "name": "选择模式",
+                "tooltip": "选择 select_on_execution 时，在工作流执行时动态决定选择。select_on_prompt 是为旧版 ComfyUI 保留的选项，在工作流执行前决定选择。"
             },
             "input1": {
-                "name": "输入1"
+                "name": "输入1",
+                "tooltip": "任意输入。连接后会新增一个输入插槽。"
             }
         },
         "outputs": {
             "0": {
-                "name": "选中的值"
+                "name": "选中的值",
+                "tooltip": "仅输出由 select 值选中的输入。"
             },
             "1": {
-                "name": "选中的标签"
+                "name": "选中的标签",
+                "tooltip": "所选输入插槽的插槽标签"
             },
             "2": {
-                "name": "选中的索引"
+                "name": "选中的索引",
+                "tooltip": "原样输出 select 值"
             }
         }
     },
@@ -1871,16 +1890,23 @@
         "display_name": "反向切换 (任意)",
         "inputs": {
             "input": {
-                "name": "输入"
+                "name": "输入",
+                "tooltip": "任意输入。连接后会新增一个输入插槽。"
             },
             "select": {
-                "name": "选择"
+                "name": "选择",
+                "tooltip": "要将输入发送到的输出编号"
             },
             "sel_mode": {
-                "name": "选择模式"
+                "name": "选择模式",
+                "tooltip": "选择 select_on_execution 时，在工作流执行时动态决定选择。select_on_prompt 是为旧版 ComfyUI 保留的选项，在工作流执行前决定选择。"
             }
         },
-        "outputs": {}
+        "outputs": {
+            "0": {
+                "tooltip": "仅从 select 值选中的输出端输出。\n连接插槽后会创建更多插槽。"
+            }
+        }
     },
     "PreviewBridge": {
         "description": "此功能可在图像上编辑遮罩并将其传递出去。\n如果 block 设置为 if_empty_mask，当遮罩为空时将停止执行。",
@@ -1893,10 +1919,12 @@
                 "name": "预览图像"
             },
             "block": {
-                "name": "阻塞"
+                "name": "阻塞",
+                "tooltip": "if_empty_mask: 如果遮罩为空，则停止执行。\nnever: 从不停止执行。"
             },
             "restore_mask": {
-                "name": "恢复遮罩"
+                "name": "恢复遮罩",
+                "tooltip": "if_same_size: 如果变更后的输入图像与之前的图像尺寸相同，则使用最后保存的遮罩进行恢复\nalways: 每当输入图像变更时，始终使用最后保存的遮罩进行恢复\nnever: 不恢复遮罩。\n`restore_mask` 的优先级高于 `block`"
             }
         },
         "outputs": {
@@ -1909,7 +1937,7 @@
         }
     },
     "ImageSender": {
-        "description": "将生成的图像自动发送到具有相同 link_id 的 ImageReceiver。",
+        "description": "预览图像，并将其发送到具有相同 link_id 的 ImageReceiver 节点。",
         "display_name": "图像发送器",
         "inputs": {
             "images": {
@@ -2001,42 +2029,54 @@
         "display_name": "KSampler (管道)",
         "inputs": {
             "basic_pipe": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "用于采样的 basic_pipe 输入"
             },
             "latent_image": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "seed": {
-                "name": "种子"
+                "name": "种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "cfg": {
-                "name": "CFG"
+                "name": "CFG",
+                "tooltip": "无分类器引导（CFG）值"
             },
             "sampler_name": {
-                "name": "采样器名称"
+                "name": "采样器名称",
+                "tooltip": "采样器"
             },
             "scheduler": {
-                "name": "调度器"
+                "name": "调度器",
+                "tooltip": "噪声调度"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "要去除的噪声量。这也是开始时添加的噪声量，值越高，输入的潜在图像在返回前被修改得越多。"
             },
             "scheduler_func_opt": {
-                "name": "调度器函数"
+                "name": "调度器函数",
+                "tooltip": "[可选] 噪声调度生成函数。如果设置了此项，将忽略调度器小部件。"
             }
         },
         "outputs": {
             "0": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "原样传递输入的 basic_pipe"
             },
             "1": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             },
             "2": {
-                "name": "vae"
+                "name": "vae",
+                "tooltip": "basic_pipe 中的 VAE"
             }
         }
     },
@@ -2476,31 +2516,40 @@
         "display_name": "区域采样器",
         "inputs": {
             "seed": {
-                "name": "种子"
+                "name": "种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "seed_2nd": {
-                "name": "第二种子"
+                "name": "第二种子",
+                "tooltip": "附加噪声种子。其行为由 seed_2nd_mode 决定。"
             },
             "seed_2nd_mode": {
-                "name": "第二种子模式"
+                "name": "第二种子模式",
+                "tooltip": "seed_2nd 的应用方式。 1) ignore: 不使用 seed_2nd。在仅基础采样阶段，seed 用作噪声种子；在区域采样阶段，不添加额外噪声，直接进行降噪。 2) 其他: 在仅基础采样阶段，seed 用作噪声种子；该阶段收尾至没有剩余噪声后，使用 seed_2nd 添加新噪声，再执行区域采样阶段。 a) fixed: 将 seed_2nd 原样用作附加噪声种子。 b) seed+seed_2nd: 将 seed+seed_2nd 的值用作附加噪声种子。 c) seed-seed_2nd: 将 seed-seed_2nd 的值用作附加噪声种子。 d) increment: 尚未实现。与 fixed 相同。 e) decrement: 尚未实现。与 fixed 相同。 f) randomize: 尚未实现。与 fixed 相同。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "base_only_steps": {
-                "name": "仅基础采样步数"
+                "name": "仅基础采样步数",
+                "tooltip": "总采样步数"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "要去除的噪声量。这也是开始时添加的噪声量，值越高，输入的潜在图像在返回前被修改得越多。"
             },
             "samples": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "base_sampler": {
-                "name": "基础采样器"
+                "name": "基础采样器",
+                "tooltip": "应用于 regional_prompt 所设区域之外的采样器。"
             },
             "regional_prompts": {
-                "name": "区域提示"
+                "name": "区域提示",
+                "tooltip": "应用于各区域的提示"
             },
             "overlap_factor": {
                 "name": "重叠系数",
@@ -2511,18 +2560,22 @@
                 "tooltip": "按照修复（inpainting）的原理，在每一步将遮罩区域之外的噪声恢复为原始状态。此选项是为向后兼容而提供的，建议始终设为 true。"
             },
             "additional_mode": {
-                "name": "附加模式"
+                "name": "附加模式",
+                "tooltip": "使用 ..._sde、uni_pc 等特殊采样器时，区域无法被正确降噪，从而破坏整体的协调。为弥补这一点，会使用另一个采样器执行恢复操作。由于使用特殊采样器时每一步都要在每个区域执行第二次采样，采样需要更长时间。 1) DISABLE: 禁用此功能。 2) ratio additional: 用区域所设采样器完成该步应执行的降噪量后，再按 additional_sigma_ratio 额外应用恢复采样器。使用此选项时，总降噪量会增加 additional_sigma_ratio。 3) ratio between: 将该步中区域所设采样器应执行的降噪量与恢复采样器应执行的降噪量按 additional_sigma_ratio 划分，并分别按各自的降噪量进行降噪。使用此选项时，总降噪量不变。"
             },
             "additional_sampler": {
-                "name": "附加采样器"
+                "name": "附加采样器",
+                "tooltip": "1) AUTO: 自动设置恢复采样器。如果采样器为 uni_pc、uni_pc_bh2、dpmpp_sde、dpmpp_sde_gpu，则选择 dpm_fast 采样器；如果采样器为 dpmpp_2m_sde、dpmpp_2m_sde_gpu、dpmpp_3m_sde、dpmpp_3m_sde_gpu，则选择 dpmpp_2m 采样器。 2) 其他: 手动设置恢复采样器。"
             },
             "additional_sigma_ratio": {
-                "name": "附加 Sigma 比例"
+                "name": "附加 Sigma 比例",
+                "tooltip": "根据 additional_mode 应用的噪声调度乘数。"
             }
         },
         "outputs": {
             "0": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             }
         }
     },
@@ -2531,24 +2584,30 @@
         "display_name": "区域提示",
         "inputs": {
             "mask": {
-                "name": "遮罩"
+                "name": "遮罩",
+                "tooltip": "区域遮罩"
             },
             "advanced_sampler": {
-                "name": "高级采样器"
+                "name": "高级采样器",
+                "tooltip": "指定区域使用的采样器"
             },
             "variation_seed": {
-                "name": "变化种子"
+                "name": "变化种子",
+                "tooltip": "设置用于噪声变化的额外种子。"
             },
             "variation_strength": {
-                "name": "变化强度"
+                "name": "变化强度",
+                "tooltip": "设置噪声变化的强度。"
             },
             "variation_method": {
-                "name": "变化方法"
+                "name": "变化方法",
+                "tooltip": "设置原始噪声与额外噪声的混合方式。"
             }
         },
         "outputs": {
             "0": {
-                "name": "区域提示"
+                "name": "区域提示",
+                "tooltip": "区域提示。（可在 RegionalSampler 中使用。）"
             }
         }
     },
@@ -2557,12 +2616,14 @@
         "display_name": "合并区域提示",
         "inputs": {
             "regional_prompts1": {
-                "name": "区域提示1"
+                "name": "区域提示1",
+                "tooltip": "输入的 regional_prompts。（连接输入插槽后会增加更多插槽。）"
             }
         },
         "outputs": {
             "0": {
-                "name": "区域提示"
+                "name": "区域提示",
+                "tooltip": "合并后的 REGIONAL_PROMPTS"
             }
         }
     },
@@ -2571,33 +2632,42 @@
         "display_name": "KSampler 提供器",
         "inputs": {
             "basic_pipe": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "用于采样的 basic_pipe 输入"
             },
             "seed": {
-                "name": "种子"
+                "name": "种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "cfg": {
-                "name": "CFG"
+                "name": "CFG",
+                "tooltip": "无分类器引导（CFG）值"
             },
             "sampler_name": {
-                "name": "采样器名称"
+                "name": "采样器名称",
+                "tooltip": "采样器"
             },
             "scheduler": {
-                "name": "调度器"
+                "name": "调度器",
+                "tooltip": "噪声调度"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "要去除的噪声量。这也是开始时添加的噪声量，值越高，输入的潜在图像在返回前被修改得越多。"
             },
             "scheduler_func_opt": {
-                "name": "调度器函数"
+                "name": "调度器函数",
+                "tooltip": "[可选] 噪声调度生成函数。如果设置了此项，将忽略调度器小部件。"
             }
         },
         "outputs": {
             "0": {
-                "name": "KSAMPLER"
+                "name": "KSAMPLER",
+                "tooltip": "采样器包装器。（可在生成 regional_prompt 时使用。）"
             }
         }
     },
@@ -2606,21 +2676,26 @@
         "display_name": "遮罩双采样器",
         "inputs": {
             "latent_image": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "base_sampler": {
-                "name": "基础采样器"
+                "name": "基础采样器",
+                "tooltip": "应用于遮罩外区域的采样器。"
             },
             "mask_sampler": {
-                "name": "遮罩采样器"
+                "name": "遮罩采样器",
+                "tooltip": "应用于遮罩区域的采样器。"
             },
             "mask": {
-                "name": "遮罩"
+                "name": "遮罩",
+                "tooltip": "区域遮罩"
             }
         },
         "outputs": {
             "0": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             }
         }
     },
@@ -2633,13 +2708,16 @@
                 "tooltip": "输入要检测的目标，用逗号分隔。"
             },
             "blur": {
-                "name": "模糊"
+                "name": "模糊",
+                "tooltip": "模糊检测到的遮罩"
             },
             "threshold": {
-                "name": "阈值"
+                "name": "阈值",
+                "tooltip": "仅检测确定性高于阈值的区域。"
             },
             "dilation_factor": {
-                "name": "膨胀系数"
+                "name": "膨胀系数",
+                "tooltip": "扩张检测到的遮罩。"
             }
         },
         "outputs": {
@@ -2697,7 +2775,7 @@
         }
     },
     "DetailerForEachAutoRetry": {
-        "description": "与 Detailer (SEGS) 相同，但当连接的 Detailer hook 判定修复结果需要重试时（例如黑色区域重试 hook 检测到黑色区域），会自动重试，直到达到最大重试次数。",
+        "description": "对检测区域信息组（SEGS）中的每个区域，根据引导尺寸进行放大修复，从而增强细节。\n如果连接的 detailer_hook 拒绝某个结果（例如 BlackPatchRetryHook），将使用下一个种子重新生成该区域。max_retries 次尝试用尽后会报错。",
         "display_name": "Detailer (SEGS) 自动重试",
         "inputs": {
             "image": {
@@ -2707,7 +2785,8 @@
                 "name": "segs"
             },
             "model": {
-                "name": "模型"
+                "name": "模型",
+                "tooltip": "如果将 `ImpactDummyInput` 连接到模型，则跳过推理阶段。"
             },
             "clip": {
                 "name": "clip"
@@ -4328,7 +4407,8 @@
                 "name": "SEGS 基准"
             },
             "sam_model_opt": {
-                "name": "SAM 模型"
+                "name": "SAM 模型",
+                "tooltip": "[可选]\n用于轮廓检测的 Segment Anything 模型。\n请务必使用通过“SAM 加载器 (Impact)”节点加载的 SAM_MODEL 作为输入。\n提供此输入后，将通过 SAM 把 BBOX_DETECTOR 检测到的矩形区域细化为轮廓形状。\nsam_model_opt 优先于 segm_detector_opt。"
             },
             "segm_detector_opt": {
                 "name": "segm 检测器"
@@ -4798,39 +4878,50 @@
         "display_name": "平铺 KSampler 提供器",
         "inputs": {
             "seed": {
-                "name": "种子"
+                "name": "种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "cfg": {
-                "name": "CFG"
+                "name": "CFG",
+                "tooltip": "无分类器引导（CFG）值"
             },
             "sampler_name": {
-                "name": "采样器名称"
+                "name": "采样器名称",
+                "tooltip": "采样器"
             },
             "scheduler": {
-                "name": "调度器"
+                "name": "调度器",
+                "tooltip": "噪声调度"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "要去除的噪声量。这也是开始时添加的噪声量，值越高，输入的潜在图像在返回前被修改得越多。"
             },
             "tile_width": {
-                "name": "平铺宽度"
+                "name": "平铺宽度",
+                "tooltip": "设置 TiledKSampler 使用的平铺宽度。"
             },
             "tile_height": {
-                "name": "平铺高度"
+                "name": "平铺高度",
+                "tooltip": "设置 TiledKSampler 使用的平铺高度。"
             },
             "tiling_strategy": {
-                "name": "平铺策略"
+                "name": "平铺策略",
+                "tooltip": "设置 TiledKSampler 的平铺策略。"
             },
             "basic_pipe": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "用于采样的 basic_pipe 输入"
             }
         },
         "outputs": {
             "0": {
-                "name": "KSAMPLER"
+                "name": "KSAMPLER",
+                "tooltip": "采样器包装器。（可在生成 regional_prompt 时使用。）"
             }
         }
     },
@@ -4862,7 +4953,8 @@
         },
         "outputs": {
             "0": {
-                "name": "KSAMPLER 高级"
+                "name": "KSAMPLER 高级",
+                "tooltip": "采样器包装器。（可在生成 regional_prompt 时使用。）"
             }
         }
     },
@@ -4871,33 +4963,42 @@
         "display_name": "遮罩双高级采样器",
         "inputs": {
             "base_sampler": {
-                "name": "基础采样器"
+                "name": "基础采样器",
+                "tooltip": "应用于遮罩外区域的采样器。"
             },
             "mask_sampler": {
-                "name": "遮罩采样器"
+                "name": "遮罩采样器",
+                "tooltip": "应用于遮罩区域的采样器。"
             },
             "mask": {
-                "name": "遮罩"
+                "name": "遮罩",
+                "tooltip": "区域遮罩"
             },
             "seed": {
-                "name": "种子"
+                "name": "种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "要去除的噪声量。这也是开始时添加的噪声量，值越高，输入的潜在图像在返回前被修改得越多。"
             },
             "samples": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "overlap_factor": {
-                "name": "重叠系数"
+                "name": "重叠系数",
+                "tooltip": "为使区域边界的接缝更平滑，将遮罩扩张 overlap_factor 的量，使其与其他区域重叠。"
             }
         },
         "outputs": {
             "0": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             }
         }
     },
@@ -4907,7 +5008,8 @@
         "inputs": {},
         "outputs": {
             "0": {
-                "name": "条件"
+                "name": "条件",
+                "tooltip": "这是为不使用负面条件的 FLUX 模型提供的占位符。"
             }
         }
     },
@@ -4928,10 +5030,12 @@
                 "name": "vae"
             },
             "block": {
-                "name": "阻塞"
+                "name": "阻塞",
+                "tooltip": "if_empty_mask: 如果遮罩为空，则停止执行。\nnever: 从不停止执行，而是返回白色遮罩。"
             },
             "restore_mask": {
-                "name": "恢复遮罩"
+                "name": "恢复遮罩",
+                "tooltip": "if_same_size: 如果变更后的输入潜在图像与之前的潜在图像尺寸相同，则使用最后保存的遮罩进行恢复\nalways: 每当输入潜在图像变更时，始终使用最后保存的遮罩进行恢复\nnever: 不恢复遮罩。\n`restore_mask` 的优先级高于 `block`\n如果输入潜在图像已带有遮罩，则不恢复遮罩。"
             }
         },
         "outputs": {
@@ -4989,24 +5093,30 @@
         "display_name": "切换 (潜在图像/旧版)",
         "inputs": {
             "select": {
-                "name": "选择"
+                "name": "选择",
+                "tooltip": "要在各输入中输出的输入编号"
             },
             "sel_mode": {
-                "name": "选择模式"
+                "name": "选择模式",
+                "tooltip": "选择 select_on_execution 时，在工作流执行时动态决定选择。select_on_prompt 是为旧版 ComfyUI 保留的选项，在工作流执行前决定选择。"
             },
             "input1": {
-                "name": "输入1"
+                "name": "输入1",
+                "tooltip": "任意输入。连接后会新增一个输入插槽。"
             }
         },
         "outputs": {
             "0": {
-                "name": "选中的值"
+                "name": "选中的值",
+                "tooltip": "仅输出由 select 值选中的输入。"
             },
             "1": {
-                "name": "选中的标签"
+                "name": "选中的标签",
+                "tooltip": "所选输入插槽的插槽标签"
             },
             "2": {
-                "name": "选中的索引"
+                "name": "选中的索引",
+                "tooltip": "原样输出 select 值"
             }
         }
     },
@@ -5015,24 +5125,30 @@
         "display_name": "切换 (SEGS/旧版)",
         "inputs": {
             "select": {
-                "name": "选择"
+                "name": "选择",
+                "tooltip": "要在各输入中输出的输入编号"
             },
             "sel_mode": {
-                "name": "选择模式"
+                "name": "选择模式",
+                "tooltip": "选择 select_on_execution 时，在工作流执行时动态决定选择。select_on_prompt 是为旧版 ComfyUI 保留的选项，在工作流执行前决定选择。"
             },
             "input1": {
-                "name": "输入1"
+                "name": "输入1",
+                "tooltip": "任意输入。连接后会新增一个输入插槽。"
             }
         },
         "outputs": {
             "0": {
-                "name": "选中的值"
+                "name": "选中的值",
+                "tooltip": "仅输出由 select 值选中的输入。"
             },
             "1": {
-                "name": "选中的标签"
+                "name": "选中的标签",
+                "tooltip": "所选输入插槽的插槽标签"
             },
             "2": {
-                "name": "选中的索引"
+                "name": "选中的索引",
+                "tooltip": "原样输出 select 值"
             }
         }
     },
@@ -5269,51 +5385,66 @@
         "display_name": "KSampler (高级/管道)",
         "inputs": {
             "basic_pipe": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "用于采样的 basic_pipe 输入"
             },
             "latent_image": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "add_noise": {
-                "name": "添加噪声"
+                "name": "添加噪声",
+                "tooltip": "是否添加噪声"
             },
             "noise_seed": {
-                "name": "噪声种子"
+                "name": "噪声种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "cfg": {
-                "name": "CFG"
+                "name": "CFG",
+                "tooltip": "无分类器引导（CFG）值"
             },
             "sampler_name": {
-                "name": "采样器名称"
+                "name": "采样器名称",
+                "tooltip": "采样器"
             },
             "scheduler": {
-                "name": "调度器"
+                "name": "调度器",
+                "tooltip": "噪声调度"
             },
             "start_at_step": {
-                "name": "开始步数"
+                "name": "开始步数",
+                "tooltip": "在 steps 范围内，此节点开始采样的步数。"
             },
             "end_at_step": {
-                "name": "结束步数"
+                "name": "结束步数",
+                "tooltip": "在 steps 范围内，此节点停止采样的步数（如果大于 steps，则只采样到 steps）。"
             },
             "return_with_leftover_noise": {
-                "name": "返回剩余噪声"
+                "name": "返回剩余噪声",
+                "tooltip": "如果按照噪声调度噪声尚未完全去除，是带着剩余噪声返回潜在图像，还是完全去除噪声后再返回。"
             },
             "scheduler_func_opt": {
-                "name": "调度器函数"
+                "name": "调度器函数",
+                "tooltip": "[可选] 噪声调度生成函数。如果设置了此项，将忽略调度器小部件。"
             }
         },
         "outputs": {
             "0": {
-                "name": "基本管道"
+                "name": "基本管道",
+                "tooltip": "原样传递输入的 basic_pipe"
             },
             "1": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             },
             "2": {
-                "name": "vae"
+                "name": "vae",
+                "tooltip": "basic_pipe 中的 VAE"
             }
         }
     },
@@ -5337,7 +5468,8 @@
                 "name": "平铺尺寸"
             },
             "overlap": {
-                "name": "重叠"
+                "name": "重叠",
+                "tooltip": "此设置在启用 tile_mode 时生效。"
             }
         },
         "outputs": {
@@ -5419,7 +5551,8 @@
                 "name": "任意列表"
             },
             "index": {
-                "name": "索引"
+                "name": "索引",
+                "tooltip": "要从列表中选择的项的索引。使用负值可从末尾开始选择（例如 -1 为最后一项，-2 为倒数第二项）。"
             }
         },
         "outputs": {
@@ -5433,51 +5566,66 @@
         "display_name": "区域采样器 (高级)",
         "inputs": {
             "add_noise": {
-                "name": "添加噪声"
+                "name": "添加噪声",
+                "tooltip": "是否添加噪声"
             },
             "noise_seed": {
-                "name": "噪声种子"
+                "name": "噪声种子",
+                "tooltip": "用于生成采样所需 CPU 噪声的随机种子。"
             },
             "steps": {
-                "name": "步数"
+                "name": "步数",
+                "tooltip": "总采样步数"
             },
             "start_at_step": {
-                "name": "开始步数"
+                "name": "开始步数",
+                "tooltip": "在 steps 范围内，此节点开始采样的步数。"
             },
             "end_at_step": {
-                "name": "结束步数"
+                "name": "结束步数",
+                "tooltip": "在 steps 范围内，此节点停止采样的步数（如果大于 steps，则只采样到 steps）。"
             },
             "overlap_factor": {
-                "name": "重叠系数"
+                "name": "重叠系数",
+                "tooltip": "为使区域边界的接缝更平滑，将 regional_prompts 中设置的遮罩扩张 overlap_factor 的量，使其与其他区域重叠。"
             },
             "restore_latent": {
-                "name": "恢复潜在图像"
+                "name": "恢复潜在图像",
+                "tooltip": "按照修复（inpainting）的原理，在每一步将遮罩区域之外的噪声恢复为原始状态。此选项是为向后兼容而提供的，建议始终设为 true。"
             },
             "return_with_leftover_noise": {
-                "name": "返回剩余噪声"
+                "name": "返回剩余噪声",
+                "tooltip": "如果按照噪声调度噪声尚未完全去除，是带着剩余噪声返回潜在图像，还是完全去除噪声后再返回。"
             },
             "latent_image": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "输入的潜在图像"
             },
             "base_sampler": {
-                "name": "基础采样器"
+                "name": "基础采样器",
+                "tooltip": "应用于 regional_prompt 所设区域之外的采样器。"
             },
             "regional_prompts": {
-                "name": "区域提示"
+                "name": "区域提示",
+                "tooltip": "应用于各区域的提示"
             },
             "additional_mode": {
-                "name": "附加模式"
+                "name": "附加模式",
+                "tooltip": "使用 ..._sde、uni_pc 等特殊采样器时，区域无法被正确降噪，从而破坏整体的协调。为弥补这一点，会使用另一个采样器执行恢复操作。由于使用特殊采样器时每一步都要在每个区域执行第二次采样，采样需要更长时间。 1) DISABLE: 禁用此功能。 2) ratio additional: 用区域所设采样器完成该步应执行的降噪量后，再按 additional_sigma_ratio 额外应用恢复采样器。使用此选项时，总降噪量会增加 additional_sigma_ratio。 3) ratio between: 将该步中区域所设采样器应执行的降噪量与恢复采样器应执行的降噪量按 additional_sigma_ratio 划分，并分别按各自的降噪量进行降噪。使用此选项时，总降噪量不变。"
             },
             "additional_sampler": {
-                "name": "附加采样器"
+                "name": "附加采样器",
+                "tooltip": "1) AUTO: 自动设置恢复采样器。如果采样器为 uni_pc、uni_pc_bh2、dpmpp_sde、dpmpp_sde_gpu，则选择 dpm_fast 采样器；如果采样器为 dpmpp_2m_sde、dpmpp_2m_sde_gpu、dpmpp_3m_sde、dpmpp_3m_sde_gpu，则选择 dpmpp_2m 采样器。 2) 其他: 手动设置恢复采样器。"
             },
             "additional_sigma_ratio": {
-                "name": "附加 Sigma 比例"
+                "name": "附加 Sigma 比例",
+                "tooltip": "根据 additional_mode 应用的噪声调度乘数。"
             }
         },
         "outputs": {
             "0": {
-                "name": "潜在图像"
+                "name": "潜在图像",
+                "tooltip": "结果潜在图像"
             }
         }
     },
@@ -5486,12 +5634,14 @@
         "display_name": "组合条件",
         "inputs": {
             "conditioning1": {
-                "name": "条件1"
+                "name": "条件1",
+                "tooltip": "输入的条件。（连接输入插槽后会增加更多插槽。）"
             }
         },
         "outputs": {
             "0": {
-                "name": "条件"
+                "name": "条件",
+                "tooltip": "组合后的条件"
             }
         }
     },
@@ -5500,12 +5650,14 @@
         "display_name": "连接条件",
         "inputs": {
             "conditioning1": {
-                "name": "条件1"
+                "name": "条件1",
+                "tooltip": "输入的条件。（连接输入插槽后会增加更多插槽。）"
             }
         },
         "outputs": {
             "0": {
-                "name": "条件"
+                "name": "条件",
+                "tooltip": "连接后的条件"
             }
         }
     },
@@ -5867,7 +6019,7 @@
         "outputs": {}
     },
     "ImpactDummyInput": {
-        "description": "虚拟输入。连接到 Detailer 的模型输入时，该 Detailer 会跳过修复步骤。",
+        "description": "虚拟输入。连接到 Detailer 的模型输入时，该 Detailer 会跳过推理阶段。",
         "display_name": "虚拟输入",
         "inputs": {},
         "outputs": {
@@ -6097,15 +6249,18 @@
         "display_name": "GITS 调度器函数提供器",
         "inputs": {
             "coeff": {
-                "name": "系数"
+                "name": "系数",
+                "tooltip": "GITS 调度器的 coeff 系数"
             },
             "denoise": {
-                "name": "降噪"
+                "name": "降噪",
+                "tooltip": "噪声调度的降噪量"
             }
         },
         "outputs": {
             "0": {
-                "name": "调度器函数"
+                "name": "调度器函数",
+                "tooltip": "返回一个使用 GITSScheduler 生成噪声调度的函数。可用它代替预先确定的噪声调度，根据步数动态生成噪声调度。"
             }
         }
     },
