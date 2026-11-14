@@ -328,6 +328,15 @@ function valueSendHandler(event) {
 const impactProgressBadge = new ImpactProgressBadge();
 
 api.addEventListener("stop-iteration", () => {
+	// Run (Instant) repeats while the queue mode is 'instant-running'; Run (On Change) has no idle state.
+	const queue = app.extensionManager.queueSettings;
+	if(queue.mode == 'instant-running')
+		queue.mode = 'instant-idle';
+	else if(queue.mode == 'change')
+		queue.mode = 'disabled';
+
+	// The legacy menu repeats by this flag; its checkbox only displays it.
+	app.ui.autoQueueEnabled = false;
 	document.getElementById("autoQueueCheckbox").checked = false;
 });
 api.addEventListener("value-send", valueSendHandler);

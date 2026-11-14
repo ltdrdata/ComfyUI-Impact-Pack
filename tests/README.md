@@ -242,6 +242,11 @@ checks Switch/Combine import, browser reload, routing, and editing through Chrom
 including non-default selection, legacy names, image/mask lists and batches, and
 SEGS concatenation. Mask batch checks compare every output pixel with expected
 patterns, including resizing, center cropping, batch order, and one-pixel dimensions.
+`python3 -m pytest tests/test_e2e_stop_iteration.py` checks in Chrome that
+Conditional Stop Iteration ends Run (Instant) and Run (On Change) after the prompt
+that reports a true condition and leaves them repeating for a false one.
+`tests/stop_iteration.test.mjs` checks the queue mode and the legacy menu's Auto
+Queue state the listener changes.
 `python3 tests/e2e_conditionings.py` compares conditioning results with core
 ComfyUI and checks regional-prompt combination, using the Detailer checkpoint.
 `python3 tests/e2e_tutorials.py` imports the original Switch tutorial PNGs,
