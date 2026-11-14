@@ -40,6 +40,8 @@ SAM responses are captured and forwarded unchanged for pixel comparisons.
 | `tests/test_e2e_switches.py` | Create and wire nodes; import prepared graphs and UI-created JSON, reload Chrome, delete connected nodes, reconnect and click Run | Slot identities and typed links, list order, non-default selection and routing, fresh output after reconnecting, output preservation when a Reroute disconnects during loading |
 | `tests/test_e2e_image_list_batch.py` | Create image/mask sources and list/batch nodes, Run, native Export/reload, edit the mask; run an empty list alongside an independent output, then connect an image | Displayed pixels/order and native widget compatibility in both restoration modes; empty lists skip the preview without stopping the independent output and recover after connection |
 | `tests/test_e2e_widget_catalog.py` | Load the UI-created catalog and pan to each node at 100% zoom | Every registered node exactly once; live widget names, order, and values match the fixed baseline under positional and named restoration |
+| `tests/test_e2e_detailer_hooks.py` | Import seven original hook PNGs, native Export/reload | Hook and consumer widget names/order/typed values and hook wiring survive both restoration modes; unavailable legacy components are not executed |
+| `tests/test_e2e_detailer_advanced_options.py` | Run both UI-created advanced-options tutorials, toggle the cycle option, select a cycle, Export/reload and Run | Distinct cycle outputs, unchanged final-only pixels, tiled normal/inpaint conditioning, correct selection, current previews and preserved widgets/wiring |
 | `tests/test_e2e_mask_to_segs.py` | Import a prepared bicubic mask graph, Run, native Export/reload, change the resize widget and Run again | Contour pixels match an explicit clamp reference; saved widget names/order/values survive both restoration modes; changed inputs produce uncached mask outputs |
 | `tests/test_e2e_mask_tutorials.py` | Load original tutorial PNG/JSON files, native Export and reload | MaskToSEGS widget names/order/values survive both restoration modes, including the default contour_fill omitted by older four-value workflows |
 | `tests/test_e2e_sam_masks.py` | Upload a subject image, import the prepared SAM graph, Run, native Export/import and Run again | Real ViT-B batch count/order/pixels, combined masks and downstream per-SEGS masks match raw SAM predictions for three score regimes; fresh files, browser previews and saved widget mappings survive both restoration modes |
@@ -89,6 +91,62 @@ start servers or edit configuration.
 
 
 ## Prerequisites
+
+Detailer hook CPU regressions use real Impact/ComfyUI code with controlled VAE,
+sampling and external noise/Lama backends. Run separately from wildcard stubs:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI \
+IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials \
+python -m pytest tests/test_detailer_hooks.py tests/test_detailer_advanced_options.py tests/test_detailer_vae.py -v
+IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials \
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+python -m pytest tests/test_e2e_detailer_hooks.py -v
+```
+
+`detailer_hook_cases.py` pins the original PNG hashes at tutorial revision
+`ca31a3bae14dbede5366de4904dfedea2697b082`. Saved widget values come from those
+PNGs; names/order and defaults for absent historical controls come from the
+unchanged catalog records. The CPU suite covers denoise/seed schedules,
+noise injection, Unsampler, custom sampler precedence, neutral and nested
+composition, CoreML decode callbacks, Preview, Lama skip behavior and retries.
+Advanced-option tests additionally check per-cycle pixels and decode counts,
+independent samples/masks/batch indices, nested custom sampling policies,
+updated crop inputs for overlapping regions, final-image parity, empty/DUMMY
+paths, and FaceDetailer image/mask and MaskDetailer batch ordering. VAE tests
+verify both inpaint encodes reach the sampler/conditioning with the selected
+policy, independent encode/decode modes and safe overlaps.
+Cycle-aware post-paste hooks check the current cycle and
+final-only state. Default options, including nested combines, preserve
+FaceDetailer's existing segmentation-override policy and output pixels.
+
+The separate `workflow/detailer-advanced-options.json` tutorial was created with
+Chrome node search, widget editing, port dragging, image upload and native Export.
+Its `workflow/detailer-advanced-options.png` reference image embeds that exact
+Export. Load the PNG and upload its linked `images/combination-original.png`;
+the test does not rebuild it or change the historical PNGs or catalog.
+With the example's checkpoint installed and image uploaded, use a `--cache-none`
+test server for actual model execution (ten uncached queues across four cases).
+Four further cases load the hook/selection detail PNGs in both restoration modes
+and check native Export/reload without model execution. All four PNGs must embed
+the corresponding committed JSON verbatim:
+
+```bash
+IMPACT_TUTORIALS_DIR=/path/to/ComfyUI-extension-tutorials \
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 \
+python -m pytest tests/test_e2e_detailer_advanced_options.py -v
+```
+
+The test compares the final cycle byte-for-byte with the option disabled,
+checks that the three cycles differ, checks selection of the second image, and
+repeats execution after native reload. VAE, sampler and model are not replaced.
+Each preview is rendered before comparing browser pixels with server images.
+The second native example combines tiled VAE and cycle selection. Its
+cases execute normal conditioning with positional restoration and inpaint
+conditioning with named restoration, using tile 512 / overlap 256 to exercise
+the safe-overlap boundary. Each run and reload is uncached. These SD1.5
+executions validate the processing paths, not a model-quality or peak-memory
+improvement.
 
 For the Node unit commands below, see the shared
 [Node runtime requirement](../tests/README.md#node-unit-tests).

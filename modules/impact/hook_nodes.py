@@ -1,6 +1,45 @@
 import sys
+from comfy_api.latest import io
 from . import hooks
 from . import defs
+
+
+class DetailerAdvancedOptionsHook(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DetailerAdvancedOptionsHook",
+            display_name="Detailer Advanced Options Hook",
+            category="ImpactPack/Detailer",
+            description="Additional Detailer settings. Combine with existing hooks using DetailerHookCombine.",
+            inputs=[
+                io.Boolean.Input("return_by_cycle_step", default=False,
+                                 tooltip="Return a full image for each cycle, ordered by input image then cycle. Applies to image Detailers, not AnimateDiff."),
+                io.Combo.Input("vae_encode_mode", options=["inherit", "disabled", "tiled"], default="inherit",
+                               tooltip="Inherit the Detailer switch, disable explicit tiling, or use the specified tile. Also applies to inpaint conditioning."),
+                io.Combo.Input("vae_decode_mode", options=["inherit", "disabled", "tiled"], default="inherit",
+                               tooltip="Inherit the Detailer switch, disable explicit tiling, or use the specified tile. Normal decode retains its tiled fallback on failure."),
+                io.Int.Input("vae_tile_size", default=512, min=64, max=4096, step=64,
+                             tooltip="Tile size in pixels for tiled encode/decode. Memory follows the tile, not the crop, so use the largest your device holds."),
+                io.Int.Input("vae_tile_overlap", default=64, min=0, max=4096, step=32,
+                             tooltip="Overlap in pixels; capped at one quarter of the selected tile. Zero means no overlap."),
+                io.Boolean.Input("return_upscaled_crops", default=False,
+                                 tooltip="Return cropped and cropped_refined at the size the Detailer samples at instead of the crop size."),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
+
+    @classmethod
+    def execute(cls, return_by_cycle_step=False, vae_encode_mode="inherit", vae_decode_mode="inherit",
+                vae_tile_size=512, vae_tile_overlap=64, return_upscaled_crops=False):
+        options = {"return_by_cycle_step": return_by_cycle_step, "return_upscaled_crops": return_upscaled_crops}
+        if vae_encode_mode != "inherit":
+            options["vae_encode_mode"] = vae_encode_mode
+        if vae_decode_mode != "inherit":
+            options["vae_decode_mode"] = vae_decode_mode
+        if "tiled" in (vae_encode_mode, vae_decode_mode):
+            options.update(vae_tile_size=vae_tile_size, vae_tile_overlap=vae_tile_overlap)
+        return io.NodeOutput(hooks.AdvancedOptionsDetailerHook(options))
 
 
 class SEGSOrderedFilterDetailerHookProvider:

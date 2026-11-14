@@ -1,5 +1,5 @@
 {
-  "frontend_version": "1.57.6",
+  "frontend_version": "1.58.5",
   "created_via": "Chrome node search and native workflow Export",
   "nodes": [
     {
@@ -4001,6 +4001,36 @@
         {
           "name": "control_after_generate",
           "value": "randomize"
+        }
+      ]
+    },
+    {
+      "id": "200",
+      "type": "DetailerAdvancedOptionsHook",
+      "widgets": [
+        {
+          "name": "return_by_cycle_step",
+          "value": false
+        },
+        {
+          "name": "vae_encode_mode",
+          "value": "inherit"
+        },
+        {
+          "name": "vae_decode_mode",
+          "value": "inherit"
+        },
+        {
+          "name": "vae_tile_size",
+          "value": 512
+        },
+        {
+          "name": "vae_tile_overlap",
+          "value": 64
+        },
+        {
+          "name": "return_upscaled_crops",
+          "value": false
         }
       ]
     }
