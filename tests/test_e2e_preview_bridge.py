@@ -630,6 +630,50 @@ def test_new_image_refreshes_preview_and_obeys_restore_mask(ui, restore, resize)
     browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
 
 
+@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+def test_restored_mask_stays_out_of_the_rgba_image_other_nodes_read(ui, restore):
+    browser, args = ui
+    source = add_node(browser, "EmptyImage", 150, 150)
+    number(browser, source, "width", 256)
+    number(browser, source, "height", 256)
+    alpha = add_node(browser, "SolidMask", 150, 700)
+    number(browser, alpha, "value", 0.25)
+    number(browser, alpha, "width", 256)
+    number(browser, alpha, "height", 256)
+    join = add_node(browser, "JoinImageWithAlpha", 560, 150)
+    connect(browser, source, join)
+    connect(browser, alpha, join, target_slot="alpha")
+    bridge = add_node(browser, "PreviewBridge", 970, 150)
+    choose(browser, bridge, "restore_mask", restore)
+    connect(browser, join, bridge)
+    convert = add_node(browser, "MaskToImage", 1380, 150)
+    bridge_mask = add_node(browser, "PreviewImage", 1790, 150)
+    connect(browser, bridge, convert, source_slot=1)
+    connect(browser, convert, bridge_mask)
+
+    def split_mask(x, y):
+        split = add_node(browser, "SplitImageWithAlpha", x, y)
+        convert = add_node(browser, "MaskToImage", x + 410, y)
+        output = add_node(browser, "PreviewImage", x + 820, y)
+        connect(browser, join, split)
+        connect(browser, split, convert, source_slot=1)
+        connect(browser, convert, output)
+        return output
+
+    first = split_mask(560, 700)
+    preview(browser, browser.run(), bridge)
+    painted = edit_mask(browser, bridge, args.artifacts, "painted")
+    mask_output(browser, browser.run(), bridge_mask, painted)
+    number(browser, alpha, "value", 0.75)
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, painted)
+    joined = Image.new("L", (256, 256), 191)
+    mask_output(browser, entry, first, joined)
+    # A consumer added afterwards reads the Join output from the execution cache.
+    late = split_mask(150, 900)
+    mask_output(browser, browser.run(), late, joined)
+
+
 @pytest.mark.parametrize("restore,restored", [("always", True), ("if_same_size", False)],
                          ids=["restored_after_resize", "discarded_after_resize"])
 def test_restored_latent_mask_reaches_the_next_bridge(ui, restore, restored):
