@@ -302,7 +302,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * These nodes are experimental nodes designed to implement the logic for loops and dynamic switching.
   * `ImpactCompare`, `ImpactConditionalBranch`, `ImpactConditionalBranchSelMode`, `ImpactInt`, `ImpactBoolean`, `ImpactValueSender`, `ImpactValueReceiver`, `ImpactImageInfo`, `ImpactMinMax`, `ImpactNeg`, `ImpactConditionalStopIteration`
   * `ImpactIsNotEmptySEGS` - This node returns `true` only if the input SEGS is not empty. 
-  * `ImpactIfNone` - Returns `true` if any_input is None, and returns `false` if it is not None.
+  * `ImpactIfNone` - Returns `true` if any_input is not None, and returns `false` if it is None.
   * `Queue Trigger` - When this node is executed, it adds a new queue to assist with repetitive tasks. It will only execute if the signal's status changes.
   * `Queue Trigger (Countdown)` - Like the Queue Trigger, it adds a queue, but only adds it if it's greater than 1, and decrements the count by one each time it runs.
   * `Sleep` - Waits for the specified time (in seconds).

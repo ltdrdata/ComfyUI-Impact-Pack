@@ -471,7 +471,8 @@ class DetailerForEachAutoRetry:
 
     CATEGORY = "ImpactPack/Detailer"
 
-    DESCRIPTION = "It enhances details by inpainting each region within the detected area bundle (SEGS) after enlarging them based on the guide size."
+    DESCRIPTION = ("It enhances details by inpainting each region within the detected area bundle (SEGS) after enlarging them based on the guide size.\n"
+                   "If the connected detailer_hook rejects a result (e.g. BlackPatchRetryHook), the region is regenerated with the next seed. An error is raised once max_retries attempts are used up.")
 
     @staticmethod
     def get_core_module():
@@ -1982,7 +1983,7 @@ class BitwiseAndMaskForEach:
 
     CATEGORY = "ImpactPack/Operation"
 
-    DESCRIPTION = "Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs. SEGS with no overlapping mask areas are filtered out."
+    DESCRIPTION = "Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs."
 
     def doit(self, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
@@ -2005,7 +2006,7 @@ class SubtractMaskForEach:
 
     CATEGORY = "ImpactPack/Operation"
 
-    DESCRIPTION = "Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs. SEGS with no overlapping mask areas are filtered out."
+    DESCRIPTION = "Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs."
 
     def doit(self, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
@@ -2406,6 +2407,8 @@ class ImageSender(nodes.PreviewImage):
 
     CATEGORY = "ImpactPack/Util"
 
+    DESCRIPTION = "Previews the images and sends them to the ImageReceiver nodes with the same link_id."
+
     def doit(self, images, filename_prefix="ImgSender", link_id=0, prompt=None, extra_pnginfo=None):
         result = nodes.PreviewImage().save_images(images, filename_prefix, prompt, extra_pnginfo)
         PromptServer.instance.send_sync("img-send", {"link_id": link_id, "images": result['ui']['images']})
@@ -2677,7 +2680,8 @@ class ImpactWildcardProcessor:
                         "mode": (["populate", "fixed", "reproduce"], {"default": "populate", "tooltip":
                             "populate: Before running the workflow, it overwrites the existing value of 'populated_text' with the prompt processed from 'wildcard_text'. In this mode, 'populated_text' cannot be edited.\n"
                             "fixed: Ignores wildcard_text and keeps 'populated_text' as is. You can edit 'populated_text' in this mode.\n"
-                            "reproduce: This mode operates as 'fixed' mode only once for reproduction, and then it switches to 'populate' mode."
+                            "reproduce: This mode operates as 'fixed' mode only once for reproduction, and then it switches to 'populate' mode.\n"
+                            "Fixed also pauses automatic seed changes, including choices in populated_text. Use populate for automatic variation."
                             }),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"],),
@@ -2714,8 +2718,9 @@ class ImpactWildcardEncode:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False, "tooltip": "The actual value passed during the execution of 'ImpactWildcardEncode' is what is shown here. The behavior varies slightly depending on the mode. Wildcard syntax can also be used in 'populated_text'."}),
                         "mode": (["populate", "fixed", "reproduce"], {"tooltip":
                             "populate: Before running the workflow, it overwrites the existing value of 'populated_text' with the prompt processed from 'wildcard_text'. In this mode, 'populated_text' cannot be edited.\n"
-                            "fixed: Ignores wildcard_text and keeps 'populated_text' as is. You can edit 'populated_text' in this mode\n."
-                            "reproduce: This mode operates as 'fixed' mode only once for reproduction, and then it switches to 'populate' mode."}),
+                            "fixed: Ignores wildcard_text and keeps 'populated_text' as is. You can edit 'populated_text' in this mode.\n"
+                            "reproduce: This mode operates as 'fixed' mode only once for reproduction, and then it switches to 'populate' mode.\n"
+                            "Fixed also pauses automatic seed changes, including choices in populated_text. Use populate for automatic variation."}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"], ),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Determines the random seed to be used for wildcard processing."}),
