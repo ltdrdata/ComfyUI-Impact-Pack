@@ -383,15 +383,15 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 * pip install
    * segment-anything
    * scikit-image
-   * piexif 
-   * opencv-python
+   * piexif
+   * transformers
+   * opencv-python-headless
    * scipy
-   * numpy<2
+   * numpy
    * dill
    * matplotlib
+   * git+https://github.com/facebookresearch/sam2
    * (optional) onnxruntime
-   * (deprecated) openmim      # for mim
-   * (deprecated) pycocotools  # for mim
    
 * linux packages (ubuntu)
   * libgl1-mesa-glx
