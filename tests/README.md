@@ -250,6 +250,14 @@ results. Set `IMPACT_TUTORIALS_DIR` to the tutorial checkout; see the E2E guide
 for its input images and OpenPose requirements.
 Image checks verify that browser previews contain the current server output,
 including rejecting blocked requests and stale pixels served at a new URL.
+`python3 -m pytest tests/test_e2e_sam_mask_editor.py -v` tests the SAM tool
+integration separately from the Preview Bridge regression suite. Set
+`IMPACT_E2E_SAM_IMAGE`, install the configured SAM model, and serve the frontend
+MaskEditor tool API. Latent coverage also needs the SD1.5 VAE. See
+[SAM setup](../docs/SAM_MASK_EDITOR.md). `tests/sam_mask_editor.test.mjs` checks
+tool controls and cancellation; `tests/test_sam_editor.py` and
+`tests/test_sam_server.py` check inference helpers and real HTTP handlers with
+model doubles, including concurrency, failed requests, and recovery.
 `python3 tests/e2e_regional.py` checks exact color masks and the localized effect
 of all three regional prompts in the restored regional img2img tutorial.
 Set `IMPACT_REGIONAL_WORKFLOW` to that PNG or JSON; see the E2E guide for assets
