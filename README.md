@@ -200,13 +200,14 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `DenoiseSchedulerDetailerHookProvider` - During the progress of the cycle, the detailer's denoise is altered up to the `target_denoise`. 
   * `CoreMLDetailerHookProvider` - CoreML supports only 512x512, 512x768, 768x512, 768x768 size sampling. CoreMLDetailerHookProvider precisely fixes the upscale of the crop_region to this size. When using this hook, it will always be selected size, regardless of the guide_size. However, if the guide_size is too small, skipping will occur.
   * `DetailerHookCombine` - This is used to connect two DETAILER_HOOKs. Similar to PixelKSampleHookCombine.
+  * `DetailerAdvancedOptionsHook` - Supplies typed advanced settings through the existing hook input. Enable `return_by_cycle_step` to return a full image for each cycle, and select VAE encode/decode tiling and its tile size (including inpaint encoding). Enable `return_upscaled_crops` to return `cropped` and `cropped_refined` at the size the Detailer samples at instead of the crop size. Existing Detailer widgets and the default final-image output are preserved. See the [hook tutorial](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/detailer_hooks.md).
   * `SEGSOrderedFilterDetailerHook`, SEGSRangeFilterDetailerHook, SEGSLabelFilterDetailerHook - There are a wrapper node that provides SEGSFilter nodes to be applied in FaceDetailer or Detector by creating DETAILER_HOOK.
   * `PreviewDetailerHook` - Connecting this hook node helps provide assistance for viewing previews whenever SEGS Detailing tasks are completed. When working with a large number of SEGS, such as Make Tile SEGS, it allows for monitoring the situation as improvements progress incrementally.
     * Since this is the hook applied when pasting onto the original image, it has no effect on nodes like `SEGSDetailer`.
   * `VariationNoiseDetailerHookProvider` - Apply variation seed to the detailer. It can be applied in multiple stages through combine.
   * `CustomSamplerDetailerHookProvider` - Apply a hook that allows you to use a custom sampler in the Detailer nodes. When using `DetailerHookCombine`, the sampler from the first hook is applied.
   * `LamaRemoverDetailerHookProvider` – Applies Lama Remover to the upscaled image during the detailing stage. If `skip_sampling` is set to True, Lama Remover can be used alone without the detailing stage, allowing it to simply remove detected regions.
-      * Not applicable for **AnimateDiff** detailers. When using `DetailerHookCombine`, `skip_sampling` is only applied if it is set to `True` for all hooks.
+      * Not applicable for **AnimateDiff** detailers. When using `DetailerHookCombine`, `skip_sampling` is only applied if it is set to `True` for all processing hooks. Advanced-options hooks are neutral for this decision.
       * To use this node, the node pack at [Layer-norm/comfyui-lama-remover](https://github.com/Layer-norm/comfyui-lama-remover) must be installed.
 
 

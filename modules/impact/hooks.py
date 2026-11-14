@@ -13,6 +13,26 @@ import math
 import logging
 
 
+def get_detailer_options(hook):
+    # Third-party hooks written before advanced options remain valid.
+    getter = getattr(hook, "get_detailer_options", None)
+    return getter() if getter is not None else {}
+
+
+def get_detailer_detection_hook(hook):
+    # Remove option-only branches without changing an existing hook's policy.
+    if type(hook) is AdvancedOptionsDetailerHook:
+        return None
+    if type(hook) is DetailerHookCombine:
+        hook1 = get_detailer_detection_hook(hook.hook1)
+        hook2 = get_detailer_detection_hook(hook.hook2)
+        if hook1 is None:
+            return hook2
+        if hook2 is None:
+            return hook1
+    return hook
+
+
 class PixelKSampleHook:
     cur_step = 0
     total_step = 0
@@ -90,6 +110,9 @@ class PixelKSampleHookCombine(PixelKSampleHook):
 
 
 class DetailerHookCombine(PixelKSampleHookCombine):
+    def get_detailer_options(self):
+        return {**get_detailer_options(self.hook1), **get_detailer_options(self.hook2)}
+
     def cycle_latent(self, latent):
         latent = self.hook1.cycle_latent(latent)
         latent = self.hook2.cycle_latent(latent)
@@ -106,8 +129,8 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         return image
 
     def get_custom_noise(self, seed, noise, is_touched):
-        noise_1st, is_touched = self.hook1.get_custom_noise(seed, noise, is_touched)
-        noise_2nd, is_touched = self.hook2.get_custom_noise(seed, noise, is_touched)
+        noise, is_touched = self.hook1.get_custom_noise(seed, noise, is_touched)
+        noise, is_touched = self.hook2.get_custom_noise(seed, noise, is_touched)
         return noise, is_touched
 
     def get_custom_sampler(self):
@@ -117,7 +140,17 @@ class DetailerHookCombine(PixelKSampleHookCombine):
             return self.hook2.get_custom_sampler()
 
     def get_skip_sampling(self):
-        return self.hook1.get_skip_sampling() and self.hook2.get_skip_sampling()
+        pending = [self.hook2, self.hook1]
+        sampling_hooks = []
+        while pending:
+            hook = pending.pop()
+            # Subclasses own their sampling policy; do not bypass their method.
+            if type(hook) is DetailerHookCombine:
+                pending.extend((hook.hook2, hook.hook1))
+            elif type(hook) is not AdvancedOptionsDetailerHook:
+                sampling_hooks.append(hook)
+        # Options carry settings; they must not turn off a Lama hook's skip.
+        return bool(sampling_hooks) and all(hook.get_skip_sampling() for hook in sampling_hooks)
     
     def should_retry_patch(self, patch):
         return self.hook1.should_retry_patch(patch) or self.hook2.should_retry_patch(patch)
@@ -174,6 +207,9 @@ class SimpleStepsScheduleHook(PixelKSampleHook):
 
 
 class DetailerHook(PixelKSampleHook):
+    def get_detailer_options(self):
+        return {}
+
     def cycle_latent(self, latent):
         return latent
 
@@ -194,6 +230,15 @@ class DetailerHook(PixelKSampleHook):
     
     def should_retry_patch(self, patch):
         return False
+
+
+class AdvancedOptionsDetailerHook(DetailerHook):
+    def __init__(self, options):
+        super().__init__()
+        self.options = options.copy()
+
+    def get_detailer_options(self):
+        return self.options.copy()
 
 
 class CustomSamplerDetailerHookProvider(DetailerHook):

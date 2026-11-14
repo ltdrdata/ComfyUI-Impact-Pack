@@ -123,6 +123,7 @@ NODE_CLASS_MAPPINGS = {
     "LamaRemoverDetailerHookProvider": LamaRemoverDetailerHookProvider, # noqa: F405
 
     "DetailerHookCombine": DetailerHookCombine, # noqa: F405
+    "DetailerAdvancedOptionsHook": DetailerAdvancedOptionsHook, # noqa: F405
     "NoiseInjectionDetailerHookProvider": NoiseInjectionDetailerHookProvider, # noqa: F405
     "UnsamplerDetailerHookProvider": UnsamplerDetailerHookProvider, # noqa: F405
     "DenoiseSchedulerDetailerHookProvider": DenoiseSchedulerDetailerHookProvider, # noqa: F405

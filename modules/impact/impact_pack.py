@@ -212,6 +212,31 @@ class ONNXDetectorForEach:
         return (segs, )
 
 
+def _detailer_cycle_images(image, detailer_hook, cycle):
+    if hooks.get_detailer_options(detailer_hook).get("return_by_cycle_step", False):
+        image = image.cpu()
+        return [image.clone() for _ in range(cycle)]
+    return None
+
+
+def _paste_detail_images(image, enhanced_image, mask, crop_region, detailer_hook, images_by_cycle, cycle_images):
+    targets = [image] if images_by_cycle is None else images_by_cycle
+    patches = cycle_images if cycle_images else [enhanced_image] * len(targets)
+    for i, (target, patch) in enumerate(zip(targets, patches)):
+        utils.tensor_paste(target, patch, (crop_region[0], crop_region[1]), mask)
+        if detailer_hook is not None:
+            if images_by_cycle is not None:
+                detailer_hook.set_steps((i, len(targets)))
+            target = detailer_hook.post_paste(target)
+        targets[i] = target
+    return targets[-1]
+
+
+def _sorted_by_crop_size(outputs):
+    # Sampled-size crops keep the order of their crops, so the per-region output lists stay paired.
+    return [image for _, image in sorted(outputs, key=lambda output: output[0], reverse=True)]
+
+
 class DetailerForEach:
     @classmethod
     def INPUT_TYPES(s):
@@ -270,6 +295,8 @@ class DetailerForEach:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         image = image.clone()
+        images_by_cycle = _detailer_cycle_images(image, detailer_hook, cycle)
+        upscaled_crops = hooks.get_detailer_options(detailer_hook).get("return_upscaled_crops", False)
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
@@ -358,6 +385,8 @@ class DetailerForEach:
                 break
 
             orig_cropped_image = cropped_image.clone()
+            cycle_images = [] if images_by_cycle is not None else None
+            upscaled_images = [] if upscaled_crops else None
             if not (isinstance(model, str) and model == "DUMMY"):
                 enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                 seg.bbox, seg_seed, steps, cfg, sampler_name, scheduler,
@@ -369,7 +398,8 @@ class DetailerForEach:
                                                                 refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                 cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                 scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                vae_tiled_decode=tiled_decode)
+                                                                vae_tiled_decode=tiled_decode, cycle_images=cycle_images,
+                                                                upscaled_images=upscaled_images)
             else:
                 enhanced_image = cropped_image
                 cnet_pils = None
@@ -382,11 +412,8 @@ class DetailerForEach:
                 # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
-                utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
-                enhanced_list.append(enhanced_image)
-
-                if detailer_hook is not None:
-                    image = detailer_hook.post_paste(image)
+                image = _paste_detail_images(image, enhanced_image, mask, seg.crop_region, detailer_hook, images_by_cycle, cycle_images)
+                enhanced_list.append((enhanced_image.shape, upscaled_images[1] if upscaled_images else enhanced_image))
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
@@ -400,15 +427,15 @@ class DetailerForEach:
             else:
                 new_seg_image = None
 
-            cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
+            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image)) # NOTE: Don't use `cropped_image`
 
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-        image_tensor = utils.tensor_convert_rgb(image)
+        image_tensor = utils.tensor_convert_rgb(image if images_by_cycle is None else torch.cat(images_by_cycle))
 
-        cropped_list.sort(key=lambda x: x.shape, reverse=True)
-        enhanced_list.sort(key=lambda x: x.shape, reverse=True)
+        cropped_list = _sorted_by_crop_size(cropped_list)
+        enhanced_list = _sorted_by_crop_size(enhanced_list)
         enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
 
         return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
@@ -488,6 +515,8 @@ class DetailerForEachAutoRetry:
             raise Exception('[Impact Pack] ERROR: DetailerForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         image = image.clone()
+        images_by_cycle = _detailer_cycle_images(image, detailer_hook, cycle)
+        upscaled_crops = hooks.get_detailer_options(detailer_hook).get("return_upscaled_crops", False)
         enhanced_alpha_list = []
         enhanced_list = []
         cropped_list = []
@@ -580,9 +609,13 @@ class DetailerForEachAutoRetry:
             # initialize
             enhanced_image = cropped_image
             cnet_pils = None
+            cycle_images = None
+            upscaled_images = None
 
             if not (isinstance(model, str) and model == "DUMMY"):
                 for retry in range(max_retries):
+                    cycle_images = [] if images_by_cycle is not None else None
+                    upscaled_images = [] if upscaled_crops else None
                     enhanced_image, cnet_pils = core.enhance_detail(cropped_image, model, clip, vae, guide_size, guide_size_for_bbox, max_size,
                                                                     seg.bbox, seg_seed + retry, steps, cfg, sampler_name, scheduler,
                                                                     cropped_positive, cropped_negative, denoise, cropped_mask, force_inpaint,
@@ -593,9 +626,10 @@ class DetailerForEachAutoRetry:
                                                                     refiner_negative=refiner_negative, control_net_wrapper=seg.control_net_wrapper,
                                                                     cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                                                     scheduler_func=scheduler_func_opt, vae_tiled_encode=tiled_encode,
-                                                                    vae_tiled_decode=tiled_decode)
+                                                                    vae_tiled_decode=tiled_decode, cycle_images=cycle_images,
+                                                                    upscaled_images=upscaled_images)
 
-                    if detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
+                    if enhanced_image is None or detailer_hook is None or not detailer_hook.should_retry_patch(enhanced_image):
                         break
 
                     if retry + 1 == max_retries:
@@ -611,11 +645,8 @@ class DetailerForEachAutoRetry:
                 # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
-                utils.tensor_paste(image, enhanced_image, (seg.crop_region[0], seg.crop_region[1]), mask)  # this code affecting to `cropped_image`.
-                enhanced_list.append(enhanced_image)
-
-                if detailer_hook is not None:
-                    image = detailer_hook.post_paste(image)
+                image = _paste_detail_images(image, enhanced_image, mask, seg.crop_region, detailer_hook, images_by_cycle, cycle_images)
+                enhanced_list.append((enhanced_image.shape, upscaled_images[1] if upscaled_images else enhanced_image))
 
             if enhanced_image is not None:
                 # Convert enhanced_pil_alpha to RGBA mode
@@ -629,15 +660,15 @@ class DetailerForEachAutoRetry:
             else:
                 new_seg_image = None
 
-            cropped_list.append(orig_cropped_image) # NOTE: Don't use `cropped_image`
+            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image)) # NOTE: Don't use `cropped_image`
 
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
 
-        image_tensor = utils.tensor_convert_rgb(image)
+        image_tensor = utils.tensor_convert_rgb(image if images_by_cycle is None else torch.cat(images_by_cycle))
 
-        cropped_list.sort(key=lambda x: x.shape, reverse=True)
-        enhanced_list.sort(key=lambda x: x.shape, reverse=True)
+        cropped_list = _sorted_by_crop_size(cropped_list)
+        enhanced_list = _sorted_by_crop_size(enhanced_list)
         enhanced_alpha_list.sort(key=lambda x: x.shape, reverse=True)
 
         return image_tensor, cropped_list, enhanced_list, enhanced_alpha_list, cnet_pil_list, (segs[0], new_segs)
@@ -818,9 +849,10 @@ class FaceDetailer:
 
         elif segm_detector is not None:
             segm_segs = segm_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size)
+            detection_hook = hooks.get_detailer_detection_hook(detailer_hook)
 
             if (hasattr(segm_detector, 'override_bbox_by_segm') and segm_detector.override_bbox_by_segm and
-                    not (detailer_hook is not None and not hasattr(detailer_hook, 'override_bbox_by_segm'))):
+                    not (detection_hook is not None and not hasattr(detection_hook, 'override_bbox_by_segm'))):
                 segs = segm_segs
             else:
                 segm_mask = core.segs_to_combined_mask(segm_segs)
@@ -837,13 +869,16 @@ class FaceDetailer:
                                           cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                           scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
         else:
-            enhanced_img = image
+            images_by_cycle = _detailer_cycle_images(image, detailer_hook, cycle)
+            enhanced_img = image if images_by_cycle is None else torch.cat(images_by_cycle)
             cropped_enhanced = []
             cropped_enhanced_alpha = []
             cnet_pil_list = []
 
         # Mask Generator
         mask = core.segs_to_combined_mask(segs)
+        if hooks.get_detailer_options(detailer_hook).get("return_by_cycle_step", False):
+            mask = mask.unsqueeze(0).repeat(len(enhanced_img), 1, 1)
 
         if len(cropped_enhanced) == 0:
             cropped_enhanced = [utils.empty_pil_tensor()]
@@ -1821,7 +1856,9 @@ class MaskDetailerPipe:
                                               refiner_positive=refiner_positive, refiner_negative=refiner_negative,
                                               cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
             else:
-                enhanced_img, cropped_enhanced, cropped_enhanced_alpha = image, [], []
+                images_by_cycle = _detailer_cycle_images(image, detailer_hook, cycle)
+                enhanced_img = image if images_by_cycle is None else torch.cat(images_by_cycle)
+                cropped_enhanced, cropped_enhanced_alpha = [], []
 
             if enhanced_img_batch is None:
                 enhanced_img_batch = enhanced_img
