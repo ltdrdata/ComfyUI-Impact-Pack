@@ -322,6 +322,12 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     if detailer_hook is not None:
         new_w, new_h = detailer_hook.touch_scaled_size(new_w, new_h)
 
+    # ComfyUI before 0.3.65 has no crop_input and always crops.
+    if getattr(vae, "crop_input", True):
+        # The VAE crops what its downscale ratio does not divide; scaling that back to the crop stretches the patch.
+        ratio = vae.spacial_compression_encode()
+        new_w, new_h = max(ratio, new_w // ratio * ratio), max(ratio, new_h // ratio * ratio)
+
     logging.info(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
     # upscale
