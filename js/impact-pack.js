@@ -1033,8 +1033,6 @@ app.registerExtension({
 			// Keep core hook bookkeeping and restore the user's selected control policy.
 			const seed_widget = node.widgets.find((w) => w.name == 'seed');
 			wildcard_seed_modes.set(node, mode_widget);
-			mode_widget.tooltip = (mode_widget.tooltip ? mode_widget.tooltip + '\n' : '')
-				+ 'Fixed also pauses automatic seed changes, including choices in populated_text. Use populate for automatic variation.';
 			for (const control of seed_widget?.linkedWidgets ?? []) {
 				for (const hook of ['beforeQueued', 'afterQueued']) {
 					const original = control[hook];

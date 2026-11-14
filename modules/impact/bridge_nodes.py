@@ -24,7 +24,7 @@ class PreviewBridge:
                     "image": ("STRING", {"default": ""}),
                     },
                 "optional": {
-                    "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "is_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped."}),
+                    "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "if_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped."}),
                     "restore_mask": (["never", "always", "if_same_size"], {"tooltip": "if_same_size: If the changed input image is the same size as the previous image, restore using the last saved mask\nalways: Whenever the input image changes, always restore using the last saved mask\nnever: Do not restore the mask.\n`restore_mask` has higher priority than `block`"}),
                     },
                 "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"},
@@ -38,7 +38,7 @@ class PreviewBridge:
 
     CATEGORY = "ImpactPack/Util"
 
-    DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a image.\nIf the block is set to 'is_empty_mask', the execution is stopped when the mask is empty."
+    DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a image.\nIf the block is set to 'if_empty_mask', the execution is stopped when the mask is empty."
 
     @staticmethod
     def load_image(pb_id):
@@ -260,7 +260,7 @@ class PreviewBridgeLatent:
                     },
                 "optional": {
                     "vae_opt": ("VAE", ),
-                    "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "is_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped. Instead, it returns a white mask."}),
+                    "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "if_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped. Instead, it returns a white mask."}),
                     "restore_mask": (["never", "always", "if_same_size"], {"tooltip": "if_same_size: If the changed input latent is the same size as the previous latent, restore using the last saved mask\nalways: Whenever the input latent changes, always restore using the last saved mask\nnever: Do not restore the mask.\n`restore_mask` has higher priority than `block`\nIf the input latent already has a mask, do not restore mask."}),
                 },
                 "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
@@ -274,7 +274,7 @@ class PreviewBridgeLatent:
 
     CATEGORY = "ImpactPack/Util"
 
-    DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a latent image.\nIf the block is set to 'is_empty_mask', the execution is stopped when the mask is empty."
+    DESCRIPTION = "This is a feature that allows you to edit and send a Mask over a latent image.\nIf the block is set to 'if_empty_mask', the execution is stopped when the mask is empty."
 
     def __init__(self):
         super().__init__()
