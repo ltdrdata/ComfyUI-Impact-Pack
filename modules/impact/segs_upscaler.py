@@ -91,10 +91,19 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
     original_image_size = image.shape[1:3]
 
     # Match to original image size
-    if original_image_size[0] % 8 > 0 or original_image_size[1] % 8 > 0:
-        scale = 8/min(original_image_size[0], original_image_size[1]) + 1
-        w = int(original_image_size[1] * scale)
-        h = int(original_image_size[0] * scale)
+    h, w = original_image_size
+    if h % 8 > 0 or w % 8 > 0:
+        scale = 8/min(h, w) + 1
+        w = int(w * scale)
+        h = int(h * scale)
+
+    # ComfyUI before 0.3.65 has no crop_input and always crops.
+    if getattr(vae, "crop_input", True):
+        # The VAE crops what its downscale ratio does not divide; scaling that back to the crop stretches the patch.
+        ratio = vae.spacial_compression_encode()
+        w, h = max(ratio, w // ratio * ratio), max(ratio, h // ratio * ratio)
+
+    if (h, w) != original_image_size:
         image = utils.tensor_resize(image, w, h)
 
     if noise_mask is not None:
