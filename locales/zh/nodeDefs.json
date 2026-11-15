@@ -1925,6 +1925,10 @@
             "restore_mask": {
                 "name": "恢复遮罩",
                 "tooltip": "if_same_size: 如果变更后的输入图像与之前的图像尺寸相同，则使用最后保存的遮罩进行恢复\nalways: 每当输入图像变更时，始终使用最后保存的遮罩进行恢复\nnever: 不恢复遮罩。\n`restore_mask` 的优先级高于 `block`"
+            },
+            "alpha_as_mask": {
+                "name": "Alpha 作为遮罩",
+                "tooltip": "决定如何读取 RGBA 输入图像的 Alpha 通道。RGB 输入图像不受影响。\ndisabled: Alpha 是图像的一部分。它会原样传递，不会被用作遮罩。预览和遮罩编辑器会在棋盘格上显示透明部分。\nenabled: Alpha 是图像自带的遮罩。它成为可编辑的遮罩，`restore_mask` 不会应用于它，输出图像以当前遮罩作为其 Alpha。"
             }
         },
         "outputs": {

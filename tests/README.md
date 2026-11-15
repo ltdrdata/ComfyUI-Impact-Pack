@@ -19,7 +19,7 @@ Preview Bridge registration, cache ownership and latent-mask checks use the real
 ComfyUI environment, separately from the wildcard stubs:
 
 ```bash
-PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest tests/test_preview_bridge_result.py -q
+PYTHONPATH=/path/to/ComfyUI:$PWD/modules python -m pytest tests/test_preview_bridge_result.py tests/test_preview_bridge_alpha.py -q
 ```
 
 `tests/preview_bridge.test.mjs` loads the shipped extension with controlled API
@@ -35,9 +35,22 @@ shadows and correct preview metadata for input-root and nested files. HTTP cases
 run the real registration handlers with aiohttp's test client: input/output/temp
 paths reject escapes before reading and keep configured symlinks usable by both
 Bridges. Only unused PromptServer route/onprompt registration is substituted.
+`tests/test_preview_bridge_alpha.py` drives PreviewBridge through every three-step
+sequence of same, recomputed, changed and resized inputs and painted and cleared
+masks, for RGB and RGBA inputs with `alpha_as_mask` disabled and enabled, and lists
+the outcome where the option meets `restore_mask` and the mask editor. While the
+option is off the preview must show the transparency over a checkerboard and the
+image output must be the input, with the paint layer the editor saved laid over it. The
+picture the node shows as soon as the option is switched must be the one the next run
+writes, and there must be none where that run leaves the node's file as it is. Each case
+runs with the reference an API client keeps sending and with the one the browser
+sends after the node displays a file.
 `tests/test_e2e_preview_bridge.py` checks actual editor saves and downstream
 pixels, three unedited queues and empty-mask blocking. Its legacy SAM cases require `IMPACT_E2E_SAM_IMAGE`, SAM ViT-B and
 `vae-ft-mse-840000-ema-pruned.safetensors`; other Bridge cases need no weights.
+Only those SAM cases compute on the GPU. The other Bridge cases, the widget catalog and
+the Bridge unit tests run on the CPU; `docs/E2E_TEST_STRATEGY.md` shows how to run
+the Chrome cases side by side on servers started with `--cpu`.
 Server-restart cases additionally require `IMPACT_E2E_RESTART_COMMAND`: a command
 that restarts only the isolated test server and returns after it is ready. The
 browser tab stays open; the tests wait for the real `reconnected` event and check

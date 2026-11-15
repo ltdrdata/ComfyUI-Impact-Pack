@@ -1,4 +1,5 @@
 import asyncio
+import io
 from types import SimpleNamespace
 
 from aiohttp import web
@@ -661,3 +662,39 @@ def test_registration_preserves_media_paths_and_masks(registration_app, bridge_f
         torch.testing.assert_close(mask, expected)
         if node_type == "PreviewBridgeLatent":
             torch.testing.assert_close(output["noise_mask"], expected)
+
+
+def test_the_picture_of_the_other_alpha_as_mask_setting_is_served_for_a_node_that_ran(registration_app, bridge_files):
+    images = torch.full((2, 64, 64, 4), 0.5)
+    images[1, ..., :3] = 0.25
+    bridge_nodes.PreviewBridge().doit(images, "", unique_id="shown")
+
+    requests = [{"node_id": "shown", "alpha_as_mask": "true", "index": "1"}, {"node_id": "shown", "alpha_as_mask": "false", "index": "1"},
+                {"node_id": "shown", "alpha_as_mask": "true"},
+                {"node_id": "another", "alpha_as_mask": "true"}, {"node_id": "shown", "alpha_as_mask": "true", "index": "2"},
+                {"alpha_as_mask": "true"}, {"node_id": "shown"}, {"node_id": "shown", "alpha_as_mask": "true", "index": "second"}]
+
+    from impact import impact_server
+    registration_app.router.add_get("/impact/view/pb_alpha_preview", impact_server.view_previewbridge_alpha_preview)
+
+    async def get():
+        async with TestClient(TestServer(registration_app)) as client:
+            found = []
+            for params in requests:
+                response = await client.get("/impact/view/pb_alpha_preview", params=params)
+                found.append((response.status, response.content_type, await response.read()))
+            return found
+
+    def pixels(body):
+        with Image.open(io.BytesIO(body)) as picture:
+            return picture.mode, picture.size, picture.getpixel((0, 0)), picture.getpixel((16, 0))
+
+    files = sorted(bridge_files.rglob("*.png"))
+    found = asyncio.run(get())
+    assert sorted(bridge_files.rglob("*.png")) == files
+    assert [status for status, _, _ in found] == [200, 200, 200, 404, 404, 400, 400, 400]
+    # On: the second image with its alpha. Off: over the two colours of the checkerboard.
+    assert (found[0][1], pixels(found[0][2])) == ("image/png", ("RGBA", (64, 64), (63, 63, 63, 127), (63, 63, 63, 127)))
+    assert (found[1][1], pixels(found[1][2])) == ("image/png", ("RGB", (64, 64), (159, 159, 159), (133, 133, 133)))
+    # Without an index: the first image.
+    assert pixels(found[2][2])[2] == (127, 127, 127, 127)

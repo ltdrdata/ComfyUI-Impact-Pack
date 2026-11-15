@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 import shlex
 import subprocess
+from urllib.parse import parse_qs, urlsplit
 
 import numpy as np
 import pytest
@@ -28,7 +29,7 @@ from test_e2e_widget_catalog import export_workflow, setting
 
 BRIDGES = ["PreviewBridge", "PreviewBridgeLatent"]
 WIDGET_NAMES = {
-    "PreviewBridge": ["image", "block", "restore_mask", "$$canvas-image-preview"],
+    "PreviewBridge": ["image", "block", "restore_mask", "alpha_as_mask", "$$canvas-image-preview"],
     "PreviewBridgeLatent": ["image", "preview_method", "block", "restore_mask", "$$canvas-image-preview"],
 }
 
@@ -672,6 +673,377 @@ def test_restored_mask_stays_out_of_the_rgba_image_other_nodes_read(ui, restore)
     # A consumer added afterwards reads the Join output from the execution cache.
     late = split_mask(150, 900)
     mask_output(browser, browser.run(), late, joined)
+
+
+def build_rgba_bridge(ui, restore):
+    """EmptyImage + SolidMask -> Join -> PreviewBridge, with previews of the bridge's mask and of its image's alpha."""
+    source = add_node(ui, "EmptyImage", 150, 150)
+    number(ui, source, "width", 256)
+    number(ui, source, "height", 256)
+    alpha = add_node(ui, "SolidMask", 150, 700)
+    number(ui, alpha, "value", 0.25)
+    number(ui, alpha, "width", 256)
+    number(ui, alpha, "height", 256)
+    join = add_node(ui, "JoinImageWithAlpha", 560, 150)
+    connect(ui, source, join)
+    connect(ui, alpha, join, target_slot="alpha")
+    bridge = add_node(ui, "PreviewBridge", 970, 150)
+    choose(ui, bridge, "restore_mask", restore)
+    connect(ui, join, bridge)
+    convert = add_node(ui, "MaskToImage", 1380, 150)
+    bridge_mask = add_node(ui, "PreviewImage", 1790, 150)
+    connect(ui, bridge, convert, source_slot=1)
+    connect(ui, convert, bridge_mask)
+    split = add_node(ui, "SplitImageWithAlpha", 560, 700)
+    convert = add_node(ui, "MaskToImage", 970, 700)
+    image_alpha = add_node(ui, "PreviewImage", 1380, 700)
+    connect(ui, bridge, split)
+    connect(ui, split, convert, source_slot=1)
+    connect(ui, convert, image_alpha)
+    return alpha, bridge, bridge_mask, image_alpha
+
+
+def switch(ui, node_id, name, value):
+    ui.page.mouse.click(*point(ui, node_id, widget=name))
+    ui.page.wait_for_function("""({app, id, name, value}) =>
+        app.graph.getNodeById(id).widgets.find(w => w.name === name).value === value
+    """, arg={"app": ui.app, "id": node_id, "name": name, "value": value})
+
+
+def level(value):
+    return Image.new("L", (256, 256), value)
+
+
+def over_checkerboard(ui, entry, node_id, opacity):
+    """The bridge's file shows a black picture of this opacity over the two colours of the checkerboard."""
+    shown = preview(ui, entry, node_id).convert("L")
+    for position, board in (((0, 0), 255), ((16, 0), 204), ((16, 16), 255)):
+        assert abs(shown.getpixel(position) - board * (1 - opacity)) <= 1
+
+
+def no_mask(ui, entry, node_id):
+    # An empty mask is returned as 64 x 64 whatever the image size.
+    assert preview(ui, entry, node_id).convert("L").getextrema() == (0, 0)
+
+
+@pytest.mark.parametrize("restore", ["never", "always"])
+def test_rgba_alpha_stays_in_the_image_while_alpha_as_mask_is_disabled(ui, restore):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, "never")
+    image = add_node(browser, "PreviewImage", 1790, 700)
+    connect(browser, bridge, image)
+    black = ((0, 0),) * 3
+    # The server keeps the last mask under the node's id, across workflows, and "always" would restore one that a
+    # case before this one left. A run with "never" drops it.
+    browser.run()
+    choose(browser, bridge, "restore_mask", restore)
+    # The bridge runs again on the image it already has: nothing was painted, so there is still no mask.
+    for _ in range(2):
+        entry = browser.run()
+        assert preview(browser, entry, bridge).getchannel("A").getextrema() == (255, 255)
+        # The transparency is drawn into the bridge's file and is not in the picture it passes on.
+        over_checkerboard(browser, entry, bridge, 0.75)
+        assert preview(browser, entry, image).convert("RGB").getextrema() == black
+        no_mask(browser, entry, bridge_mask)
+        mask_output(browser, entry, image_alpha, level(64))
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    wait_editor_canvas(browser, (256, 256))
+    assert editor_mask(browser).getextrema() == (0, 0)
+    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
+    painted = edit_mask(browser, bridge, args.artifacts, "painted")
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, painted)
+    mask_output(browser, entry, image_alpha, level(64))
+    assert preview(browser, entry, image).convert("RGB").getextrema() == black
+    number(browser, alpha, "value", 0.75)
+    entry = browser.run()
+    if restore == "always":
+        mask_output(browser, entry, bridge_mask, painted)
+    else:
+        no_mask(browser, entry, bridge_mask)
+        over_checkerboard(browser, entry, bridge, 0.25)
+    mask_output(browser, entry, image_alpha, level(191))
+    assert preview(browser, entry, image).convert("RGB").getextrema() == black
+
+
+@pytest.mark.parametrize("restore,restore_by_name", [("never", False), ("always", True)], ids=["never-positional", "always-named"])
+def test_rgba_alpha_is_the_mask_while_alpha_as_mask_is_enabled(ui, restore, restore_by_name):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, restore)
+    switch(browser, bridge, "alpha_as_mask", True)
+    for _ in range(2):
+        entry = browser.run()
+        pixels_equal(preview(browser, entry, bridge).getchannel("A"), level(191), tolerance=1)
+        mask_output(browser, entry, bridge_mask, level(64))
+        mask_output(browser, entry, image_alpha, level(64))
+    # The editor opens with the alpha as its mask; the edit replaces it in the mask and in the image's alpha.
+    painted = edit_mask(browser, bridge, args.artifacts, "painted", existing=level(64))
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, painted)
+    mask_output(browser, entry, image_alpha, painted)
+    reload_workflow(browser, args.artifacts, [bridge], restore_by_name)
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, painted)
+    mask_output(browser, entry, image_alpha, painted)
+    # A new image brings its own alpha, and nothing is restored over it.
+    number(browser, alpha, "value", 0.75)
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, level(191))
+    mask_output(browser, entry, image_alpha, level(191))
+
+
+def test_switching_alpha_as_mask_rereads_the_alpha_and_keeps_an_edit(ui):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, "always")
+    switch(browser, bridge, "alpha_as_mask", True)
+    mask_output(browser, browser.run(), bridge_mask, level(64))
+    # Off: a mask that is still the alpha is dropped, also on the run after that one.
+    switch(browser, bridge, "alpha_as_mask", False)
+    warning = browser.page.get_by_test_id("toast").get_by_text("alpha_as_mask was switched off")
+    for _ in range(2):
+        entry = browser.run()
+        no_mask(browser, entry, bridge_mask)
+        mask_output(browser, entry, image_alpha, level(64))
+    expect(warning).to_have_count(0)
+    painted = edit_mask(browser, bridge, args.artifacts, "painted")
+    mask_output(browser, browser.run(), bridge_mask, painted)
+    # On: the alpha of the image is read at once.
+    switch(browser, bridge, "alpha_as_mask", True)
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, level(64))
+    mask_output(browser, entry, image_alpha, level(64))
+    # Off after an edit: the edited mask is kept and the image gets its own alpha back.
+    painted = edit_mask(browser, bridge, args.artifacts, "edited", existing=level(64))
+    mask_output(browser, browser.run(), bridge_mask, painted)
+    switch(browser, bridge, "alpha_as_mask", False)
+    entry = browser.run()
+    mask_output(browser, entry, bridge_mask, painted)
+    mask_output(browser, entry, image_alpha, level(64))
+    # The bridge's file is written again in the form the editor gets while the option is off.
+    over_checkerboard(browser, entry, bridge, 0.75)
+    # The kept mask lies on transparent pixels of the image: the user is told that it was kept.
+    expect(warning).to_be_visible()
+    browser.page.screenshot(path=str(args.artifacts / "warning.png"))
+
+
+def shown_on_node(ui, node_id, path):
+    """The picture the node displays once it comes from this path, as the server returns it."""
+    ui.page.wait_for_function("""({app, id, path}) => {
+        const image = app.graph.getNodeById(id).imgs?.[0];
+        return image?.complete && image.naturalWidth && new URL(image.src).pathname.endsWith(path);
+    }""", arg={"app": ui.app, "id": node_id, "path": path})
+    source = ui.app.evaluate("(app, id) => app.graph.getNodeById(id).imgs[0].src", node_id)
+    response = ui.page.request.get(source)
+    assert response.ok
+    return source, Image.open(io.BytesIO(response.body())).convert("RGBA")
+
+
+def test_switching_alpha_as_mask_shows_the_picture_of_the_other_setting_at_once(ui):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, "never")
+    entry = browser.run()
+    over_checkerboard(browser, entry, bridge, 0.75)
+    ran = entry["outputs"][bridge]["images"][0]["filename"]
+    runs = len(browser.page.request.get(f"{browser.base_url}/history").json())
+    # On: the picture with its alpha, where the run showed it over the checkerboard.
+    switch(browser, bridge, "alpha_as_mask", True)
+    _, shown = shown_on_node(browser, bridge, "/impact/view/pb_alpha_preview")
+    pixels_equal(shown.getchannel("A"), level(191), tolerance=1)
+    browser.page.screenshot(path=str(args.artifacts / "switched-on.png"))
+    # Back: the file of the run itself.
+    switch(browser, bridge, "alpha_as_mask", False)
+    source, _ = shown_on_node(browser, bridge, "/view")
+    assert ran in source
+    # Nothing ran for it, and the run that follows shows the same picture.
+    switch(browser, bridge, "alpha_as_mask", True)
+    _, shown = shown_on_node(browser, bridge, "/impact/view/pb_alpha_preview")
+    assert len(browser.page.request.get(f"{browser.base_url}/history").json()) == runs
+    entry = browser.run()
+    assert preview(browser, entry, bridge).convert("RGBA").tobytes() == shown.tobytes()
+    # Off: over the checkerboard again, as the run that follows shows it.
+    switch(browser, bridge, "alpha_as_mask", False)
+    _, shown = shown_on_node(browser, bridge, "/impact/view/pb_alpha_preview")
+    assert shown.getchannel("A").getextrema() == (255, 255)
+    for position, board in (((0, 0), 255), ((16, 0), 204), ((16, 16), 255)):
+        assert abs(shown.convert("L").getpixel(position) - board * 0.25) <= 1
+    browser.page.screenshot(path=str(args.artifacts / "switched-off.png"))
+    entry = browser.run()
+    assert preview(browser, entry, bridge).convert("RGBA").tobytes() == shown.tobytes()
+
+
+def test_the_sam_detector_opens_the_file_of_the_run_after_alpha_as_mask_is_switched(ui):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, "never")
+    ran = browser.run()["outputs"][bridge]["images"][0]
+    prepared, viewed = [], []
+    browser.page.route("**/sam/prepare", lambda route: (prepared.append(route.request.post_data_json), route.fulfill(status=200)))
+    browser.page.on("request", lambda request: viewed.append(parse_qs(urlsplit(request.url).query)) if urlsplit(request.url).path.endswith("/view") else None)
+    switch(browser, bridge, "alpha_as_mask", True)
+    shown_on_node(browser, bridge, "/impact/view/pb_alpha_preview")
+    viewed.clear()
+    context_menu(browser, bridge, "Open in SAM Detector")
+    expect(browser.page.locator("#pointsCanvas")).to_be_visible()
+    expect(browser.page.get_by_role("button", name="Save to node", exact=True)).to_be_enabled()
+    browser.page.screenshot(path=str(args.artifacts / "sam-after-switch.png"))
+    # The detector loads and shows the file the bridge holds, not the picture the node shows meanwhile.
+    file = {key: ran[key] for key in ("filename", "type", "subfolder")}
+    assert prepared == [{"sam_model_name": "auto", **file}]
+    assert [{key: query[key][0] for key in file} | {"channel": query["channel"]} for query in viewed] == [file | {"channel": ["rgb"]}]
+    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+    expect(browser.page.locator("#pointsCanvas")).not_to_be_visible()
+
+
+def test_the_sam_detector_opens_the_picture_a_receiver_shows_after_a_mask_was_saved_on_it(ui):
+    """ImageReceiver shows what the sender sent last, while its record of files stays at a mask saved on it earlier."""
+    browser, args = ui
+    load = add_node(browser, "LoadImage", 150, 150)
+    sender = add_node(browser, "ImageSender", 700, 150)
+    connect(browser, load, sender)
+    receiver = add_node(browser, "ImageReceiver", 150, 750)
+    output = add_node(browser, "PreviewImage", 800, 750)
+    connect(browser, receiver, output)
+    prepared = []
+    browser.page.route("**/sam/prepare", lambda route: (prepared.append(route.request.post_data_json), route.fulfill(status=200)))
+    # The detector's answer is a mask picture; no model is run here.
+    found = io.BytesIO()
+    ImageOps.expand(Image.new("L", (128, 128), 255), border=64).save(found, "PNG")
+    browser.page.route("**/sam/detect", lambda route: route.fulfill(status=200, content_type="image/png", body=found.getvalue()))
+
+    def shown(after):
+        """The file the receiver displays, once it is another one than `after`."""
+        return browser.page.wait_for_function("""({app, id, after}) => {
+            const image = app.graph.getNodeById(id).imgs?.[0];
+            const name = image?.naturalWidth ? new URL(image.src).searchParams.get('filename') : null;
+            return name && name !== after ? name : false;
+        }""", arg={"app": browser.app, "id": receiver, "after": after}).json_value()
+
+    def send(colour, after):
+        path = args.artifacts / f"picture-{len(prepared)}-{colour[0]}.png"
+        Image.new("RGB", (256, 256), colour).save(path)
+        upload_image(browser, load, path)
+        browser.run()
+        return shown(after)
+
+    first = send((200, 60, 40), None)
+    context_menu(browser, receiver, "Open in SAM Detector")
+    save = browser.page.get_by_role("button", name="Save to node", exact=True)
+    expect(save).to_be_enabled()
+    assert prepared[-1]["filename"] == first
+    box = browser.page.locator("#pointsCanvas").bounding_box()
+    browser.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+    with browser.page.expect_response(lambda response: response.url.endswith("/sam/detect")):
+        browser.page.get_by_role("button", name="Detect", exact=True).click()
+    # Until the answer is drawn there is no mask to save.
+    browser.page.wait_for_function("""() => {
+        const canvas = document.getElementById('samEditorMaskCanvas');
+        return canvas.width > 0 && canvas.getContext('2d').getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data[3] > 0;
+    }""")
+    with browser.page.expect_response(lambda response: response.url.endswith("/upload/mask")):
+        save.click()
+    expect(browser.page.locator("#pointsCanvas")).not_to_be_visible()
+    saved = shown(first)
+    second = send((40, 90, 200), saved)
+    context_menu(browser, receiver, "Open in SAM Detector")
+    expect(save).to_be_enabled()
+    browser.page.screenshot(path=str(args.artifacts / "sam-on-receiver.png"))
+    assert prepared[-1]["filename"] == second
+    browser.page.get_by_role("button", name="Cancel", exact=True).click()
+    expect(browser.page.locator("#pointsCanvas")).not_to_be_visible()
+
+
+def test_rgba_paint_of_the_editor_is_laid_over_the_input_while_alpha_as_mask_is_disabled(ui):
+    browser, args = ui
+    alpha, bridge, bridge_mask, image_alpha = build_rgba_bridge(browser, "never")
+    image = add_node(browser, "PreviewImage", 1790, 700)
+    connect(browser, bridge, image)
+    given = preview(browser, browser.run(), image)
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    zone = browser.page.get_by_test_id("pointer-zone")
+    expect(zone).to_be_visible()
+    box = zone.bounding_box()
+    browser.page.locator('[data-tool="rgbPaint"]').click()
+    browser.page.mouse.move(box["x"] + box["width"] * 0.25, box["y"] + box["height"] * 0.45)
+    browser.page.mouse.down()
+    browser.page.mouse.move(box["x"] + box["width"] * 0.4, box["y"] + box["height"] * 0.55, steps=12)
+    browser.page.mouse.up()
+    encoded = browser.page.evaluate("""() => document.querySelectorAll(
+        '#maskEditorCanvasContainer canvas')[1].toDataURL('image/png').split(',')[1]
+    """)
+    with Image.open(io.BytesIO(base64.b64decode(encoded))) as layer:
+        paint = layer.convert("RGBA")
+    levels = paint.getchannel("A").getextrema()
+    assert levels[0] == 0 and levels[1] > 0, "Paint stroke is empty"
+    browser.page.screenshot(path=str(args.artifacts / "painted-editor.png"))
+    browser.page.get_by_role("button", name=re.compile(r"Save$")).click()
+    expect(zone).not_to_be_visible()
+    for _ in range(2):
+        entry = browser.run()
+        # The paint lies over the half-transparent picture; nothing of the checkerboard the editor showed is in it.
+        pixels_equal(preview(browser, entry, image), Image.alpha_composite(given, paint), tolerance=1)
+        no_mask(browser, entry, bridge_mask)
+
+
+def test_the_selected_image_of_an_rgba_batch_goes_to_the_editor(ui):
+    browser, args = ui
+    solid = add_node(browser, "SolidMask", 150, 750)
+    number(browser, solid, "value", 0.25)
+    number(browser, solid, "width", 256)
+    number(browser, solid, "height", 256)
+    joins = []
+    for row, value in enumerate((0x4080C0, 0xC08040)):
+        source = add_node(browser, "EmptyImage", 150, 100 + 320 * row)
+        number(browser, source, "width", 256)
+        number(browser, source, "height", 256)
+        color(browser, source, value)
+        join = add_node(browser, "JoinImageWithAlpha", 560, 100 + 320 * row)
+        connect(browser, source, join)
+        connect(browser, solid, join, target_slot="alpha")
+        joins.append(join)
+    batch = add_node(browser, "ImpactMakeImageBatch", 900, 150)
+    connect(browser, joins[0], batch)
+    connect(browser, joins[1], batch, target_slot=1)
+    bridge = add_node(browser, "PreviewBridge", 1250, 150)
+    connect(browser, batch, bridge)
+    image = add_node(browser, "PreviewImage", 1700, 150)
+    connect(browser, bridge, image)
+    convert = add_node(browser, "MaskToImage", 1250, 800)
+    bridge_mask = add_node(browser, "PreviewImage", 1700, 800)
+    connect(browser, bridge, convert, source_slot=1)
+    connect(browser, convert, bridge_mask)
+    entry = browser.run()
+    browser.images(entry)
+    files = [Image.open(io.BytesIO(file_bytes(browser, meta))).convert("RGBA") for meta in entry["outputs"][bridge]["images"]]
+    passed = [Image.open(io.BytesIO(file_bytes(browser, meta))).convert("RGBA") for meta in entry["outputs"][image]["images"]]
+    assert len(files) == len(passed) == 2
+    # Both images are shown over the checkerboard, and both are passed on as they came.
+    for shown, given, value in zip(files, passed, ((0x40, 0x80, 0xC0), (0xC0, 0x80, 0x40))):
+        assert given.getpixel((0, 0)) == value + (191,)
+        assert all(abs(a - round(b * 0.75 + 255 * 0.25)) <= 1 for a, b in zip(shown.getpixel((0, 0)), value))
+        assert all(abs(a - round(b * 0.75 + 204 * 0.25)) <= 1 for a, b in zip(shown.getpixel((16, 0)), value))
+    # Select the second image on the node, then open the editor on it.
+    x, y = browser.app.evaluate("""(app, id) => {
+        const node = app.graph.getNodeById(id);
+        const [x, y, width, height] = node.imageRects[1];
+        return app.canvasPosToClientPos([node.pos[0] + x + width / 2, node.pos[1] + y + height / 2]);
+    }""", bridge)
+    # The thumbnail under the pointer is the one a click selects.
+    browser.page.mouse.move(x - 5, y - 5)
+    browser.page.mouse.move(x, y, steps=5)
+    browser.page.mouse.down()
+    # The node takes the press when it is drawn with the button held.
+    browser.page.wait_for_function("({app, id}) => app.graph.getNodeById(id).pointerDown?.index === 1", arg={"app": browser.app, "id": bridge})
+    browser.page.mouse.up()
+    browser.page.wait_for_function("({app, id}) => app.graph.getNodeById(id).imageIndex === 1", arg={"app": browser.app, "id": bridge})
+    second = entry["outputs"][bridge]["images"][1]
+    assert widget_state(browser, [bridge])[bridge]["widgets"][0]["value"].startswith(f'{second["subfolder"]}/{second["filename"]}')
+    context_menu(browser, bridge, re.compile(r"^Open in MaskEditor"))
+    wait_editor_canvas(browser, (256, 256))
+    pixels_equal(editor_image(browser), files[1].convert("RGB"), tolerance=1)
+    browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
+    painted = edit_mask(browser, bridge, args.artifacts, "painted")
+    entry = browser.run()
+    pixels_equal(preview(browser, entry, image), passed[1])
+    mask_output(browser, entry, bridge_mask, painted)
 
 
 @pytest.mark.parametrize("restore,restored", [("always", True), ("if_same_size", False)],

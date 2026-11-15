@@ -10,8 +10,11 @@ async function extension(t) {
         apiURL(url) { return url; }
     });
     let registered;
-    const app = { registerExtension(value) { registered = value; } };
-    const context = createContext({ Image: class { src = ""; }, URLSearchParams,
+    // Whether the picture at a URL can be shown.
+    const decoded = t.mock.fn(async () => {});
+    const toast = t.mock.fn();
+    const app = { registerExtension(value) { registered = value; }, extensionManager: { toast: { add: toast } } };
+    const context = createContext({ Image: class { src = ""; decode() { return decoded(this.src); } }, URLSearchParams, Promise, Math,
         document: { createElement: () => ({ getContext: () => ({ drawImage() {} }), toDataURL: () => "data:image/png;base64,saved" }) } });
     const modules = new Map();
     async function load(path) {
@@ -29,11 +32,11 @@ async function extension(t) {
     const module = await load("./impact-image-util.js");
     await module.link(load);
     await module.evaluate();
-    return { registered, fetch, api };
+    return { registered, fetch, api, toast, decoded };
 }
 
 async function bridge(t, configurable = true) {
-    const { registered, fetch, api } = await extension(t);
+    const { registered, fetch, api, toast, decoded } = await extension(t);
     let storedValue = "";
     const widget = { name: "image" };
     Object.defineProperty(widget, "value", {
@@ -43,7 +46,7 @@ async function bridge(t, configurable = true) {
     const node = { id: 41, comfyClass: "PreviewBridge", widgets: [widget], properties: {}, graph: { setDirtyCanvas() {} } };
     registered.nodeCreated(node);
     node.onAdded?.();
-    return { node, widget, descriptor, fetch, api, restore: () => registered.loadedGraphNode?.(node), storeWrite(value) { storedValue = value; } };
+    return { node, widget, descriptor, fetch, api, toast, decoded, restore: () => registered.loadedGraphNode?.(node), storeWrite(value) { storedValue = value; } };
 }
 
 test("ImageReceiver retains PR1172's protection for a non-configurable value", async t => {
@@ -240,4 +243,96 @@ test("a malformed filename rejects the queue before sending registration", async
     storeWrite("folder/[input]");
     await assert.rejects(widget.serializeValue(), /no image to register/);
     assert.equal(fetch.mock.callCount(), 0);
+});
+
+test("a mask kept over transparent pixels after alpha_as_mask is switched off raises one warning", async t => {
+    const { node, toast } = await bridge(t);
+    const item = { filename: "kept.png", subfolder: "", type: "input" };
+    node.onExecuted({ source_image: ["$41-1"], images: [item], alpha_in_mask: [false] });
+    node.onExecuted({ source_image: ["$41-1"], images: [item] });
+    assert.equal(toast.mock.callCount(), 0);
+    node.onExecuted({ source_image: ["$41-1"], images: [item], alpha_in_mask: [true] });
+    assert.equal(toast.mock.callCount(), 1);
+    const [{ severity, detail }] = toast.mock.calls[0].arguments;
+    assert.equal(severity, "warn");
+    assert.match(detail, /alpha_as_mask was switched off/);
+});
+
+test("switching alpha_as_mask shows the picture of the other setting at once", async t => {
+    const { registered, decoded } = await extension(t);
+    const original = t.mock.fn(() => "the widget's own result");
+    const option = { name: "alpha_as_mask", value: false, callback: original };
+    let redrawn = 0;
+    const node = { id: 41, comfyClass: "PreviewBridge", widgets: [{ name: "image", value: "" }, option], properties: {}, graph: { setDirtyCanvas() { redrawn++; } } };
+    registered.nodeCreated(node);
+    const sources = () => node.imgs.map(image => new URL(image.src, "http://localhost"));
+    const switched = async value => { option.value = value; option.callback(value); await new Promise(resolve => setTimeout(resolve)); };
+    const before = node.imgs;
+    // Nothing ran yet: there is no picture to replace.
+    await switched(true);
+    assert.equal(node.imgs, before);
+    // The widget's own callback still runs, with what it was given, and its result is passed on.
+    assert.equal(option.callback(true, "canvas", node), "the widget's own result");
+    assert.deepEqual(original.mock.calls.at(-1).arguments, [true, "canvas", node]);
+    const images = ["a", "b"].map(name => ({ filename: `${name}.png`, subfolder: "PreviewBridge", type: "temp", metadata: {} }));
+    node.images = images;
+    node.onExecuted({ images, alpha_as_mask: [false] });
+    await switched(true);
+    assert.deepEqual(sources().map(url => [url.pathname, url.searchParams.get("node_id"), url.searchParams.get("alpha_as_mask"), url.searchParams.get("index")]),
+        [["/impact/view/pb_alpha_preview", "41", "true", "0"], ["/impact/view/pb_alpha_preview", "41", "true", "1"]]);
+    assert.equal(redrawn, 1);
+    // Back to the setting of the run: its own files.
+    await switched(false);
+    assert.deepEqual(sources().map(url => [url.pathname, url.searchParams.get("filename"), url.searchParams.get("subfolder"), url.searchParams.get("type")]),
+        [["/view", "a.png", "PreviewBridge", "temp"], ["/view", "b.png", "PreviewBridge", "temp"]]);
+    // An input without alpha has no other picture: the request fails and the node keeps what it shows.
+    const shownNow = node.imgs;
+    decoded.mock.mockImplementation(async () => { throw new Error("404"); });
+    await switched(true);
+    assert.equal(node.imgs, shownNow);
+    decoded.mock.mockImplementation(async () => {});
+    // An image saved in the mask editor since the run is not replaced.
+    node.images = [{ filename: "clipspace-painted-masked-1.png", subfolder: "clipspace", type: "input" }];
+    await switched(false);
+    await switched(true);
+    assert.equal(node.imgs, shownNow);
+    // A picture that arrives after the option was switched back is dropped.
+    node.images = images;
+    const release = [];
+    decoded.mock.mockImplementation(() => new Promise(resolve => { release.push(resolve); }));
+    option.value = true; option.callback(true);
+    option.value = false;
+    assert.equal(release.length, 2);
+    release.splice(0).forEach(resolve => resolve());
+    await new Promise(resolve => setTimeout(resolve));
+    assert.equal(node.imgs, shownNow);
+    // So is one that arrives after the node ran again: the node shows the files of that run.
+    option.value = true; option.callback(true);
+    node.onExecuted({ images: [...images], alpha_as_mask: [true] });
+    release.splice(0).forEach(resolve => resolve());
+    await new Promise(resolve => setTimeout(resolve));
+    assert.equal(node.imgs, shownNow);
+});
+
+test("the image selected on the node is the one of a batch that the mask editor opens", async t => {
+    const { node, widget, fetch, storeWrite } = await bridge(t);
+    const images = ["a", "b", "c"].map(name => ({ filename: `${name}.png`, subfolder: "PreviewBridge", type: "temp" }));
+    storeWrite("source.png [input]");
+    node.onExecuted({ source_image: [await widget.serializeValue()], images });
+    assert.equal(widget.value, "PreviewBridge/a.png [temp]");
+    node.imageIndex = 2;
+    assert.equal(node.imageIndex, 2);
+    assert.equal(widget.value, "PreviewBridge/c.png [temp]");
+    assert.equal(node.properties.image, "PreviewBridge/c.png [temp]");
+    // Back to the grid: no image is selected, and the editor opens the first.
+    node.imageIndex = null;
+    assert.equal(widget.value, "PreviewBridge/a.png [temp]");
+    // The selection is what the next prompt registers.
+    node.imageIndex = 1;
+    await widget.serializeValue();
+    assert.equal(new URL(fetch.mock.calls.at(-1).arguments[0], "http://localhost").searchParams.get("filename"), "b.png");
+    // A file saved in the editor is not one of the batch; showing it does not select another.
+    storeWrite("clipspace/clipspace-painted-masked-1.png [input]");
+    node.imageIndex = 0;
+    assert.equal(widget.value, "clipspace/clipspace-painted-masked-1.png [input]");
 });
