@@ -167,6 +167,8 @@ NODE_CLASS_MAPPINGS = {
 
     "ImpactDecomposeSEGS": DecomposeSEGS, # noqa: F405
     "ImpactAssembleSEGS": AssembleSEGS, # noqa: F405
+    "ImpactDecomposeSEGSList": DecomposeSEGSList, # noqa: F405
+    "ImpactAssembleSEGSList": AssembleSEGSList, # noqa: F405
     "ImpactFrom_SEG_ELT": From_SEG_ELT, # noqa: F405
     "ImpactEdit_SEG_ELT": Edit_SEG_ELT, # noqa: F405
     "ImpactDilate_Mask_SEG_ELT": Dilate_SEG_ELT, # noqa: F405
@@ -380,6 +382,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     "ImpactDecomposeSEGS": "Decompose (SEGS)",
     "ImpactAssembleSEGS": "Assemble (SEGS)",
+    "ImpactDecomposeSEGSList": "Decompose (SEGS list)",
+    "ImpactAssembleSEGSList": "Assemble (SEGS list)",
     "ImpactFrom_SEG_ELT": "From SEG_ELT",
     "ImpactEdit_SEG_ELT": "Edit SEG_ELT",
     "ImpactFrom_SEG_ELT_bbox": "From SEG_ELT bbox",

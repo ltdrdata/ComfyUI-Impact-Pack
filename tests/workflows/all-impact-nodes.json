@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 200,
+  "last_node_id": 202,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10403,6 +10403,83 @@
         "vae_tile_overlap": 64,
         "return_upscaled_crops": false
       }
+    },
+    {
+      "id": 201,
+      "type": "ImpactAssembleSEGSList",
+      "pos": [
+        3075.6885592990448,
+        6325.555555555555
+      ],
+      "size": [
+        178.5533203125,
+        46
+      ],
+      "flags": {},
+      "order": 199,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "seg_header",
+          "type": "SEGS_HEADER",
+          "link": null
+        },
+        {
+          "name": "seg_elt",
+          "type": "SEG_ELT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "shape": 6,
+          "type": "SEGS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactAssembleSEGSList"
+      }
+    },
+    {
+      "id": 202,
+      "type": "ImpactDecomposeSEGSList",
+      "pos": [
+        3979.1863009982635,
+        6385.555555555555
+      ],
+      "size": [
+        193.0044921875,
+        46
+      ],
+      "flags": {},
+      "order": 200,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS_HEADER",
+          "shape": 6,
+          "type": "SEGS_HEADER",
+          "links": null
+        },
+        {
+          "name": "SEG_ELT",
+          "shape": 6,
+          "type": "SEG_ELT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactDecomposeSEGSList"
+      }
     }
   ],
   "links": [],
@@ -10412,8 +10489,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -1872.8888644748258,
-        -6075.555555555555
+        -3625.6885470920133,
+        -6195.555555555555
       ]
     },
     "frontendVersion": "1.58.5"

@@ -128,6 +128,21 @@ modes. Also run the catalog suite with its trusted fixtures and Full Cache setup
 from [E2E setup and artifacts](../docs/E2E_TEST_STRATEGY.md); these browser checks
 validate widget names/order/values, not inference.
 
+## SEGS lists through Decompose and Assemble
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_assemble_segs_list.py -v
+```
+
+The suite runs the nodes through ComfyUI's own list handling. A list of SEGS given to
+Decompose (SEGS list) must come back from Assemble (SEGS list) as the same list, including SEGS
+without elements, SEGS of different sizes and the same SEGS given twice. Elements that were
+edited, read, copied or filtered in between return to their own SEGS, also when the Decompose
+node has run again in the meantime, as it does after a cache dropped its result. Elements of
+none of the given headers go into one SEGS with a warning. Decompose (SEGS) and Assemble (SEGS)
+must be as they were. Dilate Mask (SEG_ELT) must run on its `seg_elt` input and change the mask
+only.
+
 ## Image list batching
 
 Run the real tensor and API compatibility checks separately from the wildcard stubs:

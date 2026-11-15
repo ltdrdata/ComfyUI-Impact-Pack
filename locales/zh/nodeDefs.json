@@ -4658,6 +4658,40 @@
             }
         }
     },
+    "ImpactDecomposeSEGSList": {
+        "description": "像分解 (SEGS) 一样分解列表中的每个 SEGS，并在每个头信息和元素上记下它属于哪个 SEGS，以便组合 (SEGS 列表) 重新组合该列表。",
+        "display_name": "分解 (SEGS 列表)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS 头信息"
+            },
+            "1": {
+                "name": "SEG_ELT 列表"
+            }
+        }
+    },
+    "ImpactAssembleSEGSList": {
+        "description": "将分解 (SEGS 列表) 拆开的内容按每个头信息组合成一个 SEGS：SEGS 列表仍为列表，每个元素回到其原来的 SEGS。",
+        "display_name": "组合 (SEGS 列表)",
+        "inputs": {
+            "seg_header": {
+                "name": "SEGS 头信息"
+            },
+            "seg_elt": {
+                "name": "SEG_ELT"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
+    },
     "ImpactFrom_SEG_ELT": {
         "description": "从 SEG_ELT 中提取各个元素。",
         "display_name": "从 SEG_ELT",
