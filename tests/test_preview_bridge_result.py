@@ -211,6 +211,28 @@ def test_recomputed_image_batch_keeps_every_frame(bridge_files, restore, batch_s
     assert len(result["ui"]["images"]) == batch_size
 
 
+@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+def test_restored_mask_is_not_written_into_an_rgba_input(bridge_files, restore):
+    # The input tensor is shared with every other consumer and with ComfyUI's output cache.
+    mask = torch.zeros((1, 64, 64))
+    mask[:, 16:48, 8:40] = 1
+    core.preview_bridge_last_mask_cache["rgba"] = mask
+    images = torch.full((1, 64, 64, 4), 0.25)
+    original = images.clone()
+
+    result = bridge_nodes.PreviewBridge().doit(images, "$rgba", unique_id="rgba", restore_mask=restore)
+
+    output, returned_mask = result["result"]
+    torch.testing.assert_close(images, original)
+    torch.testing.assert_close(output, original)
+    torch.testing.assert_close(returned_mask, mask)
+    # The preview file still carries the restored mask as transparency.
+    item, = result["ui"]["images"]
+    with Image.open(bridge_files / item["subfolder"] / item["filename"]) as preview:
+        alpha = preview.getchannel("A")
+        assert (alpha.getpixel((10, 20)), alpha.getpixel((60, 60))) == (0, 255)
+
+
 @pytest.mark.parametrize("restore,width,restored", [
     ("always", 32, True), ("if_same_size", 32, True), ("always", 40, True),
     ("never", 32, False), ("never", 40, False), ("if_same_size", 40, False),

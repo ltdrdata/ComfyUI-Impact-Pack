@@ -27,7 +27,7 @@ def tensor_convert_rgba(image, prefer_copy=True):
     _tensor_check_image(image)
     n_channel = image.shape[-1]
     if n_channel == 4:
-        return image
+        return image.clone() if prefer_copy else image
 
     if n_channel == 3:
         alpha = torch.ones((*image.shape[:-1], 1))
