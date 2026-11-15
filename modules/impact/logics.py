@@ -216,7 +216,8 @@ class ImpactConditionalStopIteration:
 
     def doit(self, cond):
         if cond:
-            PromptServer.instance.send_sync("stop-iteration", {})
+            # Only the tab that queued this prompt; without a client id it reaches every tab.
+            PromptServer.instance.send_sync("stop-iteration", {}, PromptServer.instance.client_id or None)
         return {}
 
 
