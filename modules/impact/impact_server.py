@@ -9,6 +9,7 @@ from io import BytesIO
 import comfy
 import folder_paths
 import impact
+import impact.bridge_nodes as bridge_nodes
 import impact.core as core
 import impact.impact_pack as impact_pack
 import impact.utils as utils
@@ -319,6 +320,20 @@ async def get_previewbridge_image(request):
             return web.json_response(path_item)
 
     return web.Response(status=400)
+
+
+@PromptServer.instance.routes.get("/impact/view/pb_alpha_preview")
+async def view_previewbridge_alpha_preview(request):
+    query = request.rel_url.query
+    try:
+        picture = bridge_nodes.PreviewBridge.alpha_preview(query["node_id"], query["alpha_as_mask"] == "true", int(query.get("index", 0)))
+    except (KeyError, ValueError):
+        return web.Response(status=400)
+    if picture is None:
+        return web.Response(status=404)
+    data = BytesIO()
+    Image.fromarray(np.clip(255. * picture[0].cpu().numpy(), 0, 255).astype(np.uint8)).save(data, "PNG", compress_level=1)
+    return web.Response(body=data.getvalue(), content_type="image/png", headers={"Cache-Control": "no-store"})
 
 
 @PromptServer.instance.routes.get("/impact/view/pb_id_image")

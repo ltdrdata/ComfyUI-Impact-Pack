@@ -16,6 +16,23 @@ from impact import core
 import random
 
 
+def over_checkerboard(images):
+    """RGBA images as RGB, with their transparency drawn over a checkerboard."""
+    height, width = images.shape[1:3]
+    rows = torch.arange(height, device=images.device).unsqueeze(1) // 16
+    columns = torch.arange(width, device=images.device).unsqueeze(0) // 16
+    board = torch.where((rows + columns) % 2 == 0, 1.0, 0.8).unsqueeze(-1).to(images)
+    alpha = images[..., 3:]
+    return images[..., :3] * alpha + board * (1 - alpha)
+
+
+def shown_frame(pixels, shown):
+    """Which image of a batch a file of the mask editor was made from: the one it differs least from as shown."""
+    if shown.shape[0] == 1:
+        return 0
+    return int(((pixels - shown.to(pixels)).abs().amax(dim=-1) > 1.5 / 255).flatten(1).sum(dim=1).argmin())
+
+
 class PreviewBridge:
     @classmethod
     def INPUT_TYPES(s):
@@ -26,6 +43,7 @@ class PreviewBridge:
                 "optional": {
                     "block": ("BOOLEAN", {"default": False, "label_on": "if_empty_mask", "label_off": "never", "tooltip": "if_empty_mask: If the mask is empty, the execution is stopped.\nnever: The execution is never stopped."}),
                     "restore_mask": (["never", "always", "if_same_size"], {"tooltip": "if_same_size: If the changed input image is the same size as the previous image, restore using the last saved mask\nalways: Whenever the input image changes, always restore using the last saved mask\nnever: Do not restore the mask.\n`restore_mask` has higher priority than `block`"}),
+                    "alpha_as_mask": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled", "tooltip": "How the alpha channel of an RGBA input image is read. An RGB input is not affected.\ndisabled: The alpha is part of the image. It is passed on unchanged and is never used as the mask. The preview and the mask editor show the transparency over a checkerboard.\nenabled: The alpha is the mask the image brings. It becomes the mask to edit, `restore_mask` is not applied to it, and the image output carries the current mask as its alpha."}),
                     },
                 "hidden": {"unique_id": "UNIQUE_ID", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
@@ -63,6 +81,17 @@ class PreviewBridge:
         return image, mask, ui_item
 
     @staticmethod
+    def paint_layer(image_path):
+        """What the mask editor's paint tools drew. The editor saves it beside the file it hands back."""
+        folder, name = os.path.split(image_path)
+        path = os.path.join(folder, name.replace("clipspace-painted-masked-", "clipspace-paint-", 1))
+        if not name.startswith("clipspace-painted-masked-") or not os.path.isfile(path):
+            return None
+        with Image.open(path) as layer:
+            paint = torch.from_numpy(np.array(layer.convert("RGBA")).astype(np.float32) / 255.0)[None,]
+        return paint if paint[..., 3].any() else None
+
+    @staticmethod
     def register_clipspace_image(clipspace_path, node_id):
         clean_path = clipspace_path.removesuffix(" [input]").removesuffix("[input]")
         input_dir = os.path.abspath(folder_paths.get_input_directory())
@@ -95,7 +124,35 @@ class PreviewBridge:
         core.preview_bridge_image_id_map[clipspace_path] = (actual_file, ui_item)
         return True
 
-    def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None):
+    @staticmethod
+    def alpha_preview(unique_id, alpha_as_mask, index):
+        """One image of the RGBA input a node ran on last, as the node shows it once alpha_as_mask has this value.
+
+        The frontend shows it as soon as the option is switched, before the bridge runs again. There is none where
+        the next run leaves the file the node shows as it is."""
+        cached = core.preview_bridge_cache.get(unique_id)
+        if cached is None or not isinstance(cached[0], torch.Tensor) or cached[0].shape[-1] != 4 or not 0 <= index < cached[0].shape[0]:
+            return None
+        images = cached[0]
+        if not (images[..., 3] < 1).any():
+            return None
+        if alpha_as_mask:
+            return images[index:index + 1]
+        held = core.preview_bridge_image_id_map.get(cached[2])
+        if cached[3] and held is not None and os.path.abspath(held[0]) not in cached[4]:
+            # A file saved in the mask editor while the option was on. One of another size, or with paint, stays as
+            # it is; else its mask is kept, on the image it was saved for.
+            pixels, mask, _ = PreviewBridge.load_image(cached[2])
+            paint = PreviewBridge.paint_layer(held[0])
+            if pixels.shape[1:3] != images.shape[1:3] or (paint is not None and paint.shape[1:3] == images.shape[1:3]):
+                return None
+            shown = over_checkerboard(images)
+            index = shown_frame(pixels, shown)
+            picture = shown[index:index + 1].to(pixels)
+            return picture if mask is None else torch.cat((picture, (1 - mask + 0.5 / 255).unsqueeze(-1)), dim=-1)
+        return over_checkerboard(images[index:index + 1])
+
+    def doit(self, images, image, unique_id, block=False, restore_mask="never", prompt=None, extra_pnginfo=None, alpha_as_mask=False):
         need_refresh = False
         cached = core.preview_bridge_cache.get(unique_id)
         # A different workflow can reuse this ID for the other bridge type.
@@ -103,6 +160,16 @@ class PreviewBridge:
             core.preview_bridge_cache.pop(unique_id)
             core.preview_bridge_last_mask_cache.pop(unique_id, None)
             cached = None
+
+        # The preview file has one alpha channel and the mask editor reads it as the mask, so an input's own
+        # alpha is either that mask (alpha_as_mask) or drawn into the file over a checkerboard and passed on
+        # from the input.
+        has_alpha = images.shape[-1] == 4
+        incoming = None
+        if has_alpha and alpha_as_mask:
+            incoming = 1 - images[..., 3].to(device="cpu", dtype=torch.float32)
+            if not incoming.any():
+                incoming = None
 
         # Check if images have changed (this determines if we start fresh)
         if cached is None:
@@ -112,6 +179,9 @@ class PreviewBridge:
             or cached[0].device != images.device
             or not torch.equal(cached[0], images)
         ):
+            need_refresh = True
+        elif incoming is not None and not cached[3]:
+            # Switched on: the alpha of this image is read now.
             need_refresh = True
 
         if need_refresh and restore_mask == "never":
@@ -125,13 +195,58 @@ class PreviewBridge:
             registered = is_clipspace and PreviewBridge.register_clipspace_image(image, unique_id)
             need_refresh = need_refresh or not registered
 
+        # A mask that is still the alpha an input brought is dropped once the alpha is no longer read as the mask.
+        # An edited mask is saved to another file and is kept.
+        held = core.preview_bridge_image_id_map.get(cached[2] if cached is not None and image == cached[1] else image)
+        from_alpha = cached is not None and held is not None and os.path.abspath(held[0]) in cached[4]
+        stale_alpha = from_alpha and not alpha_as_mask
+        if stale_alpha:
+            core.preview_bridge_last_mask_cache.pop(unique_id, None)
+            need_refresh = True
+
+        alpha_files = ()
+        kept_alpha = False
+        # Disabled, the file shows the picture to the mask editor over a checkerboard, every image of a batch.
+        shown = over_checkerboard(images) if has_alpha and not alpha_as_mask else images[..., :3]
         if not need_refresh:
+            preview = None
             pixels, mask, path_item = PreviewBridge.load_image(preview_id)
+            res_image = [path_item]
+            if has_alpha and not alpha_as_mask and pixels.shape[1:3] == images.shape[1:3]:
+                # The file is one image, the one of the batch that the mask editor was given. Only its mask is
+                # read: the image is the input, with what the editor painted laid over it.
+                index = shown_frame(pixels, shown)
+                paint = PreviewBridge.paint_layer(core.preview_bridge_image_id_map[preview_id][0])
+                pixels = images[index:index + 1].to(pixels)
+                alpha = pixels[..., 3:]
+                if paint is not None and paint.shape == pixels.shape:
+                    cover = paint[..., 3:]
+                    opacity = cover + alpha * (1 - cover)
+                    colour = (paint[..., :3] * cover + pixels[..., :3] * alpha * (1 - cover)) / opacity.clamp(min=1e-6)
+                    pixels = torch.where(cover > 0, torch.cat((colour, opacity), dim=-1), pixels)
+                elif cached[3] and (alpha < 1).any():
+                    # Switched off: the file is written again in the form the editor gets while the option is
+                    # off. A mask saved in the editor is kept as saved, with the transparent area it was opened
+                    # with, and the frontend warns about it. Half a level keeps the 8-bit levels the mask had
+                    # when it is saved again.
+                    preview = shown[index:index + 1].to(pixels)
+                    if mask is not None:
+                        preview = torch.cat((preview, (1 - mask + 0.5 / 255).unsqueeze(-1)), dim=-1)
+                if cached[3] and mask is not None:
+                    kept_alpha = bool((mask.unsqueeze(-1) * (1 - alpha)).any())
+            elif has_alpha and pixels.shape[1:3] == images.shape[1:3]:
+                alpha = torch.ones_like(pixels[..., :1]) if mask is None else (1 - mask).unsqueeze(-1)
+                pixels = torch.cat((pixels, alpha), dim=-1)
             if mask is None:
                 mask = torch.zeros((1, 64, 64), dtype=torch.float32, device="cpu")
-            res_image = [path_item]
+            if from_alpha:
+                alpha_files = cached[4]
         else:
-            if restore_mask != "never":
+            if incoming is not None:
+                # As with a latent that brings a noise mask: the incoming mask is used and nothing is restored over it.
+                # The mask is one mask: of a batch, that of the first image, which the node shows.
+                mask = incoming[:1]
+            elif restore_mask != "never" and not stale_alpha:
                 # Registrations for later queued edits may already have updated the node cache.
                 mask = core.get_previewbridge_mask(image)
                 if mask is None:
@@ -141,23 +256,29 @@ class PreviewBridge:
             else:
                 mask = None
 
-            if mask is None:
+            pixels = images
+            if incoming is not None:
+                preview = images
+            elif mask is None:
                 mask = torch.zeros((64, 64), dtype=torch.float32, device="cpu")
-                res = nodes.PreviewImage().save_images(images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
+                preview = shown
             else:
-                masked_images = utils.tensor_convert_rgba(images)
+                preview = utils.tensor_convert_rgba(shown)
                 resized_mask = utils.resize_mask(mask, (images.shape[1], images.shape[2])).unsqueeze(3)
                 resized_mask = 1 - resized_mask
-                utils.tensor_putalpha(masked_images, resized_mask)
-                res = nodes.PreviewImage().save_images(masked_images, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)
+                utils.tensor_putalpha(preview, resized_mask)
+                if has_alpha and alpha_as_mask:
+                    pixels = preview
 
-            res_image = res['ui']['images']
-            pixels = images
-
+        if preview is not None:
+            res_image = nodes.PreviewImage().save_images(preview, filename_prefix="PreviewBridge/PB-", prompt=prompt, extra_pnginfo=extra_pnginfo)['ui']['images']
             path = os.path.join(folder_paths.get_temp_directory(), 'PreviewBridge', res_image[0]['filename'])
             preview_id = core.set_previewbridge_image(unique_id, path, res_image[0])
+            if incoming is not None:
+                # The form in which the frontend registers the file it displays, which is any image of a batch.
+                alpha_files = [os.path.abspath(os.path.join(os.path.dirname(path), item['filename'])) for item in res_image]
 
-        core.preview_bridge_cache[unique_id] = (images, image, preview_id)
+        core.preview_bridge_cache[unique_id] = (images, image, preview_id, alpha_as_mask, alpha_files)
         is_empty_mask = torch.all(mask == 0)
 
         if block and is_empty_mask and core.is_execution_model_version_supported():
@@ -173,7 +294,7 @@ class PreviewBridge:
             core.preview_bridge_last_mask_cache[unique_id] = mask
 
         return {
-            "ui": {"images": res_image, "source_image": [image]},
+            "ui": {"images": res_image, "source_image": [image], "alpha_in_mask": [kept_alpha], "alpha_as_mask": [alpha_as_mask]},
             "result": result,
         }
 

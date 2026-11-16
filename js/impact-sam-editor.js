@@ -267,7 +267,15 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			self.imgCtx.clearRect(0, 0, self.imageCanvas.width, self.imageCanvas.height);
 		}
 
-		const target_image_path = ComfyApp.clipspace.imgs[ComfyApp.clipspace['selectedIndex']].src;
+		// The address of what the node shows names its file. A PreviewBridge whose alpha_as_mask was switched shows
+		// the picture of the other setting until it runs again, under an address without a file: there the file
+		// is the one the node holds.
+		const index = ComfyApp.clipspace['selectedIndex'];
+		const shown = ComfyApp.clipspace.imgs[index].src;
+		const file = ComfyApp.clipspace.images?.[index];
+		const target_image_path = file?.filename && !new URL(shown).searchParams.get("filename")
+			? new URL(api.apiURL(`/view?${new URLSearchParams({ filename: file.filename, type: file.type ?? "", subfolder: file.subfolder ?? "" })}`), window.location.href).href
+			: shown;
 		this.load_sam(target_image_path);
 
 		if(!this.is_layout_created) {

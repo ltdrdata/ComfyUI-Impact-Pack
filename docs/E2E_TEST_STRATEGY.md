@@ -31,6 +31,33 @@ These cases require the configured SAM model and the SD1.5 VAE named in
 Registration-failure and delayed-result tests control only those boundaries.
 SAM responses are captured and forwarded unchanged for pixel comparisons.
 
+Only the legacy SAM cases compute on the GPU. Every other case of the three files
+runs on a server started with `--cpu`, so the suite can be split into sessions
+that run side by side, one isolated server per session:
+
+```bash
+# GPU server: the cases that detect with SAM
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18170 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-preview-bridge-sam \
+IMPACT_E2E_SAM_IMAGE=/path/to/subject.png \
+python -m pytest tests/test_e2e_preview_bridge.py tests/test_e2e_legacy_sam.py -k legacy_sam -v
+
+# --cpu servers, at the same time
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18171 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-preview-bridge-cpu \
+python -m pytest tests/test_e2e_preview_bridge.py -k "not legacy_sam" -v
+
+IMPACT_E2E_BASE_URL=http://127.0.0.1:18172 \
+IMPACT_E2E_ARTIFACTS=/tmp/impact-widget-catalog \
+python -m pytest tests/test_e2e_widget_catalog.py -v
+```
+
+A session needs a server to itself, with its own port and `--base-directory`:
+the cases upload into its input directory, read its history and, in the restart
+cases, restart it through that session's `IMPACT_E2E_RESTART_COMMAND`. The
+sessions without a model can be split further with `-k`. Together they must
+report as many cases as the single command above, with none skipped.
+
 | Script | Setup through the UI | Assertions |
 | --- | --- | --- |
 | `tests/e2e_wildcards.py` | Create a blank workflow, search for and place ImpactWildcardProcessor and Preview as Text, drag a connection, enter text, select modes, click Run | UTF-8 file expansion, populate/fixed/reproduce behavior, editable/disabled text fields, websocket feedback, preview text |

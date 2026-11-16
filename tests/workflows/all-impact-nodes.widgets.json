@@ -2581,6 +2581,10 @@
           "value": "never"
         },
         {
+          "name": "alpha_as_mask",
+          "value": false
+        },
+        {
           "name": "$$canvas-image-preview",
           "value": ""
         }

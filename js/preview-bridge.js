@@ -1,4 +1,5 @@
 import { api } from "../../scripts/api.js";
+import { app } from "../../scripts/app.js";
 import { getFileItem } from "./image-path.js";
 
 // Registrations belong to the server process; a retained tab outlives that map.
@@ -16,7 +17,51 @@ function imageValue(item) {
 export function setupPreviewBridge(node) {
     const widget = node.widgets.find(w => w.name === "image");
     node.imgs = [new Image()];
-    node.imageIndex = 0;
+
+    // The mask editor opens the file the image widget names. For a batch, that is the image selected on the node.
+    let shown = [];
+    let selected = 0;
+    Object.defineProperty(node, "imageIndex", {
+        configurable: true,
+        enumerable: true,
+        get: () => selected,
+        set: index => {
+            selected = index;
+            const item = shown[index ?? 0];
+            if (item && shown.some(other => imageValue(other) === widget.value)) {
+                widget.value = imageValue(item);
+                node.properties.image = widget.value;
+            }
+        }
+    });
+
+    // An RGBA input is shown over a checkerboard while alpha_as_mask is off and with its alpha as the mask while it is
+    // on. Switching the option shows the picture of the other setting at once, before the bridge runs again.
+    const option = node.widgets.find(w => w.name === "alpha_as_mask");
+    let ranWith;
+    if (option) {
+        const callback = option.callback;
+        option.callback = function(value, ...args) {
+            const result = callback?.call(this, value, ...args);
+            // Only the files of the last run are replaced, not an image saved in the mask editor since.
+            if (!shown.length || node.images?.[0]?.filename !== shown[0].filename) return result;
+            const files = shown;
+            const images = files.map(({ filename, subfolder, type }, index) => {
+                const image = new Image();
+                image.src = api.apiURL(value === ranWith ? `/view?${new URLSearchParams({ filename, subfolder, type })}`
+                    : `/impact/view/pb_alpha_preview?${new URLSearchParams({ node_id: String(node.id), alpha_as_mask: value, index, rand: Math.random() })}`);
+                return image;
+            });
+            // There is no other picture for an input without alpha or a file the next run keeps: the request fails.
+            Promise.all(images.map(image => image.decode())).then(() => {
+                // The option was switched again, or the node ran, while the pictures were on their way.
+                if (option.value !== value || shown !== files) return;
+                node.imgs = images;
+                node.graph?.setDirtyCanvas(true);
+            }, () => {});
+            return result;
+        };
+    }
 
     // Preserve the legacy initial widget value in workflows saved before a queue.
     const onAdded = node.onAdded;
@@ -57,7 +102,17 @@ export function setupPreviewBridge(node) {
     const onExecuted = node.onExecuted;
     node.onExecuted = function(message, ...args) {
         const result = onExecuted?.call(this, message, ...args);
-        const item = message?.images?.[0];
+        if (message?.alpha_in_mask?.[0]) {
+            app.extensionManager.toast.add({
+                severity: "warn",
+                summary: "Preview Bridge",
+                detail: "alpha_as_mask was switched off. The mask saved in the mask editor is kept as saved, including the part of the image's transparent area it covers. Clear it in the mask editor to start over.",
+                life: 10000
+            });
+        }
+        shown = message?.images ?? [];
+        ranWith = message?.alpha_as_mask?.[0];
+        const item = shown[0];
         if (item && registration?.id && registration.connectionVersion === connectionVersion
             && message.source_image?.[0] === registration.id
             && widget.value === registration.displayedValue) {
