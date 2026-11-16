@@ -7,6 +7,8 @@ from nodes import MAX_RESOLUTION
 from . import core
 from .core import SEG
 import impact.utils as utils
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 from . import defs
 from . import segs_upscaler
 from comfy.cli_args import args
@@ -791,24 +793,25 @@ class SEGSToMaskList:
         return (masks,)
 
 
-class SEGSToMaskBatch:
+class SEGSToMaskBatch(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "segs": ("SEGS", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSToMaskBatch",
+            display_name="SEGS to Mask Batch",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, segs):
+    @classmethod
+    def execute(cls, segs):
         masks = core.segs_to_masklist(segs)
         masks = [utils.make_3d_mask(mask) for mask in masks]
         mask_batch = torch.concat(masks)
-        return (mask_batch,)
+        return io.NodeOutput(mask_batch)
 
 
 class SEGSMerge:
@@ -910,21 +913,22 @@ class SEGSConcat:
             return ((dim, res), )
 
 
-class Count_Elts_in_SEGS:
+class Count_Elts_in_SEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "segs": ("SEGS", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactCount_Elts_in_SEGS",
+            display_name="Count Elts in SEGS",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Int.Output()],
+        )
 
-    RETURN_TYPES = ("INT",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, segs):
-        return (len(segs[1]), )
+    @classmethod
+    def execute(cls, segs):
+        return io.NodeOutput(len(segs[1]))
 
 
 class DecomposeSEGS:
@@ -1054,61 +1058,85 @@ class AssembleSEGSList:
                  for header, place in zip(seg_header, places)], )
 
 
-class From_SEG_ELT:
+class From_SEG_ELT(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "seg_elt": ("SEG_ELT", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactFrom_SEG_ELT",
+            display_name="From SEG_ELT",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEG_ELT").Input("seg_elt"),
+            ],
+            outputs=[
+                io.Custom("SEG_ELT").Output(display_name="seg_elt"),
+                io.Image.Output(display_name="cropped_image"),
+                io.Mask.Output(display_name="cropped_mask"),
+                io.Custom("SEG_ELT_crop_region").Output(display_name="crop_region"),
+                io.Custom("SEG_ELT_bbox").Output(display_name="bbox"),
+                io.Custom("SEG_ELT_control_net_wrapper").Output(display_name="control_net_wrapper"),
+                io.Float.Output(display_name="confidence"),
+                io.String.Output(display_name="label"),
+            ],
+        )
 
-    RETURN_TYPES = ("SEG_ELT", "IMAGE", "MASK", "SEG_ELT_crop_region", "SEG_ELT_bbox", "SEG_ELT_control_net_wrapper", "FLOAT", "STRING")
-    RETURN_NAMES = ("seg_elt", "cropped_image", "cropped_mask", "crop_region", "bbox", "control_net_wrapper", "confidence", "label")
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, seg_elt):
+    @classmethod
+    def execute(cls, seg_elt):
         cropped_image = utils.to_tensor(seg_elt.cropped_image) if seg_elt.cropped_image is not None else None
-        return (seg_elt, cropped_image, utils.to_tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label,)
+        return io.NodeOutput(seg_elt, cropped_image, utils.to_tensor(seg_elt.cropped_mask), seg_elt.crop_region, seg_elt.bbox, seg_elt.control_net_wrapper, seg_elt.confidence, seg_elt.label)
 
 
-class From_SEG_ELT_bbox:
+class From_SEG_ELT_bbox(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "bbox": ("SEG_ELT_bbox", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactFrom_SEG_ELT_bbox",
+            display_name="From SEG_ELT bbox",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEG_ELT_bbox").Input("bbox"),
+            ],
+            outputs=[
+                io.Int.Output(display_name="left"),
+                io.Int.Output(display_name="top"),
+                io.Int.Output(display_name="right"),
+                io.Int.Output(display_name="bottom"),
+            ],
+        )
 
-    RETURN_TYPES = ("INT", "INT", "INT", "INT")
-    RETURN_NAMES = ("left", "top", "right", "bottom")
+    @classmethod
+    def execute(cls, bbox):
+        return io.NodeOutput(*cls.doit(bbox))
 
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, bbox):
+    @classmethod
+    def doit(cls, bbox):
         return [int(c) for c in bbox]
 
 
-class From_SEG_ELT_crop_region:
+class From_SEG_ELT_crop_region(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "crop_region": ("SEG_ELT_crop_region", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactFrom_SEG_ELT_crop_region",
+            display_name="From SEG_ELT crop_region",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEG_ELT_crop_region").Input("crop_region"),
+            ],
+            outputs=[
+                io.Int.Output(display_name="left"),
+                io.Int.Output(display_name="top"),
+                io.Int.Output(display_name="right"),
+                io.Int.Output(display_name="bottom"),
+            ],
+        )
 
-    RETURN_TYPES = ("INT", "INT", "INT", "INT")
-    RETURN_NAMES = ("left", "top", "right", "bottom")
+    @classmethod
+    def execute(cls, crop_region):
+        return io.NodeOutput(*crop_region)
 
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, crop_region):
+    @classmethod
+    def doit(cls, crop_region):
         return crop_region
 
 
@@ -1159,91 +1187,95 @@ class Edit_SEG_ELT:
         return (DecomposedSEG.like(seg_elt, seg),)
 
 
-class DilateMask:
+class DilateMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "mask": ("MASK", ),
-                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactDilateMask",
+            display_name="Dilate Mask",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Mask.Input("mask"),
+                io.Int.Input("dilation", default=10, min=-512, max=512, step=1),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, mask, dilation):
+    @classmethod
+    def execute(cls, mask, dilation):
         mask = utils.dilate_mask(mask.numpy(), dilation)
         mask = torch.from_numpy(mask)
         mask = utils.make_3d_mask(mask)
-        return (mask, )
+        return io.NodeOutput(mask)
 
 
-class GaussianBlurMask:
+class GaussianBlurMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "mask": ("MASK", ),
-                     "kernel_size": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
-                     "sigma": ("FLOAT", {"default": 10.0, "min": 0.1, "max": 100.0, "step": 0.1}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactGaussianBlurMask",
+            display_name="Gaussian Blur Mask",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Mask.Input("mask"),
+                io.Int.Input("kernel_size", default=10, min=0, max=100, step=1),
+                io.Float.Input("sigma", default=10.0, min=0.1, max=100.0, step=0.1),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, mask, kernel_size, sigma):
+    @classmethod
+    def execute(cls, mask, kernel_size, sigma):
         # Some custom nodes use abnormal 4-dimensional masks in the format of b, c, h, w. In the impact pack, internal 4-dimensional masks are required in the format of b, h, w, c. Therefore, normalization is performed using the normal mask format, which is 3-dimensional, before proceeding with the operation.
         mask = utils.make_3d_mask(mask)
         mask = torch.unsqueeze(mask, dim=-1)
         mask = utils.tensor_gaussian_blur_mask(mask, kernel_size, sigma)
         mask = torch.squeeze(mask, dim=-1)
-        return (mask, )
+        return io.NodeOutput(mask)
 
 
-class DilateMaskInSEGS:
+class DilateMaskInSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "segs": ("SEGS", ),
-                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactDilateMaskInSEGS",
+            display_name="Dilate Mask (SEGS)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Int.Input("dilation", default=10, min=-512, max=512, step=1),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, segs, dilation):
+    @classmethod
+    def execute(cls, segs, dilation):
         new_segs = []
         for seg in segs[1]:
             mask = utils.dilate_mask(seg.cropped_mask, dilation)
             seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(seg)
 
-        return ((segs[0], new_segs), )
+        return io.NodeOutput((segs[0], new_segs))
 
 
-class GaussianBlurMaskInSEGS:
+class GaussianBlurMaskInSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "segs": ("SEGS", ),
-                     "kernel_size": ("INT", {"default": 10, "min": 0, "max": 100, "step": 1}),
-                     "sigma": ("FLOAT", {"default": 10.0, "min": 0.1, "max": 100.0, "step": 0.1}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactGaussianBlurMaskInSEGS",
+            display_name="Gaussian Blur Mask (SEGS)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Int.Input("kernel_size", default=10, min=0, max=100, step=1),
+                io.Float.Input("sigma", default=10.0, min=0.1, max=100.0, step=0.1),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, segs, kernel_size, sigma):
+    @classmethod
+    def execute(cls, segs, kernel_size, sigma):
         new_segs = []
         for seg in segs[1]:
             mask = utils.tensor_gaussian_blur_mask(seg.cropped_mask, kernel_size, sigma)
@@ -1251,27 +1283,28 @@ class GaussianBlurMaskInSEGS:
             seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(seg)
 
-        return ((segs[0], new_segs), )
+        return io.NodeOutput((segs[0], new_segs))
 
 
-class Dilate_SEG_ELT:
+class Dilate_SEG_ELT(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "seg_elt": ("SEG_ELT", ),
-                     "dilation": ("INT", {"default": 10, "min": -512, "max": 512, "step": 1}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactDilate_Mask_SEG_ELT",
+            display_name="Dilate Mask (SEG_ELT)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEG_ELT").Input("seg_elt"),
+                io.Int.Input("dilation", default=10, min=-512, max=512, step=1),
+            ],
+            outputs=[io.Custom("SEG_ELT").Output()],
+        )
 
-    RETURN_TYPES = ("SEG_ELT", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, seg_elt, dilation):
+    @classmethod
+    def execute(cls, seg_elt, dilation):
         mask = utils.dilate_mask(seg_elt.cropped_mask, dilation)
         seg = SEG(seg_elt.cropped_image, mask, seg_elt.confidence, seg_elt.crop_region, seg_elt.bbox, seg_elt.label, seg_elt.control_net_wrapper)
-        return (DecomposedSEG.like(seg_elt, seg),)
+        return io.NodeOutput(DecomposedSEG.like(seg_elt, seg))
 
 
 class SEG_ELT_BBOX_ScaleBy:
@@ -1321,35 +1354,40 @@ class SEG_ELT_BBOX_ScaleBy:
         return (DecomposedSEG.like(seg, SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, bbox, seg.label, seg.control_net_wrapper)),)
 
 
-class EmptySEGS:
+class EmptySEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {}, }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="EmptySegs",
+            display_name="EmptySegs",
+            category="ImpactPack/Util",
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self):
+    @classmethod
+    def execute(cls):
         shape = 0, 0
-        return ((shape, []),)
+        return io.NodeOutput((shape, []))
 
 
-class SegsToCombinedMask:
+class SegsToCombinedMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"segs": ("SEGS",), }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SegsToCombinedMask",
+            display_name="SEGS to MASK (combined)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, segs):
+    @classmethod
+    def execute(cls, segs):
         mask = core.segs_to_combined_mask(segs)
         mask = utils.make_3d_mask(mask)
-        return (mask,)
+        return io.NodeOutput(mask)
 
 
 class MediaPipeFaceMeshToSEGS:
@@ -1608,25 +1646,28 @@ class ControlNetApplyAdvancedSEGS:
         return ((segs[0], new_segs), )
 
 
-class ControlNetClearSEGS:
+class ControlNetClearSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"segs": ("SEGS",), }, }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactControlNetClearSEGS",
+            display_name="ImpactControlNetClearSEGS",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    @staticmethod
-    def doit(segs):
+    @classmethod
+    def execute(cls, segs):
         new_segs = []
 
         for seg in segs[1]:
             new_seg = SEG(seg.cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, None)
             new_segs.append(new_seg)
 
-        return ((segs[0], new_segs), )
+        return io.NodeOutput((segs[0], new_segs))
 
 
 class SEGSSwitch:
@@ -1770,18 +1811,21 @@ class DefaultImageForSEGS:
             return (segs, )
 
 
-class RemoveImageFromSEGS:
+class RemoveImageFromSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"segs": ("SEGS", ), }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="RemoveImageFromSEGS",
+            display_name="Remove Image from SEGS",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    @staticmethod
-    def doit(segs):
+    @classmethod
+    def execute(cls, segs):
         results = []
 
         if len(segs[1]) > 0:
@@ -1789,9 +1833,9 @@ class RemoveImageFromSEGS:
                 new_seg = SEG(None, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
                 results.append(new_seg)
 
-            return ((segs[0], results), )
+            return io.NodeOutput((segs[0], results))
         else:
-            return (segs, )
+            return io.NodeOutput(segs)
 
 
 class MakeTileSEGS:

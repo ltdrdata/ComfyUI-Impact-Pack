@@ -1,5 +1,7 @@
 import math
 import impact.core as core
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from nodes import MAX_RESOLUTION
 import nodes
@@ -632,45 +634,45 @@ class KSamplerAdvancedBasicPipe:
         return basic_pipe, latent, vae
 
 
-class GITSSchedulerFuncProvider:
+class GITSSchedulerFuncProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "coeff": ("FLOAT", {"default": 1.20, "min": 0.80, "max": 1.50, "step": 0.05, "tooltip": "coeff factor of GITS Scheduler"}),
-                        "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "denoise amount for noise schedule"}),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="GITSSchedulerFuncProvider",
+            display_name="GITSScheduler Func Provider",
+            category="ImpactPack/sampling",
+            inputs=[
+                io.Float.Input("coeff", default=1.20, min=0.80, max=1.50, step=0.05, tooltip="coeff factor of GITS Scheduler"),
+                io.Float.Input("denoise", default=1.0, min=0.0, max=1.0, step=0.01, tooltip="denoise amount for noise schedule"),
+            ],
+            outputs=[
+                io.Custom("SCHEDULER_FUNC").Output(tooltip="Returns a function that generates a noise schedule using GITSScheduler. This can be used in place of a predetermined noise schedule to dynamically generate a noise schedule based on the steps."),
+            ],
+        )
 
-    OUTPUT_TOOLTIPS = ("Returns a function that generates a noise schedule using GITSScheduler. This can be used in place of a predetermined noise schedule to dynamically generate a noise schedule based on the steps.",)
-
-    RETURN_TYPES = ("SCHEDULER_FUNC",)
-    CATEGORY = "ImpactPack/sampling"
-
-    FUNCTION = "doit"
-
-    @staticmethod
-    def doit(coeff, denoise):
+    @classmethod
+    def execute(cls, coeff, denoise):
         def f(model, sampler, steps):
             if 'GITSScheduler' not in nodes.NODE_CLASS_MAPPINGS:
                 raise Exception("[Impact Pack] ComfyUI is an outdated version. Cannot use GITSScheduler.")
 
             return scheduler_node_sigmas('GITSScheduler', coeff, steps, denoise)
 
-        return (f, )
+        return io.NodeOutput(f)
 
 
-class NegativeConditioningPlaceholder:
+class NegativeConditioningPlaceholder(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {}}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactNegativeConditioningPlaceholder",
+            display_name="Negative Cond Placeholder",
+            category="ImpactPack/sampling",
+            outputs=[
+                io.Conditioning.Output(tooltip="This is a Placeholder for the FLUX model that does not use Negative Conditioning."),
+            ],
+        )
 
-    OUTPUT_TOOLTIPS = ("This is a Placeholder for the FLUX model that does not use Negative Conditioning.",)
-
-    RETURN_TYPES = ("CONDITIONING",)
-    CATEGORY = "ImpactPack/sampling"
-
-    FUNCTION = "doit"
-
-    @staticmethod
-    def doit():
-        return ("NegativePlaceholder", )
+    @classmethod
+    def execute(cls):
+        return io.NodeOutput("NegativePlaceholder")
