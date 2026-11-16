@@ -159,6 +159,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `SEGS_ELT Manipulation` - experimental nodes
     * `DecomposeSEGS` - Decompose SEGS to allow for detailed manipulation.
     * `AssembleSEGS` - Reassemble the decomposed SEGS.
+    * `Decompose (SEGS list)`, `Assemble (SEGS list)` - Decompose and reassemble a list of SEGS. `Assemble (SEGS list)` returns one SEGS per header, each element in the SEGS it came from, where `AssembleSEGS` puts the elements of every SEGS into a single SEGS.
     * `From SEG_ELT` - Extract detailed information from SEG_ELT.
     * `Edit SEG_ELT` - Modify some of the information in SEG_ELT.
     * `Dilate SEG_ELT` - Dilate the mask of SEG_ELT.

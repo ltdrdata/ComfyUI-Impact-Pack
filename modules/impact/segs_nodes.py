@@ -967,6 +967,93 @@ class AssembleSEGS:
         return ((seg_header[0], seg_elt), )
 
 
+class SEGSHeader(tuple):
+    """The header of one SEGS that Decompose (SEGS list) took apart, with the place it had there."""
+    origin = None
+
+
+class DecomposedSEG(SEG):
+    """A SEG that knows which SEGS Decompose (SEGS list) took it out of."""
+    origin = None
+
+    @classmethod
+    def of(cls, origin, seg):
+        elt = cls._make(seg)
+        elt.origin = origin
+        return elt
+
+    @classmethod
+    def like(cls, source, seg):
+        return cls.of(source.origin, seg) if isinstance(source, cls) else seg
+
+    def _replace(self, **fields):
+        return self.of(self.origin, super()._replace(**fields))
+
+
+class DecomposeSEGSList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "segs": ("SEGS", ),
+                     },
+                "hidden": {"unique_id": "UNIQUE_ID"},
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("SEGS_HEADER", "SEG_ELT",)
+    OUTPUT_IS_LIST = (True, True, )
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    DESCRIPTION = "Decomposes each SEGS of a list as Decompose (SEGS) does, and notes on every header and element which SEGS it is of, so that Assemble (SEGS list) can put the list together again."
+
+    def doit(self, segs, unique_id):
+        headers = []
+        elts = []
+        for index, (header, items) in enumerate(segs):
+            # This node and the place in its list. Not the objects: a cache may run this node again while
+            # elements of the run before are still handed on by the nodes after it.
+            origin = (unique_id[0], index)
+            header = SEGSHeader(header)
+            header.origin = origin
+            headers.append(header)
+            elts += [DecomposedSEG.of(origin, seg) for seg in items]
+        return headers, elts
+
+
+class AssembleSEGSList:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                     "seg_header": ("SEGS_HEADER", ),
+                     "seg_elt": ("SEG_ELT", ),
+                     },
+                }
+
+    INPUT_IS_LIST = True
+
+    RETURN_TYPES = ("SEGS", )
+    OUTPUT_IS_LIST = (True, )
+
+    FUNCTION = "doit"
+
+    CATEGORY = "ImpactPack/Util"
+
+    DESCRIPTION = "Reassembles what Decompose (SEGS list) took apart into one SEGS per header: a list of SEGS stays a list, and each element returns to the SEGS it came from."
+
+    def doit(self, seg_header, seg_elt):
+        places = [getattr(header, "origin", None) for header in seg_header]
+        origins = [getattr(elt, "origin", None) for elt in seg_elt]
+        if any(origin is None or origin not in places for origin in origins):
+            logging.warning("[Impact Pack] Assemble (SEGS list): an element is of none of the given headers, so all elements go into one SEGS. Take the headers and the elements from Decompose (SEGS list).")
+            return ([(seg_header[0], seg_elt)], )
+        return ([(header, [elt for elt, origin in zip(seg_elt, origins) if origin == place])
+                 for header, place in zip(seg_header, places)], )
+
+
 class From_SEG_ELT:
     @classmethod
     def INPUT_TYPES(s):
@@ -1069,7 +1156,7 @@ class Edit_SEG_ELT:
 
         seg = SEG(cropped_image, cropped_mask, confidence, crop_region, bbox, label, control_net_wrapper)
 
-        return (seg,)
+        return (DecomposedSEG.like(seg_elt, seg),)
 
 
 class DilateMask:
@@ -1181,10 +1268,10 @@ class Dilate_SEG_ELT:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, seg, dilation):
-        mask = utils.dilate_mask(seg.cropped_mask, dilation)
-        seg = SEG(seg.cropped_image, mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
-        return (seg,)
+    def doit(self, seg_elt, dilation):
+        mask = utils.dilate_mask(seg_elt.cropped_mask, dilation)
+        seg = SEG(seg_elt.cropped_image, mask, seg_elt.confidence, seg_elt.crop_region, seg_elt.bbox, seg_elt.label, seg_elt.control_net_wrapper)
+        return (DecomposedSEG.like(seg_elt, seg),)
 
 
 class SEG_ELT_BBOX_ScaleBy:
@@ -1231,8 +1318,7 @@ class SEG_ELT_BBOX_ScaleBy:
         bbox = (x1-dw, y1-dh, x2+dw, y2+dh)
 
         cropped_mask = SEG_ELT_BBOX_ScaleBy.fill_zero_outside_bbox(seg.cropped_mask, seg.crop_region, bbox)
-        seg = SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, bbox, seg.label, seg.control_net_wrapper)
-        return (seg,)
+        return (DecomposedSEG.like(seg, SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, bbox, seg.label, seg.control_net_wrapper)),)
 
 
 class EmptySEGS:

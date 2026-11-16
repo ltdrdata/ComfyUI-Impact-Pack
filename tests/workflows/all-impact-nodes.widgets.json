@@ -4033,6 +4033,16 @@
           "value": false
         }
       ]
+    },
+    {
+      "id": "201",
+      "type": "ImpactAssembleSEGSList",
+      "widgets": []
+    },
+    {
+      "id": "202",
+      "type": "ImpactDecomposeSEGSList",
+      "widgets": []
     }
   ]
 }
