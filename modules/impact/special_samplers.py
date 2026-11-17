@@ -642,8 +642,8 @@ class GITSSchedulerFuncProvider(ImpactNode):
             display_name="GITSScheduler Func Provider",
             category="ImpactPack/sampling",
             inputs=[
-                io.Float.Input("coeff", default=1.20, min=0.80, max=1.50, step=0.05, tooltip="coeff factor of GITS Scheduler"),
-                io.Float.Input("denoise", default=1.0, min=0.0, max=1.0, step=0.01, tooltip="denoise amount for noise schedule"),
+                io.Float.Input("coeff", default=1.20, min=0.80, max=1.50, step=0.05, tooltip="The coeff value of GITSScheduler."),
+                io.Float.Input("denoise", default=1.0, min=0.0, max=1.0, step=0.01, tooltip="The denoise amount of the noise schedule."),
             ],
             outputs=[
                 io.Custom("SCHEDULER_FUNC").Output(tooltip="Returns a function that generates a noise schedule using GITSScheduler. This can be used in place of a predetermined noise schedule to dynamically generate a noise schedule based on the steps."),
@@ -669,7 +669,7 @@ class NegativeConditioningPlaceholder(ImpactNode):
             display_name="Negative Cond Placeholder",
             category="ImpactPack/sampling",
             outputs=[
-                io.Conditioning.Output(tooltip="This is a Placeholder for the FLUX model that does not use Negative Conditioning."),
+                io.Conditioning.Output(tooltip="A placeholder for models that do not use negative conditioning, such as FLUX.1."),
             ],
         )
 

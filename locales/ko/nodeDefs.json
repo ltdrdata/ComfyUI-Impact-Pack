@@ -1237,5 +1237,852 @@
                 "name": "채워진 텍스트"
             }
         }
+    },
+    "CLIPSegDetectorProvider": {
+        "description": "CLIPSeg로 텍스트 프롬프트에 해당하는 영역을 찾는 bbox 감지기를 제공합니다.\n이 노드를 사용하려면 CLIPSeg 커스텀 노드가 설치되어 있어야 합니다.",
+        "display_name": "CLIPSeg 감지기 제공자",
+        "inputs": {
+            "text": {
+                "name": "텍스트",
+                "tooltip": "감지할 대상을 설명하는 텍스트 프롬프트입니다. 비워 두면 얼굴 디테일러는 얼굴을 찾습니다."
+            },
+            "blur": {
+                "name": "흐림",
+                "tooltip": "감지된 마스크를 흐리게 합니다."
+            },
+            "threshold": {
+                "name": "임계치",
+                "tooltip": "CLIPSeg의 확신도가 이 값보다 높은 영역만 남깁니다."
+            },
+            "dilation_factor": {
+                "name": "확장",
+                "tooltip": "감지된 마스크를 확장합니다."
+            }
+        },
+        "outputs": {}
+    },
+    "BitwiseAndMaskForEach": {
+        "description": "기준 SEGS의 각 마스크에서 마스크 SEGS의 마스크와 겹치는 부분만 남깁니다.",
+        "display_name": "픽셀 단위 (SEGS & SEGS)",
+        "inputs": {
+            "base_segs": {
+                "name": "기준 SEGS"
+            },
+            "mask_segs": {
+                "name": "마스크 SEGS"
+            }
+        },
+        "outputs": {}
+    },
+    "SubtractMaskForEach": {
+        "description": "기준 SEGS의 각 마스크에서 마스크 SEGS의 마스크와 겹치는 부분을 제거합니다.",
+        "display_name": "픽셀 단위 (SEGS - SEGS)",
+        "inputs": {
+            "base_segs": {
+                "name": "기준 SEGS"
+            },
+            "mask_segs": {
+                "name": "마스크 SEGS"
+            }
+        },
+        "outputs": {}
+    },
+    "SAMDetectorCombined": {
+        "description": "SEGS가 가리키는 각 영역의 실루엣을 SAM(Segment Anything)으로 찾아, 하나로 합친 마스크를 출력합니다.",
+        "display_name": "SAM 감지기 (통합)",
+        "inputs": {
+            "sam_model": {
+                "name": "sam 모델",
+                "tooltip": "실루엣 감지를 위한 Segment Anything 모델입니다.\n반드시 'SAMLoader (Impact)' 노드로 불러온 SAM_MODEL을 입력으로 사용하세요."
+            },
+            "segs": {
+                "name": "segs",
+                "tooltip": "감지기가 찾은 영역들입니다.\nSAM(Segment Anything)이 SEGS의 각 영역마다 마스크를 만들고, 그 마스크들을 하나의 마스크로 합칩니다."
+            },
+            "image": {
+                "name": "이미지",
+                "tooltip": "SEGS를 감지한 이미지입니다. SEGS에는 감지 영역 정보만 있고 이미지는 없으므로, SAM(Segment Anything)은 이 이미지를 참조합니다."
+            },
+            "detection_hint": {
+                "name": "감지 힌트",
+                "tooltip": "center-1만 사용할 것을 권장합니다.\ncenter-1은 각 SEG의 사각 영역과 그 정중앙의 점 1개를 SAM(Segment Anything)에 힌트로 줍니다. none은 사각 영역만 줍니다.\n나머지 옵션은 실험 단계에서 추가된 것으로 잘 동작하지 않습니다."
+            },
+            "dilation": {
+                "name": "마스크 확장",
+                "tooltip": "결과 마스크를 확장하는 커널의 크기(픽셀)입니다. 음수이면 마스크를 축소합니다."
+            },
+            "threshold": {
+                "name": "감지 임계치",
+                "tooltip": "SAM(Segment Anything)은 한 영역에 대해 점수가 매겨진 마스크 여러 개를 제안합니다. 점수가 이 값 이상인 마스크들을 합치고, 그런 마스크가 없으면 점수가 가장 높은 것을 사용합니다.\n값이 높을수록 더 좁은 마스크가 됩니다. 사람의 경우 전신 대신 옷만 잡힐 수 있습니다."
+            },
+            "bbox_expansion": {
+                "name": "영역 확장",
+                "tooltip": "각 SEG의 사각 영역을 사방으로 이 픽셀 수만큼 넓혀서 SAM(Segment Anything)에 힌트로 줍니다."
+            },
+            "mask_hint_threshold": {
+                "name": "마스크 힌트 임계치",
+                "tooltip": "감지 힌트가 mask-area일 때, SEGS 마스크 위의 점들을 SAM(Segment Anything)에 힌트로 줍니다.\n마스크 값이 이 임계치보다 큰 점만 사용합니다."
+            },
+            "mask_hint_use_negative": {
+                "name": "제외 힌트 사용",
+                "tooltip": "SAM(Segment Anything)이 마스크에서 빼야 할 곳을 알려 주는 제외 힌트를 추가합니다.\nFalse: 제외 힌트를 쓰지 않습니다.\nSmall: mask-points에서는 너비가 10픽셀보다 좁은 SEG가 제외 점이 됩니다. mask-area에서는 SEGS 마스크 값이 0인 점들이 제외 점이 됩니다.\nOutter: SEG 영역 바깥에서 일정 간격으로 샘플링한 점들입니다. mask-points에서는 쓰이지 않습니다."
+            }
+        },
+        "outputs": {}
+    },
+    "SAMDetectorSegmented": {
+        "description": "'SAM 감지기 (통합)'과 같지만, 합치기 전의 마스크들도 배치로 출력합니다.",
+        "display_name": "SAM 감지기 (분리)",
+        "inputs": {
+            "sam_model": {
+                "name": "sam 모델",
+                "tooltip": "실루엣 감지를 위한 Segment Anything 모델입니다.\n반드시 'SAMLoader (Impact)' 노드로 불러온 SAM_MODEL을 입력으로 사용하세요."
+            },
+            "segs": {
+                "name": "segs",
+                "tooltip": "감지기가 찾은 영역들입니다.\nSAM(Segment Anything)이 SEGS의 각 영역마다 마스크를 만듭니다. 그 마스크들을 하나로 합친 마스크와, 따로 묶은 배치를 출력합니다. 배치에는 SEG마다 마스크가 하나씩 들어가고, mask-points에서는 모든 SEG에 대한 마스크 하나만 들어갑니다."
+            },
+            "image": {
+                "name": "이미지",
+                "tooltip": "SEGS를 감지한 이미지입니다. SEGS에는 감지 영역 정보만 있고 이미지는 없으므로, SAM(Segment Anything)은 이 이미지를 참조합니다."
+            },
+            "detection_hint": {
+                "name": "감지 힌트",
+                "tooltip": "center-1만 사용할 것을 권장합니다.\ncenter-1은 각 SEG의 사각 영역과 그 정중앙의 점 1개를 SAM(Segment Anything)에 힌트로 줍니다. none은 사각 영역만 줍니다.\n나머지 옵션은 실험 단계에서 추가된 것으로 잘 동작하지 않습니다."
+            },
+            "dilation": {
+                "name": "마스크 확장",
+                "tooltip": "결과 마스크를 확장하는 커널의 크기(픽셀)입니다. 음수이면 마스크를 축소합니다.\n통합 마스크만 확장됩니다."
+            },
+            "threshold": {
+                "name": "감지 임계치",
+                "tooltip": "SAM(Segment Anything)은 한 영역에 대해 점수가 매겨진 마스크 여러 개를 제안합니다. 점수가 이 값 이상인 마스크들을 합치고, 그런 마스크가 없으면 점수가 가장 높은 것을 사용합니다.\n값이 높을수록 더 좁은 마스크가 됩니다. 사람의 경우 전신 대신 옷만 잡힐 수 있습니다."
+            },
+            "bbox_expansion": {
+                "name": "영역 확장",
+                "tooltip": "각 SEG의 사각 영역을 사방으로 이 픽셀 수만큼 넓혀서 SAM(Segment Anything)에 힌트로 줍니다."
+            },
+            "mask_hint_threshold": {
+                "name": "마스크 힌트 임계치",
+                "tooltip": "감지 힌트가 mask-area일 때, SEGS 마스크 위의 점들을 SAM(Segment Anything)에 힌트로 줍니다.\n마스크 값이 이 임계치보다 큰 점만 사용합니다."
+            },
+            "mask_hint_use_negative": {
+                "name": "제외 힌트 사용",
+                "tooltip": "SAM(Segment Anything)이 마스크에서 빼야 할 곳을 알려 주는 제외 힌트를 추가합니다.\nFalse: 제외 힌트를 쓰지 않습니다.\nSmall: mask-points에서는 너비가 10픽셀보다 좁은 SEG가 제외 점이 됩니다. mask-area에서는 SEGS 마스크 값이 0인 점들이 제외 점이 됩니다.\nOutter: SEG 영역 바깥에서 일정 간격으로 샘플링한 점들입니다. mask-points에서는 쓰이지 않습니다."
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "통합 마스크"
+            },
+            "1": {
+                "name": "마스크 배치"
+            }
+        }
+    },
+    "ToBasicPipe": {
+        "description": "모델, clip, vae, 긍정 조건, 부정 조건을 하나의 기본 파이프로 묶습니다.",
+        "display_name": "기본 파이프로 묶기",
+        "inputs": {
+            "model": {
+                "name": "모델"
+            },
+            "clip": {
+                "name": "clip"
+            },
+            "vae": {
+                "name": "vae"
+            },
+            "positive": {
+                "name": "긍정 조건"
+            },
+            "negative": {
+                "name": "부정 조건"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "기본 파이프"
+            }
+        }
+    },
+    "FromBasicPipe": {
+        "description": "기본 파이프에 묶인 모델, clip, vae, 긍정 조건, 부정 조건을 꺼냅니다.",
+        "display_name": "기본 파이프 풀기",
+        "inputs": {
+            "basic_pipe": {
+                "name": "기본 파이프"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "모델"
+            },
+            "1": {
+                "name": "clip"
+            },
+            "2": {
+                "name": "vae"
+            },
+            "3": {
+                "name": "긍정 조건"
+            },
+            "4": {
+                "name": "부정 조건"
+            }
+        }
+    },
+    "FromBasicPipe_v2": {
+        "description": "'기본 파이프 풀기'와 같지만, 입력된 기본 파이프도 그대로 출력합니다.",
+        "display_name": "기본 파이프 풀기 v2",
+        "inputs": {
+            "basic_pipe": {
+                "name": "기본 파이프"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "기본 파이프"
+            },
+            "1": {
+                "name": "모델"
+            },
+            "2": {
+                "name": "clip"
+            },
+            "3": {
+                "name": "vae"
+            },
+            "4": {
+                "name": "긍정 조건"
+            },
+            "5": {
+                "name": "부정 조건"
+            }
+        }
+    },
+    "DetailerPipeToBasicPipe": {
+        "description": "디테일러 파이프에서 베이스 기본 파이프와 리파이너 기본 파이프를 꺼냅니다. 리파이너 기본 파이프의 vae는 베이스 기본 파이프의 vae와 같습니다.",
+        "display_name": "디테일러 파이프 -> 기본 파이프",
+        "inputs": {
+            "detailer_pipe": {
+                "name": "디테일러 파이프"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "베이스 기본 파이프"
+            },
+            "1": {
+                "name": "리파이너 기본 파이프"
+            }
+        }
+    },
+    "LatentPixelScale": {
+        "description": "잠재 데이터를 픽셀 공간으로 디코드해서 크기를 조절한 뒤 다시 잠재 데이터로 인코드합니다.\n업스케일 모델이 연결되어 있으면 모델로 확대한 뒤, 크기 조절 방법으로 목표 크기에 맞춥니다.",
+        "display_name": "잠재 데이터 크기 조절 (픽셀 공간)",
+        "inputs": {
+            "samples": {
+                "name": "잠재 데이터"
+            },
+            "scale_method": {
+                "name": "크기 조절 방법"
+            },
+            "scale_factor": {
+                "name": "배율"
+            },
+            "vae": {
+                "name": "vae"
+            },
+            "use_tiled_vae": {
+                "name": "타일 VAE 사용"
+            },
+            "upscale_model_opt": {
+                "name": "업스케일 모델"
+            }
+        },
+        "outputs": {}
+    },
+    "PixelKSampleHookCombine": {
+        "description": "PK 후크 2개를 하나로 연결합니다. 후크 1이 먼저 실행되고 그다음 후크 2가 실행됩니다.",
+        "display_name": "PK 후크 결합",
+        "inputs": {
+            "hook1": {
+                "name": "후크 1"
+            },
+            "hook2": {
+                "name": "후크 2"
+            }
+        },
+        "outputs": {}
+    },
+    "DenoiseScheduleHookProvider": {
+        "description": "반복 업스케일의 단계가 진행됨에 따라 노이즈 제거양을 목표값까지 점진적으로 바꾸는 후크를 제공합니다.",
+        "display_name": "노이즈 제거 스케쥴 후크 제공자",
+        "inputs": {
+            "schedule_for_iteration": {
+                "name": "반복 단계 스케쥴"
+            },
+            "target_denoise": {
+                "name": "목표 노이즈 제거양"
+            }
+        },
+        "outputs": {}
+    },
+    "StepsScheduleHookProvider": {
+        "description": "반복 업스케일의 단계가 진행됨에 따라 샘플링 스텝수를 목표값까지 점진적으로 바꾸는 후크를 제공합니다.",
+        "display_name": "스텝수 스케쥴 후크 제공자",
+        "inputs": {
+            "schedule_for_iteration": {
+                "name": "반복 단계 스케쥴"
+            },
+            "target_steps": {
+                "name": "목표 스텝수"
+            }
+        },
+        "outputs": {}
+    },
+    "CfgScheduleHookProvider": {
+        "description": "반복 업스케일의 단계가 진행됨에 따라 cfg를 목표값까지 점진적으로 바꾸는 후크를 제공합니다.",
+        "display_name": "CFG 스케쥴 후크 제공자",
+        "inputs": {
+            "schedule_for_iteration": {
+                "name": "반복 단계 스케쥴"
+            },
+            "target_cfg": {
+                "name": "목표 cfg"
+            }
+        },
+        "outputs": {}
+    },
+    "CoreMLDetailerHookProvider": {
+        "description": "CoreML은 512x512, 512x768, 768x512, 768x768 크기의 샘플링만 지원합니다. 이 후크는 디테일러가 가이드 크기와 상관없이 항상 선택한 크기로 샘플링하게 합니다. 단, 가이드 크기가 너무 작으면 해당 영역은 건너뜁니다.",
+        "display_name": "CoreML 디테일러 후크 제공자",
+        "inputs": {
+            "mode": {
+                "name": "모드"
+            }
+        },
+        "outputs": {}
+    },
+    "BlackPatchRetryHookProvider": {
+        "description": "디테일러의 결과가 검게 나온 영역을 다시 생성하게 하는 후크를 제공합니다. 평균 밝기(0~255)가 평균 임계치 이하이고, 밝기(0~1)의 분산이 분산 임계치를 255로 나눈 값 이하이면 검은 패치로 봅니다.\n'Detailer (SEGS) with auto retry' 노드에서만 동작합니다.",
+        "display_name": "검은 패치 재시도 후크 제공자",
+        "inputs": {
+            "mean_thresh": {
+                "name": "평균 임계치"
+            },
+            "var_thresh": {
+                "name": "분산 임계치"
+            }
+        },
+        "outputs": {}
+    },
+    "CustomSamplerDetailerHookProvider": {
+        "description": "디테일러 노드가 연결된 샘플러로 샘플링하게 하는 후크를 제공합니다. '디테일러 후크 결합'으로 후크를 연결한 경우에는 샘플러를 가진 첫 번째 후크의 샘플러가 사용됩니다.",
+        "display_name": "커스텀 샘플러 디테일러 후크 제공자",
+        "inputs": {
+            "sampler": {
+                "name": "샘플러"
+            }
+        },
+        "outputs": {}
+    },
+    "LamaRemoverDetailerHookProvider": {
+        "description": "디테일러가 확대한 이미지에 Lama Remover를 적용하는 후크를 제공합니다. 샘플링 건너뛰기를 켜면 디테일링 없이 Lama Remover만으로 감지 영역을 지울 수 있습니다. '디테일러 후크 결합'으로 연결한 경우에는 결합된 모든 처리 후크에서 켜져 있어야 샘플링을 건너뜁니다.\n비디오용 디테일러에는 적용되지 않습니다. 이 노드를 사용하려면 comfyui-lama-remover 노드팩이 설치되어 있어야 합니다.",
+        "display_name": "Lama Remover 디테일러 후크 제공자",
+        "inputs": {
+            "mask_threshold": {
+                "name": "마스크 임계치"
+            },
+            "gaussblur_radius": {
+                "name": "가우시안 흐림 반경"
+            },
+            "skip_sampling": {
+                "name": "샘플링 건너뛰기"
+            }
+        },
+        "outputs": {}
+    },
+    "DetailerHookCombine": {
+        "description": "디테일러 후크 2개를 하나로 연결합니다. 후크 1이 먼저 실행되고 그다음 후크 2가 실행됩니다.",
+        "display_name": "디테일러 후크 결합",
+        "inputs": {
+            "hook1": {
+                "name": "후크 1"
+            },
+            "hook2": {
+                "name": "후크 2"
+            }
+        },
+        "outputs": {}
+    },
+    "DenoiseSchedulerDetailerHookProvider": {
+        "description": "디테일러의 반복이 진행됨에 따라 노이즈 제거양을 목표값까지 점진적으로 바꾸는 후크를 제공합니다. 반복수가 1이면 적용되지 않습니다.",
+        "display_name": "노이즈 제거 스케쥴 디테일러 후크 제공자",
+        "inputs": {
+            "schedule_for_cycle": {
+                "name": "반복 스케쥴"
+            },
+            "target_denoise": {
+                "name": "목표 노이즈 제거양"
+            }
+        },
+        "outputs": {}
+    },
+    "SEGSOrderedFilterDetailerHookProvider": {
+        "description": "감지 직후의 SEGS를 크기나 위치로 정렬해서 일정 범위의 SEG만 남기는 후크를 제공합니다. 얼굴 디테일러나 감지기 노드에 연결해서 사용합니다.",
+        "display_name": "SEGS 정렬 필터 디테일러 후크 제공자",
+        "inputs": {
+            "target": {
+                "name": "기준"
+            },
+            "order": {
+                "name": "정렬 순서"
+            },
+            "take_start": {
+                "name": "시작 위치"
+            },
+            "take_count": {
+                "name": "가져올 개수"
+            }
+        },
+        "outputs": {}
+    },
+    "SEGSRangeFilterDetailerHookProvider": {
+        "description": "감지 직후의 SEGS에서 크기나 위치가 일정 범위 안 또는 밖에 있는 SEG만 남기는 후크를 제공합니다. 얼굴 디테일러나 감지기 노드에 연결해서 사용합니다.",
+        "display_name": "SEGS 범위 필터 디테일러 후크 제공자",
+        "inputs": {
+            "target": {
+                "name": "기준"
+            },
+            "mode": {
+                "name": "모드"
+            },
+            "min_value": {
+                "name": "최소값"
+            },
+            "max_value": {
+                "name": "최대값"
+            }
+        },
+        "outputs": {}
+    },
+    "BitwiseAndMask": {
+        "description": "두 마스크가 겹치는 부분만 남깁니다. 이진 마스크가 아니면 정상 동작이 보장되지 않습니다. 두 마스크의 크기가 다르면 마스크 1을 그대로 출력합니다.",
+        "display_name": "픽셀 단위 (MASK & MASK)",
+        "inputs": {
+            "mask1": {
+                "name": "마스크 1"
+            },
+            "mask2": {
+                "name": "마스크 2"
+            }
+        },
+        "outputs": {}
+    },
+    "SubtractMask": {
+        "description": "마스크 1에서 마스크 2를 뺍니다. 두 마스크의 크기가 다르면 마스크 1을 그대로 출력합니다.",
+        "display_name": "픽셀 단위 (MASK - MASK)",
+        "inputs": {
+            "mask1": {
+                "name": "마스크 1"
+            },
+            "mask2": {
+                "name": "마스크 2"
+            }
+        },
+        "outputs": {}
+    },
+    "AddMask": {
+        "description": "두 마스크를 더합니다. 결과는 1을 넘지 않습니다. 두 마스크의 크기가 다르면 마스크 1을 그대로 출력합니다.",
+        "display_name": "픽셀 단위 (MASK + MASK)",
+        "inputs": {
+            "mask1": {
+                "name": "마스크 1"
+            },
+            "mask2": {
+                "name": "마스크 2"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactSegsAndMaskForEach": {
+        "description": "SEGS의 각 마스크에서, 마스크 배치의 같은 순서에 있는 마스크와 겹치는 부분만 남깁니다.",
+        "display_name": "픽셀 단위 (SEGS & MASKS 각각)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            },
+            "masks": {
+                "name": "마스크 배치"
+            }
+        },
+        "outputs": {}
+    },
+    "EmptySegs": {
+        "description": "빈 SEGS를 제공합니다.",
+        "display_name": "빈 SEGS",
+        "inputs": {},
+        "outputs": {}
+    },
+    "ImpactFlattenMask": {
+        "description": "마스크 배치를 하나의 마스크로 합칩니다. 이진 마스크가 아니면 정상 동작이 보장되지 않습니다.",
+        "display_name": "마스크 배치 합치기",
+        "inputs": {
+            "masks": {
+                "name": "마스크 배치"
+            }
+        },
+        "outputs": {}
+    },
+    "ToBinaryMask": {
+        "description": "마스크를 이진 마스크로 만듭니다. 0~255 범위로 나타낸 임계치보다 큰 값은 1이, 나머지는 0이 됩니다.",
+        "display_name": "이진 마스크로 변환",
+        "inputs": {
+            "mask": {
+                "name": "마스크"
+            },
+            "threshold": {
+                "name": "임계치"
+            }
+        },
+        "outputs": {}
+    },
+    "RemoveImageFromSEGS": {
+        "description": "'SEGS에 기본 이미지 설정'이나 SEGS 디테일러로 SEGS에 설정된 이미지를 제거합니다. 이미지가 제거된 SEGS는 디테일러에서 SEGS의 이미지 대신 현재 처리 중인 이미지를 기준으로 동작합니다.",
+        "display_name": "SEGS에서 이미지 제거",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactControlNetClearSEGS": {
+        "description": "SEGS에 적용된 컨트롤넷을 해제합니다.",
+        "display_name": "컨트롤넷 해제 (SEGS)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactFrom_SEG_ELT": {
+        "description": "SEG_ELT에 들어 있는 정보를 꺼냅니다.",
+        "display_name": "SEG_ELT 풀기",
+        "inputs": {
+            "seg_elt": {
+                "name": "SEG_ELT"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEG_ELT"
+            },
+            "1": {
+                "name": "잘라낸 이미지"
+            },
+            "2": {
+                "name": "잘라낸 마스크"
+            },
+            "3": {
+                "name": "자르기 영역"
+            },
+            "4": {
+                "name": "bbox"
+            },
+            "5": {
+                "name": "컨트롤넷 래퍼"
+            },
+            "6": {
+                "name": "신뢰도"
+            },
+            "7": {
+                "name": "레이블"
+            }
+        }
+    },
+    "ImpactDilate_Mask_SEG_ELT": {
+        "description": "SEG_ELT의 마스크를 확장합니다. 음수이면 축소합니다.",
+        "display_name": "마스크 확장 (SEG_ELT)",
+        "inputs": {
+            "seg_elt": {
+                "name": "SEG_ELT"
+            },
+            "dilation": {
+                "name": "확장"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactDilateMask": {
+        "description": "주어진 크기의 정사각 커널로 마스크를 확장합니다. 음수이면 축소합니다.",
+        "display_name": "마스크 확장",
+        "inputs": {
+            "mask": {
+                "name": "마스크"
+            },
+            "dilation": {
+                "name": "확장"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactGaussianBlurMask": {
+        "description": "마스크에 가우시안 흐림을 적용합니다. 마스크의 가장자리를 부드럽게 하는 데 쓸 수 있습니다.",
+        "display_name": "마스크 가우시안 흐림",
+        "inputs": {
+            "mask": {
+                "name": "마스크"
+            },
+            "kernel_size": {
+                "name": "커널 크기"
+            },
+            "sigma": {
+                "name": "시그마"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactDilateMaskInSEGS": {
+        "description": "SEGS의 각 마스크를 확장합니다. 음수이면 축소합니다.",
+        "display_name": "마스크 확장 (SEGS)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            },
+            "dilation": {
+                "name": "확장"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactGaussianBlurMaskInSEGS": {
+        "description": "SEGS의 각 마스크에 가우시안 흐림을 적용합니다.",
+        "display_name": "마스크 가우시안 흐림 (SEGS)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            },
+            "kernel_size": {
+                "name": "커널 크기"
+            },
+            "sigma": {
+                "name": "시그마"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactFrom_SEG_ELT_bbox": {
+        "description": "SEG_ELT의 bbox에서 좌표를 꺼냅니다.",
+        "display_name": "SEG_ELT bbox 풀기",
+        "inputs": {
+            "bbox": {
+                "name": "bbox"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "왼쪽"
+            },
+            "1": {
+                "name": "위"
+            },
+            "2": {
+                "name": "오른쪽"
+            },
+            "3": {
+                "name": "아래"
+            }
+        }
+    },
+    "ImpactFrom_SEG_ELT_crop_region": {
+        "description": "SEG_ELT의 자르기 영역에서 좌표를 꺼냅니다.",
+        "display_name": "SEG_ELT 자르기 영역 풀기",
+        "inputs": {
+            "crop_region": {
+                "name": "자르기 영역"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "왼쪽"
+            },
+            "1": {
+                "name": "위"
+            },
+            "2": {
+                "name": "오른쪽"
+            },
+            "3": {
+                "name": "아래"
+            }
+        }
+    },
+    "ImpactCount_Elts_in_SEGS": {
+        "description": "SEGS에 들어 있는 SEG의 개수를 출력합니다.",
+        "display_name": "SEGS의 SEG 개수",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "SegsToCombinedMask": {
+        "description": "SEGS의 모든 마스크를 하나의 마스크로 합칩니다.",
+        "display_name": "SEGS를 마스크로 (통합)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactNegativeConditioningPlaceholder": {
+        "description": "FLUX.1처럼 부정 조건을 쓰지 않는 모델을 위한 자리표시자입니다. Impact KSampler, KSampler (Inspire), 디테일러의 부정 조건 입력에 대신 연결합니다.",
+        "display_name": "부정 조건 자리표시자",
+        "inputs": {},
+        "outputs": {
+            "0": {
+                "tooltip": "FLUX.1처럼 부정 조건을 쓰지 않는 모델을 위한 자리표시자입니다."
+            }
+        }
+    },
+    "ImpactSEGSToMaskBatch": {
+        "description": "SEGS의 각 마스크를 원본 이미지 크기의 마스크로 만들어 배치로 묶습니다.",
+        "display_name": "SEGS를 마스크 배치로",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "ReencodeLatentPipe": {
+        "description": "잠재 데이터를 입력 기본 파이프의 vae로 디코드한 뒤, 출력 기본 파이프의 vae로 다시 인코드합니다.",
+        "display_name": "잠재 데이터 재인코드 (파이프)",
+        "inputs": {
+            "samples": {
+                "name": "잠재 데이터"
+            },
+            "tile_mode": {
+                "name": "타일 모드"
+            },
+            "input_basic_pipe": {
+                "name": "입력 기본 파이프"
+            },
+            "output_basic_pipe": {
+                "name": "출력 기본 파이프"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactFloat": {
+        "description": "실수 값을 출력합니다.",
+        "display_name": "Impact 실수",
+        "inputs": {
+            "value": {
+                "name": "값"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactBoolean": {
+        "description": "논리값을 출력합니다.",
+        "display_name": "Impact 논리값",
+        "inputs": {
+            "value": {
+                "name": "값"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactImageInfo": {
+        "description": "이미지의 배치 수, 높이, 너비, 채널 수를 출력합니다.",
+        "display_name": "Impact 이미지 정보",
+        "inputs": {
+            "value": {
+                "name": "이미지"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "배치"
+            },
+            "1": {
+                "name": "높이"
+            },
+            "2": {
+                "name": "너비"
+            },
+            "3": {
+                "name": "채널"
+            }
+        }
+    },
+    "ImpactLatentInfo": {
+        "description": "잠재 데이터의 배치 수, 높이, 너비, 채널 수를 출력합니다. 높이와 너비는 잠재 데이터 크기에 8을 곱한 값입니다.",
+        "display_name": "Impact 잠재 데이터 정보",
+        "inputs": {
+            "value": {
+                "name": "잠재 데이터"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "배치"
+            },
+            "1": {
+                "name": "높이"
+            },
+            "2": {
+                "name": "너비"
+            },
+            "3": {
+                "name": "채널"
+            }
+        }
+    },
+    "RemoveNoiseMask": {
+        "description": "잠재 데이터에서 노이즈 마스크를 제거합니다.",
+        "display_name": "노이즈 마스크 제거",
+        "inputs": {
+            "samples": {
+                "name": "잠재 데이터"
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactIsNotEmptySEGS": {
+        "description": "입력 SEGS가 비어 있지 않을 때만 true를 출력합니다.",
+        "display_name": "SEGS가 비어 있지 않음",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {}
+    },
+    "GITSSchedulerFuncProvider": {
+        "description": "GITSScheduler로 노이즈 스케쥴을 만드는 스케쥴러 함수를 제공합니다.",
+        "display_name": "GITS 스케쥴러 함수 제공자",
+        "inputs": {
+            "coeff": {
+                "name": "계수",
+                "tooltip": "GITSScheduler의 coeff 값입니다."
+            },
+            "denoise": {
+                "name": "노이즈 제거양",
+                "tooltip": "노이즈 스케쥴의 노이즈 제거양입니다."
+            }
+        },
+        "outputs": {
+            "0": {
+                "tooltip": "GITSScheduler로 노이즈 스케쥴을 생성하는 함수를 반환합니다. 미리 정해진 노이즈 스케쥴 대신 사용해서, 스텝수에 따라 노이즈 스케쥴을 동적으로 생성할 수 있습니다."
+            }
+        }
     }
 }

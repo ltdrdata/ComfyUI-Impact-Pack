@@ -77,11 +77,11 @@ class CLIPSegDetectorProvider(ImpactNode):
             node_id="CLIPSegDetectorProvider",
             display_name="CLIPSegDetectorProvider",
             category="ImpactPack/Util",
-            description="Provides a detection function using CLIPSeg, which generates masks based on text prompts.\nTo use this node, the CLIPSeg custom node must be installed.",
+            description="Provides a BBOX_DETECTOR that finds areas from a text prompt with CLIPSeg.\nTo use this node, the CLIPSeg custom node must be installed.",
             inputs=[
-                io.String.Input("text", multiline=False, tooltip="Enter the targets to be detected, separated by commas"),
-                io.Float.Input("blur", min=0, max=15, step=0.1, default=7, tooltip="Blurs the detected mask"),
-                io.Float.Input("threshold", min=0, max=1, step=0.05, default=0.4, tooltip="Detects only areas that are certain above the threshold."),
+                io.String.Input("text", multiline=False, tooltip="The text prompt that describes what to detect. If it is empty, FaceDetailer looks for a face."),
+                io.Float.Input("blur", min=0, max=15, step=0.1, default=7, tooltip="Blurs the detected mask."),
+                io.Float.Input("threshold", min=0, max=1, step=0.05, default=0.4, tooltip="Keeps only the areas that CLIPSeg is more certain of than this value."),
                 io.Int.Input("dilation_factor", min=0, max=10, step=1, default=4, tooltip="Dilates the detected mask."),
             ],
             outputs=[io.Custom("BBOX_DETECTOR").Output()],
@@ -1109,7 +1109,7 @@ class CustomSamplerDetailerHookProvider(ImpactNode):
             node_id="CustomSamplerDetailerHookProvider",
             display_name="CustomSamplerDetailerHookProvider",
             category="ImpactPack/Detailer",
-            description="Apply a hook that allows you to use a custom sampler in the Detailer nodes. When using `DetailerHookCombine`, the sampler from the first hook is applied.",
+            description="Provides a hook that makes the Detailer nodes sample with the given sampler. When hooks are joined by `DetailerHookCombine`, the sampler of the first hook that has one is used.",
             inputs=[
                 io.Sampler.Input("sampler"),
             ],
@@ -2026,7 +2026,7 @@ class BitwiseAndMaskForEach(ImpactNode):
             node_id="BitwiseAndMaskForEach",
             display_name="Pixelwise(SEGS & SEGS)",
             category="ImpactPack/Operation",
-            description="Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+            description="Keeps, in each mask of base_segs, only the part that overlaps the masks of mask_segs.",
             inputs=[
                 io.Custom("SEGS").Input("base_segs"),
                 io.Custom("SEGS").Input("mask_segs"),
@@ -2049,7 +2049,7 @@ class SubtractMaskForEach(ImpactNode):
             node_id="SubtractMaskForEach",
             display_name="Pixelwise(SEGS - SEGS)",
             category="ImpactPack/Operation",
-            description="Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+            description="Removes, from each mask of base_segs, the part that overlaps the masks of mask_segs.",
             inputs=[
                 io.Custom("SEGS").Input("base_segs"),
                 io.Custom("SEGS").Input("mask_segs"),

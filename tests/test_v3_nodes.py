@@ -2,6 +2,7 @@
 
 `v1_node_info.json` holds what `/object_info` returned for each of them while it was a V1 node (release 8.31). Before
 a node is rewritten its record is added there, taken from a server that runs the V1 node, and never edited after.
+The wording of a description or a tooltip is not held to the record: it may be corrected.
 """
 import ast
 import importlib
@@ -18,8 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 V1 = json.loads((ROOT / "tests" / "v1_node_info.json").read_text())
 # Nodes that were written on the V3 schema from the start.
 BORN_V3 = {"DetailerAdvancedOptionsHook"}
-FIELDS = ("name", "display_name", "category", "description", "input", "input_order", "is_input_list", "output", "output_name",
-          "output_is_list", "output_tooltips", "output_node", "deprecated", "experimental", "dev_only", "api_node",
+FIELDS = ("name", "display_name", "category", "input", "input_order", "is_input_list", "output", "output_name",
+          "output_is_list", "output_node", "deprecated", "experimental", "dev_only", "api_node",
           "has_intermediate_output", "search_aliases", "essentials_category")
 # Rewritten nodes whose result is not shared between nodes. `/object_info` does not carry this; the cache reads it from the class.
 NOT_IDEMPOTENT = {"BlackPatchRetryHookProvider"}
@@ -59,9 +60,9 @@ def described(info):
             if kind == "COMBO":
                 kind = options.pop("options")
                 assert options.pop("multiselect") is False
+            options.pop("tooltip", None)
             inputs[section][name] = [kind, options]
-    tooltips = info.get("output_tooltips") or []
-    return {**{field: info.get(field) or None for field in FIELDS}, "input": inputs, "output_tooltips": tooltips if any(tooltips) else None}
+    return {**{field: info.get(field) or None for field in FIELDS}, "input": inputs}
 
 
 @pytest.mark.parametrize("node_id", sorted(V1))
