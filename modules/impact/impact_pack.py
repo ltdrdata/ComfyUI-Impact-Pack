@@ -837,8 +837,10 @@ class FaceDetailer:
 
         # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
-        segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
-        bbox_detector.setAux(None)
+        try:
+            segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
+        finally:
+            bbox_detector.setAux(None)
 
         # bbox + sam combination
         if sam_model_opt is not None:
