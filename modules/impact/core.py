@@ -802,7 +802,7 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
     if not hasattr(sam, 'sam_wrapper') and not isinstance(sam, SAM2Wrapper):
-        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.\nKnown issue: The ComfyUI-YOLO node overrides the SAMLoader (Impact), making it unusable. You need to uninstall ComfyUI-YOLO.\n\n\n")
+        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure to use 'SAMLoader (Impact)'.\nKnown issue: The ComfyUI-YOLO node overrides the SAMLoader (Impact), making it unusable. You need to uninstall ComfyUI-YOLO.\n\n\n")
 
 
     if isinstance(sam, SAM2Wrapper):
@@ -1036,7 +1036,7 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
     if not hasattr(sam, 'sam_wrapper'):
-        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure 'SAMLoader (Impact)'.")
+        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure to use 'SAMLoader (Impact)'.")
 
     sam_obj = sam.sam_wrapper
     sam_obj.prepare_device()

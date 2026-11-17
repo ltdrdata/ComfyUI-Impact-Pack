@@ -12,13 +12,15 @@ from impact.core import SEG
 SAM_MODEL_TOOLTIP = {"tooltip": "Segment Anything Model for Silhouette Detection.\nBe sure to use the SAM_MODEL loaded through the SAMLoader (Impact) node as input."}
 SAM_MODEL_TOOLTIP_OPTIONAL = {"tooltip": "[OPTIONAL]\nSegment Anything Model for Silhouette Detection.\nBe sure to use the SAM_MODEL loaded through the SAMLoader (Impact) node as input.\nGiven this input, it refines the rectangular areas detected by BBOX_DETECTOR into silhouette shapes through SAM.\nsam_model_opt takes priority over segm_detector_opt."}
 
-MASK_HINT_THRESHOLD_TOOLTIP = "When detection_hint is mask-area, the mask of SEGS is used as a point hint for SAM (Segment Anything).\nIn this case, only the areas of the mask with brightness values equal to or greater than mask_hint_threshold are used as hints."
-MASK_HINT_USE_NEGATIVE_TOOLTIP = "When detecting with SAM (Segment Anything), negative hints are applied as follows:\nSmall: When the SEGS is smaller than 10 pixels in size\nOutter: Sampling the image area outside the SEGS region at regular intervals"
+MASK_HINT_THRESHOLD_TOOLTIP = "When detection_hint is mask-area, points of the SEGS mask are given to SAM (Segment Anything) as hints.\nOnly the points where the mask value is greater than mask_hint_threshold are used."
+MASK_HINT_USE_NEGATIVE_TOOLTIP = "Adds negative hints, which mark what SAM (Segment Anything) must leave out of the mask.\nFalse: No negative hint.\nSmall: With mask-points, a SEG narrower than 10 pixels becomes a negative point. With mask-area, the points where the SEGS mask is 0 become negative points.\nOutter: Points sampled at regular intervals outside the area of the SEG. Not used with mask-points."
 
-DILATION_TOOLTIP = "Set the value to dilate the result mask. If the value is negative, it erodes the mask."
-DETECTION_HINT_TOOLTIP = {"tooltip": "It is recommended to use only center-1.\nWhen refining the mask of SEGS with the SAM (Segment Anything) model, center-1 uses only the rectangular area of SEGS and a single point at the exact center as hints.\nOther options were added during the experimental stage and do not work well."}
+DILATION_TOOLTIP = "The size in pixels of the kernel that dilates the result mask. A negative value erodes the mask."
+DETECTION_HINT_TOOLTIP = {"tooltip": "It is recommended to use only center-1.\ncenter-1 gives SAM (Segment Anything) the rectangular area of each SEG and a single point at its exact center as hints. none gives only the rectangular area.\nThe other options were added during the experimental stage and do not work well."}
 
-BBOX_EXPANSION_TOOLTIP = "When performing SAM (Segment Anything) detection within the SEGS area, the rectangular area of SEGS is expanded and used as a hint."
+BBOX_EXPANSION_TOOLTIP = "The rectangular area of each SEG is expanded by this many pixels on every side before it is given to SAM (Segment Anything) as a hint."
+SAM_THRESHOLD_TOOLTIP = "SAM (Segment Anything) proposes several masks for an area, each with a score. The masks that score at least this value are combined; if none does, the best one is used.\nA higher value gives a narrower mask. For a person, it may take only the clothes instead of the whole person."
+IMAGE_TOOLTIP = "The image the SEGS were detected in. SEGS hold only the detected areas and not the image, so SAM (Segment Anything) reads this image."
 
 class SAMDetectorCombined(ImpactNode):
     @classmethod
@@ -29,11 +31,11 @@ class SAMDetectorCombined(ImpactNode):
             category="ImpactPack/Detector",
             inputs=[
                 io.Custom("SAM_MODEL").Input("sam_model", tooltip=SAM_MODEL_TOOLTIP["tooltip"]),
-                io.Custom("SEGS").Input("segs", tooltip="This is the segment information detected by the detector.\nIt refines the Mask through the SAM (Segment Anything) detector for all areas pointed to by SEGS, and combines all Masks to return as a single Mask."),
-                io.Image.Input("image", tooltip="It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."),
+                io.Custom("SEGS").Input("segs", tooltip="The areas found by a detector.\nSAM (Segment Anything) makes a mask for each area of the SEGS, and the masks are combined into a single mask."),
+                io.Image.Input("image", tooltip=IMAGE_TOOLTIP),
                 io.Combo.Input("detection_hint", options=["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"], tooltip=DETECTION_HINT_TOOLTIP["tooltip"]),
                 io.Int.Input("dilation", default=0, min=-512, max=512, step=1, tooltip=DILATION_TOOLTIP),
-                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01, tooltip="Set the sensitivity threshold for the mask detected by SAM (Segment Anything). A higher value generates a more specific mask with a narrower range. For example, when pointing to a person's area, it might detect clothes, which is a narrower range, instead of the entire person."),
+                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01, tooltip=SAM_THRESHOLD_TOOLTIP),
                 io.Int.Input("bbox_expansion", default=0, min=0, max=1000, step=1, tooltip=BBOX_EXPANSION_TOOLTIP),
                 io.Float.Input("mask_hint_threshold", default=0.7, min=0.0, max=1.0, step=0.01, tooltip=MASK_HINT_THRESHOLD_TOOLTIP),
                 io.Combo.Input("mask_hint_use_negative", options=["False", "Small", "Outter"], tooltip=MASK_HINT_USE_NEGATIVE_TOOLTIP),
@@ -57,11 +59,11 @@ class SAMDetectorSegmented(ImpactNode):
             category="ImpactPack/Detector",
             inputs=[
                 io.Custom("SAM_MODEL").Input("sam_model", tooltip=SAM_MODEL_TOOLTIP["tooltip"]),
-                io.Custom("SEGS").Input("segs", tooltip="This is the segment information detected by the detector.\nFor the SEGS region, the masks detected by SAM (Segment Anything) are created as a unified mask and a batch of individual masks."),
-                io.Image.Input("image", tooltip="It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."),
+                io.Custom("SEGS").Input("segs", tooltip="The areas found by a detector.\nSAM (Segment Anything) makes a mask for each area of the SEGS. The masks are returned combined into a single mask, and separately as a batch: one mask for each SEG, or with mask-points one mask for all of them."),
+                io.Image.Input("image", tooltip=IMAGE_TOOLTIP),
                 io.Combo.Input("detection_hint", options=["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"], tooltip=DETECTION_HINT_TOOLTIP["tooltip"]),
-                io.Int.Input("dilation", default=0, min=-512, max=512, step=1, tooltip=DILATION_TOOLTIP),
-                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01),
+                io.Int.Input("dilation", default=0, min=-512, max=512, step=1, tooltip=DILATION_TOOLTIP + "\nOnly combined_mask is dilated."),
+                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01, tooltip=SAM_THRESHOLD_TOOLTIP),
                 io.Int.Input("bbox_expansion", default=0, min=0, max=1000, step=1, tooltip=BBOX_EXPANSION_TOOLTIP),
                 io.Float.Input("mask_hint_threshold", default=0.7, min=0.0, max=1.0, step=0.01, tooltip=MASK_HINT_THRESHOLD_TOOLTIP),
                 io.Combo.Input("mask_hint_use_negative", options=["False", "Small", "Outter"], tooltip=MASK_HINT_USE_NEGATIVE_TOOLTIP),
