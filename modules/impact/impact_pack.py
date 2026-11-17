@@ -27,6 +27,8 @@ import base64
 import impact.wildcards as wildcards
 from . import hooks
 from . import utils
+from .node_base import ImpactNode
+from comfy_api.latest import io
 import inspect
 import folder_paths
 import torch
@@ -68,27 +70,27 @@ class ONNXDetectorProvider:
         return (core.ONNXDetector(model), )
 
 
-class CLIPSegDetectorProvider:
+class CLIPSegDetectorProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "text": ("STRING", {"multiline": False, "tooltip": "Enter the targets to be detected, separated by commas"}),
-                        "blur": ("FLOAT", {"min": 0, "max": 15, "step": 0.1, "default": 7, "tooltip": "Blurs the detected mask"}),
-                        "threshold": ("FLOAT", {"min": 0, "max": 1, "step": 0.05, "default": 0.4, "tooltip": "Detects only areas that are certain above the threshold."}),
-                        "dilation_factor": ("INT", {"min": 0, "max": 10, "step": 1, "default": 4, "tooltip": "Dilates the detected mask."}),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CLIPSegDetectorProvider",
+            display_name="CLIPSegDetectorProvider",
+            category="ImpactPack/Util",
+            description="Provides a detection function using CLIPSeg, which generates masks based on text prompts.\nTo use this node, the CLIPSeg custom node must be installed.",
+            inputs=[
+                io.String.Input("text", multiline=False, tooltip="Enter the targets to be detected, separated by commas"),
+                io.Float.Input("blur", min=0, max=15, step=0.1, default=7, tooltip="Blurs the detected mask"),
+                io.Float.Input("threshold", min=0, max=1, step=0.05, default=0.4, tooltip="Detects only areas that are certain above the threshold."),
+                io.Int.Input("dilation_factor", min=0, max=10, step=1, default=4, tooltip="Dilates the detected mask."),
+            ],
+            outputs=[io.Custom("BBOX_DETECTOR").Output()],
+        )
 
-    RETURN_TYPES = ("BBOX_DETECTOR", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    DESCRIPTION = "Provides a detection function using CLIPSeg, which generates masks based on text prompts.\nTo use this node, the CLIPSeg custom node must be installed."
-
-    def doit(self, text, blur, threshold, dilation_factor):
+    @classmethod
+    def execute(cls, text, blur, threshold, dilation_factor):
         if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
-            return (core.BBoxDetectorBasedOnCLIPSeg(text, blur, threshold, dilation_factor), )
+            return io.NodeOutput(core.BBoxDetectorBasedOnCLIPSeg(text, blur, threshold, dilation_factor))
         else:
             logging.error("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
             raise Exception("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
@@ -930,34 +932,33 @@ class FaceDetailer:
         return result_img, result_cropped_enhanced, result_cropped_enhanced_alpha, result_mask, pipe, result_cnet_images
 
 
-class LatentPixelScale:
+class LatentPixelScale(ImpactNode):
     upscale_methods = ["nearest-exact", "bilinear", "lanczos", "area"]
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "samples": ("LATENT", ),
-                     "scale_method": (s.upscale_methods,),
-                     "scale_factor": ("FLOAT", {"default": 1.5, "min": 0.1, "max": 10000, "step": 0.05}),
-                     "vae": ("VAE", ),
-                     "use_tiled_vae": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                    },
-                "optional": {
-                        "upscale_model_opt": ("UPSCALE_MODEL", ),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="LatentPixelScale",
+            display_name="Latent Scale (on Pixel Space)",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Latent.Input("samples"),
+                io.Combo.Input("scale_method", options=cls.upscale_methods),
+                io.Float.Input("scale_factor", default=1.5, min=0.1, max=10000, step=0.05),
+                io.Vae.Input("vae"),
+                io.Boolean.Input("use_tiled_vae", default=False, label_on="enabled", label_off="disabled"),
+                io.UpscaleModel.Input("upscale_model_opt", optional=True),
+            ],
+            outputs=[io.Latent.Output(), io.Image.Output()],
+        )
 
-    RETURN_TYPES = ("LATENT", "IMAGE")
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
+    @classmethod
+    def execute(cls, samples, scale_method, scale_factor, vae, use_tiled_vae, upscale_model_opt=None):
         if upscale_model_opt is None:
             latimg = core.latent_upscale_on_pixel_space2(samples, scale_method, scale_factor, vae, use_tile=use_tiled_vae)
         else:
             latimg = core.latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_model_opt, scale_factor, vae, use_tile=use_tiled_vae)
-        return latimg
+        return io.NodeOutput(*latimg)
 
 
 class NoiseInjectionDetailerHookProvider:
@@ -1060,84 +1061,90 @@ class UnsamplerDetailerHookProvider:
             pass
 
 
-class DenoiseSchedulerDetailerHookProvider:
+class DenoiseSchedulerDetailerHookProvider(ImpactNode):
     schedules = ["simple"]
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "schedule_for_cycle": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DenoiseSchedulerDetailerHookProvider",
+            display_name="DenoiseSchedulerDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            inputs=[
+                io.Combo.Input("schedule_for_cycle", options=cls.schedules),
+                io.Float.Input("target_denoise", default=0.3, min=0.0, max=1.0, step=0.01),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detailer"
-
-    def doit(self, schedule_for_cycle, target_denoise):
+    @classmethod
+    def execute(cls, schedule_for_cycle, target_denoise):
         hook = hooks.SimpleDetailerDenoiseSchedulerHook(target_denoise)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class CoreMLDetailerHookProvider:
+class CoreMLDetailerHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"mode": (["512x512", "768x768", "512x768", "768x512"], )}, }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CoreMLDetailerHookProvider",
+            display_name="CoreMLDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            inputs=[
+                io.Combo.Input("mode", options=["512x512", "768x768", "512x768", "768x512"]),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detailer"
-
-    def doit(self, mode):
+    @classmethod
+    def execute(cls, mode):
         hook = hooks.CoreMLHook(mode)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class CustomSamplerDetailerHookProvider:
+class CustomSamplerDetailerHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "sampler": ("SAMPLER", ),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CustomSamplerDetailerHookProvider",
+            display_name="CustomSamplerDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            description="Apply a hook that allows you to use a custom sampler in the Detailer nodes. When using `DetailerHookCombine`, the sampler from the first hook is applied.",
+            inputs=[
+                io.Sampler.Input("sampler"),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detailer"
-
-    DESCRIPTION = "Apply a hook that allows you to use a custom sampler in the Detailer nodes. When using `DetailerHookCombine`, the sampler from the first hook is applied."
-
-    def doit(self, sampler):
+    @classmethod
+    def execute(cls, sampler):
         hook = hooks.CustomSamplerDetailerHookProvider(sampler)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class CfgScheduleHookProvider:
+class CfgScheduleHookProvider(ImpactNode):
     schedules = ["simple"]
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "schedule_for_iteration": (s.schedules,),
-                     "target_cfg": ("FLOAT", {"default": 3.0, "min": 0.0, "max": 100.0}),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CfgScheduleHookProvider",
+            display_name="CfgScheduleHookProvider",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Combo.Input("schedule_for_iteration", options=cls.schedules),
+                io.Float.Input("target_cfg", default=3.0, min=0.0, max=100.0),
+            ],
+            outputs=[io.Custom("PK_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("PK_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, schedule_for_iteration, target_cfg):
+    @classmethod
+    def execute(cls, schedule_for_iteration, target_cfg):
         hook = None
         if schedule_for_iteration == "simple":
             hook = hooks.SimpleCfgScheduleHook(target_cfg)
 
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
 class UnsamplerHookProvider:
@@ -1207,90 +1214,94 @@ class NoiseInjectionHookProvider:
             logging.error(f"[Impact Pack] NoiseInjectionHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.\t{e}")
 
 
-class DenoiseScheduleHookProvider:
+class DenoiseScheduleHookProvider(ImpactNode):
     schedules = ["simple"]
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "schedule_for_iteration": (s.schedules,),
-                     "target_denoise": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0, "step": 0.01}),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DenoiseScheduleHookProvider",
+            display_name="DenoiseScheduleHookProvider",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Combo.Input("schedule_for_iteration", options=cls.schedules),
+                io.Float.Input("target_denoise", default=0.2, min=0.0, max=1.0, step=0.01),
+            ],
+            outputs=[io.Custom("PK_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("PK_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, schedule_for_iteration, target_denoise):
+    @classmethod
+    def execute(cls, schedule_for_iteration, target_denoise):
         hook = None
         if schedule_for_iteration == "simple":
             hook = hooks.SimpleDenoiseScheduleHook(target_denoise)
 
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class StepsScheduleHookProvider:
+class StepsScheduleHookProvider(ImpactNode):
     schedules = ["simple"]
 
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "schedule_for_iteration": (s.schedules,),
-                     "target_steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="StepsScheduleHookProvider",
+            display_name="StepsScheduleHookProvider",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Combo.Input("schedule_for_iteration", options=cls.schedules),
+                io.Int.Input("target_steps", default=20, min=1, max=10000),
+            ],
+            outputs=[io.Custom("PK_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("PK_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, schedule_for_iteration, target_steps):
+    @classmethod
+    def execute(cls, schedule_for_iteration, target_steps):
         hook = None
         if schedule_for_iteration == "simple":
             hook = hooks.SimpleStepsScheduleHook(target_steps)
 
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class DetailerHookCombine:
+class DetailerHookCombine(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "hook1": ("DETAILER_HOOK",),
-                     "hook2": ("DETAILER_HOOK",),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DetailerHookCombine",
+            display_name="DetailerHookCombine",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Custom("DETAILER_HOOK").Input("hook1"),
+                io.Custom("DETAILER_HOOK").Input("hook2"),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, hook1, hook2):
+    @classmethod
+    def execute(cls, hook1, hook2):
         hook = hooks.DetailerHookCombine(hook1, hook2)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class PixelKSampleHookCombine:
+class PixelKSampleHookCombine(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "hook1": ("PK_HOOK",),
-                     "hook2": ("PK_HOOK",),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="PixelKSampleHookCombine",
+            display_name="PixelKSampleHookCombine",
+            category="ImpactPack/Upscale",
+            inputs=[
+                io.Custom("PK_HOOK").Input("hook1"),
+                io.Custom("PK_HOOK").Input("hook2"),
+            ],
+            outputs=[io.Custom("PK_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("PK_HOOK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Upscale"
-
-    def doit(self, hook1, hook2):
+    @classmethod
+    def execute(cls, hook1, hook2):
         hook = hooks.PixelKSampleHookCombine(hook1, hook2)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
 class PixelTiledKSampleUpscalerProvider:
@@ -1989,163 +2000,168 @@ class SegsBitwiseAndMask:
         return (core.segs_bitwise_and_mask(segs, mask), )
 
 
-class SegsBitwiseAndMaskForEach:
+class SegsBitwiseAndMaskForEach(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs": ("SEGS",),
-                        "masks": ("MASK",),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSegsAndMaskForEach",
+            display_name="Pixelwise(SEGS & MASKS ForEach)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Mask.Input("masks"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, segs, masks):
-        return (core.apply_mask_to_each_seg(segs, masks), )
-
-
-class BitwiseAndMaskForEach:
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required":
-            {
-                "base_segs": ("SEGS",),
-                "mask_segs": ("SEGS",),
-            }
-        }
+    def execute(cls, segs, masks):
+        return io.NodeOutput(core.apply_mask_to_each_seg(segs, masks))
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Operation"
+class BitwiseAndMaskForEach(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="BitwiseAndMaskForEach",
+            display_name="Pixelwise(SEGS & SEGS)",
+            category="ImpactPack/Operation",
+            description="Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+            inputs=[
+                io.Custom("SEGS").Input("base_segs"),
+                io.Custom("SEGS").Input("mask_segs"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    DESCRIPTION = "Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs."
-
-    def doit(self, base_segs, mask_segs):
+    @classmethod
+    def execute(cls, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
         mask = utils.make_3d_mask(mask)
 
-        return SegsBitwiseAndMask().doit(base_segs, mask)
+        return io.NodeOutput(*SegsBitwiseAndMask().doit(base_segs, mask))
 
 
-class SubtractMaskForEach:
+class SubtractMaskForEach(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "base_segs": ("SEGS",),
-                        "mask_segs": ("SEGS",),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SubtractMaskForEach",
+            display_name="Pixelwise(SEGS - SEGS)",
+            category="ImpactPack/Operation",
+            description="Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+            inputs=[
+                io.Custom("SEGS").Input("base_segs"),
+                io.Custom("SEGS").Input("mask_segs"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    DESCRIPTION = "Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs."
-
-    def doit(self, base_segs, mask_segs):
+    @classmethod
+    def execute(cls, base_segs, mask_segs):
         mask = core.segs_to_combined_mask(mask_segs)
         mask = utils.make_3d_mask(mask)
-        return (core.segs_bitwise_subtract_mask(base_segs, mask), )
+        return io.NodeOutput(core.segs_bitwise_subtract_mask(base_segs, mask))
 
 
-class ToBinaryMask:
+class ToBinaryMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                      "mask": ("MASK",),
-                      "threshold": ("INT", {"default": 20, "min": 1, "max": 255}),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ToBinaryMask",
+            display_name="ToBinaryMask",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask"),
+                io.Int.Input("threshold", default=20, min=1, max=255),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, mask, threshold):
+    @classmethod
+    def execute(cls, mask, threshold):
         mask = utils.to_binary_mask(mask, threshold/255.0)
-        return (mask,)
+        return io.NodeOutput(mask)
 
 
-class FlattenMask:
+class FlattenMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "masks": ("MASK",),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactFlattenMask",
+            display_name="Flatten Mask Batch",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("masks"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, masks):
+    @classmethod
+    def execute(cls, masks):
         masks = utils.make_3d_mask(masks)
         masks = utils.flatten_mask(masks)
-        return (masks,)
+        return io.NodeOutput(masks)
 
 
-class BitwiseAndMask:
+class BitwiseAndMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "mask1": ("MASK",),
-                        "mask2": ("MASK",),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="BitwiseAndMask",
+            display_name="Pixelwise(MASK & MASK)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask1"),
+                io.Mask.Input("mask2"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, mask1, mask2):
+    @classmethod
+    def execute(cls, mask1, mask2):
         mask = utils.bitwise_and_masks(mask1, mask2)
-        return (mask,)
+        return io.NodeOutput(mask)
 
 
-class SubtractMask:
+class SubtractMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "mask1": ("MASK", ),
-                        "mask2": ("MASK", ),
-                      }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SubtractMask",
+            display_name="Pixelwise(MASK - MASK)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask1"),
+                io.Mask.Input("mask2"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, mask1, mask2):
+    @classmethod
+    def execute(cls, mask1, mask2):
         mask = utils.subtract_masks(mask1, mask2)
-        return (mask,)
+        return io.NodeOutput(mask)
 
 
-class AddMask:
+class AddMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "mask1": ("MASK",),
-            "mask2": ("MASK",),
-        }
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="AddMask",
+            display_name="Pixelwise(MASK + MASK)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask1"),
+                io.Mask.Input("mask2"),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, mask1, mask2):
+    @classmethod
+    def execute(cls, mask1, mask2):
         mask = utils.add_masks(mask1, mask2)
-        return (mask,)
+        return io.NodeOutput(mask)
 
 
 def get_image_hash(arr):

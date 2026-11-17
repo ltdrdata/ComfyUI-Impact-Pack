@@ -5,6 +5,8 @@ import execution
 import impact.impact_server
 from server import PromptServer
 from impact.utils import any_typ
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 import impact.core as core
 import re
 import nodes
@@ -46,18 +48,22 @@ class ImpactCompare:
             return (False, )
 
 
-class ImpactNotEmptySEGS:
+class ImpactNotEmptySEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {"segs": ("SEGS",)}}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactIsNotEmptySEGS",
+            display_name="SEGS isn't Empty",
+            category="ImpactPack/Logic",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Boolean.Output()],
+        )
 
-    FUNCTION = "doit"
-    CATEGORY = "ImpactPack/Logic"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, segs):
-        return (segs[1] != [], )
+    @classmethod
+    def execute(cls, segs):
+        return io.NodeOutput(segs[1] != [])
 
 
 class ImpactConditionalBranch:
@@ -255,40 +261,40 @@ class ImpactInt:
         return (value, )
 
 
-class ImpactFloat:
+class ImpactFloat(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "value": ("FLOAT", {"default": 1.0, "min": -3.402823466e+38, "max": 3.402823466e+38}),
-            },
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactFloat",
+            display_name="ImpactFloat",
+            category="ImpactPack/Logic",
+            inputs=[
+                io.Float.Input("value", default=1.0, min=-3.402823466e+38, max=3.402823466e+38),
+            ],
+            outputs=[io.Float.Output()],
+        )
 
-    FUNCTION = "doit"
-    CATEGORY = "ImpactPack/Logic"
-
-    RETURN_TYPES = ("FLOAT", )
-
-    def doit(self, value):
-        return (value, )
-
-
-class ImpactBoolean:
     @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "value": ("BOOLEAN", {"default": False}),
-            },
-        }
+    def execute(cls, value):
+        return io.NodeOutput(value)
 
-    FUNCTION = "doit"
-    CATEGORY = "ImpactPack/Logic"
 
-    RETURN_TYPES = ("BOOLEAN", )
+class ImpactBoolean(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactBoolean",
+            display_name="ImpactBoolean",
+            category="ImpactPack/Logic",
+            inputs=[
+                io.Boolean.Input("value", default=False),
+            ],
+            outputs=[io.Boolean.Output()],
+        )
 
-    def doit(self, value):
-        return (value, )
+    @classmethod
+    def execute(cls, value):
+        return io.NodeOutput(value)
 
 
 class ImpactValueSender:
@@ -367,43 +373,51 @@ class ImpactValueReceiver:
             return (value, )
 
 
-class ImpactImageInfo:
+class ImpactImageInfo(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {
-                    "value": ("IMAGE", ),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactImageInfo",
+            display_name="ImpactImageInfo",
+            category="ImpactPack/Logic/_for_test",
+            inputs=[
+                io.Image.Input("value"),
+            ],
+            outputs=[
+                io.Int.Output(display_name="batch"),
+                io.Int.Output(display_name="height"),
+                io.Int.Output(display_name="width"),
+                io.Int.Output(display_name="channel"),
+            ],
+        )
 
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Logic/_for_test"
-
-    RETURN_TYPES = ("INT", "INT", "INT", "INT")
-    RETURN_NAMES = ("batch", "height", "width", "channel")
-
-    def doit(self, value):
-        return (value.shape[0], value.shape[1], value.shape[2], value.shape[3])
-
-
-class ImpactLatentInfo:
     @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {
-                    "value": ("LATENT", ),
-                    },
-                }
+    def execute(cls, value):
+        return io.NodeOutput(value.shape[0], value.shape[1], value.shape[2], value.shape[3])
 
-    FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Logic/_for_test"
+class ImpactLatentInfo(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactLatentInfo",
+            display_name="ImpactLatentInfo",
+            category="ImpactPack/Logic/_for_test",
+            inputs=[
+                io.Latent.Input("value"),
+            ],
+            outputs=[
+                io.Int.Output(display_name="batch"),
+                io.Int.Output(display_name="height"),
+                io.Int.Output(display_name="width"),
+                io.Int.Output(display_name="channel"),
+            ],
+        )
 
-    RETURN_TYPES = ("INT", "INT", "INT", "INT")
-    RETURN_NAMES = ("batch", "height", "width", "channel")
-
-    def doit(self, value):
+    @classmethod
+    def execute(cls, value):
         shape = value['samples'].shape
-        return (shape[0], shape[2] * 8, shape[3] * 8, shape[1])
+        return io.NodeOutput(shape[0], shape[2] * 8, shape[3] * 8, shape[1])
 
 
 class ImpactMinMax:

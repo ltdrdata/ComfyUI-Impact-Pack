@@ -4,6 +4,8 @@ import impact.core as core
 from nodes import MAX_RESOLUTION
 import impact.segs_nodes as segs_nodes
 import impact.utils as utils
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 import torch
 from impact.core import SEG
 
@@ -18,63 +20,62 @@ DETECTION_HINT_TOOLTIP = {"tooltip": "It is recommended to use only center-1.\nW
 
 BBOX_EXPANSION_TOOLTIP = "When performing SAM (Segment Anything) detection within the SEGS area, the rectangular area of SEGS is expanded and used as a hint."
 
-class SAMDetectorCombined:
+class SAMDetectorCombined(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "sam_model": ("SAM_MODEL", SAM_MODEL_TOOLTIP),
-                        "segs": ("SEGS", {"tooltip": "This is the segment information detected by the detector.\nIt refines the Mask through the SAM (Segment Anything) detector for all areas pointed to by SEGS, and combines all Masks to return as a single Mask."}),
-                        "image": ("IMAGE", {"tooltip": "It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."}),
-                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area",
-                                            "mask-points", "mask-point-bbox", "none"], DETECTION_HINT_TOOLTIP),
-                        "dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1, "tooltip": DILATION_TOOLTIP}),
-                        "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Set the sensitivity threshold for the mask detected by SAM (Segment Anything). A higher value generates a more specific mask with a narrower range. For example, when pointing to a person's area, it might detect clothes, which is a narrower range, instead of the entire person."}),
-                        "bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1, "tooltip": BBOX_EXPANSION_TOOLTIP}),
-                        "mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": MASK_HINT_THRESHOLD_TOOLTIP}),
-                        "mask_hint_use_negative": (["False", "Small", "Outter"], {"tooltip": MASK_HINT_USE_NEGATIVE_TOOLTIP})
-                      }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SAMDetectorCombined",
+            display_name="SAMDetector (combined)",
+            category="ImpactPack/Detector",
+            inputs=[
+                io.Custom("SAM_MODEL").Input("sam_model", tooltip=SAM_MODEL_TOOLTIP["tooltip"]),
+                io.Custom("SEGS").Input("segs", tooltip="This is the segment information detected by the detector.\nIt refines the Mask through the SAM (Segment Anything) detector for all areas pointed to by SEGS, and combines all Masks to return as a single Mask."),
+                io.Image.Input("image", tooltip="It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."),
+                io.Combo.Input("detection_hint", options=["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"], tooltip=DETECTION_HINT_TOOLTIP["tooltip"]),
+                io.Int.Input("dilation", default=0, min=-512, max=512, step=1, tooltip=DILATION_TOOLTIP),
+                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01, tooltip="Set the sensitivity threshold for the mask detected by SAM (Segment Anything). A higher value generates a more specific mask with a narrower range. For example, when pointing to a person's area, it might detect clothes, which is a narrower range, instead of the entire person."),
+                io.Int.Input("bbox_expansion", default=0, min=0, max=1000, step=1, tooltip=BBOX_EXPANSION_TOOLTIP),
+                io.Float.Input("mask_hint_threshold", default=0.7, min=0.0, max=1.0, step=0.01, tooltip=MASK_HINT_THRESHOLD_TOOLTIP),
+                io.Combo.Input("mask_hint_use_negative", options=["False", "Small", "Outter"], tooltip=MASK_HINT_USE_NEGATIVE_TOOLTIP),
+            ],
+            outputs=[io.Mask.Output()],
+        )
 
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detector"
-
-    def doit(self, sam_model, segs, image, detection_hint, dilation,
-             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
-        return (core.make_sam_mask(sam_model, segs, image, detection_hint, dilation,
-                                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative), )
-
-
-class SAMDetectorSegmented:
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "sam_model": ("SAM_MODEL", SAM_MODEL_TOOLTIP),
-                        "segs": ("SEGS", {"tooltip": "This is the segment information detected by the detector.\nFor the SEGS region, the masks detected by SAM (Segment Anything) are created as a unified mask and a batch of individual masks."}),
-                        "image": ("IMAGE", {"tooltip": "It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."}),
-                        "detection_hint": (["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area",
-                                            "mask-points", "mask-point-bbox", "none"], DETECTION_HINT_TOOLTIP),
-                        "dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1, "tooltip": DILATION_TOOLTIP}),
-                        "threshold": ("FLOAT", {"default": 0.93, "min": 0.0, "max": 1.0, "step": 0.01}),
-                        "bbox_expansion": ("INT", {"default": 0, "min": 0, "max": 1000, "step": 1, "tooltip": BBOX_EXPANSION_TOOLTIP}),
-                        "mask_hint_threshold": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": MASK_HINT_THRESHOLD_TOOLTIP}),
-                        "mask_hint_use_negative": (["False", "Small", "Outter"], {"tooltip": MASK_HINT_USE_NEGATIVE_TOOLTIP})
-                      }
-                }
+    def execute(cls, sam_model, segs, image, detection_hint, dilation,
+                threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+        return io.NodeOutput(core.make_sam_mask(sam_model, segs, image, detection_hint, dilation,
+                                                threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative))
 
-    RETURN_TYPES = ("MASK", "MASK")
-    RETURN_NAMES = ("combined_mask", "batch_masks")
-    FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Detector"
+class SAMDetectorSegmented(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SAMDetectorSegmented",
+            display_name="SAMDetector (segmented)",
+            category="ImpactPack/Detector",
+            inputs=[
+                io.Custom("SAM_MODEL").Input("sam_model", tooltip=SAM_MODEL_TOOLTIP["tooltip"]),
+                io.Custom("SEGS").Input("segs", tooltip="This is the segment information detected by the detector.\nFor the SEGS region, the masks detected by SAM (Segment Anything) are created as a unified mask and a batch of individual masks."),
+                io.Image.Input("image", tooltip="It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."),
+                io.Combo.Input("detection_hint", options=["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "mask-area", "mask-points", "mask-point-bbox", "none"], tooltip=DETECTION_HINT_TOOLTIP["tooltip"]),
+                io.Int.Input("dilation", default=0, min=-512, max=512, step=1, tooltip=DILATION_TOOLTIP),
+                io.Float.Input("threshold", default=0.93, min=0.0, max=1.0, step=0.01),
+                io.Int.Input("bbox_expansion", default=0, min=0, max=1000, step=1, tooltip=BBOX_EXPANSION_TOOLTIP),
+                io.Float.Input("mask_hint_threshold", default=0.7, min=0.0, max=1.0, step=0.01, tooltip=MASK_HINT_THRESHOLD_TOOLTIP),
+                io.Combo.Input("mask_hint_use_negative", options=["False", "Small", "Outter"], tooltip=MASK_HINT_USE_NEGATIVE_TOOLTIP),
+            ],
+            outputs=[io.Mask.Output(display_name="combined_mask"), io.Mask.Output(display_name="batch_masks")],
+        )
 
-    def doit(self, sam_model, segs, image, detection_hint, dilation,
-             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
+    @classmethod
+    def execute(cls, sam_model, segs, image, detection_hint, dilation,
+                threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
         combined_mask, batch_masks = core.make_sam_mask_segmented(sam_model, segs, image, detection_hint, dilation,
                                                                   threshold, bbox_expansion, mask_hint_threshold,
                                                                   mask_hint_use_negative)
-        return (combined_mask, batch_masks, )
+        return io.NodeOutput(combined_mask, batch_masks)
 
 
 class BboxDetectorForEach:

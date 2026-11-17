@@ -1,0 +1,2259 @@
+{
+ "AddMask": {
+  "input": {
+   "required": {
+    "mask1": [
+     "MASK"
+    ],
+    "mask2": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask1",
+    "mask2"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "AddMask",
+  "display_name": "Pixelwise(MASK + MASK)",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "BitwiseAndMask": {
+  "input": {
+   "required": {
+    "mask1": [
+     "MASK"
+    ],
+    "mask2": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask1",
+    "mask2"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "BitwiseAndMask",
+  "display_name": "Pixelwise(MASK & MASK)",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "BitwiseAndMaskForEach": {
+  "input": {
+   "required": {
+    "base_segs": [
+     "SEGS"
+    ],
+    "mask_segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "base_segs",
+    "mask_segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "BitwiseAndMaskForEach",
+  "display_name": "Pixelwise(SEGS & SEGS)",
+  "description": "Retains only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "BlackPatchRetryHookProvider": {
+  "input": {
+   "required": {
+    "mean_thresh": [
+     "INT",
+     {
+      "default": 10,
+      "min": 0,
+      "max": 255
+     }
+    ],
+    "var_thresh": [
+     "INT",
+     {
+      "default": 5,
+      "min": 0,
+      "max": 255
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mean_thresh",
+    "var_thresh"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "BlackPatchRetryHookProvider",
+  "display_name": "BlackPatchRetryHookProvider",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "CLIPSegDetectorProvider": {
+  "input": {
+   "required": {
+    "text": [
+     "STRING",
+     {
+      "multiline": false,
+      "tooltip": "Enter the targets to be detected, separated by commas"
+     }
+    ],
+    "blur": [
+     "FLOAT",
+     {
+      "min": 0,
+      "max": 15,
+      "step": 0.1,
+      "default": 7,
+      "tooltip": "Blurs the detected mask"
+     }
+    ],
+    "threshold": [
+     "FLOAT",
+     {
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "default": 0.4,
+      "tooltip": "Detects only areas that are certain above the threshold."
+     }
+    ],
+    "dilation_factor": [
+     "INT",
+     {
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "tooltip": "Dilates the detected mask."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "text",
+    "blur",
+    "threshold",
+    "dilation_factor"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BBOX_DETECTOR"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "BBOX_DETECTOR"
+  ],
+  "name": "CLIPSegDetectorProvider",
+  "display_name": "CLIPSegDetectorProvider",
+  "description": "Provides a detection function using CLIPSeg, which generates masks based on text prompts.\nTo use this node, the CLIPSeg custom node must be installed.",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "CfgScheduleHookProvider": {
+  "input": {
+   "required": {
+    "schedule_for_iteration": [
+     [
+      "simple"
+     ]
+    ],
+    "target_cfg": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 0.0,
+      "max": 100.0
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "schedule_for_iteration",
+    "target_cfg"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "PK_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "PK_HOOK"
+  ],
+  "name": "CfgScheduleHookProvider",
+  "display_name": "CfgScheduleHookProvider",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "CoreMLDetailerHookProvider": {
+  "input": {
+   "required": {
+    "mode": [
+     [
+      "512x512",
+      "768x768",
+      "512x768",
+      "768x512"
+     ]
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mode"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "CoreMLDetailerHookProvider",
+  "display_name": "CoreMLDetailerHookProvider",
+  "description": "",
+  "category": "ImpactPack/Detailer",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "CustomSamplerDetailerHookProvider": {
+  "input": {
+   "required": {
+    "sampler": [
+     "SAMPLER"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "sampler"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "CustomSamplerDetailerHookProvider",
+  "display_name": "CustomSamplerDetailerHookProvider",
+  "description": "Apply a hook that allows you to use a custom sampler in the Detailer nodes. When using `DetailerHookCombine`, the sampler from the first hook is applied.",
+  "category": "ImpactPack/Detailer",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "DenoiseScheduleHookProvider": {
+  "input": {
+   "required": {
+    "schedule_for_iteration": [
+     [
+      "simple"
+     ]
+    ],
+    "target_denoise": [
+     "FLOAT",
+     {
+      "default": 0.2,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "schedule_for_iteration",
+    "target_denoise"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "PK_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "PK_HOOK"
+  ],
+  "name": "DenoiseScheduleHookProvider",
+  "display_name": "DenoiseScheduleHookProvider",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "DenoiseSchedulerDetailerHookProvider": {
+  "input": {
+   "required": {
+    "schedule_for_cycle": [
+     [
+      "simple"
+     ]
+    ],
+    "target_denoise": [
+     "FLOAT",
+     {
+      "default": 0.3,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "schedule_for_cycle",
+    "target_denoise"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "DenoiseSchedulerDetailerHookProvider",
+  "display_name": "DenoiseSchedulerDetailerHookProvider",
+  "description": "",
+  "category": "ImpactPack/Detailer",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "DetailerHookCombine": {
+  "input": {
+   "required": {
+    "hook1": [
+     "DETAILER_HOOK"
+    ],
+    "hook2": [
+     "DETAILER_HOOK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "hook1",
+    "hook2"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "DetailerHookCombine",
+  "display_name": "DetailerHookCombine",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "DetailerPipeToBasicPipe": {
+  "input": {
+   "required": {
+    "detailer_pipe": [
+     "DETAILER_PIPE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "detailer_pipe"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BASIC_PIPE",
+   "BASIC_PIPE"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "base_basic_pipe",
+   "refiner_basic_pipe"
+  ],
+  "name": "DetailerPipeToBasicPipe",
+  "display_name": "DetailerPipe -> BasicPipe",
+  "description": "",
+  "category": "ImpactPack/Pipe",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "EmptySegs": {
+  "input": {
+   "required": {}
+  },
+  "input_order": {
+   "required": []
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "EmptySegs",
+  "display_name": "EmptySegs",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "FromBasicPipe": {
+  "input": {
+   "required": {
+    "basic_pipe": [
+     "BASIC_PIPE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "basic_pipe"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL",
+   "CLIP",
+   "VAE",
+   "CONDITIONING",
+   "CONDITIONING"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "model",
+   "clip",
+   "vae",
+   "positive",
+   "negative"
+  ],
+  "name": "FromBasicPipe",
+  "display_name": "FromBasicPipe",
+  "description": "",
+  "category": "ImpactPack/Pipe",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "FromBasicPipe_v2": {
+  "input": {
+   "required": {
+    "basic_pipe": [
+     "BASIC_PIPE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "basic_pipe"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BASIC_PIPE",
+   "MODEL",
+   "CLIP",
+   "VAE",
+   "CONDITIONING",
+   "CONDITIONING"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "basic_pipe",
+   "model",
+   "clip",
+   "vae",
+   "positive",
+   "negative"
+  ],
+  "name": "FromBasicPipe_v2",
+  "display_name": "FromBasicPipe_v2",
+  "description": "",
+  "category": "ImpactPack/Pipe",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "GITSSchedulerFuncProvider": {
+  "input": {
+   "required": {
+    "coeff": [
+     "FLOAT",
+     {
+      "default": 1.2,
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.05,
+      "tooltip": "coeff factor of GITS Scheduler"
+     }
+    ],
+    "denoise": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "denoise amount for noise schedule"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "coeff",
+    "denoise"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SCHEDULER_FUNC"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SCHEDULER_FUNC"
+  ],
+  "name": "GITSSchedulerFuncProvider",
+  "display_name": "GITSScheduler Func Provider",
+  "description": "",
+  "category": "ImpactPack/sampling",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "Returns a function that generates a noise schedule using GITSScheduler. This can be used in place of a predetermined noise schedule to dynamically generate a noise schedule based on the steps."
+  ],
+  "search_aliases": []
+ },
+ "ImpactBoolean": {
+  "input": {
+   "required": {
+    "value": [
+     "BOOLEAN",
+     {
+      "default": false
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ],
+  "name": "ImpactBoolean",
+  "display_name": "ImpactBoolean",
+  "description": "",
+  "category": "ImpactPack/Logic",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactControlNetClearSEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactControlNetClearSEGS",
+  "display_name": "ImpactControlNetClearSEGS",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactCount_Elts_in_SEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "INT"
+  ],
+  "name": "ImpactCount_Elts_in_SEGS",
+  "display_name": "Count Elts in SEGS",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactDilateMask": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 10,
+      "min": -512,
+      "max": 512,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "dilation"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "ImpactDilateMask",
+  "display_name": "Dilate Mask",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactDilateMaskInSEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 10,
+      "min": -512,
+      "max": 512,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "dilation"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactDilateMaskInSEGS",
+  "display_name": "Dilate Mask (SEGS)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactDilate_Mask_SEG_ELT": {
+  "input": {
+   "required": {
+    "seg_elt": [
+     "SEG_ELT"
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 10,
+      "min": -512,
+      "max": 512,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "seg_elt",
+    "dilation"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEG_ELT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEG_ELT"
+  ],
+  "name": "ImpactDilate_Mask_SEG_ELT",
+  "display_name": "Dilate Mask (SEG_ELT)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactFlattenMask": {
+  "input": {
+   "required": {
+    "masks": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "masks"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "ImpactFlattenMask",
+  "display_name": "Flatten Mask Batch",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactFloat": {
+  "input": {
+   "required": {
+    "value": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": -3.402823466e+38,
+      "max": 3.402823466e+38
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "FLOAT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "FLOAT"
+  ],
+  "name": "ImpactFloat",
+  "display_name": "ImpactFloat",
+  "description": "",
+  "category": "ImpactPack/Logic",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactFrom_SEG_ELT": {
+  "input": {
+   "required": {
+    "seg_elt": [
+     "SEG_ELT"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "seg_elt"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEG_ELT",
+   "IMAGE",
+   "MASK",
+   "SEG_ELT_crop_region",
+   "SEG_ELT_bbox",
+   "SEG_ELT_control_net_wrapper",
+   "FLOAT",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "seg_elt",
+   "cropped_image",
+   "cropped_mask",
+   "crop_region",
+   "bbox",
+   "control_net_wrapper",
+   "confidence",
+   "label"
+  ],
+  "name": "ImpactFrom_SEG_ELT",
+  "display_name": "From SEG_ELT",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactFrom_SEG_ELT_bbox": {
+  "input": {
+   "required": {
+    "bbox": [
+     "SEG_ELT_bbox"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "bbox"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "INT"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "left",
+   "top",
+   "right",
+   "bottom"
+  ],
+  "name": "ImpactFrom_SEG_ELT_bbox",
+  "display_name": "From SEG_ELT bbox",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactFrom_SEG_ELT_crop_region": {
+  "input": {
+   "required": {
+    "crop_region": [
+     "SEG_ELT_crop_region"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "crop_region"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "INT"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "left",
+   "top",
+   "right",
+   "bottom"
+  ],
+  "name": "ImpactFrom_SEG_ELT_crop_region",
+  "display_name": "From SEG_ELT crop_region",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactGaussianBlurMask": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "kernel_size": [
+     "INT",
+     {
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "step": 1
+     }
+    ],
+    "sigma": [
+     "FLOAT",
+     {
+      "default": 10.0,
+      "min": 0.1,
+      "max": 100.0,
+      "step": 0.1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "kernel_size",
+    "sigma"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "ImpactGaussianBlurMask",
+  "display_name": "Gaussian Blur Mask",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactGaussianBlurMaskInSEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "kernel_size": [
+     "INT",
+     {
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "step": 1
+     }
+    ],
+    "sigma": [
+     "FLOAT",
+     {
+      "default": 10.0,
+      "min": 0.1,
+      "max": 100.0,
+      "step": 0.1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "kernel_size",
+    "sigma"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactGaussianBlurMaskInSEGS",
+  "display_name": "Gaussian Blur Mask (SEGS)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactImageInfo": {
+  "input": {
+   "required": {
+    "value": [
+     "IMAGE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "INT"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "batch",
+   "height",
+   "width",
+   "channel"
+  ],
+  "name": "ImpactImageInfo",
+  "display_name": "ImpactImageInfo",
+  "description": "",
+  "category": "ImpactPack/Logic/_for_test",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactIsNotEmptySEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ],
+  "name": "ImpactIsNotEmptySEGS",
+  "display_name": "SEGS isn't Empty",
+  "description": "",
+  "category": "ImpactPack/Logic",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactLatentInfo": {
+  "input": {
+   "required": {
+    "value": [
+     "LATENT"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "INT"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "batch",
+   "height",
+   "width",
+   "channel"
+  ],
+  "name": "ImpactLatentInfo",
+  "display_name": "ImpactLatentInfo",
+  "description": "",
+  "category": "ImpactPack/Logic/_for_test",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactNegativeConditioningPlaceholder": {
+  "input": {
+   "required": {}
+  },
+  "input_order": {
+   "required": []
+  },
+  "is_input_list": false,
+  "output": [
+   "CONDITIONING"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "CONDITIONING"
+  ],
+  "name": "ImpactNegativeConditioningPlaceholder",
+  "display_name": "Negative Cond Placeholder",
+  "description": "",
+  "category": "ImpactPack/sampling",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "This is a Placeholder for the FLUX model that does not use Negative Conditioning."
+  ],
+  "search_aliases": []
+ },
+ "ImpactSEGSToMaskBatch": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "ImpactSEGSToMaskBatch",
+  "display_name": "SEGS to Mask Batch",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSegsAndMaskForEach": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "masks": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "masks"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactSegsAndMaskForEach",
+  "display_name": "Pixelwise(SEGS & MASKS ForEach)",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "LamaRemoverDetailerHookProvider": {
+  "input": {
+   "required": {
+    "mask_threshold": [
+     "INT",
+     {
+      "default": 250,
+      "min": 0,
+      "max": 255,
+      "step": 1,
+      "display": "slider"
+     }
+    ],
+    "gaussblur_radius": [
+     "INT",
+     {
+      "default": 8,
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "display": "slider"
+     }
+    ],
+    "skip_sampling": [
+     "BOOLEAN",
+     {
+      "default": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask_threshold",
+    "gaussblur_radius",
+    "skip_sampling"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "LamaRemoverDetailerHookProvider",
+  "display_name": "LamaRemoverDetailerHookProvider",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "LatentPixelScale": {
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT"
+    ],
+    "scale_method": [
+     [
+      "nearest-exact",
+      "bilinear",
+      "lanczos",
+      "area"
+     ]
+    ],
+    "scale_factor": [
+     "FLOAT",
+     {
+      "default": 1.5,
+      "min": 0.1,
+      "max": 10000,
+      "step": 0.05
+     }
+    ],
+    "vae": [
+     "VAE"
+    ],
+    "use_tiled_vae": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ]
+   },
+   "optional": {
+    "upscale_model_opt": [
+     "UPSCALE_MODEL"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "samples",
+    "scale_method",
+    "scale_factor",
+    "vae",
+    "use_tiled_vae"
+   ],
+   "optional": [
+    "upscale_model_opt"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT",
+   "IMAGE"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "LATENT",
+   "IMAGE"
+  ],
+  "name": "LatentPixelScale",
+  "display_name": "Latent Scale (on Pixel Space)",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "PixelKSampleHookCombine": {
+  "input": {
+   "required": {
+    "hook1": [
+     "PK_HOOK"
+    ],
+    "hook2": [
+     "PK_HOOK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "hook1",
+    "hook2"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "PK_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "PK_HOOK"
+  ],
+  "name": "PixelKSampleHookCombine",
+  "display_name": "PixelKSampleHookCombine",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ReencodeLatentPipe": {
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT"
+    ],
+    "tile_mode": [
+     [
+      "None",
+      "Both",
+      "Decode(input) only",
+      "Encode(output) only"
+     ]
+    ],
+    "input_basic_pipe": [
+     "BASIC_PIPE"
+    ],
+    "output_basic_pipe": [
+     "BASIC_PIPE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "samples",
+    "tile_mode",
+    "input_basic_pipe",
+    "output_basic_pipe"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "LATENT"
+  ],
+  "name": "ReencodeLatentPipe",
+  "display_name": "Reencode Latent (pipe)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "RemoveImageFromSEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "RemoveImageFromSEGS",
+  "display_name": "Remove Image from SEGS",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "RemoveNoiseMask": {
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "samples"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "LATENT"
+  ],
+  "name": "RemoveNoiseMask",
+  "display_name": "Remove Noise Mask",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SAMDetectorCombined": {
+  "input": {
+   "required": {
+    "sam_model": [
+     "SAM_MODEL",
+     {
+      "tooltip": "Segment Anything Model for Silhouette Detection.\nBe sure to use the SAM_MODEL loaded through the SAMLoader (Impact) node as input."
+     }
+    ],
+    "segs": [
+     "SEGS",
+     {
+      "tooltip": "This is the segment information detected by the detector.\nIt refines the Mask through the SAM (Segment Anything) detector for all areas pointed to by SEGS, and combines all Masks to return as a single Mask."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {
+      "tooltip": "It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."
+     }
+    ],
+    "detection_hint": [
+     [
+      "center-1",
+      "horizontal-2",
+      "vertical-2",
+      "rect-4",
+      "diamond-4",
+      "mask-area",
+      "mask-points",
+      "mask-point-bbox",
+      "none"
+     ],
+     {
+      "tooltip": "It is recommended to use only center-1.\nWhen refining the mask of SEGS with the SAM (Segment Anything) model, center-1 uses only the rectangular area of SEGS and a single point at the exact center as hints.\nOther options were added during the experimental stage and do not work well."
+     }
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 0,
+      "min": -512,
+      "max": 512,
+      "step": 1,
+      "tooltip": "Set the value to dilate the result mask. If the value is negative, it erodes the mask."
+     }
+    ],
+    "threshold": [
+     "FLOAT",
+     {
+      "default": 0.93,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "Set the sensitivity threshold for the mask detected by SAM (Segment Anything). A higher value generates a more specific mask with a narrower range. For example, when pointing to a person's area, it might detect clothes, which is a narrower range, instead of the entire person."
+     }
+    ],
+    "bbox_expansion": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 1000,
+      "step": 1,
+      "tooltip": "When performing SAM (Segment Anything) detection within the SEGS area, the rectangular area of SEGS is expanded and used as a hint."
+     }
+    ],
+    "mask_hint_threshold": [
+     "FLOAT",
+     {
+      "default": 0.7,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "When detection_hint is mask-area, the mask of SEGS is used as a point hint for SAM (Segment Anything).\nIn this case, only the areas of the mask with brightness values equal to or greater than mask_hint_threshold are used as hints."
+     }
+    ],
+    "mask_hint_use_negative": [
+     [
+      "False",
+      "Small",
+      "Outter"
+     ],
+     {
+      "tooltip": "When detecting with SAM (Segment Anything), negative hints are applied as follows:\nSmall: When the SEGS is smaller than 10 pixels in size\nOutter: Sampling the image area outside the SEGS region at regular intervals"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "sam_model",
+    "segs",
+    "image",
+    "detection_hint",
+    "dilation",
+    "threshold",
+    "bbox_expansion",
+    "mask_hint_threshold",
+    "mask_hint_use_negative"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "SAMDetectorCombined",
+  "display_name": "SAMDetector (combined)",
+  "description": "",
+  "category": "ImpactPack/Detector",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SAMDetectorSegmented": {
+  "input": {
+   "required": {
+    "sam_model": [
+     "SAM_MODEL",
+     {
+      "tooltip": "Segment Anything Model for Silhouette Detection.\nBe sure to use the SAM_MODEL loaded through the SAMLoader (Impact) node as input."
+     }
+    ],
+    "segs": [
+     "SEGS",
+     {
+      "tooltip": "This is the segment information detected by the detector.\nFor the SEGS region, the masks detected by SAM (Segment Anything) are created as a unified mask and a batch of individual masks."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {
+      "tooltip": "It is assumed that segs contains only the information about the detected areas, and does not include the image. SAM (Segment Anything) operates by referencing this image."
+     }
+    ],
+    "detection_hint": [
+     [
+      "center-1",
+      "horizontal-2",
+      "vertical-2",
+      "rect-4",
+      "diamond-4",
+      "mask-area",
+      "mask-points",
+      "mask-point-bbox",
+      "none"
+     ],
+     {
+      "tooltip": "It is recommended to use only center-1.\nWhen refining the mask of SEGS with the SAM (Segment Anything) model, center-1 uses only the rectangular area of SEGS and a single point at the exact center as hints.\nOther options were added during the experimental stage and do not work well."
+     }
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 0,
+      "min": -512,
+      "max": 512,
+      "step": 1,
+      "tooltip": "Set the value to dilate the result mask. If the value is negative, it erodes the mask."
+     }
+    ],
+    "threshold": [
+     "FLOAT",
+     {
+      "default": 0.93,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ],
+    "bbox_expansion": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 1000,
+      "step": 1,
+      "tooltip": "When performing SAM (Segment Anything) detection within the SEGS area, the rectangular area of SEGS is expanded and used as a hint."
+     }
+    ],
+    "mask_hint_threshold": [
+     "FLOAT",
+     {
+      "default": 0.7,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "When detection_hint is mask-area, the mask of SEGS is used as a point hint for SAM (Segment Anything).\nIn this case, only the areas of the mask with brightness values equal to or greater than mask_hint_threshold are used as hints."
+     }
+    ],
+    "mask_hint_use_negative": [
+     [
+      "False",
+      "Small",
+      "Outter"
+     ],
+     {
+      "tooltip": "When detecting with SAM (Segment Anything), negative hints are applied as follows:\nSmall: When the SEGS is smaller than 10 pixels in size\nOutter: Sampling the image area outside the SEGS region at regular intervals"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "sam_model",
+    "segs",
+    "image",
+    "detection_hint",
+    "dilation",
+    "threshold",
+    "bbox_expansion",
+    "mask_hint_threshold",
+    "mask_hint_use_negative"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK",
+   "MASK"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "combined_mask",
+   "batch_masks"
+  ],
+  "name": "SAMDetectorSegmented",
+  "display_name": "SAMDetector (segmented)",
+  "description": "",
+  "category": "ImpactPack/Detector",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SEGSOrderedFilterDetailerHookProvider": {
+  "input": {
+   "required": {
+    "target": [
+     [
+      "area(=w*h)",
+      "width",
+      "height",
+      "x1",
+      "y1",
+      "x2",
+      "y2"
+     ]
+    ],
+    "order": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "label_on": "descending",
+      "label_off": "ascending"
+     }
+    ],
+    "take_start": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ],
+    "take_count": [
+     "INT",
+     {
+      "default": 1,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "target",
+    "order",
+    "take_start",
+    "take_count"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "SEGSOrderedFilterDetailerHookProvider",
+  "display_name": "SEGSOrderedFilterDetailerHookProvider",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SEGSRangeFilterDetailerHookProvider": {
+  "input": {
+   "required": {
+    "target": [
+     [
+      "area(=w*h)",
+      "width",
+      "height",
+      "x1",
+      "y1",
+      "x2",
+      "y2",
+      "length_percent"
+     ]
+    ],
+    "mode": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "label_on": "inside",
+      "label_off": "outside"
+     }
+    ],
+    "min_value": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ],
+    "max_value": [
+     "INT",
+     {
+      "default": 67108864,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "target",
+    "mode",
+    "min_value",
+    "max_value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "DETAILER_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "DETAILER_HOOK"
+  ],
+  "name": "SEGSRangeFilterDetailerHookProvider",
+  "display_name": "SEGSRangeFilterDetailerHookProvider",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SegsToCombinedMask": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "SegsToCombinedMask",
+  "display_name": "SEGS to MASK (combined)",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "StepsScheduleHookProvider": {
+  "input": {
+   "required": {
+    "schedule_for_iteration": [
+     [
+      "simple"
+     ]
+    ],
+    "target_steps": [
+     "INT",
+     {
+      "default": 20,
+      "min": 1,
+      "max": 10000
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "schedule_for_iteration",
+    "target_steps"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "PK_HOOK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "PK_HOOK"
+  ],
+  "name": "StepsScheduleHookProvider",
+  "display_name": "StepsScheduleHookProvider",
+  "description": "",
+  "category": "ImpactPack/Upscale",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SubtractMask": {
+  "input": {
+   "required": {
+    "mask1": [
+     "MASK"
+    ],
+    "mask2": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask1",
+    "mask2"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "SubtractMask",
+  "display_name": "Pixelwise(MASK - MASK)",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SubtractMaskForEach": {
+  "input": {
+   "required": {
+    "base_segs": [
+     "SEGS"
+    ],
+    "mask_segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "base_segs",
+    "mask_segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "SubtractMaskForEach",
+  "display_name": "Pixelwise(SEGS - SEGS)",
+  "description": "Removes only the overlapping areas between the masks included in base_segs and the mask regions of mask_segs.",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ToBasicPipe": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL"
+    ],
+    "clip": [
+     "CLIP"
+    ],
+    "vae": [
+     "VAE"
+    ],
+    "positive": [
+     "CONDITIONING"
+    ],
+    "negative": [
+     "CONDITIONING"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "clip",
+    "vae",
+    "positive",
+    "negative"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BASIC_PIPE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "basic_pipe"
+  ],
+  "name": "ToBasicPipe",
+  "display_name": "ToBasicPipe",
+  "description": "",
+  "category": "ImpactPack/Pipe",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ToBinaryMask": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "threshold": [
+     "INT",
+     {
+      "default": 20,
+      "min": 1,
+      "max": 255
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "threshold"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "ToBinaryMask",
+  "display_name": "ToBinaryMask",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ }
+}

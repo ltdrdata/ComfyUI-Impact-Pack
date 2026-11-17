@@ -1,6 +1,7 @@
 import sys
 from comfy_api.latest import io
 from . import hooks
+from .node_base import ImpactNode
 from . import defs
 
 
@@ -42,46 +43,48 @@ class DetailerAdvancedOptionsHook(io.ComfyNode):
         return io.NodeOutput(hooks.AdvancedOptionsDetailerHook(options))
 
 
-class SEGSOrderedFilterDetailerHookProvider:
+class SEGSOrderedFilterDetailerHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"],),
-                        "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
-                        "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
-                        "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SEGSOrderedFilterDetailerHookProvider",
+            display_name="SEGSOrderedFilterDetailerHookProvider",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Combo.Input("target", options=["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2"]),
+                io.Boolean.Input("order", default=True, label_on="descending", label_off="ascending"),
+                io.Int.Input("take_start", default=0, min=0, max=sys.maxsize, step=1),
+                io.Int.Input("take_count", default=1, min=0, max=sys.maxsize, step=1),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, target, order, take_start, take_count):
+    @classmethod
+    def execute(cls, target, order, take_start, take_count):
         hook = hooks.SEGSOrderedFilterDetailerHook(target, order, take_start, take_count)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class SEGSRangeFilterDetailerHookProvider:
+class SEGSRangeFilterDetailerHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent"],),
-                        "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
-                        "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
-                        "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SEGSRangeFilterDetailerHookProvider",
+            display_name="SEGSRangeFilterDetailerHookProvider",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Combo.Input("target", options=["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent"]),
+                io.Boolean.Input("mode", default=True, label_on="inside", label_off="outside"),
+                io.Int.Input("min_value", default=0, min=0, max=sys.maxsize, step=1),
+                io.Int.Input("max_value", default=67108864, min=0, max=sys.maxsize, step=1),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, target, mode, min_value, max_value):
+    @classmethod
+    def execute(cls, target, mode, min_value, max_value):
         hook = hooks.SEGSRangeFilterDetailerHook(target, mode, min_value, max_value)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
 class SEGSLabelFilterDetailerHookProvider:
@@ -123,44 +126,43 @@ class PreviewDetailerHookProvider:
         return hook, hook
 
 
-class LamaRemoverDetailerHookProvider:
+class LamaRemoverDetailerHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "mask_threshold":("INT", {"default": 250, "min": 0, "max": 255, "step": 1, "display": "slider"}),
-                "gaussblur_radius": ("INT", {"default": 8, "min": 0, "max": 20, "step": 1, "display": "slider"}),
-                "skip_sampling": ("BOOLEAN", {"default": True}),
-            }
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="LamaRemoverDetailerHookProvider",
+            display_name="LamaRemoverDetailerHookProvider",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Int.Input("mask_threshold", default=250, min=0, max=255, step=1, display_mode=io.NumberDisplay.slider),
+                io.Int.Input("gaussblur_radius", default=8, min=0, max=20, step=1, display_mode=io.NumberDisplay.slider),
+                io.Boolean.Input("skip_sampling", default=True),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, mask_threshold, gaussblur_radius, skip_sampling):
+    @classmethod
+    def execute(cls, mask_threshold, gaussblur_radius, skip_sampling):
         hook = hooks.LamaRemoverDetailerHook(mask_threshold, gaussblur_radius, skip_sampling)
-        return (hook, )
+        return io.NodeOutput(hook)
 
 
-class BlackPatchRetryHookProvider:
+class BlackPatchRetryHookProvider(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "mean_thresh": ("INT", {"default": 10, "min": 0, "max": 255}),
-                "var_thresh": ("INT", {"default": 5, "min": 0, "max": 255})
-            },
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="BlackPatchRetryHookProvider",
+            display_name="BlackPatchRetryHookProvider",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Int.Input("mean_thresh", default=10, min=0, max=255),
+                io.Int.Input("var_thresh", default=5, min=0, max=255),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+            not_idempotent=True,
+        )
 
-    RETURN_TYPES = ("DETAILER_HOOK", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    NOT_IDEMPOTENT = True
-
-    def doit(self, mean_thresh, var_thresh):
+    @classmethod
+    def execute(cls, mean_thresh, var_thresh):
         hook = hooks.BlackPatchRetryHook(mean_thresh, var_thresh)
-        return hook, 
+        return io.NodeOutput(hook)

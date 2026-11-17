@@ -1,5 +1,7 @@
 import folder_paths
 from impact.utils import any_typ
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 
 
 class ToDetailerPipe:
@@ -126,59 +128,78 @@ class AnyPipeToBasic:
         return (any_pipe[:5], )
 
 
-class ToBasicPipe:
+class ToBasicPipe(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "model": ("MODEL",),
-                     "clip": ("CLIP",),
-                     "vae": ("VAE",),
-                     "positive": ("CONDITIONING",),
-                     "negative": ("CONDITIONING",),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ToBasicPipe",
+            display_name="ToBasicPipe",
+            category="ImpactPack/Pipe",
+            inputs=[
+                io.Model.Input("model"),
+                io.Clip.Input("clip"),
+                io.Vae.Input("vae"),
+                io.Conditioning.Input("positive"),
+                io.Conditioning.Input("negative"),
+            ],
+            outputs=[io.Custom("BASIC_PIPE").Output(display_name="basic_pipe")],
+        )
 
-    RETURN_TYPES = ("BASIC_PIPE", )
-    RETURN_NAMES = ("basic_pipe", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Pipe"
-
-    def doit(self, model, clip, vae, positive, negative):
+    @classmethod
+    def execute(cls, model, clip, vae, positive, negative):
         pipe = (model, clip, vae, positive, negative)
-        return (pipe, )
+        return io.NodeOutput(pipe)
 
 
-class FromBasicPipe:
+class FromBasicPipe(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"basic_pipe": ("BASIC_PIPE",), }, }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="FromBasicPipe",
+            display_name="FromBasicPipe",
+            category="ImpactPack/Pipe",
+            inputs=[
+                io.Custom("BASIC_PIPE").Input("basic_pipe"),
+            ],
+            outputs=[
+                io.Model.Output(display_name="model"),
+                io.Clip.Output(display_name="clip"),
+                io.Vae.Output(display_name="vae"),
+                io.Conditioning.Output(display_name="positive"),
+                io.Conditioning.Output(display_name="negative"),
+            ],
+        )
 
-    RETURN_TYPES = ("MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING")
-    RETURN_NAMES = ("model", "clip", "vae", "positive", "negative")
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Pipe"
-
-    def doit(self, basic_pipe):
-        model, clip, vae, positive, negative = basic_pipe
-        return model, clip, vae, positive, negative
-
-
-class FromBasicPipe_v2:
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"basic_pipe": ("BASIC_PIPE",), }, }
-
-    RETURN_TYPES = ("BASIC_PIPE", "MODEL", "CLIP", "VAE", "CONDITIONING", "CONDITIONING")
-    RETURN_NAMES = ("basic_pipe", "model", "clip", "vae", "positive", "negative")
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Pipe"
-
-    def doit(self, basic_pipe):
+    def execute(cls, basic_pipe):
         model, clip, vae, positive, negative = basic_pipe
-        return basic_pipe, model, clip, vae, positive, negative
+        return io.NodeOutput(model, clip, vae, positive, negative)
+
+
+class FromBasicPipe_v2(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="FromBasicPipe_v2",
+            display_name="FromBasicPipe_v2",
+            category="ImpactPack/Pipe",
+            inputs=[
+                io.Custom("BASIC_PIPE").Input("basic_pipe"),
+            ],
+            outputs=[
+                io.Custom("BASIC_PIPE").Output(display_name="basic_pipe"),
+                io.Model.Output(display_name="model"),
+                io.Clip.Output(display_name="clip"),
+                io.Vae.Output(display_name="vae"),
+                io.Conditioning.Output(display_name="positive"),
+                io.Conditioning.Output(display_name="negative"),
+            ],
+        )
+
+    @classmethod
+    def execute(cls, basic_pipe):
+        model, clip, vae, positive, negative = basic_pipe
+        return io.NodeOutput(basic_pipe, model, clip, vae, positive, negative)
 
 
 class BasicPipeToDetailerPipe:
@@ -254,22 +275,28 @@ class BasicPipeToDetailerPipeSDXL:
         return (pipe, )
 
 
-class DetailerPipeToBasicPipe:
+class DetailerPipeToBasicPipe(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"detailer_pipe": ("DETAILER_PIPE",), }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="DetailerPipeToBasicPipe",
+            display_name="DetailerPipe -> BasicPipe",
+            category="ImpactPack/Pipe",
+            inputs=[
+                io.Custom("DETAILER_PIPE").Input("detailer_pipe"),
+            ],
+            outputs=[
+                io.Custom("BASIC_PIPE").Output(display_name="base_basic_pipe"),
+                io.Custom("BASIC_PIPE").Output(display_name="refiner_basic_pipe"),
+            ],
+        )
 
-    RETURN_TYPES = ("BASIC_PIPE", "BASIC_PIPE")
-    RETURN_NAMES = ("base_basic_pipe", "refiner_basic_pipe")
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Pipe"
-
-    def doit(self, detailer_pipe):
+    @classmethod
+    def execute(cls, detailer_pipe):
         model, clip, vae, positive, negative, _, _, _, _, _, refiner_model, refiner_clip, refiner_positive, refiner_negative = detailer_pipe
         pipe = model, clip, vae, positive, negative
         refiner_pipe = refiner_model, refiner_clip, vae, refiner_positive, refiner_negative
-        return (pipe, refiner_pipe)
+        return io.NodeOutput(pipe, refiner_pipe)
 
 
 class EditBasicPipe:

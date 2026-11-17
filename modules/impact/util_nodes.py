@@ -1,4 +1,6 @@
 from impact.utils import any_typ, ByPassTypeTuple, make_3d_mask
+from impact.node_base import ImpactNode
+from comfy_api.latest import io
 import comfy_extras.nodes_mask
 from nodes import MAX_RESOLUTION
 import torch
@@ -196,19 +198,23 @@ class GeneralInversedSwitch:
         return res
 
 
-class RemoveNoiseMask:
+class RemoveNoiseMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"samples": ("LATENT",)}}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="RemoveNoiseMask",
+            display_name="Remove Noise Mask",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Latent.Input("samples"),
+            ],
+            outputs=[io.Latent.Output()],
+        )
 
-    RETURN_TYPES = ("LATENT",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, samples):
+    @classmethod
+    def execute(cls, samples):
         res = {key: value for key, value in samples.items() if key != 'noise_mask'}
-        return (res, )
+        return io.NodeOutput(res)
 
 
 class ImagePasteMasked:
@@ -611,26 +617,27 @@ class ReencodeLatent:
             return nodes.VAEEncode().encode(output_vae, pixels)
 
 
-class ReencodeLatentPipe:
+class ReencodeLatentPipe(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "samples": ("LATENT", ),
-                        "tile_mode": (["None", "Both", "Decode(input) only", "Encode(output) only"],),
-                        "input_basic_pipe": ("BASIC_PIPE", ),
-                        "output_basic_pipe": ("BASIC_PIPE", ),
-                    },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ReencodeLatentPipe",
+            display_name="Reencode Latent (pipe)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Latent.Input("samples"),
+                io.Combo.Input("tile_mode", options=["None", "Both", "Decode(input) only", "Encode(output) only"]),
+                io.Custom("BASIC_PIPE").Input("input_basic_pipe"),
+                io.Custom("BASIC_PIPE").Input("output_basic_pipe"),
+            ],
+            outputs=[io.Latent.Output()],
+        )
 
-    CATEGORY = "ImpactPack/Util"
-
-    RETURN_TYPES = ("LATENT", )
-    FUNCTION = "doit"
-
-    def doit(self, samples, tile_mode, input_basic_pipe, output_basic_pipe):
+    @classmethod
+    def execute(cls, samples, tile_mode, input_basic_pipe, output_basic_pipe):
         _, _, input_vae, _, _ = input_basic_pipe
         _, _, output_vae, _, _ = output_basic_pipe
-        return ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae)
+        return io.NodeOutput(*ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae))
 
 
 class StringSelector:

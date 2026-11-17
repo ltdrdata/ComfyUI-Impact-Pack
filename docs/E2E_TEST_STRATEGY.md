@@ -390,6 +390,31 @@ the native UI, and reloads in both restoration modes with identical widget
 names/order/values. This covers a saved alias absent from the current dropdown
 options; the catalog fixtures are unchanged.
 
+Nodes rewritten on the V3 schema are compared with what `/object_info` returned
+for them as V1 nodes, recorded in `tests/v1_node_info.json`: node ID, input
+names, order, types and options, outputs, display name and category. They must
+also still answer the V1 call `Node().doit(...)` that other node packs use:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_v3_nodes.py tests/test_v3_node_runs.py -v
+```
+
+`tests/test_v3_node_runs.py` runs each rewritten node on the inputs of
+`tests/v1_node_run_cases.py`, through ComfyUI's executor and by
+`Node().doit(...)`, and compares a summary of what it returns with
+`tests/v1_node_runs.json`, the summaries of the V1 nodes.
+
+Before rewriting a node, add its record from a server that still runs the V1
+node, add its cases to `tests/v1_node_run_cases.py`, and record them on the
+checkout that still has the V1 node:
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI PYTHONPATH=/path/to/ComfyUI:modules python tests/v1_node_run_cases.py
+```
+
+It records the cases that have no record and refuses a node that is rewritten
+already. Never regenerate a record from the rewritten node.
+
 ## Server setup
 
 Use an isolated checkout/copy and a separate ComfyUI user/output directory.
