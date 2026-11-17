@@ -181,29 +181,29 @@ class ImpactIfNone:
             return (signal, True, )
 
 
-class ImpactLogicalOperators:
+class ImpactLogicalOperators(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "operator": (['and', 'or', 'xor'],),
-                "bool_a": ("BOOLEAN", {"forceInput": True}),
-                "bool_b": ("BOOLEAN", {"forceInput": True}),
-            },
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactLogicalOperators",
+            display_name="ImpactLogicalOperators",
+            category="ImpactPack/Logic",
+            inputs=[
+                io.Combo.Input("operator", options=["and", "or", "xor"]),
+                io.Boolean.Input("bool_a", force_input=True),
+                io.Boolean.Input("bool_b", force_input=True),
+            ],
+            outputs=[io.Boolean.Output()],
+        )
 
-    FUNCTION = "doit"
-    CATEGORY = "ImpactPack/Logic"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, operator, bool_a, bool_b):
+    @classmethod
+    def execute(cls, operator, bool_a, bool_b):
         if operator == "and":
-            return (bool_a and bool_b, )
+            return io.NodeOutput(bool_a and bool_b)
         elif operator == "or":
-            return (bool_a or bool_b, )
+            return io.NodeOutput(bool_a or bool_b)
         else:
-            return (bool_a != bool_b, )
+            return io.NodeOutput(bool_a != bool_b)
 
 
 class ImpactConditionalStopIteration:
@@ -227,20 +227,22 @@ class ImpactConditionalStopIteration:
         return {}
 
 
-class ImpactNeg:
+class ImpactNeg(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": { "value": ("BOOLEAN", {"forceInput": True}), },
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactNeg",
+            display_name="ImpactNeg",
+            category="ImpactPack/Logic",
+            inputs=[
+                io.Boolean.Input("value", force_input=True),
+            ],
+            outputs=[io.Boolean.Output()],
+        )
 
-    FUNCTION = "doit"
-    CATEGORY = "ImpactPack/Logic"
-
-    RETURN_TYPES = ("BOOLEAN", )
-
-    def doit(self, value):
-        return (not value, )
+    @classmethod
+    def execute(cls, value):
+        return io.NodeOutput(not value)
 
 
 class ImpactInt:

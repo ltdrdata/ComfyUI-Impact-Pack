@@ -1,7 +1,7 @@
 """Nodes rewritten on the V3 schema return what they returned as V1 nodes.
 
 `v1_node_runs.json` holds a summary of what each of them returned for the inputs of `v1_node_run_cases.py` while it was
-a V1 node (release 8.31), through ComfyUI's executor and by `Node().doit(...)`. Run with IMPACT_COMFY_ROOT set.
+a V1 node, through ComfyUI's executor and by `Node().doit(...)`. Run with IMPACT_COMFY_ROOT set.
 """
 import json
 import os

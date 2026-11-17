@@ -1986,22 +1986,23 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
         return enhanced_img, new_segs, basic_pipe, cropped, cropped_enhanced, cropped_enhanced_alpha, cnet_pil_list
 
 
-class SegsBitwiseAndMask:
+class SegsBitwiseAndMask(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs": ("SEGS",),
-                        "mask": ("MASK",),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSegsAndMask",
+            display_name="Pixelwise(SEGS & MASK)",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Mask.Input("mask"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, segs, mask):
-        return (core.segs_bitwise_and_mask(segs, mask), )
+    @classmethod
+    def execute(cls, segs, mask):
+        return io.NodeOutput(core.segs_bitwise_and_mask(segs, mask))
 
 
 class SegsBitwiseAndMaskForEach(ImpactNode):

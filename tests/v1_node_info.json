@@ -481,6 +481,61 @@
   "has_intermediate_output": false,
   "search_aliases": []
  },
+ "EditBasicPipe": {
+  "input": {
+   "required": {
+    "basic_pipe": [
+     "BASIC_PIPE"
+    ]
+   },
+   "optional": {
+    "model": [
+     "MODEL"
+    ],
+    "clip": [
+     "CLIP"
+    ],
+    "vae": [
+     "VAE"
+    ],
+    "positive": [
+     "CONDITIONING"
+    ],
+    "negative": [
+     "CONDITIONING"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "basic_pipe"
+   ],
+   "optional": [
+    "model",
+    "clip",
+    "vae",
+    "positive",
+    "negative"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BASIC_PIPE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "basic_pipe"
+  ],
+  "name": "EditBasicPipe",
+  "display_name": "Edit BasicPipe",
+  "description": "",
+  "category": "ImpactPack/Pipe",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
  "EmptySegs": {
   "input": {
    "required": {}
@@ -1278,6 +1333,191 @@
   "has_intermediate_output": false,
   "search_aliases": []
  },
+ "ImpactLogicalOperators": {
+  "input": {
+   "required": {
+    "operator": [
+     [
+      "and",
+      "or",
+      "xor"
+     ]
+    ],
+    "bool_a": [
+     "BOOLEAN",
+     {
+      "forceInput": true
+     }
+    ],
+    "bool_b": [
+     "BOOLEAN",
+     {
+      "forceInput": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "operator",
+    "bool_a",
+    "bool_b"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ],
+  "name": "ImpactLogicalOperators",
+  "display_name": "ImpactLogicalOperators",
+  "description": "",
+  "category": "ImpactPack/Logic",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactMakeTileSEGS": {
+  "input": {
+   "required": {
+    "images": [
+     "IMAGE"
+    ],
+    "bbox_size": [
+     "INT",
+     {
+      "default": 512,
+      "min": 64,
+      "max": 4096,
+      "step": 8
+     }
+    ],
+    "crop_factor": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 1.0,
+      "max": 10,
+      "step": 0.01
+     }
+    ],
+    "min_overlap": [
+     "INT",
+     {
+      "default": 5,
+      "min": 0,
+      "max": 512,
+      "step": 1
+     }
+    ],
+    "filter_segs_dilation": [
+     "INT",
+     {
+      "default": 20,
+      "min": -255,
+      "max": 255,
+      "step": 1
+     }
+    ],
+    "mask_irregularity": [
+     "FLOAT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ],
+    "irregular_mask_mode": [
+     [
+      "Reuse fast",
+      "Reuse quality",
+      "All random fast",
+      "All random quality"
+     ]
+    ]
+   },
+   "optional": {
+    "filter_in_segs_opt": [
+     "SEGS"
+    ],
+    "filter_out_segs_opt": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "images",
+    "bbox_size",
+    "crop_factor",
+    "min_overlap",
+    "filter_segs_dilation",
+    "mask_irregularity",
+    "irregular_mask_mode"
+   ],
+   "optional": [
+    "filter_in_segs_opt",
+    "filter_out_segs_opt"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactMakeTileSEGS",
+  "display_name": "Make Tile SEGS",
+  "description": "",
+  "category": "ImpactPack/__for_testing",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactNeg": {
+  "input": {
+   "required": {
+    "value": [
+     "BOOLEAN",
+     {
+      "forceInput": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ],
+  "name": "ImpactNeg",
+  "display_name": "ImpactNeg",
+  "description": "",
+  "category": "ImpactPack/Logic",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
  "ImpactNegativeConditioningPlaceholder": {
   "input": {
    "required": {}
@@ -1304,6 +1544,316 @@
   "output_tooltips": [
    "This is a Placeholder for the FLUX model that does not use Negative Conditioning."
   ],
+  "search_aliases": []
+ },
+ "ImpactSEGSIntersectionFilter": {
+  "input": {
+   "required": {
+    "segs1": [
+     "SEGS"
+    ],
+    "segs2": [
+     "SEGS"
+    ],
+    "ioa_threshold": [
+     "FLOAT",
+     {
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs1",
+    "segs2",
+    "ioa_threshold"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "filtered_SEGS"
+  ],
+  "name": "ImpactSEGSIntersectionFilter",
+  "display_name": "SEGS Filter (intersection)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSEGSLabelAssign": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "labels": [
+     "STRING",
+     {
+      "multiline": true,
+      "placeholder": "List the label to be assigned in order of segs, separated by commas"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "labels"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactSEGSLabelAssign",
+  "display_name": "SEGS Assign (label)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSEGSMerge": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactSEGSMerge",
+  "display_name": "SEGS Merge",
+  "description": "SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed.",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSEGSNMSFilter": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "iou_threshold": [
+     "FLOAT",
+     {
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "iou_threshold"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "filtered_SEGS"
+  ],
+  "name": "ImpactSEGSNMSFilter",
+  "display_name": "SEGS Filter (non max suppression)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSEGSOrderedFilter": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "target": [
+     [
+      "area(=w*h)",
+      "width",
+      "height",
+      "x1",
+      "y1",
+      "x2",
+      "y2",
+      "confidence",
+      "none"
+     ]
+    ],
+    "order": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "label_on": "descending",
+      "label_off": "ascending"
+     }
+    ],
+    "take_start": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ],
+    "take_count": [
+     "INT",
+     {
+      "default": 1,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "target",
+    "order",
+    "take_start",
+    "take_count"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS",
+   "SEGS"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "filtered_SEGS",
+   "remained_SEGS"
+  ],
+  "name": "ImpactSEGSOrderedFilter",
+  "display_name": "SEGS Filter (ordered)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSEGSRangeFilter": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "target": [
+     [
+      "area(=w*h)",
+      "width",
+      "height",
+      "x1",
+      "y1",
+      "x2",
+      "y2",
+      "length_percent",
+      "confidence(0-100)"
+     ]
+    ],
+    "mode": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "label_on": "inside",
+      "label_off": "outside"
+     }
+    ],
+    "min_value": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ],
+    "max_value": [
+     "INT",
+     {
+      "default": 67108864,
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "target",
+    "mode",
+    "min_value",
+    "max_value"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS",
+   "SEGS"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "filtered_SEGS",
+   "remained_SEGS"
+  ],
+  "name": "ImpactSEGSRangeFilter",
+  "display_name": "SEGS Filter (range)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
   "search_aliases": []
  },
  "ImpactSEGSToMaskBatch": {
@@ -1333,6 +1883,82 @@
   "display_name": "SEGS to Mask Batch",
   "description": "",
   "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactScaleBy_BBOX_SEG_ELT": {
+  "input": {
+   "required": {
+    "seg": [
+     "SEG_ELT"
+    ],
+    "scale_by": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.01,
+      "max": 8.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "seg",
+    "scale_by"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEG_ELT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEG_ELT"
+  ],
+  "name": "ImpactScaleBy_BBOX_SEG_ELT",
+  "display_name": "ScaleBy BBOX (SEG_ELT)",
+  "description": "",
+  "category": "ImpactPack/Util",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactSegsAndMask": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "mask": [
+     "MASK"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "mask"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "ImpactSegsAndMask",
+  "display_name": "Pixelwise(SEGS & MASK)",
+  "description": "",
+  "category": "ImpactPack/Operation",
   "output_node": false,
   "has_intermediate_output": false,
   "search_aliases": []
@@ -1368,6 +1994,59 @@
   "display_name": "Pixelwise(SEGS & MASKS ForEach)",
   "description": "",
   "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "ImpactStringSelector": {
+  "input": {
+   "required": {
+    "strings": [
+     "STRING",
+     {
+      "multiline": true
+     }
+    ],
+    "multiline": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ],
+    "select": [
+     "INT",
+     {
+      "min": 0,
+      "max": 9223372036854775807,
+      "step": 1,
+      "default": 0
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "strings",
+    "multiline",
+    "select"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "STRING"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "STRING"
+  ],
+  "name": "ImpactStringSelector",
+  "display_name": "String Selector",
+  "description": "",
+  "category": "ImpactPack/Util",
   "output_node": false,
   "has_intermediate_output": false,
   "search_aliases": []
@@ -1502,6 +2181,314 @@
   "has_intermediate_output": false,
   "search_aliases": []
  },
+ "MaskToSEGS": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "combined": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "True",
+      "label_off": "False"
+     }
+    ],
+    "crop_factor": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 1.0,
+      "max": 100,
+      "step": 0.1
+     }
+    ],
+    "bbox_fill": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ],
+    "drop_size": [
+     "INT",
+     {
+      "min": 1,
+      "max": 16384,
+      "step": 1,
+      "default": 10
+     }
+    ],
+    "contour_fill": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "combined",
+    "crop_factor",
+    "bbox_fill",
+    "drop_size",
+    "contour_fill"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "MaskToSEGS",
+  "display_name": "MASK to SEGS",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "MaskToSEGS_for_AnimateDiff": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "combined": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "True",
+      "label_off": "False"
+     }
+    ],
+    "crop_factor": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 1.0,
+      "max": 100,
+      "step": 0.1
+     }
+    ],
+    "bbox_fill": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ],
+    "drop_size": [
+     "INT",
+     {
+      "min": 1,
+      "max": 16384,
+      "step": 1,
+      "default": 10
+     }
+    ],
+    "contour_fill": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "combined",
+    "crop_factor",
+    "bbox_fill",
+    "drop_size",
+    "contour_fill"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "MaskToSEGS_for_AnimateDiff",
+  "display_name": "MASK to SEGS for Video",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "MediaPipeFaceMeshToSEGS": {
+  "input": {
+   "required": {
+    "image": [
+     "IMAGE"
+    ],
+    "crop_factor": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 1.0,
+      "max": 100,
+      "step": 0.1
+     }
+    ],
+    "bbox_fill": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "enabled",
+      "label_off": "disabled"
+     }
+    ],
+    "crop_min_size": [
+     "INT",
+     {
+      "min": 10,
+      "max": 16384,
+      "step": 1,
+      "default": 50
+     }
+    ],
+    "drop_size": [
+     "INT",
+     {
+      "min": 1,
+      "max": 16384,
+      "step": 1,
+      "default": 1
+     }
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 0,
+      "min": -512,
+      "max": 512,
+      "step": 1
+     }
+    ],
+    "face": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "mouth": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "left_eyebrow": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "left_eye": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "left_pupil": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "right_eyebrow": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "right_eye": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ],
+    "right_pupil": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "label_on": "Enabled",
+      "label_off": "Disabled"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "image",
+    "crop_factor",
+    "bbox_fill",
+    "crop_min_size",
+    "drop_size",
+    "dilation",
+    "face",
+    "mouth",
+    "left_eyebrow",
+    "left_eye",
+    "left_pupil",
+    "right_eyebrow",
+    "right_eye",
+    "right_pupil"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "MediaPipeFaceMeshToSEGS",
+  "display_name": "MediaPipe FaceMesh to SEGS",
+  "description": "",
+  "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
  "PixelKSampleHookCombine": {
   "input": {
    "required": {
@@ -1583,6 +2570,85 @@
   "category": "ImpactPack/Util",
   "output_node": false,
   "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "RegionalPrompt": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK",
+     {
+      "tooltip": "region mask"
+     }
+    ],
+    "advanced_sampler": [
+     "KSAMPLER_ADVANCED",
+     {
+      "tooltip": "sampler for specified region"
+     }
+    ]
+   },
+   "optional": {
+    "variation_seed": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 18446744073709551615,
+      "tooltip": "Sets the extra seed to be used for noise variation."
+     }
+    ],
+    "variation_strength": [
+     "FLOAT",
+     {
+      "default": 0.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "Sets the strength of the noise variation."
+     }
+    ],
+    "variation_method": [
+     [
+      "linear",
+      "slerp"
+     ],
+     {
+      "tooltip": "Sets how the original noise and extra noise are blended together."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "advanced_sampler"
+   ],
+   "optional": [
+    "variation_seed",
+    "variation_strength",
+    "variation_method"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "REGIONAL_PROMPTS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "REGIONAL_PROMPTS"
+  ],
+  "name": "RegionalPrompt",
+  "display_name": "RegionalPrompt",
+  "description": "",
+  "category": "ImpactPack/Regional",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "regional prompts. (Can be used in the RegionalSampler.)"
+  ],
   "search_aliases": []
  },
  "RemoveImageFromSEGS": {
@@ -1957,6 +3023,69 @@
   "has_intermediate_output": false,
   "search_aliases": []
  },
+ "SEGSPaste": {
+  "input": {
+   "required": {
+    "image": [
+     "IMAGE"
+    ],
+    "segs": [
+     "SEGS"
+    ],
+    "feather": [
+     "INT",
+     {
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1
+     }
+    ],
+    "alpha": [
+     "INT",
+     {
+      "default": 255,
+      "min": 0,
+      "max": 255,
+      "step": 1
+     }
+    ]
+   },
+   "optional": {
+    "ref_image_opt": [
+     "IMAGE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "image",
+    "segs",
+    "feather",
+    "alpha"
+   ],
+   "optional": [
+    "ref_image_opt"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "IMAGE"
+  ],
+  "name": "SEGSPaste",
+  "display_name": "SEGSPaste",
+  "description": "This node provides a function to paste the enhanced SEGS, improved through the SEGS detailer, back onto the original image.",
+  "category": "ImpactPack/Detailer",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
  "SEGSRangeFilterDetailerHookProvider": {
   "input": {
    "required": {
@@ -2053,6 +3182,48 @@
   "display_name": "SEGS to MASK (combined)",
   "description": "",
   "category": "ImpactPack/Operation",
+  "output_node": false,
+  "has_intermediate_output": false,
+  "search_aliases": []
+ },
+ "SetDefaultImageForSEGS": {
+  "input": {
+   "required": {
+    "segs": [
+     "SEGS"
+    ],
+    "image": [
+     "IMAGE"
+    ],
+    "override": [
+     "BOOLEAN",
+     {
+      "default": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "segs",
+    "image",
+    "override"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SEGS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SEGS"
+  ],
+  "name": "SetDefaultImageForSEGS",
+  "display_name": "Set Default Image for SEGS",
+  "description": "If the SEGS have not passed through the detailer, they contain only detection area information without an image. This node sets a default image for the SEGS.",
+  "category": "ImpactPack/Util",
   "output_node": false,
   "has_intermediate_output": false,
   "search_aliases": []
