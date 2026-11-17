@@ -698,10 +698,9 @@ class StringListToString:
 
     def doit(self, join_with, string_list):
         # convert \\n to newline character
-        if join_with[0] == "\\n":
-            join_with[0] = "\n"
+        separator = "\n" if join_with[0] == "\\n" else join_with[0]
 
-        joined_text = join_with[0].join(string_list)
+        joined_text = separator.join(string_list)
 
         return (joined_text,)
 

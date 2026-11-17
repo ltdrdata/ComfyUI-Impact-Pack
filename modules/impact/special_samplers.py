@@ -3,7 +3,7 @@ import impact.core as core
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from nodes import MAX_RESOLUTION
 import nodes
-from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper, separated_sample, impact_sample
+from impact.impact_sampling import KSamplerWrapper, KSamplerAdvancedWrapper, separated_sample, impact_sample, composite_masked, scheduler_node_sigmas
 import comfy
 import torch
 import numpy as np
@@ -125,8 +125,9 @@ class TwoSamplersForMask:
     def doit(latent_image, base_sampler, mask_sampler, mask):
         inv_mask = torch.where(mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
 
-        latent_image['noise_mask'] = inv_mask
-        new_latent_image = base_sampler.sample(latent_image)
+        new_latent_image = latent_image.copy()
+        new_latent_image['noise_mask'] = inv_mask
+        new_latent_image = base_sampler.sample(new_latent_image)
 
         new_latent_image['noise_mask'] = mask
         new_latent_image = mask_sampler.sample(new_latent_image)
@@ -278,7 +279,7 @@ class ConcatConditionings:
 
             conditioning_to = out
 
-        return (out, )
+        return (conditioning_to, )
 
 
 class RegionalSampler:
@@ -338,11 +339,6 @@ class RegionalSampler:
 
         samples = samples.copy()
         samples['samples'] = comfy.sample.fix_empty_latent_channels(base_sampler.params[0], samples['samples'])
-
-        if restore_latent:
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-        else:
-            latent_compositor = None
 
         masks = [regional_prompt.mask.numpy() for regional_prompt in regional_prompts]
         masks = [np.ceil(mask).astype(np.int32) for mask in masks]
@@ -420,7 +416,7 @@ class RegionalSampler:
 
                 if restore_latent:
                     del new_latent_image['noise_mask']
-                    base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
+                    base_latent_image = composite_masked(base_latent_image, new_latent_image, region_mask)
                     new_latent_image = base_latent_image
 
                 j += 1
@@ -486,11 +482,6 @@ class RegionalSamplerAdvanced:
         new_latent_image = latent_image.copy()
         new_latent_image['samples'] = comfy.sample.fix_empty_latent_channels(base_sampler.params[0], new_latent_image['samples'])
 
-        if restore_latent:
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-        else:
-            latent_compositor = None
-
         masks = [regional_prompt.mask.numpy() for regional_prompt in regional_prompts]
         masks = [np.ceil(mask).astype(np.int32) for mask in masks]
         combined_mask = torch.from_numpy(np.bitwise_or.reduce(masks))
@@ -543,7 +534,7 @@ class RegionalSamplerAdvanced:
 
                 if restore_latent:
                     del new_latent_image['noise_mask']
-                    base_latent_image = latent_compositor.composite(base_latent_image, new_latent_image, 0, 0, False, region_mask)[0]
+                    base_latent_image = composite_masked(base_latent_image, new_latent_image, region_mask)
                     new_latent_image = base_latent_image
 
                 j += 1
@@ -663,8 +654,7 @@ class GITSSchedulerFuncProvider:
             if 'GITSScheduler' not in nodes.NODE_CLASS_MAPPINGS:
                 raise Exception("[Impact Pack] ComfyUI is an outdated version. Cannot use GITSScheduler.")
 
-            scheduler = nodes.NODE_CLASS_MAPPINGS['GITSScheduler']()
-            return scheduler.get_sigmas(coeff, steps, denoise)[0]
+            return scheduler_node_sigmas('GITSScheduler', coeff, steps, denoise)
 
         return (f, )
 

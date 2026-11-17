@@ -178,6 +178,44 @@ edits an input and checks fresh output. Empty-list scenarios also check that an
 independent output still executes and that connecting an image restores the blocked
 preview. Server setup follows the E2E guide below.
 
+## Calls into ComfyUI's own nodes
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_core_node_calls.py -v
+```
+
+The suite calls the node classes of the ComfyUI under test the way the pack does: every
+scheduler the pack adds (`AYS`, `GITS`, `LTXV`, `OSS`), the scheduler function of
+`GITSSchedulerFuncProvider`, and the masked latent composite, also where the refiner and
+the recovery step of an SDE sampler use it.
+A core node converted to the V3 schema runs in `execute`, and the method it had before
+may be gone. Run it after updating ComfyUI.
+
+## Sampler clones
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_sampler_clone.py -v
+```
+
+A `KSAMPLER_ADVANCED` cloned with other conditionings, as the Inspire Pack's
+`RemoveControlNetFromRegionalPrompts` clones the sampler of each regional prompt, keeps
+its sampler options, sigma factor and scheduler func, and samples with them.
+
+## Values given to a node
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_node_inputs.py -v
+```
+
+A node leaves the values it was given as they were: `TwoSamplersForMask` samples with a
+noise mask of its own on a copy of the latent, and `StringListToString` does not rewrite
+its separator. ComfyUI hands a value, from its cache, to every other node that reads the
+same output, in later prompts too. `FaceDetailer` takes the default prompt it sets on a
+detector off again when the detection fails.
+
+`python -m pytest tests/test_concat_conditionings.py -v`, with the same variable, runs
+`ConcatConditionings` with one conditioning and with more.
+
 ## Chrome UI E2E
 
 `python3 tests/e2e_wildcards.py` creates and connects nodes, edits widgets,

@@ -19,6 +19,16 @@ except Exception:
     raise Exception("[Impact Pack] ComfyUI is an outdated version.")
 
 
+def scheduler_node_sigmas(node_id, *args, **kwargs):
+    scheduler = nodes.NODE_CLASS_MAPPINGS[node_id]()
+    if hasattr(scheduler, 'execute'):
+        # node v3
+        return scheduler.execute(*args, **kwargs)[0]
+    else:
+        # legacy compatibility
+        return scheduler.get_sigmas(*args, **kwargs)[0]
+
+
 def calculate_sigmas(model, sampler, scheduler, steps):
     discard_penultimate_sigma = False
     if sampler in ['dpm_2', 'dpm_2_ancestral', 'uni_pc', 'uni_pc_bh2']:
@@ -26,19 +36,29 @@ def calculate_sigmas(model, sampler, scheduler, steps):
         discard_penultimate_sigma = True
 
     if scheduler.startswith('AYS'):
-        sigmas = nodes.NODE_CLASS_MAPPINGS['AlignYourStepsScheduler']().get_sigmas(scheduler[4:], steps, denoise=1.0)[0]
+        sigmas = scheduler_node_sigmas('AlignYourStepsScheduler', scheduler[4:], steps, denoise=1.0)
     elif scheduler.startswith('GITS[coeff='):
-        sigmas = nodes.NODE_CLASS_MAPPINGS['GITSScheduler']().execute(float(scheduler[11:-1]), steps, denoise=1.0)[0]
+        sigmas = scheduler_node_sigmas('GITSScheduler', float(scheduler[11:-1]), steps, denoise=1.0)
     elif scheduler == 'LTXV[default]':
-        sigmas = nodes.NODE_CLASS_MAPPINGS['LTXVScheduler']().execute(20, 2.05, 0.95, True, 0.1)[0]
+        sigmas = scheduler_node_sigmas('LTXVScheduler', 20, 2.05, 0.95, True, 0.1)
     elif scheduler.startswith('OSS'):
-        sigmas = nodes.NODE_CLASS_MAPPINGS['OptimalStepsScheduler']().execute(scheduler[4:], steps, denoise=1.0)[0]
+        sigmas = scheduler_node_sigmas('OptimalStepsScheduler', scheduler[4:], steps, denoise=1.0)
     else:
         sigmas = samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, steps)
 
     if discard_penultimate_sigma:
         sigmas = torch.cat([sigmas[:-2], sigmas[-1:]])
     return sigmas
+
+
+def composite_masked(destination, source, mask):
+    compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
+    if hasattr(compositor, 'execute'):
+        # node v3
+        return compositor.execute(destination, source, 0, 0, False, mask)[0]
+    else:
+        # legacy compatibility
+        return compositor.composite(destination, source, 0, 0, False, mask)[0]
 
 
 def get_noise_sampler(x, cpu, total_sigmas, **kwargs):
@@ -225,8 +245,7 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
             #                                      scheduler, refiner_positive, refiner_negative, latent_image, end_at_step,
             #                                      end_at_step, "enable")
 
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-            temp_latent = latent_compositor.composite(latent_image, temp_latent, 0, 0, False, latent_image['noise_mask'])[0]
+            temp_latent = composite_masked(latent_image, temp_latent, latent_image['noise_mask'])
 
         # print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
         refined_latent = separated_sample(refiner_model, False, seed, advanced_steps, cfg, sampler_name, scheduler,
@@ -245,8 +264,8 @@ class KSamplerAdvancedWrapper:
         self.scheduler_func = scheduler_func
 
     def clone_with_conditionings(self, positive, negative):
-        model, cfg, sampler_name, scheduler, _, _, _ = self.params
-        return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt)
+        model, cfg, sampler_name, scheduler, _, _, sigma_factor = self.params
+        return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt, sigma_factor, self.scheduler_func)
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0, noise=None):
@@ -286,14 +305,12 @@ class KSamplerAdvancedWrapper:
             if recovery_sampler == "AUTO":
                 recovery_sampler = 'dpm_fast' if sampler_name in ['uni_pc', 'uni_pc_bh2', 'dpmpp_sde', 'dpmpp_sde_gpu'] else 'dpmpp_2m'
 
-            latent_compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
-
             noise_mask = latent_image['noise_mask']
 
             if len(noise_mask.shape) == 4:
                 noise_mask = noise_mask.squeeze(0).squeeze(0)
 
-            latent_image = latent_compositor.composite(base_image, latent_image, 0, 0, False, noise_mask)[0]
+            latent_image = composite_masked(base_image, latent_image, noise_mask)
 
             try:
                 latent_image = separated_sample(model, add_noise, seed, steps, cfg, recovery_sampler, scheduler,
