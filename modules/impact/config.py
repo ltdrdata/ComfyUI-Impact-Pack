@@ -12,6 +12,17 @@ config_path = os.path.join(pack_root, "impact-pack.ini")
 latent_letter_path = os.path.join(pack_root, "latent.png")
 
 
+def default_config():
+    return {
+        'sam_editor_cpu': False,
+        'sam_editor_model': 'sam_vit_b_01ec64.pth',
+        'custom_wildcards': os.path.join(pack_root, "custom_wildcards"),
+        'disable_gpu_opencv': True,
+        'gpu_gaussian_blur': False,
+        'wildcard_cache_limit_mb': 50
+    }
+
+
 def write_config():
     config = configparser.ConfigParser()
     config['default'] = {
@@ -61,14 +72,7 @@ def read_config():
 
     except (FileNotFoundError, KeyError, configparser.Error, ValueError, UnicodeDecodeError, AttributeError):
         logging.exception("[Impact Pack] Failed to read impact-pack.ini — using hardcoded defaults")
-        return {
-            'sam_editor_cpu': False,
-            'sam_editor_model': 'sam_vit_b_01ec64.pth',
-            'custom_wildcards': os.path.join(pack_root, "custom_wildcards"),
-            'disable_gpu_opencv': True,
-            'gpu_gaussian_blur': False,
-            'wildcard_cache_limit_mb': 50
-        }
+        return default_config()
 
 
 cached_config = None
@@ -78,6 +82,14 @@ def get_config():
     global cached_config
 
     if cached_config is None:
-        cached_config = read_config()
+        if os.path.exists(config_path):
+            cached_config = read_config()
+        else:
+            # A new installation has no impact-pack.ini: create it with the defaults.
+            cached_config = default_config()
+            try:
+                write_config()
+            except OSError as e:
+                logging.warning(f"[Impact Pack] Failed to create impact-pack.ini — using hardcoded defaults: {e}")
 
     return cached_config

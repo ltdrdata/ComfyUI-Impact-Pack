@@ -32,11 +32,10 @@ def test_optional_model_preserves_user_settings(tmp_path, monkeypatch, caplog, m
     assert not caplog.records
 
 
-@pytest.mark.parametrize("contents", [None, b"not an ini file", b"[unrelated]\nvalue=1"])
+@pytest.mark.parametrize("contents", [b"not an ini file", b"[unrelated]\nvalue=1"])
 def test_unreadable_config_reports_fallback(tmp_path, monkeypatch, caplog, contents):
     path = tmp_path / "impact-pack.ini"
-    if contents is not None:
-        path.write_bytes(contents)
+    path.write_bytes(contents)
     monkeypatch.setattr(config, "config_path", str(path))
     with caplog.at_level(logging.ERROR):
         result = config.read_config()
@@ -49,6 +48,29 @@ def test_unreadable_config_reports_fallback(tmp_path, monkeypatch, caplog, conte
         "wildcard_cache_limit_mb": 50,
     }
     assert "Failed to read impact-pack.ini" in caplog.text
+
+
+def test_missing_config_is_created_with_the_defaults(tmp_path, monkeypatch, caplog):
+    """A new installation has no impact-pack.ini (#1253)."""
+    path = tmp_path / "impact-pack.ini"
+    monkeypatch.setattr(config, "config_path", str(path))
+    monkeypatch.setattr(config, "cached_config", None)
+    with caplog.at_level(logging.WARNING):
+        created = config.get_config()
+        assert path.read_text(encoding="utf-8").startswith("[default]\n")
+        assert config.read_config() == created == config.default_config()
+    assert not caplog.records
+
+
+def test_config_that_cannot_be_created_falls_back_to_the_defaults(tmp_path, monkeypatch, caplog):
+    path = tmp_path / "no such folder" / "impact-pack.ini"
+    monkeypatch.setattr(config, "config_path", str(path))
+    monkeypatch.setattr(config, "cached_config", None)
+    with caplog.at_level(logging.WARNING):
+        assert config.get_config() == config.default_config()
+    assert not path.exists()
+    assert [record.levelname for record in caplog.records] == ["WARNING"]
+    assert "Failed to create impact-pack.ini" in caplog.text
 
 
 @pytest.mark.parametrize("value, enabled", [(None, False), ("False", False), ("tRuE", True)])
