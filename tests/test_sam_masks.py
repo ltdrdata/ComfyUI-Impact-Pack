@@ -12,6 +12,7 @@ from types import SimpleNamespace
 import cv2
 import numpy as np
 import pytest
+import safetensors.torch
 import torch
 
 
@@ -283,3 +284,35 @@ def test_device_is_released_when_prediction_fails(core, monkeypatch):
     with pytest.raises(StopIteration):
         detect(core, model, segments(core, 1))
     assert released == [True]
+
+
+def tiny_sam(checkpoint=None):
+    """The checkpoint contract of the segment_anything builders: no checkpoint leaves the weights unloaded, a checkpoint goes through torch.load."""
+    model = torch.nn.Linear(3, 2)
+    if checkpoint is not None:
+        with open(checkpoint, "rb") as f:
+            model.load_state_dict(torch.load(f))
+    return model
+
+
+@pytest.mark.parametrize("name", ["sam_vit_b.pth", "sam_vit_b.safetensors", "SAM_VIT_B.SAFETENSORS"])
+def test_load_sam_reads_the_weights_of_the_file(core, monkeypatch, tmp_path, name):
+    monkeypatch.setattr(core, "sam_model_registry", {"vit_b": tiny_sam})
+    weights = {"weight": torch.arange(6.0).reshape(2, 3), "bias": torch.tensor([7.0, 8.0])}
+    path = str(tmp_path / name)
+    if name.endswith(".pth"):
+        torch.save(weights, path)
+    else:
+        safetensors.torch.save_file(weights, path)
+    loaded = core.load_sam("vit_b", path).state_dict()
+    assert loaded.keys() == weights.keys()
+    for key, value in weights.items():
+        assert torch.equal(loaded[key], value)
+
+
+def test_load_sam_rejects_a_safetensors_file_of_another_model(core, monkeypatch, tmp_path):
+    monkeypatch.setattr(core, "sam_model_registry", {"vit_b": tiny_sam})
+    path = str(tmp_path / "other.safetensors")
+    safetensors.torch.save_file({"weight": torch.zeros(2, 3)}, path)
+    with pytest.raises(RuntimeError, match="Missing key"):
+        core.load_sam("vit_b", path)

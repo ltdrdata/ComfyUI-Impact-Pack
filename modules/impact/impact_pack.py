@@ -4,7 +4,6 @@ import sys
 import comfy.samplers
 import comfy.sd
 import warnings
-from segment_anything import sam_model_registry
 from io import BytesIO
 import piexif
 import zipfile
@@ -165,7 +164,7 @@ class SAMLoader:
             else:
                 model_kind = 'vit_b'
 
-            sam = sam_model_registry[model_kind](checkpoint=modelname)
+            sam = core.load_sam(model_kind, modelname)
 
         size = os.path.getsize(modelname)
         safe_to = core.SafeToGPU(size)
