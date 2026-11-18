@@ -92,8 +92,8 @@ class CLIPSegDetectorProvider(ImpactNode):
         if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
             return io.NodeOutput(core.BBoxDetectorBasedOnCLIPSeg(text, blur, threshold, dilation_factor))
         else:
-            logging.error("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
-            raise Exception("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install biegert/ComfyUI-CLIPSeg extension to use this node.")
+            logging.error("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install time-river/ComfyUI-CLIPSeg extension to use this node.")
+            raise Exception("[ERROR] CLIPSegToBboxDetector: CLIPSeg custom node isn't installed. You must install time-river/ComfyUI-CLIPSeg extension to use this node.")
 
 
 sam2_config_table = {
@@ -1341,16 +1341,10 @@ class PixelTiledKSampleUpscalerProvider:
 
     def doit(self, scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy, upscale_model_opt=None,
              pk_hook_opt=None, tile_cnet_opt=None, tile_cnet_strength=1.0, overlap=64):
-        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                                                      tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_cnet_opt,
-                                                      tile_size=max(tile_width, tile_height), tile_cnet_strength=tile_cnet_strength, overlap=overlap)
-            return (upscaler, )
-        else:
-            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
-                                          "To use 'PixelTiledKSampleUpscalerProvider' node, 'BlenderNeko/ComfyUI_TiledKSampler' extension is required.")
-
-            raise Exception("[ERROR] PixelTiledKSampleUpscalerProvider: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+        upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+                                                  tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_cnet_opt,
+                                                  tile_size=max(tile_width, tile_height), tile_cnet_strength=tile_cnet_strength, overlap=overlap)
+        return (upscaler, )
 
 
 class PixelTiledKSampleUpscalerProviderPipe:
@@ -1386,15 +1380,11 @@ class PixelTiledKSampleUpscalerProviderPipe:
 
     def doit(self, scale_method, seed, steps, cfg, sampler_name, scheduler, denoise, tile_width, tile_height, tiling_strategy, basic_pipe, upscale_model_opt=None, pk_hook_opt=None,
              tile_cnet_opt=None, tile_cnet_strength=1.0):
-        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
-            model, _, vae, positive, negative = basic_pipe
-            upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
-                                                      tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_cnet_opt,
-                                                      tile_size=max(tile_width, tile_height), tile_cnet_strength=tile_cnet_strength)
-            return (upscaler, )
-        else:
-            logging.error("[Impact Pack] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
-            raise Exception("[Impact Pack] PixelTiledKSampleUpscalerProviderPipe: ComfyUI_TiledKSampler custom node isn't installed. You must install BlenderNeko/ComfyUI_TiledKSampler extension to use this node.")
+        model, _, vae, positive, negative = basic_pipe
+        upscaler = core.PixelTiledKSampleUpscaler(scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise,
+                                                  tile_width, tile_height, tiling_strategy, upscale_model_opt, pk_hook_opt, tile_cnet_opt,
+                                                  tile_size=max(tile_width, tile_height), tile_cnet_strength=tile_cnet_strength)
+        return (upscaler, )
 
 
 class PixelKSampleUpscalerProvider:

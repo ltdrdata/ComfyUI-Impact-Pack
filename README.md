@@ -66,7 +66,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `SAMLoader (Impact)` - Loads the SAM model.
   * `ONNXDetectorProvider` - Loads the ONNX model to provide BBOX_DETECTOR.
   * `CLIPSegDetectorProvider` - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
-    * You need to install the ComfyUI-CLIPSeg node extension.
+    * You need to install the [time-river/ComfyUI-CLIPSeg](https://github.com/time-river/ComfyUI-CLIPSeg) node extension. The original `biegert/ComfyUI-CLIPSeg` repository no longer exists.
   * `SEGM Detector (combined)` - Detects segmentation and returns a mask from the input image.
   * `BBOX Detector (combined)` - Detects bounding boxes and returns a mask from the input image.
   * `SAMDetector (combined)` - Utilizes the SAM technology to extract the segment at the location indicated by the input SEGS on the input image and outputs it as a unified mask.
@@ -176,8 +176,9 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
    * If upscale_model_opt is provided, it uses the model to upscale the pixel and then downscales it using the interpolation method provided in scale_method to the target resolution.
 * `PixelKSampleUpscalerProvider` - An upscaler is provided that converts latent to pixels using VAEDecode, performs upscaling, converts back to latent using VAEEncode, and then performs k-sampling. This upscaler can be attached to nodes such as `Iterative Upscale` for use.
   * Similar to `Latent Scale (on Pixel Space)`, if upscale_model_opt is provided, it performs pixel upscaling using the model.
-* `PixelTiledKSampleUpscalerProvider` - It is similar to `PixelKSampleUpscalerProvider`, but it uses `ComfyUI_TiledKSampler` and Tiled VAE Decoder/Encoder to avoid GPU VRAM issues at high resolutions.
-  * You need to install the [BlenderNeko/ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
+* `PixelTiledKSampleUpscalerProvider` - It is similar to `PixelKSampleUpscalerProvider`, but it uses the tiled sampler of `ComfyUI_TiledKSampler` and Tiled VAE Decoder/Encoder to avoid GPU VRAM issues at high resolutions.
+  * The tiled sampler is included in the Impact Pack. The `ComfyUI_TiledKSampler` extension does not need to be installed.
+  * `tile_cnet_opt` uses the `TilePreprocessor` node of [Fannovel16/comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux), which needs to be installed for that input.
 
 
 ### PK_HOOK
@@ -189,14 +190,14 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
     * The seed serves as the initial value required for generating noise, and it increments by 1 with each iteration as the process unfolds.
     * The source determines the types of CPU noise and GPU noise to be configured.
     * Currently, there is only a simple schedule available, where the strength of the noise varies from start_strength to end_strength during the progression of each iteration.
-  * `UnsamplerHookProvider` - Apply Unsampler during each iteration. To use this node, ComfyUI_Noise must be installed.
+  * `UnsamplerHookProvider` - Apply Unsampler during each iteration.
   * `PixelKSampleHookCombine` - This is used to connect two PK_HOOKs. hook1 is executed first and then hook2 is executed.
     * If you want to simultaneously change cfg and denoise, you can combine the PK_HOOKs of CfgScheduleHookProvider and DenoiseScheduleHookProvider with PixelKSampleHookCombine.
  
 
 ### DETAILER_HOOK
   * `NoiseInjectionDetailerHookProvider` - The `detailer_hook` is a hook in the `Detailer` that injects noise during the processing of each SEGS.
-  * `UnsamplerDetailerHookProvider` - Apply Unsampler during each cycle. To use this node, ComfyUI_Noise must be installed.
+  * `UnsamplerDetailerHookProvider` - Apply Unsampler during each cycle.
   * `DenoiseSchedulerDetailerHookProvider` - During the progress of the cycle, the detailer's denoise is gradually changed to the `target_denoise`.
   * `CoreMLDetailerHookProvider` - CoreML supports only 512x512, 512x768, 768x512, 768x768 size sampling. CoreMLDetailerHookProvider precisely fixes the upscale of the crop_region to this size. When using this hook, the crop is always sampled at the selected size, regardless of the guide_size. However, if the guide_size is too small, skipping will occur.
   * `DetailerHookCombine` - This is used to connect two DETAILER_HOOKs. Similar to PixelKSampleHookCombine.
@@ -222,8 +223,8 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 * `TwoSamplersForMask` - This node can apply two samplers depending on the mask area. The base_sampler is applied to the area where the mask is 0, while the mask_sampler is applied to the area where the mask is 1.
   * Note: The latent encoded through VAEEncodeForInpaint cannot be used.
 * `KSamplerProvider` - This is a wrapper that enables KSampler to be used in TwoSamplersForMask TwoSamplersForMaskUpscalerProvider.
-* `TiledKSamplerProvider` - ComfyUI_TiledKSampler is a wrapper that provides KSAMPLER.
-  * You need to install the [BlenderNeko/ComfyUI_TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) node extension.
+* `TiledKSamplerProvider` - A wrapper that provides the tiled sampler of `ComfyUI_TiledKSampler` as KSAMPLER.
+  * The tiled sampler is included in the Impact Pack. The `ComfyUI_TiledKSampler` extension does not need to be installed.
   
 * `TwoAdvancedSamplersForMask` - TwoSamplersForMask is similar to TwoAdvancedSamplersForMask, but they differ in their operation. TwoSamplersForMask performs sampling in the mask area only after all the samples in the base area are finished. On the other hand, TwoAdvancedSamplersForMask performs sampling in both the base area and the mask area sequentially at each step.
 * `KSamplerAdvancedProvider` - This is a wrapper that enables KSampler to be used in TwoAdvancedSamplersForMask, RegionalSampler.
@@ -511,9 +512,9 @@ hysts/[anime-face-detector](https://github.com/hysts/anime-face-detector) - Crea
 
 open-mmlab/[mmdetection](https://github.com/open-mmlab/mmdetection) - Object detection toolset. `dd-person_mask2former` was trained via transfer learning using their [R-50 Mask2Former instance segmentation model](https://github.com/open-mmlab/mmdetection/tree/master/configs/mask2former#instance-segmentation) as a base.
 
-biegert/[ComfyUI-CLIPSeg](https://github.com/biegert/ComfyUI-CLIPSeg) - This is a custom node that enables the use of CLIPSeg technology, which can find segments through prompts, in ComfyUI.
+biegert/ComfyUI-CLIPSeg, continued as time-river/[ComfyUI-CLIPSeg](https://github.com/time-river/ComfyUI-CLIPSeg) - This is a custom node that enables the use of CLIPSeg technology, which can find segments through prompts, in ComfyUI.
 
-BlenderNeok/[ComfyUI-TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) - The tile sampler allows high-resolution sampling even in places with low GPU VRAM.
+BlenderNeko/[ComfyUI-TiledKSampler](https://github.com/BlenderNeko/ComfyUI_TiledKSampler) - The tile sampler allows high-resolution sampling even in places with low GPU VRAM. Its sampler is included in `modules/thirdparty`.
 
 BlenderNeok/[ComfyUI_Noise](https://github.com/BlenderNeko/ComfyUI_Noise) - The noise injection feature relies on this function and slerp code for noise variation
 
