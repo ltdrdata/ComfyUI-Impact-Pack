@@ -21,6 +21,7 @@ import time
 from comfy import model_management
 from impact import utils
 from impact import impact_sampling
+from thirdparty import tiled_sampler
 from concurrent.futures import ThreadPoolExecutor
 import inspect
 from collections import OrderedDict
@@ -1997,7 +1998,7 @@ class ControlNetWrapper:
                 positive, negative, _ = acn.apply_controlnet(positive=positive, negative=negative, control_net=self.control_net, image=cnet_image,
                                                              strength=self.strength, start_percent=0.0, end_percent=1.0)
             else:
-                utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                utils.try_install_custom_node('https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet',
                                               "To use 'ControlNetWrapper' for AnimateDiff, 'ComfyUI-Advanced-ControlNet' extension is required.")
                 raise Exception("'ACN_AdvancedControlNetApply' node isn't installed.")
         else:
@@ -2058,7 +2059,7 @@ class ControlNetAdvancedWrapper:
                 positive, negative, _ = acn.apply_controlnet(positive=positive, negative=negative, control_net=self.control_net, image=cnet_image,
                                                              strength=self.strength, start_percent=self.start_percent, end_percent=self.end_percent)
             else:
-                utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
+                utils.try_install_custom_node('https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet',
                                               "To use 'ControlNetAdvancedWrapper' for AnimateDiff, 'ComfyUI-Advanced-ControlNet' extension is required.")
                 raise Exception("'ACN_AdvancedControlNetApply' node isn't installed.")
         else:
@@ -2077,7 +2078,6 @@ class ControlNetAdvancedWrapper:
         return positive, negative, cnet_image_list
 
 
-# REQUIREMENTS: BlenderNeko/ComfyUI_TiledKSampler
 class TiledKSamplerWrapper:
     params = None
 
@@ -2086,13 +2086,6 @@ class TiledKSamplerWrapper:
         self.params = model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy
 
     def sample(self, latent_image, hook=None):
-        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
-            TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
-        else:
-            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
-                                          "To use 'TiledKSamplerProvider', 'Tiled sampling for ComfyUI' extension is required.")
-            raise Exception("'BNK_TiledKSampler' node isn't installed.")
-
         model, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise, tile_width, tile_height, tiling_strategy = self.params
 
         if hook is not None:
@@ -2100,8 +2093,8 @@ class TiledKSamplerWrapper:
                 hook.pre_ksample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image,
                                  denoise)
 
-        return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                                      scheduler, positive, negative, latent_image, denoise)[0]
+        return tiled_sampler.sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                                    scheduler, positive, negative, latent_image, denoise)[0]
 
 
 class PixelTiledKSampleUpscaler:
@@ -2121,13 +2114,6 @@ class PixelTiledKSampleUpscaler:
         self.overlap = overlap
 
     def tiled_ksample(self, latent, images):
-        if "BNK_TiledKSampler" in nodes.NODE_CLASS_MAPPINGS:
-            TiledKSampler = nodes.NODE_CLASS_MAPPINGS['BNK_TiledKSampler']
-        else:
-            utils.try_install_custom_node('https://github.com/BlenderNeko/ComfyUI_TiledKSampler',
-                                          "To use 'PixelTiledKSampleUpscalerProvider', 'Tiled sampling for ComfyUI' extension is required.")
-            raise RuntimeError("'BNK_TiledKSampler' node isn't installed.")
-
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
         tile_width, tile_height, tiling_strategy = self.tile_params
 
@@ -2150,8 +2136,8 @@ class PixelTiledKSampleUpscaler:
                                                                                       start_percent=0, end_percent=1.0,
                                                                                       vae=self.vae)
 
-        return TiledKSampler().sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
-                                      scheduler, positive, negative, latent, denoise)[0]
+        return tiled_sampler.sample(model, seed, tile_width, tile_height, tiling_strategy, steps, cfg, sampler_name,
+                                    scheduler, positive, negative, latent, denoise)[0]
 
     def upscale(self, step_info, samples, upscale_factor, save_temp_prefix=None):
         scale_method, model, vae, seed, steps, cfg, sampler_name, scheduler, positive, negative, denoise = self.params
@@ -2200,7 +2186,7 @@ class PixelTiledKSampleUpscaler:
         return refined_latent
 
 
-# REQUIREMENTS: biegert/ComfyUI-CLIPSeg
+# REQUIREMENTS: time-river/ComfyUI-CLIPSeg
 class BBoxDetectorBasedOnCLIPSeg:
     prompt = None
     blur = None
@@ -2230,7 +2216,7 @@ class BBoxDetectorBasedOnCLIPSeg:
         if "CLIPSeg" in nodes.NODE_CLASS_MAPPINGS:
             CLIPSeg = nodes.NODE_CLASS_MAPPINGS['CLIPSeg']
         else:
-            utils.try_install_custom_node('https://github.com/biegert/ComfyUI-CLIPSeg/raw/main/custom_nodes/clipseg.py',
+            utils.try_install_custom_node('https://raw.githubusercontent.com/time-river/ComfyUI-CLIPSeg/main/custom_nodes/clipseg.py',
                                           "To use 'CLIPSegDetectorProvider', 'CLIPSeg' extension is required.")
             raise Exception("'CLIPSeg' node isn't installed.")
 
