@@ -25,7 +25,7 @@ def pack():
         from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
         from impact import impact_pack, special_samplers, util_nodes
         yield SimpleNamespace(TwoSamplersForMask=special_samplers.TwoSamplersForMask, StringListToString=util_nodes.StringListToString,
-                              FaceDetailer=impact_pack.FaceDetailer)
+                              FaceDetailer=impact_pack.FaceDetailer, SAMLoader=impact_pack.SAMLoader, impact_pack=impact_pack)
 
 
 class Sampler:
@@ -97,3 +97,30 @@ def test_face_detailer_takes_its_default_prompt_off_the_detector_when_detection_
         pack.FaceDetailer.enhance_face(**given)
 
     assert detector.aux == ["face", None]
+
+
+@pytest.mark.parametrize("folder", ["sams", "checkpoints"])
+def test_sam_loader_loads_a_file_named_sam3_as_sam3_from_either_folder(pack, monkeypatch, folder):
+    files = {"sams": ["sam_vit_b_01ec64.pth"], "checkpoints": ["sd15.safetensors"]}
+    files[folder].append("SAM3.1_multiplex_fp16.safetensors")
+    folder_paths, loaded = pack.impact_pack.folder_paths, []
+    # stands for the model ComfyUI loads, with the functions of its SAM3 that the pack calls
+    model = SimpleNamespace(model=SimpleNamespace(diffusion_model=SimpleNamespace(
+        forward_segment=lambda images, point_inputs=None, box_inputs=None: None,
+        forward_video=lambda images, initial_masks, pbar=None, target_device=None, target_dtype=None: None)))
+    monkeypatch.setattr(folder_paths, "get_filename_list", lambda name: files[name])
+    monkeypatch.setattr(folder_paths, "get_full_path", lambda name, file: f"/{name}/{file}" if file in files[name] else None)
+    monkeypatch.setattr(pack.impact_pack.comfy.sd, "load_checkpoint_guess_config_model_only", lambda path: loaded.append(path) or model)
+
+    # the file is offered once, and a checkpoint that is not SAM3 is not offered
+    assert pack.SAMLoader.INPUT_TYPES()["required"]["model_name"][0] == ["sam_vit_b_01ec64.pth", "SAM3.1_multiplex_fp16.safetensors"]
+
+    sam, = pack.SAMLoader().load_model("SAM3.1_multiplex_fp16.safetensors", "AUTO")
+    assert loaded == [f"/{folder}/SAM3.1_multiplex_fp16.safetensors"]
+    assert isinstance(sam, pack.impact_pack.core.SAM3Wrapper) and sam.model is model
+
+
+def test_sam_loader_refuses_a_sam3_model_on_a_comfyui_without_sam3(pack, monkeypatch):
+    monkeypatch.delattr(pack.impact_pack.comfy.model_base, "SAM3")
+    with pytest.raises(Exception, match="SAM3 cannot be used with the current version of ComfyUI"):
+        pack.SAMLoader().load_model("sam3.1_multiplex_fp16.safetensors", "AUTO")

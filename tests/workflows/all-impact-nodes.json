@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 202,
+  "last_node_id": 203,
   "last_link_id": 0,
   "nodes": [
     {
@@ -6319,7 +6319,7 @@
       ],
       "size": [
         270,
-        338
+        362
       ],
       "flags": {},
       "order": 109,
@@ -6349,12 +6349,14 @@
       "widgets_values": [
         "$111-0",
         false,
-        "never"
+        "never",
+        false
       ],
       "widgets_values_named": {
         "image": "$111-0",
         "block": false,
-        "restore_mask": "never"
+        "restore_mask": "never",
+        "alpha_as_mask": false
       }
     },
     {
@@ -10480,6 +10482,58 @@
       "properties": {
         "Node name for S&R": "ImpactDecomposeSEGSList"
       }
+    },
+    {
+      "id": 203,
+      "type": "ImpactSAM3VideoDetectorSEGS",
+      "pos": [
+        4832.265097384982,
+        6745.555555555555
+      ],
+      "size": [
+        293.8423828125,
+        146
+      ],
+      "flags": {},
+      "order": 201,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_frames",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "bbox_detector",
+          "type": "BBOX_DETECTOR",
+          "link": null
+        },
+        {
+          "name": "sam3_model",
+          "type": "SAM_MODEL",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactSAM3VideoDetectorSEGS"
+      },
+      "widgets_values": [
+        0.5,
+        3,
+        10
+      ],
+      "widgets_values_named": {
+        "bbox_threshold": 0.5,
+        "crop_factor": 3,
+        "drop_size": 10
+      }
     }
   ],
   "links": [],
@@ -10489,8 +10543,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -3625.6885470920133,
-        -6195.555555555555
+        -4529.186288791232,
+        -6555.555555555555
       ]
     },
     "frontendVersion": "1.58.5"

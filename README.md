@@ -8,6 +8,7 @@ This node pack helps to conveniently enhance images through Detector, Detailer, 
 NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pack. To use the UltralyticsDetectorProvider node, please install the ComfyUI-Impact-Subpack separately.
 
 ## NOTICE 
+* V9.1: `SAMLoader (Impact)` loads SAM3 models, and `SAM3 Video Detector (SEGS)` tracks with them. See the [Detector nodes](#detector-nodes) for the download.
 * V9.1: `sam2` is no longer installed with `requirements.txt`. To use SAM2 models, install [`requirements-sam2.txt`](#sam2-optional). An installation that already has `sam2` needs nothing.
 * V8.24: This compatibility patch requires ComfyUI version 0.3.63 or higher due to structural changes in DifferentialDiffusion.
 * V8.19: legacy nodes (mmdet and etc.) are removed
@@ -66,6 +67,15 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 ## Custom Nodes
 ### [Detector nodes](https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/detectors.md)
   * `SAMLoader (Impact)` - Loads the SAM model.
+    * SAM3: a file whose name starts with `sam3` is loaded as SAM3 on ComfyUI's own SAM3 implementation. It needs no extra package, and it needs ComfyUI v0.21.0 or later. On an older ComfyUI, `SAMLoader (Impact)` reports that SAM3 cannot be used with the current version of ComfyUI. If it reports that on v0.21.0 or later, please open an issue.
+      * Download [`sam3.1_multiplex_fp16.safetensors`](https://huggingface.co/Comfy-Org/sam3.1/resolve/main/checkpoints/sam3.1_multiplex_fp16.safetensors) (1.75 GB) from [Comfy-Org/sam3.1](https://huggingface.co/Comfy-Org/sam3.1) on Hugging Face. Place it in `ComfyUI/models/checkpoints`, where ComfyUI's own SAM3 nodes read the same file, or in `ComfyUI/models/sams`.
+      * With the Hugging Face CLI, run this in the `ComfyUI` directory. The file goes to `models/checkpoints`.
+        ```
+        hf download Comfy-Org/sam3.1 checkpoints/sam3.1_multiplex_fp16.safetensors --local-dir models
+        ```
+      * The model is under the [SAM License](https://huggingface.co/Comfy-Org/sam3.1/blob/main/LICENSE).
+      * It works where a `SAM_MODEL` is used on an image: `SAMDetector (combined)`, `SAMDetector (segmented)`, `Simple Detector (SEGS)` and the `sam_model_opt` of the detailers. `SAM3 Video Detector (SEGS)` tracks with it. `SAM2 Video Detector (SEGS)` and the SAM editor do not take it.
+      * SAM3 returns one mask for a prompt, without a score, so the `threshold` of a SAM detector does not apply to it. `device_mode` does not apply either: ComfyUI's model management places the model.
   * `ONNXDetectorProvider` - Loads the ONNX model to provide BBOX_DETECTOR.
   * `CLIPSegDetectorProvider` - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
     * You need to install the [time-river/ComfyUI-CLIPSeg](https://github.com/time-river/ComfyUI-CLIPSeg) node extension. The original `biegert/ComfyUI-CLIPSeg` repository no longer exists.
@@ -78,6 +88,8 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `Simple Detector for Video (SEGS)` – Performs detection on videos composed of image frames. Instead of using a single mask, it performs detection individually on each image frame and generates a SEGS object with a batch of masks. 
   * `SAM2 Video Detector (SEGS)` – Similar to `Simple Detector for Video (SEGS)`, but utilizes SAM2’s video tracking technology to generate a SEGS object with a batch of masks. 
       * To use this node, you must select a SAM2 model in the SAMLoader.
+  * `SAM3 Video Detector (SEGS)` – The same with the video tracking of SAM3. It has no threshold for the masks: SAM3 gives masks, where SAM2 gives values to compare with `sam2_threshold`.
+      * To use this node, you must select a SAM3 model in the SAMLoader.
 
 
 ### ControlNet, IPAdapter
