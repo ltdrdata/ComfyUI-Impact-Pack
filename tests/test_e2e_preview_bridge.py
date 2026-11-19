@@ -431,6 +431,50 @@ def test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload(ui, node_type, 
         mask_output(browser, entry, second_mask, expected)
 
 
+def test_a_bridge_that_was_not_executed_explains_itself_instead_of_opening_an_editor(ui):
+    browser, args = ui
+    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
+    browser.page.route("**/sam/prepare", lambda route: route.fulfill(status=200))
+    errors = []
+    browser.page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
+    notice = browser.page.get_by_test_id("toast").get_by_text(re.compile(r"the node itself (is|has been) executed"))
+    editor, detector = browser.page.get_by_test_id("mask-editor-root"), browser.page.locator("#pointsCanvas")
+
+    def toolbar(name):
+        browser.page.mouse.click(*point(browser, bridge, menu=True))
+        browser.page.get_by_role("button", name=name, exact=True).click()
+
+    ways = {"menu": lambda: context_menu(browser, bridge, re.compile(r"^Open in MaskEditor")),
+            "toolbar": lambda: toolbar("Open Mask Editor for Selected Node"),
+            "sam": lambda: context_menu(browser, bridge, "Open in SAM Detector")}
+
+    def explained(state):
+        for name, open_it in ways.items():
+            open_it()
+            expect(notice).to_be_visible()
+            expect(editor).not_to_be_visible()
+            expect(detector).not_to_be_visible()
+            browser.page.screenshot(path=str(args.artifacts / f"{state}-{name}.png"))
+            expect(notice).not_to_be_visible(timeout=15000)
+
+    explained("not-run")
+    # A run of the workflow is not an execution of the bridge: bypassed, the run passes it by and it stays empty.
+    toolbar("Bypass/Unbypass Selected Nodes")
+    assert bridge not in browser.run()["outputs"]
+    explained("run-bypassed")
+    assert not [error for error in errors if "MaskEditor" in error]
+    toolbar("Bypass/Unbypass Selected Nodes")
+    assert bridge in browser.run()["outputs"]
+    for name, open_it in ways.items():
+        open_it()
+        opened = detector if name == "sam" else editor
+        expect(opened).to_be_visible()
+        expect(notice).not_to_be_visible()
+        browser.page.screenshot(path=str(args.artifacts / f"executed-{name}.png"))
+        browser.page.get_by_role("button", name=re.compile(r"Cancel$")).click()
+        expect(opened).not_to_be_visible()
+
+
 def test_image_clipspace_feedback_for_repeated_edits(ui):
     browser, args = ui
     source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
