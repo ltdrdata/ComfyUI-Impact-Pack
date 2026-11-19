@@ -4,6 +4,7 @@ ComfyUI keeps the output of a node in its cache and hands the same object to eve
 prompts too. Run with IMPACT_COMFY_ROOT set.
 """
 import inspect
+import logging
 import os
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -25,7 +26,8 @@ def pack():
         from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
         from impact import impact_pack, special_samplers, util_nodes
         yield SimpleNamespace(TwoSamplersForMask=special_samplers.TwoSamplersForMask, StringListToString=util_nodes.StringListToString,
-                              FaceDetailer=impact_pack.FaceDetailer, SAMLoader=impact_pack.SAMLoader, impact_pack=impact_pack)
+                              FaceDetailer=impact_pack.FaceDetailer, SAMLoader=impact_pack.SAMLoader, impact_pack=impact_pack,
+                              impact_server=impact_server)
 
 
 class Sampler:
@@ -124,3 +126,17 @@ def test_sam_loader_refuses_a_sam3_model_on_a_comfyui_without_sam3(pack, monkeyp
     monkeypatch.delattr(pack.impact_pack.comfy.model_base, "SAM3")
     with pytest.raises(Exception, match="SAM3 cannot be used with the current version of ComfyUI"):
         pack.SAMLoader().load_model("sam3.1_multiplex_fp16.safetensors", "AUTO")
+
+
+@pytest.mark.parametrize("request_body", [{"1": {"class_type": "ImpactInt", "inputs": {"value": 1}}}, {"number": 1}, {"front": True}, {}],
+                         ids=["a prompt as the body itself", "number", "front", "empty"])
+def test_a_request_without_a_prompt_passes_the_prompt_handler_as_it_is(pack, caplog, request_body):
+    """ComfyUI calls the prompt handlers with every POST /prompt, and refuses one without a prompt afterwards.
+    A prompt that is posted as the body itself, not as the value of "prompt", is such a request."""
+    given = dict(request_body)
+
+    with caplog.at_level(logging.ERROR):
+        assert pack.impact_server.onprompt(request_body) is request_body
+
+    assert request_body == given
+    assert caplog.records == []

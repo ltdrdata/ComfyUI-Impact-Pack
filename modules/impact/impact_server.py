@@ -651,6 +651,10 @@ def onprompt_for_remote(json_data):
 
 
 def onprompt(json_data):
+    # ComfyUI calls the handlers with every POST /prompt, and refuses one without a prompt afterwards
+    if 'prompt' not in json_data:
+        return json_data
+
     try:
         onprompt_for_remote(json_data)  # NOTE: top priority
         onprompt_for_switch(json_data)
