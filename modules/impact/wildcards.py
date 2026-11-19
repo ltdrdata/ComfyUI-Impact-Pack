@@ -1116,14 +1116,13 @@ class WildcardChooserDict:
         self.items = items
 
     def get(self, seg):
-        text = ""
-        if 'ALL' in self.items:
-            text = self.items['ALL']
+        prefix = self.items.get('ALL', '')
+        text = self.items.get(seg.label, '')
 
-        if seg.label in self.items:
-            text += self.items[seg.label]
+        if prefix and text:
+            return prefix + ' ' + text
 
-        return text
+        return prefix + text
 
 
 def split_string_with_sep(input_string):
