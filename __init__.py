@@ -158,6 +158,7 @@ NODE_CLASS_MAPPINGS = {
     "ONNXDetectorSEGS": BboxDetectorForEach, # noqa: F405
     "ImpactSimpleDetectorSEGS_for_AD": SimpleDetectorForAnimateDiff, # noqa: F405
     "ImpactSAM2VideoDetectorSEGS": SAM2VideoDetectorSEGS, # noqa: F405
+    "ImpactSAM3VideoDetectorSEGS": SAM3VideoDetectorSEGS, # noqa: F405
     "ImpactSimpleDetectorSEGS": SimpleDetectorForEach, # noqa: F405
     "ImpactSimpleDetectorSEGSPipe": SimpleDetectorForEachPipe, # noqa: F405
     "ImpactControlNetApplySEGS": ControlNetApplySEGS, # noqa: F405
@@ -308,6 +309,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ONNXDetectorSEGS": "ONNX Detector (SEGS/legacy) - use BBOXDetector",
     "ImpactSimpleDetectorSEGS_for_AD": "Simple Detector for Video (SEGS)",
     "ImpactSAM2VideoDetectorSEGS": "SAM2 Video Detector (SEGS)",
+    "ImpactSAM3VideoDetectorSEGS": "SAM3 Video Detector (SEGS)",
     "ImpactSimpleDetectorSEGS": "Simple Detector (SEGS)",
     "ImpactSimpleDetectorSEGSPipe": "Simple Detector (SEGS/pipe)",
     "ImpactControlNetApplySEGS": "ControlNetApply (SEGS) - DEPRECATED",

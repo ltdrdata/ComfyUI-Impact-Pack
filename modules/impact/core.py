@@ -787,6 +787,93 @@ class SAM2Wrapper:
 
         return result
 
+sam3_unavailable_message = ("[Impact Pack] SAM3 cannot be used with the current version of ComfyUI. It requires ComfyUI v0.21.0 or later.\n"
+                            "If you see this on ComfyUI v0.21.0 or later, please report it: https://github.com/ltdrdata/ComfyUI-Impact-Pack/issues")
+
+
+class SAM3Wrapper:
+    """SAM3 on ComfyUI's own implementation. ComfyUI's model management places the model, so there is no device mode."""
+    image_size = 1008
+
+    # The functions inside ComfyUI's SAM3 that are called here, with the arguments they are given. ComfyUI does not promise to keep them:
+    # forward_video took no target_device before v0.21.0. A ComfyUI that differs in them cannot run SAM3 here.
+    calls = {"forward_segment": ("point_inputs", "box_inputs"),
+             "forward_video": ("images", "initial_masks", "pbar", "target_device", "target_dtype")}
+
+    def __init__(self, model):
+        import comfy.ldm.sam3.tracker  # SAMLoader refuses a SAM3 model on a ComfyUI that has no SAM3
+
+        sam3 = model.model.diffusion_model
+        for name, arguments in self.calls.items():
+            if not hasattr(sam3, name) or not set(arguments) <= set(inspect.signature(getattr(sam3, name)).parameters):
+                raise Exception(sam3_unavailable_message)
+
+        if not hasattr(comfy.ldm.sam3.tracker, "unpack_masks"):
+            raise Exception(sam3_unavailable_message)
+
+        self.model = model
+
+    def prepare_device(self):
+        comfy.model_management.load_model_gpu(self.model)
+
+    def release_device(self):
+        pass
+
+    def predict(self, image, points, plabs, bbox, threshold):
+        if not points and bbox is None:
+            return []
+
+        device = comfy.model_management.get_torch_device()
+        dtype = self.model.model.get_dtype()
+        height, width = image.shape[:2]
+        scale = torch.tensor([self.image_size / width, self.image_size / height], device=device, dtype=dtype)
+
+        frame = torch.from_numpy(image).movedim(-1, 0).unsqueeze(0).float() / 255
+        frame = comfy.utils.common_upscale(frame, self.image_size, self.image_size, "bilinear", crop="disabled").to(device=device, dtype=dtype)
+
+        point_inputs = None
+        if points:
+            point_inputs = {"point_coords": torch.tensor([points], device=device, dtype=dtype) * scale,
+                            "point_labels": torch.tensor([plabs], device=device, dtype=torch.int32)}
+
+        box_inputs = None
+        if bbox is not None:
+            box_inputs = torch.tensor(bbox, device=device, dtype=dtype).view(1, 2, 2) * scale
+
+        logits = self.model.model.diffusion_model.forward_segment(frame, point_inputs=point_inputs, box_inputs=box_inputs)
+        mask = F.interpolate(logits.float(), size=(height, width), mode="bilinear", align_corners=False)[0, 0] > 0
+
+        # SAM3 returns its best mask for the prompt without a score, so there is nothing to compare with the threshold
+        return [mask.cpu().numpy()]
+
+    def predict_video_segs(self, image_frames, segs):
+        from comfy.ldm.sam3.tracker import unpack_masks
+
+        self.prepare_device()
+        device = comfy.model_management.get_torch_device()
+        dtype = self.model.model.get_dtype()
+        height, width = image_frames.shape[1:3]
+
+        # SAM3 tracks an object from its mask, so the first frame is segmented with the prompt SAM2 gets: the box and its center
+        first_frame = np.clip(255. * image_frames[0, ..., :3].cpu().numpy(), 0, 255).astype(np.uint8)
+        initial_masks = [self.predict(first_frame, [utils.center_of_bbox(seg.bbox)], [1], seg.bbox, None)[0] for seg in segs[1]]
+        initial_masks = torch.from_numpy(np.stack(initial_masks)).unsqueeze(1).to(device=device, dtype=dtype)
+
+        tracked = self.model.model.diffusion_model.forward_video(
+            images=image_frames[..., :3].movedim(-1, 1), initial_masks=initial_masks,
+            pbar=comfy.utils.ProgressBar(len(image_frames)), target_device=device, target_dtype=dtype)
+
+        result = {}
+        for i in range(len(segs[1])):
+            # ComfyUI's tracker returns packed masks for SAM3.1 and logits for SAM3
+            masks = unpack_masks(tracked["packed_masks"][:, i]) if isinstance(tracked, dict) else tracked[:, i] > 0
+            masks = masks.unsqueeze(1).float()
+            masks = F.interpolate(masks, size=(height, width), mode="bilinear", align_corners=False)[:, 0] > 0.5
+            result[i] = masks.float().unsqueeze(3)
+
+        return result
+
+
 class ESAMWrapper:
     def __init__(self, model, device):
         self.model = model
@@ -809,18 +896,21 @@ class ESAMWrapper:
         return [detected_masks.squeeze(0)]
 
 
+def sam_wrapper_of(sam):
+    # SAMLoader returns a SAM2 or SAM3 model as its wrapper, and any other model with its wrapper attached
+    if isinstance(sam, (SAM2Wrapper, SAM3Wrapper)):
+        return sam
+
+    if not hasattr(sam, 'sam_wrapper'):
+        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure to use 'SAMLoader (Impact)'.\nKnown issue: The ComfyUI-YOLO node overrides the SAMLoader (Impact), making it unusable. You need to uninstall ComfyUI-YOLO.\n\n\n")
+
+    return sam.sam_wrapper
+
+
 def make_sam_mask(sam, segs, image, detection_hint, dilation,
                   threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
-    if not hasattr(sam, 'sam_wrapper') and not isinstance(sam, SAM2Wrapper):
-        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure to use 'SAMLoader (Impact)'.\nKnown issue: The ComfyUI-YOLO node overrides the SAMLoader (Impact), making it unusable. You need to uninstall ComfyUI-YOLO.\n\n\n")
-
-
-    if isinstance(sam, SAM2Wrapper):
-        sam_obj = sam
-    else:
-        sam_obj = sam.sam_wrapper
-
+    sam_obj = sam_wrapper_of(sam)
     sam_obj.prepare_device()
 
     try:
@@ -1046,10 +1136,7 @@ def segs_scale_match(segs, target_shape):
 def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                             threshold, bbox_expansion, mask_hint_threshold, mask_hint_use_negative):
 
-    if not hasattr(sam, 'sam_wrapper'):
-        raise Exception("[Impact Pack] Invalid SAMLoader is connected. Make sure to use 'SAMLoader (Impact)'.")
-
-    sam_obj = sam.sam_wrapper
+    sam_obj = sam_wrapper_of(sam)
     sam_obj.prepare_device()
 
     try:

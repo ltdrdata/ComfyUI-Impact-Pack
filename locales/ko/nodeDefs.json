@@ -2084,5 +2084,40 @@
                 "tooltip": "GITSScheduler로 노이즈 스케쥴을 생성하는 함수를 반환합니다. 미리 정해진 노이즈 스케쥴 대신 사용해서, 스텝수에 따라 노이즈 스케쥴을 동적으로 생성할 수 있습니다."
             }
         }
+    },
+    "ImpactSAM3VideoDetectorSEGS": {
+        "description": "첫 프레임에서 객체를 감지하고, SAM3 모델로 프레임을 따라 추적합니다. 프레임마다 마스크를 가진 SEGS를 출력합니다.",
+        "display_name": "SAM3 비디오 감지기 (SEGS)",
+        "inputs": {
+            "image_frames": {
+                "name": "이미지 프레임",
+                "tooltip": "이미지 배치로 주어진 비디오 프레임입니다."
+            },
+            "bbox_detector": {
+                "name": "bbox 감지기",
+                "tooltip": "첫 프레임에서 추적할 객체를 찾습니다. 첫 프레임에서 찾지 못하면 마지막 프레임에서 찾아 비디오를 거꾸로 추적합니다."
+            },
+            "sam3_model": {
+                "name": "sam3 모델",
+                "tooltip": "SAMLoader (Impact)로 불러온 SAM3 모델입니다."
+            },
+            "bbox_threshold": {
+                "name": "bbox 임계값",
+                "tooltip": "감지기의 점수가 이 값보다 낮은 객체는 추적하지 않습니다."
+            },
+            "crop_factor": {
+                "name": "crop 배율",
+                "tooltip": "각 SEG의 crop 영역이 추적한 객체보다 얼마나 넓은지 정합니다."
+            },
+            "drop_size": {
+                "name": "최소 크기",
+                "tooltip": "너비나 높이가 이 픽셀 수보다 작은 객체는 버립니다."
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
     }
 }

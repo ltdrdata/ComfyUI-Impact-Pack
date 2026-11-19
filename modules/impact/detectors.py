@@ -303,6 +303,73 @@ class SimpleDetectorForEachPipe:
                                             sam_mask_hint_threshold, post_dilation=post_dilation, sam_model_opt=sam_model_opt, segm_detector_opt=segm_detector_opt,
                                             detailer_hook=detailer_hook)
 
+def track_video_segs(tracker, bbox_detector, image_frames, bbox_threshold, crop_factor, drop_size, cutoff):
+    """SEGS of the objects that the detector finds in the first frame, each with its mask in every frame.
+    A pixel is in a mask where the tracker gives at least `cutoff`."""
+    # ---- Detect bboxes ----
+    segs = bbox_detector.detect(image_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
+
+      # ---- If no detections, try reversed frames before giving up ----
+    if len(segs[1]) == 0:
+        reversed_frames = torch.flip(image_frames, dims=[0])
+        segs_rev = bbox_detector.detect(reversed_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
+
+        if len(segs_rev[1]) == 0:
+            # No Bboxes when reversed -> Give up
+            h, w = image_frames.shape[1:3]
+            return (h, w), []
+            
+        # ---- Predict masks in reversed mode ----
+        segs_masks = tracker.predict_video_segs(reversed_frames, segs_rev)
+
+        # segs_masks wieder umdrehen, damit sie mit Originalframes matchen
+        for k in segs_masks.keys():
+            segs_masks[k] = torch.flip(segs_masks[k], dims=[0])
+    else:
+        # ---- Predict masks if BBOXES were found in forward pass----
+        segs_masks = tracker.predict_video_segs(image_frames, segs)
+
+    def get_whole_merged_mask(all_masks):
+        merged_mask = (all_masks[0] * 255).to(torch.uint8)
+        for mask in all_masks[1:]:
+            merged_mask |= (mask * 255).to(torch.uint8)
+
+        merged_mask = (merged_mask / 255.0).to(torch.float32)
+        merged_mask = utils.to_binary_mask(merged_mask, 0.1)[0]
+        return merged_mask
+
+    new_segs = []
+    for k, v in segs_masks.items():
+        v = v.squeeze(3)
+        m = get_whole_merged_mask(v)
+        seg = segs_nodes.MaskToSEGS.doit(m, False, crop_factor, False, drop_size, contour_fill=True)[0][1]
+
+        if len(seg) == 0:
+            continue
+
+        seg = seg[0]
+
+        x1, y1, x2, y2 = seg.crop_region
+        masks = []
+        for mask in v:
+            masks.append(mask[y1:y2, x1:x2])
+        cropped_mask = torch.stack(masks)
+        cropped_mask = (cropped_mask >= cutoff).to(torch.uint8).cpu()
+
+        new_seg = SEG(
+            seg.cropped_image,
+            cropped_mask,
+            seg.confidence,
+            seg.crop_region,
+            seg.bbox,
+            seg.label,
+            seg.control_net_wrapper
+        )
+        new_segs.append(new_seg)
+
+    return segs[0], new_segs
+
+
 class SAM2VideoDetectorSEGS:
     @classmethod
     def INPUT_TYPES(s):
@@ -332,69 +399,36 @@ class SAM2VideoDetectorSEGS:
             logging.error("[Impact Pack] To use the SAM2VideoDetectorSEGS node, a valid SAM2 model must be provided as input to `sam2_model`.")
             raise Exception("To use the SAM2VideoDetectorSEGS node, a SAM2 model must be provided as input to `sam2_model`.")
 
-        # ---- Detect bboxes ----
-        segs = bbox_detector.detect(image_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
+        return (track_video_segs(sam2_model, bbox_detector, image_frames, bbox_threshold, crop_factor, drop_size, sam2_threshold * 100 - 50), )
 
-          # ---- If no detections, try reversed frames before giving up ----
-        if len(segs[1]) == 0:
-            reversed_frames = torch.flip(image_frames, dims=[0])
-            segs_rev = bbox_detector.detect(reversed_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
 
-            if len(segs_rev[1]) == 0:
-                # No Bboxes when reversed -> Give up
-                h, w = image_frames.shape[1:3]
-                return (((h, w), []), )
-                
-            # ---- Predict masks in reversed mode ----
-            segs_masks = sam2_model.predict_video_segs(reversed_frames, segs_rev)
+class SAM3VideoDetectorSEGS(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSAM3VideoDetectorSEGS",
+            display_name="SAM3 Video Detector (SEGS)",
+            category="ImpactPack/Detector",
+            description="Detects objects in the first frame and tracks them through the frames with a SAM3 model. Returns SEGS with a mask for every frame.",
+            inputs=[
+                io.Image.Input("image_frames", tooltip="The frames of the video, as a batch of images."),
+                io.Custom("BBOX_DETECTOR").Input("bbox_detector", tooltip="Finds the objects to track in the first frame. When it finds none there, the last frame is used and the video is tracked backwards."),
+                io.Custom("SAM_MODEL").Input("sam3_model", tooltip="A SAM3 model loaded through SAMLoader (Impact)."),
+                io.Float.Input("bbox_threshold", default=0.5, min=0.0, max=1.0, step=0.01, tooltip="Objects that the detector scores below this value are not tracked."),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=100, step=0.1, tooltip="How much wider than the tracked object the crop region of each SEG is."),
+                io.Int.Input("drop_size", default=10, min=1, max=MAX_RESOLUTION, step=1, tooltip="Objects smaller than this many pixels in width or height are dropped."),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-            # segs_masks wieder umdrehen, damit sie mit Originalframes matchen
-            for k in segs_masks.keys():
-                segs_masks[k] = torch.flip(segs_masks[k], dims=[0])
-        else:
-            # ---- Predict masks if BBOXES were found in forward pass----
-            segs_masks = sam2_model.predict_video_segs(image_frames, segs)
+    @classmethod
+    def execute(cls, image_frames, bbox_detector, sam3_model, bbox_threshold, crop_factor, drop_size) -> io.NodeOutput:
+        tracker = core.sam_wrapper_of(sam3_model)
+        if not isinstance(tracker, core.SAM3Wrapper):
+            raise Exception("To use the SAM3 Video Detector (SEGS) node, a SAM3 model must be provided as input to `sam3_model`.")
 
-        def get_whole_merged_mask(all_masks):
-            merged_mask = (all_masks[0] * 255).to(torch.uint8)
-            for mask in all_masks[1:]:
-                merged_mask |= (mask * 255).to(torch.uint8)
-
-            merged_mask = (merged_mask / 255.0).to(torch.float32)
-            merged_mask = utils.to_binary_mask(merged_mask, 0.1)[0]
-            return merged_mask
-
-        new_segs = []
-        for k, v in segs_masks.items():
-            v = v.squeeze(3)
-            m = get_whole_merged_mask(v)
-            seg = segs_nodes.MaskToSEGS.doit(m, False, crop_factor, False, drop_size, contour_fill=True)[0][1]
-
-            if len(seg) == 0:
-                continue
-
-            seg = seg[0]
-
-            x1, y1, x2, y2 = seg.crop_region
-            masks = []
-            for mask in v:
-                masks.append(mask[y1:y2, x1:x2])
-            cropped_mask = torch.stack(masks)
-            cropped_mask = (cropped_mask >= (sam2_threshold * 100 - 50)).to(torch.uint8).cpu()
-
-            new_seg = SEG(
-                seg.cropped_image,
-                cropped_mask,
-                seg.confidence,
-                seg.crop_region,
-                seg.bbox,
-                seg.label,
-                seg.control_net_wrapper
-            )
-            new_segs.append(new_seg)
-
-        return ((segs[0], new_segs), )
-
+        # SAM3Wrapper returns masks of 0 and 1, where SAM2Wrapper returns logits
+        return io.NodeOutput(track_video_segs(tracker, bbox_detector, image_frames, bbox_threshold, crop_factor, drop_size, 0.5))
 
 
 class SimpleDetectorForAnimateDiff:

@@ -4047,6 +4047,24 @@
       "id": "202",
       "type": "ImpactDecomposeSEGSList",
       "widgets": []
+    },
+    {
+      "id": "203",
+      "type": "ImpactSAM3VideoDetectorSEGS",
+      "widgets": [
+        {
+          "name": "bbox_threshold",
+          "value": 0.5
+        },
+        {
+          "name": "crop_factor",
+          "value": 3
+        },
+        {
+          "name": "drop_size",
+          "value": 10
+        }
+      ]
     }
   ]
 }

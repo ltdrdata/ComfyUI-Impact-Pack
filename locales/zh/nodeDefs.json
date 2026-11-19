@@ -1381,11 +1381,11 @@
         "inputs": {
             "model_name": {
                 "name": "模型名称",
-                "tooltip": "检测精度因 SAM 模型而异。只有安装了 ComfyUI-YoloWorld-EfficientSAM 才能使用 ESAM。"
+                "tooltip": "检测精度因 SAM 模型而异。只有安装了 ComfyUI-YoloWorld-EfficientSAM 才能使用 ESAM。\n名称以 `sam3` 开头的文件将作为 SAM3 加载，可放在 `models/sams` 或 `models/checkpoints`。"
             },
             "device_mode": {
                 "name": "设备模式",
-                "tooltip": "AUTO: 仅在有可用 GPU 时适用。仅在使用检测功能时才将 SAM_MODEL 临时加载到 VRAM。\nPrefer GPU: 尽可能将 SAM_MODEL 保留在 GPU 上。可在 VRAM 充足时使用。\nCPU: 始终仅加载到 CPU。"
+                "tooltip": "AUTO: 仅在有可用 GPU 时适用。仅在使用检测功能时才将 SAM_MODEL 临时加载到 VRAM。\nPrefer GPU: 尽可能将 SAM_MODEL 保留在 GPU 上。可在 VRAM 充足时使用。\nCPU: 始终仅加载到 CPU。\nSAM3 模型由 ComfyUI 的模型管理放置，此设置对其不适用。"
             }
         },
         "outputs": {
@@ -4448,6 +4448,41 @@
             },
             "drop_size": {
                 "name": "最小检测尺寸"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
+    },
+    "ImpactSAM3VideoDetectorSEGS": {
+        "description": "在第一帧中检测对象，并使用 SAM3 模型在各帧中跟踪它们。返回每帧都带有蒙版的 SEGS。",
+        "display_name": "SAM3 视频检测器 (SEGS)",
+        "inputs": {
+            "image_frames": {
+                "name": "图像帧序列",
+                "tooltip": "视频的各帧，以图像批次形式提供。"
+            },
+            "bbox_detector": {
+                "name": "bbox 检测器",
+                "tooltip": "在第一帧中找到要跟踪的对象。如果第一帧中没有找到，则使用最后一帧并反向跟踪视频。"
+            },
+            "sam3_model": {
+                "name": "SAM3 模型",
+                "tooltip": "通过 SAMLoader (Impact) 加载的 SAM3 模型。"
+            },
+            "bbox_threshold": {
+                "name": "bbox 阈值",
+                "tooltip": "检测器评分低于此值的对象不会被跟踪。"
+            },
+            "crop_factor": {
+                "name": "裁剪系数",
+                "tooltip": "每个 SEG 的裁剪区域比被跟踪对象宽多少。"
+            },
+            "drop_size": {
+                "name": "最小检测尺寸",
+                "tooltip": "宽度或高度小于此像素数的对象会被丢弃。"
             }
         },
         "outputs": {

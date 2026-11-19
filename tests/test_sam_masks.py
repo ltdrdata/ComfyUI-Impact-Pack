@@ -8,6 +8,7 @@ import importlib
 import os
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import cv2
 import numpy as np
@@ -34,6 +35,18 @@ def core():
         module = importlib.import_module("impact.core")
         patch.setattr(module.utils.config, "cached_config", {"disable_gpu_opencv": True})
         yield module
+
+
+@pytest.fixture(scope="module")
+def detectors(core):
+    from aiohttp import web
+    from server import PromptServer
+
+    # Node imports register HTTP handlers. No server or requests are needed here.
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(PromptServer, "instance", SimpleNamespace(
+            routes=web.RouteTableDef(), add_on_prompt_handler=Mock()), raising=False)
+        yield importlib.import_module("impact.detectors")
 
 
 def candidates(index):
@@ -316,3 +329,184 @@ def test_load_sam_rejects_a_safetensors_file_of_another_model(core, monkeypatch,
     safetensors.torch.save_file({"weight": torch.zeros(2, 3)}, path)
     with pytest.raises(RuntimeError, match="Missing key"):
         core.load_sam("vit_b", path)
+
+
+@pytest.mark.parametrize("combined", [False, True], ids=["segmented", "combined"])
+def test_a_sam2_model_is_taken_by_both_detectors(core, monkeypatch, combined):
+    model = core.SAM2Wrapper(config=None, modelname=None, is_auto_mode=False)
+    monkeypatch.setattr(model, "predict", lambda image, points, plabs, bbox, threshold: [candidates(0)[0]])
+    result = detect(core, model, segments(core, 2), combined=combined)
+
+    if combined:
+        np.testing.assert_array_equal(result[0].numpy(), candidates(0)[0])
+    else:
+        mask, batch = result
+        np.testing.assert_array_equal(mask.numpy(), candidates(0)[0])
+        np.testing.assert_array_equal(batch.numpy()[:, 0], np.stack([candidates(0)[0]] * 2))
+
+
+def test_an_object_that_samloader_did_not_return_is_refused(core):
+    for combined in (False, True):
+        with pytest.raises(Exception, match="Invalid SAMLoader is connected"):
+            detect(core, SimpleNamespace(), segments(core, 1), combined=combined)
+
+
+def sam3_model(core, monkeypatch, tracks="packed masks"):
+    """A SAM3 model as SAMLoader returns it, on a stand-in for ComfyUI's model. Its mask is the inside of the prompted box, or nothing without a box.
+    ComfyUI's tracker returns packed masks for SAM3.1 and logits for SAM3."""
+    model = SimpleNamespace(calls=[], loaded=[])
+
+    def forward_segment(frame, point_inputs=None, box_inputs=None):
+        model.calls.append({"frame": tuple(frame.shape), "points": point_inputs, "box": box_inputs})
+        logits = torch.full((1, 1, 1008, 1008), -10.0)
+        if box_inputs is not None:
+            (x1, y1), (x2, y2) = box_inputs[0].round().int().tolist()
+            logits[..., y1:y2, x1:x2] = 10.0
+        return logits
+
+    def forward_video(images, initial_masks, pbar=None, target_device=None, target_dtype=None):
+        """Every object keeps the mask it starts with and moves one pixel to the right in each frame."""
+        from comfy.ldm.sam3.tracker import pack_masks
+        model.video = {"frames": tuple(images.shape), "initial": initial_masks.clone()}
+        tracked = torch.stack([torch.roll(initial_masks[:, 0], frame, dims=-1) for frame in range(images.shape[0])])
+        if tracks == "logits":
+            return torch.where(tracked > 0, 0.2, -10.0)   # a logit above 0 is inside the mask
+        return {"packed_masks": pack_masks(tracked), "n_frames": images.shape[0], "scores": [1.0] * initial_masks.shape[0]}
+
+    model.model = SimpleNamespace(get_dtype=lambda: torch.float32,
+                                  diffusion_model=SimpleNamespace(forward_segment=forward_segment, forward_video=forward_video))
+    monkeypatch.setattr(core.comfy.model_management, "load_model_gpu", model.loaded.append)
+    return core.SAM3Wrapper(model)
+
+
+@pytest.mark.parametrize("combined", [False, True], ids=["segmented", "combined"])
+def test_sam3_masks_each_detection_at_the_size_of_the_image(core, monkeypatch, combined):
+    sam = sam3_model(core, monkeypatch)
+    model = sam.model
+    result = detect(core, sam, segments(core, 2), combined=combined)
+
+    expected = np.zeros((2, HEIGHT, WIDTH), dtype=bool)
+    for i in range(2):
+        expected[i, i * 7:i * 7 + 5, 1:19] = True
+
+    if combined:
+        np.testing.assert_array_equal(result[0].numpy(), np.logical_or.reduce(expected))
+    else:
+        mask, batch = result
+        np.testing.assert_array_equal(mask.numpy(), np.logical_or.reduce(expected))
+        np.testing.assert_array_equal(batch.numpy()[:, 0], expected)
+
+    # ComfyUI's model management is asked for the model, once for the node
+    assert model.loaded == [model]
+    # the picture and the prompts reach the model at its own size, 1008 x 1008: here 31.5 times the width and 42 times the height
+    assert [call["frame"] for call in model.calls] == [(1, 3, 1008, 1008)] * 2
+    assert model.calls[1]["box"].tolist() == [[[31.5, 294.0], [598.5, 504.0]]]
+    assert model.calls[1]["points"]["point_coords"].tolist() == [[[315.0, 399.0]]]
+    assert model.calls[1]["points"]["point_labels"].tolist() == [[1]]
+
+
+def test_sam3_is_not_asked_without_a_prompt(core, monkeypatch):
+    sam = sam3_model(core, monkeypatch)
+    result = detect(core, sam, segments(core, 0), hint="mask-points", combined=True)
+
+    assert tuple(result.shape) == (1, HEIGHT, WIDTH)
+    assert torch.count_nonzero(result) == 0
+    assert sam.model.calls == []
+
+
+@pytest.mark.parametrize("tracks", ["packed masks", "logits"])
+def test_the_sam3_video_detector_tracks_each_detection_of_the_first_frame(core, detectors, monkeypatch, tracks):
+    sam = sam3_model(core, monkeypatch, tracks)
+    model = sam.model
+    bbox_detector = SimpleNamespace(detect=lambda image, threshold, dilation, crop_factor, drop_size: segments(core, 2))
+    frames = torch.zeros((3, HEIGHT, WIDTH, 3))
+
+    (shape, segs), = detectors.SAM3VideoDetectorSEGS.execute(frames, bbox_detector, sam, 0.5, 3.0, 1).result
+
+    # the tracker gets the frames and, for each detection, the mask SAM3 makes of its box in the first frame
+    assert model.video["frames"] == (3, 3, HEIGHT, WIDTH)
+    boxes = np.zeros((2, HEIGHT, WIDTH), dtype=bool)
+    for i in range(2):
+        boxes[i, i * 7:i * 7 + 5, 1:19] = True
+    np.testing.assert_array_equal(model.video["initial"][:, 0].numpy() > 0, boxes)
+
+    assert shape == (HEIGHT, WIDTH)
+    assert len(segs) == 2
+    for i, seg in enumerate(segs):
+        x1, y1, x2, y2 = seg.crop_region
+        tracked = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
+        tracked[:, y1:y2, x1:x2] = seg.cropped_mask.numpy()
+        np.testing.assert_array_equal(tracked, np.stack([np.roll(boxes[i], frame, axis=-1) for frame in range(3)]))
+
+
+def test_the_sam3_video_detector_tracks_back_from_the_last_frame_when_the_first_has_no_detection(core, detectors, monkeypatch):
+    sam = sam3_model(core, monkeypatch)
+    last_frame = torch.ones((HEIGHT, WIDTH, 3))
+    frames = torch.cat([torch.zeros((2, HEIGHT, WIDTH, 3)), last_frame.unsqueeze(0)])
+    bbox_detector = SimpleNamespace(detect=lambda image, threshold, dilation, crop_factor, drop_size: segments(core, 1 if torch.equal(image[0], last_frame) else 0))
+
+    (shape, segs), = detectors.SAM3VideoDetectorSEGS.execute(frames, bbox_detector, sam, 0.5, 3.0, 1).result
+
+    box = np.zeros((HEIGHT, WIDTH), dtype=bool)
+    box[0:5, 1:19] = True
+    x1, y1, x2, y2 = segs[0].crop_region
+    tracked = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
+    tracked[:, y1:y2, x1:x2] = segs[0].cropped_mask.numpy()
+    # the mask starts on the last frame and moves one pixel for each frame towards the first
+    np.testing.assert_array_equal(tracked, np.stack([np.roll(box, 2 - frame, axis=-1) for frame in range(3)]))
+
+
+def test_the_sam3_video_detector_returns_no_segs_without_a_detection(core, detectors, monkeypatch):
+    sam = sam3_model(core, monkeypatch)
+    bbox_detector = SimpleNamespace(detect=lambda image, threshold, dilation, crop_factor, drop_size: segments(core, 0))
+
+    (shape, segs), = detectors.SAM3VideoDetectorSEGS.execute(torch.zeros((3, HEIGHT, WIDTH, 3)), bbox_detector, sam, 0.5, 3.0, 1).result
+
+    assert shape == (HEIGHT, WIDTH)
+    assert segs == []
+
+
+def test_each_video_detector_takes_only_its_own_model(core, detectors, monkeypatch):
+    frames = torch.zeros((2, HEIGHT, WIDTH, 3))
+    sam2 = core.SAM2Wrapper(config=None, modelname=None, is_auto_mode=False)
+    for model in (sam_model(core, monkeypatch, []), sam2):
+        with pytest.raises(Exception, match="a SAM3 model must be provided"):
+            detectors.SAM3VideoDetectorSEGS.execute(frames, None, model, 0.5, 3.0, 1)
+    for model in (sam_model(core, monkeypatch, []), sam3_model(core, monkeypatch)):
+        with pytest.raises(Exception, match="a SAM2 model must be provided"):
+            detectors.SAM2VideoDetectorSEGS.doit(None, model, frames, 0.5, 0.5, 3.0, 1)
+
+
+def test_the_sam2_video_detector_cuts_the_tracked_logits_at_its_threshold(core, detectors, monkeypatch):
+    sam2 = core.SAM2Wrapper(config=None, modelname=None, is_auto_mode=False)
+    logits = torch.full((3, HEIGHT, WIDTH, 1), -30.0)
+    logits[:, 4:12, 6:20] = 10.0
+    logits[:, 6:10, 8:16] = 40.0
+    monkeypatch.setattr(sam2, "predict_video_segs", lambda frames, segs: {0: logits.clone()})
+    bbox_detector = SimpleNamespace(detect=lambda image, threshold, dilation, crop_factor, drop_size: segments(core, 1))
+
+    def tracked(threshold):
+        ((shape, segs), ) = detectors.SAM2VideoDetectorSEGS.doit(bbox_detector, sam2, torch.zeros((3, HEIGHT, WIDTH, 3)), 0.5, threshold, 3.0, 1)
+        x1, y1, x2, y2 = segs[0].crop_region
+        mask = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
+        mask[:, y1:y2, x1:x2] = segs[0].cropped_mask.numpy()
+        return mask
+
+    # the threshold maps 0..1 to logits -50..50: 0.5 keeps the logits of at least 0, 0.8 those of at least 30
+    assert tracked(0.5).sum() == 3 * 8 * 14
+    assert tracked(0.8).sum() == 3 * 4 * 8
+
+
+@pytest.mark.parametrize("change", ["forward_video as in ComfyUI v0.20.0", "no forward_segment", "no unpack_masks"])
+def test_sam3_is_refused_on_a_comfyui_whose_sam3_it_cannot_call(core, monkeypatch, change):
+    model = sam3_model(core, monkeypatch).model
+    if change == "forward_video as in ComfyUI v0.20.0":
+        model.model.diffusion_model.forward_video = lambda images, initial_masks, pbar=None: None   # no target_device, no target_dtype
+    elif change == "no forward_segment":
+        del model.model.diffusion_model.forward_segment
+    else:
+        import comfy.ldm.sam3.tracker
+        monkeypatch.delattr(comfy.ldm.sam3.tracker, "unpack_masks")
+
+    with pytest.raises(Exception, match="SAM3 cannot be used with the current version of ComfyUI"):
+        core.SAM3Wrapper(model)

@@ -3,6 +3,7 @@ import sys
 
 import comfy.samplers
 import comfy.sd
+import comfy.model_base
 import warnings
 from io import BytesIO
 import piexif
@@ -106,20 +107,28 @@ sam2_config_table = {
     'sam2_hiera_large.pt': 'configs/sam2/sam2_hiera_l.yaml'
 }
 
+def is_sam3(model_name):
+    return os.path.basename(model_name).lower().startswith('sam3')
+
+
 class SAMLoader:
     @classmethod
     def INPUT_TYPES(cls):
         models = [x for x in folder_paths.get_filename_list("sams") if 'hq' not in x and (x.endswith('.pt') or x.endswith('.pth') or x.endswith('.safetensors'))]
+        # ComfyUI's own SAM3 nodes load the same file from the checkpoints folder
+        models += [x for x in folder_paths.get_filename_list("checkpoints") if is_sam3(x) and x not in models]
 
         if 'ESAM_ModelLoader_Zho' in nodes.NODE_CLASS_MAPPINGS:
             models.append('ESAM')
 
         return {
             "required": {
-                "model_name": (models, {"tooltip": "The detection accuracy varies depending on the SAM model. ESAM can only be used if ComfyUI-YoloWorld-EfficientSAM is installed."}),
+                "model_name": (models, {"tooltip": "The detection accuracy varies depending on the SAM model. ESAM can only be used if ComfyUI-YoloWorld-EfficientSAM is installed.\n"
+                                                   "A file whose name starts with `sam3` is loaded as SAM3, from `models/sams` or `models/checkpoints`."}),
                 "device_mode": (["AUTO", "Prefer GPU", "CPU"], {"tooltip": "AUTO: Only applicable when a GPU is available. It temporarily loads the SAM_MODEL into VRAM only when the detection function is used.\n"
                                                                            "Prefer GPU: Tries to keep the SAM_MODEL on the GPU whenever possible. This can be used when there is sufficient VRAM available.\n"
-                                                                           "CPU: Always loads only on the CPU."}),
+                                                                           "CPU: Always loads only on the CPU.\n"
+                                                                           "A SAM3 model is placed by ComfyUI's model management, and this setting does not apply to it."}),
             }
         }
 
@@ -150,6 +159,15 @@ class SAMLoader:
 
             logging.info(f"Loads EfficientSAM model: (device:{device_mode})")
             return (esam, )
+        elif is_sam3(model_name):
+            if not hasattr(comfy.model_base, 'SAM3'):
+                raise Exception(core.sam3_unavailable_message)
+
+            modelname = folder_paths.get_full_path("sams", model_name) or folder_paths.get_full_path_or_raise("checkpoints", model_name)
+            sam = core.SAM3Wrapper(comfy.sd.load_checkpoint_guess_config_model_only(modelname))
+
+            logging.info(f"Loads SAM3 model: {modelname}")
+            return (sam, )
         elif model_name in sam2_config_table:
             model_kind = 'sam2'
             config = sam2_config_table[model_name]
