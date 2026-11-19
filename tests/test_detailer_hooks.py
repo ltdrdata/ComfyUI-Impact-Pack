@@ -167,6 +167,30 @@ def test_coreml_encode_decode_hooks_run_once(runtime, state, decode):
     assert decoded.call_args.args[0].shape == (1, 4, 8, 8)
 
 
+@pytest.mark.parametrize("wildcard,prompts", [
+    ("[LAB]\n[ALL] photo, sharp focus\n[left] blue eyes\n[right] green eyes",
+     {"left": "photo, sharp focus blue eyes", "right": "photo, sharp focus green eyes", "other": "photo, sharp focus"}),
+    ("[LAB]\n[ALL] photo, sharp focus,\n[left] blue eyes", {"left": "photo, sharp focus, blue eyes", "right": "photo, sharp focus,", "other": "photo, sharp focus,"}),
+    ("[LAB]\n[ALL] <lora:detail:0.5>\n[left] blue eyes", {"left": "<lora:detail:0.5> blue eyes", "right": "<lora:detail:0.5>", "other": "<lora:detail:0.5>"}),
+    ("[LAB]\n[left] blue eyes\n[right] green eyes", {"left": "blue eyes", "right": "green eyes", "other": ""}),
+], ids=["a prefix for every label", "a prefix that ends with a comma", "a prefix that is a LoRA tag", "no prefix"])
+def test_each_seg_is_detailed_with_the_prompt_of_its_label(runtime, state, monkeypatch, wildcard, prompts):
+    given = {}
+
+    def enhance_detail(image, *args, wildcard_opt=None, **kwargs):
+        given[args[6]] = wildcard_opt   # the bbox of the SEG -> the prompt it is detailed with
+        return image, None
+
+    monkeypatch.setattr(runtime.core, "enhance_detail", enhance_detail)
+    args = foreach_arguments(runtime, state)
+    boxes = {"left": (0, 0, 16, 16), "right": (32, 0, 48, 16), "other": (0, 32, 16, 48)}
+    args["segs"] = ((64, 64), [runtime.core.SEG(None, np.ones((16, 16), np.float32), 1., box, box, label) for label, box in boxes.items()])
+
+    runtime.pack.DetailerForEach.do_detail(**dict(args, wildcard_opt=wildcard))
+
+    assert {label: given[box] for label, box in boxes.items()} == prompts
+
+
 @pytest.mark.parametrize("kind", ["empty", "zero-mask", "large", "dummy"])
 def test_skipped_segments_keep_image_and_skip_sampling(runtime, state, kind):
     hook = runtime.hooks.DetailerHook()
