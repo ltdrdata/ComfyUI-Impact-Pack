@@ -1,6 +1,6 @@
 import { api } from "../../scripts/api.js";
 import { app } from "../../scripts/app.js";
-import { getFileItem } from "./image-path.js";
+import { getFileItem, showsImage } from "./image-path.js";
 
 // Registrations belong to the server process; a retained tab outlives that map.
 let connectionVersion = 0;
@@ -10,6 +10,27 @@ export function isPreviewBridge(node) {
     return node.comfyClass === "PreviewBridge" || node.comfyClass === "PreviewBridgeLatent";
 }
 
+function explainNoImage() {
+    app.extensionManager.toast.add({
+        severity: "warn",
+        summary: "Preview Bridge",
+        detail: "This Preview Bridge has no image to open. It gets one when the node itself is executed. If a run left it empty, the run did not reach it: check its input connection, a bypass, or a switch that routes around it.",
+        life: 10000
+    });
+}
+
+// The toolbar button and the keybinding of the mask editor run this command. Without a picture it fails without a word.
+export function guardMaskEditorCommand() {
+    const command = app.extensionManager.command.commands.find(c => c.id === "Comfy.MaskEditor.OpenMaskEditor");
+    if (!command) return;
+    const open = command.function;
+    command.function = (...args) => {
+        const selected = Object.values(app.canvas.selected_nodes ?? {});
+        if (selected.length === 1 && isPreviewBridge(selected[0]) && !showsImage(selected[0])) return explainNoImage();
+        return open(...args);
+    };
+}
+
 function imageValue(item) {
     return `${item.subfolder ? item.subfolder + "/" : ""}${item.filename} [${item.type || "temp"}]`;
 }
@@ -17,6 +38,18 @@ function imageValue(item) {
 export function setupPreviewBridge(node) {
     const widget = node.widgets.find(w => w.name === "image");
     node.imgs = [new Image()];
+
+    // The same notice for the menu entry of the mask editor, which does not go through the command.
+    const getExtraMenuOptions = node.getExtraMenuOptions;
+    node.getExtraMenuOptions = function(canvas, options) {
+        const result = getExtraMenuOptions?.call(this, canvas, options);
+        for (const option of options) {
+            if (typeof option?.content !== "string" || !option.content.startsWith("Open in MaskEditor")) continue;
+            const open = option.callback;
+            option.callback = (...args) => showsImage(node) ? open(...args) : explainNoImage();
+        }
+        return result;
+    };
 
     // The mask editor opens the file the image widget names. For a batch, that is the image selected on the node.
     let shown = [];

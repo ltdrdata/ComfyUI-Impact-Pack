@@ -236,6 +236,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 
 ### Image Utils
   * `PreviewBridge (image)` - This custom node can be used with a bridge for image when using the MaskEditor feature of Clipspace.
+    * A Preview Bridge, image or latent, gets its image when the node itself is executed. Until then it has none, and the MaskEditor and the SAM Detector show a notice in place of opening. Running the workflow is not enough when the run does not reach the bridge: an unconnected input, a bypass or a switch that routes around it leaves it empty.
   * `PreviewBridge (latent)` - This custom node can be used with a bridge for latent image when using the MaskEditor feature of Clipspace.
     * If a latent with a mask is provided as input, it displays the mask. Additionally, the mask output provides the mask set in the latent.
     * If a latent without a mask is provided as input, it outputs the original latent as is, but the mask output provides an output with the entire region set as a mask.

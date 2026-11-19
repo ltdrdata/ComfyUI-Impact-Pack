@@ -1,5 +1,6 @@
 import { app, ComfyApp } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
+import { showsImage } from "./image-path.js";
 
 const { ComfyDialog, $el } = window.comfyAPI?.ui ?? await import("../../scripts/ui.js");
 
@@ -659,6 +660,15 @@ app.registerExtension({
 				options.unshift({
 					content: "Open in SAM Detector",
 					callback: () => {
+						if (!showsImage(this)) {
+							app.extensionManager.toast.add({
+								severity: "warn",
+								summary: "SAM Detector",
+								detail: "This node shows no image for the SAM Detector to open. A node with a preview shows its image after the node itself has been executed. If a run left it empty, the run did not reach it: check its input connection, a bypass, or a switch that routes around it.",
+								life: 10000
+							});
+							return;
+						}
 						ComfyApp.copyToClipspace(this);
 						ComfyApp.clipspace_return_node = this;
 

@@ -9,3 +9,11 @@ export function getFileItem(baseType, value) {
         type: annotation ? annotation[1].toLowerCase() : baseType
     };
 }
+
+// The mask editor and the SAM Detector open the picture a node shows. A node gets its picture when the node itself is
+// executed, which a run of the workflow does not guarantee: an unconnected input, a bypass or a switch keeps a run from
+// reaching it. A node that was not executed, or whose file is gone, shows none.
+export function showsImage(node) {
+    const image = node.imgs?.[node.imageIndex ?? 0];
+    return !!image?.src && !(image.complete && !image.naturalWidth);
+}

@@ -13,7 +13,10 @@ async function extension(t) {
     // Whether the picture at a URL can be shown.
     const decoded = t.mock.fn(async () => {});
     const toast = t.mock.fn();
-    const app = { registerExtension(value) { registered = value; }, extensionManager: { toast: { add: toast } } };
+    // The core command behind the toolbar button of the mask editor.
+    const command = { id: "Comfy.MaskEditor.OpenMaskEditor", function: t.mock.fn() };
+    const app = { registerExtension(value) { registered = value; }, canvas: { selected_nodes: {} },
+        extensionManager: { toast: { add: toast }, command: { commands: [command] } } };
     const context = createContext({ Image: class { src = ""; decode() { return decoded(this.src); } }, URLSearchParams, Promise, Math,
         document: { createElement: () => ({ getContext: () => ({ drawImage() {} }), toDataURL: () => "data:image/png;base64,saved" }) } });
     const modules = new Map();
@@ -32,7 +35,7 @@ async function extension(t) {
     const module = await load("./impact-image-util.js");
     await module.link(load);
     await module.evaluate();
-    return { registered, fetch, api, toast, decoded };
+    return { registered, fetch, api, toast, decoded, app, command };
 }
 
 async function bridge(t, configurable = true) {
@@ -335,4 +338,50 @@ test("the image selected on the node is the one of a batch that the mask editor 
     storeWrite("clipspace/clipspace-painted-masked-1.png [input]");
     node.imageIndex = 0;
     assert.equal(widget.value, "clipspace/clipspace-painted-masked-1.png [input]");
+});
+
+test("a bridge that shows no image explains it where the mask editor would fail", async t => {
+    const { registered, toast, app, command } = await extension(t);
+    const openCommand = command.function;
+    const openEntry = t.mock.fn();
+    const copy = () => {};
+    const node = { id: 41, comfyClass: "PreviewBridge", widgets: [{ name: "image", value: "" }], properties: {}, graph: { setDirtyCanvas() {} },
+        getExtraMenuOptions(canvas, options) {
+            options.push(null, { content: "Open in MaskEditor | Image Canvas", callback: openEntry }, { content: "Copy (Clipspace)", callback: copy });
+        } };
+    registered.nodeCreated(node);
+    registered.setup();
+    app.canvas.selected_nodes = { 41: node };
+    const entries = () => { const options = []; node.getExtraMenuOptions(null, options); return options; };
+
+    // Before the node is executed: the menu entry and the command both explain, and neither reaches the editor.
+    entries()[1].callback();
+    command.function();
+    assert.equal(toast.mock.callCount(), 2);
+    assert.match(toast.mock.calls[0].arguments[0].detail, /It gets one when the node itself is executed/);
+    assert.equal(openEntry.mock.callCount() + openCommand.mock.callCount(), 0);
+    assert.equal(entries()[2].callback, copy, "other menu entries are left as they are");
+
+    // With a picture both open as before.
+    node.imgs[0].src = "/view?filename=a.png";
+    entries()[1].callback("event");
+    command.function();
+    assert.equal(toast.mock.callCount(), 2);
+    assert.equal(openEntry.mock.callCount(), 1);
+    assert.equal(openEntry.mock.calls[0].arguments[0], "event");
+    assert.equal(openCommand.mock.callCount(), 1);
+
+    // A picture whose file is gone, as after a server restart, is no picture.
+    Object.assign(node.imgs[0], { complete: true, naturalWidth: 0 });
+    entries()[1].callback();
+    assert.equal(toast.mock.callCount(), 3);
+    assert.equal(openEntry.mock.callCount(), 1);
+
+    // The command is stopped for this bridge alone.
+    app.canvas.selected_nodes = { 7: { id: 7, comfyClass: "LoadImage" } };
+    command.function();
+    app.canvas.selected_nodes = { 7: { id: 7, comfyClass: "LoadImage" }, 41: node };
+    command.function();
+    assert.equal(openCommand.mock.callCount(), 3);
+    assert.equal(toast.mock.callCount(), 3);
 });

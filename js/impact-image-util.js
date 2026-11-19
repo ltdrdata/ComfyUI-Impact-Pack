@@ -1,10 +1,14 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
-import { isPreviewBridge, setupPreviewBridge, restorePreviewBridge } from "./preview-bridge.js";
+import { isPreviewBridge, setupPreviewBridge, restorePreviewBridge, guardMaskEditorCommand } from "./preview-bridge.js";
 import { getFileItem } from "./image-path.js";
 
 app.registerExtension({
 	name: "Comfy.Impact.img",
+
+	setup() {
+		guardMaskEditorCommand();
+	},
 
 	loadedGraphNode(node) {
 		if (isPreviewBridge(node)) return restorePreviewBridge(node);
