@@ -12,8 +12,7 @@ dependencies = [
     "scipy",
     "numpy",
     "dill",
-    "matplotlib",
-    "sam2 @ git+https://github.com/facebookresearch/sam2"
+    "matplotlib"
 ]
 
 [project.urls]

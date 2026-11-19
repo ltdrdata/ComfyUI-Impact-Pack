@@ -7,4 +7,3 @@ scipy
 numpy
 dill
 matplotlib
-git+https://github.com/facebookresearch/sam2
