@@ -3,8 +3,9 @@ import os
 import uuid
 import warnings
 
+import safetensors.torch
 import torch
-from segment_anything import SamPredictor
+from segment_anything import SamPredictor, sam_model_registry
 
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from collections import namedtuple
@@ -637,6 +638,16 @@ def sam_predict(predictor, points, plabs, bbox, threshold):
         total_masks.append(max_mask)
 
     return total_masks
+
+
+def load_sam(model_kind, model_path):
+    if not model_path.lower().endswith('.safetensors'):
+        return sam_model_registry[model_kind](checkpoint=model_path)
+
+    # segment_anything opens a checkpoint with torch.load, which cannot read safetensors
+    sam = sam_model_registry[model_kind]()
+    sam.load_state_dict(safetensors.torch.load_file(model_path))
+    return sam
 
 
 class SAMWrapper:

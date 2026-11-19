@@ -20,7 +20,7 @@ from aiohttp import web
 from comfy_execution.graph_utils import is_link
 from impact.utils import to_tensor
 from PIL import Image
-from segment_anything import SamPredictor, sam_model_registry
+from segment_anything import SamPredictor
 from server import PromptServer
 
 sam_predictor = None
@@ -42,7 +42,7 @@ def async_prepare_sam(model_name, filename):
         else:
             model_kind = 'vit_b'
 
-        sam_model = sam_model_registry[model_kind](checkpoint=model_name)
+        sam_model = core.load_sam(model_kind, model_name)
         sam_predictor = SamPredictor(sam_model)
 
         image = nodes.LoadImage().load_image(filename)[0]
