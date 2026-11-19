@@ -64,8 +64,7 @@ def test_normal_masks_preserve_values_geometry_and_batch_order(runtime, dtype, b
     assert len(segments) == (2 if batched else 1)
     for index, seg in enumerate(segments):
         x, y = 8 + 8 * index, 4 + 4 * index
-        # The combined path's historical max coordinates are inclusive.
-        width, height = (23, 15) if combined else (24, 16)
+        width, height = 24, 16
         assert seg.bbox == (x, y, x + width, y + height)
         assert tuple(seg.crop_region) == seg.bbox
         value = 1.0 if contour_fill else (0.375, 0.75)[index]
@@ -131,7 +130,7 @@ def test_empty_masks_and_combined_path_remain_unchanged(runtime):
     mask = np.zeros((32, 48), dtype=np.float32)
     mask[4:20, 8:32] = 2.0
     _, segments = runtime.core.mask_to_segs(mask, True, 1.0, False)
-    np.testing.assert_array_equal(segments[0].cropped_mask, np.full((15, 23), 2.0))
+    np.testing.assert_array_equal(segments[0].cropped_mask, np.full((16, 24), 2.0))
 
 
 @pytest.mark.parametrize("contour_fill", [False, True])
@@ -209,7 +208,50 @@ def test_tutorial_combined_disconnected_regions(runtime):
     separate = runtime.segs_nodes.MaskToSEGS.doit(torch.from_numpy(mask), False, 2.0, False, 10)[0]
     assert sorted(seg.bbox for seg in separate[1]) == [(8, 8, 24, 24), (56, 32, 72, 48)]
     combined = runtime.segs_nodes.MaskToSEGS.doit(torch.from_numpy(mask), True, 2.0, False, 10)[0]
-    assert len(combined[1]) == 1 and combined[1][0].bbox == (8, 8, 71, 47)
+    assert len(combined[1]) == 1 and combined[1][0].bbox == (8, 8, 72, 48)
     assert tuple(combined[1][0].crop_region) == (0, 0, 96, 64)
     np.testing.assert_array_equal(combined[1][0].cropped_mask, before)
     np.testing.assert_array_equal(mask, before)
+
+
+def edge_masks():
+    whole = np.ones((48, 64), dtype=np.float32)
+    right_edge = np.zeros((48, 64), dtype=np.float32)
+    right_edge[10:30, 40:64] = 1.0
+    bottom_edge = np.zeros((48, 64), dtype=np.float32)
+    bottom_edge[30:48, 8:20] = 1.0
+    inside = np.zeros((48, 64), dtype=np.float32)
+    inside[10:30, 20:40] = 1.0
+    return {"the whole picture": whole, "to the right edge": right_edge, "to the bottom edge": bottom_edge, "inside": inside}
+
+
+@pytest.mark.parametrize("name", list(edge_masks()))
+@pytest.mark.parametrize("crop_factor", [1.0, 1.5, 3.0])
+def test_combined_gives_the_region_of_the_separate_segs_merged(runtime, name, crop_factor):
+    mask = edge_masks()[name]
+    combined, = runtime.segs_nodes.MaskToSEGS.doit(torch.from_numpy(mask), True, crop_factor, False, 1)[0][1]
+    separate = runtime.segs_nodes.MaskToSEGS.doit(torch.from_numpy(mask), False, crop_factor, False, 1)[0]
+    merged, = runtime.segs_nodes.SEGSMerge().doit(separate)[0][1]
+
+    assert tuple(combined.bbox) == tuple(merged.bbox)
+    assert tuple(combined.crop_region) == tuple(merged.crop_region)
+    # every pixel of the mask is in the SEG, at its place in the picture
+    x1, y1, x2, y2 = combined.crop_region
+    placed = np.zeros_like(mask)
+    placed[y1:y2, x1:x2] = combined.cropped_mask
+    np.testing.assert_array_equal(placed, mask)
+
+
+@pytest.mark.parametrize("crop_factor", [1.0, 1.5, 3.0])
+def test_combined_bbox_fill_fills_the_bbox_where_it_is_in_the_picture(runtime, crop_factor):
+    ring = np.zeros((48, 64), dtype=np.float32)
+    ring[20:40, 30:56] = 1.0
+    ring[25:35, 36:50] = 0.0
+    seg, = runtime.segs_nodes.MaskToSEGS.doit(torch.from_numpy(ring), True, crop_factor, True, 1)[0][1]
+
+    x1, y1, x2, y2 = seg.crop_region
+    placed = np.zeros_like(ring)
+    placed[y1:y2, x1:x2] = seg.cropped_mask
+    filled = np.zeros_like(ring)
+    filled[20:40, 30:56] = 1.0
+    np.testing.assert_array_equal(placed, filled)

@@ -1411,8 +1411,8 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                 bbox = (
                     np.min(indices[1]),
                     np.min(indices[0]),
-                    np.max(indices[1]),
-                    np.max(indices[0]),
+                    np.max(indices[1]) + 1,
+                    np.max(indices[0]) + 1,
                 )
                 crop_region = utils.make_crop_region(
                     mask_i.shape[1], mask_i.shape[0], bbox, crop_factor
@@ -1428,7 +1428,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
                     if bbox_fill:
                         bx1, by1, bx2, by2 = bbox
                         cropped_mask = cropped_mask.copy()
-                        cropped_mask[by1:by2, bx1:bx2] = 1.0
+                        cropped_mask[by1 - y1:by2 - y1, bx1 - x1:bx2 - x1] = 1.0
 
                     if cropped_mask is not None:
                         item = SEG(None, cropped_mask, 1.0, crop_region, bbox, label, None)
