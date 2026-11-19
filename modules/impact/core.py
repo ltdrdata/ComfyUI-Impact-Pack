@@ -33,12 +33,11 @@ import importlib
 
 
 is_sam2_available = importlib.util.find_spec("sam2")
-sam2_unavailable_message = f"\n----------------------------------------------------------------------------\n[Impact Pack] The SAM2 functionality is unavailable because the `facebook/sam2` dependency is not installed.\n\nInstallation command:\n{sys.executable} -m pip install git+https://github.com/facebookresearch/sam2\n----------------------------------------------------------------------------\n"
+sam2_requirements_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "requirements-sam2.txt")
+sam2_unavailable_message = f"\n----------------------------------------------------------------------------\n[Impact Pack] The SAM2 functionality is unavailable because the `facebook/sam2` dependency is not installed.\n\nInstallation command:\n{sys.executable} -m pip install -r \"{sam2_requirements_path}\"\n----------------------------------------------------------------------------\n"
 if is_sam2_available:
     from sam2.sam2_image_predictor import SAM2ImagePredictor
     from sam2.build_sam import build_sam2, build_sam2_video_predictor
-else:
-    logging.warning(sam2_unavailable_message)
 
 try:
     from comfy_extras import nodes_differential_diffusion

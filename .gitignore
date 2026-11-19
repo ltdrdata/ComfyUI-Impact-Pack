@@ -8,6 +8,7 @@ impact_subpack
 *.txt
 *.yaml
 !requirements.txt
+!requirements-sam2.txt
 !LICENSE.txt
 .claude/
 .pair-cowork

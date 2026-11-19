@@ -8,6 +8,7 @@ This node pack helps to conveniently enhance images through Detector, Detailer, 
 NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pack. To use the UltralyticsDetectorProvider node, please install the ComfyUI-Impact-Subpack separately.
 
 ## NOTICE 
+* V9.1: `sam2` is no longer installed with `requirements.txt`. To use SAM2 models, install [`requirements-sam2.txt`](#sam2-optional). An installation that already has `sam2` needs nothing.
 * V8.24: This compatibility patch requires ComfyUI version 0.3.63 or higher due to structural changes in DifferentialDiffusion.
 * V8.19: legacy nodes (mmdet and etc.) are removed
 * V8.18: Support [facebookresearch/sam2](https://github.com/facebookresearch/sam2) models
@@ -56,6 +57,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
         ```
         pip install -r requirements.txt
         ```
+    * SAM2 models need one more package. See [SAM2 (optional)](#sam2-optional).
 
 ### Companion Pack
 * If you need the `Ultralytics Detector Provider` to use various YOLO detection models, you should also install [ComfyUI-Impact-Subpack](https://github.com/ltdrdata/ComfyUI-Impact-Subpack).
@@ -379,6 +381,14 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
 * NOTE2: You can use this colab notebook [colab notebook](https://colab.research.google.com/github/ltdrdata/ComfyUI-Impact-Pack/blob/Main/notebook/comfyui_colab_impact_pack.ipynb) to launch it. This notebook automatically downloads the impact pack to the custom_nodes directory, installs the tested dependencies, and runs it.
 * NOTE3: If you create an empty file named `skip_download_model` in the `ComfyUI/custom_nodes/` directory, it will skip the model download step during the installation of the impact pack.
 
+### SAM2 (optional)
+SAM2 models (`sam2*.pt` in `SAMLoader`) need the `sam2` package of [facebookresearch/sam2](https://github.com/facebookresearch/sam2). It is not on PyPI and is not installed with `requirements.txt`. To use them, run this in the Impact Pack directory, with the Python of ComfyUI:
+```
+pip install -r requirements-sam2.txt
+```
+* `sam2` requires `torch>=2.5.1` and `torchvision>=0.20.1`. With an older version installed, pip replaces `torch` and `torchvision` with the default builds of PyPI, which may not be the build your GPU needs. Update `torch` first in that case.
+* Without the package, the rest of the Impact Pack works, and a detector that is run with a SAM2 model reports the command to install it.
+
 
 ## Package Dependencies (If you need to manual setup.)
 
@@ -392,7 +402,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
    * numpy
    * dill
    * matplotlib
-   * git+https://github.com/facebookresearch/sam2
+   * (optional) git+https://github.com/facebookresearch/sam2 - for SAM2 models, in `requirements-sam2.txt`
    * (optional) onnxruntime
    
 * linux packages (ubuntu)
