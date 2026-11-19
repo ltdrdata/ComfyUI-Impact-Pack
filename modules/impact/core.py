@@ -684,6 +684,13 @@ class SAM2Wrapper:
     def prepare_device(self):
         pass
 
+    def build(self, builder):
+        # sam2 builds a model on cuda unless it is told where
+        model = builder(self.config, self.modelname, device="cpu")
+        if self.device_mode == "Prefer GPU":
+            self.safe_to_gpu.to_device(model, device=comfy.model_management.get_torch_device())
+        return model
+
     def prepare_image_device(self):
         if self.is_auto_mode:
             device = comfy.model_management.get_torch_device()
@@ -706,7 +713,7 @@ class SAM2Wrapper:
             raise Exception(sam2_unavailable_message)
 
         if self.image_predictor is None:
-            self.image_predictor = SAM2ImagePredictor(build_sam2(self.config, self.modelname))
+            self.image_predictor = SAM2ImagePredictor(self.build(build_sam2))
 
         self.prepare_image_device()
 
@@ -719,7 +726,7 @@ class SAM2Wrapper:
             raise Exception(sam2_unavailable_message)
 
         if self.video_predictor is None:
-            self.video_predictor = build_sam2_video_predictor(self.config, self.modelname)
+            self.video_predictor = self.build(build_sam2_video_predictor)
 
         self.prepare_video_device()
 

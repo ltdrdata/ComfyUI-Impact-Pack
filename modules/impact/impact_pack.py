@@ -187,18 +187,15 @@ class SAMLoader:
         size = os.path.getsize(modelname)
         safe_to = core.SafeToGPU(size)
 
-        # Unless user explicitly wants to use CPU, we use GPU
-        device = comfy.model_management.get_torch_device() if device_mode == "Prefer GPU" else "CPU"
-
-        if device_mode == "Prefer GPU":
-            safe_to.to_device(sam, device)
-
         is_auto_mode = device_mode == "AUTO"
 
         if model_kind == 'sam2':
             sam = core.SAM2Wrapper(config=config, modelname=modelname, is_auto_mode=is_auto_mode, safe_to_gpu=safe_to, device_mode=device_mode)
             logging.info(f"Loads SAM2 model: {modelname} (device:{device_mode})")
         else:
+            if device_mode == "Prefer GPU":
+                safe_to.to_device(sam, comfy.model_management.get_torch_device())
+
             sam_obj = core.SAMWrapper(sam, is_auto_mode=is_auto_mode, safe_to_gpu=safe_to)
             sam.sam_wrapper = sam_obj
             logging.info(f"Loads SAM model: {modelname} (device:{device_mode})")

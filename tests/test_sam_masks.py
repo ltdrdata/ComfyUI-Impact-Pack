@@ -345,6 +345,81 @@ def test_a_sam2_model_is_taken_by_both_detectors(core, monkeypatch, combined):
         np.testing.assert_array_equal(batch.numpy()[:, 0], np.stack([candidates(0)[0]] * 2))
 
 
+@pytest.mark.parametrize("device_mode", ["AUTO", "Prefer GPU", "CPU"])
+def test_samloader_returns_a_sam2_model_that_a_detector_takes_in_every_device_mode(core, detectors, monkeypatch, tmp_path, device_mode):
+    pack = importlib.import_module("impact.impact_pack")
+    file = tmp_path / "sam2.1_hiera_tiny.pt"
+    file.write_bytes(b"")
+    monkeypatch.setattr(pack.folder_paths, "get_full_path", lambda folder, name: str(file))
+
+    model, = pack.SAMLoader().load_model(file.name, device_mode)
+
+    monkeypatch.setattr(model, "predict", lambda image, points, plabs, bbox, threshold: [candidates(0)[0]])
+    np.testing.assert_array_equal(detect(core, model, segments(core, 1), combined=True)[0].numpy(), candidates(0)[0])
+
+
+class TrackedNowhere(torch.nn.Identity):
+    """Stands for the video predictor of sam2: every frame gets an empty mask for every object."""
+    image_size, device = 16, torch.device("cpu")
+
+    def _get_image_feature(self, inference_state, frame_idx, batch_size):
+        pass
+
+    def add_new_points_or_box(self, inference_state, frame_idx, obj_id, points, labels, box):
+        inference_state["obj_ids"].append(obj_id)
+
+    def propagate_in_video(self, inference_state):
+        for frame in range(inference_state["num_frames"]):
+            yield frame, inference_state["obj_ids"], torch.zeros(len(inference_state["obj_ids"]), 1, self.image_size, self.image_size)
+
+
+@pytest.mark.parametrize("device_mode", ["AUTO", "Prefer GPU", "CPU"])
+@pytest.mark.parametrize("used_for", ["an image", "a video"])
+def test_a_sam2_model_is_built_on_the_cpu_and_goes_to_the_gpu_only_as_its_device_mode_says(core, monkeypatch, used_for, device_mode):
+    sampling_device = torch.device("cuda:1")
+    built_on, moved_to = [], []
+
+    def builder(model):
+        def build(config, modelname, device="cuda"):
+            built_on.append(torch.device(device))
+            return model
+        return build
+
+    monkeypatch.setattr(core, "is_sam2_available", True)
+    monkeypatch.setattr(core, "build_sam2", builder(torch.nn.Identity()), raising=False)
+    monkeypatch.setattr(core, "build_sam2_video_predictor", builder(TrackedNowhere()), raising=False)
+    monkeypatch.setattr(core, "SAM2ImagePredictor", lambda model: SimpleNamespace(
+        model=model, set_image=lambda image: None, predict=lambda **prompt: ([candidates(0)[0]], [1.0], None)), raising=False)
+    monkeypatch.setattr(core.comfy.model_management, "get_torch_device", lambda: sampling_device)
+    mover = SimpleNamespace(to_device=lambda model, device: moved_to.append(device))
+    model = core.SAM2Wrapper(config=None, modelname=None, is_auto_mode=device_mode == "AUTO", safe_to_gpu=mover, device_mode=device_mode)
+
+    if used_for == "an image":
+        model.predict(np.zeros((HEIGHT, WIDTH, 3), dtype=np.uint8), [[1, 1]], [1], None, THRESHOLD)
+    else:
+        model.predict_video_segs(torch.zeros(2, HEIGHT, WIDTH, 3), segments(core, 1))
+
+    assert built_on == [torch.device("cpu")]
+    assert moved_to == ([] if device_mode == "CPU" else [sampling_device])
+
+
+@pytest.mark.parametrize("device_mode", ["AUTO", "Prefer GPU", "CPU"])
+def test_samloader_moves_a_sam_model_to_the_gpu_at_once_only_with_prefer_gpu(core, detectors, monkeypatch, tmp_path, device_mode):
+    pack = importlib.import_module("impact.impact_pack")
+    file = tmp_path / "sam_vit_b.pth"
+    file.write_bytes(b"")
+    sampling_device = torch.device("cuda:1")
+    moved_to = []
+    monkeypatch.setattr(pack.folder_paths, "get_full_path", lambda folder, name: str(file))
+    monkeypatch.setattr(core, "load_sam", lambda kind, path: torch.nn.Identity())
+    monkeypatch.setattr(core, "SafeToGPU", lambda size: SimpleNamespace(to_device=lambda model, device: moved_to.append(device)))
+    monkeypatch.setattr(pack.comfy.model_management, "get_torch_device", lambda: sampling_device)
+
+    pack.SAMLoader().load_model(file.name, device_mode)
+
+    assert moved_to == ([sampling_device] if device_mode == "Prefer GPU" else [])
+
+
 def test_an_object_that_samloader_did_not_return_is_refused(core):
     for combined in (False, True):
         with pytest.raises(Exception, match="Invalid SAMLoader is connected"):
