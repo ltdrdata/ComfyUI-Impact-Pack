@@ -1,3 +1,4 @@
+import inspect
 import logging
 
 import nodes
@@ -69,8 +70,13 @@ def get_noise_sampler(x, cpu, total_sigmas, **kwargs):
     return None
 
 
+WHOLE_SCHEDULE_NOISE_SAMPLERS = ("dpmpp_sde", "dpmpp_sde_gpu", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde", "dpmpp_3m_sde_gpu")
+# ComfyUI gives them a noise sampler and calls them with eta 0
+ETA_0_SAMPLER_FUNCTIONS = ("sample_res_multistep", "sample_res_multistep_cfg_pp")
+
+
 def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
-    if sampler_name in ["dpmpp_sde", "dpmpp_sde_gpu", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu", "dpmpp_3m_sde", "dpmpp_3m_sde_gpu"]:
+    if sampler_name in WHOLE_SCHEDULE_NOISE_SAMPLERS:
         if sampler_name == "dpmpp_sde":
             orig_sampler_function = k_diffusion_sampling.sample_dpmpp_sde
         elif sampler_name == "dpmpp_sde_gpu":
@@ -266,6 +272,19 @@ class KSamplerAdvancedWrapper:
     def clone_with_conditionings(self, positive, negative):
         model, cfg, sampler_name, scheduler, _, _, sigma_factor = self.params
         return KSamplerAdvancedWrapper(model, cfg, sampler_name, scheduler, positive, negative, self.sampler_opt, sigma_factor, self.scheduler_func)
+
+    def draws_noise_in_each_call(self):
+        sampler_name = self.params[2]
+        if self.sampler_opt is None and sampler_name in WHOLE_SCHEDULE_NOISE_SAMPLERS:
+            return False
+
+        sampler = self.sampler_opt if self.sampler_opt is not None else comfy.samplers.sampler_object(sampler_name)
+        sampler_function = getattr(sampler, 'sampler_function', None)
+        if sampler_function is None or getattr(sampler_function, '__name__', None) in ETA_0_SAMPLER_FUNCTIONS:
+            return False
+        if sampler.extra_options.get('eta') == 0 or sampler.extra_options.get('s_noise') == 0:
+            return False
+        return 'noise_sampler' in inspect.signature(sampler_function).parameters
 
     def sample_advanced(self, add_noise, seed, steps, latent_image, start_at_step, end_at_step, return_with_leftover_noise, hook=None,
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0, noise=None):

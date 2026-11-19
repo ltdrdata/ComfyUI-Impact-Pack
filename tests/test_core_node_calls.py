@@ -133,6 +133,9 @@ class Fill:
     def sample_advanced(self, add_noise, seed, steps, latent_image, *args, **kwargs):
         return {**latent_image, "samples": torch.full_like(latent_image["samples"], self.value)}
 
+    def draws_noise_in_each_call(self):
+        return False
+
 
 @pytest.fixture
 def region(runtime, monkeypatch):

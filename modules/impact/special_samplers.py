@@ -284,6 +284,26 @@ class ConcatConditionings:
         return (conditioning_to, )
 
 
+def seed_of_step(sampler, seed, step):
+    """A sampler that draws its noise anew in every call draws the same noise in every call with the same seed."""
+    if sampler.draws_noise_in_each_call():
+        # ComfyUI adds 1 to the seed of noise that it draws on the CPU
+        return (seed + step) % (2**64 - 1)
+    return seed
+
+
+def take_back_outside_of_mask(sampler, before, after, mask):
+    """A sampler that draws its noise anew in every call adds it outside the mask as well. A sampling that runs to the
+    end removes it there in its last step."""
+    if not sampler.draws_noise_in_each_call():
+        return after
+
+    inside = comfy.utils.reshape_mask(mask, after['samples'].shape) > 0
+    result = after.copy()
+    result['samples'] = torch.where(inside.to(after['samples'].device), after['samples'], before['samples'].to(after['samples'].device))
+    return result
+
+
 class RegionalSampler:
     @classmethod
     def INPUT_TYPES(s):
@@ -393,10 +413,13 @@ class RegionalSampler:
         for i in range(start_at_step+base_only_steps, adv_steps):
             core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
+            before_step = new_latent_image
             new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(add_noise, seed, adv_steps, new_latent_image,
+            new_latent_image = base_sampler.sample_advanced(add_noise, seed_of_step(base_sampler, seed, i), adv_steps, new_latent_image,
                                                             start_at_step=i, end_at_step=i + 1, return_with_leftover_noise=True,
                                                             recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio, noise=noise)
+            if not add_noise:
+                new_latent_image = take_back_outside_of_mask(base_sampler, before_step, new_latent_image, inv_mask)
 
             if restore_latent:
                 if 'noise_mask' in new_latent_image:
@@ -412,9 +435,11 @@ class RegionalSampler:
 
                 region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
 
+                before_step = new_latent_image
                 new_latent_image['noise_mask'] = region_mask
-                new_latent_image = regional_prompt.sampler.sample_advanced(False, seed, adv_steps, new_latent_image, i, i + 1, True,
+                new_latent_image = regional_prompt.sampler.sample_advanced(False, seed_of_step(regional_prompt.sampler, seed, i), adv_steps, new_latent_image, i, i + 1, True,
                                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio)
+                new_latent_image = take_back_outside_of_mask(regional_prompt.sampler, before_step, new_latent_image, region_mask)
 
                 if restore_latent:
                     del new_latent_image['noise_mask']
@@ -509,9 +534,12 @@ class RegionalSamplerAdvanced:
             else:
                 noise = None
 
+            before_step = new_latent_image
             new_latent_image['noise_mask'] = inv_mask
-            new_latent_image = base_sampler.sample_advanced(cur_add_noise, noise_seed, steps, new_latent_image, i, i + 1, True,
+            new_latent_image = base_sampler.sample_advanced(cur_add_noise, seed_of_step(base_sampler, noise_seed, i), steps, new_latent_image, i, i + 1, True,
                                                             recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio, noise=noise)
+            if not cur_add_noise:
+                new_latent_image = take_back_outside_of_mask(base_sampler, before_step, new_latent_image, inv_mask)
 
             if restore_latent:
                 del new_latent_image['noise_mask']
@@ -530,9 +558,11 @@ class RegionalSamplerAdvanced:
                 else:
                     region_mask = region_masks[j]
 
+                before_step = new_latent_image
                 new_latent_image['noise_mask'] = region_mask
-                new_latent_image = regional_prompt.sampler.sample_advanced(False, noise_seed, steps, new_latent_image, i, i + 1, True,
+                new_latent_image = regional_prompt.sampler.sample_advanced(False, seed_of_step(regional_prompt.sampler, noise_seed, i), steps, new_latent_image, i, i + 1, True,
                                                                            recovery_mode=additional_mode, recovery_sampler=additional_sampler, recovery_sigma_ratio=additional_sigma_ratio)
+                new_latent_image = take_back_outside_of_mask(regional_prompt.sampler, before_step, new_latent_image, region_mask)
 
                 if restore_latent:
                     del new_latent_image['noise_mask']
