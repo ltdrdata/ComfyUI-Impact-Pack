@@ -172,31 +172,27 @@ class TwoAdvancedSamplersForMask:
                                       additional_sampler="AUTO", additional_sigma_ratio=0.3)
 
 
-class RegionalPrompt:
+class RegionalPrompt(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "mask": ("MASK", {"tooltip": "region mask"}),
-                    "advanced_sampler": ("KSAMPLER_ADVANCED", {"tooltip": "sampler for specified region"}),
-                    },
-                "optional": {
-                    "variation_seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "Sets the extra seed to be used for noise variation."}),
-                    "variation_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Sets the strength of the noise variation."}),
-                    "variation_method": (["linear", "slerp"], {"tooltip": "Sets how the original noise and extra noise are blended together."}),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="RegionalPrompt",
+            display_name="RegionalPrompt",
+            category="ImpactPack/Regional",
+            inputs=[
+                io.Mask.Input("mask", tooltip="region mask"),
+                io.Custom("KSAMPLER_ADVANCED").Input("advanced_sampler", tooltip="sampler for specified region"),
+                io.Int.Input("variation_seed", optional=True, default=0, min=0, max=0xffffffffffffffff, tooltip="Sets the extra seed to be used for noise variation."),
+                io.Float.Input("variation_strength", optional=True, default=0.0, min=0.0, max=1.0, step=0.01, tooltip="Sets the strength of the noise variation."),
+                io.Combo.Input("variation_method", options=["linear", "slerp"], optional=True, tooltip="Sets how the original noise and extra noise are blended together."),
+            ],
+            outputs=[io.Custom("REGIONAL_PROMPTS").Output(tooltip="regional prompts. (Can be used in the RegionalSampler.)")],
+        )
 
-    OUTPUT_TOOLTIPS = ("regional prompts. (Can be used in the RegionalSampler.)", )
-
-    RETURN_TYPES = ("REGIONAL_PROMPTS", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Regional"
-
-    @staticmethod
-    def doit(mask, advanced_sampler, variation_seed=0, variation_strength=0.0, variation_method="linear"):
+    @classmethod
+    def execute(cls, mask, advanced_sampler, variation_seed=0, variation_strength=0.0, variation_method="linear"):
         regional_prompt = core.REGIONAL_PROMPT(mask, advanced_sampler, variation_seed=variation_seed, variation_strength=variation_strength, variation_method=variation_method)
-        return ([regional_prompt], )
+        return io.NodeOutput([regional_prompt])
 
 
 class CombineRegionalPrompts:

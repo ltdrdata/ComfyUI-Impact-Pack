@@ -1,6 +1,6 @@
 """Nodes rewritten on the V3 schema stay the nodes they were.
 
-`v1_node_info.json` holds what `/object_info` returned for each of them while it was a V1 node (release 8.31). Before
+`v1_node_info.json` holds what `/object_info` returned for each of them while it was a V1 node. Before
 a node is rewritten its record is added there, taken from a server that runs the V1 node, and never edited after.
 The wording of a description or a tooltip is not held to the record: it may be corrected.
 """
@@ -18,7 +18,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 V1 = json.loads((ROOT / "tests" / "v1_node_info.json").read_text())
 # Nodes that were written on the V3 schema from the start.
-BORN_V3 = {"DetailerAdvancedOptionsHook"}
+BORN_V3 = {"DetailerAdvancedOptionsHook", "ImpactSAM3VideoDetectorSEGS"}
 FIELDS = ("name", "display_name", "category", "input", "input_order", "is_input_list", "output", "output_name",
           "output_is_list", "output_node", "deprecated", "experimental", "dev_only", "api_node",
           "has_intermediate_output", "search_aliases", "essentials_category")

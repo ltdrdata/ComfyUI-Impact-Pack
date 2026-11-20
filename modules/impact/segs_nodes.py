@@ -169,27 +169,26 @@ class SEGSDetailer:
 
 
 
-class SEGSPaste:
+class SEGSPaste(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "image": ("IMAGE", ),
-                     "segs": ("SEGS", ),
-                     "feather": ("INT", {"default": 5, "min": 0, "max": 100, "step": 1}),
-                     "alpha": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
-                     },
-                "optional": {"ref_image_opt": ("IMAGE", ), }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SEGSPaste",
+            display_name="SEGSPaste",
+            category="ImpactPack/Detailer",
+            description="This node provides a function to paste the enhanced SEGS, improved through the SEGS detailer, back onto the original image.",
+            inputs=[
+                io.Image.Input("image"),
+                io.Custom("SEGS").Input("segs"),
+                io.Int.Input("feather", default=5, min=0, max=100, step=1),
+                io.Int.Input("alpha", default=255, min=0, max=255, step=1),
+                io.Image.Input("ref_image_opt", optional=True),
+            ],
+            outputs=[io.Image.Output()],
+        )
 
-    RETURN_TYPES = ("IMAGE", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Detailer"
-
-    DESCRIPTION = "This node provides a function to paste the enhanced SEGS, improved through the SEGS detailer, back onto the original image."
-
-    @staticmethod
-    def doit(image, segs, feather, alpha=255, ref_image_opt=None):
+    @classmethod
+    def execute(cls, image, segs, feather, alpha=255, ref_image_opt=None):
         # Optimized SEGS paste node: preallocates result and avoids repeated concat.
         segs = core.segs_scale_match(segs, image.shape)
 
@@ -242,7 +241,7 @@ class SEGSPaste:
         if not args.highvram and not args.gpu_only:
             result = result.cpu()
 
-        return (result,)
+        return io.NodeOutput(result)
 
 
 class SEGSPreviewCNet:
@@ -474,20 +473,19 @@ class SEGSLabelFilter:
         return SEGSLabelFilter.filter(segs, labels)
 
 
-class SEGSLabelAssign:
+class SEGSLabelAssign(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs": ("SEGS", ),
-                        "labels": ("STRING", {"multiline": True, "placeholder": "List the label to be assigned in order of segs, separated by commas"}),
-                     },
-                }
-
-    RETURN_TYPES = ("SEGS",)
-    RETURN_NAMES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSLabelAssign",
+            display_name="SEGS Assign (label)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.String.Input("labels", multiline=True, placeholder="List the label to be assigned in order of segs, separated by commas"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
     @staticmethod
     def assign(segs, labels):
@@ -507,28 +505,31 @@ class SEGSLabelAssign:
 
         return ((segs[0], labeled_segs), )
 
-    def doit(self, segs, labels):
-        labels = labels.split(',')
-        return SEGSLabelAssign.assign(segs, labels)
-
-
-class SEGSOrderedFilter:
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence", "none"],),
-                        "order": ("BOOLEAN", {"default": True, "label_on": "descending", "label_off": "ascending"}),
-                        "take_start": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
-                        "take_count": ("INT", {"default": 1, "min": 0, "max": sys.maxsize, "step": 1}),
-                     },
-                }
+    def execute(cls, segs, labels):
+        labels = labels.split(',')
+        return io.NodeOutput(*SEGSLabelAssign.assign(segs, labels))
 
-    RETURN_TYPES = ("SEGS", "SEGS",)
-    RETURN_NAMES = ("filtered_SEGS", "remained_SEGS",)
-    FUNCTION = "doit"
 
-    CATEGORY = "ImpactPack/Util"
+class SEGSOrderedFilter(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSOrderedFilter",
+            display_name="SEGS Filter (ordered)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Combo.Input("target", options=["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "confidence", "none"]),
+                io.Boolean.Input("order", default=True, label_on="descending", label_off="ascending"),
+                io.Int.Input("take_start", default=0, min=0, max=sys.maxsize, step=1),
+                io.Int.Input("take_count", default=1, min=0, max=sys.maxsize, step=1),
+            ],
+            outputs=[
+                io.Custom("SEGS").Output(display_name="filtered_SEGS"),
+                io.Custom("SEGS").Output(display_name="remained_SEGS"),
+            ],
+        )
 
     @staticmethod
     def get_sort_key_fn(target: str) -> Union[Callable, None]:
@@ -549,7 +550,8 @@ class SEGSOrderedFilter:
 
         return sort_key_fn
 
-    def doit(self, segs, target, order, take_start, take_count):
+    @classmethod
+    def execute(cls, segs, target, order, take_start, take_count):
         sort_key_fn = SEGSOrderedFilter.get_sort_key_fn(target)
 
         sorted_list = list(segs[1]) # make a shallow copy, so it does not mutate the original list when sort
@@ -557,29 +559,32 @@ class SEGSOrderedFilter:
             sorted_list.sort(key=sort_key_fn, reverse=order)
 
         take_stop = take_start + take_count
-        return (segs[0], sorted_list[take_start:take_stop]), \
-            (segs[0], sorted_list[:take_start] + sorted_list[take_stop:]),
+        return io.NodeOutput((segs[0], sorted_list[take_start:take_stop]),
+                             (segs[0], sorted_list[:take_start] + sorted_list[take_stop:]))
 
 
-class SEGSRangeFilter:
+class SEGSRangeFilter(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs": ("SEGS", ),
-                        "target": (["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent", "confidence(0-100)"],),
-                        "mode": ("BOOLEAN", {"default": True, "label_on": "inside", "label_off": "outside"}),
-                        "min_value": ("INT", {"default": 0, "min": 0, "max": sys.maxsize, "step": 1}),
-                        "max_value": ("INT", {"default": 67108864, "min": 0, "max": sys.maxsize, "step": 1}),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSRangeFilter",
+            display_name="SEGS Filter (range)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Combo.Input("target", options=["area(=w*h)", "width", "height", "x1", "y1", "x2", "y2", "length_percent", "confidence(0-100)"]),
+                io.Boolean.Input("mode", default=True, label_on="inside", label_off="outside"),
+                io.Int.Input("min_value", default=0, min=0, max=sys.maxsize, step=1),
+                io.Int.Input("max_value", default=67108864, min=0, max=sys.maxsize, step=1),
+            ],
+            outputs=[
+                io.Custom("SEGS").Output(display_name="filtered_SEGS"),
+                io.Custom("SEGS").Output(display_name="remained_SEGS"),
+            ],
+        )
 
-    RETURN_TYPES = ("SEGS", "SEGS",)
-    RETURN_NAMES = ("filtered_SEGS", "remained_SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, segs, target, mode, min_value, max_value):
+    @classmethod
+    def execute(cls, segs, target, mode, min_value, max_value):
         new_segs = []
         remained_segs = []
 
@@ -622,26 +627,26 @@ class SEGSRangeFilter:
                 remained_segs.append(seg)
                 logging.info(f"[filter] value={value} / {mode}, {min_value}, {max_value}")
 
-        return (segs[0], new_segs), (segs[0], remained_segs),
+        return io.NodeOutput((segs[0], new_segs), (segs[0], remained_segs))
 
 
-class SEGSIntersectionFilter:
+class SEGSIntersectionFilter(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                        "segs1": ("SEGS", ),
-                        "segs2": ("SEGS", ),
-                        "ioa_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSIntersectionFilter",
+            display_name="SEGS Filter (intersection)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs1"),
+                io.Custom("SEGS").Input("segs2"),
+                io.Float.Input("ioa_threshold", default=0.5, min=0.0, max=1.0, step=0.01),
+            ],
+            outputs=[io.Custom("SEGS").Output(display_name="filtered_SEGS")],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    RETURN_NAMES = ("filtered_SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def compute_ioa(self, mask1, mask2):
+    @staticmethod
+    def compute_ioa(mask1, mask2):
         """Compute Intersection over Area (IoA) between two boxes."""
         inter_mask = utils.bitwise_and_masks(mask1, mask2)
 
@@ -650,7 +655,8 @@ class SEGSIntersectionFilter:
 
         return inter_area / area1 if area1 > 0 else 0
 
-    def doit(self, segs1, segs2, ioa_threshold):
+    @classmethod
+    def execute(cls, segs1, segs2, ioa_threshold):
         """Remove segments from segs1 if their IoA with any segment in segs2 exceeds the threshold."""
         # Extract bounding boxes for all segments in segs1 and segs2
         keep = []
@@ -663,7 +669,7 @@ class SEGSIntersectionFilter:
             # Compare with every segment in segs2
             for seg2 in segs2[1]:
                 mask2 = core.segs_to_combined_mask((segs2[0], [seg2]))
-                ioa = self.compute_ioa(mask1, mask2)  # IoA between segment 1 and segment 2
+                ioa = SEGSIntersectionFilter.compute_ioa(mask1, mask2)
 
                 if ioa > ioa_threshold:  # If IoA exceeds the threshold, mark the segment for removal
                     keep_segment = False
@@ -673,26 +679,25 @@ class SEGSIntersectionFilter:
             if keep_segment:
                 keep.append(segs1[1][idx1])
 
-        return (segs1[0], keep),  # Return the updated SEGS
+        return io.NodeOutput((segs1[0], keep))
 
 
-class SEGSNMSFilter:
+class SEGSNMSFilter(ImpactNode):
     @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "segs": ("SEGS",),
-                "iou_threshold": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-            },
-        }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSNMSFilter",
+            display_name="SEGS Filter (non max suppression)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Float.Input("iou_threshold", default=0.5, min=0.0, max=1.0, step=0.01),
+            ],
+            outputs=[io.Custom("SEGS").Output(display_name="filtered_SEGS")],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    RETURN_NAMES = ("filtered_SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def compute_iou(self, mask1, mask2):
+    @staticmethod
+    def compute_iou(mask1, mask2):
         """Compute IoU between two bounding boxes (x1, y1, x2, y2)."""
         inter_mask = utils.bitwise_and_masks(mask1, mask2)
         union_mask = utils.add_masks(mask1, mask2)
@@ -702,7 +707,8 @@ class SEGSNMSFilter:
 
         return inter_area / union_area if union_area > 0 else 0
 
-    def doit(self, segs, iou_threshold):
+    @classmethod
+    def execute(cls, segs, iou_threshold):
         """Perform NMS to filter overlapping segments."""
         confidences = np.ndarray.flatten(np.array([seg.confidence for seg in segs[1]]))
 
@@ -720,14 +726,14 @@ class SEGSNMSFilter:
             filtered_indices = []
             for i in sorted_indices:
                 mask2 = core.segs_to_combined_mask((segs[0], [segs[1][i]]))
-                iou = self.compute_iou(mask1, mask2)
+                iou = SEGSNMSFilter.compute_iou(mask1, mask2)
                 if iou < iou_threshold:
                     filtered_indices.append(i)
 
             sorted_indices = np.array(filtered_indices)
 
         filtered_segs = [segs[1][i] for i in keep]
-        return (segs[0], filtered_segs),
+        return io.NodeOutput((segs[0], filtered_segs))
 
 
 class SEGSToImageList:
@@ -814,22 +820,22 @@ class SEGSToMaskBatch(ImpactNode):
         return io.NodeOutput(mask_batch)
 
 
-class SEGSMerge:
+class SEGSMerge(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "segs": ("SEGS", ),
-                     },
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSMerge",
+            display_name="SEGS Merge",
+            category="ImpactPack/Util",
+            description="SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed.",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    DESCRIPTION = "SEGS contains multiple SEGs. SEGS Merge integrates several SEGs into a single merged SEG. The label is changed to `merged` and the confidence becomes the minimum confidence. The applied controlnet and cropped_image are removed."
-
-    def doit(self, segs):
+    @classmethod
+    def execute(cls, segs):
         crop_left = sys.maxsize
         crop_right = 0
         crop_top = sys.maxsize
@@ -873,7 +879,7 @@ class SEGSMerge:
         bbox = [bbox_left, bbox_top, bbox_right, bbox_bottom]
 
         seg = SEG(None, cropped_mask, min_confidence, crop_region, bbox, 'merged', None)
-        return ((segs[0], [seg]),)
+        return io.NodeOutput((segs[0], [seg]))
 
 
 class SEGSConcat:
@@ -1307,19 +1313,19 @@ class Dilate_SEG_ELT(ImpactNode):
         return io.NodeOutput(DecomposedSEG.like(seg_elt, seg))
 
 
-class SEG_ELT_BBOX_ScaleBy:
+class SEG_ELT_BBOX_ScaleBy(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "seg": ("SEG_ELT", ),
-                     "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 8.0, "step": 0.01}), }
-                }
-
-    RETURN_TYPES = ("SEG_ELT", )
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactScaleBy_BBOX_SEG_ELT",
+            display_name="ScaleBy BBOX (SEG_ELT)",
+            category="ImpactPack/Util",
+            inputs=[
+                io.Custom("SEG_ELT").Input("seg"),
+                io.Float.Input("scale_by", default=1.0, min=0.01, max=8.0, step=0.01),
+            ],
+            outputs=[io.Custom("SEG_ELT").Output()],
+        )
 
     @staticmethod
     def fill_zero_outside_bbox(mask, crop_region, bbox):
@@ -1340,7 +1346,8 @@ class SEG_ELT_BBOX_ScaleBy:
         mask_cropped[y2:, :] = 0  # zero fill bottom side
         return mask_cropped
 
-    def doit(self, seg, scale_by):
+    @classmethod
+    def execute(cls, seg, scale_by):
         x1, y1, x2, y2 = seg.bbox
         w = x2-x1
         h = y2-y1
@@ -1351,7 +1358,7 @@ class SEG_ELT_BBOX_ScaleBy:
         bbox = (x1-dw, y1-dh, x2+dw, y2+dh)
 
         cropped_mask = SEG_ELT_BBOX_ScaleBy.fill_zero_outside_bbox(seg.cropped_mask, seg.crop_region, bbox)
-        return (DecomposedSEG.like(seg, SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, bbox, seg.label, seg.control_net_wrapper)),)
+        return io.NodeOutput(DecomposedSEG.like(seg, SEG(seg.cropped_image, cropped_mask, seg.confidence, seg.crop_region, bbox, seg.label, seg.control_net_wrapper)))
 
 
 class EmptySEGS(ImpactNode):
@@ -1390,36 +1397,34 @@ class SegsToCombinedMask(ImpactNode):
         return io.NodeOutput(mask)
 
 
-class MediaPipeFaceMeshToSEGS:
+class MediaPipeFaceMeshToSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        bool_true_widget = ("BOOLEAN", {"default": True, "label_on": "Enabled", "label_off": "Disabled"})
-        bool_false_widget = ("BOOLEAN", {"default": False, "label_on": "Enabled", "label_off": "Disabled"})
-        return {"required": {
-                                "image": ("IMAGE",),
-                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
-                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                                "crop_min_size": ("INT", {"min": 10, "max": MAX_RESOLUTION, "step": 1, "default": 50}),
-                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 1}),
-                                "dilation": ("INT", {"default": 0, "min": -512, "max": 512, "step": 1}),
-                                "face": bool_true_widget,
-                                "mouth": bool_false_widget,
-                                "left_eyebrow": bool_false_widget,
-                                "left_eye": bool_false_widget,
-                                "left_pupil": bool_false_widget,
-                                "right_eyebrow": bool_false_widget,
-                                "right_eye": bool_false_widget,
-                                "right_pupil": bool_false_widget,
-                             },
-                # "optional": {"reference_image_opt": ("IMAGE", ), }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="MediaPipeFaceMeshToSEGS",
+            display_name="MediaPipe FaceMesh to SEGS",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Image.Input("image"),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=100, step=0.1),
+                io.Boolean.Input("bbox_fill", default=False, label_on="enabled", label_off="disabled"),
+                io.Int.Input("crop_min_size", min=10, max=MAX_RESOLUTION, step=1, default=50),
+                io.Int.Input("drop_size", min=1, max=MAX_RESOLUTION, step=1, default=1),
+                io.Int.Input("dilation", default=0, min=-512, max=512, step=1),
+                io.Boolean.Input("face", default=True, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("mouth", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("left_eyebrow", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("left_eye", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("left_pupil", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("right_eyebrow", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("right_eye", default=False, label_on="Enabled", label_off="Disabled"),
+                io.Boolean.Input("right_pupil", default=False, label_on="Enabled", label_off="Disabled"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    def doit(self, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+    @classmethod
+    def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
         # padding is obsolete now
         # https://github.com/Fannovel16/comfyui_controlnet_aux/blob/1ec41fceff1ee99596445a0c73392fd91df407dc/utils.py#L33
         # def calc_pad(h_raw, w_raw):
@@ -1452,61 +1457,61 @@ class MediaPipeFaceMeshToSEGS:
         #         image = nodes.ImageScaleBy().upscale(image, "bilinear", scale_by)[0]
 
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
-        return (result, )
+        return io.NodeOutput(result)
 
 
-class MaskToSEGS:
+class MaskToSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                                "mask": ("MASK",),
-                                "combined": ("BOOLEAN", {"default": False, "label_on": "True", "label_off": "False"}),
-                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
-                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                                "contour_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                             }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="MaskToSEGS",
+            display_name="MASK to SEGS",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask"),
+                io.Boolean.Input("combined", default=False, label_on="True", label_off="False"),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=100, step=0.1),
+                io.Boolean.Input("bbox_fill", default=False, label_on="enabled", label_off="disabled"),
+                io.Int.Input("drop_size", min=1, max=MAX_RESOLUTION, step=1, default=10),
+                io.Boolean.Input("contour_fill", default=False, label_on="enabled", label_off="disabled"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    @staticmethod
-    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @classmethod
+    def execute(cls, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         mask = utils.make_2d_mask(mask)
         result = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
 
-        return (result, )
+        return io.NodeOutput(result)
 
 
-class MaskToSEGS_for_AnimateDiff:
+class MaskToSEGS_for_AnimateDiff(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                                "mask": ("MASK",),
-                                "combined": ("BOOLEAN", {"default": False, "label_on": "True", "label_off": "False"}),
-                                "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 100, "step": 0.1}),
-                                "bbox_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                                "drop_size": ("INT", {"min": 1, "max": MAX_RESOLUTION, "step": 1, "default": 10}),
-                                "contour_fill": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-                             }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="MaskToSEGS_for_AnimateDiff",
+            display_name="MASK to SEGS for Video",
+            category="ImpactPack/Operation",
+            inputs=[
+                io.Mask.Input("mask"),
+                io.Boolean.Input("combined", default=False, label_on="True", label_off="False"),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=100, step=0.1),
+                io.Boolean.Input("bbox_fill", default=False, label_on="enabled", label_off="disabled"),
+                io.Int.Input("drop_size", min=1, max=MAX_RESOLUTION, step=1, default=10),
+                io.Boolean.Input("contour_fill", default=False, label_on="enabled", label_off="disabled"),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Operation"
-
-    @staticmethod
-    def doit(mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
+    @classmethod
+    def execute(cls, mask, combined, crop_factor, bbox_fill, drop_size, contour_fill=False):
         if (len(mask.shape) == 4 and mask.shape[1] > 1) or (len(mask.shape) == 3 and mask.shape[0] > 1):
             mask = utils.make_3d_mask(mask)
             if contour_fill:
                 logging.info("[Impact Pack] MaskToSEGS_for_AnimateDiff: 'contour_fill' is ignored because batch mask 'contour_fill' is not supported.")
             result = core.batch_mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size)
-            return (result, )
+            return io.NodeOutput(result)
 
         mask = utils.make_2d_mask(mask)
         segs = core.mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
@@ -1519,7 +1524,7 @@ class MaskToSEGS_for_AnimateDiff:
         result_mask = (result_mask/255.0).to(torch.float32)
         result_mask = utils.to_binary_mask(result_mask, 0.1)[0]
 
-        return MaskToSEGS.doit(result_mask, False, crop_factor, False, drop_size, contour_fill)
+        return io.NodeOutput(*MaskToSEGS.doit(result_mask, False, crop_factor, False, drop_size, contour_fill))
 
 
 class IPAdapterApplySEGS:
@@ -1760,24 +1765,24 @@ class SEGSPicker:
         return ((segs[0], new_segs),)
 
 
-class DefaultImageForSEGS:
+class DefaultImageForSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                    "segs": ("SEGS", ),
-                    "image": ("IMAGE", ),
-                    "override": ("BOOLEAN", {"default": True}),
-                }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SetDefaultImageForSEGS",
+            display_name="Set Default Image for SEGS",
+            category="ImpactPack/Util",
+            description="If the SEGS have not passed through the detailer, they contain only detection area information without an image. This node sets a default image for the SEGS.",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Image.Input("image"),
+                io.Boolean.Input("override", default=True),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS", )
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    DESCRIPTION = "If the SEGS have not passed through the detailer, they contain only detection area information without an image. This node sets a default image for the SEGS."
-
-    @staticmethod
-    def doit(segs, image, override):
+    @classmethod
+    def execute(cls, segs, image, override):
         results = []
 
         segs = core.segs_scale_match(segs, image.shape)
@@ -1806,9 +1811,9 @@ class DefaultImageForSEGS:
                 new_seg = SEG(cropped_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
                 results.append(new_seg)
 
-            return ((segs[0], results), )
+            return io.NodeOutput((segs[0], results))
         else:
-            return (segs, )
+            return io.NodeOutput(segs)
 
 
 class RemoveImageFromSEGS(ImpactNode):
@@ -1838,32 +1843,29 @@ class RemoveImageFromSEGS(ImpactNode):
             return io.NodeOutput(segs)
 
 
-class MakeTileSEGS:
+class MakeTileSEGS(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-                     "images": ("IMAGE", ),
-                     "bbox_size": ("INT", {"default": 512, "min": 64, "max": 4096, "step": 8}),
-                     "crop_factor": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 10, "step": 0.01}),
-                     "min_overlap": ("INT", {"default": 5, "min": 0, "max": 512, "step": 1}),
-                     "filter_segs_dilation": ("INT", {"default": 20, "min": -255, "max": 255, "step": 1}),
-                     "mask_irregularity": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
-                     "irregular_mask_mode": (["Reuse fast", "Reuse quality", "All random fast", "All random quality"],)
-                    },
-                "optional": {
-                    "filter_in_segs_opt": ("SEGS", ),
-                    "filter_out_segs_opt": ("SEGS", ),
-                    }
-                }
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactMakeTileSEGS",
+            display_name="Make Tile SEGS",
+            category="ImpactPack/__for_testing",
+            inputs=[
+                io.Image.Input("images"),
+                io.Int.Input("bbox_size", default=512, min=64, max=4096, step=8),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=10, step=0.01),
+                io.Int.Input("min_overlap", default=5, min=0, max=512, step=1),
+                io.Int.Input("filter_segs_dilation", default=20, min=-255, max=255, step=1),
+                io.Float.Input("mask_irregularity", default=0, min=0, max=1.0, step=0.01),
+                io.Combo.Input("irregular_mask_mode", options=["Reuse fast", "Reuse quality", "All random fast", "All random quality"]),
+                io.Custom("SEGS").Input("filter_in_segs_opt", optional=True),
+                io.Custom("SEGS").Input("filter_out_segs_opt", optional=True),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
 
-    RETURN_TYPES = ("SEGS",)
-
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/__for_testing"
-
-    @staticmethod
-    def doit(images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
+    @classmethod
+    def execute(cls, images, bbox_size, crop_factor, min_overlap, filter_segs_dilation, mask_irregularity=0, irregular_mask_mode="Reuse fast", filter_in_segs_opt=None, filter_out_segs_opt=None):
         if bbox_size <= 2*min_overlap:
             new_min_overlap = bbox_size / 2
             logging.info(f"[MakeTileSEGS] min_overlap should be greater than bbox_size. (value changed: {min_overlap} => {new_min_overlap})")
@@ -1908,7 +1910,7 @@ class MakeTileSEGS:
 
             a, b = core.mask_to_segs(and_mask, True, 1.0, False, 0)
             if len(b) == 0:
-                return ((a, b),)
+                return io.NodeOutput((a, b))
 
             start_x, start_y, c, d = b[0].crop_region
             w = c - start_x
@@ -2025,7 +2027,7 @@ class MakeTileSEGS:
             y += bbox_size - h_overlap_size
 
         res = (ih, iw), new_segs  # segs
-        return (res,)
+        return io.NodeOutput(res)
 
 
 class SEGSUpscaler:

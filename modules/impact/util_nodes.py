@@ -640,21 +640,23 @@ class ReencodeLatentPipe(ImpactNode):
         return io.NodeOutput(*ReencodeLatent().doit(samples, tile_mode, input_vae, output_vae))
 
 
-class StringSelector:
+class StringSelector(ImpactNode):
     @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {
-            "strings": ("STRING", {"multiline": True}),
-            "multiline": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
-            "select": ("INT", {"min": 0, "max": sys.maxsize, "step": 1, "default": 0}),
-        }}
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactStringSelector",
+            display_name="String Selector",
+            category="ImpactPack/Util",
+            inputs=[
+                io.String.Input("strings", multiline=True),
+                io.Boolean.Input("multiline", default=False, label_on="enabled", label_off="disabled"),
+                io.Int.Input("select", min=0, max=sys.maxsize, step=1, default=0),
+            ],
+            outputs=[io.String.Output()],
+        )
 
-    RETURN_TYPES = ("STRING",)
-    FUNCTION = "doit"
-
-    CATEGORY = "ImpactPack/Util"
-
-    def doit(self, strings, multiline, select):
+    @classmethod
+    def execute(cls, strings, multiline, select):
         lines = strings.split('\n')
 
         if multiline:
@@ -684,7 +686,7 @@ class StringSelector:
             else:
                 selected = lines[select % len(lines)]
 
-        return (selected, )
+        return io.NodeOutput(selected)
 
 
 class StringListToString:
