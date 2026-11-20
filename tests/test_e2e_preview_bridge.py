@@ -431,6 +431,36 @@ def test_legacy_sam_temp_mask_reaches_bridge_and_survives_reload(ui, node_type, 
         mask_output(browser, entry, second_mask, expected)
 
 
+@pytest.mark.parametrize("restore_by_name", [False, True], ids=["positional", "named"])
+def test_a_workflow_with_the_image_object_of_the_first_bridge_versions_runs(ui, restore_by_name):
+    """The first versions of the bridge saved its image as an object. Later ones read it as a bridge without an image."""
+    browser, args = ui
+    setting(browser, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
+    source, bridge, output, mask = build_bridge(browser, "PreviewBridge")
+    current = args.artifacts / "current.json"
+    export_workflow(browser, current)
+    saved = json.loads(current.read_text())
+    for node in saved["nodes"]:
+        node.pop("widgets_values_named", None)  # a workflow of that time has the values by position only
+    node, = [n for n in saved["nodes"] if n["type"] == "PreviewBridge"]
+    values = node["widgets_values"]
+    values[0] = {"filename": "clipspace-mask-470361.200000003.png", "subfolder": "clipspace", "type": "input", "image_hash": -9057483542318295000,
+                 "forward_filename": "ComfyUI_temp_oimqn_00002_.png", "forward_subfolder": "", "forward_type": "temp"}
+    legacy = args.artifacts / "image-object.json"
+    legacy.write_text(json.dumps(saved))
+    browser.new_workflow()
+    browser.load_workflow(legacy, len(saved["nodes"]))
+
+    entry = browser.run()
+
+    preview(browser, entry, bridge)
+    no_mask(browser, entry, mask)
+    state = widget_state(browser, [bridge])[bridge]
+    assert [w["name"] for w in state["widgets"]] == WIDGET_NAMES["PreviewBridge"]
+    assert [w["value"] for w in state["widgets"][1:len(values)]] == values[1:], "The other saved values of the bridge stay as saved"
+    assert isinstance(state["widgets"][0]["value"], str), "The run gives the bridge its image"
+
+
 def test_a_bridge_that_was_not_executed_explains_itself_instead_of_opening_an_editor(ui):
     browser, args = ui
     source, bridge, output, mask = build_bridge(browser, "PreviewBridge")

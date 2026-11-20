@@ -241,6 +241,17 @@ for (const change of ["new edit", "removed node"]) {
     });
 }
 
+test("an image saved as an object by the first versions of the bridge is a bridge without an image", async t => {
+    const { node, widget, fetch, restore, storeWrite } = await bridge(t);
+    storeWrite({ filename: "clipspace-mask-1.png", subfolder: "clipspace", type: "input", image_hash: 1,
+        forward_filename: "ComfyUI_temp_00001_.png", forward_subfolder: "", forward_type: "temp" });
+    await restore();
+    assert.equal(await widget.serializeValue(), "$41-0");
+    assert.equal(fetch.mock.callCount(), 0);
+    node.onExecuted({ source_image: ["$41-0"], images: [{ filename: "next.png", subfolder: "PreviewBridge", type: "temp" }] });
+    assert.equal(widget.value, "PreviewBridge/next.png [temp]", "The run gives the bridge its image, as it does for a new bridge");
+});
+
 test("a malformed filename rejects the queue before sending registration", async t => {
     const { widget, fetch, storeWrite } = await bridge(t);
     storeWrite("folder/[input]");
