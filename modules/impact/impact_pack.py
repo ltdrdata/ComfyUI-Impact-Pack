@@ -28,6 +28,7 @@ import impact.wildcards as wildcards
 from . import hooks
 from . import utils
 from .node_base import ImpactNode
+from comfy_api.internal import classproperty
 from comfy_api.latest import io
 import inspect
 import folder_paths
@@ -2824,7 +2825,11 @@ class ImpactSchedulerAdapter:
 
     CATEGORY = "ImpactPack/Util"
 
-    RETURN_TYPES = (core.get_schedulers(),)
+    # Read when a prompt is validated: a nodepack that is imported after this one can add schedulers.
+    @classproperty
+    def RETURN_TYPES(cls):
+        return (core.get_schedulers(),)
+
     RETURN_NAMES = ("scheduler",)
 
     FUNCTION = "doit"
