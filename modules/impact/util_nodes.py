@@ -78,11 +78,16 @@ class GeneralSwitch:
         else:
             logging.info("[Impact-Pack] The switch node does not guarantee proper functioning in API mode.")
 
-        if input_name in kwargs:
-            return kwargs[input_name], selected_label, selected_index
-        else:
-            logging.info("ImpactSwitch: invalid select index (ignored)")
-            return None, "", selected_index
+        linked = input_name in kwargs
+        value = kwargs.get(input_name)
+        if value is None:
+            if linked:
+                logging.info(f"[Impact Pack] Switch (Any) {node_id}: select is {selected_index} and {input_name} gave None. It returns None.")
+            else:
+                links = [name for name in kwargs if re.fullmatch(r"input[1-9][0-9]*", name)]
+                logging.info(f"[Impact Pack] Switch (Any) {node_id}: select is {selected_index} and {input_name} has no link. It returns None. Linked inputs: {', '.join(links) or 'none'}.")
+            PromptServer.instance.send_sync("impact-switch-none", {"node_id": node_id, "select": selected_index}, PromptServer.instance.client_id)
+        return value, selected_label if linked else "", selected_index
 
 class LatentSwitch:
     @classmethod
