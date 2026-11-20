@@ -109,6 +109,8 @@ export function setupPreviewBridge(node) {
     // editor's filename in the existing image widget's serialized position.
     let registration;
     widget.serializeValue = async function() {
+        // The first versions of the bridge saved its image as an object. It names no file to register: the bridge has no image.
+        if (typeof widget.value !== "string") widget.value = `$${node.id}-0`;
         const value = widget.value || `$${node.id}-0`;
         if (!registration || value !== registration.value || registration.connectionVersion !== connectionVersion) {
             const current = { value, displayedValue: value, connectionVersion };
