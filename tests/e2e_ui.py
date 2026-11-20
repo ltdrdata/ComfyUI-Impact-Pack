@@ -62,6 +62,8 @@ class ComfyUI:
         self.page.get_by_role("option").filter(has=label).click()
         expect(search).not_to_be_visible()
         self.page.get_by_role("dialog").wait_for(state="hidden")
+        # The backdrop of the search fades out after the dialog. A click it still covers does not place the node.
+        self.page.wait_for_function("([x, y]) => document.elementFromPoint(x, y)?.tagName === 'CANVAS'", arg=[x, y])
         self.page.mouse.move(x, y)
         self.page.mouse.click(x, y, delay=100)
         node_id = self.page.wait_for_function("""({app, type}) => {
