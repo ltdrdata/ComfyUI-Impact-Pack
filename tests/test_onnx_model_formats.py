@@ -1,9 +1,13 @@
+import importlib
 import os
+import sys
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 import torch
+
+TYPES = {"float32": "tensor(float)", "int32": "tensor(int32)"}
 
 
 class FakeSession:
@@ -17,7 +21,7 @@ class FakeSession:
         return [SimpleNamespace(name="images", shape=self.input_shape)]
 
     def get_outputs(self):
-        return [SimpleNamespace(name=f"output{index}") for index in range(len(self.outputs))]
+        return [SimpleNamespace(name=f"output{index}", type=TYPES[output.dtype.name], shape=list(output.shape)) for index, output in enumerate(self.outputs)]
 
     def get_modelmeta(self):
         return SimpleNamespace(custom_metadata_map=self.metadata)
@@ -138,7 +142,23 @@ def test_a_yolo_model_that_filters_its_own_boxes_gives_them_as_they_are(inferenc
     FakeSession([1, 3, 640, 640], [np.zeros((1, 16800, 4), dtype=np.float32), np.zeros((1, 16800, 2), dtype=np.float32)]),
     FakeSession([1, 3, 640, 640], [np.zeros((1, 25200, 85), dtype=np.float32)]),
     FakeSession([1, 1, 28, 28], [np.zeros((1, 10), dtype=np.float32)]),
-], ids=["boxes and scores apart", "rows of four values", "rows with an object score", "not a picture of three channels"])
+    FakeSession(["batch", "height", "width", 3], [np.zeros((1, 3), dtype=np.float32)]),
+    FakeSession(["batch", "height", "width", 3], [np.zeros((4,), dtype=np.int32), np.zeros((1, 3), dtype=np.float32)]),
+    FakeSession([8], [np.zeros((8,), dtype=np.float32)]),
+], ids=["boxes and scores apart", "rows of four values", "rows with an object score", "not a picture of three channels",
+        "channels last without slots", "channels last with a whole number and no slots", "not a picture"])
 def test_a_model_of_another_format_is_refused_with_the_formats_that_work(inference, model):
     with pytest.raises(ValueError, match="Ultralytics YOLO.*detector_v2_base_checkpoint.onnx"):
         inference(model, torch.zeros((1, 320, 640, 3)))
+
+
+def test_an_onnxruntime_that_cannot_be_imported_is_the_error_of_the_detector():
+    with pytest.MonkeyPatch.context() as patch:
+        patch.syspath_prepend(os.environ["IMPACT_COMFY_ROOT"])
+        from impact import additional_dependencies, impact_onnx
+        patch.setattr(additional_dependencies, "ensure_onnx_package", lambda: None)
+        patch.setitem(sys.modules, "onnxruntime", None)
+
+        with pytest.raises(ImportError, match="onnxruntime"):
+            importlib.reload(impact_onnx)
+    importlib.reload(impact_onnx)
