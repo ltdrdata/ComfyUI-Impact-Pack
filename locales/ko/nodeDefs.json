@@ -2134,5 +2134,28 @@
                 "tooltip": "프레임마다 박스 목록 하나입니다. 각 박스는 x, y, width, height, label, score를 가집니다."
             }
         }
+    },
+    "ImpactBoundingBoxesToSEGS": {
+        "description": "SAM3 Detect 같은 ComfyUI 기본 노드가 출력하는 바운딩 박스로 SEGS를 만듭니다.\n각 박스는 BBOX Detector (SEGS)의 결과처럼, 박스 자체를 마스크로 가진 SEG가 됩니다.",
+        "display_name": "바운딩 박스를 SEGS로",
+        "inputs": {
+            "bboxes": {
+                "name": "bboxes",
+                "tooltip": "박스 하나, 박스 목록, 또는 한 프레임의 박스 목록입니다. 박스의 label과 score는 SEG의 레이블과 신뢰도가 됩니다."
+            },
+            "image": {
+                "name": "이미지",
+                "tooltip": "박스가 속한 이미지입니다. SEGS의 크기를 정하고, 각 SEG에 crop 영역의 그림을 줍니다."
+            },
+            "crop_factor": {
+                "name": "crop 배율",
+                "tooltip": "각 SEG의 crop 영역이 박스보다 얼마나 넓은지 정합니다."
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
     }
 }

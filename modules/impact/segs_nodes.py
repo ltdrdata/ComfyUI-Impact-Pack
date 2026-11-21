@@ -840,6 +840,29 @@ class SEGSToBoundingBoxes(ImpactNode):
         return io.NodeOutput(core.segs_to_bounding_boxes(segs))
 
 
+class BoundingBoxesToSEGS(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactBoundingBoxesToSEGS",
+            display_name="Bounding Boxes to SEGS",
+            category="ImpactPack/Util",
+            description="Makes SEGS from the bounding boxes that ComfyUI's own nodes give, such as SAM3 Detect.\n"
+                        "Each box becomes a SEG whose mask is the box, as BBOX Detector (SEGS) gives them.",
+            inputs=[
+                io.Custom("BOUNDING_BOX").Input("bboxes", extra_dict={"forceInput": True},
+                                                tooltip="A box, a list of boxes, or a list of boxes for a single frame. The label and the score of a box become the label and the confidence of its SEG."),
+                io.Image.Input("image", tooltip="The image the boxes belong to. It gives the SEGS their size, and each SEG the picture of its crop region."),
+                io.Float.Input("crop_factor", default=3.0, min=1.0, max=100, step=0.1, tooltip="How much wider than its box the crop region of each SEG is."),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
+
+    @classmethod
+    def execute(cls, bboxes, image, crop_factor):
+        return io.NodeOutput(core.bounding_boxes_to_segs(bboxes, image, crop_factor))
+
+
 class SEGSMerge(ImpactNode):
     @classmethod
     def define_schema(cls):
