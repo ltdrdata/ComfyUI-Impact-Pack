@@ -1617,6 +1617,31 @@ def segs_to_masklist(segs):
     return masks
 
 
+def segs_to_bounding_boxes(segs):
+    """The boxes of the SEGS as a BOUNDING_BOX of ComfyUI: a list of boxes for each frame.
+
+    A SEG with a mask for each frame of a video holds one box around all of them. There the box of a frame is where the mask of that frame lies."""
+    frames = [[]]
+    for seg in segs[1]:
+        masks = seg.cropped_mask.cpu().numpy() if isinstance(seg.cropped_mask, torch.Tensor) else seg.cropped_mask
+        if masks.ndim == 3 and len(masks) > 1:
+            left, top = seg.crop_region[:2]
+            boxes = []
+            for mask in masks:
+                ys, xs = np.nonzero(mask > 0.5)
+                boxes.append((left + xs.min(), top + ys.min(), left + xs.max() + 1, top + ys.max() + 1) if len(xs) else None)
+        else:
+            boxes = [seg.bbox]
+
+        frames.extend([] for _ in range(len(boxes) - len(frames)))
+        for frame, box in zip(frames, boxes):
+            if box is not None:
+                x1, y1, x2, y2 = (float(value) for value in box)
+                frame.append({"x": x1, "y": y1, "width": x2 - x1, "height": y2 - y1, "label": seg.label, "score": np.asarray(seg.confidence).item()})
+
+    return frames
+
+
 def vae_decode(vae, samples, use_tile, hook, tile_size=512, overlap=64):
     if use_tile:
         decoder = nodes.VAEDecodeTiled()

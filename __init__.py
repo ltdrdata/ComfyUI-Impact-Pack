@@ -220,6 +220,7 @@ NODE_CLASS_MAPPINGS = {
     "SEGSToImageList": SEGSToImageList, # noqa: F405
     "ImpactSEGSToMaskList": SEGSToMaskList, # noqa: F405
     "ImpactSEGSToMaskBatch": SEGSToMaskBatch, # noqa: F405
+    "ImpactSEGSToBoundingBoxes": SEGSToBoundingBoxes, # noqa: F405
     "ImpactSEGSConcat": SEGSConcat, # noqa: F405
     "ImpactSEGSPicker": SEGSPicker, # noqa: F405
     "ImpactMakeTileSEGS": MakeTileSEGS, # noqa: F405
@@ -378,6 +379,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSEGSConcat": "SEGS Concat",
     "ImpactSEGSToMaskList": "SEGS to Mask List",
     "ImpactSEGSToMaskBatch": "SEGS to Mask Batch",
+    "ImpactSEGSToBoundingBoxes": "SEGS to Bounding Boxes",
     "ImpactSEGSPicker": "Picker (SEGS)",
     "ImpactMakeTileSEGS": "Make Tile SEGS",
     "ImpactSEGSMerge": "SEGS Merge",

@@ -820,6 +820,26 @@ class SEGSToMaskBatch(ImpactNode):
         return io.NodeOutput(mask_batch)
 
 
+class SEGSToBoundingBoxes(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSToBoundingBoxes",
+            display_name="SEGS to Bounding Boxes",
+            category="ImpactPack/Util",
+            description="Gives the box of each SEG as the bounding boxes that ComfyUI's own nodes take, such as SAM3 Detect.\n"
+                        "When the SEGS hold a mask for each frame of a video, each frame gets the box of where its mask lies.",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+            ],
+            outputs=[io.Custom("BOUNDING_BOX").Output(display_name="bboxes", tooltip="A list of boxes for each frame. Each box has x, y, width, height, label and score.")],
+        )
+
+    @classmethod
+    def execute(cls, segs):
+        return io.NodeOutput(core.segs_to_bounding_boxes(segs))
+
+
 class SEGSMerge(ImpactNode):
     @classmethod
     def define_schema(cls):

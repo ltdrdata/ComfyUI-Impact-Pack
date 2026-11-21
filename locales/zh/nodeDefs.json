@@ -6386,5 +6386,20 @@
                 "name": "名称"
             }
         }
+    },
+    "ImpactSEGSToBoundingBoxes": {
+        "description": "将每个 SEG 的边界框输出为 ComfyUI 自带节点（如 SAM3 Detect）可接收的边界框。\n当 SEGS 为视频的每一帧都带有蒙版时，每一帧输出其蒙版所在位置的边界框。",
+        "display_name": "SEGS 转边界框",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "bboxes",
+                "tooltip": "每一帧对应一个边界框列表。每个边界框包含 x、y、width、height、label 和 score。"
+            }
+        }
     }
 }

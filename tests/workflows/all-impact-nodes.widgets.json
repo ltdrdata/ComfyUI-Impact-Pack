@@ -1,5 +1,5 @@
 {
-  "frontend_version": "1.58.5",
+  "frontend_version": "1.59.10",
   "created_via": "Chrome node search and native workflow Export",
   "nodes": [
     {
@@ -4065,6 +4065,11 @@
           "value": 10
         }
       ]
+    },
+    {
+      "id": "204",
+      "type": "ImpactSEGSToBoundingBoxes",
+      "widgets": []
     }
   ]
 }

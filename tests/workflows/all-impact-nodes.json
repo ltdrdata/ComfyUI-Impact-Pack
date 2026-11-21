@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 203,
+  "last_node_id": 204,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10534,6 +10534,38 @@
         "crop_factor": 3,
         "drop_size": 10
       }
+    },
+    {
+      "id": 204,
+      "type": "ImpactSEGSToBoundingBoxes",
+      "pos": [
+        5730.054831271701,
+        6805.555555555555
+      ],
+      "size": [
+        204.4205078125,
+        26
+      ],
+      "flags": {},
+      "order": 202,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactSEGSToBoundingBoxes"
+      }
     }
   ],
   "links": [],
@@ -10543,11 +10575,11 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -4529.186288791232,
-        -6555.555555555555
+        -5382.265085177951,
+        -6615.555555555555
       ]
     },
-    "frontendVersion": "1.58.5"
+    "frontendVersion": "1.59.10"
   },
   "version": 0.4
 }
