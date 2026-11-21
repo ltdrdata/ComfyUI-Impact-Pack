@@ -77,6 +77,10 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
       * It works where a `SAM_MODEL` is used on an image: `SAMDetector (combined)`, `SAMDetector (segmented)`, `Simple Detector (SEGS)` and the `sam_model_opt` of the detailers. `SAM3 Video Detector (SEGS)` tracks with it. `SAM2 Video Detector (SEGS)` and the SAM editor do not take it.
       * SAM3 returns one mask for a prompt, without a score, so the `threshold` of a SAM detector does not apply to it. `device_mode` does not apply either: ComfyUI's model management places the model.
   * `ONNXDetectorProvider` - Loads the ONNX model to provide BBOX_DETECTOR.
+    * It takes a model in one of two formats, and stops with an error for a model in another format.
+      * A detection model exported to ONNX by Ultralytics YOLO, such as YOLOv8, or YOLOv10, which filters its own boxes. The label of a SEG is the class name that the model holds.
+      * A RetinaNet model in the format of `detector_v2_base_checkpoint.onnx`. The label of a SEG is the class number.
+    * The model runs on the CPU.
   * `CLIPSegDetectorProvider` - Wrapper for CLIPSeg to provide BBOX_DETECTOR.
     * You need to install the [time-river/ComfyUI-CLIPSeg](https://github.com/time-river/ComfyUI-CLIPSeg) node extension. The original `biegert/ComfyUI-CLIPSeg` repository no longer exists.
   * `SEGM Detector (combined)` - Detects segmentation and returns a mask from the input image.
