@@ -130,7 +130,7 @@ class SEGS_Classify:
 
         classified = []
         remained_SEGS = []
-        provided_labels = set()
+        provided_labels = []
 
         for seg in segs[1]:
             cropped_image = None
@@ -147,7 +147,8 @@ class SEGS_Classify:
                 classified.append((seg, res))
 
                 for x in res:
-                    provided_labels.add(x['label'])
+                    if x['label'] not in provided_labels:
+                        provided_labels.append(x['label'])
             else:
                 remained_SEGS.append(seg)
 
@@ -186,4 +187,4 @@ class SEGS_Classify:
             else:
                 remained_SEGS.append(seg)
 
-        return (segs[0], filtered_SEGS), (segs[0], remained_SEGS), list(provided_labels)
+        return (segs[0], filtered_SEGS), (segs[0], remained_SEGS), provided_labels

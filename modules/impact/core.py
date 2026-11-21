@@ -1577,7 +1577,9 @@ def segs_to_combined_mask(segs):
     mask = np.zeros((h, w), dtype=np.uint8)
 
     for seg in segs[1]:
-        cropped_mask = seg.cropped_mask
+        cropped_mask = seg.cropped_mask.cpu().numpy() if isinstance(seg.cropped_mask, torch.Tensor) else seg.cropped_mask
+        if cropped_mask.ndim == 3:
+            cropped_mask = cropped_mask.max(axis=0)
         crop_region = seg.crop_region
         mask[crop_region[1]:crop_region[3], crop_region[0]:crop_region[2]] |= (cropped_mask * 255).astype(np.uint8)
 

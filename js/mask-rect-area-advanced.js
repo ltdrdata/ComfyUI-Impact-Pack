@@ -239,22 +239,12 @@ app.registerExtension({
         nodeType.prototype.onNodeCreated = function () {
             const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
 
-            this.setProperty("width", 512);
-            this.setProperty("height", 512);
-            this.setProperty("x", 0);
-            this.setProperty("y", 0);
-            this.setProperty("w", 256);
-            this.setProperty("h", 256);
-            this.setProperty("blur_radius", 0);
-
             this.selected = false;
             this.index = 3;
             this.serialize_widgets = true;
 
-            // If the node already provides widgets from Python/ComfyUI, do NOT recreate them
-            const hasExisting = Array.isArray(this.widgets) && this.widgets.some(w => w && w.name === "x");
-
-            // Helper: attach callbacks to existing widgets to keep node.properties in sync (canvas preview).
+            // Helper: attach callbacks to the widgets to keep node.properties in sync (canvas preview).
+            // A new node takes its properties from the widgets, which hold the defaults of the server.
             const hookWidget = (node, widgetName, propName, opts) => {
                 if (!Array.isArray(node.widgets)) {
                     return;
@@ -268,11 +258,7 @@ app.registerExtension({
                 const max = (opts && typeof opts.max === "number") ? opts.max : undefined;
                 const step = (opts && typeof opts.step === "number") ? opts.step : undefined;
 
-                if (node.properties && Object.prototype.hasOwnProperty.call(node.properties, propName)) {
-                    w.value = node.properties[propName];
-                } else {
-                    node.properties[propName] = w.value;
-                }
+                node.properties[propName] = w.value;
 
                 const prevCb = w.callback;
                 w.callback = function (v, ...args) {
@@ -299,52 +285,13 @@ app.registerExtension({
                 };
             };
 
-            if (hasExisting) {
-                hookWidget(this, "x", "x", {"step": 10});
-                hookWidget(this, "y", "y", {"step": 10});
-                hookWidget(this, "width", "w", {"step": 10});
-                hookWidget(this, "height", "h", {"step": 10});
-                hookWidget(this, "image_width", "width", {"step": 10});
-                hookWidget(this, "image_height", "height", {"step": 10});
-                hookWidget(this, "blur_radius", "blur_radius", {"min": 0, "max": 255, "step": 10});
-            } else {
-                CUSTOM_INT(this, "x", 0, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["x"] = this.value;
-                });
-                CUSTOM_INT(this, "y", 0, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["y"] = this.value;
-                });
-                CUSTOM_INT(this, "width", 256, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["w"] = this.value;
-                });
-                CUSTOM_INT(this, "height", 256, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["h"] = this.value;
-                });
-                CUSTOM_INT(this, "image_width", 512, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["width"] = this.value;
-                });
-                CUSTOM_INT(this, "image_height", 512, function (v, _, node) {
-                    const s = this.options.step / 10;
-                    this.value = Math.round(v / s) * s;
-                    node.properties["height"] = this.value;
-                });
-                CUSTOM_INT(this, "blur_radius", 0, function (v, _, node) {
-                    this.value = Math.round(v) || 0;
-                    node.properties["blur_radius"] = this.value;
-                },
-                        {"min": 0, "max": 255, "step": 10}
-                );
-            }
+            hookWidget(this, "x", "x", {"step": 10});
+            hookWidget(this, "y", "y", {"step": 10});
+            hookWidget(this, "width", "w", {"step": 10});
+            hookWidget(this, "height", "h", {"step": 10});
+            hookWidget(this, "image_width", "width", {"step": 10});
+            hookWidget(this, "image_height", "height", {"step": 10});
+            hookWidget(this, "blur_radius", "blur_radius", {"min": 0, "max": 255, "step": 10});
 
             showPreviewCanvas(this, app);
 
@@ -383,18 +330,6 @@ function getDrawArea(node, backgroundWidth, backgroundHeight) {
     }
 
     return [x, y, w, h];
-}
-
-function CUSTOM_INT(node, inputName, val, func, config = {}) {
-    return {
-        widget: node.addWidget(
-                "number",
-                inputName,
-                val,
-                func,
-                Object.assign({}, {min: 0, max: 4096, step: 640, precision: 0}, config)
-                )
-    };
 }
 
 function syncLinkedInputsToPropertiesAdvanced(node) {
