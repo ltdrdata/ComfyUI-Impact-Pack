@@ -330,7 +330,8 @@ class CoreMLHook(DetailerHook):
             top_gap = by1 - y1
             bottom_gap = y2 - by2
 
-            gap_ratio = top_gap / bottom_gap
+            # what is cut comes from above and below the box by the room on each side, so a box in the middle stays there
+            gap_ratio = top_gap / (top_gap + bottom_gap) if top_gap + bottom_gap > 0 else 0.5
 
             target_height = 1/target_ratio*crop_w
             delta_height = crop_h - target_height
@@ -344,7 +345,7 @@ class CoreMLHook(DetailerHook):
             left_gap = bx1 - x1
             right_gap = x2 - bx2
 
-            gap_ratio = left_gap / right_gap
+            gap_ratio = left_gap / (left_gap + right_gap) if left_gap + right_gap > 0 else 0.5
 
             target_width = target_ratio*crop_h
             delta_width = crop_w - target_width
