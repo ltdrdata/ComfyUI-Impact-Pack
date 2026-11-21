@@ -2119,5 +2119,20 @@
                 "name": "SEGS"
             }
         }
+    },
+    "ImpactSEGSToBoundingBoxes": {
+        "description": "각 SEG의 박스를 SAM3 Detect 같은 ComfyUI 기본 노드가 받는 바운딩 박스로 출력합니다.\nSEGS가 비디오의 프레임마다 마스크를 가지면, 프레임마다 그 마스크가 있는 위치의 박스를 출력합니다.",
+        "display_name": "SEGS를 바운딩 박스로",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "bboxes",
+                "tooltip": "프레임마다 박스 목록 하나입니다. 각 박스는 x, y, width, height, label, score를 가집니다."
+            }
+        }
     }
 }

@@ -154,6 +154,8 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `SEGSPreview (CNET Image)` - Show images configured with `ControlNetApply (SEGS)` for debugging purposes.
   * `SEGSToImageList` - Convert SEGS To Image List
   * `SEGSToMaskList` - Convert SEGS To Mask List
+  * `SEGS to Bounding Boxes` - Gives the box of each SEG as the bounding boxes that ComfyUI's own nodes take, such as the `bboxes` of `SAM3 Detect`.
+     * When the SEGS hold a mask for each frame of a video, each frame gets the box of where its mask lies. `Simple Detector for Video (SEGS)` in the `Pivot SEGS` mode holds one mask for all frames: its boxes are one list, which the nodes of ComfyUI use for every frame.
   * `SEGS Filter (label)` - This node filters SEGS based on the label of the detected areas. 
   * `SEGS Filter (ordered)` - This node sorts SEGS based on size and position and retrieves SEGs within a certain range. 
   * `SEGS Filter (range)` - This node retrieves only SEGs from SEGS that have a size and position within a certain range.
