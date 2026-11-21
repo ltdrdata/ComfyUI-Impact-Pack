@@ -6401,5 +6401,28 @@
                 "tooltip": "每一帧对应一个边界框列表。每个边界框包含 x、y、width、height、label 和 score。"
             }
         }
+    },
+    "ImpactBoundingBoxesToSEGS": {
+        "description": "根据 ComfyUI 自带节点（如 SAM3 Detect）输出的边界框生成 SEGS。\n每个边界框成为一个以该框为蒙版的 SEG，与 BBOX 检测器 (SEGS) 的结果相同。",
+        "display_name": "边界框转 SEGS",
+        "inputs": {
+            "bboxes": {
+                "name": "bboxes",
+                "tooltip": "一个边界框、一个边界框列表，或单帧的边界框列表。边界框的 label 和 score 成为其 SEG 的标签和置信度。"
+            },
+            "image": {
+                "name": "图像",
+                "tooltip": "边界框所属的图像。它决定 SEGS 的尺寸，并为每个 SEG 提供其裁剪区域的图像。"
+            },
+            "crop_factor": {
+                "name": "裁剪系数",
+                "tooltip": "每个 SEG 的裁剪区域比其边界框宽多少。"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
     }
 }

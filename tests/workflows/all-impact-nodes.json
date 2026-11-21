@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 204,
+  "last_node_id": 205,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10566,6 +10566,49 @@
       "properties": {
         "Node name for S&R": "ImpactSEGSToBoundingBoxes"
       }
+    },
+    {
+      "id": 205,
+      "type": "ImpactBoundingBoxesToSEGS",
+      "pos": [
+        6595.05481906467,
+        6865.555555555555
+      ],
+      "size": [
+        270,
+        78
+      ],
+      "flags": {},
+      "order": 203,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "link": null
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactBoundingBoxesToSEGS"
+      },
+      "widgets_values": [
+        3
+      ],
+      "widgets_values_named": {
+        "crop_factor": 3
+      }
     }
   ],
   "links": [],
@@ -10575,8 +10618,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -5382.265085177951,
-        -6615.555555555555
+        -6280.05481906467,
+        -6675.555555555555
       ]
     },
     "frontendVersion": "1.59.10"

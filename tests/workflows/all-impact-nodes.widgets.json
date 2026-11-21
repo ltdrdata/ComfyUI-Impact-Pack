@@ -4070,6 +4070,16 @@
       "id": "204",
       "type": "ImpactSEGSToBoundingBoxes",
       "widgets": []
+    },
+    {
+      "id": "205",
+      "type": "ImpactBoundingBoxesToSEGS",
+      "widgets": [
+        {
+          "name": "crop_factor",
+          "value": 3
+        }
+      ]
     }
   ]
 }

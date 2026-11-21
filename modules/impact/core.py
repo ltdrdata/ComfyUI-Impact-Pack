@@ -1642,6 +1642,38 @@ def segs_to_bounding_boxes(segs):
     return frames
 
 
+def bounding_boxes_to_segs(bboxes, image, crop_factor):
+    """A BOUNDING_BOX of ComfyUI as the SEGS a bbox detector gives for the image: the mask of a SEG is its box.
+
+    ComfyUI's nodes give a single box, a list of boxes, or a list of boxes for each frame."""
+    if isinstance(bboxes, dict):
+        bboxes = [bboxes]
+    elif bboxes and not isinstance(bboxes[0], dict):
+        if len(bboxes) > 1:
+            raise Exception("[Impact Pack] ERROR: Bounding Boxes to SEGS does not allow the boxes of more than one frame.")
+        bboxes = bboxes[0]
+
+    if len(image) > 1:
+        raise Exception("[Impact Pack] ERROR: Bounding Boxes to SEGS does not allow image batches.")
+
+    h, w = image.shape[1:3]
+    items = []
+    for box in bboxes:
+        x1, y1 = max(0.0, float(box["x"])), max(0.0, float(box["y"]))
+        x2, y2 = min(float(w), float(box["x"] + box["width"])), min(float(h), float(box["y"] + box["height"]))
+        if x2 - x1 <= 1 or y2 - y1 <= 1:
+            continue
+
+        # A bbox detector fills the mask between the truncated corners of the box, the corners included.
+        mask = np.zeros((h, w), dtype=np.float32)
+        mask[int(y1):int(y2) + 1, int(x1):int(x2) + 1] = 1.0
+        crop_region = utils.make_crop_region(w, h, (x1, y1, x2, y2), crop_factor)
+        items.append(SEG(utils.crop_image(image, crop_region), utils.crop_ndarray2(mask, crop_region), box.get("score", 1.0),
+                         crop_region, (x1, y1, x2, y2), str(box.get("label") or ""), None))
+
+    return (h, w), items
+
+
 def vae_decode(vae, samples, use_tile, hook, tile_size=512, overlap=64):
     if use_tile:
         decoder = nodes.VAEDecodeTiled()
