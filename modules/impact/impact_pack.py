@@ -2327,9 +2327,9 @@ class MaskRectAreaAdvanced:
                 "x": ("INT", {"default": 0, "min": 0, "step": 1}),
                 "y": ("INT", {"default": 0, "min": 0, "step": 1}),
                 "width": ("INT", {"default": 256, "min": 0, "step": 1}),
-                "height": ("INT", {"default": 320, "min": 0, "step": 1}),
+                "height": ("INT", {"default": 256, "min": 0, "step": 1}),
                 "image_width": ("INT", {"default": 512, "min": 1, "step": 1}),
-                "image_height": ("INT", {"default": 320, "min": 1, "step": 1}),
+                "image_height": ("INT", {"default": 512, "min": 1, "step": 1}),
                 "blur_radius": ("INT", {"default": 0, "min": 0, "step": 1})
             },
             "hidden": {"extra_pnginfo": "EXTRA_PNGINFO", "unique_id": "UNIQUE_ID"}
