@@ -1340,14 +1340,12 @@ class ONNXDetector:
                         crop_region = utils.make_crop_region(w, h, item_bbox, crop_factor)
 
                         if detailer_hook is not None:
-                            crop_region = item_bbox.post_crop_region(w, h, item_bbox, crop_region)
-
-                        crop_x1, crop_y1, crop_x2, crop_y2, = crop_region
+                            crop_region = detailer_hook.post_crop_region(w, h, item_bbox, crop_region)
 
                         # prepare cropped mask
-                        cropped_mask = np.zeros((crop_y2 - crop_y1, crop_x2 - crop_x1))
-                        cropped_mask[y1 - crop_y1:y2 - crop_y1, x1 - crop_x1:x2 - crop_x1] = 1
-                        cropped_mask = utils.dilate_mask(cropped_mask, dilation)
+                        mask = np.zeros((h, w))
+                        mask[y1:y2, x1:x2] = 1
+                        cropped_mask = utils.dilate_mask(utils.crop_ndarray2(mask, crop_region), dilation)
 
                         # make items. just convert the integer label to a string
                         item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, str(labels[i]), None)
@@ -1362,6 +1360,7 @@ class ONNXDetector:
             return segs
         except Exception as e:
             logging.error(f"ONNXDetector: unable to execute.\n{e}")
+            raise
 
     def detect_combined(self, image, threshold, dilation):
         return segs_to_combined_mask(self.detect(image, threshold, dilation, 1))
