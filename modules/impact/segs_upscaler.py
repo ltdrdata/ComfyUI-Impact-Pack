@@ -45,7 +45,6 @@ def upscale_with_model(upscale_model, image):
 
 def apply_resize_image(image: Image.Image, original_width, original_height, rounding_modulus, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024,
                        resample='bicubic'):
-    # Calculate the new width and height based on the given mode and parameters
     if mode == 'rescale':
         new_width, new_height = int(original_width * factor), int(original_height * factor)
     else:
@@ -56,14 +55,11 @@ def apply_resize_image(image: Image.Image, original_width, original_height, roun
         new_width = width if width % m == 0 else width + (m - width % m)
         new_height = height if height % m == 0 else height + (m - height % m)
 
-    # Define a dictionary of resampling filters
     resample_filters = {'nearest': 0, 'bilinear': 2, 'bicubic': 3, 'lanczos': 1}
 
-    # Apply supersample
     if supersample == 'true':
         image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
 
-    # Resize the image using the given resampling filter
     resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
 
     return resized_image
@@ -90,7 +86,6 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
 
     original_image_size = image.shape[1:3]
 
-    # Match to original image size
     h, w = original_image_size
     if h % 8 > 0 or w % 8 > 0:
         scale = 8/min(h, w) + 1
@@ -116,7 +111,6 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
     if control_net_wrapper is not None:
         positive, negative, _ = control_net_wrapper.apply(positive, negative, image, noise_mask)
 
-    # prepare mask
     if noise_mask is not None and inpaint_model:
         imc_encode = nodes.InpaintModelConditioning().encode
         if 'noise_mask' in inspect.signature(imc_encode).parameters:
@@ -131,19 +125,13 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
 
     refined_latent = latent_image
 
-    # ksampler
     refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, refined_latent, denoise, scheduler_func=scheduler_func_opt)
 
-    # non-latent downscale - latent downscale cause bad quality
     refined_image = vae.decode(refined_latent['samples'])
 
-    # prevent mixing of device
     refined_image = refined_image.cpu()
 
-    # Match to original image size
     if refined_image.shape[1:3] != original_image_size:
         refined_image = utils.tensor_resize(refined_image, original_image_size[1], original_image_size[0])
 
-    # don't convert to latent - latent break image
-    # preserving pil is much better
     return refined_image

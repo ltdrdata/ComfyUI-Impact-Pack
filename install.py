@@ -8,7 +8,7 @@ import traceback
 
 
 if sys.argv[0] == 'install.py':
-    sys.path.append('.')   # for portable version
+    sys.path.append('.')
 
 
 pack_path = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +37,6 @@ sys.path.append(impact_path)
 sys.path.append(comfy_path)
 
 
-# ---
 def handle_stream(stream, is_stdout):
     stream.reconfigure(encoding=locale.getpreferredencoding(), errors='replace')
 
@@ -65,7 +64,6 @@ def process_wrap(cmd_str, cwd=None, handler=None, env=None):
     stderr_thread.join()
 
     return process.wait()
-# ---
 
 
 try:
@@ -78,7 +76,6 @@ try:
         new_env["COMFYUI_PATH"] = comfy_path
         new_env["COMFYUI_MODEL_PATH"] = model_path
 
-        # Download model
         print("### ComfyUI-Impact-Pack: Check basic models")
         sam_path = os.path.join(model_path, "sams")
         onnx_path = os.path.join(model_path, "onnx")
@@ -96,7 +93,6 @@ try:
 
         impact.config.write_config()
 
-        # Remove legacy subpack
         try:
             subpack_path = os.path.join(pack_path, 'impact_subpack')
             if os.path.exists(subpack_path):

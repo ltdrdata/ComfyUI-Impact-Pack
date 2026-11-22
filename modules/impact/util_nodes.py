@@ -15,8 +15,6 @@ import logging
 
 
 class _SwitchInputs(dict):
-    """Expose one UI socket while marking every numbered input as lazy."""
-
     def __contains__(self, key):
         return re.fullmatch(r"input[1-9][0-9]*", key) is not None
 
@@ -184,7 +182,6 @@ class GeneralInversedSwitch:
 
         res = []
 
-        # search max output count in prompt
         cnt = 0
         for x in prompt.values():
             for y in x.get('inputs', {}).values():
@@ -276,14 +273,6 @@ class ImpactLogger:
 
         logging.info(f"         PROMPT: {prompt}")
 
-        # for x in prompt:
-        #     if 'inputs' in x and 'populated_text' in x['inputs']:
-        #         print(f"PROMPT: {x['10']['inputs']['populated_text']}")
-        #
-        # for x in extra_pnginfo['workflow']['nodes']:
-        #     if x['type'] == 'ImpactWildcardProcessor':
-        #         print(f" WV : {x['widgets_values'][1]}\n")
-
         PromptServer.instance.send_sync("impact-node-feedback", {"node_id": unique_id, "widget_name": "text", "type": "TEXT", "value": f"{data}"})
         return {}
 
@@ -361,7 +350,6 @@ class MaskListToMaskBatch:
                 m = m[:, 0, :, :]
             
             upscaled_masks.append(m)
-        # Concatenate all at once
         result = torch.cat(upscaled_masks, dim=0)
         return (result,)
 
@@ -398,29 +386,24 @@ class ImageListToImageBatch:
             return (torch.cat(images, dim=0),)
 
         for image2 in images[1:]:
-            # Ensure same device
             if image2.device != image1.device:
                 image2 = image2.to(image1.device)
 
-            # Ensure HxW match exactly
             H, W = image1.shape[1], image1.shape[2]
             if image2.shape[1] != H or image2.shape[2] != W:
                 image2 = comfy.utils.common_upscale(
-                    image2.movedim(-1, 1),  # move channels first
-                    W,  # width
-                    H,  # height
+                    image2.movedim(-1, 1),
+                    W,
+                    H,
                     "lanczos",
                     "center"
-                ).movedim(1, -1)  # move channels back last
+                ).movedim(1, -1)
 
-            # Ensure channels match
             if image2.shape[3] != image1.shape[3]:
-                # simple fix: truncate or pad channels
                 min_C = min(image1.shape[3], image2.shape[3])
                 image1 = image1[:, :, :, :min_C]
                 image2 = image2[:, :, :, :min_C]
 
-            # Concatenate along batch dimension
             image1 = torch.cat((image1, image2), dim=0)
 
         return (image1,)
@@ -711,7 +694,6 @@ class StringListToString:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, join_with, string_list):
-        # convert \\n to newline character
         separator = "\n" if join_with[0] == "\\n" else join_with[0]
 
         joined_text = separator.join(string_list)
@@ -740,11 +722,9 @@ class WildcardPromptFromString:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, string, delimiter, prefix_all, postfix_all, restrict_to_tags, exclude_tags):
-        # convert \\n to newline character
         if delimiter == "\\n":
             delimiter = "\n"
 
-        # some sanity checks and normalization for later processing
         if prefix_all is None:
             prefix_all = ""
         if postfix_all is None:
@@ -757,25 +737,20 @@ class WildcardPromptFromString:
         restrict_to_tags = restrict_to_tags.split(", ")
         exclude_tags = exclude_tags.split(", ")
 
-        # build the wildcard prompt per list entry
         output = ["[LAB]"]
         labels = []
         for x in string.split(delimiter):
             label = str(len(labels) + 1)
             labels.append(label)
             x = x.split(", ")
-            # restrict to tags
             if restrict_to_tags != [""]:
                 x = list(set(x) & set(restrict_to_tags))
-            # remove tags
             if exclude_tags != [""]:
                 x = list(set(x) - set(exclude_tags))
-            # next row: <LABEL> <PREFIX> <TAGS> <POSTFIX>
             prompt_for_seg = f'[{label}] {prefix_all} {", ".join(x)} {postfix_all}'.strip()
             output.append(prompt_for_seg)
         output = "\n".join(output)
 
-        # clean string: fixup double spaces, commas etc.
         output = re.sub(r' ,', ',', output)
         output = re.sub(r'  +', ' ', output)
         output = re.sub(r',,+', ',', output)

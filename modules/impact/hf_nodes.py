@@ -138,7 +138,6 @@ class SEGS_Classify:
             if seg.cropped_image is not None:
                 cropped_image = seg.cropped_image
             elif ref_image_opt is not None:
-                # take from original image
                 cropped_image = utils.crop_image(ref_image_opt, seg.crop_region)
 
             if cropped_image is not None:

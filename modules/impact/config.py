@@ -43,7 +43,6 @@ def read_config():
         config.read(config_path)
         default_conf = config['default']
 
-        # Strip quotes from custom_wildcards path if present
         custom_wildcards_path = default_conf.get('custom_wildcards', '').strip('\'"')
 
         if not os.path.exists(custom_wildcards_path):
@@ -52,7 +51,6 @@ def read_config():
 
         default_conf['custom_wildcards'] = custom_wildcards_path
 
-        # Parse wildcard_cache_limit_mb with default value of 50MB
         cache_limit_mb = 50
         if 'wildcard_cache_limit_mb' in default_conf:
             try:
@@ -85,7 +83,6 @@ def get_config():
         if os.path.exists(config_path):
             cached_config = read_config()
         else:
-            # A new installation has no impact-pack.ini: create it with the defaults.
             cached_config = default_config()
             try:
                 write_config()

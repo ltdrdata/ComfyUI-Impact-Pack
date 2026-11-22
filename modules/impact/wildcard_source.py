@@ -10,7 +10,6 @@ from impact import config, wildcards
 
 
 _LORA_RE = re.compile(r"<lora:([^>]+)>")
-# Keep labels and strength targets from workflows saved by the incoming node.
 _LEGACY_LORA_RE = re.compile(r"<lora:([^:>]+):([\d.]+)\s*>")
 
 
@@ -50,8 +49,6 @@ def parse_linhas_wildcard(caminho):
         (existing if legacy_match else added).append((line.strip(), name))
 
     entries, counts, used = [], {}, set()
-    # Allocate every old label first. Newly supported rows cannot take an old
-    # row's name, duplicate suffix, or position in the original option list.
     for group in (existing, added):
         for line, name in group:
             count = counts.get(name, 0)
@@ -85,7 +82,6 @@ def entry_with_strength(entry, strength):
 
 
 def resolver_caminho_lora(nome):
-    """Locates the .safetensors (or other supported formats) in the ComfyUI cache, resolving subfolders."""
     if not nome.endswith((".safetensors", ".ckpt", ".pt")):
         nome_com_ext = nome + ".safetensors"
     else:
@@ -93,14 +89,12 @@ def resolver_caminho_lora(nome):
 
     todos_loras = folder_paths.get_filename_list("loras")
 
-    # Attempt 1: Exact match or relative path
     for lora in todos_loras:
         lora_norm = lora.replace("\\", "/")
         nome_norm = nome_com_ext.replace("\\", "/")
         if lora_norm == nome_norm or lora_norm.endswith("/" + nome_norm):
             return lora
 
-    # Attempt 2: Filename only (ignores subfolders)
     nome_basico = os.path.basename(nome_com_ext)
     for lora in todos_loras:
         if os.path.basename(lora) == nome_basico:
@@ -109,10 +103,6 @@ def resolver_caminho_lora(nome):
     return None
 
 def extrair_e_limpar_loras(prompt):
-    """Scans the prompt for <lora:NAME:weight> or <lora:NAME:model_w:clip_w> tags,
-    returning the list of LoRAs to load and cleaning the tags from the text."""
-    # The shared wildcard parser deduplicates tags and accepts different weights.
-    # Keep this node's original repeated-tag and float() semantics.
     if not prompt:
         return [], ""
 
@@ -141,10 +131,8 @@ def extrair_e_limpar_loras(prompt):
 
             loras_extraidos.append((nome_lora, weight_model, weight_clip))
 
-    # Clean the tags from the prompt
     prompt_limpo = re.sub(pattern, "", prompt)
 
-    # Remove duplicate/trailing commas and extra spaces
     prompt_limpo = re.sub(r",\s*,", ",", prompt_limpo)
     prompt_limpo = re.sub(r"\s+", " ", prompt_limpo).strip()
     prompt_limpo = prompt_limpo.strip(",").strip()
@@ -152,10 +140,8 @@ def extrair_e_limpar_loras(prompt):
     return loras_extraidos, prompt_limpo
 
 def aplicar_loras_e_codificar(model, clip, loras_a_aplicar, prompt_limpo):
-    """Loads LoRAs sequentially and encodes the prompt using CLIPTextEncode (supporting BREAK)."""
     loader = nodes.LoraLoader()
 
-    # 1. Load LoRAs onto the model and CLIP
     for nome_lora, w_model, w_clip in loras_a_aplicar:
         caminho_resolvido = resolver_caminho_lora(nome_lora)
         if caminho_resolvido:
@@ -164,7 +150,6 @@ def aplicar_loras_e_codificar(model, clip, loras_a_aplicar, prompt_limpo):
         else:
             logging.warning(f"[Impact Wildcard] WARNING: LoRA '{nome_lora}' could not be found in ComfyUI.")
 
-    # 2. Split by BREAK and encode (for composite conditioning / ImpactWildcardEncode compatibility)
     secoes = [x.strip() for x in prompt_limpo.split("BREAK")]
     secoes = [x for x in secoes if x != ""]
     if not secoes:
@@ -185,7 +170,6 @@ def aplicar_loras_e_codificar(model, clip, loras_a_aplicar, prompt_limpo):
 
 
 def nome_arquivo_limpo(nome, fallback="no_lora"):
-    """Cleans and formats the LoRA filename for safe usage in image saving prefixes."""
     n = nome.replace("\\", "/").split("/")[-1]
     n = re.sub(r'[<>:"/\\|?*\[\],]', "", n)
     n = re.sub(r"\s+", "_", n).strip("_")
@@ -202,11 +186,9 @@ async def get_items_handler(request):
 class LoraWildcardSource:
     @classmethod
     def INPUT_TYPES(cls):
-        # Scan wildcard text files from custom_wildcards directory dynamically
         categorias = listar_categorias_wildcard()
         primeira_categoria = categorias[0] if categorias else "styles"
 
-        # Default fallback to first available category file list
         caminho = achar_arquivo_wildcard(primeira_categoria + ".txt")
         entradas = parse_linhas_wildcard(caminho)
         labels_padrao = [e[0] for e in entradas] or [f"({primeira_categoria}.txt not found)"]
@@ -245,8 +227,6 @@ class LoraWildcardSource:
     def build(self, model, clip, category, lora_wildcard, mode, strength, base_prompt, seed):
         entries = parse_linhas_wildcard(achar_arquivo_wildcard(f"{category}.txt"))
         if mode in ("random", "sequential", "batch") or not any(entry[0] == lora_wildcard for entry in entries):
-            # Extended syntax requires an explicit fixed selection. Keep the
-            # original candidates for saved seeds, batch counts and empty selections.
             entries = [entry for entry in entries if _LEGACY_LORA_RE.search(entry[1])]
         if not entries:
             loras, text = [], base_prompt

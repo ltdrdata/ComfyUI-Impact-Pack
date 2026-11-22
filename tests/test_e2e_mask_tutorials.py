@@ -1,8 +1,3 @@
-"""Native PNG/JSON compatibility using the original extension tutorials.
-
-Set IMPACT_TUTORIALS_DIR to a ComfyUI-extension-tutorials checkout.
-This checks loading and saved widgets; it does not run model inference.
-"""
 from argparse import Namespace
 import json
 import os
@@ -27,7 +22,6 @@ def test_native_mask_tutorial_widgets(tmp_path, restore_by_name):
     names = ["combined", "crop_factor", "bbox_fill", "drop_size", "contour_fill"]
     cases = [
         ("mask_to_segs.png", 5, {"3": [False, 1, False, 50, False]}),
-        # Four saved values: the absent contour_fill must retain its False default.
         ("maskpointer.json", 4, {"13": [True, 2, False, 10, False], "57": [False, 2, False, 10, False]}),
         ("segs-manipulation.png", 5, {"2": [False, 3, False, 10, False]}),
     ]
@@ -47,7 +41,6 @@ def test_native_mask_tutorial_widgets(tmp_path, restore_by_name):
                 f"Tutorial saved controls changed: {filename}")
             for loading_original in (True, False):
                 ui.new_workflow()
-                # Missing media/models do not prevent checking the saved controls.
                 ui.load_workflow(path, len(original["nodes"]), check_node_errors=False)
                 for node_id, values in expected.items():
                     show_node(ui, node_id)

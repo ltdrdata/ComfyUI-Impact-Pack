@@ -17,7 +17,6 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
-#  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
 PublisherId = "drltdata"

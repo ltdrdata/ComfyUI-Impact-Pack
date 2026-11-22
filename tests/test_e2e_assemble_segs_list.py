@@ -1,11 +1,3 @@
-"""Chrome E2E for Decompose (SEGS list) and Assemble (SEGS list): a list of SEGS that is taken apart and put
-together again stays a list.
-
-Two images, red and blue, form an image list. Two SEGS form a SEGS list, each holding the picture of the
-other image. SEGSPaste must give every image the SEGS of its own place after Decompose (SEGS list) and
-Assemble (SEGS list), and the last SEGS after Decompose (SEGS) and Assemble (SEGS). Requires an isolated ComfyUI
-server with Impact Pack, Playwright and Chrome.
-"""
 import io
 import json
 
@@ -20,7 +12,6 @@ RED, BLUE = (255, 0, 0), (0, 0, 255)
 
 
 def colors(browser, entry, node_id):
-    """The colour of each image a preview node received; every image must be of one colour."""
     found = []
     for meta in entry["outputs"][node_id]["images"]:
         with Image.open(io.BytesIO(file_bytes(browser, meta))) as image:
@@ -50,7 +41,6 @@ def test_each_image_of_a_list_gets_the_segs_of_its_own_place(ui, restore_by_name
     number(browser, solid, "height", 64)
     to_segs = add_node(browser, "MaskToSEGS", 520, 720)
     connect(browser, solid, to_segs)
-    # The first SEGS holds the blue picture and the second the red one.
     with_picture = []
     for row, picture in enumerate(reversed(pictures)):
         node = add_node(browser, "SetDefaultImageForSEGS", 900, 380 + 190 * row)

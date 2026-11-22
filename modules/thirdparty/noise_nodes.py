@@ -70,7 +70,6 @@ class Unsampler:
                                  force_full_denoise=False, denoise_mask=noise_mask, sigmas=sigmas, start_step=0,
                                  last_step=end_at_step, callback=callback)
         if normalize:
-            # technically doesn't normalize because unsampling is not guaranteed to end at a std given by the schedule
             samples -= samples.mean()
             samples /= samples.std()
         samples = samples.cpu()

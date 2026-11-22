@@ -25,7 +25,6 @@ import numpy as np
 import torch
 
 RECORD = Path(__file__).resolve().parent / "v1_node_runs.json"
-# This case runs with the CLIPSeg node pack taken as installed; the case before it runs without.
 CLIPSEG_INSTALLED = "CLIPSegDetectorProvider#1"
 
 
@@ -43,7 +42,6 @@ def seg(SEG, seed, box, label, image=True):
 
 
 def cases(core, hooks):
-    """Node ID -> the inputs of each of its cases."""
     SEGS = ((64, 64), [seg(core.SEG, 1, (8, 8, 30, 34), "face"), seg(core.SEG, 2, (36, 20, 60, 50), "hand", image=False)])
     OTHER = ((64, 64), [seg(core.SEG, 3, (4, 4, 40, 40), "face")])
     EMPTY = ((64, 64), [])
@@ -183,10 +181,8 @@ def without_models(core, util_nodes):
 
 
 def summary(value):
-    """What a returned value is, in a form that survives small differences of floating point between machines."""
     if isinstance(value, (torch.Tensor, np.ndarray)):
         data = np.asarray(value.detach().cpu() if isinstance(value, torch.Tensor) else value, dtype=np.float64).reshape(-1)
-        # Weights scattered over the positions, so that values moved, mirrored or exchanged change the second sum.
         weights = 1.0 + (np.arange(len(data), dtype=np.int64) * 2654435761 % 4096) / 4096.0
         return {type(value).__name__: [list(value.shape), str(value.dtype), float(data.sum()), float((data * weights).sum())]}
     if isinstance(value, tuple) and hasattr(value, "_fields"):
@@ -222,7 +218,6 @@ def attempt(call):
 
 
 def run(case, node, inputs, execution):
-    """One case, through ComfyUI's executor and by the V1 call."""
     listed = {name: [value] for name, value in inputs.items()}
     with patch.dict(execution.nodes.NODE_CLASS_MAPPINGS, {"CLIPSeg": object} if case == CLIPSEG_INSTALLED else {}):
         result = {"executor": attempt(lambda: asyncio.run(execution.get_output_data("prompt", "1", node(), listed))[0]),
@@ -231,13 +226,11 @@ def run(case, node, inputs, execution):
 
 
 def node_classes(root):
-    """The classes a checkout registers, by node ID."""
     init = ast.parse((root / "__init__.py").read_text())
     modules = [importlib.import_module("impact." + node.module.rsplit(".", 1)[-1]) for node in init.body
                if isinstance(node, ast.ImportFrom) and (node.module or "").startswith("modules.impact.")]
     assert Path(modules[0].__file__).resolve().parents[2] == root
     mapping = next(node.value for node in init.body if isinstance(node, ast.Assign) and node.targets[0].id == "NODE_CLASS_MAPPINGS")
-    # A later star import of __init__.py replaces an earlier name.
     return {key.value: next(getattr(module, value.id) for module in reversed(modules) if hasattr(module, value.id))
             for key, value in zip(mapping.keys, mapping.values)}
 
@@ -251,7 +244,7 @@ def record():
     from server import PromptServer
     from types import SimpleNamespace
     PromptServer.instance = SimpleNamespace(routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None)
-    from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
+    from impact import impact_server  # noqa: F401
     from impact import core, hooks, util_nodes
     classes = node_classes(Path(core.__file__).resolve().parents[2])
     recorded = json.loads(RECORD.read_text()) if RECORD.exists() else {}

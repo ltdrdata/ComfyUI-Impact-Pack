@@ -1,10 +1,3 @@
-"""Import original tutorial PNGs, then use native Export and reload in Chrome.
-
-Requires IMPACT_TUTORIALS_DIR. This checks the affected registered node even
-when unrelated tutorial plugins are unavailable; it does not execute those
-incomplete graphs. The full LBW inference check additionally needs a trusted
-Main output in IMPACT_E2E_REFERENCE_IMAGE and the original models/Inspire Pack.
-"""
 import json
 import os
 from pathlib import Path
@@ -12,7 +5,7 @@ from pathlib import Path
 from PIL import Image
 import pytest
 
-from test_e2e_wildcard_cache import cached, ui as ui  # shared browser fixture
+from test_e2e_wildcard_cache import cached, ui as ui
 from test_e2e_widget_catalog import ROOT, export_workflow, setting, show_node, widget_state
 from wildcard_tutorial_cases import CASES, tutorial
 
@@ -31,8 +24,6 @@ def test_native_tutorial_widgets(ui, case, restore_by_name):
     assert [w["name"] for w in before["widgets"]] == [w["name"] for w in reference["widgets"]]
 
     saved = target["widgets_values"]
-    # Explicit legacy behavior, checked against Main. "Fixed" remains invalid
-    # for execution in the oldest tutorial; do not silently bless a migration.
     mode = ("populate" if saved[2] else "fixed") if isinstance(saved[2], bool) else saved[2]
     expected = [widget["value"] for widget in reference["widgets"]]
     expected[:3] = [*saved[:2], mode]

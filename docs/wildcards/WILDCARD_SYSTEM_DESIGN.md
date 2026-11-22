@@ -636,7 +636,6 @@ invalid YAML is reported as a parsing error without retrying another encoding.
 
 - [Product Requirements Document](WILDCARD_SYSTEM_PRD.md)
 - [User Guide](WILDCARD_SYSTEM_OVERVIEW.md)
-- [Testing Guide](WILDCARD_TESTING_GUIDE.md)
 - [Tutorial](../../ComfyUI-extension-tutorials/ComfyUI-Impact-Pack/tutorial/ImpactWildcard.md)
 
 ### 11.2 Code References

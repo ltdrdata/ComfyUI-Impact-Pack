@@ -82,7 +82,6 @@ class SEGSDetailerForAnimateDiff:
 
             cropped_image_frames = cropped_image_frames.cpu().numpy()
 
-            # It is assumed that AnimateDiff does not support conditioning masks based on test results, but it will be added for future consideration.
             cropped_positive = [
                 [condition, {
                     k: core.crop_condition_mask(v, cropped_image_frames, seg.crop_region) if k == "mask" else v

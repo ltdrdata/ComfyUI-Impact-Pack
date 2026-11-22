@@ -39,8 +39,6 @@ function showPreviewCanvas(node, app) {
         },
         draw: function (ctx, node, widgetWidth, widgetY) {
 
-            // If we are initially offscreen when created we wont have received a resize event
-            // Calculate it here instead
             if (!node.canvasHeight) {
                 computeCanvasSize(node, node.size, 200, 200);
             }
@@ -83,18 +81,14 @@ function showPreviewCanvas(node, app) {
             let widgetX = xOffset;
             widgetY = widgetY + yOffset;
 
-            // Draw the background border
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_OUTLINE_COLOR;
             ctx.fillRect(widgetX - border, widgetY - border, backgroundWidth + border * 2, backgroundHeight + border * 2);
 
-            // Draw the main background area 
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR;
             ctx.fillRect(widgetX, widgetY, backgroundWidth, backgroundHeight);
 
-            // Keep preview in sync when inputs are driven by links.
             syncLinkedInputsToProperties(node);
 
-            // Draw the conditioning zone
             let [x, y, w, h] = getDrawArea(node, backgroundWidth, backgroundHeight);
 
             ctx.fillStyle = getDrawColor(0, "80");
@@ -102,7 +96,6 @@ function showPreviewCanvas(node, app) {
             ctx.beginPath();
             ctx.lineWidth = 1;
 
-            // Draw grid lines
             for (let x = 0; x <= width / 64; x += 1) {
                 ctx.moveTo(widgetX + x * 64 * scale, widgetY);
                 ctx.lineTo(widgetX + x * 64 * scale, widgetY + backgroundHeight);
@@ -117,7 +110,6 @@ function showPreviewCanvas(node, app) {
             ctx.stroke();
             ctx.closePath();
 
-            // Draw current zone
             let [sx, sy, sw, sh] = getDrawArea(node, backgroundWidth, backgroundHeight);
 
             ctx.fillStyle = getDrawColor(0, "80");
@@ -126,12 +118,10 @@ function showPreviewCanvas(node, app) {
             ctx.fillStyle = getDrawColor(0, "40");
             ctx.fillRect(widgetX + sx + border, widgetY + sy + border, sw - border * 2, sh - border * 2);
 
-            // Draw white border around the current zone
             ctx.strokeStyle = globalThis.LiteGraph.NODE_SELECTED_TITLE_COLOR;
             ctx.lineWidth = 2;
             ctx.strokeRect(widgetX + sx, widgetY + sy, sw, sh);
 
-            // Display
             ctx.beginPath();
 
             ctx.arc(LiteGraph.NODE_SLOT_HEIGHT * 0.5, LiteGraph.NODE_SLOT_HEIGHT * (index + 0.5) + 4, 4, 0, Math.PI * 2);
@@ -143,7 +133,6 @@ function showPreviewCanvas(node, app) {
             ctx.lineWidth = 1;
             ctx.closePath();
 
-            // Draw progress bar canvas
             if (backgroundWidth < widgetWidth) {
                 xOffset += (widgetWidth - backgroundWidth) / 2 - margin;
             }
@@ -151,7 +140,6 @@ function showPreviewCanvas(node, app) {
             const barHeight = 8;
             let widgetYBar = widgetY + backgroundHeight + margin;
 
-            // Draw progress bar border
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_OUTLINE_COLOR;
             ctx.fillRect(
                     widgetX - border,
@@ -160,8 +148,7 @@ function showPreviewCanvas(node, app) {
                     barHeight + border * 2
                     );
 
-            // Draw progress bar area
-            ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR; // Mismo color de fondo que el canvas
+            ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR;
             ctx.fillRect(
                     widgetX,
                     widgetYBar,
@@ -169,15 +156,12 @@ function showPreviewCanvas(node, app) {
                     barHeight
                     );
 
-            // Draw progress bar grid
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#66666650";
 
-            // Determine max lines
             const numLines = Math.floor(backgroundWidth / 64);
 
-            // Draw progress bar grid
             for (let x = 0; x <= width / 64; x += 1) {
                 ctx.moveTo(widgetX + x * 64 * scale, widgetYBar);
                 ctx.lineTo(widgetX + x * 64 * scale, widgetYBar + barHeight);
@@ -185,7 +169,6 @@ function showPreviewCanvas(node, app) {
             ctx.stroke();
             ctx.closePath();
 
-            // Draw progress bar
             const progress = Math.min(blurRadius / 255, 1);
             ctx.fillStyle = "rgba(0, 120, 255, 0.5)";
 
@@ -244,10 +227,6 @@ app.registerExtension({
             this.index = 3;
             this.serialize_widgets = true;
 
-            // If Python/ComfyUI already created typed widgets, do not recreate them (avoid duplicates).
-            const hasExisting = Array.isArray(this.widgets) && this.widgets.some(w => w && w.name === "x");
-
-            // Hook existing widgets to keep node.properties in sync (canvas uses properties).
             const hookWidget = (node, widgetName, propName, opts) => {
                 if (!Array.isArray(node.widgets)) {
                     return;
@@ -290,41 +269,14 @@ app.registerExtension({
                 };
             };
 
-            if (hasExisting) {
-                // Note: "width"/"height" widgets map to "w"/"h" properties (percent-based).
-                hookWidget(this, "x", "x", {"min": 0, "max": 100});
-                hookWidget(this, "y", "y", {"min": 0, "max": 100});
-                hookWidget(this, "width", "w", {"min": 0, "max": 100});
-                hookWidget(this, "height", "h", {"min": 0, "max": 100});
-                hookWidget(this, "blur_radius", "blur_radius", {"min": 0, "max": 255});
-            } else {
-                CUSTOM_INT(this, "x", 0, function (v, _, node) {
-                    this.value = Math.max(0, Math.min(100, Math.round(v)));
-                    node.properties["x"] = this.value;
-                });
-                CUSTOM_INT(this, "y", 0, function (v, _, node) {
-                    this.value = Math.max(0, Math.min(100, Math.round(v)));
-                    node.properties["y"] = this.value;
-                });
-                CUSTOM_INT(this, "w", 50, function (v, _, node) {
-                    this.value = Math.max(0, Math.min(100, Math.round(v)));
-                    node.properties["w"] = this.value;
-                });
-                CUSTOM_INT(this, "h", 50, function (v, _, node) {
-                    this.value = Math.max(0, Math.min(100, Math.round(v)));
-                    node.properties["h"] = this.value;
-                });
-                CUSTOM_INT(this, "blur_radius", 0, function (v, _, node) {
-                    this.value = Math.round(v) || 0;
-                    node.properties["blur_radius"] = this.value;
-                }, {"min": 0, "max": 255, "step": 10});
-
-                // If Python widgets exist, they will be used instead; this is back-compat only.
-            }
+            hookWidget(this, "x", "x", {"min": 0, "max": 100});
+            hookWidget(this, "y", "y", {"min": 0, "max": 100});
+            hookWidget(this, "width", "w", {"min": 0, "max": 100});
+            hookWidget(this, "height", "h", {"min": 0, "max": 100});
+            hookWidget(this, "blur_radius", "blur_radius", {"min": 0, "max": 255});
 
             showPreviewCanvas(this, app);
 
-            // Sync linked input values -> node.properties so the preview updates when driven by connections.
             const prevOnExecute = this.onExecute;
             this.onExecute = function () {
                 const rr = prevOnExecute ? prevOnExecute.apply(this, arguments) : undefined;
@@ -415,15 +367,12 @@ app.registerExtension({
 });
 
 
-// Calculate the drawing area using percentage-based properties.
 function getDrawArea(node, backgroundWidth, backgroundHeight) {
-    // Convert percentages to actual pixel values based on the background dimensions
     let x = (node.properties["x"] / 100) * backgroundWidth;
     let y = (node.properties["y"] / 100) * backgroundHeight;
     let w = (node.properties["w"] / 100) * backgroundWidth;
     let h = (node.properties["h"] / 100) * backgroundHeight;
 
-    // Ensure the values do not exceed the background boundaries
     if (x > backgroundWidth) {
         x = backgroundWidth;
     }
@@ -431,7 +380,6 @@ function getDrawArea(node, backgroundWidth, backgroundHeight) {
         y = backgroundHeight;
     }
 
-    // Adjust width and height to fit within the background dimensions
     if (x + w > backgroundWidth) {
         w = Math.max(0, backgroundWidth - x);
     }
@@ -440,18 +388,6 @@ function getDrawArea(node, backgroundWidth, backgroundHeight) {
     }
 
     return [x, y, w, h];
-}
-
-function CUSTOM_INT(node, inputName, val, func, config = {}) {
-    return {
-        widget: node.addWidget(
-                "number",
-                inputName,
-                val,
-                func,
-                Object.assign({}, {min: 0, max: 100, step: 10, precision: 0}, config)
-                )
-    };
 }
 
 function syncLinkedInputsToProperties(node) {

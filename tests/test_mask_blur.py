@@ -1,7 +1,3 @@
-"""Run with: python -m pytest tests/test_mask_blur.py
-
-Use real torch/torchvision operations; substitute only ComfyUI dependencies.
-"""
 import importlib.util
 from pathlib import Path
 import sys
@@ -22,7 +18,6 @@ def utils(monkeypatch):
     comfy = types.ModuleType("comfy")
     comfy.model_management = types.SimpleNamespace(get_torch_device=Mock())
     monkeypatch.setitem(sys.modules, "comfy", comfy)
-    # wildcards/conftest.py stubs impact.utils; load the real module under another name.
     spec = importlib.util.spec_from_file_location(
         "impact.blur_test_utils", Path(__file__).resolve().parents[1] / "modules/impact/utils.py"
     )

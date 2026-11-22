@@ -111,7 +111,6 @@ test('Open in SAM Detector explains a node that shows no image and opens one tha
     options[0].callback();
   };
 
-  // No picture at all, the empty picture of a Preview Bridge that was not executed, and a picture whose file is gone.
   for (const imgs of [undefined, [{ src: '' }], [{ src: 'http://localhost/view?filename=gone.png', complete: true, naturalWidth: 0 }]]) {
     open(Object.assign(new NodeType(), { imgs }));
   }

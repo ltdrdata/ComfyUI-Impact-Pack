@@ -4,11 +4,11 @@ from types import SimpleNamespace
 import pytest
 
 IMAGE = 1024, 576
-MIDDLE = 594, 183, 684, 302  # a box far from every border: its crop region has the same room on both sides
-NEAR_TOP = 366, 97, 453, 230  # the border pushes its crop region down, so the box has less room above than below
-NEAR_BOTTOM = 366, 346, 453, 479  # and here up, so the box has more room above than below
-AT_RIGHT = 944, 100, 1024, 200  # the box ends at the border, and so does its crop region
-MODES = "512x512", "768x768", "512x768", "768x512"
+MIDDLE = 594, 183, 684, 302
+NEAR_TOP = 366, 97, 453, 230
+NEAR_BOTTOM = 366, 346, 453, 479
+AT_RIGHT = 944, 100, 1024, 200
+MODES = "512x512", "512x768", "768x512"
 
 
 @pytest.fixture(scope="module")
@@ -25,14 +25,12 @@ def runtime():
         from impact import hooks, utils
 
         def regions(box, mode, crop_factor=3.0):
-            """The crop region a detector makes for the box, and what the hook makes of it."""
             made = tuple(utils.make_crop_region(*IMAGE, box, crop_factor))
             return made, tuple(hooks.CoreMLHook(mode).post_crop_region(*IMAGE, box, made))
         yield SimpleNamespace(regions=regions)
 
 
 def room(box, region):
-    """How far the crop region reaches beyond the box: left, top, right, bottom. Negative where it cuts into the box."""
     return box[0] - region[0], box[1] - region[1], region[2] - box[2], region[3] - box[3]
 
 
@@ -62,7 +60,6 @@ def test_a_box_that_a_border_pushed_off_the_middle_keeps_its_place_in_the_crop_r
 
     before, after = room(box, made), room(box, fitted)
     assert min(after) >= 0
-    # the room above the box is the share of the room above and below that it was, to the pixel
     assert abs(after[1] - (after[1] + after[3]) * before[1] / (before[1] + before[3])) < 1.5
 
 

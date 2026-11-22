@@ -1,9 +1,3 @@
-"""Chrome regression for the regional-sampler-img2img tutorial.
-
-Set IMPACT_REGIONAL_WORKFLOW to its PNG or JSON with the original embedded
-source image and color map restored. Requires Inspire Pack, Essentials and
-the checkpoint named by the workflow. No images or models are substituted.
-"""
 import base64
 import copy
 import io
@@ -58,7 +52,6 @@ def main():
     nodes = {node["id"]: node for node in workflow["nodes"]}
     for node, index in ((35, 3), (49, 1)):
         assert nodes[node]["widgets_values"][index].startswith("data:image/"), "Restore the original embedded images first"
-        # Embedded data is authoritative; the old session's file need not exist.
         nodes[node]["widgets_values"][0] = "#DATA"
     with Image.open(io.BytesIO(base64.b64decode(nodes[35]["widgets_values"][3].split(",", 1)[1]))) as image:
         color_map = np.asarray(image.convert("RGB"))

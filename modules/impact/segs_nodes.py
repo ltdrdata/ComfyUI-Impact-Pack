@@ -161,7 +161,6 @@ class SEGSDetailer:
                                                      refiner_basic_pipe_opt=refiner_basic_pipe_opt,
                                                      inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt)
 
-        # set fallback image
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [utils.empty_pil_tensor()]
 
@@ -189,7 +188,6 @@ class SEGSPaste(ImpactNode):
 
     @classmethod
     def execute(cls, image, segs, feather, alpha=255, ref_image_opt=None):
-        # Optimized SEGS paste node: preallocates result and avoids repeated concat.
         segs = core.segs_scale_match(segs, image.shape)
 
         batch_size, _, _, _ = image.shape
@@ -197,13 +195,11 @@ class SEGSPaste(ImpactNode):
 
         with torch.no_grad():
             for i in range(batch_size):
-                # avoid extra clone/unsqueeze
                 image_i = image[i].unsqueeze(0).clone()
 
                 for seg in segs[1]:
                     ref_image = None
 
-                    # ref_image handling
                     if ref_image_opt is None and seg.cropped_image is not None:
                         cropped_image = seg.cropped_image
                         if isinstance(cropped_image, np.ndarray):
@@ -216,20 +212,16 @@ class SEGSPaste(ImpactNode):
                     if ref_image is None:
                         continue
 
-                    # mask handling
                     cmask = seg.cropped_mask
                     if cmask.ndim == 3 and len(cmask) == batch_size:
                         mask = cmask[i]
                     elif cmask.ndim == 3 and len(cmask) > 1:
-                        # statt OR-Schleife → vektorisiert
                         mask = torch.any(cmask > 0.1, dim=0).float()
-                    else:  # ndim == 2
+                    else:
                         mask = cmask
 
-                    # blur + alpha
                     mask = utils.tensor_gaussian_blur_mask(mask, feather) * (alpha / 255.0)
 
-                    # ensure same device
                     mask = mask.to(image_i.device)
                     ref_image = ref_image.to(image_i.device)
 
@@ -381,7 +373,6 @@ class SEGSPreview:
                     if seg.cropped_image is not None:
                         cropped_image = seg.cropped_image[i, None]
                     elif fallback_image_opt is not None:
-                        # take from original image
                         ref_image = fallback_image_opt[i].unsqueeze(0)
                         cropped_image = utils.crop_image(ref_image, seg.crop_region)
 
@@ -554,7 +545,7 @@ class SEGSOrderedFilter(ImpactNode):
     def execute(cls, segs, target, order, take_start, take_count):
         sort_key_fn = SEGSOrderedFilter.get_sort_key_fn(target)
 
-        sorted_list = list(segs[1]) # make a shallow copy, so it does not mutate the original list when sort
+        sorted_list = list(segs[1])
         if sort_key_fn is not None:
             sorted_list.sort(key=sort_key_fn, reverse=order)
 
@@ -658,24 +649,20 @@ class SEGSIntersectionFilter(ImpactNode):
     @classmethod
     def execute(cls, segs1, segs2, ioa_threshold):
         """Remove segments from segs1 if their IoA with any segment in segs2 exceeds the threshold."""
-        # Extract bounding boxes for all segments in segs1 and segs2
         keep = []
 
-        # Iterate over all segments in segs1
         for idx1, seg1 in enumerate(segs1[1]):
-            keep_segment = True  # Assume the segment should be kept
+            keep_segment = True
             mask1 = core.segs_to_combined_mask((segs1[0], [seg1]))
 
-            # Compare with every segment in segs2
             for seg2 in segs2[1]:
                 mask2 = core.segs_to_combined_mask((segs2[0], [seg2]))
                 ioa = SEGSIntersectionFilter.compute_ioa(mask1, mask2)
 
-                if ioa > ioa_threshold:  # If IoA exceeds the threshold, mark the segment for removal
+                if ioa > ioa_threshold:
                     keep_segment = False
-                    break  # If one overlap exceeds threshold, break early and mark for removal
+                    break
 
-            # Keep the segment if it did not exceed the threshold with any other segment
             if keep_segment:
                 keep.append(segs1[1][idx1])
 
@@ -712,7 +699,6 @@ class SEGSNMSFilter(ImpactNode):
         """Perform NMS to filter overlapping segments."""
         confidences = np.ndarray.flatten(np.array([seg.confidence for seg in segs[1]]))
 
-        # Sort boxes by confidence (high to low)
         sorted_indices = np.argsort(confidences)[::-1].tolist()
         keep = []
 
@@ -722,7 +708,6 @@ class SEGSNMSFilter(ImpactNode):
             keep.append(idx)
             sorted_indices = sorted_indices[1:]
 
-            # Filter indices only contain the indices where the bbox does not intersect
             filtered_indices = []
             for i in sorted_indices:
                 mask2 = core.segs_to_combined_mask((segs[0], [segs[1][i]]))
@@ -763,7 +748,6 @@ class SEGSToImageList:
             if seg.cropped_image is not None:
                 cropped_image = utils.to_tensor(seg.cropped_image)
             elif fallback_image_opt is not None:
-                # take from original image
                 cropped_image = utils.to_tensor(utils.crop_image(fallback_image_opt, seg.crop_region))
             else:
                 cropped_image = utils.empty_pil_tensor()
@@ -1275,7 +1259,6 @@ class GaussianBlurMask(ImpactNode):
 
     @classmethod
     def execute(cls, mask, kernel_size, sigma):
-        # Some custom nodes use abnormal 4-dimensional masks in the format of b, c, h, w. In the impact pack, internal 4-dimensional masks are required in the format of b, h, w, c. Therefore, normalization is performed using the normal mask format, which is 3-dimensional, before proceeding with the operation.
         mask = utils.make_3d_mask(mask)
         mask = torch.unsqueeze(mask, dim=-1)
         mask = utils.tensor_gaussian_blur_mask(mask, kernel_size, sigma)
@@ -1383,10 +1366,10 @@ class SEG_ELT_BBOX_ScaleBy(ImpactNode):
         y2 = int(min(h-1, max(0, y2)))
 
         mask_cropped = mask.copy()
-        mask_cropped[:, :x1] = 0  # zero fill left side
-        mask_cropped[:, x2:] = 0  # zero fill right side
-        mask_cropped[:y1, :] = 0  # zero fill top side
-        mask_cropped[y2:, :] = 0  # zero fill bottom side
+        mask_cropped[:, :x1] = 0
+        mask_cropped[:, x2:] = 0
+        mask_cropped[:y1, :] = 0
+        mask_cropped[y2:, :] = 0
         return mask_cropped
 
     @classmethod
@@ -1468,37 +1451,6 @@ class MediaPipeFaceMeshToSEGS(ImpactNode):
 
     @classmethod
     def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
-        # padding is obsolete now
-        # https://github.com/Fannovel16/comfyui_controlnet_aux/blob/1ec41fceff1ee99596445a0c73392fd91df407dc/utils.py#L33
-        # def calc_pad(h_raw, w_raw):
-        #     resolution = normalize_size_base_64(h_raw, w_raw)
-        #
-        #     def pad64(x):
-        #         return int(np.ceil(float(x) / 64.0) * 64 - x)
-        #
-        #     k = float(resolution) / float(min(h_raw, w_raw))
-        #     h_target = int(np.round(float(h_raw) * k))
-        #     w_target = int(np.round(float(w_raw) * k))
-        #
-        #     return pad64(h_target), pad64(w_target)
-
-        # if reference_image_opt is not None:
-        #     if image.shape[1:] != reference_image_opt.shape[1:]:
-        #         scale_by1 = reference_image_opt.shape[1] / image.shape[1]
-        #         scale_by2 = reference_image_opt.shape[2] / image.shape[2]
-        #         scale_by = min(scale_by1, scale_by2)
-        #
-        #         # padding is obsolete now
-        #         # h_pad, w_pad = calc_pad(reference_image_opt.shape[1], reference_image_opt.shape[2])
-        #         # if h_pad != 0:
-        #         #     # height padded
-        #         #     image = image[:, :-h_pad, :, :]
-        #         # elif w_pad != 0:
-        #         #     # width padded
-        #         #     image = image[:, :, :-w_pad, :]
-        #
-        #         image = nodes.ImageScaleBy().upscale(image, "bilinear", scale_by)[0]
-
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return io.NodeOutput(result)
 
@@ -1613,7 +1565,6 @@ class IPAdapterApplySEGS:
             reference_image = utils.tensor_resize(reference_image, w, h)
 
         for seg in segs[1]:
-            # The context_crop_region sets how much wider the IPAdapter context will reflect compared to the crop_region, not the bbox
             context_crop_region = utils.make_crop_region(w, h, seg.crop_region, context_crop_factor)
             cropped_image = utils.crop_image(reference_image, context_crop_region)
 
@@ -1771,13 +1722,11 @@ class SEGSPicker:
         if fallback_image_opt is not None:
             segs = core.segs_scale_match(segs, fallback_image_opt.shape)
 
-        # generate candidates image
         cands = []
         for seg in segs[1]:
             if seg.cropped_image is not None:
                 cropped_image = seg.cropped_image
             elif fallback_image_opt is not None:
-                # take from original image
                 cropped_image = utils.crop_image(fallback_image_opt, seg.crop_region)
             else:
                 cropped_image = utils.empty_pil_tensor()
@@ -1791,7 +1740,6 @@ class SEGSPicker:
 
         impact.impact_server.segs_picker_map[unique_id] = cands
 
-        # pass only selected
         pick_ids = set()
 
         for pick in picks.split(","):
@@ -1842,7 +1790,6 @@ class DefaultImageForSEGS(ImpactNode):
                 else:
                     cropped_image = None
                     for i in range(0, batch_count):
-                        # take from original image
                         ref_image = image[i].unsqueeze(0)
                         cropped_image2 = utils.crop_image(ref_image, seg.crop_region)
 
@@ -1930,13 +1877,11 @@ class MakeTileSEGS(ImpactNode):
             elif irregular_mask_mode == "All random fast":
                 mask_quality = 512
 
-        # compensate overlap/bbox_size for irregular mask
         if mask_irregularity > 0:
             compensate = max(6, int(mask_quality * mask_irregularity / 4))
             min_overlap += compensate
             bbox_size += compensate*2
 
-        # create exclusion mask
         if filter_out_segs_opt is not None:
             exclusion_mask = core.segs_to_combined_mask(filter_out_segs_opt)
             exclusion_mask = utils.make_3d_mask(exclusion_mask)
@@ -1964,7 +1909,6 @@ class MakeTileSEGS(ImpactNode):
             h, w = ih, iw
             and_mask = None
 
-        # calculate tile factors
         if bbox_size > h or bbox_size > w:
             new_bbox_size = min(bbox_size, min(w, h))
             logging.info(f"[MaskTileSEGS] bbox_size is greater than resolution (value changed: {bbox_size} => {new_bbox_size}")
@@ -2031,7 +1975,6 @@ class MakeTileSEGS(ImpactNode):
                     else:
                         core.random_mask(mask, (rel_left, rel_top, rel_right, rel_bot), factor=mask_irregularity, size=mask_quality)
 
-                    # corner filling
                     if rel_left == 0:
                         pad = int((x2 - x1) / 8)
                         mask[rel_top:rel_bot, :pad] = 1.0
@@ -2069,7 +2012,7 @@ class MakeTileSEGS(ImpactNode):
                 x += bbox_size - w_overlap_size
             y += bbox_size - h_overlap_size
 
-        res = (ih, iw), new_segs  # segs
+        res = (ih, iw), new_segs
         return io.NodeOutput(res)
 
 

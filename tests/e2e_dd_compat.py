@@ -78,9 +78,6 @@ PROMPT = {
             "labels": "all",
         },
     },
-    # Non-zero noise_mask_feather is the critical knob — this is what
-    # activates the DifferentialDiffusion path inside enhance_detail and
-    # SEGSDetailer.do_detail.
     "detail": {
         "class_type": "SEGSDetailer",
         "inputs": {
@@ -127,8 +124,6 @@ PROMPT = {
 def main():
     args = options(__doc__)
     with browser_session(args) as ui:
-        # Import the prepared graph through the frontend's file input. The
-        # frontend performs node creation, widget callbacks, and connections.
         ui.load_workflow({
             "name": "dd-compat.json",
             "mimeType": "application/json",
@@ -138,7 +133,6 @@ def main():
         outputs = entry["outputs"]
         assert "preview_input" in outputs and "preview_paste" in outputs, outputs
 
-        # Require the frontend to receive and load the output image as well.
         ui.page.wait_for_function("""(app) => {
             const node = app.graph.getNodeById('preview_paste');
             return node?.imgs?.some(img => img.complete && img.naturalWidth > 0);

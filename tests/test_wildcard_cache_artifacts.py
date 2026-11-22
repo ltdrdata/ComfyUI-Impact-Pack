@@ -1,4 +1,3 @@
-"""Original prompt artifact regressions; no Chrome or ComfyUI server required."""
 from contextlib import contextmanager
 import json
 from types import SimpleNamespace

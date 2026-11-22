@@ -1,8 +1,3 @@
-"""Chrome queue/control interactions for constant-linked wildcard prompts.
-
-Create and edit every graph through the UI; inspect real execution history and
-websocket feedback. Encode cases use the checkpoint from the cache E2E suite.
-"""
 import json
 import time
 from urllib.parse import urlsplit
@@ -14,7 +9,7 @@ from test_e2e_widget_catalog import export_workflow, full_zoom, setting, show_no
 from test_e2e_wildcard_cache import (
     NODE_TYPES, cached, graph, input_slot, native_roundtrip, set_text, run as run_preview,
 )
-from test_e2e_wildcard_cache import ui as ui  # shared Chrome fixture
+from test_e2e_wildcard_cache import ui as ui
 
 
 def run(ui, preview_id, expected, label):
@@ -55,7 +50,6 @@ def test_cold_batch_reuses_constant_cache(ui, node_type, field):
     native_roundtrip(ui, node_id)
     workflow = ui.artifacts / "saved.json"
 
-    # Occupy the execution worker so both native batch requests arrive cold.
     ui.new_workflow()
     full_zoom(ui)
     ui.add_node("Text", "PrimitiveString", 100, 250)
@@ -120,8 +114,6 @@ def test_control_bridge_stop_with_constant(ui, node_type, upstream, restore_by_n
     for index in range(2):
         entry = run(ui, preview_id, text, f"active-{index}")
         inputs = entry["prompt"][2][node_id]["inputs"]
-        # Fixed mode pauses the selected increment policy; direct constants
-        # still use the backend's normalized static cache key.
         assert inputs["seed"] == (731 if upstream else 0)
         assert inputs["populated_text"] == [bridge_id if upstream else source_id, 0]
         if index:
@@ -203,7 +195,6 @@ def test_remote_seed_precedes_constant_check(ui, node_type, restore_by_name):
 
 
 def queue_runs(ui, count, label):
-    """Click Run once and observe the frontend's bounded automatic requeues."""
     requests = []
     prompt_ids = []
     history = {}
@@ -314,8 +305,6 @@ def test_control_bridge_mode_change_requeues(ui, node_type, behavior, node_mode,
     toggle(ui, "ImpactControlBridge", "mode", True)
     entries = queue_runs(ui, 2, "reactivate")
     assert node_id not in entries[0]["prompt"][2]
-    # With a muted target, the bridge can be the last executable node: the
-    # requeue still happens, but no following node polls the interrupt flag.
     if entries[0]["status"]["status_str"] != "success":
         assert any(event == "execution_interrupted" for event, _ in entries[0]["status"]["messages"])
     assert entries[1]["status"]["status_str"] == "success"
@@ -360,8 +349,6 @@ def test_widget_feedback_and_countdown_requeue(ui, node_type, restore_by_name):
         show_node(ui, target)
         assert next(w["value"] for w in widget_state(ui, target)["widgets"] if w["name"] == widget) == expected
 
-    # A runtime widget update can introduce wildcard syntax. The next queued
-    # prompt must keep its requested seed instead of reusing the old static key.
     syntax = text + " {red|green|blue}"
     show_node(ui, replacement_id)
     ui.page.get_by_placeholder("value", exact=True).fill(syntax)

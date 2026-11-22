@@ -6,7 +6,6 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../js/switch-none.js', import.meta.url), 'utf8');
 const titles = { 1: 'Load Checkpoint', 3: 'Branch', 4: 'Which checkpoint', 5: 'Switch (Any)', 6: 'Switch (Any)', 8: 'Negative' };
 
-// A prompt as the page builds it: node 8 takes its clip from switch 5, node 9 its vae from loader 1.
 function prompt(select, input1 = ['1', 1]) {
   return {
     1: { class_type: 'CheckpointLoaderSimple', inputs: {} },
@@ -19,7 +18,6 @@ function prompt(select, input1 = ['1', 1]) {
   };
 }
 
-// As much of a page as the marks need: elements that hold children, and one element for every node of the graph.
 function element() {
   return {
     style: {}, children: [], listeners: {}, textContent: '',
@@ -51,7 +49,6 @@ async function load(output) {
   const send = (name, detail) => listeners[name]({ detail });
   const fail = (node_id, current_inputs) => send('execution_error', { node_id, node_type: output[node_id].class_type, current_inputs });
   const bubbles = () => area.children[0].children;
-  // The marks the page shows: [id of the node with the frame, text of its bubble].
   const marks = () => Array.from(head.children[1].textContent.matchAll(/data-node-id="(\w+)"/g), (match, index) => [match[1], bubbles()[index].textContent]);
   const close = index => bubbles()[index].children[0].listeners.click();
   return { send, fail, marks, close };

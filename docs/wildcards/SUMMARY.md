@@ -5,8 +5,7 @@
 Progressive on-demand wildcard loading system for ComfyUI Impact Pack with dynamic prompt support, UTF-8 encoding, and comprehensive testing.
 
 **Status**: ✅ Production Ready
-**Test Coverage**: 86 tests, 100% pass rate
-**Documentation**: Complete PRD, design docs, and testing guide
+**Documentation**: PRD and design docs
 
 ---
 
@@ -41,20 +40,7 @@ Progressive on-demand wildcard loading system for ComfyUI Impact Pack with dynam
 
 ## Testing
 
-### Test Suites (86 tests)
-1. **UTF-8 Encoding** (15 tests) - Multi-language support validation
-2. **Error Handling** (10 tests) - Graceful error recovery
-3. **Edge Cases** (20 tests) - Boundary conditions and special scenarios
-4. **Deep Nesting** (17 tests) - 7-level transitive expansion + pattern matching
-5. **On-Demand Loading** (8 tests) - Progressive loading with cache limits
-6. **Config Quotes** (5 tests) - Configuration path handling
-7. **Dynamic Prompts** (11 tests) - Statistical validation of dynamic features
-
-### Test Infrastructure
-- Dedicated ports per suite (8188-8198)
-- Automated server lifecycle management
-- Comprehensive logging in `/tmp/`
-- 100% pass rate with statistical validation
+The pytest suite under `tests/wildcards/` and `tests/test_encoding.sh` cover the loader. See [tests/README.md](../../tests/README.md).
 
 ---
 
@@ -63,7 +49,6 @@ Progressive on-demand wildcard loading system for ComfyUI Impact Pack with dynam
 - **[README](README.md)** - Quick start and feature overview
 - **[PRD](WILDCARD_SYSTEM_PRD.md)** - Complete product requirements
 - **[Design](WILDCARD_SYSTEM_DESIGN.md)** - Technical architecture
-- **[Testing Guide](WILDCARD_TESTING_GUIDE.md)** - Test procedures and validation
 
 ---
 
@@ -85,16 +70,7 @@ Progressive on-demand wildcard loading system for ComfyUI Impact Pack with dynam
 ```
 
 ### Running Tests
-```bash
-cd tests/
-bash test_encoding.sh
-bash test_error_handling.sh
-bash test_edge_cases.sh
-bash test_deep_nesting.sh
-bash test_ondemand_loading.sh
-bash test_config_quotes.sh
-bash test_dynamic_prompts_full.sh
-```
+See [tests/README.md](../../tests/README.md).
 
 ---
 

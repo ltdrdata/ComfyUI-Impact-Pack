@@ -1,4 +1,3 @@
-"""Original PNGs from ComfyUI-extension-tutorials ca31a3b; never rewrite them."""
 import hashlib
 import json
 from pathlib import Path

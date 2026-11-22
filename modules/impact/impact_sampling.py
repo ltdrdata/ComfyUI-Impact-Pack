@@ -23,10 +23,8 @@ except Exception:
 def scheduler_node_sigmas(node_id, *args, **kwargs):
     scheduler = nodes.NODE_CLASS_MAPPINGS[node_id]()
     if hasattr(scheduler, 'execute'):
-        # node v3
         return scheduler.execute(*args, **kwargs)[0]
     else:
-        # legacy compatibility
         return scheduler.get_sigmas(*args, **kwargs)[0]
 
 
@@ -55,10 +53,8 @@ def calculate_sigmas(model, sampler, scheduler, steps):
 def composite_masked(destination, source, mask):
     compositor = nodes.NODE_CLASS_MAPPINGS['LatentCompositeMasked']()
     if hasattr(compositor, 'execute'):
-        # node v3
         return compositor.execute(destination, source, 0, 0, False, mask)[0]
     else:
-        # legacy compatibility
         return compositor.composite(destination, source, 0, 0, False, mask)[0]
 
 
@@ -104,7 +100,6 @@ def ksampler(sampler_name, total_sigmas, extra_options={}, inpaint_options={}):
     return samplers.KSAMPLER(sampler_function, extra_options, inpaint_options)
 
 
-# modified version of SamplerCustom.sample
 def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negative, sampler, sigmas, latent_image, noise=None, callback=None):
     latent = latent_image
     latent_image = latent["samples"]
@@ -145,10 +140,6 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
         noise_mask = noise_mask.to(device)
 
     if negative != 'NegativePlaceholder':
-        # This way is incompatible with Advanced ControlNet, yet.
-        # guider = comfy.samplers.CFGGuider(model)
-        # guider.set_conds(positive, negative)
-        # guider.set_cfg(cfg)
         samples = comfy.sample.sample_custom(model, noise, cfg, sampler, sigmas, positive, negative, latent_image,
                                              noise_mask=noise_mask, callback=touched_callback,
                                              disable_pbar=disable_pbar, seed=noise_seed)
@@ -169,7 +160,6 @@ def sample_with_custom_noise(model, add_noise, noise_seed, cfg, positive, negati
     return out, out_denoised
 
 
-# When sampling one step at a time, it mitigates the problem. (especially for _sde series samplers)
 def separated_sample(model, add_noise, seed, steps, cfg, sampler_name, scheduler, positive, negative,
                      latent_image, start_at_step, end_at_step, return_with_leftover_noise, sigma_ratio=1.0, sampler_opt=None, noise=None, callback=None, scheduler_func=None):
 
@@ -225,9 +215,6 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, sigma_factor=1.0, noise=None, scheduler_func=None, sampler_opt=None):
 
     if refiner_ratio is None or refiner_model is None or refiner_clip is None or refiner_positive is None or refiner_negative is None:
-        # Use separated_sample instead of KSampler for `AYS scheduler`
-        # refined_latent = nodes.KSampler().sample(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, denoise * sigma_factor)[0]
-
         advanced_steps = math.floor(steps / denoise)
         start_at_step = advanced_steps - steps
         end_at_step = start_at_step + steps
@@ -240,20 +227,13 @@ def ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive,
         start_at_step = advanced_steps - steps
         end_at_step = start_at_step + math.floor(steps * (1.0 - refiner_ratio))
 
-        # print(f"pre: {start_at_step} .. {end_at_step} / {advanced_steps}")
         temp_latent = separated_sample(model, True, seed, advanced_steps, cfg, sampler_name, scheduler,
                                        positive, negative, latent_image, start_at_step, end_at_step, True,
                                        sigma_ratio=sigma_factor, sampler_opt=sampler_opt, noise=noise, scheduler_func=scheduler_func)
 
         if 'noise_mask' in latent_image:
-            # noise_latent = \
-            #     impact_sampling.separated_sample(refiner_model, "enable", seed, advanced_steps, cfg, sampler_name,
-            #                                      scheduler, refiner_positive, refiner_negative, latent_image, end_at_step,
-            #                                      end_at_step, "enable")
-
             temp_latent = composite_masked(latent_image, temp_latent, latent_image['noise_mask'])
 
-        # print(f"post: {end_at_step} .. {advanced_steps + 1} / {advanced_steps}")
         refined_latent = separated_sample(refiner_model, False, seed, advanced_steps, cfg, sampler_name, scheduler,
                                           refiner_positive, refiner_negative, temp_latent, end_at_step, advanced_steps + 1, False,
                                           sigma_ratio=sigma_factor, sampler_opt=sampler_opt, scheduler_func=scheduler_func)
@@ -290,7 +270,6 @@ class KSamplerAdvancedWrapper:
                         recovery_mode="ratio additional", recovery_sampler="AUTO", recovery_sigma_ratio=1.0, noise=None):
 
         model, cfg, sampler_name, scheduler, positive, negative, sigma_factor = self.params
-        # steps, start_at_step, end_at_step = self.compensate_denoise(steps, start_at_step, end_at_step)
 
         if hook is not None:
             model, seed, steps, cfg, sampler_name, scheduler, positive, negative, upscaled_latent = hook.pre_ksample_advanced(model, add_noise, seed, steps, cfg, sampler_name, scheduler,

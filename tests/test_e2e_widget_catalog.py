@@ -1,8 +1,3 @@
-"""Native workflow/widget compatibility for every registered Impact Pack node.
-
-Run this file directly to extend the fixtures through Chrome's UI. Pytest only
-reads the checked-in fixtures; it never updates the expected widget values.
-"""
 from argparse import Namespace
 import ast
 from collections import Counter
@@ -57,7 +52,6 @@ def full_zoom(ui):
     page.get_by_test_id("zoom-controls-button").click()
     zoom = page.get_by_test_id("zoom-percentage-input").locator("input")
     # The number field can restore its previous value after a synthetic fill.
-    # Type through its keyboard handlers before committing with Enter.
     zoom.press("ControlOrMeta+a")
     zoom.press_sequentially("100", delay=100)
     zoom.press("Enter")
@@ -149,15 +143,11 @@ def check_catalog_load(ui, workflow, expected, restore_by_name):
         "Keep the trusted workflow and snapshot unchanged.")
     setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
     ui.new_workflow()
-    # has_errors also flags unavailable models. This unconnected catalog
-    # checks loading/rendering without requiring inference assets.
     ui.load_workflow(workflow, len(expected), check_node_errors=False)
     return assert_catalog(ui, expected)
 
 
 def record_catalog(args):
-    # Read the trusted baseline before opening ComfyUI. Missing fixtures must
-    # be restored, never recreated from a potentially broken runtime.
     baseline = json.loads(WIDGETS.read_text())
     assert WORKFLOW.is_file(), f"Restore the trusted workflow: {WORKFLOW}"
     nodes = baseline["nodes"].copy()
@@ -176,7 +166,6 @@ def record_catalog(args):
             return
         setting(ui, "deprecated", "Comfy.Node.ShowDeprecated", True)
         for index, node_type in enumerate(additions, start=len(nodes)):
-            # Continue the existing catalog's 14-column grid.
             row, column = divmod(index, 14)
             pan(ui, 0 if column == 0 else (800 if row % 2 else -800), -1500 if column == 0 else 0)
             node_id = ui.add_node(definitions[node_type]["display_name"], node_type, 450, 180)
@@ -192,7 +181,6 @@ def record_catalog(args):
         data = {"frontend_version": json.loads(candidate.read_text())["extra"]["frontendVersion"],
                 "created_via": "Chrome node search and native workflow Export",
                 "nodes": nodes}
-    # Browser error checks and artifact saving must also succeed before publication.
     WORKFLOW.write_bytes(candidate.read_bytes())
     WIDGETS.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
 
@@ -317,7 +305,6 @@ def test_recorder_preserves_trusted_fixtures_on_failure(browser_args, tmp_path, 
 
         def serve(route):
             response = route.fetch()
-            # Simulate a runtime regression, without editing either fixture.
             script = """
 app.registerExtension({
     name: 'impact.catalog.corruptionTest',
@@ -365,8 +352,6 @@ def test_recorder_publishes_only_after_successful_session(browser_args, tmp_path
     workflow_bytes, snapshot_bytes = workflow.read_bytes(), snapshot.read_bytes()
     monkeypatch.setitem(globals(), "WORKFLOW", workflow)
     monkeypatch.setitem(globals(), "WIDGETS", snapshot)
-    # Exercise a real UI addition with a small catalog; full inventory coverage
-    # and both restoration modes are checked separately above.
     definitions = {name: definitions[name] for name in ("ImpactInt", "ImpactBoolean")}
     monkeypatch.setitem(globals(), "registered_types", lambda: list(definitions))
     monkeypatch.setitem(globals(), "node_definitions", lambda ui: definitions)

@@ -1,4 +1,3 @@
-"""Advanced options through the existing Detailer entry points and hooks."""
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -251,7 +250,6 @@ def test_options_preserve_face_segmentation_override(runtime, state, kind, compo
                   feather=0, bbox_detector=Detector((0, 0, 32, 64)),
                   segm_detector_opt=Detector((32, 0, 64, 64), True), detailer_hook=base_hook)
     expected = runtime.pack.FaceDetailer().doit(**params)
-    # Preserve the legacy policy, including attribute-presence checks on hooks.
     mask = torch.zeros(64, 64)
     if kind in ("none", "coreml", "custom-combine"):
         mask[:, 32:] = 1
@@ -357,7 +355,6 @@ def test_retry_hook_does_not_inspect_skipped_patches(runtime, state, enabled):
 
 
 def upscaled_arguments(runtime, state, hook, **overrides):
-    # A 64x64 crop sampled at 128x128.
     return {**foreach_arguments(runtime, state, hook), "guide_size": 128, "max_size": 128, **overrides}
 
 
@@ -374,12 +371,10 @@ def test_upscaled_crops_replace_only_the_crop_outputs(runtime, state, enabled, a
     size = 128 if enabled else 64
     assert [tuple(x.shape) for x in cropped] == [tuple(x.shape) for x in refined] == [(1, size, size, 3)]
     if enabled:
-        # The image given to the VAE and the decoded image before it is scaled back.
         assert state.vae.encode.call_args.args[0] is cropped[0]
         assert torch.equal(refined[0], torch.full((1, 128, 128, 3), .375))
     else:
         assert torch.equal(cropped[0], reference[1][0]) and torch.equal(refined[0], reference[2][0])
-    # Everything else keeps the crop size and its pixels.
     assert torch.equal(image, reference[0])
     assert torch.equal(alpha[0], reference[3][0]) and alpha[0].shape == (1, 64, 64, 4)
     assert np.array_equal(segs[0].cropped_image, reference[5][1][0].cropped_image) and segs[0].cropped_image.shape == (1, 64, 64, 3)
@@ -423,7 +418,6 @@ def test_upscaled_crops_follow_each_processing_path(runtime, state, monkeypatch,
     image, cropped, refined, *_ = cls.do_detail(**upscaled_arguments(runtime, state, hook, **overrides))
 
     if kind in ("skip", "dummy"):
-        # Nothing was upscaled, so the original crop is returned.
         assert [tuple(x.shape) for x in cropped] == [(1, 64, 64, 3)]
         assert [tuple(x.shape) for x in refined] == ([] if kind == "skip" else [(1, 64, 64, 3)])
         state.sampler.assert_not_called()
@@ -433,7 +427,6 @@ def test_upscaled_crops_follow_each_processing_path(runtime, state, monkeypatch,
         assert refined[0] is cropped[0] and torch.equal(cropped[0], torch.full((1, 128, 128, 3), .75))
         state.sampler.assert_not_called()
     else:
-        # With per-cycle images the refined crop is the last cycle, decoded once per cycle.
         assert torch.equal(refined[0], torch.full((1, 128, 128, 3), .375))
         assert state.vae.decode.call_count == (3 if kind == "cycles" else 1)
         assert image.shape == ((3, 64, 64, 3) if kind == "cycles" else (1, 64, 64, 3))
@@ -442,7 +435,6 @@ def test_upscaled_crops_follow_each_processing_path(runtime, state, monkeypatch,
 @pytest.mark.parametrize("enabled", [False, True])
 @pytest.mark.parametrize("auto_retry", [False, True])
 def test_crop_outputs_stay_paired_per_region(runtime, state, enabled, auto_retry):
-    # Two 64 px high crops, 80 and 82 px wide. At 2x both are sampled 160 px wide, the size the VAE keeps whole.
     image = torch.zeros(1, 64, 200, 3)
     image[:, :, :80] = .25
     image[:, :, 100:182] = .75
@@ -469,7 +461,6 @@ def test_crop_outputs_stay_paired_per_region(runtime, state, enabled, auto_retry
 def test_retry_returns_sampled_size_crops_of_the_accepted_attempt(runtime, state):
     retry = runtime.providers.BlackPatchRetryHookProvider().doit(10, 5)[0]
     advanced = runtime.providers.DetailerAdvancedOptionsHook.execute(return_upscaled_crops=True)[0]
-    # The first attempt decodes a black patch and is rejected.
     state.vae.decode.side_effect = [torch.zeros(1, 128, 128, 3), torch.full((1, 128, 128, 3), .5)]
     image, cropped, refined, *_ = runtime.pack.DetailerForEachAutoRetry.do_detail(
         **upscaled_arguments(runtime, state, runtime.hooks.DetailerHookCombine(retry, advanced), max_retries=2))
@@ -498,7 +489,6 @@ def test_decode_hooks_observe_the_cycle_being_decoded(runtime, state):
     runtime.core.enhance_detail(**dict(state.arguments, detailer_hook=options(runtime, hook=stamp), cycle_images=[]))
     assert stamp.steps == [(name, i, 3) for i in range(3) for name in ("pre", "post")]
 
-    # Final-only decoding keeps the state left by the sampling loop.
     stamp.steps.clear()
     runtime.core.enhance_detail(**dict(state.arguments, detailer_hook=options(runtime, False, stamp)))
     assert stamp.steps == [("pre", 2, 3), ("post", 2, 3)]

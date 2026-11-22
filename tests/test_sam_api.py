@@ -1,4 +1,3 @@
-"""SAM preparation HTTP contract; requires the current backend and configured model."""
 import io
 import os
 from uuid import uuid4

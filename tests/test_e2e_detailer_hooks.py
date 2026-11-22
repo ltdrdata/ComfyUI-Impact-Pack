@@ -1,8 +1,3 @@
-"""Native import/Export/reload of pinned hook tutorials; no model inference.
-
-IMPACT_TUTORIALS_DIR and an isolated IMPACT_E2E_BASE_URL are required.
-Unknown unrelated tutorial plugins are tolerated; every target must be registered.
-"""
 from argparse import Namespace
 import json
 import os
@@ -24,8 +19,6 @@ def test_original_hook_tutorial_roundtrip(tmp_path, case, restore_by_name):
     ids = {str(n["id"]) for n in nodes}
     hook_ids = {str(n["id"]) for n in nodes if "Hook" in n["type"]}
     expected = {str(n["id"]): expected_widgets(n) for n in nodes}
-    # Legacy workflow/MAKE_BASIC_PIPE components may be unavailable. Their
-    # model wiring is outside this loading test; all hook edges remain required.
     def hook_links(graph):
         return sorted(link for link in graph["links"] if str(link[1]) in hook_ids or str(link[3]) in hook_ids
                       or link[5] in ("DETAILER_HOOK", "PK_HOOK", "UPSCALER_HOOK"))

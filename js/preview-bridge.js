@@ -2,7 +2,6 @@ import { api } from "../../scripts/api.js";
 import { app } from "../../scripts/app.js";
 import { getFileItem, showsImage } from "./image-path.js";
 
-// Registrations belong to the server process; a retained tab outlives that map.
 let connectionVersion = 0;
 api.addEventListener("reconnected", () => { connectionVersion++; });
 
@@ -19,7 +18,6 @@ function explainNoImage() {
     });
 }
 
-// The toolbar button and the keybinding of the mask editor run this command. Without a picture it fails without a word.
 export function guardMaskEditorCommand() {
     const command = app.extensionManager.command.commands.find(c => c.id === "Comfy.MaskEditor.OpenMaskEditor");
     if (!command) return;
@@ -39,7 +37,6 @@ export function setupPreviewBridge(node) {
     const widget = node.widgets.find(w => w.name === "image");
     node.imgs = [new Image()];
 
-    // The same notice for the menu entry of the mask editor, which does not go through the command.
     const getExtraMenuOptions = node.getExtraMenuOptions;
     node.getExtraMenuOptions = function(canvas, options) {
         const result = getExtraMenuOptions?.call(this, canvas, options);
@@ -51,7 +48,6 @@ export function setupPreviewBridge(node) {
         return result;
     };
 
-    // The mask editor opens the file the image widget names. For a batch, that is the image selected on the node.
     let shown = [];
     let selected = 0;
     Object.defineProperty(node, "imageIndex", {
@@ -68,15 +64,12 @@ export function setupPreviewBridge(node) {
         }
     });
 
-    // An RGBA input is shown over a checkerboard while alpha_as_mask is off and with its alpha as the mask while it is
-    // on. Switching the option shows the picture of the other setting at once, before the bridge runs again.
     const option = node.widgets.find(w => w.name === "alpha_as_mask");
     let ranWith;
     if (option) {
         const callback = option.callback;
         option.callback = function(value, ...args) {
             const result = callback?.call(this, value, ...args);
-            // Only the files of the last run are replaced, not an image saved in the mask editor since.
             if (!shown.length || node.images?.[0]?.filename !== shown[0].filename) return result;
             const files = shown;
             const images = files.map(({ filename, subfolder, type }, index) => {
@@ -85,9 +78,7 @@ export function setupPreviewBridge(node) {
                     : `/impact/view/pb_alpha_preview?${new URLSearchParams({ node_id: String(node.id), alpha_as_mask: value, index, rand: Math.random() })}`);
                 return image;
             });
-            // There is no other picture for an input without alpha or a file the next run keeps: the request fails.
             Promise.all(images.map(image => image.decode())).then(() => {
-                // The option was switched again, or the node ran, while the pictures were on their way.
                 if (option.value !== value || shown !== files) return;
                 node.imgs = images;
                 node.graph?.setDirtyCanvas(true);
@@ -96,7 +87,6 @@ export function setupPreviewBridge(node) {
         };
     }
 
-    // Preserve the legacy initial widget value in workflows saved before a queue.
     const onAdded = node.onAdded;
     node.onAdded = function(...args) {
         const result = onAdded?.apply(this, args);
@@ -104,12 +94,8 @@ export function setupPreviewBridge(node) {
         return result;
     };
 
-    // Keep the native image widget and its Vue value-store binding intact.
-    // Only the API prompt needs an Impact ID; native workflows retain the
-    // editor's filename in the existing image widget's serialized position.
     let registration;
     widget.serializeValue = async function() {
-        // The first versions of the bridge saved its image as an object. It names no file to register: the bridge has no image.
         if (typeof widget.value !== "string") widget.value = `$${node.id}-0`;
         const value = widget.value || `$${node.id}-0`;
         if (!registration || value !== registration.value || registration.connectionVersion !== connectionVersion) {
@@ -164,7 +150,6 @@ export async function restorePreviewBridge(node) {
     const value = widget.value;
     let item = getFileItem("input", value);
     if (typeof value === "string" && value.startsWith("$")) {
-        // Workflows saved before the Vue integration contain opaque IDs.
         const response = await api.fetchApi(`/impact/get/pb_id_image?${new URLSearchParams({ id: value })}`, { cache: "no-store" });
         if (!response.ok) return;
         item = await response.json();

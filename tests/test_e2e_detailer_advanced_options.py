@@ -1,9 +1,3 @@
-"""Load embedded-workflow PNGs and run the UI-created Detailer tutorials.
-
-Use an isolated --cache-none ComfyUI server. IMPACT_TUTORIALS_DIR points to the
-companion tutorial checkout; its original example image must have been uploaded.
-No model, sampler or VAE is replaced in these tests.
-"""
 from argparse import Namespace
 import json
 import os

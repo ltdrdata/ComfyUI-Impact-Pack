@@ -32,7 +32,6 @@ def workflow():
     latent = add("EmptyLatentImage", width=128, height=128, batch_size=1)
     seed = add("PrimitiveInt", value=12345)
     # A linked string bypasses CLIPTextEncode's frontend dynamic-prompt widget.
-    # The reference must receive the same literal text as the source node.
     literal = add("PrimitiveString", value=FIRST_SECTION)
 
     def preview(model, conditioning):
@@ -151,8 +150,6 @@ def main():
             label = "saved-label" if mode == "fixed" else "mixed-" + mode
             check_native(label, expected)
 
-        # An old API workflow may contain an alias absent from today's combo
-        # options. Import it through the UI, then use native Export/reload.
         graph[source]["inputs"]["category"] = "pose"
         ui.new_workflow()
         ui.load_workflow({"name": "legacy-alias-api.json", "mimeType": "application/json",

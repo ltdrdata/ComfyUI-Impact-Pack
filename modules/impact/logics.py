@@ -724,21 +724,18 @@ class ImpactControlBridge:
                         bypass_nodes.append(next_node_id)
 
             if mode:
-                # active
                 should_be_active_nodes = mute_nodes + bypass_nodes
                 if len(should_be_active_nodes) > 0:
                     PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
                     nodes.interrupt_processing()
 
             elif behavior == "Mute" or behavior == True:  # noqa: E712
-                # mute
                 should_be_mute_nodes = active_nodes + bypass_nodes
                 if len(should_be_mute_nodes) > 0:
                     PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_be_mute_nodes)})
                     nodes.interrupt_processing()
 
             else:
-                # bypass
                 should_be_bypass_nodes = active_nodes + mute_nodes
                 if len(should_be_bypass_nodes) > 0:
                     PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'bypasses': list(should_be_bypass_nodes)})

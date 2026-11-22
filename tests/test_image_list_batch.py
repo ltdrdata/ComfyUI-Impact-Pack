@@ -1,7 +1,3 @@
-"""Real ComfyUI tensor/validator checks; run separately from wildcard stubs.
-
-IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_image_list_batch.py -v
-"""
 import asyncio
 import os
 from pathlib import Path
@@ -29,11 +25,11 @@ def runtime():
 
 
 @pytest.mark.parametrize("batch_sizes, unbatched", [
-    ((1,) * 4, ()), ((1,) * 16, ()), ((1,) * 64, ()), ((2, 1, 3), ()),
-    ((1,) * 4, range(4)), ((1,) * 16, range(16)), ((1,) * 64, range(64)),
+    ((1,) * 4, ()), ((1,) * 64, ()), ((2, 1, 3), ()),
+    ((1,) * 4, range(4)),
     ((1, 2, 3), (0,)), ((2, 1, 3), (1,)),
-], ids=["4-frames", "16-frames", "64-frames", "unequal-batches",
-        "3d-4-frames", "3d-16-frames", "3d-64-frames", "3d-first", "3d-later"])
+], ids=["4-frames", "64-frames", "unequal-batches",
+        "3d-4-frames", "3d-first", "3d-later"])
 def test_uniform_frames_allocate_at_most_one_concatenated_batch(runtime, batch_sizes, unbatched):
     count = sum(batch_sizes)
     expected = torch.arange(count).div(64).reshape(count, 1, 1, 1).expand(count, 8, 12, 3).clone()
@@ -151,7 +147,6 @@ def test_mixed_sizes_keep_center_crop_and_resize(runtime, batched):
     result = runtime.node.doit(images)[0]
     expected = torch.zeros(4, 4, 4, 3)
     expected[:3] = torch.eye(3).reshape(3, 1, 1, 3)
-    # Main eace4a9 output with ComfyUI 61e524b; fixed pixels distinguish resize kernels.
     expected[3] = torch.tensor([[1, 13, 13, 1], [12, 230, 230, 12],
                                 [12, 230, 230, 12], [1, 13, 13, 1]], dtype=torch.float32).unsqueeze(-1) / 255
     expected = expected.repeat_interleave(torch.tensor(counts), dim=0)

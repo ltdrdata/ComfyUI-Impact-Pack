@@ -61,7 +61,6 @@ def get_tiles_and_masks_padded(steps, latent_shape, tile_height, tile_width):
     tile_size_w = int(tile_width // 8)
     tile_size_w = int((tile_size_w // 4) * 4)
 
-    #masks
     mask_h = [0,tile_size_h // 4, tile_size_h - tile_size_h // 4, tile_size_h]
     mask_w = [0,tile_size_w // 4, tile_size_w - tile_size_w // 4, tile_size_w]
     masks = [[] for _ in range(3)]
@@ -137,7 +136,6 @@ def get_tiles_and_masks_rgrid(steps, latent_shape, tile_height, tile_width, gene
         tile_coords = [(c1, c2-c1) for c1, c2 in zip(tile_coords, tile_coords[1:])]
         return tile_coords
     
-    #calc stuff
     latent_size_h = latent_shape[-2]
     latent_size_w = latent_shape[-1]
     tile_size_h = int(tile_height // 8)
@@ -153,7 +151,6 @@ def get_tiles_and_masks_rgrid(steps, latent_shape, tile_height, tile_width, gene
         jitter_h1 = int(rands[1] * tile_size_h)
         jitter_h2 = int(((rands[1] + .5) % 1.0) * tile_size_h)
 
-        #calc number of tiles
         tiles_h = [
             calc_coords(latent_size_h, tile_size_h, jitter_h1),
             calc_coords(latent_size_h, tile_size_h, jitter_h2)

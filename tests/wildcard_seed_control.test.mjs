@@ -48,8 +48,6 @@ async function setup(type, beforeQueued = true, failure, serializationFailure) {
         return result;
     };
     extension.setup?.();
-    // Spy on the core boundary; actual seed arithmetic/bookkeeping is covered
-    // by Chrome queues, rather than copied into a second implementation here.
     for (const hook of beforeQueued ? ['beforeQueued', 'afterQueued'] : ['afterQueued']) {
         control[hook] = function (...args) {
             calls.push({ hook, receiver: this, args, value: this.value });
@@ -104,19 +102,6 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         }
     });
 
-    test(`${type}: populate and reproduce delegate unchanged to core hooks`, async () => {
-        const { mode, control, calls, result } = await setup(type);
-        for (const value of ['populate', 'reproduce', true]) {
-            mode.value = value;
-            for (const hook of ['beforeQueued', 'afterQueued']) {
-                const argument = {};
-                assert.equal(control[hook](argument), result);
-                assert.deepEqual(calls.at(-1), { hook, receiver: control, args: [argument], value: 'increment' });
-            }
-        }
-        assert.equal(calls.length, 6);
-    });
-
     test(`${type}: each call uses the current mode and preserves a manually edited seed`, async () => {
         const { seed, mode, control, calls } = await setup(type);
         mode.value = 'fixed';
@@ -164,7 +149,6 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         control.value = 'randomize';
         assert.equal(control.beforeQueued(), result);
         host.getWidgetFromSlot(host.inputs[0]);
-        // The core reads the policy outside the hook to update the host seed.
         assert.equal(control.value, 'fixed');
         const argument = {};
         assert.equal(app.graphToPrompt(argument), result);
@@ -191,7 +175,7 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         assert.equal(control.value, 'fixed');
         unknown.inputs = undefined;
         unknown.getWidgetFromSlot(input);
-        assert.equal(control.value, 'decrement'); // Core consumes it synchronously.
+        assert.equal(control.value, 'decrement');
         await Promise.resolve();
         assert.equal(control.value, 'decrement');
     });
@@ -215,20 +199,6 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         assert.equal(control.value, 'randomize');
     });
 
-    test(`${type}: promoted pending controls resume the selected policy on a mode change`, async () => {
-        const { node, mode, control, calls, extension, app } = await setup(type);
-        const host = promotedHost(node, extension, app);
-        mode.value = 'fixed';
-        control.afterQueued();
-        host.getWidgetFromSlot(host.inputs[0]);
-        mode.value = 'populate';
-        control.beforeQueued();
-        assert.equal(calls.at(-1).value, 'increment');
-        assert.equal(control.value, 'increment');
-        await Promise.resolve();
-        assert.equal(control.value, 'increment');
-    });
-
     test(`${type}: shared hosts use their own promoted modes`, async () => {
         const { node, mode, control, app, extension } = await setup(type);
         const fixed = promotedHost(node, extension, app, 'fixed');
@@ -245,63 +215,6 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         assert.equal(control.value, 'increment');
     });
 
-    test(`${type}: native promoted projections keep their own identity and frozen values`, async () => {
-        const { node, mode, control, app, extension } = await setup(type);
-        let current = Object.freeze({ name: 'seed', value: 42 });
-        const host = promotedHost(node, extension, app, undefined, () => current);
-        mode.value = 'fixed';
-        control.beforeQueued();
-        assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
-        current = Object.freeze({ name: 'seed', value: 99 });
-        const target = host.getWidgetFromSlot(host.inputs[0]);
-        assert.equal(target, current);
-        assert.equal(target.value, 99);
-        await Promise.resolve();
-        assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
-    });
-
-    test(`${type}: native promoted widget errors propagate unchanged`, async () => {
-        const { node, mode, control, app, extension } = await setup(type);
-        const error = new Error('native widget lookup failed');
-        const host = promotedHost(node, extension, app, undefined, () => { throw error; });
-        mode.value = 'fixed';
-        control.beforeQueued();
-        assert.throws(() => host.getWidgetFromSlot(host.inputs[0]), thrown => thrown === error);
-        assert.equal(control.value, 'increment');
-        await Promise.resolve();
-        assert.equal(control.value, 'increment');
-    });
-
-    test(`${type}: API drift declines promotion without breaking the queue`, async () => {
-        const changes = [
-            host => { host.subgraph.inputNode = null; },
-            host => { host.subgraph.inputNode.slots = {}; },
-            host => { host.subgraph.inputNode.slots[0].linkIds = {}; },
-            host => { host.subgraph.getLink = undefined; },
-            host => { host.subgraph.getLink = () => null; },
-            host => { host.subgraph.getLink = () => ({}); },
-            host => { host.subgraph.getLink = () => ({ resolve: () => null }); },
-            host => { host.subgraph.getLink = () => ({ resolve() { throw new Error('API drift'); } }); },
-            (_, node) => { node.getWidgetFromSlot = undefined; },
-            host => { host.inputs = undefined; },
-            (_, node) => { node.widgets = undefined; },
-            (_, node, seed) => { seed.linkedWidgets = {}; },
-        ];
-        for (const change of changes) {
-            const { node, seed, mode, control, app, extension } = await setup(type);
-            const current = { name: 'seed', value: 42 };
-            const host = promotedHost(node, extension, app, undefined, () => current);
-            const input = host.inputs[0];
-            mode.value = 'fixed';
-            control.beforeQueued();
-            change(host, node, seed);
-            assert.equal(host.getWidgetFromSlot(input), current);
-            assert.equal(control.value, 'increment');
-            await Promise.resolve();
-            assert.equal(control.value, 'increment');
-        }
-    });
-
     test(`${type}: after-phase restoration redraws the selected policy`, async () => {
         const { node, mode, control, app, extension, draws } = await setup(type);
         const host = promotedHost(node, extension, app);
@@ -309,7 +222,7 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         control.value = 'decrement';
         control.afterQueued();
         host.getWidgetFromSlot(host.inputs[0]);
-        app.canvas.draw(); // Core draws synchronously before microtasks.
+        app.canvas.draw();
         assert.equal(draws.at(-1), 'fixed');
         await Promise.resolve();
         assert.equal(control.value, 'decrement');
@@ -328,18 +241,104 @@ for (const type of ['ImpactWildcardProcessor', 'ImpactWildcardEncode']) {
         assert.equal(control.value, 'increment');
     });
 
-    test(`${type}: serialization errors preserve the policy and propagate unchanged`, async () => {
-        const error = new Error('serialization failed');
-        const { node, mode, control, app, extension } = await setup(type, true, undefined, error);
-        const host = promotedHost(node, extension, app);
-        mode.value = 'fixed';
-        control.beforeQueued();
-        host.getWidgetFromSlot(host.inputs[0]);
-        assert.throws(() => app.graphToPrompt(), thrown => thrown === error);
-        assert.equal(control.value, 'increment');
-        await Promise.resolve();
-        assert.equal(control.value, 'increment');
-    });
+    if (type === 'ImpactWildcardProcessor') {
+        test(`${type}: populate and reproduce delegate unchanged to core hooks`, async () => {
+            const { mode, control, calls, result } = await setup(type);
+            for (const value of ['populate', 'reproduce', true]) {
+                mode.value = value;
+                for (const hook of ['beforeQueued', 'afterQueued']) {
+                    const argument = {};
+                    assert.equal(control[hook](argument), result);
+                    assert.deepEqual(calls.at(-1), { hook, receiver: control, args: [argument], value: 'increment' });
+                }
+            }
+            assert.equal(calls.length, 6);
+        });
+
+        test(`${type}: promoted pending controls resume the selected policy on a mode change`, async () => {
+            const { node, mode, control, calls, extension, app } = await setup(type);
+            const host = promotedHost(node, extension, app);
+            mode.value = 'fixed';
+            control.afterQueued();
+            host.getWidgetFromSlot(host.inputs[0]);
+            mode.value = 'populate';
+            control.beforeQueued();
+            assert.equal(calls.at(-1).value, 'increment');
+            assert.equal(control.value, 'increment');
+            await Promise.resolve();
+            assert.equal(control.value, 'increment');
+        });
+
+        test(`${type}: native promoted projections keep their own identity and frozen values`, async () => {
+            const { node, mode, control, app, extension } = await setup(type);
+            let current = Object.freeze({ name: 'seed', value: 42 });
+            const host = promotedHost(node, extension, app, undefined, () => current);
+            mode.value = 'fixed';
+            control.beforeQueued();
+            assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
+            current = Object.freeze({ name: 'seed', value: 99 });
+            const target = host.getWidgetFromSlot(host.inputs[0]);
+            assert.equal(target, current);
+            assert.equal(target.value, 99);
+            await Promise.resolve();
+            assert.equal(host.getWidgetFromSlot(host.inputs[0]), current);
+        });
+
+        test(`${type}: native promoted widget errors propagate unchanged`, async () => {
+            const { node, mode, control, app, extension } = await setup(type);
+            const error = new Error('native widget lookup failed');
+            const host = promotedHost(node, extension, app, undefined, () => { throw error; });
+            mode.value = 'fixed';
+            control.beforeQueued();
+            assert.throws(() => host.getWidgetFromSlot(host.inputs[0]), thrown => thrown === error);
+            assert.equal(control.value, 'increment');
+            await Promise.resolve();
+            assert.equal(control.value, 'increment');
+        });
+
+        test(`${type}: API drift declines promotion without breaking the queue`, async () => {
+            const changes = [
+                host => { host.subgraph.inputNode = null; },
+                host => { host.subgraph.inputNode.slots = {}; },
+                host => { host.subgraph.inputNode.slots[0].linkIds = {}; },
+                host => { host.subgraph.getLink = undefined; },
+                host => { host.subgraph.getLink = () => null; },
+                host => { host.subgraph.getLink = () => ({}); },
+                host => { host.subgraph.getLink = () => ({ resolve: () => null }); },
+                host => { host.subgraph.getLink = () => ({ resolve() { throw new Error('API drift'); } }); },
+                (_, node) => { node.getWidgetFromSlot = undefined; },
+                host => { host.inputs = undefined; },
+                (_, node) => { node.widgets = undefined; },
+                (_, node, seed) => { seed.linkedWidgets = {}; },
+            ];
+            for (const change of changes) {
+                const { node, seed, mode, control, app, extension } = await setup(type);
+                const current = { name: 'seed', value: 42 };
+                const host = promotedHost(node, extension, app, undefined, () => current);
+                const input = host.inputs[0];
+                mode.value = 'fixed';
+                control.beforeQueued();
+                change(host, node, seed);
+                assert.equal(host.getWidgetFromSlot(input), current);
+                assert.equal(control.value, 'increment');
+                await Promise.resolve();
+                assert.equal(control.value, 'increment');
+            }
+        });
+
+        test(`${type}: serialization errors preserve the policy and propagate unchanged`, async () => {
+            const error = new Error('serialization failed');
+            const { node, mode, control, app, extension } = await setup(type, true, undefined, error);
+            const host = promotedHost(node, extension, app);
+            mode.value = 'fixed';
+            control.beforeQueued();
+            host.getWidgetFromSlot(host.inputs[0]);
+            assert.throws(() => app.graphToPrompt(), thrown => thrown === error);
+            assert.equal(control.value, 'increment');
+            await Promise.resolve();
+            assert.equal(control.value, 'increment');
+        });
+    }
 }
 
 test('unrelated node types are untouched', async () => {

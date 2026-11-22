@@ -1,11 +1,3 @@
-"""Helpers for the populate regression suite (test_populate_regression.py).
-
-`wildcards.process(text, seed)` is the system-under-test. Helpers here wrap
-the call with deterministic setup, provide the common assertions
-(determinism / set-membership / binomial distribution within ±sigma), and
-offer a single entry point to install fixture data into the module-global
-`wildcard_dict` used by process().
-"""
 from __future__ import annotations
 
 import math
@@ -16,7 +8,6 @@ from impact.wildcards import process as populate, wildcard_dict
 
 
 def assert_determinism(text: str, seed: int) -> str:
-    """The same text and seed must produce the same output."""
     first = populate(text, seed)
     second = populate(text, seed)
     assert first == second, (
@@ -39,12 +30,6 @@ def assert_distribution(
     n: int = 1000,
     sigma: float = 3.0,
 ) -> Counter:
-    """Empirical binomial distribution check with ±sigma tolerance.
-
-    `get_output(i)` must return one of the keys in `weights`. The i-th
-    invocation receives a distinct seed so 1000 samples explore the PRNG
-    space rather than hammering a single seed.
-    """
     counts: Counter = Counter()
     misses = []
     for i in range(n):
@@ -82,12 +67,5 @@ def assert_distribution(
 
 
 def install_wildcards(mapping: dict[str, list[str]]) -> None:
-    """Clear wildcard_dict and install the provided mapping.
-
-    Tests use this instead of touching the filesystem so each test has an
-    isolated fixture. Keys are stored as-given — wildcards.process()
-    normalises lookup keys via `wildcard_normalize` (lowercase + space→dash
-    + backslash→slash), so callers should provide already-normalised keys.
-    """
     wildcard_dict.clear()
     wildcard_dict.update(mapping)

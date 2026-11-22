@@ -5,7 +5,6 @@ import { customAlert, isBeforeFrontendVersion } from "./common.js";
 const is_legacy_front = () => isBeforeFrontendVersion('1.16.9');
 
 // Promoted controls run after the interior widget hooks in the same queue phase.
-// Restore before serialization, with a microtask fallback for errors/afterQueued.
 const paused_seed_controls = new Map();
 const wildcard_seed_modes = new WeakMap();
 let seed_control_phase = false;
@@ -116,7 +115,6 @@ export function get_wildcard_label() {
 }
 
 export function is_wildcard_label(value) {
-	// Check if value is a label (not an actual wildcard selection)
 	return value === "Select the Wildcard to add to the text" ||
 	       value.startsWith("Select Wildcard 🔵 On-Demand:") ||
 	       value === "Select Wildcard 🟢 Full Cache";
@@ -131,7 +129,6 @@ export function get_wildcards_list() {
 export { load_wildcard_status };
 
 // temporary implementation (copying from https://github.com/pythongosssss/ComfyUI-WD14-Tagger)
-// I think this should be included into master!!
 class ImpactProgressBadge {
 	constructor() {
 		if (!window.__progress_badge__) {
@@ -335,7 +332,6 @@ api.addEventListener("stop-iteration", () => {
 	else if(queue.mode == 'change')
 		queue.mode = 'disabled';
 
-	// The legacy menu repeats by this flag; its checkbox only displays it.
 	app.ui.autoQueueEnabled = false;
 	document.getElementById("autoQueueCheckbox").checked = false;
 });
@@ -344,7 +340,6 @@ api.addEventListener("img-send", imgSendHandler);
 api.addEventListener("latent-send", latentSendHandler);
 api.addEventListener("executed", progressExecuteHandler);
 
-// Update wildcard status after workflow execution (on-demand mode)
 api.addEventListener("executed", async (event) => {
 	if (wildcard_status.on_demand_mode) {
 		await load_wildcard_status();
@@ -404,7 +399,6 @@ app.registerExtension({
 				if(index != 0 || !link_info || this.inputs[0].type != '*')
 					return;
 
-				// assign type
 				let slot_type = '*';
 
 				if(type == 2) {
@@ -412,7 +406,6 @@ app.registerExtension({
 				}
 				else {
 					const node = app.graph.getNodeById(link_info.origin_id);
-					// An upstream dynamic output may not be restored yet during workflow loading.
 					slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 				}
 
@@ -430,7 +423,6 @@ app.registerExtension({
 				if(index >= 2)
 					return;
 
-				// assign type
 				let slot_type = '*';
 
 				if(type == 2) {
@@ -453,7 +445,6 @@ app.registerExtension({
 				if(!link_info || this.inputs[0].type != '*' || type == 2)
 					return;
 
-				// assign type
 				const node = app.graph.getNodeById(link_info.origin_id);
 				const slot_type = node?.outputs[link_info.origin_slot]?.type ?? link_info.type ?? '*';
 
@@ -470,7 +461,6 @@ app.registerExtension({
 				if(index >= 2)
 					return;
 
-				// assign type
 				let slot_type = '*';
 
 				if(type == 2) {
@@ -497,7 +487,6 @@ app.registerExtension({
 				if(!link_info)
 					return;
 
-				// HOTFIX: subgraph
 				const stackTrace = new Error().stack;
 
 				if(stackTrace.includes('convertToSubgraph') || stackTrace.includes('Subgraph.configure')) {
@@ -505,7 +494,6 @@ app.registerExtension({
 				}
 
 				if(type == 2) {
-					// connect output
 					if(connected){
 						if(app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
 							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
@@ -516,7 +504,6 @@ app.registerExtension({
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
-								// propagate type
 								this.outputs[0].type = link_info.type;
 								this.outputs[0].name = link_info.type;
 
@@ -532,13 +519,12 @@ app.registerExtension({
 					if(app.graph._nodes_by_id[link_info.origin_id]?.type == 'Reroute')
 						this.disconnectInput(link_info.target_slot);
 
-					// connect input
 					if(this.inputs[0].type == '*'){
 						const node = app.graph.getNodeById(link_info.origin_id);
 						let origin_type = node?.outputs[link_info.origin_slot]?.type;
 
 						if(origin_type==undefined) {
-							return; // fallback
+							return;
 						}
 
 						for(let i in this.inputs) {
@@ -557,8 +543,8 @@ app.registerExtension({
 					const stackTrace = new Error().stack;
 
 					if(
-						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
-						!stackTrace.includes('LGraphNode.connect') && // for mouse device
+						!stackTrace.includes('LGraphNode.prototype.connect') &&
+						!stackTrace.includes('LGraphNode.connect') &&
 						!stackTrace.includes('loadGraphData') && !app.configuringGraph) {
 							if(this.outputs[link_info.origin_slot].links.length == 0) {
 								this.removeOutput(link_info.origin_slot);
@@ -576,7 +562,6 @@ app.registerExtension({
 				}
 
 				if(connected) {
-					// NOTE: node.slot_index is different with link_info.origin_slot
 					let last_slot_index = this.outputs.length - 1;
 					if (last_slot_index == link_info.origin_slot) {
 						this.addOutput(`output${slot_i}`, this.outputs[0].type);
@@ -645,7 +630,6 @@ app.registerExtension({
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				const stackTrace = new Error().stack;
 
-				// HOTFIX: subgraph
 				if(stackTrace.includes('convertToSubgraph') || stackTrace.includes('Subgraph.configure')) {
 					return;
 				}
@@ -670,7 +654,6 @@ app.registerExtension({
 					return;
 
 				if(type == 2) {
-					// connect output
 					if(connected && index == 0){
 						if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
 							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
@@ -681,7 +664,6 @@ app.registerExtension({
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
-								// propagate type
 								this.outputs[0].type = link_info.type;
 								this.outputs[0].label = link_info.type;
 								this.outputs[0].name = link_info.type;
@@ -701,14 +683,12 @@ app.registerExtension({
 					if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id]?.type == 'Reroute')
 						this.disconnectInput(link_info.target_slot);
 
-					// connect input
 					if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
 						return;
 
 					if(this.inputs[0].type == '*'){
 						const node = app.graph.getNodeById(link_info.origin_id);
 
-						// NOTE: node is undefined when subgraph editing mode
 						if(node) {
 							let origin_type = node.outputs[link_info.origin_slot]?.type;
 							for(let i in this.inputs) {
@@ -731,8 +711,8 @@ app.registerExtension({
 
 				if (!connected && (this.inputs.length > widget_count+1)) {
 					if(
-						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
-						!stackTrace.includes('LGraphNode.connect') && // for mouse device
+						!stackTrace.includes('LGraphNode.prototype.connect') &&
+						!stackTrace.includes('LGraphNode.connect') &&
 						!stackTrace.includes('loadGraphData') &&
 						this.inputs[index].name != 'select') {
 						    this.removeInput(index);
@@ -813,11 +793,9 @@ app.registerExtension({
 					const source = promoted_seed_source(this, input.name);
 					if (!source) return widget;
 					seed = source.node.widgets.find((widget) => widget.name === 'seed');
-					// Another host may have paused this shared control earlier in the phase.
 					for (const control of seed.linkedWidgets) restore_seed_control(control);
 					mode = promoted_wildcard_mode(source.node, source.hosts);
 				} catch {
-					// Optional native bindings may change; leave core behavior intact.
 					return widget;
 				}
 				if (mode === 'fixed' || mode === false) {
@@ -954,7 +932,6 @@ app.registerExtension({
 
 						node.widgets[tbox_id].value += node._wildcard_value;
 
-						// Reload wildcard status to update loaded count
 						if (wildcard_status.on_demand_mode) {
 							await load_wildcard_status();
 							await load_wildcards();
@@ -1003,7 +980,6 @@ app.registerExtension({
 				});
 			}
 
-			// Preventing validation errors from occurring in any situation.
 			if(has_lora) {
 				node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
 			}
@@ -1018,7 +994,6 @@ app.registerExtension({
 			const populated_text_widget = node.widgets.find((w) => w.name == 'populated_text');
 			const mode_widget = node.widgets.find((w) => w.name == 'mode');
 
-			// mode combo
 			Object.defineProperty(mode_widget, "value", {
 				set: (value) => {
 						if(value == true)
@@ -1026,7 +1001,7 @@ app.registerExtension({
 						else if(value == false)
 							node._mode_value = "fixed";
 						else
-							node._mode_value = value; // combo value
+							node._mode_value = value;
 
 						populated_text_widget.inputEl.disabled = node._mode_value == 'populate';
 					},
@@ -1038,8 +1013,6 @@ app.registerExtension({
 					 }
 			});
 
-			// Keep fixed prompts cached by pausing the core's automatic seed updates.
-			// Keep core hook bookkeeping and restore the user's selected control policy.
 			const seed_widget = node.widgets.find((w) => w.name == 'seed');
 			wildcard_seed_modes.set(node, mode_widget);
 			for (const control of seed_widget?.linkedWidgets ?? []) {
