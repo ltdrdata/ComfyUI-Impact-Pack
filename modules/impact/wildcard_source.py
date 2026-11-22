@@ -308,8 +308,10 @@ class TextWildcardSource:
     CATEGORY = "Impact Pack/Wildcard"
     DESCRIPTION = ("Text wildcard source: fixed / random / sequential / batch. "
                    "Select a category (wildcard text file) and one of its lines. "
-                   "fixed uses the selected line, sequential uses line (seed mod line count), "
-                   "random picks a line from the seed and batch outputs every line. "
+                   "fixed uses the selected line; random and sequential use line number "
+                   "(seed mod line count), with the seed kept within the line count, so "
+                   "randomize draws a line and increment steps through them; "
+                   "batch outputs every line. "
                    "Wildcard syntax inside a line is processed with the same seed.")
 
     @classmethod
@@ -322,9 +324,10 @@ class TextWildcardSource:
             return ([""], [f"no_{category}"])
         if mode == "batch":
             selected = entries
-        elif mode == "random":
-            selected = [random.Random(seed).choice(entries)]
-        elif mode == "sequential":
+        elif mode in ("random", "sequential"):
+            # The seed is the line index. The frontend caps the seed widget at the
+            # line count, so "randomize" draws one of the lines and "increment"
+            # walks them in order; the modulo also covers seeds from older workflows.
             selected = [entries[seed % len(entries)]]
         else:
             entry = next((entry for entry in entries if entry[0] == text_wildcard), None)

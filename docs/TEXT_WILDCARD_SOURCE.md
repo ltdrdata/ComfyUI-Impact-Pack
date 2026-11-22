@@ -8,7 +8,9 @@ It reads the same directory (`custom_wildcards` in `impact-pack.ini`) with the s
 
 - **fixed**: Outputs the line selected in the `text_wildcard` dropdown. If that line has been removed from the file, execution reports the missing selection instead of silently choosing another one.
 - **sequential**: Outputs line number `seed % line_count`. With the seed's *control after generate* set to `increment`, every queued run moves to the next line and wraps around at the end of the file.
-- **random**: Picks a line from the seed, so the same seed always gives the same line.
+- **random**: Also outputs line number `seed % line_count`; with the seed control set to `randomize`, every queued run draws one of the lines. The same seed always gives the same line.
+
+In the UI, the seed is kept within the line count of the selected category (it is the line index, starting at 0), so `randomize` only draws existing lines and `increment` wraps back to the first line after the last one.
 - **batch**: Outputs every line as a list, one queued item per line.
 
 Wildcard syntax inside the chosen line (such as `__color__` or `{red|blue}`) is processed with the same seed, so a line can still contain variations.
@@ -18,7 +20,7 @@ Wildcard syntax inside the chosen line (such as `__color__` or `{red|blue}`) is 
 - **category** (COMBO): The text file names (categories) in the configured directory.
 - **text_wildcard** (COMBO): The lines of the selected category. Long lines are shortened to 60 characters in the dropdown; repeated labels get a ` (1)`, ` (2)`... suffix. Changing the category refreshes this list from `/impact/get_text_items`.
 - **mode** (COMBO): `fixed`, `random`, `sequential` or `batch`.
-- **seed** (INT): Seed used for the sequential index, the random choice and wildcard processing inside the line.
+- **seed** (INT): Line index for `sequential` and `random` (kept within the line count), also used for wildcard processing inside the line.
 
 ## Outputs
 

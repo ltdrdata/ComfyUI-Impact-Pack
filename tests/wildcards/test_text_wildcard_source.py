@@ -63,7 +63,7 @@ def test_long_and_repeated_lines_get_short_unique_labels(source):
     ("fixed", 7, ["second"]),
     ("sequential", 0, ["first"]), ("sequential", 1, ["second"]),
     ("sequential", 2, ["third"]), ("sequential", 3, ["first"]),
-    ("random", 3, [random.Random(3).choice(["first", "second", "third"])]),
+    ("random", 1, ["second"]), ("random", 5, ["third"]),
     ("batch", 0, ["first", "second", "third"]),
 ])
 def test_modes(source, mode, seed, expected):
