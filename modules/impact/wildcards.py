@@ -113,12 +113,6 @@ def scan_wildcard_metadata(wildcard_path):
                     key = wildcard_normalize(os.path.splitext(rel_path)[0])
                     available_wildcards[key] = file_path
                     discovered += 1
-                elif file.endswith('.yaml') or file.endswith('.yml'):
-                    file_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(file_path, wildcard_path)
-                    key_base = wildcard_normalize(os.path.splitext(rel_path)[0])
-                    available_wildcards[key_base] = file_path
-                    discovered += 1
     except (OSError, FileNotFoundError) as e:
         logging.warning(f"[Impact Pack] Error scanning wildcard directory {wildcard_path}: {e}")
 
@@ -146,54 +140,26 @@ def get_wildcard_dict():
 
 
 def find_wildcard_file(key):
-    potential_paths = [
-        f"{key}.txt",
-        f"{key}.yaml",
-        f"{key}.yml"
-    ]
+    rel_path = f"{key}.txt"
 
-    for rel_path in potential_paths:
-        file_path = os.path.join(wildcards_path, rel_path)
-        if os.path.isfile(file_path):
-            return (file_path, file_path.endswith(('.yaml', '.yml')))
+    file_path = os.path.join(wildcards_path, rel_path)
+    if os.path.isfile(file_path):
+        return file_path
 
     try:
         custom_path = config.get_config().get('custom_wildcards')
         if custom_path and os.path.exists(custom_path):
-            for rel_path in potential_paths:
-                file_path = os.path.join(custom_path, rel_path)
-                if os.path.isfile(file_path):
-                    return (file_path, file_path.endswith(('.yaml', '.yml')))
+            file_path = os.path.join(custom_path, rel_path)
+            if os.path.isfile(file_path):
+                return file_path
     except Exception:
         pass
 
     file_path = available_wildcards.get(key)
     if file_path and os.path.isfile(file_path):
-        return (file_path, file_path.endswith(('.yaml', '.yml')))
+        return file_path
 
-    if '/' in key:
-        parent_key = key.split('/')[0]
-        yaml_paths = [
-            f"{parent_key}.yaml",
-            f"{parent_key}.yml"
-        ]
-
-        for rel_path in yaml_paths:
-            file_path = os.path.join(wildcards_path, rel_path)
-            if os.path.isfile(file_path):
-                return (file_path, True)
-
-        try:
-            custom_path = config.get_config().get('custom_wildcards')
-            if custom_path and os.path.exists(custom_path):
-                for rel_path in yaml_paths:
-                    file_path = os.path.join(custom_path, rel_path)
-                    if os.path.isfile(file_path):
-                        return (file_path, True)
-        except Exception:
-            pass
-
-    return (None, False)
+    return None
 
 
 def get_wildcard_value(key):
@@ -203,7 +169,7 @@ def get_wildcard_value(key):
         if key in loaded_wildcards:
             return loaded_wildcards[key]
 
-        file_path, is_yaml = find_wildcard_file(key)
+        file_path = find_wildcard_file(key)
         if file_path is None:
             matched_keys = []
             for k in available_wildcards.keys():
@@ -224,10 +190,6 @@ def get_wildcard_value(key):
                     logging.info(f"[Impact Pack] Wildcard '{key}' resolved via depth-agnostic pattern matching to {len(matched_keys)} keys: {matched_keys}")
                     return all_options
 
-            return None
-
-        if is_yaml or file_path.endswith(('.yaml', '.yml')):
-            logging.warning(f"[Impact Pack] YAML wildcard '{key}' not found (pre-load issue)")
             return None
 
         try:
@@ -260,47 +222,15 @@ def load_txt_wildcard(file_path):
             if x.strip() and not x.strip().startswith('#')]
 
 
-def load_yaml_wildcard(file_path, key_prefix=''):
-    global loaded_wildcards
-
+def load_yaml_wildcard(file_path):
     yaml_data = yaml.load(_read_wildcard_text(file_path), Loader=yaml.FullLoader)
 
-    if not yaml_data:
-        return []
-
-    result = []
-    for k, v in yaml_data.items():
-        if isinstance(v, list):
-            sub_key = wildcard_normalize(f"{key_prefix}/{k}") if key_prefix else wildcard_normalize(k)
-            loaded_wildcards[sub_key] = v
-            result.extend(v)
-        elif isinstance(v, dict):
-            parent_key = wildcard_normalize(k)
-            parent_values = []
-
-            for k2, v2 in v.items():
-                sub_key = wildcard_normalize(f"{k}/{k2}")
-                if isinstance(v2, list):
-                    loaded_wildcards[sub_key] = v2
-                    parent_values.extend(v2)
-                elif isinstance(v2, str):
-                    loaded_wildcards[sub_key] = [v2]
-                    parent_values.append(v2)
-                elif isinstance(v2, (int, float)):
-                    loaded_wildcards[sub_key] = [str(v2)]
-                    parent_values.append(str(v2))
-
-            if parent_values:
-                loaded_wildcards[parent_key] = parent_values
-                result.extend(parent_values)
-        elif isinstance(v, str):
-            sub_key = wildcard_normalize(f"{key_prefix}/{k}") if key_prefix else wildcard_normalize(k)
-            loaded_wildcards[sub_key] = [v]
-        elif isinstance(v, (int, float)):
-            sub_key = wildcard_normalize(f"{key_prefix}/{k}") if key_prefix else wildcard_normalize(k)
-            loaded_wildcards[sub_key] = [str(v)]
-
-    return result if result else list(yaml_data.values())
+    if yaml_data:
+        for k, v in yaml_data.items():
+            keys = {}
+            read_wildcard(k, v, keys)
+            loaded_wildcards.update(keys)
+            available_wildcards.update(dict.fromkeys(keys, file_path))
 
 
 def is_on_demand_mode():
@@ -311,21 +241,21 @@ def wildcard_normalize(x):
     return x.replace("\\", "/").replace(' ', '-').lower()
 
 
-def read_wildcard(k, v, on_demand=False):
+def read_wildcard(k, v, into):
     if isinstance(v, list):
         k = wildcard_normalize(k)
-        wildcard_dict[k] = v
+        into[k] = v
     elif isinstance(v, dict):
         for k2, v2 in v.items():
             new_key = f"{k}/{k2}"
             new_key = wildcard_normalize(new_key)
-            read_wildcard(new_key, v2, on_demand)
+            read_wildcard(new_key, v2, into)
     elif isinstance(v, str):
         k = wildcard_normalize(k)
-        wildcard_dict[k] = [v]
+        into[k] = [v]
     elif isinstance(v, (int, float)):
         k = wildcard_normalize(k)
-        wildcard_dict[k] = [str(v)]
+        into[k] = [str(v)]
 
 def read_wildcard_dict(wildcard_path, on_demand=False):
     global wildcard_dict
@@ -359,7 +289,7 @@ def _read_wildcard_file(wildcard_path, file, file_path, on_demand):
 
         if yaml_data:
             for k, v in yaml_data.items():
-                read_wildcard(k, v, on_demand)
+                read_wildcard(k, v, wildcard_dict)
 
 
 def process_comment_out(text):
@@ -1006,7 +936,7 @@ def load_yaml_files_only(wildcard_path):
                 if file.endswith('.yaml') or file.endswith('.yml'):
                     file_path = os.path.join(root, file)
                     try:
-                        load_yaml_wildcard(file_path, key_prefix='')
+                        load_yaml_wildcard(file_path)
                         yaml_count += 1
                         logging.debug(f"[Impact Pack] Pre-loaded YAML file: {file_path}")
                     except Exception as e:

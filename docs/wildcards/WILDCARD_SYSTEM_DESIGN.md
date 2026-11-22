@@ -261,8 +261,8 @@ YAML wildcards cannot participate in on-demand loading because their keys live i
 
 **Algorithm**:
 1. Enumerate every `.yaml`/`.yml` file under the wildcards roots.
-2. Parse each file and iterate over its top-level keys.
-3. Insert each `(key, value)` pair into `loaded_wildcards` at startup so subsequent lookups are immediate.
+2. Parse each file and walk its keys at every level with the reader of full cache mode: `colors: {warm: {deep: [...]}}` gives `colors/warm/deep`.
+3. Insert each `(key, value)` pair into `loaded_wildcards` at startup so subsequent lookups are immediate, and record the key in `available_wildcards` so `*` patterns and depth-agnostic matching find it.
 
 ---
 
