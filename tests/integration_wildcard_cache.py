@@ -1,9 +1,3 @@
-"""Check wildcard prompt hooks and ComfyUI cache keys on CPU, without models.
-
-Run separately from the stubbed wildcard pytest suite. The actual server hook,
-parser, node implementations and cache key builder are used. Only HTTP feedback
-and the CLIP model are substituted; this does not test neural encoding quality.
-"""
 import argparse
 import asyncio
 from copy import deepcopy
@@ -41,10 +35,8 @@ def main():
     from comfy_extras.nodes_preview_any import PreviewAny
     from comfy_extras.nodes_string import StringConcatenate
     from execution import IsChangedCache, _async_map_node_over_list, validate_prompt
-    # Match server startup order; importing impact_pack first creates a cycle.
     from impact import impact_server, impact_pack, logics, util_nodes, wildcards
 
-    # Text providers whose output may change while their inputs stay equal, like file loaders.
     class ChangingTextSource:
         @classmethod
         def INPUT_TYPES(cls):
@@ -63,7 +55,6 @@ def main():
         def fingerprint_inputs(cls, path):
             return float("NaN")
 
-    # Breaks ComfyUI's cache contract: its text may change without declaring IS_CHANGED.
     class UndeclaredTextSource:
         @classmethod
         def INPUT_TYPES(cls):
@@ -107,7 +98,6 @@ def main():
     def prepare(name, seed, text, mode="fixed", source="", upstream=None):
         inputs = dict(wildcard_text=source, populated_text=text, seed=seed, mode=mode)
         prompt = deepcopy(upstream or {}) | {"1": {"class_type": name, "inputs": inputs}}
-        # The saved native workflow must keep the user's seed and widget slots.
         widgets = list(dict(widget_defaults[name], wildcard_text=source, populated_text=text,
                             mode=mode, seed=seed, control_after_generate="increment").values())
         workflow_node = {"id": 1, "widgets_values": deepcopy(widgets)}
@@ -154,8 +144,6 @@ def main():
             wildcards.static_linked_text_seeds.clear()
 
         def test_file_loading_modes_preserve_seeded_output(self):
-            # Exercise the real startup loader, lazy TXT lookup and preloaded
-            # YAML through the hook, not just an injected wildcard dictionary.
             with TemporaryDirectory() as directory, patch.multiple(
                     wildcards, wildcards_path=directory, wildcard_dict={},
                     available_wildcards={}, loaded_wildcards={}, _on_demand_mode=False):
@@ -207,8 +195,6 @@ def main():
             self.assertEqual(combined, "__colors__")
             sources = [
                 {"class_type": "StringConcatenate", "inputs": parts},
-                # Unregistered descriptors model opaque providers, not real nodes.
-                # Their resolved output is supplied below; upstream execution is outside this test.
                 {"class_type": "ExternalTextReader", "inputs": {"path": "prompt.txt"}},
                 {"class_type": "ExternalTextGenerator", "inputs": {}},
             ]
@@ -230,7 +216,6 @@ def main():
                     def linked(seed, upstream=source):
                         return prepare(name, seed, ["text", 0], mode, upstream={"text": upstream})
 
-                    # Nothing is known about the text before the first run.
                     first = linked(731)
                     self.assertEqual(first["1"]["inputs"]["seed"], 731)
                     self.assertEqual(output(name, first["1"]["inputs"], resolve(source), prompt=first), resolve(source))
@@ -245,7 +230,6 @@ def main():
                     self.assertEqual(third["1"]["inputs"]["seed"], 733)
                     self.assertNotEqual(asyncio.run(cache_keys(first)), asyncio.run(cache_keys(third)))
 
-                    # Only the last run is kept; ComfyUI's cache drops the earlier text too.
                     output(name, third["1"]["inputs"], resolve(changed), prompt=third)
                     self.assertEqual(linked(734)["1"]["inputs"]["seed"], 734)
 
@@ -260,7 +244,6 @@ def main():
                         with self.subTest(node=name, mode=mode, source=source["class_type"]):
                             wildcards.static_linked_text_seeds.clear()
                             for _ in range(2):
-                                # Queue every prompt before any of them runs.
                                 queued = [prepare(name, seed, ["text", 0], mode, upstream={"text": source}) for seed in seeds]
                                 self.assertEqual([p["1"]["inputs"]["seed"] for p in queued], list(seeds))
                                 actual = tuple(output(name, p["1"]["inputs"], resolve(source), prompt=p) for p in queued)
@@ -292,7 +275,7 @@ def main():
         def test_validated_upstream_values_keep_fingerprint(self):
             # The hook sees the submitted prompt, the node sees it after ComfyUI's validation
             # cast the FLOAT (JSON sends 1.0 as 1) and unwrapped the __value__ widget.
-            name = "ImpactWildcardProcessor"  # Encode needs a model loader to validate
+            name = "ImpactWildcardProcessor"
             upstream = {
                 "float": {"class_type": "PrimitiveFloat", "inputs": {"value": 1}},
                 "number": {"class_type": "ImpactConvertDataType", "inputs": {"value": ["float", 0]}},
@@ -335,7 +318,6 @@ def main():
 
                     def execute(instance, **values):
                         result = original(instance, **values)
-                        # A request may arrive between mapped calls, before the list finishes.
                         queued = prepare(name, 42, ["list", 0], upstream=upstream)
                         self.assertEqual(queued["1"]["inputs"]["seed"], 42)
                         return result
@@ -385,7 +367,6 @@ def main():
                     output(name, first["1"]["inputs"], "plain α", prompt=first)
                     second = prepare(name, 732, ["text", 0], upstream=upstream)
                     self.assertEqual(second["1"]["inputs"]["seed"], 731)
-                    # Same inputs, different text: only a contract-breaking upstream node does this.
                     output(name, second["1"]["inputs"], "__colors__", prompt=second)
                     self.assertEqual(prepare(name, 733, ["text", 0], upstream=upstream)["1"]["inputs"]["seed"], 733)
 

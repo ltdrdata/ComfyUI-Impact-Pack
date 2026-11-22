@@ -10,10 +10,8 @@ async function extension(t) {
         apiURL(url) { return url; }
     });
     let registered;
-    // Whether the picture at a URL can be shown.
     const decoded = t.mock.fn(async () => {});
     const toast = t.mock.fn();
-    // The core command behind the toolbar button of the mask editor.
     const command = { id: "Comfy.MaskEditor.OpenMaskEditor", function: t.mock.fn() };
     const app = { registerExtension(value) { registered = value; }, canvas: { selected_nodes: {} },
         extensionManager: { toast: { add: toast }, command: { commands: [command] } } };
@@ -84,7 +82,6 @@ for (const configurable of [true, false]) {
         const { node, widget, descriptor, fetch, storeWrite } = await bridge(t, configurable);
         assert.deepEqual(Object.getOwnPropertyDescriptor(widget, "value"), descriptor);
         assert.equal(widget.value, "$41-0");
-        // Vue writes the store without invoking a widget callback.
         const filename = "masks/a & b+#한글.png [input]";
         storeWrite(filename);
         assert.equal(fetch.mock.callCount(), 0);
@@ -282,10 +279,8 @@ test("switching alpha_as_mask shows the picture of the other setting at once", a
     const sources = () => node.imgs.map(image => new URL(image.src, "http://localhost"));
     const switched = async value => { option.value = value; option.callback(value); await new Promise(resolve => setTimeout(resolve)); };
     const before = node.imgs;
-    // Nothing ran yet: there is no picture to replace.
     await switched(true);
     assert.equal(node.imgs, before);
-    // The widget's own callback still runs, with what it was given, and its result is passed on.
     assert.equal(option.callback(true, "canvas", node), "the widget's own result");
     assert.deepEqual(original.mock.calls.at(-1).arguments, [true, "canvas", node]);
     const images = ["a", "b"].map(name => ({ filename: `${name}.png`, subfolder: "PreviewBridge", type: "temp", metadata: {} }));
@@ -295,22 +290,18 @@ test("switching alpha_as_mask shows the picture of the other setting at once", a
     assert.deepEqual(sources().map(url => [url.pathname, url.searchParams.get("node_id"), url.searchParams.get("alpha_as_mask"), url.searchParams.get("index")]),
         [["/impact/view/pb_alpha_preview", "41", "true", "0"], ["/impact/view/pb_alpha_preview", "41", "true", "1"]]);
     assert.equal(redrawn, 1);
-    // Back to the setting of the run: its own files.
     await switched(false);
     assert.deepEqual(sources().map(url => [url.pathname, url.searchParams.get("filename"), url.searchParams.get("subfolder"), url.searchParams.get("type")]),
         [["/view", "a.png", "PreviewBridge", "temp"], ["/view", "b.png", "PreviewBridge", "temp"]]);
-    // An input without alpha has no other picture: the request fails and the node keeps what it shows.
     const shownNow = node.imgs;
     decoded.mock.mockImplementation(async () => { throw new Error("404"); });
     await switched(true);
     assert.equal(node.imgs, shownNow);
     decoded.mock.mockImplementation(async () => {});
-    // An image saved in the mask editor since the run is not replaced.
     node.images = [{ filename: "clipspace-painted-masked-1.png", subfolder: "clipspace", type: "input" }];
     await switched(false);
     await switched(true);
     assert.equal(node.imgs, shownNow);
-    // A picture that arrives after the option was switched back is dropped.
     node.images = images;
     const release = [];
     decoded.mock.mockImplementation(() => new Promise(resolve => { release.push(resolve); }));
@@ -320,7 +311,6 @@ test("switching alpha_as_mask shows the picture of the other setting at once", a
     release.splice(0).forEach(resolve => resolve());
     await new Promise(resolve => setTimeout(resolve));
     assert.equal(node.imgs, shownNow);
-    // So is one that arrives after the node ran again: the node shows the files of that run.
     option.value = true; option.callback(true);
     node.onExecuted({ images: [...images], alpha_as_mask: [true] });
     release.splice(0).forEach(resolve => resolve());
@@ -338,14 +328,11 @@ test("the image selected on the node is the one of a batch that the mask editor 
     assert.equal(node.imageIndex, 2);
     assert.equal(widget.value, "PreviewBridge/c.png [temp]");
     assert.equal(node.properties.image, "PreviewBridge/c.png [temp]");
-    // Back to the grid: no image is selected, and the editor opens the first.
     node.imageIndex = null;
     assert.equal(widget.value, "PreviewBridge/a.png [temp]");
-    // The selection is what the next prompt registers.
     node.imageIndex = 1;
     await widget.serializeValue();
     assert.equal(new URL(fetch.mock.calls.at(-1).arguments[0], "http://localhost").searchParams.get("filename"), "b.png");
-    // A file saved in the editor is not one of the batch; showing it does not select another.
     storeWrite("clipspace/clipspace-painted-masked-1.png [input]");
     node.imageIndex = 0;
     assert.equal(widget.value, "clipspace/clipspace-painted-masked-1.png [input]");
@@ -365,7 +352,6 @@ test("a bridge that shows no image explains it where the mask editor would fail"
     app.canvas.selected_nodes = { 41: node };
     const entries = () => { const options = []; node.getExtraMenuOptions(null, options); return options; };
 
-    // Before the node is executed: the menu entry and the command both explain, and neither reaches the editor.
     entries()[1].callback();
     command.function();
     assert.equal(toast.mock.callCount(), 2);
@@ -373,7 +359,6 @@ test("a bridge that shows no image explains it where the mask editor would fail"
     assert.equal(openEntry.mock.callCount() + openCommand.mock.callCount(), 0);
     assert.equal(entries()[2].callback, copy, "other menu entries are left as they are");
 
-    // With a picture both open as before.
     node.imgs[0].src = "/view?filename=a.png";
     entries()[1].callback("event");
     command.function();
@@ -382,13 +367,11 @@ test("a bridge that shows no image explains it where the mask editor would fail"
     assert.equal(openEntry.mock.calls[0].arguments[0], "event");
     assert.equal(openCommand.mock.callCount(), 1);
 
-    // A picture whose file is gone, as after a server restart, is no picture.
     Object.assign(node.imgs[0], { complete: true, naturalWidth: 0 });
     entries()[1].callback();
     assert.equal(toast.mock.callCount(), 3);
     assert.equal(openEntry.mock.callCount(), 1);
 
-    // The command is stopped for this bridge alone.
     app.canvas.selected_nodes = { 7: { id: 7, comfyClass: "LoadImage" } };
     command.function();
     app.canvas.selected_nodes = { 7: { id: 7, comfyClass: "LoadImage" }, 41: node };

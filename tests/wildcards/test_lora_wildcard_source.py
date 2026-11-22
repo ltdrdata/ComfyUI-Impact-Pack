@@ -1,4 +1,3 @@
-"""Behavior and existing-workflow regressions for LoraWildcardSource."""
 import asyncio
 import importlib.util
 import json
@@ -51,8 +50,6 @@ def source(tmp_path, monkeypatch):
     pack = tmp_path / "pack"
     custom = pack / "custom_wildcards"
     custom.mkdir(parents=True)
-    # Keep the package-default directory and configured directory equal unless
-    # the test specifically exercises a relocated wildcard collection.
     monkeypatch.setattr(module, "__file__", str(pack / "modules/impact/wildcard_source.py"))
     monkeypatch.setattr(config, "cached_config", {"custom_wildcards": str(custom)})
     monkeypatch.setattr(wildcards, "wildcard_dict", {"color": ["blue"]})
@@ -265,8 +262,6 @@ def test_windows_cross_drive_link_preserves_valid_categories(source, monkeypatch
         assert path == valid, "The excluded file must never be read"
         return ["portrait, <lora:A:0.7>"]
 
-    # Resolve a Windows link without requiring a Windows filesystem. The
-    # drive comparison itself uses the real Windows standard-library code.
     monkeypatch.setattr(module, "os", types.SimpleNamespace(
         path=types.SimpleNamespace(realpath=realpath, join=ntpath.join, splitext=ntpath.splitext,
                                    commonpath=ntpath.commonpath, isfile=lambda path: path in (valid, outside)),

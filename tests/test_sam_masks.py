@@ -1,9 +1,3 @@
-"""SAM mask contracts with real Impact/ComfyUI code and controlled predictions.
-
-Run separately from the wildcard tests, which stub Impact dependencies:
-IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_sam_masks.py -v
-No weights, GPU, or running server are required.
-"""
 import importlib
 import os
 from pathlib import Path
@@ -42,7 +36,6 @@ def detectors(core):
     from aiohttp import web
     from server import PromptServer
 
-    # Node imports register HTTP handlers. No server or requests are needed here.
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=Mock()), raising=False)
@@ -109,7 +102,6 @@ def test_segmented_masks_preserve_detection_boundaries(core, monkeypatch, scores
     combined, batch = detect(core, model, segments(core, len(scores)))
     expected = np.stack([np.logical_or.reduce(candidates(i)[indices]) for i, indices in enumerate(selected)])
 
-    # Check combined pixels first: correcting grouping must not alter selection.
     np.testing.assert_array_equal(combined.numpy(), np.logical_or.reduce(expected))
     assert combined.dtype == torch.float32
     assert combined.device.type == "cpu"
@@ -117,7 +109,6 @@ def test_segmented_masks_preserve_detection_boundaries(core, monkeypatch, scores
     assert batch.device.type == "cpu"
     assert tuple(batch.shape) == (len(scores), 1, HEIGHT, WIDTH)
     np.testing.assert_array_equal(batch[:, 0].numpy(), expected)
-    # Follow the tutorial's mask-to-SEGS refinement boundary used by Detailer.
     input_segs = segments(core, len(scores))
     refined = core.apply_mask_to_each_seg(input_segs, batch)
     assert refined[0] == input_segs[0]
@@ -144,7 +135,6 @@ def test_combined_pixels_and_dilation_are_unchanged(core, monkeypatch, dilation)
     model = sam_model(core, monkeypatch, responses)
     combined_only = detect(core, model, segs, dilation=dilation, combined=True)
     np.testing.assert_array_equal(combined_only[0].numpy(), expected)
-    # The existing dilation applies only to combined_mask, not batch_masks.
     np.testing.assert_array_equal(batch[:, 0].numpy(),
                                   [candidates(0)[0] | candidates(0)[1], candidates(1)[2]])
 
@@ -167,7 +157,6 @@ def test_mask_points_remains_one_joint_prediction(core, monkeypatch, negative):
 
 @pytest.mark.parametrize("hint", ["center-1", "horizontal-2", "vertical-2", "rect-4", "diamond-4", "none"])
 def test_tutorial_hints_and_expanded_boxes_preserve_masks(core, monkeypatch, hint):
-    # basic-refine.png uses bbox_expansion=240; clip to the non-square image.
     responses = [(candidates(0), [.99, .95, .3]), (candidates(1), [.3, .99, .2])]
     expected = [candidates(0)[0] | candidates(0)[1], candidates(1)[1]]
     for combined_only in (False, True):
@@ -359,7 +348,6 @@ def test_samloader_returns_a_sam2_model_that_a_detector_takes_in_every_device_mo
 
 
 class TrackedNowhere(torch.nn.Identity):
-    """Stands for the video predictor of sam2: every frame gets an empty mask for every object."""
     image_size, device = 16, torch.device("cpu")
 
     def _get_image_feature(self, inference_state, frame_idx, batch_size):
@@ -440,12 +428,11 @@ def sam3_model(core, monkeypatch, tracks="packed masks"):
         return logits
 
     def forward_video(images, initial_masks, pbar=None, target_device=None, target_dtype=None):
-        """Every object keeps the mask it starts with and moves one pixel to the right in each frame."""
         from comfy.ldm.sam3.tracker import pack_masks
         model.video = {"frames": tuple(images.shape), "initial": initial_masks.clone()}
         tracked = torch.stack([torch.roll(initial_masks[:, 0], frame, dims=-1) for frame in range(images.shape[0])])
         if tracks == "logits":
-            return torch.where(tracked > 0, 0.2, -10.0)   # a logit above 0 is inside the mask
+            return torch.where(tracked > 0, 0.2, -10.0)
         return {"packed_masks": pack_masks(tracked), "n_frames": images.shape[0], "scores": [1.0] * initial_masks.shape[0]}
 
     model.model = SimpleNamespace(get_dtype=lambda: torch.float32,
@@ -471,9 +458,7 @@ def test_sam3_masks_each_detection_at_the_size_of_the_image(core, monkeypatch, c
         np.testing.assert_array_equal(mask.numpy(), np.logical_or.reduce(expected))
         np.testing.assert_array_equal(batch.numpy()[:, 0], expected)
 
-    # ComfyUI's model management is asked for the model, once for the node
     assert model.loaded == [model]
-    # the picture and the prompts reach the model at its own size, 1008 x 1008: here 31.5 times the width and 42 times the height
     assert [call["frame"] for call in model.calls] == [(1, 3, 1008, 1008)] * 2
     assert model.calls[1]["box"].tolist() == [[[31.5, 294.0], [598.5, 504.0]]]
     assert model.calls[1]["points"]["point_coords"].tolist() == [[[315.0, 399.0]]]
@@ -498,7 +483,6 @@ def test_the_sam3_video_detector_tracks_each_detection_of_the_first_frame(core, 
 
     (shape, segs), = detectors.SAM3VideoDetectorSEGS.execute(frames, bbox_detector, sam, 0.5, 3.0, 1).result
 
-    # the tracker gets the frames and, for each detection, the mask SAM3 makes of its box in the first frame
     assert model.video["frames"] == (3, 3, HEIGHT, WIDTH)
     boxes = np.zeros((2, HEIGHT, WIDTH), dtype=bool)
     for i in range(2):
@@ -527,7 +511,6 @@ def test_the_sam3_video_detector_tracks_back_from_the_last_frame_when_the_first_
     x1, y1, x2, y2 = segs[0].crop_region
     tracked = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
     tracked[:, y1:y2, x1:x2] = segs[0].cropped_mask.numpy()
-    # the mask starts on the last frame and moves one pixel for each frame towards the first
     np.testing.assert_array_equal(tracked, np.stack([np.roll(box, 2 - frame, axis=-1) for frame in range(3)]))
 
 
@@ -567,7 +550,6 @@ def test_the_sam2_video_detector_cuts_the_tracked_logits_at_its_threshold(core, 
         mask[:, y1:y2, x1:x2] = segs[0].cropped_mask.numpy()
         return mask
 
-    # the threshold maps 0..1 to logits -50..50: 0.5 keeps the logits of at least 0, 0.8 those of at least 30
     assert tracked(0.5).sum() == 3 * 8 * 14
     assert tracked(0.8).sum() == 3 * 4 * 8
 
@@ -576,7 +558,7 @@ def test_the_sam2_video_detector_cuts_the_tracked_logits_at_its_threshold(core, 
 def test_sam3_is_refused_on_a_comfyui_whose_sam3_it_cannot_call(core, monkeypatch, change):
     model = sam3_model(core, monkeypatch).model
     if change == "forward_video as in ComfyUI v0.20.0":
-        model.model.diffusion_model.forward_video = lambda images, initial_masks, pbar=None: None   # no target_device, no target_dtype
+        model.model.diffusion_model.forward_video = lambda images, initial_masks, pbar=None: None
     elif change == "no forward_segment":
         del model.model.diffusion_model.forward_segment
     else:

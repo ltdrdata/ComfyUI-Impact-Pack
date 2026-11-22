@@ -1,8 +1,3 @@
-"""Real queue/cache behavior and native wildcard widget restoration in Chrome.
-
-Use an isolated ComfyUI server. Encode cases use an installed checkpoint,
-defaulting to v1-5-pruned-emaonly-fp16.safetensors (no downloads).
-"""
 from argparse import Namespace
 import json
 import os
@@ -67,8 +62,6 @@ def run(ui, preview_id, expected, label):
 
 
 def run_submitted(ui, preview_id, expected, label):
-    # History contains the backend-normalized seed. Observe the real POST to
-    # distinguish before/after frontend control timing without copying core RNG.
     with ui.page.expect_request(lambda req: req.method == "POST" and urlsplit(req.url).path in ("/prompt", "/api/prompt")) as queued:
         entry = ui.run()
     request = queued.value.post_data_json
@@ -84,7 +77,6 @@ def set_text(ui, node_type, widget, value):
 
 
 def native_roundtrip(ui, node_id, *other_ids, expected_widget_names=None):
-    """Compare rendered widget names/order/values and the native serialization."""
     trusted = json.loads((ROOT / "tests/workflows/all-impact-nodes.widgets.json").read_text())
     states = {}
     for target_id in (node_id, *other_ids):
@@ -118,7 +110,6 @@ def native_roundtrip(ui, node_id, *other_ids, expected_widget_names=None):
     # remain identical. Widget arrays above deliberately retain their order.
     assert sorted(restored["links"]) == sorted(saved["links"])
     # Subgraph link records can reorder too; compare complete records by ID.
-    # Keep every node/widget array and all other definition fields ordered.
     def ordered_links(definitions):
         if definitions is None:
             return None
@@ -133,7 +124,6 @@ def native_roundtrip(ui, node_id, *other_ids, expected_widget_names=None):
 
 def promoted_widget_state(ui, node_id):
     # Host widget projections can replace their transient last_y after a queue.
-    # Check rendered visibility and stable name/value pairs, not that cache field.
     return ui.app.evaluate("""(app, id) => {
         const node = app.graph.getNodeById(id);
         if (!app.canvas.visible_nodes.includes(node)) throw new Error('Host was not rendered');
@@ -156,8 +146,6 @@ def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name)
     ui.choose(node_type, "mode", "fixed")
     source_id = ui.add_node("Concatenate Text", "StringConcatenate", 100, 650)
     show_node(ui, source_id)
-    # Neither fragment contains a complete choice, so scanning upstream input
-    # strings cannot determine the seed dependence of their combined output.
     ui.page.get_by_placeholder("string_a", exact=True).fill("{red|")
     ui.page.get_by_placeholder("string_b", exact=True).fill("green|blue}")
     show_node(ui, node_id)
@@ -176,8 +164,6 @@ def test_linked_inputs_and_subgraph_native_queue(ui, node_type, restore_by_name)
     entry = run(ui, preview_id, "red", "linked-seed")
     assert entry["prompt"][2][node_id]["inputs"]["seed"] == [seed_id, 0]
 
-    # Convert the real upstream node using the frontend menu. No graph mutation
-    # or hand-written workflow JSON is used to construct the subgraph.
     show_node(ui, source_id)
     title = ui.page.evaluate("""({app, id}) => {
         const n = app.graph.getNodeById(id);
@@ -211,7 +197,6 @@ def test_populate_reuses_cache_only_for_same_expansion(ui, node_type):
     # case even on a warm LRU server, while keeping expected output deterministic.
     source = f"# cache case {uuid4().hex}\n" + prefix + "{red|green|blue}"
     ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill(source)
-    # Trusted pre-change selections: 0 and 1 -> green; 2 -> red.
     for seed, color in ((0, "green"), (1, "green"), (2, "red")):
         ui.set_number(node_type, "seed", seed)
         entry = run(ui, preview_id, prefix + color, f"populate-cache-{seed}")
@@ -296,8 +281,6 @@ def test_reproduce_native_workflow_then_populate(ui, node_type, restore_by_name)
     setting(ui, "Restore widget values", "Comfy.Workflow.NamedValuesRestore", restore_by_name)
     node_id, preview_id = graph(ui, node_type)
     ui.page.get_by_placeholder("Wildcard Prompt (User input)", exact=True).fill("{red|green|blue}")
-    # Set a known saved expansion through the UI so a population bug cannot
-    # prevent this test from reaching the reproduce/load behavior it protects.
     ui.choose(node_type, "mode", "fixed")
     ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill("red")
     ui.choose(node_type, "mode", "reproduce")
@@ -391,7 +374,6 @@ def test_fixed_mode_suppresses_automatic_seed_changes(ui, node_type, text_case, 
         ui.page.get_by_placeholder("string_b", exact=True).fill(last_part + " changed")
         show_node(ui, node_id)
     else:
-        # Add text outside the comment in the comment-only case.
         changed_text = text + ("\n" if text_case == "empty" else "") + " changed"
         ui.page.get_by_placeholder("Populated Prompt (Will be generated automatically)", exact=True).fill(changed_text)
     changed = run(ui, preview_id, expected + " changed", "changed")
@@ -487,7 +469,6 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing, 
         ui.page.get_by_test_id("subgraph-breadcrumb-back").click()
         ui.page.wait_for_function("app => app.canvas.graph === app.rootGraph", arg=ui.app)
         show_node(ui, host)
-        # Move the native combo once from populate to fixed, without a popup.
         right = ui.app.evaluate("""(app, id) => {
             const node = app.graph.getNodeById(id);
             const mode = node.widgets.find(w => w.name === 'mode');
@@ -506,7 +487,6 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing, 
     controls = interior["widgets_values"]
     seed_index = 3 if node_type == "ImpactWildcardProcessor" else 5
     assert controls[seed_index:seed_index + 2] == [5, control]
-    # A promoted mode must override a different interior mode, not merely copy it.
     assert controls[2] == interior["widgets_values_named"]["mode"] == ("populate" if promote_mode else "fixed")
     for iteration in range(3):
         show_node(ui, preview_id)
@@ -529,7 +509,6 @@ def test_promoted_fixed_seed_preserves_cache_and_widgets(ui, node_type, timing, 
     saved_interior = next(n for sg in restored["definitions"]["subgraphs"] for n in sg["nodes"] if n["type"] == node_type)
     assert saved_interior["widgets_values"] == controls
 
-    # A manual host seed edit is still authoritative in fixed mode.
     ui.set_number(before["type"], "seed", 2)
     show_node(ui, preview_id)
     manual = run(ui, preview_id, "red", "manual-host-seed")
@@ -669,8 +648,6 @@ def test_execution_metadata_restores_populated_text(ui, node_type, source_type, 
     show_node(ui, node_id)
     before = native_roundtrip(ui, node_id)
     entry = run(ui, preview_id, "red", "generated")
-    # Load the native workflow captured by the server, before UI feedback can
-    # repair stale metadata through another Export.
     workflow = entry["prompt"][3]["extra_pnginfo"]["workflow"]
     path = ui.artifacts / "execution-workflow.json"
     path.write_text(json.dumps(workflow, indent=2) + "\n")
@@ -714,8 +691,6 @@ def test_fixed_policy_edit_survives_reload_and_resumes(ui, node_type, timing):
     first = run(ui, preview_id, "blue", "initial-fixed")
     assert {node_id, preview_id}.isdisjoint(cached(first))
 
-    # Editing the automatic policy must neither invalidate fixed output nor be
-    # overwritten by the policy that was selected when the node was created.
     ui.choose(node_type, "control_after_generate", "decrement")
     before = native_roundtrip(ui, node_id)
     repeat = run(ui, preview_id, "blue", "restored-fixed")
@@ -791,7 +766,7 @@ def test_fixed_seed_is_preserved_within_one_batched_queue(ui, node_type, timing)
     batch_count = ui.page.get_by_role("textbox", name="Batch Count", exact=True)
     batch_count.fill("3")
     batch_count.press("Enter")
-    ui.run()  # One click submits all three prompts through the real queue loop.
+    ui.run()
     entries = ui.page.wait_for_function("""async ({url, id, source}) => {
         const response = await fetch(url + '/history');
         if (!response.ok) throw new Error('History request failed: ' + response.status);

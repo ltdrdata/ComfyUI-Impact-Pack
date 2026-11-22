@@ -1,4 +1,3 @@
-"""Real loader modes, YAML preload, nested TXT access and fresh reloads."""
 import pytest
 
 from impact import wildcards

@@ -5,7 +5,6 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../js/impact-pack.js', import.meta.url), 'utf8');
 
-// Loads the shipped extension and returns the frontend state its stop-iteration listener works on.
 async function load(mode, autoQueueEnabled = false) {
   const listeners = {};
   const checkbox = { checked: autoQueueEnabled };

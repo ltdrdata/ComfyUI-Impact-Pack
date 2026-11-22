@@ -47,7 +47,6 @@ def main():
         check_output(ui.run(), {"재현 🌺"})
         expect(populated).to_be_disabled()
 
-        # The reproduce run must restore populate mode via websocket feedback.
         check_output(ui.run(), {f"🌸 {color}" for color in colors})
         print("PASS: UI node creation/linking, populate/fixed/reproduce, UTF-8, and preview updates")
 

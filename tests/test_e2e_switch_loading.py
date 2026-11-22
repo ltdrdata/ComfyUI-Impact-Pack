@@ -1,8 +1,3 @@
-"""Preserve Switch selection when loading workflows with unused inputs.
-
-These Chrome checks pass on Main and detect the automatic selection changes in
-PR #1252. The existing catalog and its fixed widget snapshot remain read-only.
-"""
 import json
 from pathlib import Path
 
@@ -92,6 +87,4 @@ def test_unused_switch_inputs_preserve_selection_and_output(ui, fixture, selecti
         assert state["links"] == expected_links
         assert state["text"] == expected_text
     assert_same_values(saved["widgets_values"], target["widgets_values"])
-    # A safe cleanup may remove unused sockets; connected slots and widget values
-    # must retain their meaning. Do not require the bloated socket count to persist.
     assert_same_values(observations[0], observations[1])

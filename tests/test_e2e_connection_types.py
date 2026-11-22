@@ -1,4 +1,3 @@
-"""Native loading of consumers created before their upstream dynamic outputs."""
 import json
 
 import pytest
@@ -26,7 +25,6 @@ def widgets(browser, node_ids):
 
 
 def bridge_transition(browser, preview, mode, artifacts, label):
-    """Observe the real browser continuation when Bridge changes a downstream mode."""
     def submitted_mode(response, expected):
         if response.request.method != "POST" or not response.url.endswith("/prompt"):
             return False
@@ -96,7 +94,6 @@ def test_dynamic_output_type_survives_native_loading(ui, node_type, title, targe
                     (source, "ImpactInt", [("value", 42)]),
                 ]]
     before = widgets(browser, node_ids)
-    # Anchor the round trip to the intended non-default values and widget order.
     assert json.dumps(before, sort_keys=True) == json.dumps(expected, sort_keys=True)
     original_path = artifacts / "original.json"
     exported_path = artifacts / "exported.json"
@@ -146,7 +143,6 @@ def test_restored_dynamic_output_consumer_executes(ui, node_type, title, target_
     target = browser.add_node(title, node_type, 1000, 180)
     inverse = browser.add_node("Inversed Switch (Any)", "ImpactInversedSwitch", 620, 350)
     source = browser.add_node("ImpactInt", "ImpactInt", 180, 350)
-    # Keep output1 connected so the consumer really uses dynamic output2 on reload.
     browser.add_node("ImpactConvertDataType", "ImpactConvertDataType", 1000, 650)
     preview = browser.add_node("Preview as Text", "PreviewAny", 1450, 250)
     browser.set_number("ImpactInt", "value", 42)
@@ -219,7 +215,7 @@ def test_restored_dynamic_output_consumer_executes(ui, node_type, title, target_
             changed = "42"
         else:
             browser.page.mouse.click(*browser.point(node_type, widget="mode"))
-            changed = None  # Stop must block the downstream preview, not pass 42 through.
+            changed = None
         run_and_check(path.stem + "-changed", changed)
         if node_type == "ImpactControlBridge":
             browser.page.mouse.click(*browser.point(node_type, widget="mode"))

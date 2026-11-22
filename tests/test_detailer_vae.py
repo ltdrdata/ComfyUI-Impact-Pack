@@ -1,8 +1,3 @@
-"""VAE selection through the real Detailer paths.
-
-Sampling and model inference are controlled; conditioning and encode routing
-use the installed ComfyUI/Impact implementations.
-"""
 import pytest
 import torch
 
@@ -68,8 +63,6 @@ def test_inpaint_vae_results_reach_sampler_and_conditioning(runtime, state, enco
     runtime.core.enhance_detail(**dict(state.arguments, noise_mask=mask, positive=positive, negative=negative,
                                        inpaint_model=True, detailer_hook=hook, cycle_images=images,
                                        vae_tiled_encode=True, vae_tiled_decode=True))
-    # Image resizing quantizes .25 to 63/255; inpaint replaces the masked half
-    # with .5 for conditioning and encodes the unmasked original separately.
     original = torch.full((1, 4, 8, 8), 63 / 255 + bias)
     conditioning = original.clone()
     conditioning[:, :, :, 4:] = .5 + bias

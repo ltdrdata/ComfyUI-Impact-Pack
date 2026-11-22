@@ -50,12 +50,10 @@ warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is
 model_path = folder_paths.models_dir
 
 
-# folder_paths.supported_pt_extensions
 utils.add_folder_path_and_extensions("sams", [os.path.join(model_path, "sams")], folder_paths.supported_pt_extensions)
 utils.add_folder_path_and_extensions("onnx", [os.path.join(model_path, "onnx")], {'.onnx'})
 
 
-# Nodes
 class ONNXDetectorProvider:
     @classmethod
     def INPUT_TYPES(s):
@@ -250,7 +248,6 @@ def _paste_detail_images(image, enhanced_image, mask, crop_region, detailer_hook
 
 
 def _sorted_by_crop_size(outputs):
-    # Sampled-size crops keep the order of their crops, so the per-region output lists stay paired.
     return [image for _, image in sorted(outputs, key=lambda output: output[0], reverse=True)]
 
 
@@ -339,7 +336,7 @@ class DetailerForEach:
             elif wmode == 'ASC-SIZE':
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]))
 
-            else:   # wmode == 'DSC-SIZE'
+            else:
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]), reverse=True)
         else:
             ordered_segs = segs[1]
@@ -348,7 +345,7 @@ class DetailerForEach:
             model = utils.apply_differential_diffusion(model)
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)
             cropped_image = utils.to_tensor(cropped_image)
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
@@ -392,7 +389,6 @@ class DetailerForEach:
                     for condition, details in negative
                 ]
             else:
-                # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
@@ -425,26 +421,22 @@ class DetailerForEach:
                 cnet_pil_list.extend(cnet_pils)
 
             if enhanced_image is not None:
-                # don't latent composite-> converting to latent caused poor quality
-                # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
                 image = _paste_detail_images(image, enhanced_image, mask, seg.crop_region, detailer_hook, images_by_cycle, cycle_images)
                 enhanced_list.append((enhanced_image.shape, upscaled_images[1] if upscaled_images else enhanced_image))
 
             if enhanced_image is not None:
-                # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
-                new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
+                new_seg_image = enhanced_image.numpy()
 
-                # Apply the mask
                 mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
             else:
                 new_seg_image = None
 
-            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image)) # NOTE: Don't use `cropped_image`
+            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image))
 
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
@@ -559,7 +551,7 @@ class DetailerForEachAutoRetry:
             elif wmode == 'ASC-SIZE':
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]))
 
-            else:   # wmode == 'DSC-SIZE'
+            else:
                 ordered_segs = sorted(segs[1], key=lambda x: (x.bbox[2]-x.bbox[0]) * (x.bbox[3]-x.bbox[1]), reverse=True)
         else:
             ordered_segs = segs[1]
@@ -568,7 +560,7 @@ class DetailerForEachAutoRetry:
             model = utils.apply_differential_diffusion(model)
 
         for i, seg in enumerate(ordered_segs):
-            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)  # Never use seg.cropped_image to handle overlapping area
+            cropped_image = utils.crop_ndarray4(image.cpu().numpy(), seg.crop_region)
             cropped_image = utils.to_tensor(cropped_image)
             mask = utils.to_tensor(seg.cropped_mask)
             mask = utils.tensor_gaussian_blur_mask(mask, feather)
@@ -612,7 +604,6 @@ class DetailerForEachAutoRetry:
                     for condition, details in negative
                 ]
             else:
-                # Negative Conditioning is placeholder such as FLUX.1
                 cropped_negative = negative
 
             if wildcard_item and wildcard_item.strip() == '[SKIP]':
@@ -623,7 +614,6 @@ class DetailerForEachAutoRetry:
 
             orig_cropped_image = cropped_image.clone()
 
-            # initialize
             enhanced_image = cropped_image
             cnet_pils = None
             cycle_images = None
@@ -658,26 +648,22 @@ class DetailerForEachAutoRetry:
                 cnet_pil_list.extend(cnet_pils)
 
             if enhanced_image is not None:
-                # don't latent composite-> converting to latent caused poor quality
-                # use image paste
                 image = image.cpu()
                 enhanced_image = enhanced_image.cpu()
                 image = _paste_detail_images(image, enhanced_image, mask, seg.crop_region, detailer_hook, images_by_cycle, cycle_images)
                 enhanced_list.append((enhanced_image.shape, upscaled_images[1] if upscaled_images else enhanced_image))
 
             if enhanced_image is not None:
-                # Convert enhanced_pil_alpha to RGBA mode
                 enhanced_image_alpha = utils.tensor_convert_rgba(enhanced_image)
-                new_seg_image = enhanced_image.numpy()  # alpha should not be applied to seg_image
+                new_seg_image = enhanced_image.numpy()
 
-                # Apply the mask
                 mask = utils.tensor_resize(mask, *utils.tensor_get_size(enhanced_image))
                 utils.tensor_putalpha(enhanced_image_alpha, mask)
                 enhanced_alpha_list.append(enhanced_image_alpha)
             else:
                 new_seg_image = None
 
-            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image)) # NOTE: Don't use `cropped_image`
+            cropped_list.append((orig_cropped_image.shape, upscaled_images[0] if upscaled_images else orig_cropped_image))
 
             new_seg = SEG(new_seg_image, seg.cropped_mask, seg.confidence, seg.crop_region, seg.bbox, seg.label, seg.control_net_wrapper)
             new_segs.append(new_seg)
@@ -774,7 +760,6 @@ class DetailerForEachPipe:
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather, scheduler_func_opt=scheduler_func_opt,
                                       tiled_encode=tiled_encode, tiled_decode=tiled_decode)
 
-        # set fallback image
         if len(cnet_pil_list) == 0:
             cnet_pil_list = [utils.empty_pil_tensor()]
 
@@ -852,14 +837,12 @@ class FaceDetailer:
                      refiner_ratio=None, refiner_model=None, refiner_clip=None, refiner_positive=None, refiner_negative=None, cycle=1,
                      inpaint_model=False, noise_mask_feather=0, scheduler_func_opt=None, tiled_encode=False, tiled_decode=False):
 
-        # make default prompt as 'face' if empty prompt for CLIPSeg
         bbox_detector.setAux('face')
         try:
             segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, bbox_crop_factor, drop_size, detailer_hook=detailer_hook)
         finally:
             bbox_detector.setAux(None)
 
-        # bbox + sam combination
         if sam_model_opt is not None:
             sam_mask = core.make_sam_mask(sam_model_opt, segs, image, sam_detection_hint, sam_dilation,
                                           sam_threshold, sam_bbox_expansion, sam_mask_hint_threshold,
@@ -894,7 +877,6 @@ class FaceDetailer:
             cropped_enhanced_alpha = []
             cnet_pil_list = []
 
-        # Mask Generator
         mask = core.segs_to_combined_mask(segs)
         if hooks.get_detailer_options(detailer_hook).get("return_by_cycle_step", False):
             mask = mask.unsqueeze(0).repeat(len(enhanced_img), 1, 1)
@@ -1002,23 +984,6 @@ class NoiseInjectionDetailerHookProvider:
             return (hook, )
         except Exception as e:
             logging.error(f"[Impact Pack] NoiseInjectionDetailerHookProvider: 'ComfyUI Noise' custom node isn't installed. You must install 'BlenderNeko/ComfyUI Noise' extension to use this node.\t{e}")
-
-
-# class CustomNoiseDetailerHookProvider:
-#     @classmethod
-#     def INPUT_TYPES(s):
-#         return {"required": {
-#                     "noise": ("NOISE",)},
-#                 }
-#
-#     RETURN_TYPES = ("DETAILER_HOOK",)
-#     FUNCTION = "doit"
-#
-#     CATEGORY = "ImpactPack/Detailer"
-#
-#     def doit(self, noise):
-#         hook = hooks.CustomNoiseDetailerHookProvider(noise)
-#         return (hook, )
 
 
 class VariationNoiseDetailerHookProvider:
@@ -1593,7 +1558,6 @@ class IterativeLatentUpscale:
 
     CATEGORY = "ImpactPack/Upscale"
 
-    # dim_reduction_factor=8 for SD1/SDXL, used to calculate actual dims from latents based on VAE
     def doit(self, samples, upscale_factor, steps, temp_prefix, upscaler, step_mode="simple", vae_compression=8, unique_id=None):
         h, w = samples['samples'].shape[-2:]
         w, h = w * vae_compression, h * vae_compression
@@ -1603,7 +1567,7 @@ class IterativeLatentUpscale:
 
         if step_mode == "geometric":
             upscale_factor_unit = pow(upscale_factor, 1.0/steps)
-        else:  # simple
+        else:
             upscale_factor_unit = max(0, (upscale_factor - 1.0) / steps)
 
         current_latent = samples
@@ -1613,7 +1577,7 @@ class IterativeLatentUpscale:
         for i in range(steps-1):
             if step_mode == "geometric":
                 scale *= upscale_factor_unit
-            else:  # simple
+            else:
                 scale += upscale_factor_unit
 
             new_w = w*scale
@@ -1853,7 +1817,6 @@ class MaskDetailerPipe:
         else:
             refiner_model, refiner_clip, _, refiner_positive, refiner_negative = refiner_basic_pipe_opt
 
-        # create segs
         if mask is not None:
             mask = utils.make_2d_mask(mask)
             segs = core.mask_to_segs(mask, False, crop_factor, bbox_fill, drop_size, is_contour=contour_fill)
@@ -1886,7 +1849,6 @@ class MaskDetailerPipe:
             cropped_enhanced_list += cropped_enhanced
             cropped_enhanced_alpha_list += cropped_enhanced_alpha
 
-        # set fallback image
         if len(cropped_enhanced_list) == 0:
             cropped_enhanced_list = [utils.empty_pil_tensor()]
 
@@ -1919,7 +1881,6 @@ class DetailerForEachTest(DetailerForEach):
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                       scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
 
-        # set fallback image
         if len(cropped) == 0:
             cropped = [utils.empty_pil_tensor()]
 
@@ -1971,7 +1932,6 @@ class DetailerForEachTestPipe(DetailerForEachPipe):
                                       cycle=cycle, inpaint_model=inpaint_model, noise_mask_feather=noise_mask_feather,
                                       scheduler_func_opt=scheduler_func_opt, tiled_encode=tiled_encode, tiled_decode=tiled_decode)
 
-        # set fallback image
         if len(cropped) == 0:
             cropped = [utils.empty_pil_tensor()]
 
@@ -2178,7 +2138,6 @@ def get_image_hash(arr):
     part3 = arr[split_index1:, :split_index2]
     part4 = arr[split_index1:, split_index2:]
 
-    # 각 부분을 합산
     sum1 = np.sum(part1)
     sum2 = np.sum(part2)
     sum3 = np.sum(part3)
@@ -2211,7 +2170,6 @@ def get_file_item(base_type, path):
 
 
 class MaskRectArea:
-    # Creates a rectangle mask using percentage.
     def __init__(self):
         pass
 
@@ -2219,7 +2177,6 @@ class MaskRectArea:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                # Added typed INT inputs so this node can be driven by other INT nodes.
                 "x": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                 "y": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1}),
                 "width": ("INT", {"default": 50, "min": 0, "max": 100, "step": 1}),
@@ -2235,7 +2192,6 @@ class MaskRectArea:
     FUNCTION = "create_mask"
 
     def create_mask(self, x, y, width, height, blur_radius, extra_pnginfo, unique_id):
-        # Backward-compat: if node properties exist in workflow, prefer them.
         try:
             for node in extra_pnginfo["workflow"]["nodes"]:
                 if str(node["id"]) == str(unique_id):
@@ -2249,7 +2205,6 @@ class MaskRectArea:
         except Exception:
             pass
 
-        # Clamp percent inputs
         if x < 0:
             x = 0
         if y < 0:
@@ -2267,23 +2222,19 @@ class MaskRectArea:
         if height > 100:
             height = 100
 
-        # Convert percent to ratio
         min_x = x / 100.0
         min_y = y / 100.0
         w_ratio = width / 100.0
         h_ratio = height / 100.0
 
-        # Create a mask with standard resolution (e.g., 512x512)
         resolution = 512
         mask = torch.zeros((resolution, resolution), dtype=torch.float32)
 
-        # Calculate pixel coordinates
         min_x_px = int(min_x * resolution)
         min_y_px = int(min_y * resolution)
         max_x_px = int((min_x + w_ratio) * resolution)
         max_y_px = int((min_y + h_ratio) * resolution)
 
-        # Clamp pixel bounds
         if min_x_px < 0:
             min_x_px = 0
         if min_y_px < 0:
@@ -2293,30 +2244,23 @@ class MaskRectArea:
         if max_y_px > resolution:
             max_y_px = resolution
 
-        # Draw the rectangle on the mask
         if max_x_px > min_x_px and max_y_px > min_y_px:
             mask[min_y_px:max_y_px, min_x_px:max_x_px] = 1.0
 
-        # Apply blur if the radii are greater than 0
         if blur_radius > 0:
             dx = blur_radius * 2 + 1
             dy = blur_radius * 2 + 1
 
-            # Convert the mask to a format compatible with OpenCV (numpy array)
             mask_np = mask.cpu().numpy().astype("float32")
 
-            # Apply Gaussian Blur
             blurred_mask = cv2.GaussianBlur(mask_np, (dx, dy), 0)
 
-            # Convert back to tensor
             mask = torch.from_numpy(blurred_mask)
 
-        # Return the mask as a tensor with an additional channel
         return (mask.unsqueeze(0),)
 
 
 class MaskRectAreaAdvanced:
-    # Creates a rectangle mask using pixels relative to image size.
     def __init__(self):
         pass
 
@@ -2341,7 +2285,6 @@ class MaskRectAreaAdvanced:
     FUNCTION = "create_mask_advanced"
 
     def create_mask_advanced(self, x, y, width, height, image_width, image_height, blur_radius, extra_pnginfo, unique_id):
-        # Backward-compat fallback: if node properties exist in workflow, prefer them
         try:
             for node in extra_pnginfo["workflow"]["nodes"]:
                 if node["id"] == int(unique_id):
@@ -2357,7 +2300,6 @@ class MaskRectAreaAdvanced:
         except Exception:
             pass
 
-        # Clamp to safe bounds
         if image_width < 1:
             image_width = 1
         if image_height < 1:
@@ -2379,14 +2321,12 @@ class MaskRectAreaAdvanced:
         if max_x > x and max_y > y:
             mask[y:max_y, x:max_x] = 1.0
 
-        # Apply blur if the radii are greater than 0
         if blur_radius > 0:
             k = blur_radius * 2 + 1
             mask_np = mask.cpu().numpy().astype("float32")
             blurred_mask = cv2.GaussianBlur(mask_np, (k, k), 0)
             mask = torch.from_numpy(blurred_mask)
 
-        # Return the mask as a tensor with an additional channel
         return (mask.unsqueeze(0),)
 
 
@@ -2675,7 +2615,6 @@ class LatentSender(nodes.SaveLatent):
         if max_size > upper_bound:
             scale_factor = upper_bound/max_size
 
-        # prevent too small preview
         if min_size*scale_factor < lower_bound:
             scale_factor = lower_bound/min_size
 
@@ -2709,10 +2648,8 @@ class LatentSender(nodes.SaveLatent):
     def doit(self, samples, filename_prefix="latents/LatentSender", link_id=0, preview_method="Latent2RGB-SDXL", prompt=None, extra_pnginfo=None):
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
 
-        # load preview
         preview = LatentSender.prepare_preview(samples['samples'], preview_method)
 
-        # support save metadata for latent sharing
         file = f"{filename}_{counter:05}_.latent.png"
         fullpath = os.path.join(full_output_folder, file)
 

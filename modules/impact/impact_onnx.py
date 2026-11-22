@@ -8,7 +8,7 @@ from impact import utils
 
 impact.additional_dependencies.ensure_onnx_package()
 
-import onnxruntime  # noqa: E402
+import onnxruntime
 
 UNSUPPORTED = ("ONNXDetectorProvider cannot use this model. It takes a detection model exported by Ultralytics YOLO, "
                "and a RetinaNet model in the format of detector_v2_base_checkpoint.onnx.")
@@ -32,7 +32,6 @@ def yolo_inference(image, onnx_model):
     canvas = np.full((input_h, input_w, 3), 114, dtype=np.float32)
     canvas[top:top + fit_h, left:left + fit_w] = cv2.resize(np.array(utils.tensor2pil(image)), (fit_w, fit_h), interpolation=cv2.INTER_LINEAR)
 
-    # do detection
     output = onnx_model.run(None, {model_input.name: (canvas / 255).transpose(2, 0, 1)[None]})[0]
     if output.ndim != 3:
         raise ValueError(UNSUPPORTED)
@@ -76,14 +75,12 @@ def onnx_inference(image, onnx_model):
     if input_shape[3] != 3 or sorted((output.type, len(output.shape)) for output in onnx_model.get_outputs()) != sorted(RETINANET_OUTPUTS.values()):
         raise ValueError(UNSUPPORTED)
 
-    # prepare image
     pil = utils.tensor2pil(image)
     image = np.ascontiguousarray(pil)
-    image = image[:, :, ::-1]  # to BGR image
+    image = image[:, :, ::-1]
     image = image.astype(np.float32)
     image -= [103.939, 116.779, 123.68]  # 'caffe' mode image preprocessing
 
-    # do detection
     outputs = onnx_model.run(
         [s_i.name for s_i in onnx_model.get_outputs()],
         {onnx_model.get_inputs()[0].name: np.expand_dims(image, axis=0)},
@@ -93,7 +90,6 @@ def onnx_inference(image, onnx_model):
     scores = [op for op in outputs if isinstance(op[0][0], np.float32)][0]
     boxes = [op for op in outputs if isinstance(op[0][0], np.ndarray)][0]
 
-    # filter-out useless item
     used = labels[0] != -1
 
     labels = labels[0][used]

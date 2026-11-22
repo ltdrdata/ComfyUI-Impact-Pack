@@ -281,7 +281,6 @@ class ConcatConditionings:
 
 
 def seed_of_step(sampler, seed, step):
-    """A sampler that draws its noise anew in every call draws the same noise in every call with the same seed."""
     if sampler.draws_noise_in_each_call():
         # ComfyUI adds 1 to the seed of noise that it draws on the CPU
         return (seed + step) % (2**64 - 1)
@@ -289,8 +288,6 @@ def seed_of_step(sampler, seed, step):
 
 
 def take_back_outside_of_mask(sampler, before, after, mask):
-    """A sampler that draws its noise anew in every call adds it outside the mask as well. A sampling that runs to the
-    end removes it there in its last step."""
     if not sampler.draws_noise_in_each_call():
         return after
 
@@ -446,7 +443,6 @@ class RegionalSampler:
 
             add_noise = False
 
-        # finalize
         core.update_node_status(unique_id, "finalize")
         if base_latent_image is not None:
             new_latent_image = base_latent_image
@@ -567,7 +563,6 @@ class RegionalSamplerAdvanced:
 
                 j += 1
 
-        # finalize
         core.update_node_status(unique_id, "finalize")
         if base_latent_image is not None:
             new_latent_image = base_latent_image

@@ -1,9 +1,3 @@
-"""Conditional Stop Iteration ends Run (Instant) and Run (On Change) in Chrome.
-
-The condition is computed from a number that increments after every queued
-prompt. That keeps Run (On Change) repeating, and the node runs instead of
-being served from the execution cache.
-"""
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -51,7 +45,6 @@ def test_condition_ends_auto_queue(ui, run_mode, running, stopped, comparison, s
     select_run_mode(browser, run_mode)
     page.get_by_test_id("queue-button").click()
     if stops:
-        # Long enough for dozens of repeats when the condition is ignored.
         page.wait_for_timeout(4000)
         assert (len(posted), queue_mode(browser)) == (1, stopped)
     else:

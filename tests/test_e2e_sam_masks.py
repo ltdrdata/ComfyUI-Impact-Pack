@@ -1,11 +1,3 @@
-"""Real SAM execution, downstream masks and native workflow reload in Chrome.
-
-Start an isolated ComfyUI server with Impact Pack, local SAM ViT-B weights and
---cache-none. Set IMPACT_E2E_SAM_IMAGE to a local subject image and
-IMPACT_E2E_SAM_MODEL to the same sam_vit_b_01ec64.pth used by that server.
-No models are downloaded. API-shaped input is only graph setup; Run and native
-Export/import use the UI. Reference predictions come directly from SAM.
-"""
 import hashlib
 import json
 import os

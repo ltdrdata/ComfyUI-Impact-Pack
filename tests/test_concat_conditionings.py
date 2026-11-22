@@ -1,7 +1,3 @@
-"""ConcatConditionings with one conditioning and with more.
-
-Run with IMPACT_COMFY_ROOT set.
-"""
 import os
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -20,7 +16,7 @@ def node():
         from server import PromptServer
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None, send_sync=Mock()), raising=False)
-        from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
+        from impact import impact_server  # noqa: F401
         from impact import special_samplers
         yield special_samplers.ConcatConditionings
 

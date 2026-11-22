@@ -1,9 +1,3 @@
-"""Compare real LoRA patches and conditioning tensors with core ComfyUI nodes.
-
-Run separately from pytest's stubbed wildcard tests. Requires the same models
-as e2e_lora_wildcard_inference.py. Only unused HTTP route registration is
-substituted; checkpoint loading, patching and CLIP encoding use real ComfyUI.
-"""
 import argparse
 import gc
 from pathlib import Path

@@ -1,11 +1,3 @@
-"""Original SAM tutorial PNG execution and Mask Pointer JSON restoration.
-
-Set IMPACT_TUTORIALS_DIR to the tutorial checkout and IMPACT_E2E_TUTORIAL_IMAGE
-to its detectors-sam.png workflow's original ComfyUI_temp_xltgv_00001_.png input.
-Requires Impact Subpack, face_yolov8m.pt, SAM ViT-B and --cache-none.
-Mask Pointer's external painted Clipspace mask is not bundled; that JSON case
-checks native loading/serialization only and does not claim diffusion execution.
-"""
 import hashlib
 import json
 import os
@@ -55,7 +47,6 @@ def test_original_sam_tutorial(ui, named, filename, execute):
     before = controls(browser, node_ids)
     trusted = json.loads((Path(__file__).parent / "workflows/all-impact-nodes.widgets.json").read_text())["nodes"]
     names = {node["type"]: [widget["name"] for widget in node["widgets"]] for node in trusted}
-    # Subpack nodes are outside the Impact Pack catalog.
     names["UltralyticsDetectorProvider"] = ["model_name"]
     for node, actual in zip(relevant, before, strict=True):
         assert [widget["name"] for widget in actual["widgets"]] == names[node["type"]]

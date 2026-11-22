@@ -39,8 +39,6 @@ function showPreviewCanvas(node, app) {
         },
         draw: function (ctx, node, widgetWidth, widgetY) {
 
-            // If we are initially offscreen when created we wont have received a resize event
-            // Calculate it here instead
             if (!node.canvasHeight) {
                 computeCanvasSize(node, node.size, 220, 240);
             }
@@ -51,7 +49,6 @@ function showPreviewCanvas(node, app) {
             const border = 2;
             const widgetHeight = node.canvasHeight;
 
-            // Keep preview in sync when inputs are driven by links.
             syncLinkedInputsToPropertiesAdvanced(node);
 
             const width = Math.max(1, Math.round(node.properties["width"]));
@@ -91,15 +88,12 @@ function showPreviewCanvas(node, app) {
             let widgetX = xOffset;
             widgetY = widgetY + yOffset;
 
-            // Draw the background border
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_OUTLINE_COLOR;
             ctx.fillRect(widgetX - border, widgetY - border, backgroundWidth + border * 2, backgroundHeight + border * 2)
 
-            // Draw the main background area 
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR;
             ctx.fillRect(widgetX, widgetY, backgroundWidth, backgroundHeight);
 
-            // Draw the conditioning zone
             let [x, y, w, h] = getDrawArea(node, backgroundWidth, backgroundHeight);
 
             ctx.fillStyle = getDrawColor(0, "80");
@@ -107,7 +101,6 @@ function showPreviewCanvas(node, app) {
             ctx.beginPath();
             ctx.lineWidth = 1;
 
-            // Draw grid lines
             for (let x = 0; x <= width / 64; x += 1) {
                 ctx.moveTo(widgetX + x * 64 * scale, widgetY);
                 ctx.lineTo(widgetX + x * 64 * scale, widgetY + backgroundHeight);
@@ -122,7 +115,6 @@ function showPreviewCanvas(node, app) {
             ctx.stroke();
             ctx.closePath();
 
-            // Draw current zone
             let [sx, sy, sw, sh] = getDrawArea(node, backgroundWidth, backgroundHeight);
 
             ctx.fillStyle = getDrawColor(0, "80");
@@ -131,12 +123,10 @@ function showPreviewCanvas(node, app) {
             ctx.fillStyle = getDrawColor(0, "40");
             ctx.fillRect(widgetX + sx + border, widgetY + sy + border, sw - border * 2, sh - border * 2);
 
-            // Draw white border around the current zone
             ctx.strokeStyle = globalThis.LiteGraph.NODE_SELECTED_TITLE_COLOR;
             ctx.lineWidth = 2;
             ctx.strokeRect(widgetX + sx, widgetY + sy, sw, sh);
 
-            // Display
             ctx.beginPath();
 
             ctx.arc(LiteGraph.NODE_SLOT_HEIGHT * 0.5, LiteGraph.NODE_SLOT_HEIGHT * (index + 0.5) + 4, 4, 0, Math.PI * 2);
@@ -149,16 +139,13 @@ function showPreviewCanvas(node, app) {
             ctx.lineWidth = 1;
             ctx.closePath();
 
-            // Draw progress bar canvas
             if (backgroundWidth < widgetWidth) {
                 xOffset += (widgetWidth - backgroundWidth) / 2 - margin;
             }
 
-            // Adjust X and Y coordinates
             const barHeight = 8;
             let widgetYBar = widgetY + backgroundHeight + margin;
 
-            // Draw the border around the progress bar
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_OUTLINE_COLOR;
             ctx.fillRect(
                     widgetX - border,
@@ -167,7 +154,6 @@ function showPreviewCanvas(node, app) {
                     barHeight + border * 2
                     );
 
-            // Draw the main bar area (background)
             ctx.fillStyle = globalThis.LiteGraph.WIDGET_BGCOLOR;
             ctx.fillRect(
                     widgetX,
@@ -176,15 +162,12 @@ function showPreviewCanvas(node, app) {
                     barHeight
                     );
 
-            // Draw progress bar grid
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#66666650";
 
-            // Calculate the number of grid lines based on the bar size
             const numLines = Math.floor(backgroundWidth / 64);
 
-            // Draw grid lines
             for (let x = 0; x <= width / 64; x += 1) {
                 ctx.moveTo(widgetX + x * 64 * scale, widgetYBar);
                 ctx.lineTo(widgetX + x * 64 * scale, widgetYBar + barHeight);
@@ -192,7 +175,6 @@ function showPreviewCanvas(node, app) {
             ctx.stroke();
             ctx.closePath();
 
-            // Draw progress (based on blur_radius)
             const progress = Math.min(blurRadius / 255, 1);
             ctx.fillStyle = "rgba(0, 120, 255, 0.5)";
 
@@ -243,8 +225,6 @@ app.registerExtension({
             this.index = 3;
             this.serialize_widgets = true;
 
-            // Helper: attach callbacks to the widgets to keep node.properties in sync (canvas preview).
-            // A new node takes its properties from the widgets, which hold the defaults of the server.
             const hookWidget = (node, widgetName, propName, opts) => {
                 if (!Array.isArray(node.widgets)) {
                     return;
@@ -307,7 +287,6 @@ app.registerExtension({
     }
 });
 
-// Calculate the drawing area using individual properties.
 function getDrawArea(node, backgroundWidth, backgroundHeight) {
     let x = node.properties["x"] * backgroundWidth / node.properties["width"];
     let y = node.properties["y"] * backgroundHeight / node.properties["height"];
@@ -353,7 +332,6 @@ function syncLinkedInputsToPropertiesAdvanced(node) {
         }
     }
 
-    // Input "width" is the rectangle width in px -> property "w"
     const vw = readLinkedNumber(node, "width");
     if (vw != null) {
         const nv = Math.max(0, Math.round(vw));
@@ -363,7 +341,6 @@ function syncLinkedInputsToPropertiesAdvanced(node) {
         }
     }
 
-    // Input "height" is the rectangle height in px -> property "h"
     const vh = readLinkedNumber(node, "height");
     if (vh != null) {
         const nv = Math.max(0, Math.round(vh));
@@ -373,7 +350,6 @@ function syncLinkedInputsToPropertiesAdvanced(node) {
         }
     }
 
-    // Image size (must be >=1 to avoid division by zero in getDrawArea)
     const viw = readLinkedNumber(node, "image_width");
     if (viw != null) {
         const nv = Math.max(1, Math.round(viw));

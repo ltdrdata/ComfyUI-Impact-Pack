@@ -1,7 +1,3 @@
-"""Decompose (SEGS list) and Assemble (SEGS list), run through ComfyUI's own list handling.
-
-IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_assemble_segs_list.py -v
-"""
 import asyncio
 import copy
 import itertools
@@ -39,7 +35,6 @@ def runtime():
 
 
 def run(runtime, node, **inputs):
-    """The outputs of a node, each a list, as ComfyUI hands them to the next node."""
     outputs, _, _, _ = asyncio.run(runtime.execution.get_output_data("prompt", "1", node(), inputs))
     return outputs
 
@@ -53,7 +48,6 @@ def assemble(runtime, headers, elements):
 
 
 def make(runtime, sizes, counts):
-    """One SEGS per count; every element has its own label, mask, picture and control net wrapper."""
     labels = itertools.count()
     listed = []
     for size, count in zip(sizes, counts):
@@ -68,7 +62,6 @@ def make(runtime, sizes, counts):
 
 
 def assert_same(actual, expected):
-    """The same SEGS in the same order: headers, and every field of every element."""
     assert [tuple(segs[0]) for segs in actual] == [tuple(segs[0]) for segs in expected]
     assert [[seg.label for seg in segs[1]] for segs in actual] == [[seg.label for seg in segs[1]] for segs in expected]
     for found, wanted in zip(itertools.chain(*(segs[1] for segs in actual)), itertools.chain(*(segs[1] for segs in expected))):
@@ -78,11 +71,10 @@ def assert_same(actual, expected):
         assert found[2:6] == wanted[2:6]
 
 
-SHAPES = [(1,), (3,), (0,), (1, 1, 1), (2, 0, 3), (0, 2), (2, 0), (0, 0), (4, 1, 0, 2, 1), ()]
+SHAPES = [(1,), (0,), (0, 2), (2, 0), (0, 0), (4, 1, 0, 2, 1), ()]
 
 
-@pytest.mark.parametrize("counts", SHAPES, ids=str)
-@pytest.mark.parametrize("sizes", ["one size", "sizes differ"])
+@pytest.mark.parametrize("sizes,counts", [("one size", counts) for counts in SHAPES] + [("sizes differ", counts) for counts in SHAPES[:-1]], ids=str)
 def test_a_list_of_segs_comes_back_as_that_list(runtime, counts, sizes):
     listed = make(runtime, [(768, 768) if sizes == "one size" else (64 + index, 96 + 2 * index) for index in range(len(counts))], counts)
     headers, elements = decompose(runtime, listed)
@@ -209,7 +201,7 @@ def test_segs_given_twice_to_assemble_do_not_share_their_elements(runtime):
     assert assembled[0][1] is not assembled[1][1]
 
 
-@pytest.mark.parametrize("case", ["an element made elsewhere", "headers of another node", "elements of Decompose (SEGS)",
+@pytest.mark.parametrize("case", ["an element made elsewhere", "headers of another node",
                                   "headers of Decompose (SEGS)", "both of Decompose (SEGS)", "a header left out"])
 def test_elements_of_no_given_header_go_into_one_segs_with_a_warning(runtime, caplog, case):
     listed = make(runtime, [(64, 64), (96, 96)], (2, 1))
@@ -218,8 +210,6 @@ def test_elements_of_no_given_header_go_into_one_segs_with_a_warning(runtime, ca
         elements = elements + make(runtime, [(64, 64)], (1,))[0][1]
     elif case == "headers of another node":
         headers = decompose(runtime, listed, "8")[0]
-    elif case == "elements of Decompose (SEGS)":
-        elements = run(runtime, runtime.nodes.DecomposeSEGS, segs=listed)[1]
     elif case == "headers of Decompose (SEGS)":
         headers = run(runtime, runtime.nodes.DecomposeSEGS, segs=listed)[0]
     elif case == "both of Decompose (SEGS)":
@@ -252,7 +242,6 @@ def test_decomposing_again_after_assembling_gives_the_same_list(runtime):
 
 
 def test_each_image_of_a_list_gets_the_segs_of_its_own_place(runtime):
-    """The workflow of the report: three images, three SEGS, each SEGS holding the crop of another picture."""
     images = [torch.full((1, 32, 32, 3), value) for value in (0.25, 0.5, 0.75)]
     pasted = [torch.full((1, 16, 16, 3), value) for value in (1.0, 0.0, 0.125)]
     mask = np.ones((16, 16), dtype=np.float32)

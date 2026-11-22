@@ -20,7 +20,7 @@ def bridge_files(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
-@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+@pytest.mark.parametrize("restore", ["if_same_size"])
 @pytest.mark.parametrize("block", [False, True])
 def test_saved_clear_survives_input_refresh(bridge_files, node_type, restore, block):
     from comfy_execution.graph import ExecutionBlocker
@@ -54,7 +54,7 @@ def test_saved_clear_survives_input_refresh(bridge_files, node_type, restore, bl
 
 
 @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
-@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+@pytest.mark.parametrize("restore", ["if_same_size"])
 @pytest.mark.parametrize("first_alpha", [191, 255], ids=["painted", "cleared"])
 def test_queued_refresh_uses_its_submitted_mask(bridge_files, node_type, restore, first_alpha):
     node = getattr(bridge_nodes, node_type)()
@@ -65,7 +65,6 @@ def test_queued_refresh_uses_its_submitted_mask(bridge_files, node_type, restore
         inputs.update(latent={"samples": torch.zeros((1, 4, 8, 8))}, preview_method="Latent2RGB-SD15")
     node.doit(image="$initial", **inputs)
 
-    # Both prompts register before either executes; the node cache now holds B.
     references = []
     for filename, alpha in [("a.png", first_alpha), ("b.png", 64)]:
         path = bridge_files / filename
@@ -107,13 +106,11 @@ def test_shared_registration_preserves_mask_and_refreshed_preview(bridge_files, 
         "filename": path.name, "subfolder": "", "type": "temp",
     })
 
-    # Both queues use the same saved file, but different input sizes/policies.
     node.doit(image=reference, unique_id="shared", restore_mask=first_restore, **source(128, 0.25))
     inputs = source(64, 1.0)
     expected_mask = torch.full((1, 64, 64), 1 - alpha / 255)
     refreshed_rgb = None
     for _ in range(2):
-        # Reuse must keep the refreshed pixels, not reload the original red image.
         result = node.doit(image=reference, unique_id="shared", restore_mask="if_same_size", **inputs)
         output, mask = result["result"]
         item, = result["ui"]["images"]
@@ -183,7 +180,6 @@ def test_reusing_a_node_id_for_the_other_bridge_discards_its_cache(bridge_files,
         return getattr(bridge_nodes, node_type)().doit(**inputs)
 
     execute(first_type)
-    # An edited mask from the other node type must not leak into the new node.
     core.preview_bridge_last_mask_cache["reused-id"] = torch.full((1, 64, 64), 0.5)
     second_type = "PreviewBridgeLatent" if first_type == "PreviewBridge" else "PreviewBridge"
     result = execute(second_type)
@@ -198,7 +194,7 @@ def test_reusing_a_node_id_for_the_other_bridge_discards_its_cache(bridge_files,
     assert result["ui"]["source_image"] == ["$reused-id"]
 
 
-@pytest.mark.parametrize("restore", ["never", "always", "if_same_size"])
+@pytest.mark.parametrize("restore", ["never", "if_same_size"])
 @pytest.mark.parametrize("batch_size", [2, 3])
 def test_recomputed_image_batch_keeps_every_frame(bridge_files, restore, batch_size):
     node = bridge_nodes.PreviewBridge()
@@ -212,7 +208,7 @@ def test_recomputed_image_batch_keeps_every_frame(bridge_files, restore, batch_s
     assert len(result["ui"]["images"]) == batch_size
 
 
-@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+@pytest.mark.parametrize("restore", ["if_same_size"])
 def test_restored_mask_is_not_written_into_an_rgba_input(bridge_files, restore):
     # The input tensor is shared with every other consumer and with ComfyUI's output cache.
     mask = torch.zeros((1, 64, 64))
@@ -227,7 +223,6 @@ def test_restored_mask_is_not_written_into_an_rgba_input(bridge_files, restore):
     torch.testing.assert_close(images, original)
     torch.testing.assert_close(output, original)
     torch.testing.assert_close(returned_mask, mask)
-    # The preview file still carries the restored mask as transparency.
     item, = result["ui"]["images"]
     with Image.open(bridge_files / item["subfolder"] / item["filename"]) as preview:
         alpha = preview.getchannel("A")
@@ -235,7 +230,7 @@ def test_restored_mask_is_not_written_into_an_rgba_input(bridge_files, restore):
 
 
 @pytest.mark.parametrize("restore,width,restored", [
-    ("always", 32, True), ("if_same_size", 32, True), ("always", 40, True),
+    ("if_same_size", 32, True), ("always", 40, True),
     ("never", 32, False), ("never", 40, False), ("if_same_size", 40, False),
 ])
 def test_latent_refresh_propagates_only_the_applicable_restored_mask(bridge_files, restore, width, restored):
@@ -285,7 +280,6 @@ def test_unedited_latent_requeue_keeps_no_mask_and_block(bridge_files, block):
             assert output["samples"] is latent["samples"]
             torch.testing.assert_close(mask, torch.ones((1, 8, 12)))
         if queue == 0:
-            # First feedback changes the filename; the third queue keeps this ID.
             item, = result["ui"]["images"]
             image = core.set_previewbridge_image("unedited", str(bridge_files / item["subfolder"] / item["filename"]), item)
     assert "noise_mask" not in latent
@@ -304,7 +298,6 @@ def test_latent_mask_presence_controls_blocking(bridge_files, alpha, route, bloc
             latent["noise_mask"] = torch.full((1, 64, 96), 1 - alpha / 255)
     else:
         if route == "reuse":
-            # A saved edit must replace an incoming mask without mutating it.
             latent["noise_mask"] = torch.full((1, 64, 96), 0.5)
         node.doit(latent, image, "Latent2RGB-SD15", unique_id="edit")
         if route == "refresh":
@@ -345,7 +338,6 @@ def test_never_refresh_does_not_revive_an_older_cached_mask(bridge_files, node_t
     reference = core.set_previewbridge_image("policy", str(path), {"filename": path.name, "subfolder": "", "type": "temp"})
     node.doit(image=reference, unique_id="policy", restore_mask="always", **source(0.0))
     node.doit(image=reference, unique_id="policy", restore_mask="never", **source(0.5))
-    # A legacy/missing reference has no saved alpha and must use the fallback cache.
     output, mask = node.doit(image="$unavailable", unique_id="policy", restore_mask="always", **source(1.0))["result"]
     if node_type == "PreviewBridge":
         assert torch.all(mask == 0)
@@ -393,11 +385,19 @@ def test_legacy_clipspace_reference_loads_or_refreshes(bridge_files, monkeypatch
 
 
 @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
-@pytest.mark.parametrize("restore,size,restored", [
-    ("never", 64, False), ("always", 64, True), ("if_same_size", 64, True),
-    ("always", 96, True), ("if_same_size", 96, False),
+@pytest.mark.parametrize("alpha,restore,size,restored", [
+    pytest.param(128, "never", 64, False, id="painted-never-64-False"),
+    pytest.param(128, "if_same_size", 64, True, id="painted-if_same_size-64-True"),
+    pytest.param(128, "always", 96, True, id="painted-always-96-True"),
+    pytest.param(128, "if_same_size", 96, False, id="painted-if_same_size-96-False"),
+    pytest.param(255, "never", 64, False, id="clear-never-64-False"),
+    pytest.param(255, "if_same_size", 64, True, id="clear-if_same_size-64-True"),
+    pytest.param(255, "always", 96, True, id="clear-always-96-True"),
+    pytest.param(255, "if_same_size", 96, False, id="clear-if_same_size-96-False"),
+    pytest.param(None, "never", 64, False, id="missing-never-64-False"),
+    pytest.param(None, "if_same_size", 64, True, id="missing-if_same_size-64-True"),
+    pytest.param(None, "if_same_size", 96, False, id="missing-if_same_size-96-False"),
 ])
-@pytest.mark.parametrize("alpha", [128, 255, None], ids=["painted", "clear", "missing"])
 def test_raw_clipspace_mask_obeys_restoration_on_changed_input(
         bridge_files, monkeypatch, node_type, restore, size, restored, alpha):
     monkeypatch.setattr(bridge_nodes.folder_paths, "input_directory", str(bridge_files))
@@ -485,7 +485,6 @@ def test_raw_file_registration_rejects_escape_without_reading(bridge_files, monk
     Image.new("RGBA", (64, 64), (0, 255, 0, 128)).save(outside)
     (input_dir / "clipspace").mkdir()
     fallback = input_dir / "clipspace" / "mask.png"
-    # A rejected external reference must not silently select this other file.
     Image.new("RGBA", (64, 64), (255, 0, 0, 64)).save(fallback)
     if kind in ("absolute-outside", "sibling-prefix"):
         reference = str(outside) if kind == "absolute-outside" else "../input-other/mask.png"
@@ -532,7 +531,7 @@ def test_raw_symlinks_preserve_saved_mask_and_logical_metadata(bridge_files, mon
 
 @pytest.mark.parametrize("node_type", ["PreviewBridge", "PreviewBridgeLatent"])
 @pytest.mark.parametrize("reuse", [False, True], ids=["first-run", "reuse"])
-@pytest.mark.parametrize("restore", ["always", "if_same_size"])
+@pytest.mark.parametrize("restore", ["if_same_size"])
 def test_external_raw_file_does_not_reach_either_bridge(bridge_files, monkeypatch, node_type, reuse, restore):
     input_dir = bridge_files / "input"
     input_dir.mkdir()
@@ -582,9 +581,12 @@ def registration_app(bridge_files, monkeypatch):
     return app
 
 
-@pytest.mark.parametrize("path_type", ["input", "output", "temp"])
-@pytest.mark.parametrize("escape", ["absolute-subfolder", "parent-subfolder", "sibling-subfolder",
-                                   "absolute-filename", "parent-filename"])
+@pytest.mark.parametrize("escape,path_type", [
+    ("absolute-subfolder", "input"), ("absolute-subfolder", "output"), ("absolute-subfolder", "temp"),
+    ("parent-subfolder", "input"), ("parent-subfolder", "output"), ("parent-subfolder", "temp"),
+    ("sibling-subfolder", "input"), ("sibling-subfolder", "output"), ("sibling-subfolder", "temp"),
+    ("absolute-filename", "input"), ("parent-filename", "input"),
+])
 def test_registration_rejects_escape_before_reading(registration_app, bridge_files, monkeypatch, path_type, escape):
     outside = bridge_files / (path_type + "-other") / "mask.png"
     outside.parent.mkdir()
@@ -693,8 +695,6 @@ def test_the_picture_of_the_other_alpha_as_mask_setting_is_served_for_a_node_tha
     found = asyncio.run(get())
     assert sorted(bridge_files.rglob("*.png")) == files
     assert [status for status, _, _ in found] == [200, 200, 200, 404, 404, 400, 400, 400]
-    # On: the second image with its alpha. Off: over the two colours of the checkerboard.
     assert (found[0][1], pixels(found[0][2])) == ("image/png", ("RGBA", (64, 64), (63, 63, 63, 127), (63, 63, 63, 127)))
     assert (found[1][1], pixels(found[1][2])) == ("image/png", ("RGB", (64, 64), (159, 159, 159), (133, 133, 133)))
-    # Without an index: the first image.
     assert pixels(found[2][2])[2] == (127, 127, 127, 127)

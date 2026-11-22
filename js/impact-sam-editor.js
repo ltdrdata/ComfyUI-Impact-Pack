@@ -28,7 +28,6 @@ function addMenuHandler(nodeType, cb) {
 	};
 }
 
-// Helper function to convert a data URL to a Blob object
 function dataURLToBlob(dataURL) {
 	const parts = dataURL.split(';base64,');
 	const contentType = parts[0].split(':')[1];
@@ -173,8 +172,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 	setlayout(imgCanvas, maskCanvas, pointsCanvas) {
 		const self = this;
 
-		// If it is specified as relative, using it only as a hidden placeholder for padding is recommended
-		// to prevent anomalies where it exceeds a certain size and goes outside of the window.
 		var placeholder = document.createElement("div");
 		placeholder.style.position = "relative";
 		placeholder.style.height = "50px";
@@ -200,7 +197,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		this.element.appendChild(imgCanvas);
 		this.element.appendChild(maskCanvas);
 		this.element.appendChild(pointsCanvas);
-		this.element.appendChild(placeholder); // must below z-index than bottom_panel to avoid covering button
+		this.element.appendChild(placeholder);
 		this.element.appendChild(bottom_panel);
 		document.body.appendChild(brush);
 		this.brush_size = 5;
@@ -268,9 +265,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			self.imgCtx.clearRect(0, 0, self.imageCanvas.width, self.imageCanvas.height);
 		}
 
-		// The address of what the node shows names its file. A PreviewBridge whose alpha_as_mask was switched shows
-		// the picture of the other setting until it runs again, under an address without a file: there the file
-		// is the one the node holds.
 		const index = ComfyApp.clipspace['selectedIndex'];
 		const shown = ComfyApp.clipspace.imgs[index].src;
 		const file = ComfyApp.clipspace.images?.[index];
@@ -280,7 +274,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		this.load_sam(target_image_path);
 
 		if(!this.is_layout_created) {
-			// layout
 			const imgCanvas = document.createElement('canvas');
 			const maskCanvas = document.createElement('canvas');
 			const pointsCanvas = document.createElement('canvas');
@@ -291,7 +284,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 			this.setlayout(imgCanvas, maskCanvas, pointsCanvas);
 
-			// prepare content
 			this.imgCanvas = imgCanvas;
 			this.maskCanvas = maskCanvas;
 			this.pointsCanvas = pointsCanvas;
@@ -301,7 +293,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 			this.setEventHandler(pointsCanvas);
 			this.is_layout_created = true;
 
-			// replacement of onClose hook since close is not real close
 			const self = this;
 			const observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
@@ -331,7 +322,7 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		this.saveButton.disabled = true;
 
 		this.element.style.display = "block";
-		this.element.style.zIndex = 8888; // NOTE: alert dialog must be high priority.
+		this.element.style.zIndex = 8888;
 	}
 
 	updateBrushPreview(self, event) {
@@ -355,15 +346,12 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 		const self = this;
 
-		// image load
 		const orig_image = new Image();
 		window.removeEventListener("resize", this.resizeHandler);
 		this.resizeHandler = () => {
-			// repositioning
 			imgCanvas.width = window.innerWidth - 250;
 			imgCanvas.height = window.innerHeight - 200;
 
-			// redraw image
 			let drawWidth = orig_image.width;
 			let drawHeight = orig_image.height;
 
@@ -379,7 +367,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 			imgCtx.drawImage(orig_image, 0, 0, drawWidth, drawHeight);
 
-			// update mask
 			let w = (drawWidth * imgCanvas.clientWidth/imgCanvas.width) + "px";
 			let h = (drawHeight * imgCanvas.clientHeight/imgCanvas.height) + "px";
 
@@ -398,7 +385,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 		};
 		window.addEventListener("resize", this.resizeHandler);
 
-		// original image load
 		orig_image.onload = () => self.onLoaded(self);
 		const rgb_url = new URL(target_image_path);
 		rgb_url.searchParams.delete('channel');
@@ -433,11 +419,11 @@ class ImpactSamEditorDialog extends ComfyDialog {
 	static handleKeyDown(event) {
 		const self = ImpactSamEditorDialog.instance;
 		const brush = self.brush;
-		if (event.key === '=') { // positive
+		if (event.key === '=') {
 			brush.style.backgroundColor = "blue";
 			brush.style.outline = "2px solid pink";
 			self.is_positive_mode = true;
-		} else if (event.key === '-') { // negative
+		} else if (event.key === '-') {
 			brush.style.backgroundColor = "red";
 			brush.style.outline = "2px solid skyblue";
 			self.is_positive_mode = false;
@@ -544,10 +530,8 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 			var point = null;
 			if (event.button == 0) {
-				// positive
 				point = [true, originalX, originalY];
 			} else {
-				// negative
 				point = [false, originalX, originalY];
 			}
 
@@ -573,7 +557,6 @@ class ImpactSamEditorDialog extends ComfyDialog {
 
 		const save_data = save_ctx.getImageData(0, 0, save_canvas.width, save_canvas.height);
 
-		// refine mask image
 		for (let i = 0; i < save_data.data.length; i += 4) {
 			if(save_data.data[i]) {
 				save_data.data[i+3] = 0;

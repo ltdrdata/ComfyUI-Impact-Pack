@@ -1,4 +1,3 @@
-"""Unmodified hook tutorials from extension-tutorials ca31a3b."""
 import hashlib
 import json
 import os

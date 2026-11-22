@@ -1,5 +1,3 @@
-"""Shared inputs and independent expected text for the real-model checks."""
-
 CHECKPOINT = "v1-5-pruned-emaonly-fp16.safetensors"
 LORAS = ["SD1.5/etc/add_detail", "SD1.5/etc/detailmaker"]
 FILENAMES = ["add_detail", "detailmaker"]

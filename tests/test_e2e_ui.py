@@ -1,4 +1,3 @@
-"""Browser cleanup regressions; requires Chrome, but no ComfyUI server."""
 from argparse import Namespace
 from zipfile import ZipFile
 

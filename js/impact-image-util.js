@@ -91,7 +91,7 @@ app.registerExtension({
 								image.src = api.apiURL('/view'+params);
 							}
 
-							this._img = [new Image()]; // placeholder
+							this._img = [new Image()];
 							image.onload = function(v) {
 								set_img_act([image]);
 							};

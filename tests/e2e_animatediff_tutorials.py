@@ -45,8 +45,6 @@ def main():
         for node in workflow["nodes"]:
             if node["type"] not in TYPES:
                 continue
-            # Names/order and defaults come from the unchanged trusted catalog;
-            # saved values come from the original PNG, never the current runtime.
             widgets = [dict(widget) for widget in catalog[node["type"]]]
             saved = node["widgets_values"]
             assert len(saved) <= len(widgets)
@@ -68,7 +66,6 @@ def main():
                 missing = ui.app.evaluate("""app => app.graph._nodes.filter(node =>
                     !LiteGraph.registered_node_types[node.type]).map(node => node.type)""")
                 assert not TYPES.intersection(missing)
-                # Export through the native UI; no hand-built workflow JSON.
                 exported = args.artifacts / "exported.json"
                 export_workflow(ui, exported)
                 ui.new_workflow()
@@ -77,7 +74,6 @@ def main():
                 report = dict(source=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
                               restore_by_name=restore_by_name, widgets=expected, missing_external_nodes=missing,
                               png_import=True, native_export_reload=True, inference=False)
-            # Session exit also checks browser errors and trace/close failures.
             result_path.write_text(json.dumps(report, indent=2) + "\n")
             print(f"PASS: {label}, {len(expected)} Impact nodes, original PNG and native JSON reload", flush=True)
 

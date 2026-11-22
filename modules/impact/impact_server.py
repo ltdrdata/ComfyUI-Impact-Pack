@@ -66,7 +66,6 @@ async def sam_prepare(request):
 
     with sam_lock:
         if last_prepare_data is not None and last_prepare_data == data:
-            # already loaded: skip -- prevent redundant loading
             return web.Response(status=200)
 
         model_name = 'sam_vit_b_01ec64.pth'
@@ -364,10 +363,8 @@ def onprompt_for_switch(json_data):
 
         cls = v['class_type']
         if cls == 'ImpactInversedSwitch':
-            # if 'sel_mode' is 'select_on_prompt'
             if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode'] and 'select' in v['inputs']:
                 select_input = v['inputs']['select']
-                # if 'select' is converted input
                 if isinstance(select_input, list) and len(select_input) == 2:
                     input_node = json_data['prompt'][select_input[0]]
                     if input_node['class_type'] == 'ImpactInt' and 'inputs' in input_node and 'value' in input_node['inputs']:
@@ -378,10 +375,8 @@ def onprompt_for_switch(json_data):
                     inversed_switch_info[k] = select_input
 
         elif cls in ['ImpactSwitch', 'LatentSwitch', 'SEGSSwitch', 'ImpactMakeImageList']:
-            # if 'sel_mode' is 'select_on_prompt'
             if 'sel_mode' in v['inputs'] and v['inputs']['sel_mode'] and 'select' in v['inputs']:
                 select_input = v['inputs']['select']
-                # if 'select' is converted input
                 if isinstance(select_input, list) and len(select_input) == 2:
                     input_node = json_data['prompt'][select_input[0]]
                     if input_node['class_type'] == 'ImpactInt' and 'inputs' in input_node and 'value' in input_node['inputs']:
@@ -395,7 +390,6 @@ def onprompt_for_switch(json_data):
                     onprompt_switch_info[k] = select_input
 
                 if k in onprompt_switch_info and f'input{onprompt_switch_info[k]}' not in v['inputs']:
-                    # disconnect output
                     disabled_switch.add(k)
 
         elif cls == 'ImpactConditionalBranchSelMode':
@@ -443,7 +437,6 @@ def onprompt_for_switch(json_data):
         for kk in disable_targets:
             del v['inputs'][kk]
 
-    # inversed_switch - select out of range
     for target in unused_inversed_switches:
         json_data['prompt'][target]['inputs'].pop('input', None)
 
@@ -459,7 +452,6 @@ def onprompt_for_pickers(json_data):
         if cls == 'ImpactSEGSPicker':
             detected_pickers.add(k)
 
-    # garbage collection
     keys_to_remove = [key for key in segs_picker_map if key not in detected_pickers]
     for key in keys_to_remove:
         del segs_picker_map[key]
@@ -470,12 +462,10 @@ def gc_preview_bridge_cache(json_data):
 
     for key in list(core.preview_bridge_cache.keys()):
         if key not in prompt_keys:
-            # print(f"key deleted [PB]: {key}")
             del core.preview_bridge_cache[key]
 
     for key in list(core.preview_bridge_last_mask_cache.keys()):
         if key not in prompt_keys:
-            # print(f"key deleted [PB_last_mask]: {key}")
             del core.preview_bridge_last_mask_cache[key]
 
 
@@ -531,7 +521,6 @@ def find_input_value(input_node, prompt, input_type=int, input_keys=('value',)):
 
 
 def _constant_text(value, prompt):
-    """Read literals and direct core string constants without executing upstream nodes."""
     if isinstance(value, str):
         return value
     if not is_link(value) or type(value[1]) is not int or value[1] != 0:
@@ -551,7 +540,6 @@ def onprompt_populate_wildcards(json_data):
         if 'class_type' in v and (v['class_type'] == 'ImpactWildcardEncode' or v['class_type'] == 'ImpactWildcardProcessor'):
             inputs = v['inputs']
 
-            # legacy adapter
             if isinstance(inputs['mode'], bool):
                 if inputs['mode']:
                     new_mode = 'populate'
@@ -590,7 +578,6 @@ def onprompt_populate_wildcards(json_data):
                 PromptServer.instance.send_sync("impact-node-feedback", {"node_id": k, "widget_name": "populated_text", "type": "STRING", "value": inputs['populated_text']})
                 updated_widget_values[k] = inputs['populated_text']
 
-            # Static text can share cache entries; preserve seeds for syntax and unknown outputs.
             populated_text = _constant_text(inputs['populated_text'], prompt)
             if isinstance(inputs['seed'], int) and populated_text is not None:
                 if impact.wildcards.is_static_text(populated_text):
@@ -656,7 +643,7 @@ def onprompt(json_data):
         return json_data
 
     try:
-        onprompt_for_remote(json_data)  # NOTE: top priority
+        onprompt_for_remote(json_data)
         onprompt_for_switch(json_data)
         onprompt_for_pickers(json_data)
         onprompt_populate_wildcards(json_data)

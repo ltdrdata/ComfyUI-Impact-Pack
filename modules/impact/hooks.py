@@ -14,13 +14,11 @@ import logging
 
 
 def get_detailer_options(hook):
-    # Third-party hooks written before advanced options remain valid.
     getter = getattr(hook, "get_detailer_options", None)
     return getter() if getter is not None else {}
 
 
 def get_detailer_detection_hook(hook):
-    # Remove option-only branches without changing an existing hook's policy.
     if type(hook) is AdvancedOptionsDetailerHook:
         return None
     if type(hook) is DetailerHookCombine:
@@ -144,12 +142,10 @@ class DetailerHookCombine(PixelKSampleHookCombine):
         sampling_hooks = []
         while pending:
             hook = pending.pop()
-            # Subclasses own their sampling policy; do not bypass their method.
             if type(hook) is DetailerHookCombine:
                 pending.extend((hook.hook2, hook.hook1))
             elif type(hook) is not AdvancedOptionsDetailerHook:
                 sampling_hooks.append(hook)
-        # Options carry settings; they must not turn off a Lama hook's skip.
         return bool(sampling_hooks) and all(hook.get_skip_sampling() for hook in sampling_hooks)
     
     def should_retry_patch(self, patch):
@@ -250,15 +246,6 @@ class CustomSamplerDetailerHookProvider(DetailerHook):
         return self.sampler
 
 
-# class CustomNoiseDetailerHookProvider(DetailerHook):
-#     def __init__(self, noise):
-#         super().__init__()
-#         self.noise = noise
-#
-#     def get_custom_noise(self, seed, noise, is_start):
-#         return self.noise
-
-
 class VariationNoiseDetailerHookProvider(DetailerHook):
     def __init__(self, variation_seed, variation_strength):
         super().__init__()
@@ -273,9 +260,8 @@ class VariationNoiseDetailerHookProvider(DetailerHook):
 
         mixed_noise = ((1 - self.variation_strength) * noise + self.variation_strength * noise_2nd)
 
-        # NOTE: Since the variance of the Gaussian noise in mixed_noise has changed, it must be corrected through scaling.
         scale_factor = math.sqrt((1 - self.variation_strength) ** 2 + self.variation_strength ** 2)
-        corrected_noise = mixed_noise / scale_factor  # Scale the noise to maintain variance of 1
+        corrected_noise = mixed_noise / scale_factor
 
         return corrected_noise, True
 
@@ -291,7 +277,6 @@ class SimpleDetailerDenoiseSchedulerHook(DetailerHook):
             gap = self.target_denoise - denoise
             current_denoise = denoise + gap * progress
         else:
-            # ignore hook if total cycle <= 1
             current_denoise = denoise
 
         return model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent, current_denoise
@@ -326,11 +311,9 @@ class CoreMLHook(DetailerHook):
         crop_ratio = crop_w/crop_h
         target_ratio = self.w/self.h
         if crop_ratio < target_ratio:
-            # shrink height
             top_gap = by1 - y1
             bottom_gap = y2 - by2
 
-            # what is cut comes from above and below the box by the room on each side, so a box in the middle stays there
             gap_ratio = top_gap / (top_gap + bottom_gap) if top_gap + bottom_gap > 0 else 0.5
 
             target_height = 1/target_ratio*crop_w
@@ -341,7 +324,6 @@ class CoreMLHook(DetailerHook):
             crop_region = x1, new_y1, x2, new_y2
 
         elif crop_ratio > target_ratio:
-            # shrink width
             left_gap = bx1 - x1
             right_gap = x2 - bx2
 
@@ -360,7 +342,6 @@ class CoreMLHook(DetailerHook):
         return self.w, self.h
 
 
-# REQUIREMENTS: BlenderNeko/ComfyUI Noise
 class InjectNoiseHook(PixelKSampleHook):
     def __init__(self, source, seed, start_strength, end_strength):
         super().__init__()
@@ -385,7 +366,6 @@ class InjectNoiseHook(PixelKSampleHook):
 
         noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
 
-        # inj noise
         mask = None
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
@@ -425,7 +405,6 @@ class UnsamplerHook(PixelKSampleHook):
 
         logging.info(f"[Impact Pack] UnsamplerHook: end_at_step = {end_at_step}")
 
-        # inj noise
         mask = None
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
@@ -465,7 +444,6 @@ class InjectNoiseHookForDetailer(DetailerHook):
 
         noise = NoisyLatentImage().create_noisy_latents(self.source, seed, size[3] * 8, size[2] * 8, size[0])[0]
 
-        # inj noise
         mask = None
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
@@ -510,7 +488,6 @@ class UnsamplerDetailerHook(DetailerHook):
         end_at_step = self.start_end_at_step + (self.end_end_at_step - self.start_end_at_step) * cur_step / total_step
         end_at_step = int(end_at_step)
 
-        # inj noise
         mask = None
         if 'noise_mask' in samples:
             mask = samples['noise_mask']
@@ -625,15 +602,13 @@ class BlackPatchRetryHook(DetailerHook):
         self.var_thresh = var_thresh
 
     def should_retry_patch(self, cropped_region):
-        # remove the first dimension (batch_size)
         if cropped_region.ndim == 4:
             assert cropped_region.shape[0] == 1
             cropped_region = cropped_region.squeeze(0)
         
-        # turn image to grayscape
         if cropped_region.ndim == 3:
             assert cropped_region.shape[-1] in [1, 3]
-            cropped_region = cropped_region.mean(axis=-1)  # simple average grayscale
+            cropped_region = cropped_region.mean(axis=-1)
 
         mean = cropped_region.mean()
         var = cropped_region.var()

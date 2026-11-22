@@ -1,4 +1,3 @@
-"""Stub dependencies unused by wildcard parsing; pytest.ini handles import paths."""
 import sys
 import types
 from unittest.mock import Mock

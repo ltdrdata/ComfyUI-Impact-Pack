@@ -1,10 +1,3 @@
-"""Existing hook contracts derived from the original tutorials.
-
-Uses real Impact/ComfyUI hooks, image operations and Detailer loops on CPU.
-Only sampling, VAE inference and external noise/Lama backends are controlled.
-Run separately from wildcard dependency stubs with IMPACT_COMFY_ROOT and
-IMPACT_TUTORIALS_DIR set.
-"""
 import asyncio
 import os
 from pathlib import Path
@@ -30,7 +23,7 @@ def runtime():
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None,
             send_sync=Mock()), raising=False)
-        from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
+        from impact import impact_server  # noqa: F401
         from impact import impact_pack, core, hooks, hook_nodes
         assert Path(core.__file__).resolve().parents[2] == Path(__file__).resolve().parents[1]
         yield SimpleNamespace(pack=impact_pack, core=core, hooks=hooks, providers=hook_nodes,
@@ -85,7 +78,6 @@ def test_tutorial_denoise_schedule_reaches_sampler(runtime, state, cycle, combin
     assert state.vae.encode.call_count == state.vae.decode.call_count == 1
     assert output.shape == (1, 64, 64, 3) and control is None
     torch.testing.assert_close(output, torch.full_like(output, int(cycle * .125 * 255) / 255))
-    # Reusing a hook on another image must reset cycle progress.
     state.sampler.reset_mock()
     runtime.core.enhance_detail(**dict(state.arguments, detailer_hook=hook, cycle=1))
     assert state.sampler.call_args.args[9] == .5
@@ -178,7 +170,7 @@ def test_each_seg_is_detailed_with_the_prompt_of_its_label(runtime, state, monke
     given = {}
 
     def enhance_detail(image, *args, wildcard_opt=None, **kwargs):
-        given[args[6]] = wildcard_opt   # the bbox of the SEG -> the prompt it is detailed with
+        given[args[6]] = wildcard_opt
         return image, None
 
     monkeypatch.setattr(runtime.core, "enhance_detail", enhance_detail)

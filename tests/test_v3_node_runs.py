@@ -1,8 +1,3 @@
-"""Nodes rewritten on the V3 schema return what they returned as V1 nodes.
-
-`v1_node_runs.json` holds a summary of what each of them returned for the inputs of `v1_node_run_cases.py` while it was
-a V1 node, through ComfyUI's executor and by `Node().doit(...)`. Run with IMPACT_COMFY_ROOT set.
-"""
 import json
 import os
 from pathlib import Path
@@ -28,7 +23,7 @@ def runtime():
         from server import PromptServer
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None), raising=False)
-        from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
+        from impact import impact_server  # noqa: F401
         from impact import core, hooks, util_nodes
         with recorded.without_models(core, util_nodes):
             yield SimpleNamespace(classes=recorded.node_classes(ROOT), cases=recorded.cases(core, hooks), execution=execution)

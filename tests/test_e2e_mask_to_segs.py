@@ -1,8 +1,3 @@
-"""Bicubic mask execution and native workflow restoration through Chrome.
-
-Use an isolated ComfyUI server with Impact Pack; no models are required.
-The reference branch uses core MaskComposite to clamp the same resized mask.
-"""
 from argparse import Namespace
 import json
 import os

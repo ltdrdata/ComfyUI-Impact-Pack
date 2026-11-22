@@ -233,7 +233,6 @@ class SimpleDetectorForEach:
             raise Exception('[Impact Pack] ERROR: SimpleDetectorForEach does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
 
         if segm_detector_opt is not None and hasattr(segm_detector_opt, 'bbox_detector') and segm_detector_opt.bbox_detector == bbox_detector:
-            # Better segm support for YOLO-World detector
             segs = segm_detector_opt.detect(image, sub_threshold, sub_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
         else:
             segs = bbox_detector.detect(image, bbox_threshold, bbox_dilation, crop_factor, drop_size, detailer_hook=detailer_hook)
@@ -304,29 +303,21 @@ class SimpleDetectorForEachPipe:
                                             detailer_hook=detailer_hook)
 
 def track_video_segs(tracker, bbox_detector, image_frames, bbox_threshold, crop_factor, drop_size, cutoff):
-    """SEGS of the objects that the detector finds in the first frame, each with its mask in every frame.
-    A pixel is in a mask where the tracker gives at least `cutoff`."""
-    # ---- Detect bboxes ----
     segs = bbox_detector.detect(image_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
 
-      # ---- If no detections, try reversed frames before giving up ----
     if len(segs[1]) == 0:
         reversed_frames = torch.flip(image_frames, dims=[0])
         segs_rev = bbox_detector.detect(reversed_frames[0].unsqueeze(0), bbox_threshold, 0, 0, drop_size)
 
         if len(segs_rev[1]) == 0:
-            # No Bboxes when reversed -> Give up
             h, w = image_frames.shape[1:3]
             return (h, w), []
             
-        # ---- Predict masks in reversed mode ----
         segs_masks = tracker.predict_video_segs(reversed_frames, segs_rev)
 
-        # segs_masks wieder umdrehen, damit sie mit Originalframes matchen
         for k in segs_masks.keys():
             segs_masks[k] = torch.flip(segs_masks[k], dims=[0])
     else:
-        # ---- Predict masks if BBOXES were found in forward pass----
         segs_masks = tracker.predict_video_segs(image_frames, segs)
 
     def get_whole_merged_mask(all_masks):
@@ -394,7 +385,6 @@ class SAM2VideoDetectorSEGS:
 
     @staticmethod
     def doit(bbox_detector, sam2_model, image_frames, bbox_threshold, sam2_threshold, crop_factor, drop_size):
-        # ---- Check SAM2 model ----
         if not isinstance(sam2_model, core.SAM2Wrapper):
             logging.error("[Impact Pack] To use the SAM2VideoDetectorSEGS node, a valid SAM2 model must be provided as input to `sam2_model`.")
             raise Exception("To use the SAM2VideoDetectorSEGS node, a SAM2 model must be provided as input to `sam2_model`.")
@@ -427,7 +417,6 @@ class SAM3VideoDetectorSEGS(ImpactNode):
         if not isinstance(tracker, core.SAM3Wrapper):
             raise Exception("To use the SAM3 Video Detector (SEGS) node, a SAM3 model must be provided as input to `sam3_model`.")
 
-        # SAM3Wrapper returns masks of 0 and 1, where SAM2Wrapper returns logits
         return io.NodeOutput(track_video_segs(tracker, bbox_detector, image_frames, bbox_threshold, crop_factor, drop_size, 0.5))
 
 
@@ -471,7 +460,6 @@ class SimpleDetectorForAnimateDiff:
         h = image_frames.shape[1]
         w = image_frames.shape[2]
 
-        # gather segs for all frames
         segs_by_frames = []
         for image in image_frames:
             image = image.unsqueeze(0)
@@ -578,14 +566,13 @@ class SimpleDetectorForAnimateDiff:
 
             return pivot_segs[0], new_segs
 
-        # create result mask
         if masking_mode == "Pivot SEGS":
             return (get_pivot_segs(), )
 
         elif masking_mode == "Combine neighboring frames":
             return (get_segs(merged_neighboring=True), )
 
-        else: # elif masking_mode == "Don't combine":
+        else:
             return (get_segs(merged_neighboring=False), )
 
     def doit(self, bbox_detector, image_frames, bbox_threshold, bbox_dilation, crop_factor, drop_size,

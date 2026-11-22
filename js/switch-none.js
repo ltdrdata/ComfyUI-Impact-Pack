@@ -1,12 +1,9 @@
 import { api } from "../../scripts/api.js";
 import { app } from "../../scripts/app.js";
 
-// The select of each Switch (Any) that returned None when it last ran, by execution id.
 // The server keeps the None of that run in its cache, so a later prompt can fail on it without the switch running again.
 const gaveNone = new Map();
 
-// Marks of the last failed run: { node, bubble }. A mark is an orange frame on the element the Nodes 2.0 renderer
-// creates for the node, and a bubble above it. Selection is the user's own and the red frame is the error of ComfyUI.
 let marks = [];
 let layer;
 const frames = document.createElement("style");
@@ -21,8 +18,6 @@ looks.textContent = `
     .impact-none-bubble button:hover { background-color: #0005; }`;
 document.head.append(looks, frames);
 
-// A bubble follows its node while the graph is moved and zoomed. A node id is only unique in its graph, so a mark
-// shows only while its graph is open.
 function place() {
     const area = layer.getBoundingClientRect();
     const framed = [];
@@ -95,12 +90,8 @@ api.addEventListener("execution_error", async ({ detail }) => {
         const source = output[detail.node_id]?.inputs?.[name];
         if (!Array.isArray(source) || output[source[0]]?.class_type !== "ImpactSwitch") continue;
         const inputs = output[source[0]].inputs;
-        // After a reload of the page nothing is remembered. A select that is a widget value still tells.
         const select = gaveNone.get(String(source[0])) ?? (Number.isInteger(inputs.select) ? inputs.select : undefined);
-        // Only a None of a known select is reported.
         if (select === undefined) continue;
-        // The switch is marked, and the node that gave it the None when the selected input is linked.
-        // A bubble says what its node did. Why the other node failed is not known here.
         const given = inputs[`input${select}`];
         const found = Array.isArray(given)
             ? [[source[0], `passed on the None of input${select}`], [given[0], "gave None to the Switch (Any)"]]

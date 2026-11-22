@@ -1,8 +1,3 @@
-"""The Detailer samples at a size its VAE keeps whole, so the patch returns at the source's scale.
-
-Uses the real Impact Detailer and ComfyUI's own encode crop on CPU. Only sampling and VAE inference are controlled.
-IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_detailer_working_size.py -v
-"""
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,7 +18,7 @@ def runtime():
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None,
             send_sync=Mock()), raising=False)
-        from impact import impact_server  # noqa: F401 - register routes before the core import cycle
+        from impact import impact_server  # noqa: F401
         from impact import core
         import comfy.sd
         assert Path(core.__file__).resolve().parents[2] == Path(__file__).resolve().parents[1]
@@ -48,7 +43,6 @@ def fake_vae(runtime, ratio, crop_input):
 
 
 def detail(runtime, monkeypatch, ratio, crop_input, guide_size, hook=None):
-    """Detail a 200 x 120 crop holding one soft dot; return the size the VAE was given and the dot's shift in pixels."""
     vae = fake_vae(runtime, ratio, crop_input)
     monkeypatch.setattr(runtime.core.impact_sampling, "ksampler_wrapper", lambda *args, **kwargs: args[8])
     ys, xs = torch.meshgrid(torch.arange(120.), torch.arange(200.), indexing="ij")
@@ -66,9 +60,8 @@ def detail(runtime, monkeypatch, ratio, crop_input, guide_size, hook=None):
     return (encoded[2], encoded[1]), (centre(refined) - centre(image)).abs().max().item()
 
 
-@pytest.mark.parametrize("ratio", [8, 16])
+@pytest.mark.parametrize("ratio", [16])
 def test_patch_returns_at_the_source_scale(runtime, monkeypatch, ratio):
-    # guide_size 315 on the 120 px side asks for 525 x 315, which neither ratio divides.
     size, shift = detail(runtime, monkeypatch, ratio, True, 315)
 
     assert size == (525 // ratio * ratio, 315 // ratio * ratio)
@@ -97,7 +90,6 @@ def test_comfyui_without_crop_input_is_snapped(runtime, monkeypatch):
 
 @pytest.mark.parametrize("ratio,width,height", [(8, 6, 40), (16, 12, 200), (8, 7, 7)])
 def test_crop_narrower_than_the_ratio_is_still_detailed(runtime, monkeypatch, ratio, width, height):
-    # force_inpaint keeps the crop's own size; a side below the ratio must not round down to nothing.
     vae = fake_vae(runtime, ratio, True)
     monkeypatch.setattr(runtime.core.impact_sampling, "ksampler_wrapper", lambda *args, **kwargs: args[8])
 

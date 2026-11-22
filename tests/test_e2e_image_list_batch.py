@@ -1,4 +1,3 @@
-"""Image list batching through native UI creation, execution and workflow reload."""
 import json
 
 import pytest

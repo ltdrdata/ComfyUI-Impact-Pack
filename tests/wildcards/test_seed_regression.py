@@ -1,4 +1,3 @@
-"""Wildcard seed compatibility and isolation from Python's shared RNG."""
 from concurrent.futures import ThreadPoolExecutor
 import random
 import threading
@@ -72,7 +71,6 @@ def test_concurrent_random_draws_are_preserved(monkeypatch, seed):
         assert resume.wait(5), "Concurrent consumer did not release wildcard lookup"
         return get_wildcard_dict()
 
-    # Hold expansion at its lookup boundary while another thread consumes RNG.
     monkeypatch.setattr(wc, "get_wildcard_dict", paused_lookup)
     random.seed(1224)
     reference = random.Random(1224)

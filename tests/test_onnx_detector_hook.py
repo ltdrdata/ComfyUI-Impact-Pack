@@ -18,7 +18,6 @@ def runtime():
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None), raising=False)
         from impact import impact_server  # noqa: F401
         from impact import core, hooks, impact_onnx
-        # What the model finds in the picture: two objects over the threshold and one under it.
         found = np.array([3, 7, 5], dtype=np.int32), np.array([0.9, 0.6, 0.2], dtype=np.float32), np.array([[20, 30, 60, 50], [100, 10, 140, 70], [0, 0, 30, 30]], dtype=np.uint32)
         patch.setattr(impact_onnx, "onnx_inference", lambda image, onnx_model: found, raising=False)
         yield SimpleNamespace(

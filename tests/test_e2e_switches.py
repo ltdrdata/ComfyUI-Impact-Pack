@@ -1,7 +1,3 @@
-"""Chrome E2E for Switch/Combine workflow loading and interactive links.
-
-Requires a running ComfyUI server with Impact Pack. No models are needed.
-"""
 from argparse import Namespace
 import json
 import os
@@ -210,8 +206,6 @@ def test_inversed_switch_keeps_other_outputs_when_reroute_disconnects_during_loa
                    inputs=[{"name": "", "type": "*", "link": 2}],
                    outputs=[{"name": "", "type": "STRING", "links": None}])
     expected = fixture_slots(workflow)
-    # Impact Pack rejects Reroute links, including links saved by older frontends.
-    # Disconnecting output1 during configure must leave output2/output3 in place.
     expected["links"] = [link for link in expected["links"] if link[0] != 2]
     expected["nodes"]["10"]["outputs"][0] = []
     expected["nodes"]["20"]["inputs"][0]["link"] = None
@@ -264,8 +258,6 @@ def test_inversed_switch_branches_rejoin(ui, node_type, select_on_prompt):
         for index in (1, 2, 3):
             prompt[f"side{index}"] = {"class_type": "PreviewImage", "inputs": {"images": ["inverse", index - 1]}}
     else:
-        # Execution mode accepts an INT computed by an upstream node, not just
-        # the static ImpactInt/Primitive selectors supported by prompt mode.
         prompt["choice"] = prompt.pop("select")
         prompt["selector_image"] = {"class_type": "EmptyImage", "inputs": {
             "width": 16, "height": 16, "batch_size": ["choice", 0], "color": 0}}
@@ -293,7 +285,6 @@ def test_inversed_switch_branches_rejoin(ui, node_type, select_on_prompt):
             expected[f"side{value}"] = (255, 0, 0)
             executed_prompt = entry["prompt"][2]
             for index in (1, 2, 3):
-                # Every consumer must retain only the selected output, regardless of node order.
                 link = ["inverse", index - 1] if index == value else None
                 assert executed_prompt[f"branch{index}"]["inputs"].get("image") == link
                 assert executed_prompt[f"side{index}"]["inputs"].get("images") == link
@@ -329,7 +320,6 @@ def test_switch_does_not_execute_unselected_input(ui, select_on_prompt):
     browser.load_workflow({"name": "unselected-input-saved.json", "mimeType": "application/json",
                            "buffer": json.dumps(saved).encode()}, len(prompt))
     assert text_outputs(browser) == {"preview": ["7"]}
-    # Prove the unselected branch really would fail if it were evaluated.
     browser.set_number("ImpactInt", "value", 2)
     with pytest.raises(AssertionError, match="invalid literal for int"):
         browser.run()
@@ -485,7 +475,6 @@ def test_mask_batch_preserves_patterns_and_order(ui, sizes, crops):
             prefix: {"class_type": "ImageToMask", "inputs": {"image": [f"{prefix}_batch", 0], "channel": "red"}},
         })
         inputs[f"mask{index}"] = [prefix, 0]
-        # Explicit crop boxes are independent of MakeMaskBatch's resizing code.
         for background, foreground in ((0, value), (255, 1 - value)):
             image = Image.new("L", (width, height), background)
             image.paste(int(foreground * 255), (x, y, x + patch_width, y + patch_height))

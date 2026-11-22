@@ -1,4 +1,3 @@
-"""Legacy SAM compatibility on a frontend without the ClipspaceDialog export."""
 import io
 import json
 import os
@@ -85,7 +84,6 @@ def clipspace_state(browser):
 
 
 def widgets(browser):
-    # SAM updates LoadImage. Output preview widgets are recreated only on execution.
     return browser.app.evaluate("""app => app.graph._nodes.filter(node => node.type === 'LoadImage').map(node => ({
         id: node.id, type: node.type,
         widgets: (node.widgets ?? []).map(widget => ({name: widget.name, value: widget.value ?? null}))

@@ -71,7 +71,6 @@ def main():
 
         def test_original_lbw_vector_and_strengths(self):
             model, clip, inputs = original("lbw")
-            # Explicit expanded vector is independent of Impact's A/B parser.
             reference = LoraLoaderBlockWeight().doit(
                 model, clip, "SD1.5/cloth/2b leotardV2.safetensors", 1.0, 1.0,
                 False, 0, 1.0, 1.0, "", "0,0,0,0,0,0,0,2,2,1.5,1.5,0,0,0,0,0,0")[:2]
@@ -81,8 +80,6 @@ def main():
 
         def test_sdxl_seed_changes_selected_lora_and_downstream_clip(self):
             model, clip, inputs = original("styler")
-            # Trusted Main selections for the original seven-way multiline
-            # source. Different seeds must change actual LoRA patches too.
             for seed, name, lora in ((3, "D.VA", "SDXL/person/d.va_xl_v1"),
                                      (2, "chunli", "SDXL/person/chun-li_xl_v1")):
                 with self.subTest(seed=seed):

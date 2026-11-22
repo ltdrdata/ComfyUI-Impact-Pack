@@ -137,18 +137,6 @@ function refreshPreview(event) {
 api.addEventListener("impact-preview", refreshPreview);
 
 
-// ============================================================================
-// MaskRectArea Shared Utilities
-// ============================================================================
-
-/**
- * Reads a numeric value from a connected link by inspecting the origin node widget.
- * More reliable than getInputData() in ComfyUI's frontend execution model.
- *
- * @param {LGraphNode} node - LiteGraph node instance
- * @param {string} inputName - Name of the input to read
- * @returns {number|null} The numeric value or null if not available
- */
 export function readLinkedNumber(node, inputName) {
     try {
         if (!node || !node.graph || !Array.isArray(node.inputs)) {
@@ -181,13 +169,6 @@ export function readLinkedNumber(node, inputName) {
     }
 }
 
-/**
- * Generates a color based on percentage using HSL color space.
- *
- * @param {number} percent - Value between 0 and 1
- * @param {string} alpha - Hex alpha value (e.g., "ff", "80")
- * @returns {string} Hex color string with alpha (e.g., "#ff8040ff")
- */
 export function getDrawColor(percent, alpha) {
     let h = 360 * percent;
     let s = 50;
@@ -202,28 +183,16 @@ export function getDrawColor(percent, alpha) {
     return `#${f(0)}${f(8)}${f(4)}${alpha}`;
 }
 
-/**
- * Computes and adjusts canvas size for preview widgets.
- *
- * @param {LGraphNode} node - LiteGraph node instance
- * @param {[number, number]} size - [width, height] array
- * @param {number} minHeight - Minimum canvas height (REQUIRED)
- * @param {number} minWidth - Minimum canvas width (REQUIRED)
- * @returns {void}
- */
 export function computeCanvasSize(node, size, minHeight, minWidth) {
-    // Validate required parameters
     if (typeof minHeight !== 'number' || typeof minWidth !== 'number') {
         console.warn('[computeCanvasSize] minHeight and minWidth are required parameters');
         return;
     }
 
-    // Null safety check for widgets array
     if (!node.widgets?.length || node.widgets[0].last_y == null) {
         return;
     }
 
-    // LiteGraph global availability check
     const NODE_WIDGET_HEIGHT = (typeof LiteGraph !== 'undefined' && LiteGraph.NODE_WIDGET_HEIGHT)
         ? LiteGraph.NODE_WIDGET_HEIGHT
         : 20;
@@ -231,7 +200,6 @@ export function computeCanvasSize(node, size, minHeight, minWidth) {
     let y = node.widgets[0].last_y + 5;
     let freeSpace = size[1] - y;
 
-    // Compute the height of all non-customCanvas widgets
     let widgetHeight = 0;
     for (let i = 0; i < node.widgets.length; i++) {
         const w = node.widgets[i];
@@ -244,28 +212,23 @@ export function computeCanvasSize(node, size, minHeight, minWidth) {
         }
     }
 
-    // Ensure there is enough vertical space
     freeSpace -= widgetHeight;
 
-    // Clamp minimum canvas height
     if (freeSpace < minHeight) {
         freeSpace = minHeight;
     }
 
-    // Allow both grow and shrink to fit content
     const targetHeight = y + widgetHeight + freeSpace;
     if (node.size[1] !== targetHeight) {
         node.size[1] = targetHeight;
         node.graph.setDirtyCanvas(true);
     }
 
-    // Ensure the node width meets the minimum width requirement
     if (node.size[0] < minWidth) {
         node.size[0] = minWidth;
         node.graph.setDirtyCanvas(true);
     }
 
-    // Position each of the widgets
     for (const w of node.widgets) {
         w.y = y;
         if (w.type === "customCanvas") {

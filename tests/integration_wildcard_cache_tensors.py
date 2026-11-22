@@ -18,7 +18,6 @@ from integration_lora_wildcard_tensors import assert_lora_patches_equal
 
 
 def runtime(comfy_root):
-    """Use real ComfyUI on CPU; substitute only unused HTTP registration/feedback."""
     root = Path(__file__).resolve().parents[1]
     sys.path[:0] = [str(comfy_root.resolve()), str(root / "modules")]
     from comfy.cli_args import args as comfy_args

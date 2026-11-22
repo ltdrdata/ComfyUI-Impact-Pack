@@ -1,4 +1,3 @@
-"""Configuration regressions without importing the ComfyUI server."""
 import logging
 from pathlib import Path
 
@@ -51,7 +50,6 @@ def test_unreadable_config_reports_fallback(tmp_path, monkeypatch, caplog, conte
 
 
 def test_missing_config_is_created_with_the_defaults(tmp_path, monkeypatch, caplog):
-    """A new installation has no impact-pack.ini (#1253)."""
     path = tmp_path / "impact-pack.ini"
     monkeypatch.setattr(config, "config_path", str(path))
     monkeypatch.setattr(config, "cached_config", None)

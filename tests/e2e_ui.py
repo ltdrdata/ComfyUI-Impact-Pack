@@ -1,8 +1,3 @@
-"""Shared Chrome UI interactions for the standalone E2E scripts.
-
-Graph inspection is read-only. Nodes, widgets, links, workflow loading, and
-execution are changed through browser input events, never app/graph API calls.
-"""
 import argparse
 import base64
 from contextlib import contextmanager

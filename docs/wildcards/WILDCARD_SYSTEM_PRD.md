@@ -416,7 +416,6 @@ wildcard_cache_limit_mb = 50
 
 ### Technical Documentation
 - **[Design Document](WILDCARD_SYSTEM_DESIGN.md)** - Architecture details
-- **[Testing Guide](WILDCARD_TESTING_GUIDE.md)** - Test procedures
 
 ---
 

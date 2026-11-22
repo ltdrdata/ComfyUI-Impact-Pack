@@ -1,8 +1,3 @@
-"""Native restoration with real node registration and delayed category responses.
-
-Use an isolated server configured with tests/wildcards/lora_samples as its
-custom_wildcards directory. No models or graph API mutations are required.
-"""
 from argparse import Namespace
 import os
 from pathlib import Path
@@ -54,8 +49,6 @@ def test_category_response_cannot_overwrite_native_saved_values(tmp_path, restor
         assert widget_state(ui, node_id) == before
         categories = {parse_qs(urlsplit(route.request.url).query)["category"][0]: route for route in pending}
         assert categories.keys() == {"aaa", "ink"}
-        # The restored category completes first; the stale creation request
-        # completes last and must not change names, order, values or options.
         for category in ("ink", "aaa"):
             route = categories[category]
             with page.expect_response(lambda response: response.url == route.request.url) as received:
@@ -66,9 +59,6 @@ def test_category_response_cannot_overwrite_native_saved_values(tmp_path, restor
         assert ui.app.evaluate("""app => Array.from(app.graph._nodes.find(n => n.type === 'LoraWildcardSource')
             .widgets.find(w => w.name === 'lora_wildcard').options.values)""") == ["Ink first", "Ink second"]
 
-        # Returning to the same category needs request ordering as well as a
-        # category comparison. An older 'ink' response must not reset a choice
-        # made after the newest response, even when both contain the same items.
         pending.clear()
         for category in ("aaa", "ink", "aaa", "ink"):
             with page.expect_request(f"**/impact/get_items?category={category}"):

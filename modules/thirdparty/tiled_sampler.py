@@ -41,7 +41,7 @@ def copy_cond(cond):
 def slice_cond(tile_h, tile_h_len, tile_w, tile_w_len, cond, area):
     tile_h_end = tile_h + tile_h_len
     tile_w_end = tile_w + tile_w_len
-    coords = area[0] #h_len, w_len, h, w,
+    coords = area[0]
     mask = area[1]
     if coords is not None:
         h_len, w_len, h, w = coords
@@ -142,22 +142,16 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
         else:
             samples += sampler.sigmas[start_at_step].cpu() * model.model.process_latent_out(noise)
 
-    # cnets
     cnets =  [c['control'] for (_, c) in positive + negative if 'control' in c]
-    # unroll recursion
     cnets = list(set([x for m in cnets for x in recursion_to_list(m, "previous_controlnet")]))
-    # filter down to only cnets
     cnets = [x for x in cnets if isinstance(x, comfy.controlnet.ControlNet)]
     cnet_imgs = [
         torch.nn.functional.interpolate(m.cond_hint_original, (shape[-2] * 8, shape[-1] * 8), mode='nearest-exact').to('cpu')
         if m.cond_hint_original.shape[-2] != shape[-2] * 8 or m.cond_hint_original.shape[-1] != shape[-1] * 8 else None
         for m in cnets]
 
-    # T2I
     T2Is =  [c['control'] for (_, c) in positive + negative if 'control' in c]
-    # unroll recursion
     T2Is = [x for m in T2Is for x in recursion_to_list(m, "previous_controlnet")]
-    # filter down to only T2I
     T2Is = [x for x in T2Is if isinstance(x, comfy.controlnet.T2IAdapter)]
     T2I_imgs = [
         torch.nn.functional.interpolate(m.cond_hint_original, (shape[-2] * 8, shape[-1] * 8), mode='nearest-exact').to('cpu')
@@ -169,7 +163,6 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
         for m, img in zip(T2Is, T2I_imgs)
     ]
     
-    #cond area and mask
     spatial_conds_pos = [
         (c[1]['area'] if 'area' in c[1] else None, 
             prepare_cond_mask(c[1]['mask'], shape, device) if 'mask' in c[1] else None)
@@ -249,26 +242,20 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
                             else:
                                 tiled_noise = tiling.get_slice(noise, tile_h, tile_h_len, tile_w, tile_w_len).to(device) * (1 - tiled_mask)
 
-                        #TODO: all other condition based stuff like area sets and GLIGEN should also happen here
-
-                        #cnets
                         for m, img in zip(cnets, cnet_imgs):
                             slice_cnet(tile_h, tile_h_len, tile_w, tile_w_len, m, img)
 
-                        #T2I
                         for m, img in zip(T2Is, T2I_imgs):
                             slices_T2I(tile_h, tile_h_len, tile_w, tile_w_len, m, img)
 
                         pos = copy_cond(positive)
                         neg = copy_cond(negative)
 
-                        #cond areas
                         pos = [slice_cond(tile_h, tile_h_len, tile_w, tile_w_len, c, area) for c, area in zip(pos, spatial_conds_pos)]
                         pos = [c for c, ignore in pos if not ignore]
                         neg = [slice_cond(tile_h, tile_h_len, tile_w, tile_w_len, c, area) for c, area in zip(neg, spatial_conds_neg)]
                         neg = [c for c, ignore in neg if not ignore]
 
-                        #gligen
                         for cond in pos + neg:
                             slice_gligen(tile_h, tile_h_len, tile_w, tile_w_len, cond, cond[1].get('gligen'))
 

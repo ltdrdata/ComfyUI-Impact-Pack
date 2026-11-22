@@ -23,7 +23,7 @@ def runtime():
         from server import PromptServer
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None, send_sync=Mock(), client_id=None), raising=False)
-        from impact import impact_server  # noqa: F401 - register routes before the hook import cycle
+        from impact import impact_server  # noqa: F401
         from impact import core, impact_sampling, special_samplers
         from comfy_extras import nodes_align_your_steps, nodes_gits, nodes_lt, nodes_mask, nodes_optimalsteps
         # ComfyUI registers these when it starts; a test session does not start it.
@@ -92,7 +92,6 @@ def test_a_latent_is_composited_by_a_core_node_from_before_its_conversion(runtim
 
 @pytest.fixture
 def half_masked(runtime, monkeypatch):
-    """A latent of zeros masked on its right half, and a sampler that turns every latent it is given into ones."""
     mask = torch.zeros(64, 64)
     mask[:, 32:] = 1.0
     given = []
@@ -124,7 +123,6 @@ def test_the_refiner_starts_from_a_latent_sampled_only_under_the_mask(runtime, h
 
 
 class Fill:
-    """A sampler that turns every latent it is given into one value."""
     params = ("model",)
 
     def __init__(self, value):
@@ -139,7 +137,6 @@ class Fill:
 
 @pytest.fixture
 def region(runtime, monkeypatch):
-    """A latent of zeros, a base sampler that leaves zeros, and a prompt for the right half whose sampler leaves ones."""
     monkeypatch.setattr(runtime.samplers.comfy.sample, "fix_empty_latent_channels", lambda model, latent, *args, **kwargs: latent)
     mask = torch.zeros(64, 64)
     mask[:, 32:] = 1.0

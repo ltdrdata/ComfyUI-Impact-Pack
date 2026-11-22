@@ -23,7 +23,6 @@ class TensorBatchBuilder:
 
 
 def tensor_convert_rgba(image, prefer_copy=True):
-    """Assumes NHWC format tensor with 1, 3 or 4 channels."""
     _tensor_check_image(image)
     n_channel = image.shape[-1]
     if n_channel == 4:
@@ -40,12 +39,10 @@ def tensor_convert_rgba(image, prefer_copy=True):
             image = image.expand(1, -1, -1, 3)
         return image
 
-    # NOTE: Similar error message as in PIL, for easier googling :P
     raise ValueError(f"illegal conversion (channels: {n_channel} -> 4)")
 
 
 def tensor_convert_rgb(image, prefer_copy=True):
-    """Assumes NHWC format tensor with 1, 3 or 4 channels."""
     _tensor_check_image(image)
     n_channel = image.shape[-1]
     if n_channel == 3:
@@ -54,7 +51,6 @@ def tensor_convert_rgb(image, prefer_copy=True):
     if n_channel == 4:
         image = image[..., :3]
         if prefer_copy:
-            # torch tensors have clone(), not copy(); numpy arrays have copy().
             image = image.clone() if torch.is_tensor(image) else image.copy()
         return image
 
@@ -65,14 +61,13 @@ def tensor_convert_rgb(image, prefer_copy=True):
             image = image.expand(1, -1, -1, 3)
         return image
 
-    # NOTE: Same error message as in PIL, for easier googling :P
     raise ValueError(f"illegal conversion (channels: {n_channel} -> 3)")
 
 
 def resize_with_padding(image, target_w: int, target_h: int):
     _tensor_check_image(image)
     b, h, w, c = image.shape
-    image = image.permute(0, 3, 1, 2)  # B, C, H, W
+    image = image.permute(0, 3, 1, 2)
 
     scale = min(target_w / w, target_h / h)
     new_w, new_h = int(w * scale), int(h * scale)
@@ -86,7 +81,7 @@ def resize_with_padding(image, target_w: int, target_h: int):
 
     image = F.pad(image, (pad_left, pad_right, pad_top, pad_bottom), mode='constant', value=0)
 
-    image = image.permute(0, 2, 3, 1)  # B, H, W, C
+    image = image.permute(0, 2, 3, 1)
     return image, (pad_top, pad_bottom, pad_left, pad_right)
 
 
@@ -96,19 +91,12 @@ def remove_padding(image, padding):
 
 
 def adjust_bbox_after_resize(bbox, original_size, target_size, padding):
-    """
-    bbox: (x1, y1, x2, y2) in original image
-    original_size: (original_h, original_w)
-    target_size: (target_h, target_w)
-    padding: (pad_top, pad_bottom, pad_left, pad_right)
-    """
     orig_h, orig_w = original_size
     target_h, target_w = target_size
     pad_top, pad_bottom, pad_left, pad_right = padding
 
     scale = min(target_w / orig_w, target_h / orig_h)
 
-    # Apply scale
     x1 = int(bbox[0] * scale + pad_left)
     y1 = int(bbox[1] * scale + pad_top)
     x2 = int(bbox[2] * scale + pad_left)
@@ -125,7 +113,6 @@ def general_tensor_resize(image, w: int, h: int):
     return image
 
 
-# TODO: Sadly, we need LANCZOS
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 def tensor_resize(image, w: int, h: int):
     _tensor_check_image(image)
@@ -145,7 +132,6 @@ def tensor_resize(image, w: int, h: int):
 
 
 def tensor_get_size(image):
-    """Mimicking `PIL.Image.size`"""
     _tensor_check_image(image)
     _, h, w, _ = image.shape
     return (w, h)
@@ -226,10 +212,6 @@ def tensor2numpy(image):
 
 
 def tensor_paste(image1, image2, left_top, mask):
-    """
-    Pastes image2 onto image1 at position left_top using mask.
-    Supports both RGB and RGBA images.
-    """
     _tensor_check_image(image1)
     _tensor_check_image(image2)
     _tensor_check_mask(mask)
@@ -241,50 +223,39 @@ def tensor_paste(image1, image2, left_top, mask):
     _, h1, w1, c1 = image1.shape
     _, h2, w2, c2 = image2.shape
 
-    # Calculate image patch size
     w = min(w1, x + w2) - x
     h = min(h1, y + h2) - y
 
-    # If the patch is out of bound, nothing to do!
     if w <= 0 or h <= 0:
         return
 
     mask = mask[:, :h, :w, :]
 
-    # Get the region to be modified
     region1 = image1[:, y:y+h, x:x+w, :]
     region2 = image2[:, :h, :w, :]
 
-    # Handle RGB and RGBA cases
     if c1 == 3 and c2 == 3:
-        # Both RGB - simple case
         image1[:, y:y+h, x:x+w, :] = (1 - mask) * region1 + mask * region2
 
     elif c1 == 4 and c2 == 4:
-        # Both RGBA - need to handle alpha channel separately
-        # RGB channels
         image1[:, y:y+h, x:x+w, :3] = (
             (1 - mask) * region1[:, :, :, :3] +
             mask * region2[:, :, :, :3]
         )
 
-        # Alpha channel - use "over" composition
         a1 = region1[:, :, :, 3:4]
         a2 = region2[:, :, :, 3:4] * mask
         new_alpha = a1 + a2 * (1 - a1)
         image1[:, y:y+h, x:x+w, 3:4] = new_alpha
 
     elif c1 == 4 and c2 == 3:
-        # Target is RGBA, source is RGB - assume source is fully opaque
         image1[:, y:y+h, x:x+w, :3] = (
             (1 - mask) * region1[:, :, :, :3] +
             mask * region2
         )
-        # Alpha channel - reduce alpha where mask is applied
         image1[:, y:y+h, x:x+w, 3:4] = region1[:, :, :, 3:4] * (1 - mask) + mask
 
     elif c1 == 3 and c2 == 4:
-        # Target is RGB, source is RGBA - apply source alpha to mask
         effective_mask = mask * region2[:, :, :, 3:4]
         image1[:, y:y+h, x:x+w, :] = (
             (1 - effective_mask) * region1 +
@@ -312,7 +283,6 @@ def combine_masks(masks):
             if combined_cv2_mask.shape == cv2_mask.shape:
                 combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
             else:
-                # do nothing - incompatible mask
                 pass
 
         mask = torch.from_numpy(combined_cv2_mask)
@@ -332,7 +302,6 @@ def combine_masks2(masks):
             if combined_cv2_mask.shape == cv2_mask.shape:
                 combined_cv2_mask = cv2.bitwise_or(combined_cv2_mask, cv2_mask)
             else:
-                # do nothing - incompatible mask
                 pass
 
         mask = torch.from_numpy(combined_cv2_mask)
@@ -349,7 +318,6 @@ def bitwise_and_masks(mask1, mask2):
         cv2_mask = cv2.bitwise_and(cv2_mask1, cv2_mask2)
         return torch.from_numpy(cv2_mask)
     else:
-        # do nothing - incompatible mask shape: mostly empty mask
         return mask1
 
 
@@ -422,12 +390,10 @@ import torch.nn.functional as F
 def feather_mask(mask, thickness):
     mask = mask.permute(0, 3, 1, 2)
 
-    # Gaussian kernel for blurring
     kernel_size = 2 * int(thickness) + 1
-    sigma = thickness / 3  # Adjust the sigma value as needed
+    sigma = thickness / 3
     blur_kernel = _gaussian_kernel(kernel_size, sigma).to(mask.device, mask.dtype)
 
-    # Apply blur to the mask
     blurred_mask = F.conv2d(mask, blur_kernel.unsqueeze(0).unsqueeze(0), padding=thickness)
 
     blurred_mask = blurred_mask.permute(0, 2, 3, 1)
@@ -435,13 +401,11 @@ def feather_mask(mask, thickness):
     return blurred_mask
 
 def _gaussian_kernel(kernel_size, sigma):
-    # Generate a 1D Gaussian kernel
     kernel = torch.exp(-(torch.arange(kernel_size) - kernel_size // 2)**2 / (2 * sigma**2))
     return kernel / kernel.sum()
 
 
 def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
-    """Return NHWC torch.Tenser from ndim == 2 or 4 `np.ndarray` or `torch.Tensor`"""
     if isinstance(mask, np.ndarray):
         mask = torch.from_numpy(mask)
 
@@ -463,13 +427,12 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
         if kernel_size % 2 == 0:
             kernel_size += 1
         if kernel_size < 3:
-            return mask  # skip feathering
+            return mask
 
     prev_device = mask.device
     device = comfy.model_management.get_torch_device() if config.get_config()['gpu_gaussian_blur'] else torch.device('cpu')
     mask = mask.to(device)
 
-    # apply gaussian blur
     mask = mask[:, None, ..., 0]
     blurred_mask = torchvision.transforms.GaussianBlur(kernel_size=kernel_size, sigma=sigma)(mask)
     blurred_mask = blurred_mask[:, 0, ..., None]
@@ -489,7 +452,6 @@ def subtract_masks(mask1, mask2):
         cv2_mask = cv2.subtract(cv2_mask1, cv2_mask2)
         return torch.clamp(torch.from_numpy(cv2_mask) / 255.0, min=0, max=1)
     else:
-        # do nothing - incompatible mask shape: mostly empty mask
         return mask1
 
 
@@ -503,7 +465,6 @@ def add_masks(mask1, mask2):
         cv2_mask = cv2.add(cv2_mask1, cv2_mask2)
         return torch.clamp(torch.from_numpy(cv2_mask) / 255.0, min=0, max=1)
     else:
-        # do nothing - incompatible mask shape: mostly empty mask
         return mask1
 
 
@@ -543,7 +504,6 @@ def make_crop_region(w, h, bbox, crop_factor, crop_min_size=None):
     new_x1 = int(kernel_x - crop_w / 2)
     new_y1 = int(kernel_y - crop_h / 2)
 
-    # make sure position in (w,h)
     new_x1, new_x2 = normalize_region(w, new_x1, crop_w)
     new_y1, new_y2 = normalize_region(h, new_y1, crop_h)
 
@@ -598,7 +558,7 @@ def to_latent_image(pixels, vae, vae_tiled_encode=False):
 
     start = time.time()
     if vae_tiled_encode:
-        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, 512, overlap=64)[0] # using default settings
+        encoded = nodes.VAEEncodeTiled().encode(vae, pixels, 512, overlap=64)[0]
         logging.info(f"[Impact Pack] vae encoded (tiled) in {time.time() - start:.1f}s")
     else:
         encoded = nodes.VAEEncode().encode(vae, pixels)[0]
@@ -692,9 +652,6 @@ def try_install_custom_node(custom_node_url, msg):
 
 
 def apply_differential_diffusion(model):
-    # ComfyUI ≥0.3.63 exposes V3 schema (classmethod `execute`); older versions use instance method `apply`.
-    # Import is deferred so callers with guarded imports (e.g. segs_upscaler.py) still work when the
-    # comfy_extras module is absent on very old ComfyUI — the ImportError propagates as before.
     from comfy_extras import nodes_differential_diffusion
     dd = nodes_differential_diffusion.DifferentialDiffusion()
     if hasattr(dd, 'execute'):
@@ -732,23 +689,14 @@ class NonListIterable:
 
 
 def add_folder_path_and_extensions(folder_name, full_folder_paths, extensions):
-    # Iterate over the list of full folder paths
     for full_folder_path in full_folder_paths:
-        # Use the provided function to add each model folder path
         folder_paths.add_model_folder_path(folder_name, full_folder_path)
 
-    # Now handle the extensions. If the folder name already exists, update the extensions
     if folder_name in folder_paths.folder_names_and_paths:
-        # Unpack the current paths and extensions
         current_paths, current_extensions = folder_paths.folder_names_and_paths[folder_name]
-        # Update the extensions set with the new extensions
         updated_extensions = current_extensions | extensions
-        # Reassign the updated tuple back to the dictionary
         folder_paths.folder_names_and_paths[folder_name] = (current_paths, updated_extensions)
     else:
-        # If the folder name was not present, add_model_folder_path would have added it with the last path
-        # Now we just need to update the set of extensions as it would be an empty set
-        # Also ensure that all paths are included (since add_model_folder_path adds only one path at a time)
         folder_paths.folder_names_and_paths[folder_name] = (full_folder_paths, extensions)
 # <---
 

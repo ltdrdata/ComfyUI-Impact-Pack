@@ -136,10 +136,8 @@ def mix_noise(from_noise, to_noise, strength, variation_method):
     if variation_method == 'slerp':
         mixed_noise = slerp(strength, from_noise, to_noise)
     else:
-        # linear
         mixed_noise = (1 - strength) * from_noise + strength * to_noise
 
-        # NOTE: Since the variance of the Gaussian noise in mixed_noise has changed, it must be corrected through scaling.
         scale_factor = math.sqrt((1 - strength) ** 2 + strength ** 2)
         mixed_noise /= scale_factor
 
@@ -213,7 +211,6 @@ def gen_detection_hints_from_mask_area(x, y, mask, threshold, use_negative):
     points = []
     plabs = []
 
-    # minimum sampling step >= 3
     y_step = max(3, int(mask.shape[0] / 20))
     x_step = max(3, int(mask.shape[1] / 20))
 
@@ -233,7 +230,6 @@ def gen_negative_hints(w, h, x1, y1, x2, y2):
     npoints = []
     nplabs = []
 
-    # minimum sampling step >= 3
     y_step = max(3, int(w / 20))
     x_step = max(3, int(h / 20))
 
@@ -334,22 +330,18 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
     bbox_h = bbox[3] - bbox[1]
     bbox_w = bbox[2] - bbox[0]
 
-    # Skip processing if the detected bbox is already larger than the guide_size
     if not force_inpaint and bbox_h >= guide_size and bbox_w >= guide_size:
         logging.info("Detailer: segment skip (enough big)")
         return None, None
 
-    if guide_size_for_bbox:  # == "bbox"
-        # Scale up based on the smaller dimension between width and height.
+    if guide_size_for_bbox:
         upscale = guide_size / min(bbox_w, bbox_h)
     else:
-        # for cropped_size
         upscale = guide_size / min(w, h)
 
     new_w = int(w * upscale)
     new_h = int(h * upscale)
 
-    # safeguard
     if 'aitemplate_keep_loaded' in model.model_options:
         max_size = min(4096, max_size)
 
@@ -384,7 +376,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
 
     logging.info(f"Detailer: segment upscale for ({bbox_w, bbox_h}) | crop region {w, h} x {upscale} -> {new_w, new_h}")
 
-    # upscale
     upscaled_image = utils.tensor_resize(image, new_w, new_h)
 
     if detailer_hook is not None:
@@ -399,7 +390,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         model, cnet_pils2 = control_net_wrapper.doit_ipadapter(model)
         cnet_pils.extend(cnet_pils2)
 
-    # prepare mask
     if detailer_hook is None or not detailer_hook.get_skip_sampling():
         encode_tiles = _detailer_vae_tiles(options, "encode", vae_tiled_encode)
         encode_vae = vae if encode_tiles is None else _DetailerTiledVAE(vae, encode_tiles)
@@ -425,7 +415,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
         if detailer_hook is not None:
             sampler_opt = detailer_hook.get_custom_sampler()
 
-        # ksampler
         for i in range(0, cycle):
             if detailer_hook is not None:
                 detailer_hook.set_steps((i, cycle))
@@ -447,7 +436,6 @@ def enhance_detail(image, model, clip, vae, guide_size, guide_size_for_bbox, max
                                                               noise=noise, scheduler_func=scheduler_func, sampler_opt=sampler_opt)
 
             if cycle_images is not None and i < cycle - 1:
-                # Decode hooks also consume masks and metadata such as batch_index.
                 cycle_latents.append({key: value.to('cpu', copy=True) if isinstance(value, torch.Tensor)
                                       else copy.deepcopy(value) for key, value in refined_latent.items()})
 
@@ -495,18 +483,14 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     bbox_h = bbox[3] - bbox[1]
     bbox_w = bbox[2] - bbox[0]
 
-    # Skip processing if the detected bbox is already larger than the guide_size
-    if guide_size_for_bbox:  # == "bbox"
-        # Scale up based on the smaller dimension between width and height.
+    if guide_size_for_bbox:
         upscale = guide_size / min(bbox_w, bbox_h)
     else:
-        # for cropped_size
         upscale = guide_size / min(w, h)
 
     new_w = int(w * upscale)
     new_h = int(h * upscale)
 
-    # safeguard
     if 'aitemplate_keep_loaded' in model.model_options:
         max_size = min(4096, max_size)
 
@@ -533,10 +517,8 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     for image in image_frames:
         image = torch.from_numpy(image).unsqueeze(0)
 
-        # upscale
         upscaled_image = utils.tensor_resize(image, new_w, new_h)
 
-        # ksampler
         samples = utils.to_latent_image(upscaled_image, vae)['samples']
 
         latent_frames.append(samples)
@@ -582,7 +564,6 @@ def enhance_detail_for_animatediff(image_frames, model, clip, vae, guide_size, g
     for refined_sample in refined_latent['samples']:
         refined_sample = refined_sample.unsqueeze(0)
 
-        # non-latent downscale - latent downscale cause bad quality
         refined_image = vae.decode(refined_sample)
 
         if refined_image_frames is None:
@@ -602,7 +583,6 @@ def composite_to(dest_latent, crop_region, src_latent):
     x1 = crop_region[0]
     y1 = crop_region[1]
 
-    # composite to original latent
     lc = nodes.LatentComposite()
     orig_image = lc.composite(dest_latent, src_latent, x1, y1)
 
@@ -808,7 +788,7 @@ class SAM3Wrapper:
              "forward_video": ("images", "initial_masks", "pbar", "target_device", "target_dtype")}
 
     def __init__(self, model):
-        import comfy.ldm.sam3.tracker  # SAMLoader refuses a SAM3 model on a ComfyUI that has no SAM3
+        import comfy.ldm.sam3.tracker
 
         sam3 = model.model.diffusion_model
         for name, arguments in self.calls.items():
@@ -861,7 +841,6 @@ class SAM3Wrapper:
         dtype = self.model.model.get_dtype()
         height, width = image_frames.shape[1:3]
 
-        # SAM3 tracks an object from its mask, so the first frame is segmented with the prompt SAM2 gets: the box and its center
         first_frame = np.clip(255. * image_frames[0, ..., :3].cpu().numpy(), 0, 255).astype(np.uint8)
         initial_masks = [self.predict(first_frame, [utils.center_of_bbox(seg.bbox)], [1], seg.bbox, None)[0] for seg in segs[1]]
         initial_masks = torch.from_numpy(np.stack(initial_masks)).unsqueeze(1).to(device=device, dtype=dtype)
@@ -904,7 +883,6 @@ class ESAMWrapper:
 
 
 def sam_wrapper_of(sam):
-    # SAMLoader returns a SAM2 or SAM3 model as its wrapper, and any other model with its wrapper attached
     if isinstance(sam, (SAM2Wrapper, SAM3Wrapper)):
         return sam
 
@@ -927,7 +905,6 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
 
         use_small_negative = mask_hint_use_negative == "Small"
 
-        # seg_shape = segs[0]
         segs = segs[1]
         if detection_hint == "mask-points":
             points = []
@@ -938,7 +915,6 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 center = utils.center_of_bbox(segs[i].bbox)
                 points.append(center)
 
-                # small point is background, big point is foreground
                 if use_small_negative and bbox[2] - bbox[0] < 10:
                     plabs.append(0)
                 else:
@@ -963,7 +939,7 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 plabs = []
                 if detection_hint == "center-1":
                     points.append(center)
-                    plabs = [1]  # 1 = foreground point, 0 = background point
+                    plabs = [1]
 
                 elif detection_hint == "horizontal-2":
                     gap = (x2 - x1) / 3
@@ -1016,7 +992,6 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
                 detected_masks = sam_obj.predict(image, points, plabs, dilated_bbox, threshold)
                 total_masks += detected_masks
 
-        # merge every collected masks
         mask = utils.combine_masks2(total_masks)
 
     finally:
@@ -1028,7 +1003,7 @@ def make_sam_mask(sam, segs, image, detection_hint, dilation,
         mask = torch.from_numpy(mask)
     else:
         size = image.shape[0], image.shape[1]
-        mask = torch.zeros(size, dtype=torch.float32, device="cpu")  # empty mask
+        mask = torch.zeros(size, dtype=torch.float32, device="cpu")
 
     mask = utils.make_3d_mask(mask)
     return mask
@@ -1042,7 +1017,7 @@ def generate_detection_hints(image, seg, center, detection_hint, dilated_bbox, m
     plabs = []
     if detection_hint == "center-1":
         points.append(center)
-        plabs = [1]  # 1 = foreground point, 0 = background point
+        plabs = [1]
 
     elif detection_hint == "horizontal-2":
         gap = (x2 - x1) / 3
@@ -1149,12 +1124,10 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
     try:
         image = np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
 
-        # Keep one mask per prediction; thresholding can leave fewer than three candidates.
         total_masks = []
 
         use_small_negative = mask_hint_use_negative == "Small"
 
-        # seg_shape = segs[0]
         segs = segs[1]
         if detection_hint == "mask-points":
             points = []
@@ -1165,7 +1138,6 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                 center = utils.center_of_bbox(bbox)
                 points.append(center)
 
-                # small point is background, big point is foreground
                 if use_small_negative and bbox[2] - bbox[0] < 10:
                     plabs.append(0)
                 else:
@@ -1195,7 +1167,6 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
                 if detected_masks:
                     total_masks.append(utils.combine_masks2(detected_masks))
 
-        # merge every collected masks
         mask = utils.combine_masks2([m.numpy() for m in total_masks])
 
     finally:
@@ -1209,15 +1180,13 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
         mask = torch.from_numpy(mask)
         mask = mask.to(device=mask_working_device)
     else:
-        # Extracting batch, height and width
         height, width, _ = image.shape
         mask = torch.zeros(
             (height, width), dtype=torch.float32, device=mask_working_device
-        )  # empty mask
+        )
 
     batch_masks = None
     if total_masks:
-        # Preserve binary uint8 batches even for wrappers returning 0/255 masks.
         batch_masks = torch.stack(total_masks).unsqueeze(1).ne(0).to(torch.uint8)
     return mask, batch_masks
 
@@ -1328,7 +1297,6 @@ class ONNXDetector:
 
             labels, scores, boxes = onnx.onnx_inference(image, self.onnx_model)
 
-            # collect feasible item
             result = []
 
             for i in range(len(labels)):
@@ -1336,18 +1304,16 @@ class ONNXDetector:
                     item_bbox = boxes[i]
                     x1, y1, x2, y2 = item_bbox
 
-                    if x2 - x1 > drop_size and y2 - y1 > drop_size:  # minimum dimension must be (2,2) to avoid squeeze issue
+                    if x2 - x1 > drop_size and y2 - y1 > drop_size:
                         crop_region = utils.make_crop_region(w, h, item_bbox, crop_factor)
 
                         if detailer_hook is not None:
                             crop_region = detailer_hook.post_crop_region(w, h, item_bbox, crop_region)
 
-                        # prepare cropped mask
                         mask = np.zeros((h, w))
                         mask[y1:y2, x1:x2] = 1
                         cropped_mask = utils.dilate_mask(utils.crop_ndarray2(mask, crop_region), dilation)
 
-                        # make items. just convert the integer label to a string
                         item = SEG(None, cropped_mask, scores[i], crop_region, item_bbox, str(labels[i]), None)
                         result.append(item)
 
@@ -1391,7 +1357,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
         return ([],)
 
     if isinstance(mask, np.ndarray):
-        pass  # `mask` is already a NumPy array
+        pass
     else:
         try:
             mask = mask.numpy()
@@ -1491,10 +1457,7 @@ def mask_to_segs(mask, combined, crop_factor, bbox_fill, drop_size=1, label='A',
         logging.info("[mask_to_segs] Empty mask.")
 
     logging.info(f"# of Detected SEGS: {len(result)}")
-    # for r in result:
-    #     print(f"\tbbox={r.bbox}, crop={r.crop_region}, label={r.label}")
 
-    # shape: (b,h,w) -> (h,w)
     return (mask.shape[1], mask.shape[2]), result
 
 
@@ -1665,7 +1628,6 @@ def bounding_boxes_to_segs(bboxes, image, crop_factor):
         if x2 - x1 <= 1 or y2 - y1 <= 1:
             continue
 
-        # A bbox detector fills the mask between the truncated corners of the box, the corners included.
         mask = np.zeros((h, w), dtype=np.float32)
         mask[int(y1):int(y2) + 1, int(x1):int(x2) + 1] = 1.0
         crop_region = utils.make_crop_region(w, h, (x1, y1, x2, y2), crop_factor)
@@ -1761,7 +1723,6 @@ def latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upsca
 
     w = pixels.shape[2]
 
-    # upscale by model upscaler
     current_w = w
     while current_w < new_w:
         model_upscaler = nodes.NODE_CLASS_MAPPINGS['ImageUpscaleWithModel']()
@@ -1775,7 +1736,6 @@ def latent_upscale_on_pixel_space_with_model_shape2(samples, scale_method, upsca
             logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
             break
 
-    # downscale to target scale
     pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
 
     old_pixels = pixels
@@ -1802,7 +1762,6 @@ def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_mod
     new_w = w * scale_factor
     new_h = h * scale_factor
 
-    # upscale by model upscaler
     current_w = w
     while current_w < new_w:
         model_upscaler = nodes.NODE_CLASS_MAPPINGS['ImageUpscaleWithModel']()
@@ -1816,7 +1775,6 @@ def latent_upscale_on_pixel_space_with_model2(samples, scale_method, upscale_mod
             logging.info("[latent_upscale_on_pixel_space_with_model] x1 upscale model selected")
             break
 
-    # downscale to target scale
     pixels = nodes.ImageScale().upscale(pixels, scale_method, int(new_w), int(new_h), False)[0]
 
     old_pixels = pixels
@@ -1854,7 +1812,6 @@ class TwoSamplersForMaskUpscaler:
 
         self.prepare_hook(step_info)
 
-        # upscale latent
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space(samples, scale_method, upscale_factor, vae,
                                                             use_tile=self.use_tiled_vae,
@@ -1884,7 +1841,6 @@ class TwoSamplersForMaskUpscaler:
 
         self.prepare_hook(step_info)
 
-        # upscale latent
         if self.upscale_model is None:
             upscaled_latent = latent_upscale_on_pixel_space_shape(samples, scale_method, w, h, vae,
                                                                   use_tile=self.use_tiled_vae,
@@ -1904,7 +1860,6 @@ class TwoSamplersForMaskUpscaler:
     def is_full_sample_time(self, step_info, sample_schedule):
         cur_step, total_step = step_info
 
-        # make start from 1 instead of zero
         cur_step += 1
         total_step += 1
 
@@ -1947,22 +1902,18 @@ class TwoSamplersForMaskUpscaler:
 
         else:
             logging.info(f"step_info={step_info} / non-full time")
-            # upscale mask
             if mask.ndim == 2:
                 mask = mask[None, :, :, None]
             upscaled_mask = F.interpolate(mask, size=(upscaled_latent['samples'].shape[2], upscaled_latent['samples'].shape[3]), mode='bilinear', align_corners=True)
             upscaled_mask = upscaled_mask[:, :, :upscaled_latent['samples'].shape[2], :upscaled_latent['samples'].shape[3]]
 
-            # base sampler
             upscaled_inv_mask = torch.where(upscaled_mask != 1.0, torch.tensor(1.0), torch.tensor(0.0))
             upscaled_latent['noise_mask'] = upscaled_inv_mask
             upscaled_latent = base_sampler.sample(upscaled_latent, self.hook_base)
 
-            # mask sampler
             upscaled_latent['noise_mask'] = upscaled_mask
             upscaled_latent = mask_sampler.sample(upscaled_latent, self.hook_mask)
 
-            # remove mask
             del upscaled_latent['noise_mask']
             return upscaled_latent
 
@@ -1991,7 +1942,6 @@ class PixelKSampleUpscaler:
                 if 'TilePreprocessor' not in nodes.NODE_CLASS_MAPPINGS:
                     raise RuntimeError("'TilePreprocessor' node (from comfyui_controlnet_aux) isn't installed.")
                 preprocessor = nodes.NODE_CLASS_MAPPINGS['TilePreprocessor']()
-                # might add capacity to set pyrUp_iters later, not needed for now though
                 preprocessed = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))[0]
                 positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive=positive,
                                                                                       negative=negative,
@@ -2087,7 +2037,6 @@ class IPAdapterWrapper:
         self.neg_image = neg_image
         self.combine_embeds = combine_embeds
 
-    # name 'apply_ipadapter' isn't allowed
     def doit_ipadapter(self, model):
         cnet_image_list = [self.image]
         prev_cnet_images = []
@@ -2287,7 +2236,6 @@ class PixelTiledKSampleUpscaler:
                 if 'TilePreprocessor' not in nodes.NODE_CLASS_MAPPINGS:
                     raise RuntimeError("'TilePreprocessor' node (from comfyui_controlnet_aux) isn't installed.")
                 preprocessor = nodes.NODE_CLASS_MAPPINGS['TilePreprocessor']()
-                # might add capacity to set pyrUp_iters later, not needed for now though
                 preprocessed = preprocessor.execute(images, pyrUp_iters=3, resolution=min(image_w, image_h))[0]
 
                 positive, negative = nodes.ControlNetApplyAdvanced().apply_controlnet(positive=positive,
@@ -2348,7 +2296,6 @@ class PixelTiledKSampleUpscaler:
         return refined_latent
 
 
-# REQUIREMENTS: time-river/ComfyUI-CLIPSeg
 class BBoxDetectorBasedOnCLIPSeg:
     prompt = None
     blur = None
@@ -2492,7 +2439,7 @@ class SafeToGPU:
         if utils.is_same_device(device, 'cpu'):
             obj.to(device)
         else:
-            if utils.is_same_device(obj.device, 'cpu'):  # cpu to gpu
+            if utils.is_same_device(obj.device, 'cpu'):
                 model_management.free_memory(self.size * 1.3, device)
                 if model_management.get_free_memory(device) > self.size * 1.3:
                     try:
@@ -2523,7 +2470,6 @@ try:
             method = args.preview_method
 
         if method != LatentPreviewMethod.NoPreviews or force:
-            # TODO previewer methods
             taesd_decoder_path = None
 
             if hasattr(latent_format, "taesd_decoder_path"):
