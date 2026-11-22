@@ -89,24 +89,25 @@ function setMuteState(event) {
 api.addEventListener("impact-node-mute-state", setMuteState);
 
 
-async function bridgeContinue(event) {
-	let nodes = app.graph._nodes_by_id;
-	let node = nodes[event.detail.node_id];
-	if(node) {
-		const mutes = new Set(event.detail.mutes);
-		const actives = new Set(event.detail.actives);
-		const bypasses = new Set(event.detail.bypasses);
+// An ID from the server names a node inside a subgraph by its path: '22:21' is node 21 in the subgraph of node 22.
+function nodeOfId(id) {
+	let graph = app.graph;
+	let node;
+	for(const part of String(id).split(':')) {
+		node = graph?.getNodeById(part);
+		graph = node?.subgraph;
+	}
+	return node;
+}
 
-		for(let i in app.graph._nodes_by_id) {
-			let this_node = app.graph._nodes_by_id[i];
-			if(mutes.has(i)) {
-				this_node.mode = 2;
-			}
-			else if(actives.has(i)) {
-				this_node.mode = 0;
-			}
-			else if(bypasses.has(i)) {
-				this_node.mode = 4;
+async function bridgeContinue(event) {
+	if(nodeOfId(event.detail.node_id)) {
+		for(const [ids, mode] of [[event.detail.mutes, 2], [event.detail.actives, 0], [event.detail.bypasses, 4]]) {
+			for(const id of ids ?? []) {
+				const node = nodeOfId(id);
+				if(node) {
+					node.mode = mode;
+				}
 			}
 		}
 
