@@ -97,7 +97,7 @@ from .modules.impact.hook_nodes import (
 from .modules.impact.animatediff_nodes import (
     DetailerForEachPipeForAnimateDiff, SEGSPaste, SEGSDetailerForAnimateDiff,
 )
-from .modules.impact.wildcard_source import LoraWildcardSource
+from .modules.impact.wildcard_source import LoraWildcardSource, TextWildcardSource
 
 import threading
 
@@ -252,6 +252,7 @@ NODE_CLASS_MAPPINGS = {
     "ImpactWildcardProcessor": ImpactWildcardProcessor,
     "ImpactWildcardEncode": ImpactWildcardEncode,
     "LoraWildcardSource": LoraWildcardSource,
+    "TextWildcardSource": TextWildcardSource,
 
     "SEGSUpscaler": SEGSUpscaler,
     "SEGSUpscalerPipe": SEGSUpscalerPipe,
@@ -498,7 +499,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactSchedulerAdapter": "Impact Scheduler Adapter",
     "GITSSchedulerFuncProvider": "GITSScheduler Func Provider",
     "ImpactNegativeConditioningPlaceholder": "Negative Cond Placeholder",
-    "LoraWildcardSource": "Lora Wildcard Source / Modes"
+    "LoraWildcardSource": "Lora Wildcard Source / Modes",
+    "TextWildcardSource": "Text Wildcard Source / Modes"
 }
 
 
