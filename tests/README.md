@@ -201,6 +201,21 @@ A `KSAMPLER_ADVANCED` cloned with other conditionings, as the Inspire Pack's
 `RemoveControlNetFromRegionalPrompts` clones the sampler of each regional prompt, keeps
 its sampler options, sigma factor and scheduler func, and samples with them.
 
+## Control Bridge in subgraphs and loops
+
+```bash
+IMPACT_COMFY_ROOT=/path/to/ComfyUI python -m pytest tests/test_control_bridge.py -v
+```
+
+`Control Bridge` with Mute or Bypass finds the nodes behind it in the workflow that Chrome
+sent with the prompt, `tests/workflows/control-bridge/`: in the same subgraph, behind the
+subgraph node when the bridge is the last node of one or two subgraphs, behind the right
+one of two uses of a subgraph, behind a reroute, and for the copy of the bridge that a
+loop makes. A bridge that nothing follows passes its value.
+With a running test server, `IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 python3 -m pytest tests/test_e2e_control_bridge.py`
+loads two of these workflows in Chrome and clicks Run: the page bypasses the node behind
+the bridge and queues the workflow again without it.
+
 ## Values given to a node
 
 ```bash

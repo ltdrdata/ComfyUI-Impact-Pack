@@ -2,7 +2,6 @@ import sys
 import time
 
 import execution
-import impact.impact_server
 from server import PromptServer
 from impact.utils import any_typ
 from impact.node_base import ImpactNode
@@ -591,15 +590,44 @@ class ImpactSleep:
         return (signal,)
 
 
-def workflow_to_map(workflow):
-    nodes = {}
+SUBGRAPH_OUTPUT = -20
+
+
+def workflow_to_map(graph):
+    nodes = {str(node['id']): node for node in graph['nodes']}
     links = {}
-    for link in workflow['links']:
-        links[link[0]] = link[1:]
-    for node in workflow['nodes']:
-        nodes[str(node['id'])] = node
+    for link in graph['links']:
+        if isinstance(link, dict):  # a subgraph keeps a link as an object
+            links[link['id']] = link['target_id'], link['target_slot']
+        else:
+            links[link[0]] = link[3], link[4]
 
     return nodes, links
+
+
+def nodes_behind(workflow, node_id):
+    """The nodes behind a node, as (ID, node). An ID is the one the server gives a node: '22:21' is node 21 in the subgraph of node 22."""
+    subgraphs = {subgraph['id']: subgraph for subgraph in workflow.get('definitions', {}).get('subgraphs', [])}
+    path = node_id.split(':')
+    graphs = [workflow_to_map(workflow)]
+    for subgraph_node in path[:-1]:
+        graphs.append(workflow_to_map(subgraphs[graphs[-1][0][subgraph_node]['type']]))
+
+    found = []
+
+    def follow(depth, node_id, slot):
+        nodes, links = graphs[depth]
+        for link in nodes[node_id]['outputs'][slot]['links'] or ():  # None when nothing was ever linked
+            target, target_slot = links[link]
+            if target == SUBGRAPH_OUTPUT:
+                follow(depth - 1, path[depth - 1], target_slot)
+            elif nodes[str(target)]['type'] in ('Reroute', 'Reroute (rgthree)'):
+                follow(depth, str(target), 0)
+            else:
+                found.append((':'.join(path[:depth] + [str(target)]), nodes[str(target)]))
+
+    follow(len(path) - 1, path[-1], 0)
+    return found
 
 
 class ImpactRemoteBoolean:
@@ -647,7 +675,7 @@ class ImpactControlBridge:
                       "mode": ("BOOLEAN", {"default": True, "label_on": "Active", "label_off": "Stop/Mute/Bypass"}),
                       "behavior": (["Stop", "Mute", "Bypass"], ),
                     },
-                "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"}
+                "hidden": {"unique_id": "UNIQUE_ID", "prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO", "dynprompt": "DYNPROMPT"}
                 }
 
     FUNCTION = "doit"
@@ -663,7 +691,7 @@ class ImpactControlBridge:
                    "When behavior is Mute/Bypass and mode is Stop/Mute/Bypass, the node connected to the output is changed to Mute/Bypass state.")
 
     @classmethod
-    def IS_CHANGED(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None):
+    def IS_CHANGED(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
         if behavior == "Stop":
             return value, mode, behavior
         else:
@@ -675,16 +703,13 @@ class ImpactControlBridge:
                 logging.info("[Impact Pack] core.current_prompt['extra_data']['extra_pnginfo']['workflow']")
                 return 0
 
-            nodes, links = workflow_to_map(workflow)
-            next_nodes = []
+            if unique_id not in core.current_prompt['prompt']:
+                # a copy of the node that a loop made while the prompt runs: IS_CHANGED is not told which node it is a copy of
+                return float("NaN")
 
-            for link in nodes[unique_id]['outputs'][0]['links']:
-                node_id = str(links[link][2])
-                impact.utils.collect_non_reroute_nodes(nodes, links, next_nodes, node_id)
+            return [node_id for node_id, _ in nodes_behind(workflow, unique_id)]
 
-        return next_nodes
-
-    def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None):
+    def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
         global error_skip_flag
 
         if core.is_execution_model_version_supported():
@@ -701,27 +726,21 @@ class ImpactControlBridge:
             logging.warning(f"[Impact Pack] limitation: '{behavior}' behavior cannot be used in API execution.")
             return (value,)
         else:
-            workflow_nodes, links = workflow_to_map(extra_pnginfo['workflow'])
+            unique_id = dynprompt.get_display_node_id(unique_id)
 
             active_nodes = []
             mute_nodes = []
             bypass_nodes = []
 
-            for link in workflow_nodes[unique_id]['outputs'][0]['links']:
-                node_id = str(links[link][2])
+            for next_node_id, next_node in nodes_behind(extra_pnginfo['workflow'], unique_id):
+                node_mode = next_node['mode']
 
-                next_nodes = []
-                impact.utils.collect_non_reroute_nodes(workflow_nodes, links, next_nodes, node_id)
-
-                for next_node_id in next_nodes:
-                    node_mode = workflow_nodes[next_node_id]['mode']
-
-                    if node_mode == 0:
-                        active_nodes.append(next_node_id)
-                    elif node_mode == 2:
-                        mute_nodes.append(next_node_id)
-                    elif node_mode == 4:
-                        bypass_nodes.append(next_node_id)
+                if node_mode == 0:
+                    active_nodes.append(next_node_id)
+                elif node_mode == 2:
+                    mute_nodes.append(next_node_id)
+                elif node_mode == 4:
+                    bypass_nodes.append(next_node_id)
 
             if mode:
                 should_be_active_nodes = mute_nodes + bypass_nodes

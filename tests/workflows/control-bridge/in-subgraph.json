@@ -1,0 +1,327 @@
+{
+  "id": "09c85dcf-6fb8-4ddb-b5f9-f71d8fc83478",
+  "revision": 0,
+  "last_node_id": 22,
+  "last_link_id": 26,
+  "nodes": [
+    {
+      "id": 10,
+      "type": "EmptyImage",
+      "pos": [
+        -133.71038098930694,
+        35.96639028473757
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyImage"
+      },
+      "widgets_values": [
+        64,
+        64,
+        1,
+        0
+      ],
+      "widgets_values_named": {
+        "width": 64,
+        "height": 64,
+        "batch_size": 1,
+        "color": 0
+      }
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        774.2504125251844,
+        21.771940684004733
+      ],
+      "size": [
+        140,
+        246
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 22,
+      "type": "3305c30e-a56f-422c-8354-f4dd3a814279",
+      "pos": [
+        400.24584885618077,
+        49.86090919152369
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "IMAGE",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [],
+        "previewExposures": []
+      }
+    }
+  ],
+  "links": [
+    [
+      25,
+      10,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      22,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "3305c30e-a56f-422c-8354-f4dd3a814279",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 22,
+          "lastLinkId": 26,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "New Subgraph",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            41.94973876091797,
+            17.86090919152369,
+            120,
+            60
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            778.5419589514436,
+            17.86090919152369,
+            120,
+            60
+          ]
+        },
+        "inputs": [
+          {
+            "id": "25e879e1-10e4-4b28-9335-588cf69a75c7",
+            "name": "value",
+            "type": "IMAGE",
+            "linkIds": [
+              23
+            ],
+            "localized_name": "value",
+            "pos": [
+              55,
+              20
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "5bff9ff7-a9f0-4b7c-92be-1123b768b0d0",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "linkIds": [
+              12
+            ],
+            "localized_name": "IMAGE",
+            "pos": [
+              20,
+              20
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 21,
+            "type": "ImpactControlBridge",
+            "pos": [
+              221.94973876091797,
+              22.44440242867445
+            ],
+            "size": [
+              270,
+              82
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "IMAGE",
+                "link": 23
+              }
+            ],
+            "outputs": [
+              {
+                "label": "IMAGE",
+                "localized_name": "value",
+                "name": "value",
+                "type": "IMAGE",
+                "links": [
+                  24
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImpactControlBridge"
+            },
+            "widgets_values": [
+              false,
+              "Bypass"
+            ],
+            "widgets_values_named": {
+              "mode": false,
+              "behavior": "Bypass"
+            }
+          },
+          {
+            "id": 12,
+            "type": "ImageInvert",
+            "pos": [
+              578.5419589514436,
+              21.27741595437294
+            ],
+            "size": [
+              169.1265625,
+              26
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "link": 24
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "IMAGE",
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  12
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageInvert"
+            }
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 24,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 23,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 12,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          }
+        ],
+        "extra": {
+          "workflowRendererVersion": "LG"
+        }
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "workflowRendererVersion": "LG",
+    "ue_links": [],
+    "ds": {
+      "scale": 1.1236367545394512,
+      "offset": [
+        321.7038465750554,
+        315.21172328036664
+      ]
+    },
+    "frontendVersion": "1.59.10"
+  },
+  "version": 0.4
+}

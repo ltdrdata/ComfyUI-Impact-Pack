@@ -607,15 +607,6 @@ def is_same_device(a, b):
     return a_device.type == b_device.type and a_device.index == b_device.index
 
 
-def collect_non_reroute_nodes(node_map, links, res, node_id):
-    if node_map[node_id]['type'] != 'Reroute' and node_map[node_id]['type'] != 'Reroute (rgthree)':
-        res.append(node_id)
-    else:
-        for link in node_map[node_id]['outputs'][0]['links']:
-            next_node_id = str(links[link][2])
-            collect_non_reroute_nodes(node_map, links, res, next_node_id)
-
-
 from torchvision.transforms.functional import to_pil_image
 
 
