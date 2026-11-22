@@ -629,7 +629,7 @@ def flatten_mask(all_masks):
     for mask in all_masks[1:]:
         merged_mask |= (mask * 255).to(torch.uint8)
 
-    return merged_mask
+    return merged_mask / 255.0
 
 
 def try_install_custom_node(custom_node_url, msg):

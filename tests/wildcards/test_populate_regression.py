@@ -101,6 +101,44 @@ def test_wildcard_scans_ignore_git_metadata(wildcard_directory, monkeypatch, cap
     assert not [r for r in caplog.records if r.levelno >= logging.WARNING]
 
 
+@pytest.mark.parametrize("on_demand", [False, True])
+@pytest.mark.parametrize("char", list("!%&';=@^`~") + ["！"])
+def test_name_with_special_character_resolves(wildcard_directory, monkeypatch, on_demand, char):
+    folder = wildcard_directory / f"set{char}"
+    folder.mkdir()
+    (folder / f"wow{char}.txt").write_text("red\n", encoding="utf-8")
+    monkeypatch.setattr(wc, "get_cache_limit", lambda: 1 if on_demand else 1024 * 1024)
+
+    wc.wildcard_load()
+
+    name = f"set{char}/wow{char}"
+    assert wc.process(f"a __{name}__ b", 42) == "a red b"
+    assert wc.process(f"__set{char}/*__ __*/wow{char}__ {{1$$__set{char}/*__}}", 42) == "red red red"
+    assert wc.process(f"{{2$$, $$2#__{name}__}}", 42) == "red, red"
+
+
+@pytest.mark.parametrize("char", list("!\"%&';=?@^`~") + ["！"])
+def test_yaml_key_with_special_character_resolves(char):
+    install_wildcards({f"key{char}": ["blue"]})
+
+    assert wc.process(f"a __key{char}__ b", 42) == "a blue b"
+
+
+@pytest.mark.parametrize("name", ["c++", "style\\old", "a.b"])
+def test_quantifier_repeats_a_name_with_special_character(name):
+    install_wildcards({"c++": ["red"], "style/old": ["red"], "a.b": ["red"], "axb": ["blue"]})
+
+    assert wc.process(f"{{2$$, $$2#__{name}__}} 2#__axb__", 42) == "red, red blue|blue"
+
+
+@pytest.mark.parametrize("text", ["__warm__|__cold__", "<lora:__warm__:0.5>", "3#__warm__ __cold__", "__warm__$$__cold__", "__warm__::__cold__", "{__warm__}{__cold__}",
+                                  "(__warm__:1.2),(__cold__)", "[__warm__|__cold__]", "__warm__,__cold__"])
+def test_prompt_syntax_between_wildcards_is_not_part_of_a_name(text):
+    install_wildcards({"warm": ["red"], "cold": ["blue"]})
+
+    assert "__" not in wc.process(text, 42)
+
+
 _FLOWERS = ["rose", "orchid", "iris", "carnation", "lily"]
 
 
@@ -248,14 +286,26 @@ def test_c5_4_wrong_syntax_rejected_as_equal_weights():
     )
 
 
-def test_c5_5_decimal_weight_current_behavior():
+def test_c5_5_weights_up_to_one_pick_one_option():
+    install_wildcards({"warm": ["red"], "cold": ["blue"]})
+
+    def get(i):
+        return populate("{0.3::__warm__|0.7::__cold__}", i)
+
+    assert_distribution(
+        get,
+        weights={"red": 0.3, "blue": 0.7},
+        n=1000,
+        sigma=3.0,
+    )
+
+
+def test_c5_7_weights_up_to_one_keep_the_selection_count():
     install_wildcards({})
-    allowed = {"a b", "b a"}
     for seed in SEEDS:
-        out = assert_determinism("{0.5::a|0.3::b}", seed)
-        assert out in allowed, (
-            f"baseline violation: {out!r} — decimal-weight parsing drift"
-        )
+        out = assert_determinism("{2$$, $$0.2::a|0.3::b|0.4::c}", seed)
+        picked = out.split(", ")
+        assert len(picked) == 2 and len(set(picked)) == 2 and set(picked) <= {"a", "b", "c"}, out
 
 
 def test_c5_6_simple_decimal_acceptance():

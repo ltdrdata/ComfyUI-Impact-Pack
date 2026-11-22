@@ -15,7 +15,9 @@ from impact import config, utils
 
 wildcards_path = os.path.join(config.pack_root, "wildcards")
 
-RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+?)__", re.IGNORECASE)
+WILDCARD_NAME = r"[^\s{}|$:#<>()\[\],]+?"
+WILDCARD = rf"__({WILDCARD_NAME})__"
+RE_WildCardQuantifier = re.compile(rf"(?P<quantifier>\d+)#__(?P<keyword>{WILDCARD_NAME})__", re.IGNORECASE)
 wildcard_lock = threading.Lock()
 wildcard_dict = {}
 
@@ -405,7 +407,6 @@ def process(text, seed=None):
             select_sep = ' '
             range_pattern = r'(\d+)(-(\d+))?'
             range_pattern2 = r'-(\d+)'
-            wildcard_pattern = r"__([\w.\-+/*\\]+?)__"
 
             if len(multi_select_pattern) > 1:
                 r = re.match(range_pattern, options[0])
@@ -429,8 +430,8 @@ def process(text, seed=None):
                         x = int(a)
                         select_range = (x, x)
 
-                    def expand_wildcard_or_return_string(options, pattern, wildcard_pattern):
-                        matches = re.findall(wildcard_pattern, pattern)
+                    def expand_wildcard_or_return_string(options, pattern):
+                        matches = re.findall(WILDCARD, pattern)
                         if len(options) == 1 and matches:
                             return get_wildcard_options(pattern)
                         else:
@@ -438,10 +439,10 @@ def process(text, seed=None):
                             return options
 
                     if select_range is not None and len(multi_select_pattern) == 2:
-                        options = expand_wildcard_or_return_string(options, multi_select_pattern[1], wildcard_pattern )
+                        options = expand_wildcard_or_return_string(options, multi_select_pattern[1])
                     elif select_range is not None and len(multi_select_pattern) == 3:
                         select_sep = multi_select_pattern[1]
-                        options = expand_wildcard_or_return_string(options, multi_select_pattern[2], wildcard_pattern )
+                        options = expand_wildcard_or_return_string(options, multi_select_pattern[2])
 
             adjusted_probabilities = []
 
@@ -477,7 +478,7 @@ def process(text, seed=None):
                         return random_gen.integers(low=_low_value, high=_high_value, size=1)
                 select_count = calculate_select_count(calculate_max(len(options), select_range[1]), select_range[0], random_gen)
 
-            if select_count > len(options) or total_prob <= 1:
+            if select_count > len(options) or (len(options) <= 1 and total_prob <= 1):
                 random_gen.shuffle(options)
                 selected_items = options
             else:
@@ -497,8 +498,7 @@ def process(text, seed=None):
         return replaced_string, replacements_found
 
     def get_wildcard_options(string):
-        pattern = r"__([\w.\-+/*\\]+?)__"
-        matches = re.findall(pattern, string)
+        matches = re.findall(WILDCARD, string)
 
         options = []
 
@@ -539,7 +539,7 @@ def process(text, seed=None):
 
                     logging.info(f"[Impact Pack] [get_wildcard_options] Result: matched={matched_count}, patterns={len(total_patterns)}")
                 else:
-                    subpattern = keyword.replace('*', '.*').replace('+', '\\+')
+                    subpattern = re.escape(keyword).replace('\\*', '.*')
                     for k in search_dict.keys():
                         if re.match(subpattern, k) is not None or re.match(subpattern, k+'/') is not None:
                             v = get_wildcard_value(k)
@@ -553,8 +553,7 @@ def process(text, seed=None):
         return options
 
     def replace_wildcard(string):
-        pattern = r"__([\w.\-+/*\\]+?)__"
-        matches = re.findall(pattern, string)
+        matches = re.findall(WILDCARD, string)
 
         replacements_found = False
 
@@ -601,7 +600,7 @@ def process(text, seed=None):
                                 total_patterns += v
                                 found = True
                 else:
-                    subpattern = keyword.replace('*', '.*').replace('+', '\\+')
+                    subpattern = re.escape(keyword).replace('\\*', '.*')
                     for k in search_dict.keys():
                         if re.match(subpattern, k) is not None or re.match(subpattern, k+'/') is not None:
                             v = get_wildcard_value(k)
@@ -629,9 +628,9 @@ def process(text, seed=None):
             keyword = match['keyword'].lower()
             quantifier = int(match['quantifier']) if match['quantifier'] else 1
             replacement = '__|__'.join([keyword,] * quantifier)
-            wilder_keyword = keyword.replace('*', '\\*')
+            wilder_keyword = re.escape(keyword)
             RE_TEMP = re.compile(fr"(?P<quantifier>\d+)#__(?P<keyword>{wilder_keyword})__", re.IGNORECASE)
-            text = RE_TEMP.sub(f"__{replacement}__", text)
+            text = RE_TEMP.sub(lambda _: f"__{replacement}__", text)
 
         pass1, is_replaced1 = replace_options(text)
 

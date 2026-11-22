@@ -76,7 +76,6 @@ The Wildcard System provides **dynamic text generation** for AI prompts, enablin
 **Limitations**:
 - Weights must be integers or simple decimals (e.g., `5`, `10`, `0.5`)
 - Complex decimal weights may cause parsing issues due to multiselect pattern conflicts
-- For decimal ratios, prefer integer equivalents: use `{5::a|3::b|2::c}` instead of `{0.5::a|0.3::b|0.2::c}`
 
 **Multi-Select**:
 - `{n$$opt1|opt2|opt3}` - Select exactly n items

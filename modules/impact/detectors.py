@@ -345,7 +345,7 @@ def track_video_segs(tracker, bbox_detector, image_frames, bbox_threshold, crop_
         for mask in v:
             masks.append(mask[y1:y2, x1:x2])
         cropped_mask = torch.stack(masks)
-        cropped_mask = (cropped_mask >= cutoff).to(torch.uint8).cpu()
+        cropped_mask = (cropped_mask >= cutoff).float().cpu()
 
         new_seg = SEG(
             seg.cropped_image,
