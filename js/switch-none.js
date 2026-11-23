@@ -3,6 +3,7 @@ import { app } from "../../scripts/app.js";
 
 // The server keeps the None of that run in its cache, so a later prompt can fail on it without the switch running again.
 const gaveNone = new Map();
+const warningOfLastRun = new Map();
 
 let marks = [];
 let layer;
@@ -79,8 +80,24 @@ app.registerExtension({
 });
 
 api.addEventListener("execution_start", () => unmark(marks));
-api.addEventListener("executing", ({ detail }) => gaveNone.delete(String(detail)));
+api.addEventListener("executing", ({ detail }) => {
+    gaveNone.delete(String(detail));
+    warningOfLastRun.delete(String(detail));
+});
 api.addEventListener("impact-switch-none", ({ detail }) => gaveNone.set(String(detail.node_id), detail.select));
+
+function warn(id) {
+    const node = nodeOf(id);
+    if (!node || !warningOfLastRun.has(String(id))) return;
+    mark(node, warningOfLastRun.get(String(id)));
+    if (!following) follow();
+}
+
+api.addEventListener("impact-node-warning", ({ detail }) => {
+    warningOfLastRun.set(String(detail.node_id), detail.text);
+    warn(detail.node_id);
+});
+api.addEventListener("execution_cached", ({ detail }) => detail.nodes.forEach(warn));
 
 api.addEventListener("execution_error", async ({ detail }) => {
     const empty = Object.entries(detail.current_inputs ?? {}).filter(([, values]) => values?.length === 1 && values[0] === null).map(([name]) => name);

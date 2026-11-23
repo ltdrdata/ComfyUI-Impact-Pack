@@ -39,7 +39,8 @@ async function load(output) {
     registerExtension: extension => extension.setup(),
   };
   const head = element();
-  const context = vm.createContext({ console, requestAnimationFrame() {}, document: { createElement: element, head, querySelector: element } });
+  let nextFrame;
+  const context = vm.createContext({ console, requestAnimationFrame(callback) { nextFrame = callback; }, document: { createElement: element, head, querySelector: element } });
   const imports = { '../../scripts/app.js': { app }, '../../scripts/api.js': { api: { addEventListener(name, listener) { listeners[name] = listener; } } } };
   const module = new vm.SourceTextModule(source, { context });
   await module.link(specifier => new vm.SyntheticModule(Object.keys(imports[specifier]), function () {
@@ -51,7 +52,8 @@ async function load(output) {
   const bubbles = () => area.children[0].children;
   const marks = () => Array.from(head.children[1].textContent.matchAll(/data-node-id="(\w+)"/g), (match, index) => [match[1], bubbles()[index].textContent]);
   const close = index => bubbles()[index].children[0].listeners.click();
-  return { send, fail, marks, close };
+  const frame = () => nextFrame();
+  return { send, fail, marks, close, frame };
 }
 
 const NO_LINK = [['5', 'returned None: select is 3, input3 has no link']];
@@ -124,4 +126,36 @@ test('the x of a bubble removes that mark and leaves the other', async () => {
   await page.fail('8', { clip: [null], text: ['blurry'] });
   page.close(0);
   assert.deepEqual(page.marks(), [['3', 'gave None to the Switch (Any)']]);
+});
+
+const UNPAIRED = 'returned mask1 unchanged: mask1 is a batch of 2 and mask2 a batch of 3';
+
+test('the server warns of a node: the node is marked with the text', async () => {
+  const page = await load(prompt(['4', 0]));
+  page.send('execution_start', {});
+  page.send('executing', '9');
+  page.send('impact-node-warning', { node_id: '9', text: UNPAIRED });
+  assert.deepEqual(page.marks(), [['9', UNPAIRED]]);
+});
+
+test('the next prompt takes the result of that node from the cache: the mark is the same', async () => {
+  const page = await load(prompt(['4', 0]));
+  page.send('executing', '9');
+  page.send('impact-node-warning', { node_id: '9', text: UNPAIRED });
+  page.send('execution_start', {});
+  assert.deepEqual(page.marks(), []);
+  page.send('execution_cached', { nodes: ['1', '9'] });
+  page.frame();
+  assert.deepEqual(page.marks(), [['9', UNPAIRED]]);
+});
+
+test('the node runs again and the server does not warn: no mark, and none from the cache after it', async () => {
+  const page = await load(prompt(['4', 0]));
+  page.send('impact-node-warning', { node_id: '9', text: UNPAIRED });
+  page.send('execution_start', {});
+  page.send('executing', '9');
+  page.send('execution_start', {});
+  page.send('execution_cached', { nodes: ['9'] });
+  page.frame();
+  assert.deepEqual(page.marks(), []);
 });

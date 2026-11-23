@@ -30,6 +30,7 @@ from . import utils
 from .node_base import ImpactNode
 from comfy_api.internal import classproperty
 from comfy_api.latest import io
+from comfy_execution.utils import get_executing_context
 import inspect
 import folder_paths
 import torch
@@ -2070,6 +2071,18 @@ class FlattenMask(ImpactNode):
         return io.NodeOutput(masks)
 
 
+def warn_of_unpaired_batches(mask1, mask2):
+    count1, count2 = mask1.shape[:-2].numel(), mask2.shape[:-2].numel()
+    if count1 == count2 or 1 in (count1, count2):
+        return
+
+    text = f"returned mask1 unchanged: mask1 is a batch of {count1} and mask2 a batch of {count2}"
+    logging.warning(f"[Impact Pack] Pixelwise: {text}")
+    context = get_executing_context()
+    if context is not None:
+        PromptServer.instance.send_sync("impact-node-warning", {"node_id": context.node_id, "text": text}, PromptServer.instance.client_id)
+
+
 class BitwiseAndMask(ImpactNode):
     @classmethod
     def define_schema(cls):
@@ -2086,6 +2099,7 @@ class BitwiseAndMask(ImpactNode):
 
     @classmethod
     def execute(cls, mask1, mask2):
+        warn_of_unpaired_batches(mask1, mask2)
         mask = utils.bitwise_and_masks(mask1, mask2)
         return io.NodeOutput(mask)
 
@@ -2106,6 +2120,7 @@ class SubtractMask(ImpactNode):
 
     @classmethod
     def execute(cls, mask1, mask2):
+        warn_of_unpaired_batches(mask1, mask2)
         mask = utils.subtract_masks(mask1, mask2)
         return io.NodeOutput(mask)
 
@@ -2126,6 +2141,7 @@ class AddMask(ImpactNode):
 
     @classmethod
     def execute(cls, mask1, mask2):
+        warn_of_unpaired_batches(mask1, mask2)
         mask = utils.add_masks(mask1, mask2)
         return io.NodeOutput(mask)
 

@@ -308,9 +308,22 @@ def combine_masks2(masks):
         return mask
 
 
+def to_same_shape(mask1, mask2):
+    if mask1.shape == mask2.shape:
+        return mask1, mask2
+
+    mask1 = mask1.reshape((-1, *mask1.shape[-2:]))
+    mask2 = mask2.reshape((-1, *mask2.shape[-2:]))
+    if mask1.shape[-2:] != mask2.shape[-2:]:
+        mask2 = resize_mask(mask2, mask1.shape[-2:])
+    if 1 in (len(mask1), len(mask2)):
+        mask1, mask2 = torch.broadcast_tensors(mask1, mask2)
+
+    return mask1, mask2
+
+
 def bitwise_and_masks(mask1, mask2):
-    mask1 = mask1.cpu()
-    mask2 = mask2.cpu()
+    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
     cv2_mask1 = np.array(mask1)
     cv2_mask2 = np.array(mask2)
 
@@ -443,8 +456,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
 
 
 def subtract_masks(mask1, mask2):
-    mask1 = mask1.cpu()
-    mask2 = mask2.cpu()
+    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
 
@@ -456,8 +468,7 @@ def subtract_masks(mask1, mask2):
 
 
 def add_masks(mask1, mask2):
-    mask1 = mask1.cpu()
-    mask2 = mask2.cpu()
+    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
 
