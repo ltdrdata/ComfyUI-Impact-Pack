@@ -70,8 +70,9 @@ def test_each_image_of_a_list_gets_the_segs_of_its_own_place(ui, restore_by_name
     for name in ("ImpactDecomposeSEGS", "ImpactDecomposeSEGSList"):
         assert definitions[name]["input"]["required"] == {"segs": ["SEGS"]}
         assert definitions[name]["output"] == ["SEGS_HEADER", "SEG_ELT"]
+    assert definitions["ImpactAssembleSEGS"]["input"] == {"required": {"seg_header": ["SEGS_HEADER"], "seg_elt": ["SEG_ELT", {"lazy": True}]}}
+    assert definitions["ImpactAssembleSEGSList"]["input"] == {"required": {"seg_header": ["SEGS_HEADER"], "seg_elt": ["SEG_ELT"]}}
     for name in ("ImpactAssembleSEGS", "ImpactAssembleSEGSList"):
-        assert definitions[name]["input"] == {"required": {"seg_header": ["SEGS_HEADER"], "seg_elt": ["SEG_ELT"]}}
         assert definitions[name]["output"] == ["SEGS"]
     assert definitions["ImpactDecomposeSEGS"]["output_is_list"] == [False, True]
     assert definitions["ImpactDecomposeSEGSList"]["output_is_list"] == [True, True]

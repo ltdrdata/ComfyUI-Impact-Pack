@@ -25,13 +25,16 @@ def runtime():
         from comfy.cli_args import args
         patch.setattr(args, "cpu", True)
         import execution
+        import nodes
         from aiohttp import web
+        from comfy_extras.nodes_mask import SolidMask
         from server import PromptServer
         patch.setattr(PromptServer, "instance", SimpleNamespace(
             routes=web.RouteTableDef(), add_on_prompt_handler=lambda handler: None), raising=False)
         from impact import segs_nodes
         assert Path(segs_nodes.__file__).resolve().parents[2] == Path(__file__).resolve().parents[1]
-        yield SimpleNamespace(execution=execution, nodes=segs_nodes, SEG=segs_nodes.SEG)
+        yield SimpleNamespace(execution=execution, nodes=segs_nodes, SEG=segs_nodes.SEG,
+                              NODE_CLASS_MAPPINGS=nodes.NODE_CLASS_MAPPINGS, SolidMask=SolidMask)
 
 
 def run(runtime, node, **inputs):
@@ -98,7 +101,8 @@ def test_decompose_segs_and_assemble_segs_are_as_they_were(runtime, counts):
     listed = make(runtime, [(64 + index, 96) for index in range(len(counts))], counts)
     wanted = [seg for segs in listed for seg in segs[1]]
     headers, elements = run(runtime, runtime.nodes.DecomposeSEGS, segs=listed)
-    assert all(found is given[0] for found, given in zip(headers, listed))
+    assert headers == [given[0] for given in listed]
+    assert all(found is given[0] for found, given in zip(headers, listed) if given[1])
     assert len(elements) == len(wanted) and all(found is given for found, given in zip(elements, wanted))
     assembled, = run(runtime, runtime.nodes.AssembleSEGS, seg_header=headers, seg_elt=elements)
     assert_same(assembled, [(listed[0][0], wanted)])
@@ -275,3 +279,63 @@ def test_a_dilated_element_returns_to_its_own_segs(runtime):
     assembled = assemble(runtime, headers, dilated)
     assert [tuple(segs[0]) for segs in assembled] == [(64, 64), (96, 96), (64, 64)]
     assert [[seg.label for seg in segs[1]] for segs in assembled] == [[seg.label for seg in segs[1]] for segs in listed]
+
+
+def detect_decompose_edit_and_assemble(runtime, monkeypatch, mask_value):
+    received = []
+
+    class Next:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {"segs": ("SEGS", )}}
+
+        RETURN_TYPES = ()
+        OUTPUT_NODE = True
+        FUNCTION = "doit"
+
+        def doit(self, segs):
+            received.append(segs)
+            return {}
+
+    for name, node in (("SolidMask", runtime.SolidMask), ("MaskToSEGS", runtime.nodes.MaskToSEGS),
+                       ("ImpactDecomposeSEGS", runtime.nodes.DecomposeSEGS), ("ImpactFrom_SEG_ELT", runtime.nodes.From_SEG_ELT),
+                       ("ImpactEdit_SEG_ELT", runtime.nodes.Edit_SEG_ELT), ("ImpactAssembleSEGS", runtime.nodes.AssembleSEGS), ("Next", Next)):
+        monkeypatch.setitem(runtime.NODE_CLASS_MAPPINGS, name, node)
+    prompt = {
+        "1": {"class_type": "SolidMask", "inputs": {"value": mask_value, "width": 64, "height": 48}},
+        "2": {"class_type": "MaskToSEGS", "inputs": {"mask": ["1", 0], "combined": False, "crop_factor": 1.0, "bbox_fill": False,
+                                                     "drop_size": 1, "contour_fill": False}},
+        "3": {"class_type": "ImpactDecomposeSEGS", "inputs": {"segs": ["2", 0]}},
+        "4": {"class_type": "ImpactFrom_SEG_ELT", "inputs": {"seg_elt": ["3", 1]}},
+        "5": {"class_type": "ImpactEdit_SEG_ELT", "inputs": {"seg_elt": ["4", 0], "cropped_mask_opt": ["4", 2], "label_opt": "edited"}},
+        "6": {"class_type": "ImpactAssembleSEGS", "inputs": {"seg_header": ["3", 0], "seg_elt": ["5", 0]}},
+        "7": {"class_type": "Next", "inputs": {"segs": ["6", 0]}},
+    }
+    server = SimpleNamespace(client_id=None, last_node_id=None, send_sync=lambda *args: None)
+    executor = runtime.execution.PromptExecutor(server, cache_type=runtime.execution.CacheType.CLASSIC, cache_args={"ram": 0, "ram_inactive": 0})
+    executor.execute(prompt, "detect", {}, ["7"])
+    errors = [message["exception_message"] for event, message in executor.status_messages if event == "execution_error"]
+    return errors, received
+
+
+def test_a_segs_without_a_seg_comes_through_decompose_edit_and_assemble_as_a_segs_without_a_seg(runtime, monkeypatch):
+    errors, received = detect_decompose_edit_and_assemble(runtime, monkeypatch, 0.0)
+    assert errors == []
+    assert [(tuple(segs[0]), segs[1]) for segs in received] == [((48, 64), [])]
+
+
+def test_a_segs_assembled_from_a_list_that_begins_without_a_seg_keeps_its_segs_when_decomposed_again(runtime):
+    listed = make(runtime, [(64, 64), (64, 64)], (0, 2))
+    headers, elements = run(runtime, runtime.nodes.DecomposeSEGS, segs=listed)
+    assembled, = run(runtime, runtime.nodes.AssembleSEGS, seg_header=headers, seg_elt=elements)
+    headers, elements = run(runtime, runtime.nodes.DecomposeSEGS, segs=assembled)
+    assert_same(run(runtime, runtime.nodes.AssembleSEGS, seg_header=headers, seg_elt=elements)[0], [((64, 64), listed[1][1])])
+
+
+def test_a_seg_edited_between_decompose_and_assemble_comes_back_edited(runtime, monkeypatch):
+    errors, received = detect_decompose_edit_and_assemble(runtime, monkeypatch, 1.0)
+    assert errors == []
+    (header, (seg, )), = received
+    assert tuple(header) == (48, 64)
+    assert (seg.label, tuple(seg.bbox), seg.cropped_mask.shape) == ("edited", (0, 0, 64, 48), (48, 64))
+    assert seg.cropped_mask.min() == seg.cropped_mask.max() == 1

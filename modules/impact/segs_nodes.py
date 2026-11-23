@@ -964,6 +964,12 @@ class Count_Elts_in_SEGS(ImpactNode):
         return io.NodeOutput(len(segs[1]))
 
 
+class HeaderOfNoSEG(tuple):
+    """The header Decompose (SEGS) gives for a SEGS without a SEG. ComfyUI runs a node once and without its input when
+    that input is an empty list, so the nodes between Decompose (SEGS) and Assemble (SEGS) cannot run for such a SEGS,
+    and Assemble (SEGS) does not ask for their elements."""
+
+
 class DecomposeSEGS:
     @classmethod
     def INPUT_TYPES(s):
@@ -980,7 +986,8 @@ class DecomposeSEGS:
     CATEGORY = "ImpactPack/Util"
 
     def doit(self, segs):
-        return segs
+        header, items = segs
+        return (header if items else HeaderOfNoSEG(header)), items
 
 
 class AssembleSEGS:
@@ -988,7 +995,7 @@ class AssembleSEGS:
     def INPUT_TYPES(s):
         return {"required": {
                      "seg_header": ("SEGS_HEADER", ),
-                     "seg_elt": ("SEG_ELT", ),
+                     "seg_elt": ("SEG_ELT", {"lazy": True}),
                      },
                 }
 
@@ -1000,8 +1007,14 @@ class AssembleSEGS:
 
     CATEGORY = "ImpactPack/Util"
 
+    def check_lazy_status(self, seg_header, seg_elt):
+        if not all(isinstance(header, HeaderOfNoSEG) for header in seg_header):
+            return ["seg_elt"]
+
     def doit(self, seg_header, seg_elt):
-        return ((seg_header[0], seg_elt), )
+        if all(isinstance(header, HeaderOfNoSEG) for header in seg_header):
+            seg_elt = []
+        return ((tuple(seg_header[0]), seg_elt), )
 
 
 class SEGSHeader(tuple):
