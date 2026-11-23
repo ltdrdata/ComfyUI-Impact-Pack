@@ -105,7 +105,7 @@ def test_segmented_masks_preserve_detection_boundaries(core, monkeypatch, scores
     np.testing.assert_array_equal(combined.numpy(), np.logical_or.reduce(expected))
     assert combined.dtype == torch.float32
     assert combined.device.type == "cpu"
-    assert batch.dtype == torch.uint8
+    assert batch.dtype == torch.float32
     assert batch.device.type == "cpu"
     assert tuple(batch.shape) == (len(scores), 1, HEIGHT, WIDTH)
     np.testing.assert_array_equal(batch[:, 0].numpy(), expected)
@@ -234,7 +234,7 @@ def test_selected_zero_mask_keeps_its_batch_entry(core, monkeypatch, count, zero
     expected = np.stack([mask[0] for mask in masks])
     np.testing.assert_array_equal(combined.numpy(), np.logical_or.reduce(expected))
     np.testing.assert_array_equal(batch[:, 0].numpy(), expected)
-    assert batch.dtype == torch.uint8
+    assert batch.dtype == torch.float32
     assert tuple(batch.shape) == (count, 1, HEIGHT, WIDTH)
     assert torch.count_nonzero(batch[zero_index]) == 0
 
@@ -275,7 +275,7 @@ def test_single_candidate_wrapper_keeps_each_detection(core, dtype, value):
     combined, batch = detect(core, model, segments(core, 2))
     np.testing.assert_array_equal(combined.numpy(), (candidates(0)[0] | candidates(1)[0]) * value)
     np.testing.assert_array_equal(batch[:, 0].numpy(), [candidates(0)[0], candidates(1)[0]])
-    assert batch.dtype == torch.uint8
+    assert batch.dtype == torch.float32
     assert wrapper.released
 
 
@@ -493,6 +493,7 @@ def test_the_sam3_video_detector_tracks_each_detection_of_the_first_frame(core, 
     assert len(segs) == 2
     for i, seg in enumerate(segs):
         x1, y1, x2, y2 = seg.crop_region
+        assert seg.cropped_mask.dtype == torch.float32
         tracked = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
         tracked[:, y1:y2, x1:x2] = seg.cropped_mask.numpy()
         np.testing.assert_array_equal(tracked, np.stack([np.roll(boxes[i], frame, axis=-1) for frame in range(3)]))
@@ -546,6 +547,7 @@ def test_the_sam2_video_detector_cuts_the_tracked_logits_at_its_threshold(core, 
     def tracked(threshold):
         ((shape, segs), ) = detectors.SAM2VideoDetectorSEGS.doit(bbox_detector, sam2, torch.zeros((3, HEIGHT, WIDTH, 3)), 0.5, threshold, 3.0, 1)
         x1, y1, x2, y2 = segs[0].crop_region
+        assert segs[0].cropped_mask.dtype == torch.float32
         mask = np.zeros((3, HEIGHT, WIDTH), dtype=np.uint8)
         mask[:, y1:y2, x1:x2] = segs[0].cropped_mask.numpy()
         return mask

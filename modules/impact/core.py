@@ -1187,7 +1187,7 @@ def make_sam_mask_segmented(sam, segs, image, detection_hint, dilation,
 
     batch_masks = None
     if total_masks:
-        batch_masks = torch.stack(total_masks).unsqueeze(1).ne(0).to(torch.uint8)
+        batch_masks = torch.stack(total_masks).unsqueeze(1).ne(0).float()
     return mask, batch_masks
 
 
@@ -1310,7 +1310,7 @@ class ONNXDetector:
                         if detailer_hook is not None:
                             crop_region = detailer_hook.post_crop_region(w, h, item_bbox, crop_region)
 
-                        mask = np.zeros((h, w))
+                        mask = np.zeros((h, w), dtype=np.float32)
                         mask[y1:y2, x1:x2] = 1
                         cropped_mask = utils.dilate_mask(utils.crop_ndarray2(mask, crop_region), dilation)
 
