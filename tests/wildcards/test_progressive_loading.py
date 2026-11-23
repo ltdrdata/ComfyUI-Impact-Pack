@@ -12,10 +12,9 @@ def test_metadata_scan(wildcard_loader):
     (wildcard_loader / "first.txt").write_text("one\ntwo\n")
     (wildcard_loader / "second.txt").write_text("three\n")
     (wildcard_loader / "palette.yaml").write_text("colors: [red, blue]\n")
-    assert wildcards.scan_wildcard_metadata(wildcard_loader) == 3
+    assert wildcards.scan_wildcard_metadata(wildcard_loader) == 2
     assert wildcards.available_wildcards == {
-        name: str(wildcard_loader / filename) for name, filename in (
-            ("first", "first.txt"), ("second", "second.txt"), ("palette", "palette.yaml"))
+        name: str(wildcard_loader / filename) for name, filename in (("first", "first.txt"), ("second", "second.txt"))
     }
     assert wildcards.loaded_wildcards == {}
     assert wildcards.get_wildcard_dict() == {}

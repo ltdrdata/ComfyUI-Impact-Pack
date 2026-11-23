@@ -21,10 +21,15 @@ def test_decoding_across_loaders(tmp_path, monkeypatch, caplog, encoding, file_t
     path.write_bytes(content.encode(encoding))
     monkeypatch.setattr(wc, "wildcard_dict", {})
     monkeypatch.setattr(wc, "loaded_wildcards", {})
+    monkeypatch.setattr(wc, "available_wildcards", {})
 
     with caplog.at_level(logging.WARNING):
         if loader == "direct":
-            result = wc.load_txt_wildcard(path) if file_type == "txt" else wc.load_yaml_wildcard(path)
+            if file_type == "txt":
+                result = wc.load_txt_wildcard(path)
+            else:
+                wc.load_yaml_wildcard(path)
+                result = wc.loaded_wildcards["encoded"]
         elif loader == "lazy":
             result = wc.LazyWildcardLoader(path, file_type).get_data()
             if file_type == "yaml":

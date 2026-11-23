@@ -280,7 +280,7 @@ def test_c6_1_case_insensitive_equivalence():
 
 def test_c6_2_filename_case_normalize():
     install_wildcards({})
-    wc.read_wildcard("Jewel", ["diamond", "ruby", "sapphire"])
+    wc.read_wildcard("Jewel", ["diamond", "ruby", "sapphire"], wc.wildcard_dict)
     assert "Jewel" not in wc.wildcard_dict
     assert "jewel" in wc.wildcard_dict
     for seed in SEEDS:
