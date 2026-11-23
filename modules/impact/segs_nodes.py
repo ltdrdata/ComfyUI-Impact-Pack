@@ -1451,6 +1451,9 @@ class MediaPipeFaceMeshToSEGS(ImpactNode):
 
     @classmethod
     def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+        if len(image) > 1:
+            raise Exception('[Impact Pack] ERROR: MediaPipeFaceMeshToSEGS does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return io.NodeOutput(result)
 
