@@ -66,3 +66,17 @@ def test_crop_narrower_than_the_ratio_is_still_refined(runtime, monkeypatch, wid
     _, encoded, _ = refine(runtime, monkeypatch, 16, True, width, height)
 
     assert size(encoded) == expected
+
+
+def test_video_vae_gives_one_picture_of_the_size_of_the_input(runtime, monkeypatch):
+    from impact import segs_upscaler
+
+    vae = fake_vae(runtime, 8, True)
+    decode = vae.decode.side_effect
+    vae.decode.side_effect = lambda samples: decode(samples).unsqueeze(1)
+    monkeypatch.setattr(segs_upscaler.impact_sampling, "ksampler_wrapper", lambda *args, **kwargs: args[8])
+    image = torch.rand(1, 480, 800, 3)
+
+    refined = segs_upscaler.img2img_segs(image, SimpleNamespace(model_options={}), None, vae, 123, 20, 7.0, "euler", "normal", [], [], 0.5, None)
+
+    assert refined.shape == image.shape

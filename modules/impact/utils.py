@@ -323,7 +323,7 @@ def to_same_shape(mask1, mask2):
 
 
 def bitwise_and_masks(mask1, mask2):
-    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
+    mask1, mask2 = to_same_shape(mask1.cpu().float(), mask2.cpu().float())
     cv2_mask1 = np.array(mask1)
     cv2_mask2 = np.array(mask2)
 
@@ -456,7 +456,7 @@ def tensor_gaussian_blur_mask(mask, kernel_size, sigma=10.0):
 
 
 def subtract_masks(mask1, mask2):
-    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
+    mask1, mask2 = to_same_shape(mask1.cpu().float(), mask2.cpu().float())
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
 
@@ -468,7 +468,7 @@ def subtract_masks(mask1, mask2):
 
 
 def add_masks(mask1, mask2):
-    mask1, mask2 = to_same_shape(mask1.cpu(), mask2.cpu())
+    mask1, mask2 = to_same_shape(mask1.cpu().float(), mask2.cpu().float())
     cv2_mask1 = np.array(mask1) * 255
     cv2_mask2 = np.array(mask2) * 255
 

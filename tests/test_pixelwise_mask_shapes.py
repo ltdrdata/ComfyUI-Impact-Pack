@@ -51,6 +51,16 @@ def test_a_single_mask_goes_with_every_mask_of_a_batch(nodes, single):
     torch.testing.assert_close(nodes.overlap(BATCH, single), BATCH * SINGLE)
 
 
+@pytest.mark.parametrize("dtype", [torch.float64, torch.float16, torch.uint8, torch.bool], ids=str)
+def test_a_mask_of_another_dtype_counts_as_its_values(nodes, dtype):
+    other = SINGLE.to(dtype)
+    for mask1, mask2 in ((BATCH, other), (other, BATCH), (other, other)):
+        float1, float2 = mask1.float(), mask2.float()
+        torch.testing.assert_close(nodes.add(mask1, mask2), torch.clamp(float1 + float2, 0, 1))
+        torch.testing.assert_close(nodes.subtract(mask1, mask2), torch.clamp(float1 - float2, 0, 1))
+        torch.testing.assert_close(nodes.overlap(mask1, mask2), float1 * float2)
+
+
 @pytest.mark.parametrize("mask1", [torch.ones((64, 64)), torch.ones((1, 64, 64)), torch.ones((3, 64, 64))],
                          ids=["height by width", "batch of one", "batch of three"])
 def test_a_mask_of_another_size_is_stretched_to_the_first_mask(nodes, mask1):
