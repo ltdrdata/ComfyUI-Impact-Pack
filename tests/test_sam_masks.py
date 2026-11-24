@@ -361,6 +361,26 @@ class TrackedNowhere(torch.nn.Identity):
             yield frame, inference_state["obj_ids"], torch.zeros(len(inference_state["obj_ids"]), 1, self.image_size, self.image_size)
 
 
+class TrackedOnlyBackground(TrackedNowhere):
+    image_size = 1024
+
+    def propagate_in_video(self, inference_state):
+        for frame in range(inference_state["num_frames"]):
+            yield frame, inference_state["obj_ids"], torch.full((len(inference_state["obj_ids"]), 1, self.image_size, self.image_size), -10.0)
+
+
+@pytest.mark.parametrize("width,height", [(512, 768), (768, 512), (854, 480)])
+def test_a_sam2_video_mask_of_background_has_no_object_at_the_border_of_the_frame(core, monkeypatch, width, height):
+    monkeypatch.setattr(core, "is_sam2_available", True)
+    monkeypatch.setattr(core, "build_sam2_video_predictor", lambda config, modelname, device="cuda": TrackedOnlyBackground(), raising=False)
+    model = core.SAM2Wrapper(config=None, modelname=None, is_auto_mode=False, safe_to_gpu=None, device_mode="CPU")
+
+    masks = model.predict_video_segs(torch.zeros(2, height, width, 3), segments(core, 1))[0]
+
+    assert masks.shape == (2, height, width, 1)
+    assert (masks < 0).all()
+
+
 @pytest.mark.parametrize("device_mode", ["AUTO", "Prefer GPU", "CPU"])
 @pytest.mark.parametrize("used_for", ["an image", "a video"])
 def test_a_sam2_model_is_built_on_the_cpu_and_goes_to_the_gpu_only_as_its_device_mode_says(core, monkeypatch, used_for, device_mode):
