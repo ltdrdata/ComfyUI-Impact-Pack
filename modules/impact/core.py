@@ -1861,7 +1861,6 @@ class TwoSamplersForMaskUpscaler:
         cur_step, total_step = step_info
 
         cur_step += 1
-        total_step += 1
 
         if sample_schedule == "none":
             return False
@@ -1882,13 +1881,13 @@ class TwoSamplersForMaskUpscaler:
             return cur_step >= total_step - 1
 
         elif sample_schedule == "interleave1+last1":
-            return cur_step % 2 == 0 or cur_step >= total_step - 1
+            return cur_step % 2 == 0 or cur_step == total_step
 
         elif sample_schedule == "interleave2+last1":
-            return cur_step % 2 == 0 or cur_step >= total_step - 1
+            return cur_step % 3 == 0 or cur_step == total_step
 
         elif sample_schedule == "interleave3+last1":
-            return cur_step % 2 == 0 or cur_step >= total_step - 1
+            return cur_step % 4 == 0 or cur_step == total_step
 
     def do_samples(self, step_info, base_sampler, mask_sampler, sample_schedule, mask, upscaled_latent):
         mask = utils.make_2d_mask(mask)
