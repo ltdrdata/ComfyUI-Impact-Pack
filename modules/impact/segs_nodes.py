@@ -7,7 +7,7 @@ from nodes import MAX_RESOLUTION
 from . import core
 from .core import SEG
 import impact.utils as utils
-from impact.node_base import ImpactNode
+from impact.node_base import ImpactNode, warn_on_node
 from comfy_api.latest import io
 from . import defs
 from . import segs_upscaler
@@ -1451,6 +1451,10 @@ class MediaPipeFaceMeshToSEGS(ImpactNode):
 
     @classmethod
     def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
+        if len(image) > 1:
+            warn_on_node("MediaPipeFaceMeshToSEGS", f"used the first of {len(image)} images: put Image Batch to Image List before this node")
+            image = image[:1]
+
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return io.NodeOutput(result)
 
