@@ -32,7 +32,7 @@ def mesh(*ovals):
 
 
 LARGE, SMALL = (6, 10, 58, 54), (20, 24, 44, 40)
-FIRST_ONLY = "used the first image only: the batch holds 2 images. Put Image Batch to Image List before this node to get the SEGS of every image"
+FIRST_ONLY = "used the first of 2 images: put Image Batch to Image List before this node"
 
 
 def test_one_frame_gives_the_seg_of_its_face(runtime, caplog):

@@ -1452,7 +1452,7 @@ class MediaPipeFaceMeshToSEGS(ImpactNode):
     @classmethod
     def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
         if len(image) > 1:
-            warn_on_node("MediaPipeFaceMeshToSEGS", f"used the first image only: the batch holds {len(image)} images. Put Image Batch to Image List before this node to get the SEGS of every image")
+            warn_on_node("MediaPipeFaceMeshToSEGS", f"used the first of {len(image)} images: put Image Batch to Image List before this node")
             image = image[:1]
 
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
