@@ -220,6 +220,15 @@ function progressExecuteHandler(event) {
 	}
 }
 
+function receiver_link_id(node) {
+	const link = node.graph.getLink(node.inputs.find((input) => input.name == 'link_id')?.link);
+	if(!link)
+		return node.widgets.find((widget) => widget.name == 'link_id').value;
+
+	const value_widget_of_source = node.graph.getNodeById(link.origin_id).widgets?.[0];
+	return value_widget_of_source?.value;
+}
+
 function imgSendHandler(event) {
 	if(event.detail.images.length > 0){
 		let data = event.detail.images[0];
@@ -228,27 +237,7 @@ function imgSendHandler(event) {
 		let nodes = app.graph._nodes;
 		for(let i in nodes) {
 			if(nodes[i].type == 'ImageReceiver') {
-				let is_linked = false;
-
-				if(nodes[i].widgets[1].type == 'converted-widget') {
-					for(let j in nodes[i].inputs) {
-						let input = nodes[i].inputs[j];
-						if(input.name === 'link_id') {
-							if(input.link) {
-								let src_node = app.graph._nodes_by_id[app.graph.links[input.link].origin_id];
-								if(src_node.type == 'ImpactInt' || src_node.type == 'PrimitiveNode') {
-									is_linked = true;
-								}
-							}
-							break;
-						}
-					}
-				}
-				else if(nodes[i].widgets[1].value == event.detail.link_id) {
-					is_linked = true;
-				}
-
-				if(is_linked) {
+				if(receiver_link_id(nodes[i]) == event.detail.link_id) {
 					if(data.subfolder)
 						nodes[i].widgets[0].value = `${data.subfolder}/${data.filename} [${data.type}]`;
 					else
@@ -276,7 +265,7 @@ function latentSendHandler(event) {
 		let nodes = app.graph._nodes;
 		for(let i in nodes) {
 			if(nodes[i].type == 'LatentReceiver') {
-				if(nodes[i].widgets[1].value == event.detail.link_id) {
+				if(receiver_link_id(nodes[i]) == event.detail.link_id) {
 					if(data.subfolder)
 						nodes[i].widgets[0].value = `${data.subfolder}/${data.filename} [${data.type}]`;
 					else
@@ -297,7 +286,7 @@ function valueSendHandler(event) {
 	let nodes = app.graph._nodes;
 	for(let i in nodes) {
 		if(nodes[i].type == 'ImpactValueReceiver') {
-			if(nodes[i].widgets[2].value == event.detail.link_id) {
+			if(receiver_link_id(nodes[i]) == event.detail.link_id) {
 				nodes[i].widgets[1].value = event.detail.value;
 
 				let typ = typeof event.detail.value;
