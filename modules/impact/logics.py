@@ -8,8 +8,8 @@ from impact.node_base import ImpactNode
 from comfy_api.latest import io
 import impact.core as core
 import re
-import nodes
 import logging
+import comfy.model_management
 
 
 class ImpactCompare:
@@ -630,6 +630,11 @@ def nodes_behind(workflow, node_id):
     return found
 
 
+def is_taken(nodes, node_id):
+    """Whether one of the nodes of a prompt takes the first output of a node."""
+    return any(link == [node_id, 0] for node in nodes for link in node['inputs'].values())
+
+
 class ImpactRemoteBoolean:
     @classmethod
     def INPUT_TYPES(cls):
@@ -707,10 +712,28 @@ class ImpactControlBridge:
                 # a copy of the node that a loop made while the prompt runs: IS_CHANGED is not told which node it is a copy of
                 return float("NaN")
 
-            return [node_id for node_id, _ in nodes_behind(workflow, unique_id)]
+            return [node_id for node_id, _ in nodes_behind(workflow, unique_id)], is_taken(core.current_prompt['prompt'].values(), unique_id)
+
+    @staticmethod
+    def change_behind(mode, behavior, unique_id, extra_pnginfo, dynprompt):
+        """What the page has to change in the nodes behind the bridge before the prompt can go on, as the message for the page. None when there is nothing to change."""
+        unique_id = dynprompt.get_display_node_id(unique_id)
+        wanted, change = (0, 'actives') if mode else (2, 'mutes') if behavior == "Mute" or behavior == True else (4, 'bypasses')  # noqa: E712
+        others = [node_id for node_id, node in nodes_behind(extra_pnginfo['workflow'], unique_id) if node['mode'] in (0, 2, 4) and node['mode'] != wanted]
+        if others:
+            return {"node_id": unique_id, change: others}
 
     def check_lazy_status(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
-        if mode or behavior != "Stop":
+        if behavior == "Stop":
+            taken = mode
+        elif extra_pnginfo is None:
+            taken = True
+        elif self.change_behind(mode, behavior, unique_id, extra_pnginfo, dynprompt):
+            taken = False
+        else:
+            taken = mode or is_taken((dynprompt.get_node(node_id) for node_id in dynprompt.all_node_ids()), unique_id)
+
+        if taken:
             return ["value"]
 
     def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
@@ -730,39 +753,10 @@ class ImpactControlBridge:
             logging.warning(f"[Impact Pack] limitation: '{behavior}' behavior cannot be used in API execution.")
             return (value,)
         else:
-            unique_id = dynprompt.get_display_node_id(unique_id)
-
-            active_nodes = []
-            mute_nodes = []
-            bypass_nodes = []
-
-            for next_node_id, next_node in nodes_behind(extra_pnginfo['workflow'], unique_id):
-                node_mode = next_node['mode']
-
-                if node_mode == 0:
-                    active_nodes.append(next_node_id)
-                elif node_mode == 2:
-                    mute_nodes.append(next_node_id)
-                elif node_mode == 4:
-                    bypass_nodes.append(next_node_id)
-
-            if mode:
-                should_be_active_nodes = mute_nodes + bypass_nodes
-                if len(should_be_active_nodes) > 0:
-                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'actives': list(should_be_active_nodes)})
-                    nodes.interrupt_processing()
-
-            elif behavior == "Mute" or behavior == True:  # noqa: E712
-                should_be_mute_nodes = active_nodes + bypass_nodes
-                if len(should_be_mute_nodes) > 0:
-                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'mutes': list(should_be_mute_nodes)})
-                    nodes.interrupt_processing()
-
-            else:
-                should_be_bypass_nodes = active_nodes + mute_nodes
-                if len(should_be_bypass_nodes) > 0:
-                    PromptServer.instance.send_sync("impact-bridge-continue", {"node_id": unique_id, 'bypasses': list(should_be_bypass_nodes)})
-                    nodes.interrupt_processing()
+            change = self.change_behind(mode, behavior, unique_id, extra_pnginfo, dynprompt)
+            if change:
+                PromptServer.instance.send_sync("impact-bridge-continue", change)
+                raise comfy.model_management.InterruptProcessingException()
 
             return (value, )
 
