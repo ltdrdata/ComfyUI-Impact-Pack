@@ -11,17 +11,18 @@ const RECEIVERS = {
   ImpactValueReceiver: { event: 'value-send', widgets: ['typ', 'value', 'link_id'], detail: { value: 37 }, taken: 37 },
 };
 
-async function send(type, { widget, linked }) {
+async function send(type, { widget, linked, in_subgraph = false, from_subgraph_input = false }) {
   const listeners = {};
-  const receiver = { type, size: [200, 100], inputs: [{ name: 'link_id', link: linked === undefined ? null : 9 }],
+  const receiver = { type, size: [200, 100], inputs: [{ name: 'link_id', link: linked === undefined && !from_subgraph_input ? null : 9 }],
                      widgets: RECEIVERS[type].widgets.map(name => ({ name, value: name == 'link_id' ? widget : 'before' })) };
   const graph = {
     _nodes: [receiver],
-    getLink: id => id == null ? undefined : { origin_id: 4 },
+    getLink: id => id == null ? undefined : { origin_id: from_subgraph_input ? -10 : 4 },
     getNodeById: id => ({ 4: { type: 'ImpactInt', widgets: [{ name: 'value', value: linked }] } })[id],
   };
   receiver.graph = graph;
-  const app = { graph, canvas: { setDirty() {} }, getPreviewFormatParam: () => '', registerExtension() {} };
+  const root = in_subgraph ? { _nodes: [{ type: 'a subgraph', subgraph: graph }] } : graph;
+  const app = { graph: root, canvas: { setDirty() {} }, getPreviewFormatParam: () => '', registerExtension() {} };
   const context = vm.createContext({ window: {}, console, document: {}, Image: class {} });
   const imports = {
     '../../scripts/app.js': { app, ComfyApp: {} },
@@ -54,5 +55,14 @@ for (const type of Object.keys(RECEIVERS)) {
   test(`${type} with a linked link_id goes by the node behind the link`, async () => {
     assert.equal(await send(type, { widget: 0, linked: 5 }), true);
     assert.equal(await send(type, { widget: 5, linked: 7 }), false);
+  });
+
+  test(`${type} inside a subgraph takes what is sent to its link_id`, async () => {
+    assert.equal(await send(type, { widget: 5, in_subgraph: true }), true);
+    assert.equal(await send(type, { widget: 0, in_subgraph: true }), false);
+  });
+
+  test(`${type} whose link_id comes from the input of its subgraph takes nothing`, async () => {
+    assert.equal(await send(type, { widget: 5, in_subgraph: true, from_subgraph_input: true }), false);
   });
 }
