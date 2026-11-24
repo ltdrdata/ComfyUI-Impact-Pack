@@ -165,7 +165,7 @@ class GeneralInversedSwitch:
                     "sel_mode": ("BOOLEAN", {"default": False, "label_on": "select_on_prompt", "label_off": "select_on_execution", "forceInput": False,
                                              "tooltip": "In the case of 'select_on_execution', the selection is dynamically determined at the time of workflow execution. 'select_on_prompt' is an option that exists for older versions of ComfyUI, and it makes the decision before the workflow execution."}),
                     },
-                "hidden": {"prompt": "PROMPT", "unique_id": "UNIQUE_ID"},
+                "hidden": {"dynprompt": "DYNPROMPT", "unique_id": "UNIQUE_ID"},
                 }
 
     RETURN_TYPES = ByPassTypeTuple((any_typ, ))
@@ -174,7 +174,7 @@ class GeneralInversedSwitch:
 
     CATEGORY = "ImpactPack/Util"
 
-    def doit(self, select, prompt, unique_id, input, **kwargs):
+    def doit(self, select, dynprompt, unique_id, input, **kwargs):
         if core.is_execution_model_version_supported():
             from comfy_execution.graph import ExecutionBlocker
         else:
@@ -183,8 +183,8 @@ class GeneralInversedSwitch:
         res = []
 
         cnt = 0
-        for x in prompt.values():
-            for y in x.get('inputs', {}).values():
+        for node_id in dynprompt.all_node_ids():
+            for y in dynprompt.get_node(node_id).get('inputs', {}).values():
                 if isinstance(y, list) and len(y) == 2:
                     if y[0] == unique_id:
                         cnt = max(cnt, y[1])
