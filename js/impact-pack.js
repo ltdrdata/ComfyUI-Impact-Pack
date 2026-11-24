@@ -225,8 +225,12 @@ function receiver_link_id(node) {
 	if(!link)
 		return node.widgets.find((widget) => widget.name == 'link_id').value;
 
-	const value_widget_of_source = node.graph.getNodeById(link.origin_id).widgets?.[0];
+	const value_widget_of_source = node.graph.getNodeById(link.origin_id)?.widgets?.[0];
 	return value_widget_of_source?.value;
+}
+
+function nodes_with_those_in_subgraphs(graph) {
+	return graph._nodes.flatMap((node) => node.subgraph ? [node, ...nodes_with_those_in_subgraphs(node.subgraph)] : [node]);
 }
 
 function imgSendHandler(event) {
@@ -234,7 +238,7 @@ function imgSendHandler(event) {
 		let data = event.detail.images[0];
 		let filename = `${data.filename} [${data.type}]`;
 
-		let nodes = app.graph._nodes;
+		let nodes = nodes_with_those_in_subgraphs(app.graph);
 		for(let i in nodes) {
 			if(nodes[i].type == 'ImageReceiver') {
 				if(receiver_link_id(nodes[i]) == event.detail.link_id) {
@@ -262,7 +266,7 @@ function latentSendHandler(event) {
 		let data = event.detail.images[0];
 		let filename = `${data.filename} [${data.type}]`;
 
-		let nodes = app.graph._nodes;
+		let nodes = nodes_with_those_in_subgraphs(app.graph);
 		for(let i in nodes) {
 			if(nodes[i].type == 'LatentReceiver') {
 				if(receiver_link_id(nodes[i]) == event.detail.link_id) {
@@ -283,7 +287,7 @@ function latentSendHandler(event) {
 
 
 function valueSendHandler(event) {
-	let nodes = app.graph._nodes;
+	let nodes = nodes_with_those_in_subgraphs(app.graph);
 	for(let i in nodes) {
 		if(nodes[i].type == 'ImpactValueReceiver') {
 			if(receiver_link_id(nodes[i]) == event.detail.link_id) {
