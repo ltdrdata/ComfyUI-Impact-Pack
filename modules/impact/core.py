@@ -1903,7 +1903,7 @@ class TwoSamplersForMaskUpscaler:
         else:
             logging.info(f"step_info={step_info} / non-full time")
             if mask.ndim == 2:
-                mask = mask[None, :, :, None]
+                mask = mask[None, None]
             upscaled_mask = F.interpolate(mask, size=(upscaled_latent['samples'].shape[2], upscaled_latent['samples'].shape[3]), mode='bilinear', align_corners=True)
             upscaled_mask = upscaled_mask[:, :, :upscaled_latent['samples'].shape[2], :upscaled_latent['samples'].shape[3]]
 
