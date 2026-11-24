@@ -27,10 +27,9 @@ import base64
 import impact.wildcards as wildcards
 from . import hooks
 from . import utils
-from .node_base import ImpactNode
+from .node_base import ImpactNode, warn_on_node
 from comfy_api.internal import classproperty
 from comfy_api.latest import io
-from comfy_execution.utils import get_executing_context
 import inspect
 import folder_paths
 import torch
@@ -2076,11 +2075,7 @@ def warn_of_unpaired_batches(mask1, mask2):
     if count1 == count2 or 1 in (count1, count2):
         return
 
-    text = f"returned mask1 unchanged: mask1 is a batch of {count1} and mask2 a batch of {count2}"
-    logging.warning(f"[Impact Pack] Pixelwise: {text}")
-    context = get_executing_context()
-    if context is not None:
-        PromptServer.instance.send_sync("impact-node-warning", {"node_id": context.node_id, "text": text}, PromptServer.instance.client_id)
+    warn_on_node("Pixelwise", f"returned mask1 unchanged: mask1 is a batch of {count1} and mask2 a batch of {count2}")
 
 
 class BitwiseAndMask(ImpactNode):

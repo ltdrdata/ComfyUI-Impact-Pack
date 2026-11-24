@@ -7,7 +7,7 @@ from nodes import MAX_RESOLUTION
 from . import core
 from .core import SEG
 import impact.utils as utils
-from impact.node_base import ImpactNode
+from impact.node_base import ImpactNode, warn_on_node
 from comfy_api.latest import io
 from . import defs
 from . import segs_upscaler
@@ -1452,7 +1452,8 @@ class MediaPipeFaceMeshToSEGS(ImpactNode):
     @classmethod
     def execute(cls, image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil):
         if len(image) > 1:
-            raise Exception('[Impact Pack] ERROR: MediaPipeFaceMeshToSEGS does not allow image batches.\nPlease refer to https://github.com/ltdrdata/ComfyUI-extension-tutorials/blob/Main/ComfyUI-Impact-Pack/tutorial/batching-detailer.md for more information.')
+            warn_on_node("MediaPipeFaceMeshToSEGS", f"used the first image only: the batch holds {len(image)} images. Put Image Batch to Image List before this node to get the SEGS of every image")
+            image = image[:1]
 
         result = core.mediapipe_facemesh_to_segs(image, crop_factor, bbox_fill, crop_min_size, drop_size, dilation, face, mouth, left_eyebrow, left_eye, left_pupil, right_eyebrow, right_eye, right_pupil)
         return io.NodeOutput(result)
