@@ -83,6 +83,7 @@ try:
         if not os.path.exists(os.path.join(os.path.dirname(pack_path), 'skip_download_model')):
             try:
                 if not os.path.exists(os.path.join(sam_path, "sam_vit_b_01ec64.pth")):
+                    print(f"### ComfyUI-Impact-Pack: Downloading sam_vit_b_01ec64.pth (375 MB) to '{sam_path}'. This can take a while.", flush=True)
                     download_url("https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth", sam_path)
             except:
                 print("[Impact Pack] Failed to auto-download model files. Please download them manually.")
