@@ -404,7 +404,7 @@ class RegionalSampler:
             noise = None
 
         for i in range(start_at_step+base_only_steps, adv_steps):
-            core.update_node_status(unique_id, f"{i}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
+            core.update_node_status(unique_id, f"{i-start_at_step}/{steps} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             before_step = new_latent_image
             new_latent_image['noise_mask'] = inv_mask
@@ -424,7 +424,7 @@ class RegionalSampler:
                 if restore_latent:
                     new_latent_image = base_latent_image.copy()
 
-                core.update_node_status(unique_id, f"{i}/{steps} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
+                core.update_node_status(unique_id, f"{i-start_at_step}/{steps} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
 
                 region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
 
@@ -515,7 +515,7 @@ class RegionalSamplerAdvanced:
         region_masks = {}
 
         for i in range(start_at_step, end_at_step-1):
-            core.update_node_status(unique_id, f"{start_at_step+i}/{end_at_step} steps  |         ", ((i-start_at_step)*region_len)/total)
+            core.update_node_status(unique_id, f"{i}/{end_at_step} steps  |         ", ((i-start_at_step)*region_len)/total)
 
             cur_add_noise = True if i == start_at_step and add_noise else False
 
@@ -542,7 +542,7 @@ class RegionalSamplerAdvanced:
                 if restore_latent:
                     new_latent_image = base_latent_image.copy()
 
-                core.update_node_status(unique_id, f"{start_at_step+i}/{end_at_step} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
+                core.update_node_status(unique_id, f"{i}/{end_at_step} steps  |  {j}/{region_len}", ((i-start_at_step)*region_len + j)/total)
 
                 if j not in region_masks:
                     region_mask = regional_prompt.get_mask_erosion(overlap_factor).squeeze(0).squeeze(0)
