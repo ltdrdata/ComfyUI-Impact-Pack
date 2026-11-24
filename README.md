@@ -268,6 +268,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
     * When the `link_id` of a receiver is linked, the receiver goes by the value of the node behind the link. That node has to hold the value in a widget, like `ImpactInt` or a primitive node.
     * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
     * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
+    * With `preview_method` `None` the thumbnail holds no picture of the latent. Use it for a latent that none of the methods fits, for example that of a video model with another number of channels.
 
 
 ### Switch nodes

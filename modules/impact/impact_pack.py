@@ -2546,7 +2546,8 @@ class LatentSender(nodes.SaveLatent):
                                                  "Latent2RGB-SD-X4", "Latent2RGB-Playground-2.5",
                                                  "Latent2RGB-SC-Prior", "Latent2RGB-SC-B",
                                                  "Latent2RGB-LTXV",
-                                                 "TAEF1", "TAESDXL", "TAESD15", "TAESD3"],)
+                                                 "TAEF1", "TAESDXL", "TAESD15", "TAESD3",
+                                                 "None"],)
                              },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
@@ -2579,6 +2580,9 @@ class LatentSender(nodes.SaveLatent):
 
     @staticmethod
     def prepare_preview(latent_tensor, preview_method):
+        if preview_method == "None":
+            return Image.open(latent_letter_path).convert('RGB')
+
         lower_bound = 128
         upper_bound = 256
 
