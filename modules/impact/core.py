@@ -770,7 +770,7 @@ class SAM2Wrapper:
         for k, v in temp_masks.items():
             m = torch.stack(v, dim=0)
             m = utils.remove_padding(m, padding)
-            result[k] = utils.resize_with_padding(m, orig_video_width, orig_video_height)[0]
+            result[k] = F.interpolate(m.permute(0, 3, 1, 2), size=(orig_video_height, orig_video_width), mode="bilinear", align_corners=False).permute(0, 2, 3, 1)
 
         return result
 
