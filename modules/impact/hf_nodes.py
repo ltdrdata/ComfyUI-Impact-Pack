@@ -31,7 +31,7 @@ class HF_TransformersClassifierProvider:
     CATEGORY = "ImpactPack/HuggingFace"
 
     def doit(self, preset_repo_id, manual_repo_id, device_mode):
-        from transformers import pipeline
+        from transformers import AutoModelForImageClassification, pipeline
 
         if preset_repo_id == 'Manual repo id':
             url = manual_repo_id
@@ -43,7 +43,8 @@ class HF_TransformersClassifierProvider:
         else:
             device = "cpu"
 
-        classifier = pipeline('image-classification', model=url, device=device)
+        model = AutoModelForImageClassification.from_pretrained(url)
+        classifier = pipeline('image-classification', model=model, image_processor=url, device=device)
 
         return (classifier,)
 
