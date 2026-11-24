@@ -127,9 +127,7 @@ def img2img_segs(image, model, clip, vae, seed, steps, cfg, sampler_name, schedu
 
     refined_latent = impact_sampling.ksampler_wrapper(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, refined_latent, denoise, scheduler_func=scheduler_func_opt)
 
-    refined_image = vae.decode(refined_latent['samples'])
-
-    refined_image = refined_image.cpu()
+    refined_image = nodes.VAEDecode().decode(vae, refined_latent)[0].cpu()
 
     if refined_image.shape[1:3] != original_image_size:
         refined_image = utils.tensor_resize(refined_image, original_image_size[1], original_image_size[0])
