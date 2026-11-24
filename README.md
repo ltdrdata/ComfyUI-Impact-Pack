@@ -265,6 +265,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
     * When connected to `vae_opt`, it takes higher priority than the `preview_method`.
   * `ImageSender`, `ImageReceiver` - The images generated in ImageSender are automatically sent to the ImageReceiver with the same link_id.
   * `LatentSender`, `LatentReceiver` - The latent generated in LatentSender are automatically sent to the LatentReceiver with the same link_id.
+    * When the `link_id` of a receiver is linked, the receiver goes by the value of the node behind the link. That node has to hold the value in a widget, like `ImpactInt` or a primitive node.
     * Furthermore, LatentSender is implemented with PreviewLatent, which stores the latent in payload form within the image thumbnail.
     * Due to the current structure of ComfyUI, it is unable to distinguish between SDXL latent and SD1.5/SD2.1 latent. Therefore, it generates thumbnails by decoding them using the SD1.5 method.
 

@@ -329,6 +329,9 @@ that reports a true condition and leaves them repeating for a false one, and
 that auto queue in another tab keeps running.
 `tests/stop_iteration.test.mjs` checks the queue mode and the legacy menu's Auto
 Queue state the listener changes.
+`tests/receiver_link_id.test.mjs` checks that Image Receiver, Latent Receiver and
+Value Receiver go by their own `link_id` without a link and by the node behind the
+link with one.
 `python3 tests/e2e_conditionings.py` compares conditioning results with core
 ComfyUI and checks regional-prompt combination, using the Detailer checkpoint.
 `python3 tests/e2e_tutorials.py` imports the original Switch tutorial PNGs,
