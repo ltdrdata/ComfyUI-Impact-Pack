@@ -25,6 +25,7 @@ from PIL.PngImagePlugin import PngInfo
 import comfy.model_management
 import base64
 import impact.wildcards as wildcards
+from . import bridge_nodes
 from . import hooks
 from . import utils
 from .node_base import ImpactNode, warn_on_node
@@ -2578,47 +2579,18 @@ class LatentSender(nodes.SaveLatent):
 
     @staticmethod
     def prepare_preview(latent_tensor, preview_method):
-        from comfy.cli_args import LatentPreviewMethod
-        import comfy.latent_formats as latent_formats
-
         lower_bound = 128
         upper_bound = 256
 
-        if preview_method == "Latent2RGB-SD15":
-            latent_format = latent_formats.SD15()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-SDXL":
-            latent_format = latent_formats.SDXL()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-SD3":
-            latent_format = latent_formats.SD3()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-SD-X4":
-            latent_format = latent_formats.SD_X4()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-Playground-2.5":
-            latent_format = latent_formats.SDXL_Playground_2_5()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-SC-Prior":
-            latent_format = latent_formats.SC_Prior()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-SC-B":
-            latent_format = latent_formats.SC_B()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-FLUX.1":
-            latent_format = latent_formats.Flux()
-            method = LatentPreviewMethod.Latent2RGB
-        elif preview_method == "Latent2RGB-LTXV":
-            latent_format = latent_formats.LTXV()
-            method = LatentPreviewMethod.Latent2RGB
-        else:
-            logging.warning(f"[Impact Pack] LatentSender: '{preview_method}' is unsupported preview method.")
-            latent_format = latent_formats.SD15()
-            method = LatentPreviewMethod.Latent2RGB
+        if preview_method in bridge_nodes.tae_methods:
+            decoder, latent2rgb = bridge_nodes.tae_methods[preview_method]
+            files = folder_paths.get_filename_list("vae_approx")
+            missing = [name for name in (f"{decoder}_encoder", f"{decoder}_decoder") if not any(file.startswith(f"{name}.") for file in files)]
+            if missing:
+                warn_on_node("LatentSender", f"showed {latent2rgb}: {preview_method} needs {' and '.join(missing)} in models/vae_approx")
+                preview_method = latent2rgb
 
-        previewer = core.get_previewer("cpu", latent_format=latent_format, force=True, method=method)
-
-        image = previewer.decode_latent_to_preview(latent_tensor)
+        image = utils.to_pil(bridge_nodes.decode_latent({"samples": latent_tensor[:1]}, preview_method))
         min_size = min(image.size[0], image.size[1])
         max_size = max(image.size[0], image.size[1])
 
