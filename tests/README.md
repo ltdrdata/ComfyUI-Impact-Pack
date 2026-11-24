@@ -214,7 +214,8 @@ one of two uses of a subgraph, behind a reroute, and for the copy of the bridge 
 loop makes. A bridge that nothing follows passes its value.
 With a running test server, `IMPACT_E2E_BASE_URL=http://127.0.0.1:18188 python3 -m pytest tests/test_e2e_control_bridge.py`
 loads two of these workflows in Chrome and clicks Run: the page bypasses the node behind
-the bridge and queues the workflow again without it.
+the bridge and queues the workflow again without it. It also builds a bridge with Stop
+between two nodes: while the bridge is not active, the node before it does not run.
 
 ## Values given to a node
 
