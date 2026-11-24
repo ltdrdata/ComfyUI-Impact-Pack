@@ -44,7 +44,7 @@ def bridge():
             patch.setattr(core, "current_prompt", {"prompt": {unique_id: {}} if in_prompt else {}, "extra_data": {"extra_pnginfo": {"workflow": sent}}})
             return logics.ImpactControlBridge.IS_CHANGED(object(), False, "Bypass", unique_id=unique_id)
 
-        yield SimpleNamespace(run=run, is_changed=is_changed)
+        yield SimpleNamespace(run=run, is_changed=is_changed, asks_for=logics.ImpactControlBridge().check_lazy_status)
 
 
 @pytest.mark.parametrize("behavior,change", [("Bypass", "bypasses"), ("Mute", "mutes")])
@@ -96,3 +96,8 @@ def test_the_cache_key_names_the_nodes_behind_and_makes_a_copy_of_a_loop_run(bri
     assert bridge.is_changed(workflow("in-subgraph"), "22:21") == ["22:12"]
     assert bridge.is_changed(workflow("nothing-behind"), "2") == []
     assert math.isnan(bridge.is_changed(workflow("loop"), "6.0.0.3", in_prompt=False))
+
+
+@pytest.mark.parametrize("mode,behavior,asked", [(False, "Stop", None), (True, "Stop", ["value"]), (False, "Mute", ["value"]), (False, "Bypass", ["value"])])
+def test_only_a_stopped_bridge_does_not_ask_for_its_value(bridge, mode, behavior, asked):
+    assert bridge.asks_for(None, mode, behavior) == asked

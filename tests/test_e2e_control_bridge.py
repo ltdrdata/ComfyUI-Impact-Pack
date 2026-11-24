@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from urllib.parse import urlsplit
+from uuid import uuid4
 
 import pytest
 
@@ -18,6 +19,8 @@ BYPASSED = """app => {
     walk(app.graph, '');
     return found;
 }"""
+RAN = """app => { window.impactRan = []; window.impactListens ??= app.api.addEventListener('executing', event => event.detail == null || window.impactRan.push(String(event.detail))) ?? true; }"""
+MODE = "({app, mode}) => app.graph._nodes.find(n => n.type === 'ImpactControlBridge').widgets.find(w => w.name === 'mode').value === mode"
 
 
 @pytest.mark.parametrize("name,behind", [("in-subgraph", "22:12"), ("last-two-subgraphs-deep", "5")],
@@ -48,3 +51,31 @@ def test_bridge_in_a_subgraph_bypasses_the_node_behind_it(ui, name, behind):
     assert ends == [["execution_interrupted"], ["execution_success"]], history[-1]["status"] if history and history[-1] else prompts
     assert behind in history[0]["prompt"][2] and behind not in history[1]["prompt"][2]
     assert browser.app.evaluate(BYPASSED) == [behind]
+
+
+def test_a_stopped_bridge_does_not_run_the_nodes_before_it(ui):
+    browser, _ = ui
+    page = browser.page
+    browser.new_workflow()
+    browser.add_node("Empty Image", "EmptyImage", 150, 250)
+    before = browser.add_node("Invert Image Colors", "ImageInvert", 450, 250)
+    browser.add_node("Control Bridge", "ImpactControlBridge", 750, 250)
+    preview = browser.add_node("Preview Image", "PreviewImage", 1050, 250)
+    browser.set_number("EmptyImage", "width", 64 + uuid4().int % 1000)
+    browser.connect("EmptyImage", "ImageInvert")
+    browser.connect("ImageInvert", "ImpactControlBridge")
+    browser.connect("ImpactControlBridge", "PreviewImage")
+
+    page.mouse.click(*browser.point("ImpactControlBridge", widget="mode"))
+    page.wait_for_function(MODE, arg={"app": browser.app, "mode": False})
+    browser.app.evaluate(RAN)
+    stopped = browser.run()
+    assert preview not in stopped["outputs"]
+    assert before not in page.evaluate("window.impactRan")
+
+    page.mouse.click(*browser.point("ImpactControlBridge", widget="mode"))
+    page.wait_for_function(MODE, arg={"app": browser.app, "mode": True})
+    browser.app.evaluate(RAN)
+    active = browser.run()
+    assert len(active["outputs"][preview]["images"]) == 1
+    assert before in page.evaluate("window.impactRan")

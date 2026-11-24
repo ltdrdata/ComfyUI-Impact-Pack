@@ -671,7 +671,7 @@ class ImpactControlBridge:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-                      "value": (any_typ,),
+                      "value": (any_typ, {"lazy": True}),
                       "mode": ("BOOLEAN", {"default": True, "label_on": "Active", "label_off": "Stop/Mute/Bypass"}),
                       "behavior": (["Stop", "Mute", "Bypass"], ),
                     },
@@ -708,6 +708,10 @@ class ImpactControlBridge:
                 return float("NaN")
 
             return [node_id for node_id, _ in nodes_behind(workflow, unique_id)]
+
+    def check_lazy_status(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
+        if mode or behavior != "Stop":
+            return ["value"]
 
     def doit(self, value, mode, behavior="Stop", unique_id=None, prompt=None, extra_pnginfo=None, dynprompt=None):
         global error_skip_flag

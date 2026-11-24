@@ -335,6 +335,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
   * `Control Bridge` - This node modifies the state of the connected control nodes based on the `mode` and `behavior` . If there are nodes that require a change, the current execution is paused, the mute status is updated, and a new prompt queue is inserted. 
     * When the `mode` is `active`, it makes the connected control nodes active regardless of the behavior. 
     * When the `mode` is `Bypass/Mute`, it changes the state of the connected nodes based on whether the behavior is `Bypass` or `Mute`.
+    * When the `behavior` is `Stop` and the `mode` is not `active`, the nodes behind the bridge do not run, and neither do the nodes before it whose result only the bridge takes.
     * The node works inside a subgraph and inside a loop. When it is the last node of a subgraph, the connected nodes are the ones behind the subgraph node.
     * **Limitation**: Due to these characteristics, it does not function correctly when the batch count exceeds 1. Additionally, it does not guarantee proper operation when the seed is randomized or when the state of nodes is altered by actions such as `Queue Trigger`, `Set Widget Value`, `Set Mute`, before the Control Bridge.
     * When utilizing this node, please structure the workflow in such a way that `Queue Trigger`, `Set Widget Value`, `Set Mute State`, and similar actions are executed at the end of the workflow.
