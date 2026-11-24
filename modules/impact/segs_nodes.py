@@ -1977,7 +1977,7 @@ class MakeTileSEGS(ImpactNode):
                     if mask_cache is not None:
                         core.adaptive_mask_paste(mask, mask_cache, (rel_left, rel_top, rel_right, rel_bot))
                     else:
-                        core.random_mask(mask, (rel_left, rel_top, rel_right, rel_bot), factor=mask_irregularity, size=mask_quality)
+                        core.random_mask(mask, (rel_left, rel_top, rel_right, rel_bot), factor=mask_irregularity, size=mask_quality, seed=j * n_horizontal + i)
 
                     if rel_left == 0:
                         pad = int((x2 - x1) / 8)

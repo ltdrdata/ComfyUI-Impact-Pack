@@ -2360,7 +2360,7 @@ def update_node_status(node, text, progress=None):
     }, PromptServer.instance.client_id)
 
 
-def random_mask_raw(mask, bbox, factor):
+def random_mask_raw(mask, bbox, factor, seed):
     x1, y1, x2, y2 = bbox
     w = x2 - x1
     h = y2 - y1
@@ -2375,9 +2375,10 @@ def random_mask_raw(mask, bbox, factor):
                     mask[x, y] = 1
 
     def draw_irregular_line(start, end, pivot, is_vertical):
+        rng_of_this_line = np.random.default_rng((seed, start, pivot, int(is_vertical)))
         i = start
         while i < end:
-            base_radius = np.random.randint(5, factor)
+            base_radius = rng_of_this_line.integers(5, factor)
             radius = int(base_radius)
 
             if is_vertical:
@@ -2406,9 +2407,9 @@ def random_mask_raw(mask, bbox, factor):
     mask[y1 + factor:y2 - factor, x1 + factor:x2 - factor] = 1.0
 
 
-def random_mask(mask, bbox, factor, size=128):
+def random_mask(mask, bbox, factor, size=128, seed=0):
     small_mask = np.zeros((size, size)).astype(np.float32)
-    random_mask_raw(small_mask, (0, 0, size, size), factor)
+    random_mask_raw(small_mask, (0, 0, size, size), factor, seed)
 
     x1, y1, x2, y2 = bbox
     small_mask = torch.tensor(small_mask).unsqueeze(0).unsqueeze(0)
