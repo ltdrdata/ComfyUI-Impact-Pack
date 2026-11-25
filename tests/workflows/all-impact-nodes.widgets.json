@@ -4080,6 +4080,32 @@
           "value": 3
         }
       ]
+    },
+    {
+      "id": "206",
+      "type": "TextWildcardSource",
+      "widgets": [
+        {
+          "name": "category",
+          "value": "test_encoding_emoji"
+        },
+        {
+          "name": "text_wildcard",
+          "value": "🌸🌺🌼🌻🌷🌹🥀🏵️💐🌾"
+        },
+        {
+          "name": "mode",
+          "value": "fixed"
+        },
+        {
+          "name": "seed",
+          "value": 0
+        },
+        {
+          "name": "control_after_generate",
+          "value": "randomize"
+        }
+      ]
     }
   ]
 }

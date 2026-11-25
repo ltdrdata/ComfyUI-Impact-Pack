@@ -6387,6 +6387,32 @@
             }
         }
     },
+    "TextWildcardSource": {
+        "description": "文本通配符源：固定 / 随机 / 顺序 / 批量。选择类别（通配符文本文件）及其中的一行。固定使用所选行，顺序使用第（种子 mod 行数）行，随机根据种子选取一行，批量输出所有行。行内的通配符语法使用同一种子处理。",
+        "display_name": "文本通配符源 / 模式",
+        "inputs": {
+            "category": {
+                "name": "类别"
+            },
+            "text_wildcard": {
+                "name": "文本通配符"
+            },
+            "mode": {
+                "name": "模式"
+            },
+            "seed": {
+                "name": "种子"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "文本"
+            },
+            "1": {
+                "name": "名称"
+            }
+        }
+    },
     "ImpactSEGSToBoundingBoxes": {
         "description": "将每个 SEG 的边界框输出为 ComfyUI 自带节点（如 SAM3 Detect）可接收的边界框。\n当 SEGS 为视频的每一帧都带有蒙版时，每一帧输出其蒙版所在位置的边界框。",
         "display_name": "SEGS 转边界框",

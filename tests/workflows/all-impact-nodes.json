@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 205,
+  "last_node_id": 206,
   "last_link_id": 0,
   "nodes": [
     {
@@ -4134,12 +4134,12 @@
       ],
       "properties": {
         "Node name for S&R": "MaskRectAreaAdvanced",
-        "width": 512,
-        "height": 512,
         "x": 0,
         "y": 0,
         "w": 256,
         "h": 256,
+        "width": 512,
+        "height": 512,
         "blur_radius": 0
       },
       "widgets_values": [
@@ -10609,6 +10609,53 @@
       "widgets_values_named": {
         "crop_factor": 3
       }
+    },
+    {
+      "id": 206,
+      "type": "TextWildcardSource",
+      "pos": [
+        7445.17708468967,
+        6925.555555555555
+      ],
+      "size": [
+        299.75546875,
+        174
+      ],
+      "flags": {},
+      "order": 204,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "text",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "name",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextWildcardSource"
+      },
+      "widgets_values": [
+        "test_encoding_emoji",
+        "🌸🌺🌼🌻🌷🌹🥀🏵️💐🌾",
+        "fixed",
+        0,
+        "randomize"
+      ],
+      "widgets_values_named": {
+        "category": "test_encoding_emoji",
+        "text_wildcard": "🌸🌺🌼🌻🌷🌹🥀🏵️💐🌾",
+        "mode": "fixed",
+        "seed": 0,
+        "control_after_generate": "randomize"
+      }
     }
   ],
   "links": [],
@@ -10618,8 +10665,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -6280.05481906467,
-        -6675.555555555555
+        -7145.05481906467,
+        -6735.555555555555
       ]
     },
     "frontendVersion": "1.59.10"

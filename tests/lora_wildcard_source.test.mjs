@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-function setup() {
+function setup(comfyClass = 'LoraWildcardSource', widget = 'lora_wildcard') {
     const pending = [];
     let extension;
     const app = { registerExtension(value) { extension = value; }, graph: { setDirtyCanvas() {} } };
@@ -12,8 +12,8 @@ function setup() {
         .replace(/^import .*;\s*$/gm, '');
     vm.runInNewContext(source, { app, api: { fetchApi: fetch }, fetch, console: { log() {}, error() {} } });
     const category = { name: 'category', value: 'first', callback() {} };
-    const wildcard = { name: 'lora_wildcard', value: 'A', options: { values: ['A'] } };
-    const node = { comfyClass: 'LoraWildcardSource', widgets: [category, wildcard], setDirtyCanvas() {} };
+    const wildcard = { name: widget, value: 'A', options: { values: ['A'] } };
+    const node = { comfyClass, widgets: [category, wildcard], setDirtyCanvas() {} };
     extension.nodeCreated(node, app);
     async function reply(index, items) {
         pending[index].resolve({ ok: true, json: async () => items });
@@ -80,10 +80,22 @@ test('category query values are encoded', async () => {
     assert.equal(new URL(pending[1].url, 'http://localhost').searchParams.get('category'), category.value);
 });
 
+test('Text Wildcard Source fills its own dropdown from its own route', async () => {
+    const { category, wildcard, pending, reply } = setup('TextWildcardSource', 'text_wildcard');
+    assert.equal(pending[0].url, '/impact/get_text_items?category=first');
+    await reply(0, ['A']);
+    category.value = 'second';
+    category.callback('second');
+    assert.equal(pending[1].url, '/impact/get_text_items?category=second');
+    await reply(1, ['first line', 'second line']);
+    assert.equal(wildcard.value, 'first line');
+    assert.deepEqual(Array.from(wildcard.options.values), ['first line', 'second line']);
+});
+
 test('existing nodes are not changed or queried', () => {
     const { extension, app, pending } = setup();
     const baseline = JSON.parse(fs.readFileSync(new URL('./workflows/all-impact-nodes.widgets.json', import.meta.url)));
-    for (const entry of baseline.nodes.filter(n => n.type !== 'LoraWildcardSource')) {
+    for (const entry of baseline.nodes.filter(n => !['LoraWildcardSource', 'TextWildcardSource'].includes(n.type))) {
         const node = { comfyClass: entry.type };
         Object.defineProperty(node, 'widgets', { get() { assert.fail(`Accessed ${entry.type}`); } });
         extension.nodeCreated(node, app);
