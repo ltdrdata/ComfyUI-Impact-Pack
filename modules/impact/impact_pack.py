@@ -2546,7 +2546,9 @@ class LatentSender(nodes.SaveLatent):
                                                  "Latent2RGB-SD-X4", "Latent2RGB-Playground-2.5",
                                                  "Latent2RGB-SC-Prior", "Latent2RGB-SC-B",
                                                  "Latent2RGB-LTXV",
-                                                 "TAEF1", "TAESDXL", "TAESD15", "TAESD3"],)
+                                                 "TAEF1", "TAESDXL", "TAESD15", "TAESD3",
+                                                 "Latent2RGB-Mochi", "Latent2RGB-Wan2.1", "Latent2RGB-Wan2.2",
+                                                 "None"],)
                              },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
@@ -2579,8 +2581,24 @@ class LatentSender(nodes.SaveLatent):
 
     @staticmethod
     def prepare_preview(latent_tensor, preview_method):
+        if preview_method == "None":
+            return Image.open(latent_letter_path).convert('RGB')
+
         lower_bound = 128
         upper_bound = 256
+
+        shape = (latent_tensor.shape[1], latent_tensor.ndim - 2)
+        fitting = [name for name, latent_format in bridge_nodes.latent2rgb_formats.items()
+                   if (latent_format.latent_channels, latent_format.latent_dimensions) == shape]
+        latent2rgb = bridge_nodes.tae_methods[preview_method][1] if preview_method in bridge_nodes.tae_methods else preview_method
+        if latent2rgb not in fitting:
+            what = f"a latent of {shape[0]} channels" + (" with frames" if shape[1] == 3 else "")
+            if len(fitting) != 1:
+                choose = f", choose one of Latent2RGB-{'/'.join(name.removeprefix('Latent2RGB-') for name in fitting)}" if fitting else ""
+                warn_on_node("LatentSender", f"sent without a preview: {preview_method} does not fit {what}{choose}")
+                return Image.open(latent_letter_path).convert('RGB')
+            warn_on_node("LatentSender", f"showed {fitting[0]}: {preview_method} does not fit {what}")
+            preview_method = fitting[0]
 
         if preview_method in bridge_nodes.tae_methods:
             decoder, latent2rgb = bridge_nodes.tae_methods[preview_method]
