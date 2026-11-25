@@ -9,6 +9,7 @@ import numpy as np
 from impact import utils
 
 from impact import core
+import comfy.latent_formats as latent_formats
 from latent_preview import Latent2RGBPreviewer
 import random
 
@@ -272,40 +273,35 @@ tae_methods = {
     "TAEF1": ("taef1", "Latent2RGB-FLUX.1"),
 }
 
+latent2rgb_formats = {
+    "Latent2RGB-SD15": latent_formats.SD15,
+    "Latent2RGB-SDXL": latent_formats.SDXL,
+    "Latent2RGB-SD3": latent_formats.SD3,
+    "Latent2RGB-SD-X4": latent_formats.SD_X4,
+    "Latent2RGB-Playground-2.5": latent_formats.SDXL_Playground_2_5,
+    "Latent2RGB-SC-Prior": latent_formats.SC_Prior,
+    "Latent2RGB-SC-B": latent_formats.SC_B,
+    "Latent2RGB-FLUX.1": latent_formats.Flux,
+    "Latent2RGB-LTXV": latent_formats.LTXV,
+    "Latent2RGB-Mochi": latent_formats.Mochi,
+    "Latent2RGB-Wan2.1": latent_formats.Wan21,
+    "Latent2RGB-Wan2.2": latent_formats.Wan22,
+}
+
 
 def decode_latent(latent, preview_method, vae_opt=None):
     if vae_opt is not None:
         image = nodes.VAEDecode().decode(vae_opt, latent)[0]
         return image
 
-    import comfy.latent_formats as latent_formats
-
     if preview_method in tae_methods:
         vae = nodes.VAELoader().load_vae(tae_methods[preview_method][0])[0]
         image = nodes.VAEDecode().decode(vae, latent)[0]
         return image
 
-    if preview_method == "Latent2RGB-SD15":
-        latent_format = latent_formats.SD15()
-    elif preview_method == "Latent2RGB-SDXL":
-        latent_format = latent_formats.SDXL()
-    elif preview_method == "Latent2RGB-SD3":
-        latent_format = latent_formats.SD3()
-    elif preview_method == "Latent2RGB-SD-X4":
-        latent_format = latent_formats.SD_X4()
-    elif preview_method == "Latent2RGB-Playground-2.5":
-        latent_format = latent_formats.SDXL_Playground_2_5()
-    elif preview_method == "Latent2RGB-SC-Prior":
-        latent_format = latent_formats.SC_Prior()
-    elif preview_method == "Latent2RGB-SC-B":
-        latent_format = latent_formats.SC_B()
-    elif preview_method == "Latent2RGB-FLUX.1":
-        latent_format = latent_formats.Flux()
-    elif preview_method == "Latent2RGB-LTXV":
-        latent_format = latent_formats.LTXV()
-    else:
+    if preview_method not in latent2rgb_formats:
         logging.warning(f"[Impact Pack] PreviewBridgeLatent: '{preview_method}' is unsupported preview method.")
-        latent_format = latent_formats.SD15()
+    latent_format = latent2rgb_formats.get(preview_method, latent_formats.SD15)()
 
     previewer = Latent2RGBPreviewer(latent_format.latent_rgb_factors, latent_format.latent_rgb_factors_bias)
     samples = latent_format.process_in(latent['samples'])
