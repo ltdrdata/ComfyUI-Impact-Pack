@@ -589,3 +589,25 @@ def test_sam3_is_refused_on_a_comfyui_whose_sam3_it_cannot_call(core, monkeypatc
 
     with pytest.raises(Exception, match="SAM3 cannot be used with the current version of ComfyUI"):
         core.SAM3Wrapper(model)
+
+
+@pytest.mark.parametrize("name", ["mobile_sam.pt", "mobile_sam.safetensors"])
+def test_samloader_loads_a_mobile_sam_checkpoint_that_a_detector_takes(core, detectors, monkeypatch, tmp_path, name):
+    pack = importlib.import_module("impact.impact_pack")
+    torch.manual_seed(0)
+    weights = {k: torch.rand_like(v) if v.is_floating_point() else v for k, v in core.build_mobile_sam().state_dict().items()}
+    path = tmp_path / name
+    if name.endswith(".pt"):
+        torch.save(weights, path)
+    else:
+        safetensors.torch.save_file(weights, str(path))
+    monkeypatch.setattr(pack.folder_paths, "get_full_path", lambda folder, model_name: str(path))
+
+    model, = pack.SAMLoader().load_model(name, "CPU")
+
+    loaded = model.state_dict()
+    assert loaded.keys() == weights.keys()
+    assert all(torch.equal(loaded[k], v) for k, v in weights.items())
+    combined, batch = detect(core, model, segments(core, 1))
+    assert tuple(combined.shape) == (HEIGHT, WIDTH)
+    assert tuple(batch.shape) == (1, 1, HEIGHT, WIDTH)
