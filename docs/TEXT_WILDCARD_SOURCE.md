@@ -11,18 +11,18 @@ It reads the same directory (`custom_wildcards` in `impact-pack.ini`) with the s
 - **random**: Picks a line from the seed, so the same seed always gives the same line.
 - **batch**: Outputs every line as a list, one queued item per line.
 
-Wildcard syntax inside the chosen line (such as `__color__` or `{red|blue}`) is processed with the same seed, so a line can still contain variations.
+The line is output as written: wildcard syntax inside it (such as `__color__` or `{red|blue}`) is not processed. Connect `text` to the `populated_text` input of `ImpactWildcardProcessor` or `ImpactWildcardEncode` to process it. As in `LoraWildcardSource`, `fixed` and `batch` do not use the seed.
 
 ## Inputs
 
 - **category** (COMBO): The text file names (categories) in the configured directory.
 - **text_wildcard** (COMBO): The lines of the selected category. Long lines are shortened to 60 characters in the dropdown; repeated labels get a ` (1)`, ` (2)`... suffix. Changing the category refreshes this list from `/impact/get_text_items`.
 - **mode** (COMBO): `fixed`, `random`, `sequential` or `batch`.
-- **seed** (INT): Seed used for the sequential index, the random choice and wildcard processing inside the line.
+- **seed** (INT): Seed used for the sequential index and the random choice.
 
 ## Outputs
 
-- **text** (STRING): The processed line (a list in `batch` mode). An empty category outputs an empty string.
+- **text** (STRING): The line (a list in `batch` mode). An empty category outputs an empty string.
 - **name** (STRING): The dropdown label of the line, useful as a filename prefix.
 
 ## Example

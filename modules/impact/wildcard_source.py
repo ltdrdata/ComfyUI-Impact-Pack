@@ -310,7 +310,7 @@ class TextWildcardSource:
                    "Select a category (wildcard text file) and one of its lines. "
                    "fixed uses the selected line, sequential uses line (seed mod line count), "
                    "random picks a line from the seed and batch outputs every line. "
-                   "Wildcard syntax inside a line is processed with the same seed.")
+                   "The line is output as written.")
 
     @classmethod
     def VALIDATE_INPUTS(cls, category, text_wildcard):
@@ -331,5 +331,4 @@ class TextWildcardSource:
             if entry is None:
                 raise ValueError(f"Text wildcard '{text_wildcard}' not found in category '{category}'")
             selected = [entry]
-        texts = [wildcards.process(text, seed=seed) for _, text in selected]
-        return (texts, [label for label, _ in selected])
+        return ([text for _, text in selected], [label for label, _ in selected])

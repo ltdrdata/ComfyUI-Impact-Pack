@@ -74,10 +74,12 @@ def test_modes(source, mode, seed, expected):
     assert random.getstate() == state
 
 
-def test_wildcard_syntax_inside_a_line_is_processed(source):
+@pytest.mark.parametrize("mode", ["fixed", "random", "sequential", "batch"])
+def test_wildcard_syntax_inside_a_line_is_left_as_written(source, mode):
     module, custom = source
-    (custom / "scenes.txt").write_text("a __color__ door\n")
-    assert build(module, text_wildcard="a __color__ door")[0] == ["a blue door"]
+    line = "a __color__ {red|green} door"
+    (custom / "scenes.txt").write_text(line + "\n")
+    assert {build(module, mode=mode, seed=seed, text_wildcard=line)[0][0] for seed in range(8)} == {line}
 
 
 def test_missing_fixed_selection_is_not_silently_replaced(source):
