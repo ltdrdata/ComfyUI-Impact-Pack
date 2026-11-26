@@ -3,9 +3,10 @@ import os
 import uuid
 import warnings
 
-import safetensors.torch
 import torch
+from kornia.contrib import TinyViT
 from segment_anything import SamPredictor, sam_model_registry
+from segment_anything.modeling import MaskDecoder, PromptEncoder, Sam, TwoWayTransformer
 
 from comfy_extras.nodes_custom_sampler import Noise_RandomNoise
 from collections import namedtuple
@@ -619,13 +620,20 @@ def sam_predict(predictor, points, plabs, bbox, threshold):
     return total_masks
 
 
-def load_sam(model_kind, model_path):
-    if not model_path.lower().endswith('.safetensors'):
-        return sam_model_registry[model_kind](checkpoint=model_path)
+def build_mobile_sam():
+    # MobileSAM is SAM with a TinyViT image encoder, which segment_anything does not build
+    return Sam(image_encoder=TinyViT.from_config("5m", img_size=1024, mobile_sam=True),
+               prompt_encoder=PromptEncoder(embed_dim=256, image_embedding_size=(64, 64), input_image_size=(1024, 1024), mask_in_chans=16),
+               mask_decoder=MaskDecoder(num_multimask_outputs=3, transformer=TwoWayTransformer(depth=2, embedding_dim=256, mlp_dim=2048, num_heads=8),
+                                        transformer_dim=256, iou_head_depth=3, iou_head_hidden_dim=256))
 
-    # segment_anything opens a checkpoint with torch.load, which cannot read safetensors
-    sam = sam_model_registry[model_kind]()
-    sam.load_state_dict(safetensors.torch.load_file(model_path))
+
+def load_sam(model_kind, model_path):
+    sd = comfy.utils.load_torch_file(model_path, safe_load=True)
+
+    # a MobileSAM file is told by its encoder, whatever its name
+    sam = build_mobile_sam() if 'image_encoder.patch_embed.seq.0.c.weight' in sd else sam_model_registry[model_kind]()
+    sam.load_state_dict(sd)
     return sam
 
 
