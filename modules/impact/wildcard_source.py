@@ -62,6 +62,25 @@ def parse_linhas_wildcard(caminho):
     return entries
 
 
+_TEXT_LABEL_LENGTH = 60
+
+
+def parse_text_wildcard(caminho):
+    if not caminho:
+        return []
+    entries, used = [], set()
+    for line in wildcards.load_txt_wildcard(caminho):
+        text = line.strip()
+        base = text if len(text) <= _TEXT_LABEL_LENGTH else text[:_TEXT_LABEL_LENGTH - 1].rstrip() + "…"
+        label, count = base, 1
+        while label in used:
+            label = f"{base} ({count})"
+            count += 1
+        used.add(label)
+        entries.append((label, text))
+    return entries
+
+
 def listar_categorias_wildcard():
     root = config.get_config()["custom_wildcards"]
     try:
@@ -183,6 +202,12 @@ async def get_items_handler(request):
     return web.json_response([entry[0] for entry in entries])
 
 
+@PromptServer.instance.routes.get("/impact/get_text_items")
+async def get_text_items_handler(request):
+    entries = parse_text_wildcard(achar_arquivo_wildcard(f"{request.query.get('category', '')}.txt"))
+    return web.json_response([entry[0] for entry in entries])
+
+
 class LoraWildcardSource:
     @classmethod
     def INPUT_TYPES(cls):
@@ -259,3 +284,52 @@ class LoraWildcardSource:
             for output, value in zip(outputs, values):
                 output.append(value)
         return outputs
+
+
+class TextWildcardSource:
+    @classmethod
+    def INPUT_TYPES(cls):
+        categorias = listar_categorias_wildcard()
+        entradas = parse_text_wildcard(achar_arquivo_wildcard(categorias[0] + ".txt"))
+        labels_padrao = [e[0] for e in entradas] or [f"({categorias[0]}.txt not found)"]
+        return {
+            "required": {
+                "category": (categorias,),
+                "text_wildcard": (labels_padrao,),
+                "mode": (["fixed", "random", "sequential", "batch"],),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("text", "name")
+    OUTPUT_IS_LIST = (True, True)
+    FUNCTION = "build"
+    CATEGORY = "Impact Pack/Wildcard"
+    DESCRIPTION = ("Text wildcard source: fixed / random / sequential / batch. "
+                   "Select a category (wildcard text file) and one of its lines. "
+                   "fixed uses the selected line, sequential uses line (seed mod line count), "
+                   "random picks a line from the seed and batch outputs every line. "
+                   "Wildcard syntax inside a line is processed with the same seed.")
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, category, text_wildcard):
+        return True
+
+    def build(self, category, text_wildcard, mode, seed):
+        entries = parse_text_wildcard(achar_arquivo_wildcard(f"{category}.txt"))
+        if not entries:
+            return ([""], [f"no_{category}"])
+        if mode == "batch":
+            selected = entries
+        elif mode == "random":
+            selected = [random.Random(seed).choice(entries)]
+        elif mode == "sequential":
+            selected = [entries[seed % len(entries)]]
+        else:
+            entry = next((entry for entry in entries if entry[0] == text_wildcard), None)
+            if entry is None:
+                raise ValueError(f"Text wildcard '{text_wildcard}' not found in category '{category}'")
+            selected = [entry]
+        texts = [wildcards.process(text, seed=seed) for _, text in selected]
+        return (texts, [label for label, _ in selected])

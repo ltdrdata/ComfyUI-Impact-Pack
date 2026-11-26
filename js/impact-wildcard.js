@@ -1,18 +1,24 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
+const SOURCES = {
+    LoraWildcardSource: { widget: "lora_wildcard", route: "/impact/get_items" },
+    TextWildcardSource: { widget: "text_wildcard", route: "/impact/get_text_items" },
+};
+
 app.registerExtension({
     name: "Impact.LoraWildcardSource",
     nodeCreated(node) {
-        if (node.comfyClass !== "LoraWildcardSource") return;
+        const source = SOURCES[node.comfyClass];
+        if (!source) return;
         const categoryWidget = node.widgets.find(w => w.name === "category");
-        const wildcardWidget = node.widgets.find(w => w.name === "lora_wildcard");
+        const wildcardWidget = node.widgets.find(w => w.name === source.widget);
         let requestId = 0;
 
         const updateItems = async (category, preserveValue) => {
             const currentRequest = ++requestId;
             try {
-                const response = await api.fetchApi(`/impact/get_items?category=${encodeURIComponent(category)}`);
+                const response = await api.fetchApi(`${source.route}?category=${encodeURIComponent(category)}`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const items = await response.json();
                 if (currentRequest !== requestId || categoryWidget.value !== category) return;

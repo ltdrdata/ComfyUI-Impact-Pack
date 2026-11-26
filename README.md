@@ -291,6 +291,7 @@ NOTE: The UltralyticsDetectorProvider node is not part of the ComfyUI-Impact-Pac
     * If the `Inspire Pack` is installed, you can use **Lora Block Weight** in the form of `LBW=lbw spec;`
     * `<lora:chunli:1.0:1.0:LBW=B11:0,0,0,0,0,0,0,0,0,0,A,0,0,0,0,0,0;A=0.;>`, `<lora:chunli:1.0:1.0:LBW=0,0,0,0,0,0,0,0,0,0,A,B,0,0,0,0,0;A=0.5;B=0.2;>`, `<lora:chunli:1.0:1.0:LBW=SD-MIDD;>`
   * `LoraWildcardSource` - Select LoRA entries from `.txt` categories in the configured custom wildcard directory, apply their LoRAs and encode the prompt. Supports `fixed`, `random`, `sequential`, and `batch` modes. Optional samples are kept outside the scanned directories to preserve existing wildcards. (See [Detailed Documentation](docs/LORA_WILDCARD_SOURCE.md))
+  * `TextWildcardSource` - Use the lines of a `.txt` category in the configured custom wildcard directory as prompt presets: pick one from a dropdown, step through them in order with the seed, pick one at random or output all of them. Supports `fixed`, `random`, `sequential`, and `batch` modes. (See [Detailed Documentation](docs/TEXT_WILDCARD_SOURCE.md))
 
 
 
