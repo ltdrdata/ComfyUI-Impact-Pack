@@ -83,7 +83,7 @@ def test_a_batch_of_latents_is_tiled_latent_by_latent(samplers, kind, strategy):
     assert torch.allclose(result, samplers.plain(kind, latent, 0.5), atol=1e-4)
 
 
-@pytest.mark.parametrize("strategy", ["random", "simple"])
+@pytest.mark.parametrize("strategy", ["random", "padded", "simple"])
 @pytest.mark.parametrize("kind", ["sd15", "flux", "wan"])
 def test_only_the_masked_part_of_the_latent_is_sampled(samplers, kind, strategy):
     latent = latent_of(kind)

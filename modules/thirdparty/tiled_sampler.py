@@ -9,6 +9,7 @@
 #   instead of the tile, and was given the boxes of another conditioning when one before it was left out of the tile.
 # - A tile gets its noise from ComfyUI at its first step, as `padded` did. `random` and `simple` added the noise to the whole latent themselves.
 # - The height of a latent is its second last dimension.
+# - The mask of a tile is a new tensor.
 from tqdm.auto import tqdm
 
 import torch
@@ -215,7 +216,7 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
                             tiled_mask = tiling.get_slice(noise_mask, tile_h, tile_h_len, tile_w, tile_w_len).to(device)
                         if tile_mask is not None:
                             if tiled_mask is not None:
-                                tiled_mask *= tile_mask.to(device)
+                                tiled_mask = tiled_mask * tile_mask.to(device)
                             else:
                                 tiled_mask = tile_mask.to(device)
 

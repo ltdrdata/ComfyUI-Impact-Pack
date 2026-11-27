@@ -1,6 +1,7 @@
 # Copied from https://github.com/BlenderNeko/ComfyUI_TiledKSampler (2fd9b05), less one assignment that nothing read. Used by tiled_sampler.py.
 # Changed here: a tile is written back by the last two dimensions, and a mask of `padded` is one mask
 # for every latent of the batch.
+# And `mask_at_boundary` keeps the batch and channels of the mask it is given.
 
 import torch
 import itertools
@@ -125,8 +126,8 @@ def mask_at_boundary(h, h_len, w, w_len, tile_size_h, tile_size_w, latent_size_h
         return h, h_len, w, w_len, mask
     h_offset = min(0, latent_size_h - (h + tile_size_h))
     w_offset = min(0, latent_size_w - (w + tile_size_w))
-    new_mask = torch.zeros((1,1,tile_size_h, tile_size_w), dtype=torch.float32, device=device)
-    new_mask[:,:,-h_offset:h_len if h_offset == 0 else tile_size_h, -w_offset:w_len if w_offset == 0 else tile_size_w] =  1.0 if mask is None else mask
+    new_mask = torch.zeros(((1,1) if mask is None else mask.shape[:-2]) + (tile_size_h, tile_size_w), dtype=torch.float32, device=device)
+    new_mask[...,-h_offset:h_len if h_offset == 0 else tile_size_h, -w_offset:w_len if w_offset == 0 else tile_size_w] =  1.0 if mask is None else mask
     return h + h_offset, tile_size_h, w + w_offset, tile_size_w, new_mask
 
 def get_tiles_and_masks_rgrid(steps, latent_shape, tile_height, tile_width, generator):
