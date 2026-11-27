@@ -7,6 +7,8 @@
 #   conditioning stays [batch, height, width], the shape that ComfyUI samples with.
 # - GLIGEN: `slice_gligen` indexed the conditioning pair with a string, measured the end of a box from the origin of the picture
 #   instead of the tile, and was given the boxes of another conditioning when one before it was left out of the tile.
+# - A tile gets its noise from ComfyUI at its first step, as `padded` did. `random` and `simple` added the noise to the whole latent themselves.
+# - The height of a latent is its second last dimension.
 from tqdm.auto import tqdm
 
 import torch
@@ -120,7 +122,7 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
     samples = samples.clone()
     
     tile_width = min(shape[-1] * 8, tile_width)
-    tile_height = min(shape[2] * 8, tile_height)
+    tile_height = min(shape[-2] * 8, tile_height)
 
     conds0 = \
         {"positive": comfy.sampler_helpers.convert_cond(positive),
@@ -135,12 +137,6 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
     comfy.model_management.load_models_gpu([model] + modelPatches, model.memory_required(noise.shape) + inference_memory)
     
     sampler = comfy.samplers.KSampler(model, steps=steps, device=device, sampler=sampler_name, scheduler=scheduler, denoise=denoise, model_options=model.model_options)
-
-    if tiling_strategy != 'padded':
-        if noise_mask is not None:
-            samples += sampler.sigmas[start_at_step].cpu() * noise_mask * model.model.process_latent_out(noise)
-        else:
-            samples += sampler.sigmas[start_at_step].cpu() * model.model.process_latent_out(noise)
 
     cnets =  [c['control'] for (_, c) in positive + negative if 'control' in c]
     cnets = list(set([x for m in cnets for x in recursion_to_list(m, "previous_controlnet")]))
@@ -234,7 +230,7 @@ def sample_common(model, add_noise, noise_seed, tile_width, tile_height, tiling_
 
                         tiled_latent = tiling.get_slice(samples, tile_h, tile_h_len, tile_w, tile_w_len).to(device)
 
-                        if tiling_strategy == 'padded':
+                        if i == 0:
                             tiled_noise = tiling.get_slice(noise, tile_h, tile_h_len, tile_w, tile_w_len).to(device)
                         else:
                             if tiled_mask is None or noise_mask is None:

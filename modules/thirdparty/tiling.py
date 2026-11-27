@@ -1,4 +1,6 @@
 # Copied from https://github.com/BlenderNeko/ComfyUI_TiledKSampler (2fd9b05), less one assignment that nothing read. Used by tiled_sampler.py.
+# Changed here: a tile is written back by the last two dimensions, and a mask of `padded` is one mask
+# for every latent of the batch.
 
 import torch
 import itertools
@@ -26,9 +28,9 @@ def get_slice(tensor, h, h_len, w, w_len):
 
 def set_slice(tensor1,tensor2,  h, h_len, w, w_len, mask=None):
     if mask is not None:
-        tensor1[:,:,h:h+h_len,w:w+w_len] = tensor1[:,:,h:h+h_len,w:w+w_len] * (1 - mask) +  tensor2 * mask
+        tensor1[...,h:h+h_len,w:w+w_len] = tensor1[...,h:h+h_len,w:w+w_len] * (1 - mask) +  tensor2 * mask
     else:
-        tensor1[:,:,h:h+h_len,w:w+w_len] = tensor2
+        tensor1[...,h:h+h_len,w:w+w_len] = tensor2
 
 def get_tiles_and_masks_simple(steps, latent_shape, tile_height, tile_width):
     latent_size_h = latent_shape[-2]
@@ -52,7 +54,6 @@ def get_tiles_and_masks_simple(steps, latent_shape, tile_height, tile_width):
     return passes
 
 def get_tiles_and_masks_padded(steps, latent_shape, tile_height, tile_width):
-    batch_size = latent_shape[0]
     latent_size_h = latent_shape[-2]
     latent_size_w = latent_shape[-1]
 
@@ -66,7 +67,7 @@ def get_tiles_and_masks_padded(steps, latent_shape, tile_height, tile_width):
     masks = [[] for _ in range(3)]
     for i in range(3):
         for j in range(3):
-            mask = torch.zeros((batch_size,1,tile_size_h, tile_size_w), dtype=torch.float32, device='cpu')
+            mask = torch.zeros((1,1,tile_size_h, tile_size_w), dtype=torch.float32, device='cpu')
             mask[:,:,mask_h[i]:mask_h[i+1],mask_w[j]:mask_w[j+1]] = 1.0
             masks[i].append(mask)
     
