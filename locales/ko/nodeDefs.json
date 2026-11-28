@@ -2186,5 +2186,30 @@
             }
         },
         "outputs": {}
+    },
+    "CropRegionMultipleDetailerHookProvider": {
+        "description": "각 crop 영역의 너비와 높이를 주어진 크기의 배수로 만드는 후크를 제공합니다. crop 영역은 양쪽으로 넓어지고 이미지 안에 머뭅니다. 이미지가 넓어진 크기보다 작으면 crop 영역은 들어가는 가장 큰 배수가 됩니다. 이미지의 변이 주어진 크기보다 짧으면 그 변은 그대로 둡니다.",
+        "display_name": "crop 영역 배수 디테일러 후크 제공자",
+        "inputs": {
+            "multiple": {
+                "name": "배수",
+                "tooltip": "각 crop 영역의 너비와 높이가 이 크기의 배수가 됩니다."
+            }
+        },
+        "outputs": {}
+    },
+    "ImpactSEGSApplyCropRegionHook": {
+        "description": "디테일러 후크가 만드는 crop 영역을 각 SEG에 줍니다. 그 후크를 받은 디텍터와 같습니다.\nMake Tile SEGS나 MASK to SEGS처럼 디테일러 후크를 받지 않는 노드의 SEGS에 사용합니다.\nControl Net Apply (SEGS)보다 앞에 두세요. 그 노드는 그때 SEG가 가진 crop 영역으로 control 이미지를 자릅니다.",
+        "display_name": "crop 영역 후크 적용 (SEGS)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            },
+            "detailer_hook": {
+                "name": "디테일러 후크",
+                "tooltip": "crop 영역 배수 디테일러 후크 제공자처럼 crop 영역을 바꾸는 후크입니다. 후크의 다른 효과는 여기서 적용되지 않습니다."
+            }
+        },
+        "outputs": {}
     }
 }

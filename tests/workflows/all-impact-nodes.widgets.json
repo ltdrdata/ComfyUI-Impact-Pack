@@ -4135,6 +4135,21 @@
           "value": 16
         }
       ]
+    },
+    {
+      "id": "210",
+      "type": "CropRegionMultipleDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "multiple",
+          "value": 64
+        }
+      ]
+    },
+    {
+      "id": "211",
+      "type": "ImpactSEGSApplyCropRegionHook",
+      "widgets": []
     }
   ]
 }
