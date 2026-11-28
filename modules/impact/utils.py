@@ -521,6 +521,23 @@ def make_crop_region(w, h, bbox, crop_factor, crop_min_size=None):
     return [new_x1, new_y1, new_x2, new_y2]
 
 
+def equal_margin_crop_region(w, h, bbox, crop_region):
+    x1, y1, x2, y2 = crop_region
+    bbox_w = bbox[2] - bbox[0]
+    bbox_h = bbox[3] - bbox[1]
+
+    # The image can only shorten a side of the region, so the side with the largest ratio to its bbox side still has the crop factor.
+    margin = min(bbox_w, bbox_h) * (max((x2 - x1) / bbox_w, (y2 - y1) / bbox_h) - 1)
+
+    # A side that is less than a pixel too long is kept: cutting it would only move it by the int() of normalize_region.
+    if x2 - x1 >= bbox_w + margin + 1:
+        x1, x2 = normalize_region(w, int(bbox[0] - margin / 2), bbox_w + margin)
+    if y2 - y1 >= bbox_h + margin + 1:
+        y1, y2 = normalize_region(h, int(bbox[1] - margin / 2), bbox_h + margin)
+
+    return [x1, y1, x2, y2]
+
+
 def crop_ndarray4(npimg, crop_region):
     x1 = crop_region[0]
     y1 = crop_region[1]

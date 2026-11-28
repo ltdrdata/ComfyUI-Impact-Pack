@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 206,
+  "last_node_id": 207,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10656,6 +10656,32 @@
         "seed": 0,
         "control_after_generate": "randomize"
       }
+    },
+    {
+      "id": 207,
+      "type": "CropRegionEqualMarginDetailerHookProvider",
+      "pos": [
+        8274.426291232638,
+        6985.555555555555
+      ],
+      "size": [
+        341.5015625,
+        26
+      ],
+      "flags": {},
+      "order": 205,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CropRegionEqualMarginDetailerHookProvider"
+      }
     }
   ],
   "links": [],
@@ -10665,8 +10691,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -7145.05481906467,
-        -6735.555555555555
+        -7995.177072482638,
+        -6795.555555555555
       ]
     },
     "frontendVersion": "1.59.10"

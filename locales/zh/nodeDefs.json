@@ -6450,5 +6450,15 @@
                 "name": "SEGS"
             }
         }
+    },
+    "CropRegionEqualMarginDetailerHookProvider": {
+        "description": "提供一个 hook，让每个裁剪区域的长边也只获得 crop_factor 给短边的边距，使细长的边界框四周边距相同。连接到 FaceDetailer 或检测器的 detailer_hook 使用。",
+        "display_name": "裁剪区域等边距 Detailer hook提供器",
+        "inputs": {},
+        "outputs": {
+            "0": {
+                "name": "Detailer hook"
+            }
+        }
     }
 }
