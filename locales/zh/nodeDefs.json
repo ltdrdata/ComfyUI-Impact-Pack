@@ -6460,5 +6460,36 @@
                 "name": "Detailer hook"
             }
         }
+    },
+    "CropRegionXYFactorDetailerHookProvider": {
+        "description": "提供一个 hook，用每个检测区域的边界框生成裁剪区域时，宽度使用 crop_factor_x，高度使用 crop_factor_y。该区域会替换检测器或面部细节修复用其自身裁剪系数生成的区域。",
+        "display_name": "裁剪区域 XY 系数 Detailer hook提供器",
+        "inputs": {
+            "crop_factor_x": {
+                "name": "水平裁剪系数"
+            },
+            "crop_factor_y": {
+                "name": "垂直裁剪系数"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "Detailer hook"
+            }
+        }
+    },
+    "SEGSRoundCornersDetailerHookProvider": {
+        "description": "提供一个 hook，在每个检测区域遮罩所在的边界处将遮罩的四角变圆。radius 以像素为单位，最大为该边界短边的一半。检测器在扩张遮罩之后进行圆角处理，Detailer 在粘贴时对圆角遮罩进行羽化。",
+        "display_name": "SEGS 圆角 Detailer hook提供器",
+        "inputs": {
+            "radius": {
+                "name": "半径"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "Detailer hook"
+            }
+        }
     }
 }

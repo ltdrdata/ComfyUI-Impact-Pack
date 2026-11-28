@@ -1100,6 +1100,28 @@ class CropRegionEqualMarginDetailerHookProvider(ImpactNode):
         return io.NodeOutput(hooks.CropRegionEqualMarginHook())
 
 
+class CropRegionXYFactorDetailerHookProvider(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CropRegionXYFactorDetailerHookProvider",
+            display_name="CropRegionXYFactorDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            description="Provides a hook that makes the crop region of each detected area from its box with `crop_factor_x` for the width and `crop_factor_y` for the height. "
+                        "This region replaces the one that the detector or FaceDetailer made with its own crop factor.",
+            inputs=[
+                io.Float.Input("crop_factor_x", default=3.0, min=1.0, max=100, step=0.1),
+                io.Float.Input("crop_factor_y", default=3.0, min=1.0, max=100, step=0.1),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
+
+    @classmethod
+    def execute(cls, crop_factor_x, crop_factor_y):
+        hook = hooks.CropRegionXYFactorDetailerHook(crop_factor_x, crop_factor_y)
+        return io.NodeOutput(hook)
+
+
 class CustomSamplerDetailerHookProvider(ImpactNode):
     @classmethod
     def define_schema(cls):

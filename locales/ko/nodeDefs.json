@@ -2163,5 +2163,28 @@
         "display_name": "crop 영역 균등 여백 디테일러 후크 제공자",
         "inputs": {},
         "outputs": {}
+    },
+    "CropRegionXYFactorDetailerHookProvider": {
+        "description": "감지된 각 영역의 crop 영역을 박스로 만들 때 너비에는 가로 crop 배율을, 높이에는 세로 crop 배율을 쓰는 후크를 제공합니다. 이 영역은 감지기나 얼굴 디테일러가 자체 crop 배율로 만든 영역을 대체합니다.",
+        "display_name": "가로세로 crop 배율 디테일러 후크 제공자",
+        "inputs": {
+            "crop_factor_x": {
+                "name": "가로 crop 배율"
+            },
+            "crop_factor_y": {
+                "name": "세로 crop 배율"
+            }
+        },
+        "outputs": {}
+    },
+    "SEGSRoundCornersDetailerHookProvider": {
+        "description": "감지된 각 영역의 마스크 모서리를 마스크가 있는 경계에서 둥글게 만드는 후크를 제공합니다. 반경은 픽셀 단위이며 그 경계의 짧은 변의 절반을 넘지 않습니다. 감지기는 마스크를 확장한 뒤에 모서리를 둥글게 만들고, 디테일러는 붙여 넣을 때 둥글게 된 마스크의 가장자리를 흐리게 합니다.",
+        "display_name": "SEGS 둥근 모서리 디테일러 후크 제공자",
+        "inputs": {
+            "radius": {
+                "name": "반경"
+            }
+        },
+        "outputs": {}
     }
 }

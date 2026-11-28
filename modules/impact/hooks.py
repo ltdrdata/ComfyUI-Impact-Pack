@@ -1,4 +1,6 @@
 import copy
+import cv2
+import numpy as np
 import torch
 import nodes
 from impact import utils
@@ -347,6 +349,18 @@ class CropRegionEqualMarginHook(DetailerHook):
         return utils.equal_margin_crop_region(w, h, item_bbox, crop_region)
 
 
+class CropRegionXYFactorDetailerHook(DetailerHook):
+    def __init__(self, crop_factor_x, crop_factor_y):
+        super().__init__()
+        self.crop_factor_x = crop_factor_x
+        self.crop_factor_y = crop_factor_y
+
+    def post_crop_region(self, w, h, item_bbox, crop_region):
+        x1, _, x2, _ = utils.make_crop_region(w, h, item_bbox, self.crop_factor_x)
+        _, y1, _, y2 = utils.make_crop_region(w, h, item_bbox, self.crop_factor_y)
+        return [x1, y1, x2, y2]
+
+
 class InjectNoiseHook(PixelKSampleHook):
     def __init__(self, source, seed, start_strength, end_strength):
         super().__init__()
@@ -543,6 +557,31 @@ class SEGSLabelFilterDetailerHook(DetailerHook):
 
     def post_detection(self, segs):
         return segs_nodes.SEGSLabelFilter().doit(segs, "", self.labels)[0]
+
+
+class SEGSRoundCornersDetailerHook(DetailerHook):
+    def __init__(self, radius):
+        super().__init__()
+        self.radius = radius
+
+    def post_detection(self, segs):
+        items = []
+        for seg in segs[1]:
+            ys, xs = np.nonzero(seg.cropped_mask > 0)
+            if len(xs) == 0:
+                items.append(seg)
+                continue
+
+            x1, y1, x2, y2 = int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())
+            r = min(self.radius, (x2 - x1) // 2, (y2 - y1) // 2)
+            rounded = np.zeros_like(seg.cropped_mask)
+            cv2.rectangle(rounded, (x1 + r, y1), (x2 - r, y2), 1, -1)
+            cv2.rectangle(rounded, (x1, y1 + r), (x2, y2 - r), 1, -1)
+            for x, y in ((x1 + r, y1 + r), (x2 - r, y1 + r), (x1 + r, y2 - r), (x2 - r, y2 - r)):
+                cv2.circle(rounded, (x, y), r, 1, -1)
+            items.append(seg._replace(cropped_mask=seg.cropped_mask * rounded))
+
+        return segs[0], items
 
 
 class LamaRemoverDetailerHook(DetailerHook):

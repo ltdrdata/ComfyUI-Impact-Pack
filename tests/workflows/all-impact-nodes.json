@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 207,
+  "last_node_id": 209,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10682,6 +10682,72 @@
       "properties": {
         "Node name for S&R": "CropRegionEqualMarginDetailerHookProvider"
       }
+    },
+    {
+      "id": 208,
+      "type": "CropRegionXYFactorDetailerHookProvider",
+      "pos": [
+        9084.250693088106,
+        7045.555555555555
+      ],
+      "size": [
+        380.351171875,
+        82
+      ],
+      "flags": {},
+      "order": 206,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CropRegionXYFactorDetailerHookProvider"
+      },
+      "widgets_values": [
+        3,
+        3
+      ],
+      "widgets_values_named": {
+        "crop_factor_x": 3,
+        "crop_factor_y": 3
+      }
+    },
+    {
+      "id": 209,
+      "type": "SEGSRoundCornersDetailerHookProvider",
+      "pos": [
+        9887.576376681856,
+        7045.555555555555
+      ],
+      "size": [
+        373.6998046875,
+        58
+      ],
+      "flags": {},
+      "order": 207,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SEGSRoundCornersDetailerHookProvider"
+      },
+      "widgets_values": [
+        16
+      ],
+      "widgets_values_named": {
+        "radius": 16
+      }
     }
   ],
   "links": [],
@@ -10691,8 +10757,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -7995.177072482638,
-        -6795.555555555555
+        -9624.426279025607,
+        -6855.555555555555
       ]
     },
     "frontendVersion": "1.59.10"

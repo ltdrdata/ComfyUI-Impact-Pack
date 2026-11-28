@@ -4111,6 +4111,30 @@
       "id": "207",
       "type": "CropRegionEqualMarginDetailerHookProvider",
       "widgets": []
+    },
+    {
+      "id": "208",
+      "type": "CropRegionXYFactorDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "crop_factor_x",
+          "value": 3
+        },
+        {
+          "name": "crop_factor_y",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "209",
+      "type": "SEGSRoundCornersDetailerHookProvider",
+      "widgets": [
+        {
+          "name": "radius",
+          "value": 16
+        }
+      ]
     }
   ]
 }

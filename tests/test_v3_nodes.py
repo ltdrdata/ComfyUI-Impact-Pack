@@ -12,7 +12,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 V1 = json.loads((ROOT / "tests" / "v1_node_info.json").read_text())
 BORN_V3 = {"DetailerAdvancedOptionsHook", "ImpactSAM3VideoDetectorSEGS", "ImpactSEGSToBoundingBoxes", "ImpactBoundingBoxesToSEGS",
-           "CropRegionEqualMarginDetailerHookProvider"}
+           "CropRegionEqualMarginDetailerHookProvider", "CropRegionXYFactorDetailerHookProvider", "SEGSRoundCornersDetailerHookProvider"}
 FIELDS = ("name", "display_name", "category", "input", "input_order", "is_input_list", "output", "output_name",
           "output_is_list", "output_node", "deprecated", "experimental", "dev_only", "api_node",
           "has_intermediate_output", "search_aliases", "essentials_category")

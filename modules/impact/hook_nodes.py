@@ -106,6 +106,27 @@ class SEGSLabelFilterDetailerHookProvider:
         return (hook, )
 
 
+class SEGSRoundCornersDetailerHookProvider(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="SEGSRoundCornersDetailerHookProvider",
+            display_name="SEGSRoundCornersDetailerHookProvider",
+            category="ImpactPack/Util",
+            description="Provides a hook that rounds the corners of the mask of each detected area at the bounds of the mask, with `radius` in pixels limited to half the shorter side of those bounds. "
+                        "The detector rounds the mask after its dilation, and the Detailer feathers the rounded mask when it pastes.",
+            inputs=[
+                io.Int.Input("radius", default=16, min=0, max=512, step=1),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
+
+    @classmethod
+    def execute(cls, radius):
+        hook = hooks.SEGSRoundCornersDetailerHook(radius)
+        return io.NodeOutput(hook)
+
+
 class PreviewDetailerHookProvider:
     @classmethod
     def INPUT_TYPES(s):
