@@ -1,7 +1,7 @@
 {
   "id": "79741589-67f9-4713-89de-5c22075bb6a9",
   "revision": 0,
-  "last_node_id": 209,
+  "last_node_id": 211,
   "last_link_id": 0,
   "nodes": [
     {
@@ -10748,6 +10748,75 @@
       "widgets_values_named": {
         "radius": 16
       }
+    },
+    {
+      "id": 210,
+      "type": "CropRegionMultipleDetailerHookProvider",
+      "pos": [
+        10701.673239474825,
+        7105.555555555555
+      ],
+      "size": [
+        371.80625,
+        58
+      ],
+      "flags": {},
+      "order": 208,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "DETAILER_HOOK",
+          "type": "DETAILER_HOOK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CropRegionMultipleDetailerHookProvider"
+      },
+      "widgets_values": [
+        64
+      ],
+      "widgets_values_named": {
+        "multiple": 64
+      }
+    },
+    {
+      "id": 211,
+      "type": "ImpactSEGSApplyCropRegionHook",
+      "pos": [
+        11560.808005099825,
+        7105.555555555555
+      ],
+      "size": [
+        253.53671875,
+        46
+      ],
+      "flags": {},
+      "order": 209,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "segs",
+          "type": "SEGS",
+          "link": null
+        },
+        {
+          "name": "detailer_hook",
+          "type": "DETAILER_HOOK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SEGS",
+          "type": "SEGS",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactSEGSApplyCropRegionHook"
+      }
     }
   ],
   "links": [],
@@ -10757,8 +10826,8 @@
     "ds": {
       "scale": 1,
       "offset": [
-        -9624.426279025607,
-        -6855.555555555555
+        -11237.576364474826,
+        -6915.555555555555
       ]
     },
     "frontendVersion": "1.59.10"

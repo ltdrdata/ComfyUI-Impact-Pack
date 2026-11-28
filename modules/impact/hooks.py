@@ -361,6 +361,15 @@ class CropRegionXYFactorDetailerHook(DetailerHook):
         return [x1, y1, x2, y2]
 
 
+class CropRegionMultipleHook(DetailerHook):
+    def __init__(self, multiple):
+        super().__init__()
+        self.multiple = multiple
+
+    def post_crop_region(self, w, h, item_bbox, crop_region):
+        return utils.crop_region_to_multiple(w, h, crop_region, self.multiple)
+
+
 class InjectNoiseHook(PixelKSampleHook):
     def __init__(self, source, seed, start_strength, end_strength):
         super().__init__()

@@ -1122,6 +1122,28 @@ class CropRegionXYFactorDetailerHookProvider(ImpactNode):
         return io.NodeOutput(hook)
 
 
+class CropRegionMultipleDetailerHookProvider(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CropRegionMultipleDetailerHookProvider",
+            display_name="CropRegionMultipleDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            description="Provides a hook that makes the width and the height of each crop region a multiple of the given size. "
+                        "A crop region grows on both sides and stays inside the image. Where the image is too small for the grown size, "
+                        "the crop region takes the largest multiple that fits. Where a side of the image is shorter than the size, that side stays as it is.",
+            inputs=[
+                io.Int.Input("multiple", default=64, min=8, max=1024, step=8,
+                             tooltip="The width and the height of each crop region become a multiple of this size."),
+            ],
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
+
+    @classmethod
+    def execute(cls, multiple):
+        return io.NodeOutput(hooks.CropRegionMultipleHook(multiple))
+
+
 class CustomSamplerDetailerHookProvider(ImpactNode):
     @classmethod
     def define_schema(cls):

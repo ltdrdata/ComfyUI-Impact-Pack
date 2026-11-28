@@ -46,7 +46,7 @@ from .modules.impact.impact_pack import (
     PixelKSampleUpscalerProvider, PixelKSampleUpscalerProviderPipe, IterativeLatentUpscale, IterativeImageUpscale, PixelTiledKSampleUpscalerProvider,
     PixelTiledKSampleUpscalerProviderPipe, TwoSamplersForMaskUpscalerProvider, TwoSamplersForMaskUpscalerProviderPipe, PixelKSampleHookCombine,
     DenoiseScheduleHookProvider, StepsScheduleHookProvider, CfgScheduleHookProvider, NoiseInjectionHookProvider, UnsamplerHookProvider,
-    CoreMLDetailerHookProvider, CropRegionEqualMarginDetailerHookProvider, CustomSamplerDetailerHookProvider, DetailerHookCombine, NoiseInjectionDetailerHookProvider,
+    CoreMLDetailerHookProvider, CropRegionEqualMarginDetailerHookProvider, CropRegionMultipleDetailerHookProvider, CustomSamplerDetailerHookProvider, DetailerHookCombine, NoiseInjectionDetailerHookProvider,
     UnsamplerDetailerHookProvider, DenoiseSchedulerDetailerHookProvider, VariationNoiseDetailerHookProvider, BitwiseAndMask, SubtractMask, AddMask,
     MaskRectArea, MaskRectAreaAdvanced, SegsBitwiseAndMask, SegsBitwiseAndMaskForEach, FlattenMask, ToBinaryMask, ImageSender, ImageReceiver,
     LatentSender, LatentReceiver, ImpactWildcardProcessor, ImpactWildcardEncode, ImpactSchedulerAdapter, CropRegionXYFactorDetailerHookProvider,
@@ -72,7 +72,7 @@ from .modules.impact.util_nodes import (
     StringSelector, StringListToString, WildcardPromptFromString, RemoveNoiseMask, ImpactLogger, ImpactDummyInput,
 )
 from .modules.impact.segs_nodes import (
-    EmptySEGS, MediaPipeFaceMeshToSEGS, MaskToSEGS, MaskToSEGS_for_AnimateDiff, DefaultImageForSEGS, RemoveImageFromSEGS, ControlNetApplySEGS,
+    EmptySEGS, MediaPipeFaceMeshToSEGS, MaskToSEGS, MaskToSEGS_for_AnimateDiff, DefaultImageForSEGS, RemoveImageFromSEGS, SEGSApplyCropRegionHook, ControlNetApplySEGS,
     ControlNetApplyAdvancedSEGS, ControlNetClearSEGS, IPAdapterApplySEGS, DecomposeSEGS, AssembleSEGS, DecomposeSEGSList, AssembleSEGSList,
     From_SEG_ELT, Edit_SEG_ELT, Dilate_SEG_ELT, DilateMask, GaussianBlurMask, DilateMaskInSEGS, GaussianBlurMaskInSEGS, SEG_ELT_BBOX_ScaleBy,
     From_SEG_ELT_bbox, From_SEG_ELT_crop_region, Count_Elts_in_SEGS, SegsToCombinedMask, SEGSUpscaler, SEGSUpscalerPipe, SEGSDetailer, SEGSPreview,
@@ -163,6 +163,7 @@ NODE_CLASS_MAPPINGS = {
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
     "CropRegionEqualMarginDetailerHookProvider": CropRegionEqualMarginDetailerHookProvider,
     "CropRegionXYFactorDetailerHookProvider": CropRegionXYFactorDetailerHookProvider,
+    "CropRegionMultipleDetailerHookProvider": CropRegionMultipleDetailerHookProvider,
     "PreviewDetailerHookProvider": PreviewDetailerHookProvider,
     "BlackPatchRetryHookProvider": BlackPatchRetryHookProvider,
     "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider,
@@ -198,6 +199,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageListToImageBatch": ImageListToImageBatch,
     "SetDefaultImageForSEGS": DefaultImageForSEGS,
     "RemoveImageFromSEGS": RemoveImageFromSEGS,
+    "ImpactSEGSApplyCropRegionHook": SEGSApplyCropRegionHook,
 
     "BboxDetectorSEGS": BboxDetectorForEach,
     "SegmDetectorSEGS": SegmDetectorForEach,
@@ -477,6 +479,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImpactIsNotEmptySEGS": "SEGS isn't Empty",
     "SetDefaultImageForSEGS": "Set Default Image for SEGS",
     "RemoveImageFromSEGS": "Remove Image from SEGS",
+    "ImpactSEGSApplyCropRegionHook": "Apply Crop Region Hook (SEGS)",
 
     "RemoveNoiseMask": "Remove Noise Mask",
 

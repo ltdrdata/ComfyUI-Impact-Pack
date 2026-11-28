@@ -6491,5 +6491,38 @@
                 "name": "Detailer hook"
             }
         }
+    },
+    "CropRegionMultipleDetailerHookProvider": {
+        "description": "提供一个 Detailer hook，使每个裁剪区域的宽度和高度成为给定尺寸的倍数。裁剪区域向两侧扩展并保持在图像内。图像容纳不下扩展后的尺寸时，裁剪区域取能容纳的最大倍数。图像的某一边短于给定尺寸时，该边保持不变。",
+        "display_name": "裁剪区域倍数 Detailer hook提供器",
+        "inputs": {
+            "multiple": {
+                "name": "倍数",
+                "tooltip": "每个裁剪区域的宽度和高度会成为该尺寸的倍数。"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "Detailer hook"
+            }
+        }
+    },
+    "ImpactSEGSApplyCropRegionHook": {
+        "description": "为每个 SEG 赋予 Detailer hook 生成的裁剪区域，与接收该 hook 的检测器相同。\n用于 Make Tile SEGS、MASK to SEGS 等不接收 Detailer hook 的节点输出的 SEGS。\n请放在 Control Net Apply (SEGS) 之前，该节点按 SEG 当时的裁剪区域裁剪控制图像。",
+        "display_name": "应用裁剪区域 hook (SEGS)",
+        "inputs": {
+            "segs": {
+                "name": "segs"
+            },
+            "detailer_hook": {
+                "name": "Detailer hook",
+                "tooltip": "改变裁剪区域的 hook，例如裁剪区域倍数 Detailer hook提供器。hook 的其他效果不会在这里应用。"
+            }
+        },
+        "outputs": {
+            "0": {
+                "name": "SEGS"
+            }
+        }
     }
 }

@@ -538,6 +538,21 @@ def equal_margin_crop_region(w, h, bbox, crop_region):
     return [x1, y1, x2, y2]
 
 
+def region_to_multiple(limit, startp, endp, multiple):
+    if limit < multiple:
+        return startp, endp
+
+    size = endp - startp
+    new_size = min(-(-size // multiple), limit // multiple) * multiple
+    return normalize_region(limit, startp - (new_size - size) // 2, new_size)
+
+
+def crop_region_to_multiple(w, h, crop_region, multiple):
+    x1, x2 = region_to_multiple(w, crop_region[0], crop_region[2], multiple)
+    y1, y2 = region_to_multiple(h, crop_region[1], crop_region[3], multiple)
+    return [x1, y1, x2, y2]
+
+
 def crop_ndarray4(npimg, crop_region):
     x1 = crop_region[0]
     y1 = crop_region[1]

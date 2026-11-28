@@ -1837,6 +1837,45 @@ class RemoveImageFromSEGS(ImpactNode):
             return io.NodeOutput(segs)
 
 
+class SEGSApplyCropRegionHook(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="ImpactSEGSApplyCropRegionHook",
+            display_name="Apply Crop Region Hook (SEGS)",
+            category="ImpactPack/Util",
+            description="Gives each SEG the crop region that the detailer hook makes of it, as a detector with that hook does.\n"
+                        "Use it on SEGS from nodes that take no detailer hook, such as Make Tile SEGS or MASK to SEGS.\n"
+                        "Place it before Control Net Apply (SEGS), which crops its control image for the crop region the SEG has then.",
+            inputs=[
+                io.Custom("SEGS").Input("segs"),
+                io.Custom("DETAILER_HOOK").Input("detailer_hook", tooltip="A hook that changes crop regions, such as CropRegionMultipleDetailerHookProvider. Its other effects are not applied here."),
+            ],
+            outputs=[io.Custom("SEGS").Output()],
+        )
+
+    @classmethod
+    def execute(cls, segs, detailer_hook):
+        h, w = segs[0]
+        new_segs = []
+        for seg in segs[1]:
+            crop_region = detailer_hook.post_crop_region(w, h, seg.bbox, seg.crop_region)
+            if list(crop_region) != list(seg.crop_region):
+                x1, y1, x2, y2 = crop_region
+                ox1, oy1, ox2, oy2 = seg.crop_region
+                ix1, iy1 = max(x1, ox1), max(y1, oy1)
+                ix2, iy2 = max(ix1, min(x2, ox2)), max(iy1, min(y2, oy2))
+
+                old_mask = seg.cropped_mask
+                shape = (*old_mask.shape[:-2], y2 - y1, x2 - x1)
+                mask = old_mask.new_zeros(shape) if isinstance(old_mask, torch.Tensor) else np.zeros(shape, dtype=old_mask.dtype)
+                mask[..., iy1 - y1:iy2 - y1, ix1 - x1:ix2 - x1] = old_mask[..., iy1 - oy1:iy2 - oy1, ix1 - ox1:ix2 - ox1]
+                seg = seg._replace(cropped_image=None, cropped_mask=mask, crop_region=crop_region)
+            new_segs.append(seg)
+
+        return io.NodeOutput((segs[0], new_segs))
+
+
 class MakeTileSEGS(ImpactNode):
     @classmethod
     def define_schema(cls):
