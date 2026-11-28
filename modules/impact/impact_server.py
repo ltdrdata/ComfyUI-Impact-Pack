@@ -631,7 +631,7 @@ def onprompt_for_remote(json_data):
                         widget_type = 'INT'
 
                     if widget_type is None:
-                        break
+                        continue
 
                     target_inputs[widget_name] = inputs['value']
                     PromptServer.instance.send_sync("impact-node-feedback", {"node_id": node_id, "widget_name": widget_name, "type": widget_type, "value": inputs['value']})
