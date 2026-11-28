@@ -49,7 +49,7 @@ from .modules.impact.impact_pack import (
     CoreMLDetailerHookProvider, CropRegionEqualMarginDetailerHookProvider, CustomSamplerDetailerHookProvider, DetailerHookCombine, NoiseInjectionDetailerHookProvider,
     UnsamplerDetailerHookProvider, DenoiseSchedulerDetailerHookProvider, VariationNoiseDetailerHookProvider, BitwiseAndMask, SubtractMask, AddMask,
     MaskRectArea, MaskRectAreaAdvanced, SegsBitwiseAndMask, SegsBitwiseAndMaskForEach, FlattenMask, ToBinaryMask, ImageSender, ImageReceiver,
-    LatentSender, LatentReceiver, ImpactWildcardProcessor, ImpactWildcardEncode, ImpactSchedulerAdapter,
+    LatentSender, LatentReceiver, ImpactWildcardProcessor, ImpactWildcardEncode, ImpactSchedulerAdapter, CropRegionXYFactorDetailerHookProvider,
 )
 from .modules.impact.detectors import (
     SAMDetectorCombined, SAMDetectorSegmented, BboxDetectorForEach, SegmDetectorForEach, SimpleDetectorForAnimateDiff, SAM2VideoDetectorSEGS,
@@ -93,6 +93,7 @@ from .modules.impact.bridge_nodes import (
 from .modules.impact.hook_nodes import (
     PreviewDetailerHookProvider, BlackPatchRetryHookProvider, LamaRemoverDetailerHookProvider, DetailerAdvancedOptionsHook,
     SEGSOrderedFilterDetailerHookProvider, SEGSRangeFilterDetailerHookProvider, SEGSLabelFilterDetailerHookProvider,
+    SEGSRoundCornersDetailerHookProvider,
 )
 from .modules.impact.animatediff_nodes import (
     DetailerForEachPipeForAnimateDiff, SEGSPaste, SEGSDetailerForAnimateDiff,
@@ -161,6 +162,7 @@ NODE_CLASS_MAPPINGS = {
     "UnsamplerHookProvider": UnsamplerHookProvider,
     "CoreMLDetailerHookProvider": CoreMLDetailerHookProvider,
     "CropRegionEqualMarginDetailerHookProvider": CropRegionEqualMarginDetailerHookProvider,
+    "CropRegionXYFactorDetailerHookProvider": CropRegionXYFactorDetailerHookProvider,
     "PreviewDetailerHookProvider": PreviewDetailerHookProvider,
     "BlackPatchRetryHookProvider": BlackPatchRetryHookProvider,
     "CustomSamplerDetailerHookProvider": CustomSamplerDetailerHookProvider,
@@ -174,6 +176,7 @@ NODE_CLASS_MAPPINGS = {
     "SEGSOrderedFilterDetailerHookProvider": SEGSOrderedFilterDetailerHookProvider,
     "SEGSRangeFilterDetailerHookProvider": SEGSRangeFilterDetailerHookProvider,
     "SEGSLabelFilterDetailerHookProvider": SEGSLabelFilterDetailerHookProvider,
+    "SEGSRoundCornersDetailerHookProvider": SEGSRoundCornersDetailerHookProvider,
     "VariationNoiseDetailerHookProvider": VariationNoiseDetailerHookProvider,
 
     "BitwiseAndMask": BitwiseAndMask,
