@@ -2157,5 +2157,11 @@
                 "name": "SEGS"
             }
         }
+    },
+    "CropRegionEqualMarginDetailerHookProvider": {
+        "description": "각 crop 영역의 긴 변에도 crop_factor가 짧은 변에 주는 여백만큼만 주는 후크를 제공합니다. 세로나 가로로 긴 bbox도 모든 방향으로 같은 여백을 갖습니다. 얼굴 디테일러나 감지기 노드의 detailer_hook에 연결해서 사용합니다.",
+        "display_name": "crop 영역 균등 여백 디테일러 후크 제공자",
+        "inputs": {},
+        "outputs": {}
     }
 }

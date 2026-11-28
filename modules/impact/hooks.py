@@ -342,6 +342,11 @@ class CoreMLHook(DetailerHook):
         return self.w, self.h
 
 
+class CropRegionEqualMarginHook(DetailerHook):
+    def post_crop_region(self, w, h, item_bbox, crop_region):
+        return utils.equal_margin_crop_region(w, h, item_bbox, crop_region)
+
+
 class InjectNoiseHook(PixelKSampleHook):
     def __init__(self, source, seed, start_strength, end_strength):
         super().__init__()

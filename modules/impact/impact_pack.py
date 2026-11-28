@@ -1083,6 +1083,23 @@ class CoreMLDetailerHookProvider(ImpactNode):
         return io.NodeOutput(hook)
 
 
+class CropRegionEqualMarginDetailerHookProvider(ImpactNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="CropRegionEqualMarginDetailerHookProvider",
+            display_name="CropRegionEqualMarginDetailerHookProvider",
+            category="ImpactPack/Detailer",
+            description="Provides a hook that gives the long side of each crop region the margin that the crop_factor gives the short side, "
+                        "so a tall or wide bbox gets the same margin on all sides. Connect it to the detailer_hook of FaceDetailer or a detector.",
+            outputs=[io.Custom("DETAILER_HOOK").Output()],
+        )
+
+    @classmethod
+    def execute(cls):
+        return io.NodeOutput(hooks.CropRegionEqualMarginHook())
+
+
 class CustomSamplerDetailerHookProvider(ImpactNode):
     @classmethod
     def define_schema(cls):

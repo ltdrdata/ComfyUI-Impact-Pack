@@ -4106,6 +4106,11 @@
           "value": "randomize"
         }
       ]
+    },
+    {
+      "id": "207",
+      "type": "CropRegionEqualMarginDetailerHookProvider",
+      "widgets": []
     }
   ]
 }
